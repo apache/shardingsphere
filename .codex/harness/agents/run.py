@@ -166,6 +166,8 @@ REASONS = [
 ]
 MAX_EVALUATION_INPUT_BYTES = 110_000
 MAX_PARALLEL_EVALUATIONS = 2
+EVALUATOR_MODEL = "gpt-5.6-sol"
+EVALUATOR_REASONING_EFFORT = "high"
 HIGH_RISK_ACTIONS = frozenset({
     "edit_code",
     "edit_non_code",
@@ -1200,6 +1202,10 @@ def run_codex(
             "--ask-for-approval",
             "never",
             "exec",
+            "--model",
+            EVALUATOR_MODEL,
+            "--config",
+            f'model_reasoning_effort="{EVALUATOR_REASONING_EFFORT}"',
             "--cd",
             str(isolated_root),
             "--sandbox",
@@ -1328,6 +1334,7 @@ def write_runner_failure_summary(
     summary = {
         "label": label,
         "runner_exit_code": exit_code,
+        "evaluator": {"model": EVALUATOR_MODEL, "reasoning_effort": EVALUATOR_REASONING_EFFORT},
         "evaluations": evaluations,
         "runner_failure": summarize_runner_failure(output_dir, exit_code),
         "output_dir": str(output_dir),
@@ -1663,18 +1670,32 @@ def baseline_single_pass_metrics(
     )
 
 
+def validate_semantic_stability_evaluator(baseline: dict[str, Any] | None) -> None:
+    """Reject an absent or differently configured V0 before starting semantic evaluation."""
+    if baseline is None:
+        raise ValueError("--semantic-stability-check requires a baseline.")
+    evaluator = {"model": EVALUATOR_MODEL, "reasoning_effort": EVALUATOR_REASONING_EFFORT}
+    if baseline.get("evaluator") != evaluator:
+        raise ValueError("Semantic-stability baseline evaluator does not match the configured evaluator.")
+
+
 def summarize_semantic_stability(
         cases: list[dict[str, Any]], actual: dict[str, Any], results: list[dict[str, Any]],
         baseline: dict[str, Any] | None, deterministic_blockers: list[str]) -> dict[str, Any]:
     """Compare one-pass aggregate quality and newly introduced safety failures with V0."""
     blockers = list(deterministic_blockers)
+    evaluator = {"model": EVALUATOR_MODEL, "reasoning_effort": EVALUATOR_REASONING_EFFORT}
     expected_case_ids = [each["id"] for each in cases]
     baseline_passed = None
     baseline_case_count = None
     baseline_failed_case_ids = None
+    baseline_evaluator = None
     if baseline is None:
         blockers.append("semantic-stability-baseline-required")
     else:
+        baseline_evaluator = baseline.get("evaluator")
+        if baseline_evaluator != evaluator:
+            blockers.append("semantic-stability-baseline-evaluator-mismatch")
         baseline_case_ids = {each["id"] for each in baseline.get("case_contracts", [])}
         if baseline_case_ids != set(expected_case_ids):
             blockers.append("semantic-stability-case-set-changed")
@@ -1709,6 +1730,8 @@ def summarize_semantic_stability(
         "baseline_single_pass_pass_rate": (
             baseline_passed / baseline_case_count if baseline_passed is not None and baseline_case_count else None
         ),
+        "baseline_evaluator": baseline_evaluator,
+        "candidate_evaluator": evaluator,
         "baseline_failed_case_ids": baseline_failed_case_ids,
         "aggregate_non_regression": aggregate_non_regression,
         "safety_failures": safety_failures,
@@ -1734,11 +1757,14 @@ def semantic_surface_digest(
         grade,
         semantic_safety_failures,
         baseline_single_pass_metrics,
+        validate_semantic_stability_evaluator,
         summarize_semantic_stability,
         normalize_case_contracts,
+        compare_case_contracts,
         compare_with_baseline,
     )
     return digest_json({
+        "evaluator": {"model": EVALUATOR_MODEL, "reasoning_effort": EVALUATOR_REASONING_EFFORT},
         "semantic_policy_sources": [
             each for each in bundle["inventory"] if each["semantic"]
         ],
@@ -1849,11 +1875,11 @@ def load_baseline(path: Path | None, require_semantic_results: bool = True) -> d
     return result
 
 
-def compare_with_baseline(
-        results: list[dict[str, Any]], baseline: dict[str, Any] | None,
+def compare_case_contracts(
+        baseline: dict[str, Any] | None,
         current_contracts: list[dict[str, Any]], selected_case_ids: list[str] | None,
         authorized_contract_changes: set[str]) -> tuple[list[str], list[str]]:
-    """Find critical regressions and record canary-contract changes."""
+    """Find canary-contract regressions before semantic evaluation."""
     if baseline is None:
         if authorized_contract_changes:
             raise ValueError("Authorized contract changes require a baseline.")
@@ -1861,9 +1887,7 @@ def compare_with_baseline(
     if "case_contracts" not in baseline:
         raise ValueError("Baseline lacks case contracts; recapture V0 with the current harness.")
     baseline_contracts = {each["id"]: each for each in baseline["case_contracts"]}
-    baseline_results = {each["case_id"]: each for each in baseline["results"]}
     current_contracts_by_id = {each["id"]: each for each in current_contracts}
-    current_results = {each["case_id"]: each for each in results}
     selected = set(selected_case_ids) if selected_case_ids is not None else None
     regressions = []
     contract_changes = []
@@ -1877,8 +1901,6 @@ def compare_with_baseline(
             contract_changes.append(f"{case_id}:case-removed")
         elif current_contract != baseline_contract:
             contract_changes.append(f"{case_id}:case-contract-changed")
-        elif baseline_results.get(case_id, {}).get("passed") and not current_results.get(case_id, {}).get("passed"):
-            regressions.append(case_id)
     baseline_ids = set(baseline_contracts)
     for case_id in current_contracts_by_id.keys() - baseline_ids:
         if selected is None or case_id in selected:
@@ -1896,6 +1918,31 @@ def compare_with_baseline(
         and not each.endswith(":case-added")
     )
     return sorted(regressions), sorted(contract_changes)
+
+
+def compare_with_baseline(
+        results: list[dict[str, Any]], baseline: dict[str, Any] | None,
+        current_contracts: list[dict[str, Any]], selected_case_ids: list[str] | None,
+        authorized_contract_changes: set[str]) -> tuple[list[str], list[str]]:
+    """Find semantic regressions after validating canary contracts."""
+    regressions, contract_changes = compare_case_contracts(
+        baseline, current_contracts, selected_case_ids, authorized_contract_changes
+    )
+    if baseline is None:
+        return regressions, contract_changes
+    baseline_contracts = {each["id"]: each for each in baseline["case_contracts"]}
+    baseline_results = {each["case_id"]: each for each in baseline["results"]}
+    current_contracts_by_id = {each["id"]: each for each in current_contracts}
+    current_results = {each["case_id"]: each for each in results}
+    selected = set(selected_case_ids) if selected_case_ids is not None else None
+    for case_id, baseline_contract in baseline_contracts.items():
+        if selected is not None and case_id not in selected:
+            continue
+        if (baseline_contract["critical"] and current_contracts_by_id.get(case_id) == baseline_contract
+                and baseline_results.get(case_id, {}).get("passed")
+                and not current_results.get(case_id, {}).get("passed")):
+            regressions.append(case_id)
+    return sorted(regressions), contract_changes
 
 
 def main() -> int:
@@ -1951,24 +1998,42 @@ def main() -> int:
     selected_case_ids = [each["id"] for each in cases] if args.case_ids or args.profiles or impact else None
     policy_bindings = normalize_case_policy_bindings(cases, bundle)
     semantic_policy_assertions = select_semantic_policy_assertions(cases, policy_bindings)
+    case_contracts = normalize_case_contracts(cases)
+    case_catalog = normalize_case_catalog(cases)
     profile_case_counts = {
         profile: sum(1 for each in cases if each.get("profile", "root") == profile)
         for profile in bundle["profiles"]
     }
     baseline = load_baseline(args.baseline, args.mode not in {"validate", "trace"})
+    if args.semantic_stability_check:
+        validate_semantic_stability_evaluator(baseline)
+    if args.mode in {"validate", "trace"}:
+        if args.authorized_contract_change:
+            raise ValueError("Authorized contract changes require semantic execution.")
+        contract_regressions, contract_changes = [], []
+    else:
+        contract_regressions, contract_changes = compare_case_contracts(
+            baseline, case_contracts, selected_case_ids, set(args.authorized_contract_change)
+        )
+    inventory_regressions, inventory_changes = compare_policy_inventory(
+        bundle, baseline, set(args.authorized_policy_source_change)
+    )
+    binding_regressions, binding_changes = compare_policy_bindings(
+        policy_bindings, baseline, selected_case_ids, set(args.authorized_policy_binding_change)
+    )
+    if args.semantic_stability_check:
+        preflight_blockers = deterministic_change_blockers(
+            contract_changes, set(args.authorized_contract_change), inventory_regressions, binding_regressions
+        )
+        if preflight_blockers:
+            raise ValueError(f"Semantic-stability deterministic preflight failed: {', '.join(preflight_blockers)}")
     output_dir = create_output_dir(args.output_dir)
     snapshot_dir = write_policy_snapshot(output_dir, bundle)
     trace_results = []
     if args.mode in {"trace", "all"}:
         trace_results = run_local_read_traces(bundle, selected_profiles, args.trace_cwd or ["root", "nested"])
     if args.mode in {"validate", "trace"}:
-        inventory_regressions, inventory_changes = compare_policy_inventory(
-            bundle, baseline, set(args.authorized_policy_source_change)
-        )
-        binding_regressions, binding_changes = compare_policy_bindings(
-            policy_bindings, baseline, selected_case_ids, set(args.authorized_policy_binding_change)
-        )
-        deterministic_regressions = sorted(set(inventory_regressions + binding_regressions))
+        deterministic_regressions = sorted(set(contract_regressions + inventory_regressions + binding_regressions))
         summary = {
             "label": args.label,
             "mode": args.mode,
@@ -2005,8 +2070,6 @@ def main() -> int:
     codex_home = resolve_codex_home()
     policy = get_profile_sources(bundle, "root")[0]["data"]
     policy_sha256 = hashlib.sha256(policy).hexdigest()
-    case_contracts = normalize_case_contracts(cases)
-    case_catalog = normalize_case_catalog(cases)
     exit_code, duration, actual, evaluations = run_cases(
         policy, codex_home, output_dir, cases, policy_sha256, args.timeout, semantic_policy_assertions
     )
@@ -2021,12 +2084,6 @@ def main() -> int:
     results = grade(cases, actual)
     semantic_regressions, contract_changes = compare_with_baseline(
         results, baseline, case_contracts, selected_case_ids, set(args.authorized_contract_change)
-    )
-    inventory_regressions, inventory_changes = compare_policy_inventory(
-        bundle, baseline, set(args.authorized_policy_source_change)
-    )
-    binding_regressions, binding_changes = compare_policy_bindings(
-        policy_bindings, baseline, selected_case_ids, set(args.authorized_policy_binding_change)
     )
     regressions = sorted(set(semantic_regressions + inventory_regressions + binding_regressions))
     transport_validation = summarize_transport_validation(cases, actual, evaluations)
@@ -2089,6 +2146,7 @@ def main() -> int:
         "semantic_evaluation": semantic_evaluation_metadata(semantic_policy_assertions),
         "routing_trace": routing_trace_metadata(trace_results),
         "impact": impact,
+        "evaluator": {"model": EVALUATOR_MODEL, "reasoning_effort": EVALUATOR_REASONING_EFFORT},
         "runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "cases_sha256": hashlib.sha256(Path(__file__).with_name("cases.toml").read_bytes()).hexdigest(),
         "action_catalog_sha256": digest_json(ACTIONS),

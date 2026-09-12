@@ -14,7 +14,7 @@
 # limitations under the License.
 
 version = 1
-root_max_bytes = 15000
+root_max_bytes = 13000
 
 [profiles]
 root = ["agents"]
