@@ -73,31 +73,6 @@ This mode constrains the current code task and must not expand it into a reposit
 
 ## Standalone Compliance Audit Mode
 
-Use this mode only when the user explicitly asks to audit, check, or report coding-standards compliance.
-
-- Require an exact file, package, Maven module, directory, or whole-repository scope before starting.
-- Audit the current working tree rather than a pull request or diff.
-- Remain read-only throughout the audit. Do not edit code, generate patches, run formatting, or change Git or external state.
-- Read the [standalone compliance audit workflow](references/standalone-audit.md) through EOF.
-- When the scope contains a `pom.xml`, read the [Maven dependency version rules](references/rules/maven-dependencies.md) through EOF.
-- Check every target POM only within the exact user-specified Maven audit scope.
-- When the scope contains Java, read the [Java naming rules](references/rules/java-naming.md) through EOF.
-- When the scope contains Java, read the [Java type rules](references/rules/java-types.md) through EOF.
-- When the scope contains a Java declaration with at least two covered declaration annotations, read the [Java declaration annotation order rules](references/rules/java-annotation-order.md) through EOF.
-- When the scope contains Java, read the [Java constructor rules](references/rules/java-constructors.md) through EOF.
-- When the scope contains Java `throw` statements, conditional exception paths, validation or precondition calls, or calls to `ShardingSpherePreconditions`, read the [Java precondition rules](references/rules/java-preconditions.md) through EOF.
-- When the scope contains Java methods annotated with `lombok.SneakyThrows`, read the [Java exception handling rules](references/rules/java-exceptions.md) through EOF.
-- When the scope contains Java collection declarations, read the [Java collection declaration rules](references/rules/java-collections.md) through EOF.
-- When the scope contains Java expressions that copy `Collections.singleton`, `Collections.singletonMap`, or `Arrays.asList` into `ArrayList`, `LinkedList`, `HashMap`, or `LinkedHashMap`, read the [Java collection rules](references/rules/java-collections.md) through EOF.
-- When the scope contains Java, read the [Java expression rules](references/rules/java-expressions.md) through EOF.
-- When the scope contains Java, read the [Java line-wrapping rules](references/rules/java-line-wrapping.md) through EOF.
-- When the scope contains Java tests, read the [Java test code rules](references/rules/java-testing.md) through EOF.
-- When the scope contains implementation artifacts, read the [defensive-code rules](references/rules/defensive-code.md) through EOF.
-- Before auditing, run `scripts/build_audit_inventory.py` with the repository root and every user-specified repository-relative scope.
-- Check every constrained file and every physical line in scope without sampling.
-- Record applicable rules, checked files, checked physical lines, excluded files, and blocked checks.
-- Use exactly one of these conclusions: `Strictly compliant`, `Non-compliant`, `Partial audit`, or `Not applicable`.
-- Report only confirmed violations of applicable written standards.
-- Do not assign severity labels or independently report architecture, caching, lifecycle, ownership, or other semantic-design issues.
+Use this mode only when the user explicitly asks for a coding-standards compliance audit of an exact file, package, Maven module, directory, or the whole repository. Keep the audit read-only and read the [standalone compliance audit workflow](references/standalone-audit.md) through EOF; it defines reference selection, complete inventory, inspection, and reporting.
 
 This Skill may inspect architecture, ownership, lifecycle, concurrency, and runtime paths only when those facts determine whether an applicable written coding standard is satisfied.

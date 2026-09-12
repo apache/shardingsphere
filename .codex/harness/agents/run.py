@@ -168,6 +168,24 @@ MAX_EVALUATION_INPUT_BYTES = 110_000
 MAX_PARALLEL_EVALUATIONS = 2
 EVALUATOR_MODEL = "gpt-5.6-sol"
 EVALUATOR_REASONING_EFFORT = "high"
+EVALUATOR_FEATURE_OVERRIDES = (
+    "features.apps=false",
+    "features.browser_use=false",
+    "features.browser_use_external=false",
+    "features.code_mode_host=false",
+    "features.computer_use=false",
+    "features.goals=false",
+    "features.image_generation=false",
+    "features.multi_agent=false",
+    "features.plugins=false",
+    "features.remote_plugin=false",
+    "features.shell_tool=false",
+    "features.skill_search=false",
+    "features.sleep_tool=false",
+    "features.tool_suggest=false",
+    "features.view_image=false",
+    "features.workspace_dependencies=false",
+)
 HIGH_RISK_ACTIONS = frozenset({
     "edit_code",
     "edit_non_code",
@@ -1206,6 +1224,7 @@ def run_codex(
             EVALUATOR_MODEL,
             "--config",
             f'model_reasoning_effort="{EVALUATOR_REASONING_EFFORT}"',
+            *[argument for each in EVALUATOR_FEATURE_OVERRIDES for argument in ("--config", each)],
             "--cd",
             str(isolated_root),
             "--sandbox",
