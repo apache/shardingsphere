@@ -42,10 +42,21 @@ Apply these rules to project dependencies under a project or profile `<dependenc
 - Keep that override only after verifying the compatibility or release contract that requires it.
 - A possible future version change does not justify repeating the currently managed version.
 
+## Task-Caused Unused Version Properties
+
+- When the current task modifies or removes a project dependency version declaration, inspect only a version property that may have lost its last consumer because that task removed a reference.
+- Delete such a property only when repository search and the Maven effective model both prove that no child-module override, profile, plugin, resource-filtering path, or other consumer remains.
+- Do not use this check to scan, report, or remove unrelated existing version properties.
+- When evidence about any possible consumer is incomplete, preserve the property in Implementation Guidance Mode and mark the affected check as blocked in Standalone Compliance Audit Mode.
+
 ## Verification and Inspection Boundaries
 
-- Before removing a redundant version, compare the effective dependency before and after the change for every supported activation path that can affect it.
+- Before removing a redundant version, compare the effective POM before and after the change for every supported activation path that can affect it.
+- Use the effective POM to confirm each affected dependency's complete `groupId:artifactId:type:classifier` coordinate and final dependency management.
 - Verify that the effective `version`, `scope`, `type`, `classifier`, `exclusions`, and profile behavior are unchanged.
+- When a change may affect a resolved dependency version or the transitive dependency graph, compare the dependency tree before and after the change.
+- Do not require a dependency-tree comparison for every POM change; use it only when the result depends on the actual resolved dependency graph.
+- Do not use the dependency tree as a substitute for the effective POM, supported profile activation paths, or complete `groupId:artifactId:type:classifier` matching.
 - When an outcome-sensitive management source, property value, or activation path cannot be resolved, preserve the explicit version in Implementation Guidance Mode and mark the affected check as blocked in Standalone Compliance Audit Mode.
 - In Implementation Guidance Mode, inspect only project dependency declarations added or modified by the current task and do not scan, clean up, or report unrequested existing violations.
 - In Standalone Compliance Audit Mode, inspect every target POM only when the user explicitly requested a Maven standards audit and specified its exact scope.
