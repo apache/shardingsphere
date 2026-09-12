@@ -23,8 +23,6 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacke
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 import java.util.Collection;
 
@@ -38,9 +36,11 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
     
     private final int index;
     
-    private final ShardingSphereTable table;
+    private final String tableName;
     
-    private final ShardingSphereColumn column;
+    private final String columnName;
+    
+    private final FirebirdBinaryColumnType columnType;
     
     private final String tableAlias;
     
@@ -50,13 +50,10 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
     
     private final Integer columnLength;
     
-    private final boolean blobColumn;
-    
     private final Integer blobSubType;
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        FirebirdBinaryColumnType columnType = blobColumn ? FirebirdBinaryColumnType.BLOB : FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType());
         for (FirebirdSQLInfoPacketType requestedItem : requestedItems) {
             switch (requestedItem) {
                 case SQLDA_SEQ:
@@ -77,10 +74,11 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
                     FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.SCALE, 0, payload);
                     break;
                 case LENGTH:
-                    if (columnType == FirebirdBinaryColumnType.VARYING
-                            || columnType == FirebirdBinaryColumnType.LEGACY_VARYING
-                            || columnType == FirebirdBinaryColumnType.TEXT
-                            || columnType == FirebirdBinaryColumnType.LEGACY_TEXT) {
+                    if (null != columnLength
+                            && (columnType == FirebirdBinaryColumnType.VARYING
+                                    || columnType == FirebirdBinaryColumnType.LEGACY_VARYING
+                                    || columnType == FirebirdBinaryColumnType.TEXT
+                                    || columnType == FirebirdBinaryColumnType.LEGACY_TEXT)) {
                         FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.LENGTH, columnLength, payload);
                     } else {
                         int length = columnType.getLength();
@@ -88,13 +86,13 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
                     }
                     break;
                 case FIELD:
-                    FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoPacketType.FIELD, column.getName(), payload);
+                    FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoPacketType.FIELD, columnName, payload);
                     break;
                 case ALIAS:
                     FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoPacketType.ALIAS, columnAlias, payload);
                     break;
                 case RELATION:
-                    FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoPacketType.RELATION, table.getName(), payload);
+                    FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoPacketType.RELATION, tableName, payload);
                     break;
                 case RELATION_ALIAS:
                     FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoPacketType.RELATION_ALIAS, tableAlias, payload);

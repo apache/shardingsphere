@@ -185,6 +185,8 @@ class FirebirdExecuteStatementCommandExecutorTest {
         QueryResponseRow row = new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1)));
         when(proxyBackendHandler.getRowData()).thenReturn(row, row);
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), any(QueryContext.class), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
+        List<FirebirdBinaryColumnType> returnColumns = Collections.singletonList(FirebirdBinaryColumnType.LONG);
+        when(packet.getReturnColumns()).thenReturn(returnColumns);
         Collection<DatabasePacket> actual = executor.execute();
         Iterator<DatabasePacket> iterator = actual.iterator();
         assertThat(executor.getResponseType(), is(ResponseType.QUERY));
