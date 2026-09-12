@@ -43,8 +43,6 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     
     private volatile boolean stopping;
     
-    private volatile JobStatus status;
-    
     private final ConsistencyCheckJobConfiguration jobConfig;
     
     private final ConsistencyCheckJobItemProgressContext progressContext;
@@ -55,13 +53,23 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
         this.jobConfig = jobConfig;
         jobId = jobConfig.getJobId();
         this.shardingItem = shardingItem;
-        this.status = status;
         progressContext = new ConsistencyCheckJobItemProgressContext(jobId, shardingItem, jobConfig.getSourceDatabaseType().getType());
+        progressContext.setStatus(status);
         if (null != jobItemProgress) {
             progressContext.getCheckedRecordsCount().set(Optional.ofNullable(jobItemProgress.getCheckedRecordsCount()).orElse(0L));
             progressContext.getTableCheckRangePositions().addAll(jobItemProgress.getTableCheckRangePositions());
         }
         processContext = new ConsistencyCheckProcessContext(jobId);
+    }
+    
+    @Override
+    public JobStatus getStatus() {
+        return progressContext.getStatus();
+    }
+    
+    @Override
+    public void setStatus(final JobStatus status) {
+        progressContext.setStatus(status);
     }
     
     @Override
@@ -71,8 +79,6 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     
     @Override
     public ConsistencyCheckJobItemProgress toProgress() {
-        ConsistencyCheckJobItemProgress result = new ConsistencyCheckJobItemProgress(progressContext);
-        result.setStatus(status);
-        return result;
+        return new ConsistencyCheckJobItemProgress(progressContext);
     }
 }

@@ -86,4 +86,16 @@ class ConsistencyCheckJobItemContextTest {
         assertThat(actual.getLowerBound(), is(expected.getLowerBound()));
         assertThat(actual.getUpperBound(), is(expected.getUpperBound()));
     }
+    
+    @Test
+    void assertStatus() {
+        ConsistencyCheckJobItemContext actual = new ConsistencyCheckJobItemContext(
+                new ConsistencyCheckJobConfiguration("", "", "DATA_MATCH", null, databaseType), 0, JobStatus.PREPARING, null);
+        assertThat(actual.getStatus(), is(JobStatus.PREPARING));
+        assertThat(actual.getProgressContext().getStatus(), is(JobStatus.PREPARING));
+        actual.setStatus(JobStatus.EXECUTE_INVENTORY_TASK);
+        assertThat(actual.getStatus(), is(JobStatus.EXECUTE_INVENTORY_TASK));
+        assertThat(actual.getProgressContext().getStatus(), is(JobStatus.EXECUTE_INVENTORY_TASK));
+        assertThat(actual.toProgress().getStatus(), is(JobStatus.EXECUTE_INVENTORY_TASK));
+    }
 }
