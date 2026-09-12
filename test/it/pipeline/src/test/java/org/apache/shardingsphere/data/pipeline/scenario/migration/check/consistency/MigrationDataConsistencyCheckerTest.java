@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManag
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
@@ -58,23 +59,25 @@ class MigrationDataConsistencyCheckerTest {
     @Test
     void assertFixtureCheck() throws SQLException {
         MigrationJobConfiguration jobConfig = createJobConfiguration(true);
-        Map<String, TableDataConsistencyCheckResult> checkResultMap = check(jobConfig, "FIXTURE");
+        ConsistencyCheckJobItemProgressContext progressContext = createConsistencyCheckJobItemProgressContext(jobConfig.getJobId());
+        Map<String, TableDataConsistencyCheckResult> checkResultMap = check(jobConfig, "FIXTURE", progressContext);
         TableDataConsistencyCheckResult actual = checkResultMap.get("t_order");
         assertTrue(actual.isMatched());
         assertFalse(actual.isIgnored());
+        assertThat(progressContext.getStatus(), is(JobStatus.EXECUTE_INVENTORY_TASK));
     }
     
     @Test
     void assertDataMatchCheck() throws SQLException {
         MigrationJobConfiguration jobConfig = createJobConfiguration(false);
-        Map<String, TableDataConsistencyCheckResult> checkResultMap = check(jobConfig, "DATA_MATCH");
+        Map<String, TableDataConsistencyCheckResult> checkResultMap = check(jobConfig, "DATA_MATCH", createConsistencyCheckJobItemProgressContext(jobConfig.getJobId()));
         TableDataConsistencyCheckResult actual = checkResultMap.get("t_order");
         assertFalse(actual.isMatched());
         assertTrue(actual.isIgnored());
         assertThat(actual.getIgnoredType(), is(TableDataConsistencyCheckIgnoredType.NO_UNIQUE_KEY));
     }
     
-    private Map<String, TableDataConsistencyCheckResult> check(final MigrationJobConfiguration jobConfig, final String algorithmType) {
+    private Map<String, TableDataConsistencyCheckResult> check(final MigrationJobConfiguration jobConfig, final String algorithmType, final ConsistencyCheckJobItemProgressContext progressContext) {
         JobConfigurationPOJO jobConfigurationPOJO = new JobConfigurationPOJO();
         jobConfigurationPOJO.setJobParameter(YamlEngine.marshal(new YamlMigrationJobConfigurationSwapper().swapToYamlConfiguration(jobConfig)));
         jobConfigurationPOJO.setJobName(jobConfig.getJobId());
@@ -82,8 +85,7 @@ class MigrationDataConsistencyCheckerTest {
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey());
         getClusterPersistRepository().persist(String.format("/pipeline/jobs/%s/config", jobConfig.getJobId()), YamlEngine.marshal(jobConfigurationPOJO));
         governanceFacade.getJobItemFacade().getProcess().persist(jobConfig.getJobId(), 0, "");
-        return new MigrationDataConsistencyChecker(jobConfig, new TransmissionProcessContext(jobConfig.getJobId(), null),
-                createConsistencyCheckJobItemProgressContext(jobConfig.getJobId())).check(algorithmType, null);
+        return new MigrationDataConsistencyChecker(jobConfig, new TransmissionProcessContext(jobConfig.getJobId(), null), progressContext).check(algorithmType, null);
     }
     
     private ClusterPersistRepository getClusterPersistRepository() {
