@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
@@ -49,14 +48,11 @@ class StandaloneContextManagerBuilderTest {
     }
     
     @SuppressWarnings("resource")
-    void assertBuild(final ContextManagerBuilder builder) throws SQLException {
+    private void assertBuild(final ContextManagerBuilder builder) throws SQLException {
+        ModeConfiguration modeConfig = new ModeConfiguration("STANDALONE", new StandalonePersistRepositoryConfiguration("FIXTURE", new Properties()));
         InstanceMetaData instanceMetaData = new JDBCInstanceMetaData("foo", "foo_db");
-        ContextManager actual = builder.build(new ContextManagerBuilderParameter(createModeConfiguration(),
-                Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), new Properties(), instanceMetaData), mock(EventBusContext.class));
+        ContextManager actual = builder.build(new ContextManagerBuilderParameter(
+                modeConfig, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), new Properties(), instanceMetaData), mock());
         assertThat(actual.getComputeNodeInstanceContext().getInstance().getMetaData(), is(instanceMetaData));
-    }
-    
-    private ModeConfiguration createModeConfiguration() {
-        return new ModeConfiguration("STANDALONE", new StandalonePersistRepositoryConfiguration("FIXTURE", new Properties()));
     }
 }
