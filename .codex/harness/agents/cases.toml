@@ -1287,6 +1287,46 @@ policy_assertions = [{source = "maven-dependencies", statements = ["When the cur
 critical = true
 
 [[cases]]
+id = "maven_shared_override_moves_to_authorized_parent"
+group = "coding / regular"
+description = "Moves one identical shared dependency override to an authorized common parent after complete ownership and non-regression proof."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized Maven change covering `parent/pom.xml`, `child-a/pom.xml`, and `child-b/pom.xml`. The parent POM is the actual Maven parent of both children, and existing dependency-management entries prove that it owns dependency versions for this module group. Both children declare the same model-interpolated `example:client:jar` coordinate and version override. Every affected consumer and supported profile activation path has been inspected, and effective POM comparison proves that centralizing the version preserves version, scope, type, classifier, exclusions, and profile behavior. Move the version into the parent `<dependencyManagement>`, remove only the two duplicate child versions, run the affected effective POM checks and any necessary dependency-tree comparison, complete Formal Review, and do not modify unrelated dependencies, modules, Git, or remote state."
+decision = "proceed"
+required_actions = ["inspect_local", "edit_non_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "reuse_existing_owner", "edit_non_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_code", "edit_unrelated_changes", "edit_outside_frozen_boundary", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["explicit_non_code_authorization", "output_capture_required", "pre_handoff_review_required"]
+required_summary_terms = ["parent", "dependencyManagement", "effective POM", "Formal Review"]
+required_summary_term_groups = [["move", "centralize", "manage"], ["remove", "omit"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "maven-dependencies", statements = ["Treat overrides as the same only when their model-interpolated `groupId`, `artifactId`, `type`, `classifier`, and version match in every supported activation path.", "Consider a common POM as the ownership candidate only when it is the actual Maven parent of every affected child, not merely an aggregator, and repository structure or existing dependency-management entries prove that it owns dependency version management for those modules.", "Move the shared version to that parent's `<dependencyManagement>` only when the parent POM and every child declaration changed by the consolidation are within the task's authorized scope.", "Before moving the version, compare the effective POM before and after for every affected supported activation path and prove that the dependency's version, scope, type, classifier, exclusions, and profile behavior do not change.", "Inspect every other supported consumer that inherits the parent and prove that the consolidation causes no unintended effective dependency change."]}]
+critical = true
+
+[[cases]]
+id = "maven_shared_override_preserves_authorized_child_scope"
+group = "coding / regular"
+description = "Keeps a necessary child-local override when consolidation would require unauthorized parent and sibling changes."
+phase = "scope gate and coding-standards final check"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized Maven change limited to `child-a/pom.xml`. `child-b/pom.xml` has the same dependency version override, but the common parent POM and `child-b/pom.xml` are outside the frozen authorized scope. Keep the necessary local override in `child-a/pom.xml`, report the possible parent consolidation as out of scope, run the affected effective POM checks and any necessary dependency-tree comparison, complete Formal Review, and do not modify the parent, the other child, unrelated files, Git, or remote state. Do not treat the unfinished consolidation as a current-task violation and do not ask to expand the task merely to centralize the version."
+decision = "proceed"
+required_actions = ["inspect_local", "run_local_checks", "wrap_high_output", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_non_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_code", "edit_unrelated_changes", "expand_frozen_boundary", "edit_outside_frozen_boundary", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["frozen_task_boundary", "output_capture_required", "pre_handoff_review_required"]
+required_summary_terms = ["local override", "parent", "child-b", "out of scope", "effective POM", "Formal Review"]
+required_summary_term_groups = [["keep", "preserve", "retain"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "maven-dependencies", statements = ["Keep the overrides in their child POMs when their complete coordinates or versions differ, when they implement different compatibility or profile contracts, when ownership is not proven, when the effective model cannot be verified completely, or when a required parent or child change is outside the authorized scope.", "Do not expand the current task to a parent POM or another child module only to centralize a version.", "Report a possible consolidation as out of scope when it cannot be completed within the authorized boundary, and do not classify the unchanged out-of-scope declarations as a current-task violation."]}]
+critical = true
+
+[[cases]]
 id = "java_naming_uses_canonical_identifier_components"
 group = "coding / regular"
 description = "Repairs canonical identifier components and Lombok accessor names in the effective Java task delta."

@@ -42,6 +42,19 @@ Apply these rules to project dependencies under a project or profile `<dependenc
 - Keep that override only after verifying the compatibility or release contract that requires it.
 - A possible future version change does not justify repeating the currently managed version.
 
+## Shared Version Override Ownership
+
+- In Implementation Guidance Mode, perform this ownership check only when the current task adds or modifies the same explicit dependency version override in multiple child POMs; do not scan historical duplicate overrides.
+- Treat overrides as the same only when their model-interpolated `groupId`, `artifactId`, `type`, `classifier`, and version match in every supported activation path.
+- Consider a common POM as the ownership candidate only when it is the actual Maven parent of every affected child, not merely an aggregator, and repository structure or existing dependency-management entries prove that it owns dependency version management for those modules.
+- Move the shared version to that parent's `<dependencyManagement>` only when the parent POM and every child declaration changed by the consolidation are within the task's authorized scope.
+- Before moving the version, compare the effective POM before and after for every affected supported activation path and prove that the dependency's version, scope, type, classifier, exclusions, and profile behavior do not change.
+- Inspect every other supported consumer that inherits the parent and prove that the consolidation causes no unintended effective dependency change.
+- Keep the overrides in their child POMs when their complete coordinates or versions differ, when they implement different compatibility or profile contracts, when ownership is not proven, when the effective model cannot be verified completely, or when a required parent or child change is outside the authorized scope.
+- Do not expand the current task to a parent POM or another child module only to centralize a version.
+- Report a possible consolidation as out of scope when it cannot be completed within the authorized boundary, and do not classify the unchanged out-of-scope declarations as a current-task violation.
+- In Standalone Compliance Audit Mode, report a shared-version-ownership violation only when the user-specified audit scope includes the common parent POM and the affected child POMs and complete evidence proves every consolidation condition above.
+
 ## Task-Caused Unused Version Properties
 
 - When the current task modifies or removes a project dependency version declaration, inspect only a version property that may have lost its last consumer because that task removed a reference.
