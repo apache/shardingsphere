@@ -41,9 +41,9 @@ The user owns every Git state change. Read-only `status`, `diff`, `show`, `log`,
 
 Without it, do not change the index, working tree, refs, remotes, branches, tags, stashes, worktrees, or submodules. This includes `add`, `commit`, `push`, `fetch`, `pull`, `merge`, `rebase`, `reset`, `restore`, `checkout`, `switch`, `clean`, `cherry-pick`, `revert`, branch or tag, stash, or worktree mutation, and `submodule update`. Do not stage or use Git to roll back.
 
-Complete separately authorized local work without an unauthorized Git mutation. Provide a commit message or manual Git step only when requested; a commit-message request is not commit authorization.
+Complete separately authorized local work without an unauthorized Git mutation. After a code-writing task completes, provide a commit message without being asked; this never authorizes Git mutation.
 
-When requested, propose `git commit --dry-run --only` followed by `git commit --only` for exact task paths, with `git add --` first only for new task files.
+For requested manual steps, use `git commit --dry-run --only`, then `git commit --only`, for exact task paths; prepend `git add --` only for new task files.
 
 ### Remote Writes and Sensitive Data
 
