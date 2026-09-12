@@ -27,7 +27,7 @@ import tempfile
 import threading
 from typing import Any
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 RUN_SPEC = importlib.util.spec_from_file_location("agents_harness_run", Path(__file__).with_name("run.py"))
 if RUN_SPEC is None or RUN_SPEC.loader is None:
@@ -134,6 +134,31 @@ class RunTest(unittest.TestCase):
         actual = run.serialize_schema([self.case["id"]])
         self.assertEqual(run.create_schema([self.case["id"]]), json.loads(actual))
         self.assertNotIn("\n ", actual)
+
+    def test_run_codex_pins_evaluator_model_and_reasoning_effort(self) -> None:
+        with tempfile.TemporaryDirectory() as codex_home_name, tempfile.TemporaryDirectory() as output_name:
+            codex_home = Path(codex_home_name)
+            output_dir = Path(output_name)
+            schema_path = output_dir / "schema.json"
+            schema_path.write_text("{}", encoding="utf-8")
+            captured_command = []
+
+            def fake_run(command: list[str], **kwargs: Any) -> Mock:
+                del kwargs
+                captured_command.extend(command)
+                result_path = Path(command[command.index("--output-last-message") + 1])
+                result_path.write_text(json.dumps({"results": []}), encoding="utf-8")
+                return Mock(returncode=0)
+
+            with patch.object(run.subprocess, "run", side_effect=fake_run):
+                exit_code, _, _ = run.run_codex(
+                    b"policy", codex_home, output_dir, schema_path, "prompt", 1, 1
+                )
+        self.assertEqual(0, exit_code)
+        self.assertEqual(run.EVALUATOR_MODEL, captured_command[captured_command.index("--model") + 1])
+        self.assertIn(
+            f'model_reasoning_effort="{run.EVALUATOR_REASONING_EFFORT}"', captured_command
+        )
 
     def test_partition_cases_splits_full_catalog_under_input_limit(self) -> None:
         cases = run.load_cases(None)
@@ -362,6 +387,7 @@ class RunTest(unittest.TestCase):
         actual = {"results": [actual_case]}
         results = run.grade([self.case], actual)
         baseline = {
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
             "case_contracts": run.normalize_case_contracts([self.case]),
             "evaluations": [{
                 "case_count": 1,
@@ -421,12 +447,46 @@ class RunTest(unittest.TestCase):
         self.assertEqual([self.case["id"], self.case["id"]], failed_case_ids)
         self.assertIn("semantic-stability-baseline-batch-metadata-invalid", blockers)
 
+    def test_validate_semantic_stability_evaluator_rejects_unusable_baseline(self) -> None:
+        with self.assertRaisesRegex(ValueError, "requires a baseline"):
+            run.validate_semantic_stability_evaluator(None)
+        with self.assertRaisesRegex(ValueError, "does not match"):
+            run.validate_semantic_stability_evaluator({})
+        run.validate_semantic_stability_evaluator({
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT}
+        })
+
+    def test_main_rejects_evaluator_mismatch_before_semantic_execution(self) -> None:
+        baseline = {"evaluator": {"model": "other-model", "reasoning_effort": "high"}}
+        with patch("sys.argv", [
+                "run.py", "--mode", "all", "--semantic-stability-check", "--baseline", "unused"
+        ]), patch.object(run, "load_baseline", return_value=baseline), patch.object(run, "run_cases") as run_cases:
+            with self.assertRaisesRegex(ValueError, "does not match"):
+                run.main()
+        run_cases.assert_not_called()
+
+    def test_main_rejects_deterministic_regression_before_semantic_execution(self) -> None:
+        baseline = {
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT}
+        }
+        with patch("sys.argv", [
+                "run.py", "--mode", "all", "--semantic-stability-check", "--baseline", "unused"
+        ]), patch.object(run, "semantic_surface_digest", return_value="digest"), patch.object(
+                run, "load_baseline", return_value=baseline), patch.object(
+                run, "compare_case_contracts", return_value=([], [])), patch.object(
+                run, "compare_policy_inventory", return_value=(["source:changed"], ["source:changed"])), patch.object(
+                run, "compare_policy_bindings", return_value=([], [])), patch.object(run, "run_cases") as run_cases:
+            with self.assertRaisesRegex(ValueError, "deterministic preflight failed"):
+                run.main()
+        run_cases.assert_not_called()
+
     def test_semantic_stability_rejects_aggregate_or_safety_regression(self) -> None:
         actual_case = self._create_case_result(self.case, "Proceed.")
         actual_case["actions"] = ["edit_code"]
         actual = {"results": [actual_case]}
         results = run.grade([self.case], actual)
         baseline = {
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
             "case_contracts": run.normalize_case_contracts([self.case]),
             "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
             "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
@@ -442,6 +502,7 @@ class RunTest(unittest.TestCase):
         actual = {"results": [self._create_case_result(self.case, "Proceed.")]}
         results = run.grade([self.case], actual)
         baseline = {
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
             "case_contracts": [],
             "evaluations": [],
             "results": [],
@@ -453,6 +514,19 @@ class RunTest(unittest.TestCase):
             "semantic-stability-single-pass-baseline-required",
             "source:changed",
         ], stability["blockers"])
+
+    def test_semantic_stability_requires_matching_evaluator(self) -> None:
+        actual = {"results": [self._create_case_result(self.case, "Proceed.")]}
+        results = run.grade([self.case], actual)
+        baseline = {
+            "evaluator": {"model": "other-model", "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
+            "case_contracts": run.normalize_case_contracts([self.case]),
+            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
+            "results": copy.deepcopy(results),
+        }
+        stability = run.summarize_semantic_stability([self.case], actual, results, baseline, [])
+        self.assertFalse(stability["passed"])
+        self.assertIn("semantic-stability-baseline-evaluator-mismatch", stability["blockers"])
 
     def test_semantic_surface_digest_excludes_non_semantic_transport_sources(self) -> None:
         bundle = {
@@ -470,6 +544,8 @@ class RunTest(unittest.TestCase):
         self.assertEqual(expected, run.semantic_surface_digest(transport_change, [self.case], []))
         self.assertNotEqual(expected, run.semantic_surface_digest(semantic_change, [self.case], []))
         with patch.object(run, "HIGH_RISK_ACTIONS", run.HIGH_RISK_ACTIONS.union({"inspect_local"})):
+            self.assertNotEqual(expected, run.semantic_surface_digest(bundle, [self.case], []))
+        with patch.object(run, "EVALUATOR_MODEL", "other-model"):
             self.assertNotEqual(expected, run.semantic_surface_digest(bundle, [self.case], []))
 
     def test_main_transport_check_reports_semantic_failure_without_failing_transport(self) -> None:
