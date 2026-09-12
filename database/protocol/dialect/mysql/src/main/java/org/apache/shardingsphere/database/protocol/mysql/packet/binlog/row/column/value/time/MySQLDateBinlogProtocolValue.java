@@ -39,6 +39,11 @@ public final class MySQLDateBinlogProtocolValue implements MySQLBinlogProtocolVa
         int year = date / 16 / 32;
         int month = date / 32 % 16;
         int day = date % 32;
-        return 0 == date ? MySQLTimeValueUtils.ZERO_OF_DATE : Date.valueOf(LocalDate.of(year, month, day));
+        if (0 == date) {
+            return MySQLTimeValueUtils.ZERO_OF_DATE;
+        }
+        return MySQLTimeValueUtils.isCompleteDate(month, day)
+                ? Date.valueOf(LocalDate.of(year, month, day))
+                : MySQLTimeValueUtils.formatIncompleteDate(year, month, day);
     }
 }

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayl
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * MySQL DATETIME binlog protocol value.
@@ -40,7 +39,7 @@ public final class MySQLDatetimeBinlogProtocolValue implements MySQLBinlogProtoc
         return 0L == datetime ? MySQLTimeValueUtils.DATETIME_OF_ZERO : readDateTime(datetime);
     }
     
-    private Date readDateTime(final long datetime) {
+    private Serializable readDateTime(final long datetime) {
         int date = (int) (datetime / 1000000L);
         int year = date / 10000;
         int month = (date % 10000) / 100;
@@ -49,6 +48,8 @@ public final class MySQLDatetimeBinlogProtocolValue implements MySQLBinlogProtoc
         int hour = time / 10000;
         int minute = (time % 10000) / 100;
         int second = time % 100;
-        return Timestamp.valueOf(LocalDateTime.of(year, month, day, hour, minute, second));
+        return MySQLTimeValueUtils.isCompleteDate(month, day)
+                ? Timestamp.valueOf(LocalDateTime.of(year, month, day, hour, minute, second))
+                : MySQLTimeValueUtils.formatIncompleteDatetime(year, month, day, hour, minute, second, 0);
     }
 }
