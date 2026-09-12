@@ -191,6 +191,7 @@ class ConsistencyCheckJobAPITest {
         assertThat(actual.getCheckFailedTableNames(), is(""));
         assertThat(actual.getIgnoredTableNames(), is(""));
         assertThat(actual.getInventoryFinishedPercentage(), is(50));
+        assertThat(actual.getStatus(), is(JobStatus.EXECUTE_INVENTORY_TASK));
         assertNotNull(actual.getCheckBeginTime());
         assertNull(actual.getCheckEndTime());
     }

@@ -36,6 +36,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
@@ -101,6 +102,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
                 .forEach(dataNode -> sourceTableNames.add(new QualifiedTable(dataNode.getSchemaName(), dataNode.getTableName()).format()))));
         progressContext.setRecordsCount(getRecordsCount());
         progressContext.getTableNames().addAll(sourceTableNames);
+        progressContext.setStatus(JobStatus.PREPARING);
         progressContext.onProgressUpdated(new PipelineJobUpdateProgress(0));
         Map<QualifiedTable, TableDataConsistencyCheckResult> checkResultMap = new LinkedHashMap<>();
         try (
@@ -111,6 +113,8 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
             if (progressContext.getTableCheckRangePositions().isEmpty()) {
                 progressContext.getTableCheckRangePositions().addAll(splitCrossTables());
             }
+            progressContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK);
+            progressContext.onProgressUpdated(new PipelineJobUpdateProgress(0));
             for (TableCheckRangePosition each : progressContext.getTableCheckRangePositions()) {
                 TableDataConsistencyCheckResult checkResult = checkSingleTableInventoryData(each, tableChecker, dataSourceManager);
                 log.info("checkResult: {}, table: {}, checkRangePosition: {}", checkResult, each.getSourceDataNode(), each);
