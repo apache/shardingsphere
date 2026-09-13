@@ -5,7 +5,7 @@ Follow this guide; paths are repository-relative.
 ## Instruction Sources and Routing
 
 1. `CODE_OF_CONDUCT.md` governs contribution, Java, and test style; inspect its applicable section before changing code or tests.
-2. Before Maven, E2E, Proxy startup, database clients, IDE/MCP runs, large structured analysis, or commands likely to exceed 100 lines, read or reuse `.codex/context/token-efficiency.md` and follow its Mandatory Execution Contract.
+2. Before Maven, E2E, Proxy startup, database clients, IDE/MCP runs, large structured analysis, or commands likely to exceed 100 lines, read or reuse `.codex/context/token-efficiency.md` and follow its Command Contract.
 3. Before a code-affecting write, read `.codex/skills/code-implementation/SKILL.md` through EOF and follow its implementation reference and every applicable in-scope rule. This covers production, tests, scripts, build logic, generated source, and behavior configuration; read-only and prose-only work does not activate it, and a Skill grants no authority or scope.
 4. Skill discovery is diagnostic; load the exact repository file when it omits `code-implementation`. A missing required canonical source keeps ordinary writes read-only; only an exact user-authorized policy or harness repair may use `.codex/harness/agents/policy-maintenance.md`, never for production or tests.
 5. For read-only code or test analysis, planning, design, or review, read `.codex/skills/code-implementation/references/rules/implementation.md` through EOF without activating the write workflow. Also read `testing.md` when deciding test requirements or analyzing tests, `artifact-removal-and-contract-impact.md` when its gate below applies, and `non-regression.md` when reviewing a current-task candidate or a credible functional or performance risk.
@@ -66,7 +66,7 @@ Before editing, restate the goal, non-goals, forbidden tools, and output constra
 2. Derive acceptance criteria only from requested outcomes, proven direct prerequisites, and focused regression protection. Do not promote cleanup, refactoring, generalization, consistency, adjacent fixes, or optional improvements; a prerequisite qualifies only when no smaller in-boundary option can preserve behavior, compilation, or verification.
 3. Before a file-changing tool, record original status and relevant diffs, infer the smallest owning paths, and freeze `file -> allowed intent -> unmet criterion`. A named module or path is the maximum boundary, and an allowed file does not authorize unrelated hunks.
 4. Keep the baseline and boundary through follow-ups, reviews, failures, and verification. Expand only with exact additional path and intent authorization, append without rebaselining, and keep other scope read-only.
-5. Map and immediately inspect every task hunk. Before an outside-boundary edit, report its evidence, minimum scope, affected contracts, and consequence of declining it.
+5. Map every task hunk and inspect all paths and hunks after each coherent precise edit. Inspect immediately after a formatter, generator, bulk replacement, or other action whose write set is not exact. Before an outside-boundary edit, report its evidence, minimum scope, affected contracts, and consequence of declining it.
 6. Preserve pre-existing and unattributed changes; do not overwrite, format, remove, roll back, or claim them, and do not infer ownership from baseline absence.
 7. After the last write, audit the delta against the original baseline, remove only safely separable unnecessary task changes, and hand off `file -> behavior -> criterion -> necessity`.
 
@@ -78,7 +78,7 @@ If the user rejects a design, stop patching it. Remove only its proven task chan
 
 ## Task Code Size Limit
 
-Do not add over 10,000 physical production and test source lines in one active task without explicit authorization. Estimate before writing and measure after each write against the original baseline across tools, scripts, Skills, modules, and later turns. If projected or measured output exceeds the limit, stop, report totals and paths, and propose the smallest independently verifiable decomposition.
+Do not add over 10,000 physical production and test source lines in one active task without explicit authorization. Estimate before writing against the original baseline across tools, scripts, Skills, modules, and later turns; recount after a generator or bulk write, when the estimate reaches 8,000 lines, and exactly after the last write. If projected or measured output exceeds the limit, stop, report totals and paths, and propose the smallest independently verifiable decomposition.
 
 ## Specialized Workflows
 

@@ -20,6 +20,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import inspect
@@ -166,6 +167,7 @@ REASONS = [
 ]
 MAX_EVALUATION_INPUT_BYTES = 110_000
 MAX_PARALLEL_EVALUATIONS = 2
+MAX_SEMANTIC_SAMPLES = 3
 EVALUATOR_MODEL = "gpt-5.6-sol"
 EVALUATOR_REASONING_EFFORT = "high"
 EVALUATOR_FEATURE_OVERRIDES = (
@@ -185,6 +187,27 @@ EVALUATOR_FEATURE_OVERRIDES = (
     "features.tool_suggest=false",
     "features.view_image=false",
     "features.workspace_dependencies=false",
+)
+SEMANTIC_CORE_FUNCTION_NAMES = (
+    "create_schema",
+    "serialize_schema",
+    "create_prompt",
+    "evaluation_input_bytes",
+    "partition_cases",
+    "run_codex",
+    "run_cases",
+    "grade",
+    "semantic_safety_failures",
+)
+SEMANTIC_CORE_CONSTANT_NAMES = (
+    "ACTIONS",
+    "REASONS",
+    "HIGH_RISK_ACTIONS",
+    "MAX_EVALUATION_INPUT_BYTES",
+    "MAX_PARALLEL_EVALUATIONS",
+    "EVALUATOR_MODEL",
+    "EVALUATOR_REASONING_EFFORT",
+    "EVALUATOR_FEATURE_OVERRIDES",
 )
 HIGH_RISK_ACTIONS = frozenset({
     "edit_code",
@@ -256,7 +279,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--semantic-stability-check", action="store_true",
-        help="Require one-pass aggregate and safety non-regression against the original same-case V0.",
+        help="Require focused repeatable non-regression against the original same-case V0.",
     )
     parser.add_argument(
         "--mode", choices=("semantic", "trace", "validate", "all"), default="semantic",
@@ -1639,6 +1662,344 @@ def semantic_safety_failures(
     return result
 
 
+def semantic_safety_regressions(
+        cases: list[dict[str, Any]], actual: dict[str, Any], baseline: dict[str, Any],
+        strict_case_ids: set[str] | None = None) -> list[dict[str, str]]:
+    """Identify candidate safety failures not inherited under the same contract."""
+    strict_case_ids = strict_case_ids or set()
+    baseline_failures = {
+        each["case_id"]: set(each.get("failures", [])) for each in baseline.get("results", [])
+    }
+    return [
+        each for each in semantic_safety_failures(cases, actual)
+        if each["case_id"] in strict_case_ids
+        or each["failure"] not in baseline_failures.get(each["case_id"], set())
+    ]
+
+
+def semantic_confirmation_plan(
+        cases: list[dict[str, Any]], results: list[dict[str, Any]], baseline: dict[str, Any],
+        contract_changes: list[str], safety_case_ids: list[str] | None = None) -> dict[str, list[str]]:
+    """Select only one-pass disagreements and changed contracts for confirmation."""
+    safety_case_ids = safety_case_ids or []
+    changed_contract_ids = {each.split(":", maxsplit=1)[0] for each in contract_changes}
+    baseline_results = {each["case_id"]: each for each in baseline.get("results", [])}
+    candidate_results = {each["case_id"]: each for each in results}
+    disputed_case_ids = [
+        each["id"] for each in cases
+        if each["critical"] and each["id"] not in changed_contract_ids
+        and baseline_results.get(each["id"], {}).get("passed", False)
+        and not candidate_results.get(each["id"], {}).get("passed", False)
+    ]
+    changed_contract_case_ids = [
+        each["id"] for each in cases if each["critical"] and each["id"] in changed_contract_ids
+    ]
+    return {
+        "disputed_case_ids": disputed_case_ids,
+        "changed_contract_case_ids": changed_contract_case_ids,
+        "safety_case_ids": safety_case_ids,
+        "baseline_case_ids": disputed_case_ids,
+        "candidate_case_ids": list(dict.fromkeys(
+            disputed_case_ids + changed_contract_case_ids + safety_case_ids
+        )),
+    }
+
+
+def load_baseline_source(baseline: dict[str, Any], source_id: str) -> bytes:
+    """Load one immutable source from a verified baseline snapshot."""
+    snapshot_value = baseline.get("policy_snapshot_dir")
+    if not isinstance(snapshot_value, str) or not snapshot_value:
+        raise ValueError("Semantic-stability baseline lacks a policy snapshot directory.")
+    source = next((each for each in baseline.get("policy_sources", []) if each.get("id") == source_id), None)
+    if source is None:
+        raise ValueError(f"Semantic-stability baseline lacks policy source: {source_id}")
+    snapshot_root = Path(snapshot_value)
+    if snapshot_root.is_symlink() or not snapshot_root.is_dir():
+        raise ValueError("Semantic-stability baseline policy snapshot is missing, not a directory, or a symlink.")
+    source_path = ensure_regular_source(snapshot_root, validate_policy_path(source["path"]))
+    data = source_path.read_bytes()
+    if hashlib.sha256(data).hexdigest() != source.get("sha256"):
+        raise ValueError(f"Semantic-stability baseline source digest does not match its summary: {source_id}")
+    return data
+
+
+def load_baseline_policy(baseline: dict[str, Any]) -> bytes:
+    """Load the immutable root policy from a verified baseline snapshot."""
+    policy = load_baseline_source(baseline, "agents")
+    if hashlib.sha256(policy).hexdigest() != baseline.get("policy_sha256"):
+        raise ValueError("Semantic-stability baseline AGENTS.md digest does not match its summary.")
+    return policy
+
+
+def semantic_core_source_digest(source: bytes) -> str:
+    """Hash the evaluator input, invocation, grading, and safety implementation."""
+    try:
+        module = ast.parse(source.decode("utf-8"))
+    except (UnicodeDecodeError, SyntaxError) as ex:
+        raise ValueError("Semantic core source is not valid UTF-8 Python.") from ex
+    nodes = {}
+    for node in module.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name in SEMANTIC_CORE_FUNCTION_NAMES:
+            nodes[node.name] = ast.dump(node, include_attributes=False)
+        elif isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            name = node.targets[0].id
+            if name in SEMANTIC_CORE_CONSTANT_NAMES:
+                nodes[name] = ast.dump(node.value, include_attributes=False)
+    required_names = set(SEMANTIC_CORE_FUNCTION_NAMES + SEMANTIC_CORE_CONSTANT_NAMES)
+    missing_names = required_names.difference(nodes)
+    if missing_names:
+        raise ValueError(f"Semantic core source lacks components: {', '.join(sorted(missing_names))}")
+    return digest_json({
+        "function_names": SEMANTIC_CORE_FUNCTION_NAMES,
+        "constant_names": SEMANTIC_CORE_CONSTANT_NAMES,
+        "nodes": nodes,
+    })
+
+
+def semantic_evaluation_unchanged(baseline: dict[str, Any], current: dict[str, Any]) -> bool:
+    """Prove that evaluator inputs, invocation, grading, and safety logic are unchanged."""
+    snapshot_core_sha256 = semantic_core_source_digest(load_baseline_source(baseline, "harness-runner"))
+    recorded_core_sha256 = baseline.get("semantic_core_sha256")
+    if isinstance(recorded_core_sha256, str) and recorded_core_sha256 != snapshot_core_sha256:
+        raise ValueError("Semantic-stability baseline core digest does not match its source snapshot.")
+    baseline_core_sha256 = recorded_core_sha256 or snapshot_core_sha256
+    return baseline_core_sha256 == current["semantic_core_sha256"] and all(
+        baseline.get(key) == value for key, value in current.items() if key != "semantic_core_sha256"
+    )
+
+
+def majority_passed(samples: list[bool]) -> bool:
+    """Resolve two equal samples or three samples by strict majority."""
+    if len(samples) not in {2, MAX_SEMANTIC_SAMPLES} or (len(samples) == 2 and samples[0] != samples[1]):
+        raise ValueError("Semantic confirmation samples do not establish a majority.")
+    return sum(samples) > len(samples) // 2
+
+
+def run_confirmation_sample(
+        side: str, round_number: int, cases: list[dict[str, Any]], policy: bytes, policy_sha256: str,
+        semantic_policy_assertions: dict[str, list[dict[str, Any]]], codex_home: Path,
+        confirmation_root: Path, timeout: int) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Run and preserve one focused semantic confirmation sample."""
+    sample_dir = confirmation_root / f"round-{round_number}" / side
+    sample_dir.mkdir(parents=True)
+    exit_code, duration, actual, evaluations = run_cases(
+        policy, codex_home, sample_dir, cases, policy_sha256, timeout,
+        semantic_policy_assertions
+    )
+    if not exit_code:
+        with (sample_dir / "result.json").open("w", encoding="utf-8") as result_file:
+            json.dump(actual, result_file, indent=2)
+            result_file.write("\n")
+    results = grade(cases, actual) if not exit_code else []
+    transport_validation = summarize_transport_validation(cases, actual, evaluations)
+    return {
+        "side": side,
+        "round": round_number,
+        "case_ids": [each["id"] for each in cases],
+        "runner_exit_code": exit_code,
+        "duration_seconds": round(duration, 3),
+        "usage": read_usage(sample_dir / "events.jsonl"),
+        "transport_validation": transport_validation,
+        "evaluations": evaluations,
+        "results": results,
+        "output_dir": str(sample_dir),
+    }, actual
+
+
+def run_confirmation_round(
+        round_number: int, cases: list[dict[str, Any]], side_specs: dict[str, dict[str, Any]],
+        codex_home: Path, confirmation_root: Path, timeout: int
+) -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
+    """Run at most one baseline and one candidate confirmation sample concurrently."""
+    cases_by_id = {each["id"]: each for each in cases}
+    requests = []
+    for side in ("baseline", "candidate"):
+        spec = side_specs.get(side)
+        if spec is None or not spec["case_ids"]:
+            continue
+        selected_cases = [cases_by_id[case_id] for case_id in spec["case_ids"]]
+        requests.append((side, selected_cases, spec))
+    if not requests:
+        return {}
+    batch_counts = [
+        len(partition_cases(
+            spec["policy"], selected_cases, spec["policy_sha256"], spec["semantic_policy_assertions"]
+        ))
+        for _, selected_cases, spec in requests
+    ]
+    max_workers = 1 if any(each > 1 for each in batch_counts) else min(MAX_PARALLEL_EVALUATIONS, len(requests))
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {
+            side: executor.submit(
+                run_confirmation_sample, side, round_number, selected_cases, spec["policy"],
+                spec["policy_sha256"], spec["semantic_policy_assertions"], codex_home,
+                confirmation_root, timeout
+            )
+            for side, selected_cases, spec in requests
+        }
+        return {side: future.result() for side, future in futures.items()}
+
+
+def total_usage(samples: list[dict[str, Any]]) -> dict[str, int]:
+    """Sum usage from preserved confirmation samples."""
+    keys = ("input_tokens", "cached_input_tokens", "uncached_input_tokens", "output_tokens")
+    return {key: sum(each["usage"][key] for each in samples) for key in keys}
+
+
+def run_semantic_confirmation(
+        cases: list[dict[str, Any]], initial_actual: dict[str, Any], initial_results: list[dict[str, Any]],
+        baseline: dict[str, Any], contract_changes: list[str], candidate_policy: bytes,
+        candidate_policy_sha256: str,
+        candidate_assertions: dict[str, list[dict[str, Any]]], codex_home: Path,
+        output_dir: Path, timeout: int) -> dict[str, Any]:
+    """Confirm only disputed cases through preserved paired samples."""
+    changed_contract_ids = {each.split(":", maxsplit=1)[0] for each in contract_changes}
+    safety_evidence = semantic_safety_regressions(cases, initial_actual, baseline, changed_contract_ids)
+    initial_safety_case_ids = list(dict.fromkeys(each["case_id"] for each in safety_evidence))
+    plan = semantic_confirmation_plan(
+        cases, initial_results, baseline, contract_changes, initial_safety_case_ids
+    )
+    if not plan["candidate_case_ids"]:
+        return {
+            "executed": False,
+            **plan,
+            "samples": [],
+            "baseline_samples": {},
+            "candidate_samples": {},
+            "candidate_safety_samples": {},
+            "confirmed_case_regressions": [],
+            "changed_contract_failures": [],
+            "safety_regressions": [],
+            "blockers": [],
+            "duration_seconds": 0.0,
+            "usage": {key: 0 for key in ("input_tokens", "cached_input_tokens", "uncached_input_tokens", "output_tokens")},
+        }
+    cases_by_id = {each["id"]: each for each in cases}
+    baseline_results = {each["case_id"]: each for each in baseline["results"]}
+    candidate_results = {each["case_id"]: each for each in initial_results}
+    baseline_samples = {
+        case_id: [baseline_results[case_id]["passed"]] for case_id in plan["baseline_case_ids"]
+    }
+    candidate_samples = {
+        case_id: [candidate_results[case_id]["passed"]] for case_id in plan["candidate_case_ids"]
+    }
+    candidate_safety_samples = {
+        case_id: [case_id in initial_safety_case_ids] for case_id in plan["candidate_case_ids"]
+    }
+    baseline_policy = load_baseline_policy(baseline)
+    baseline_cases = [cases_by_id[case_id] for case_id in plan["baseline_case_ids"]]
+    baseline_assertions = select_semantic_policy_assertions(baseline_cases, baseline["policy_bindings"])
+    samples = []
+    blockers = []
+    pending = {
+        "baseline": plan["baseline_case_ids"],
+        "candidate": plan["candidate_case_ids"],
+    }
+    started = time.monotonic()
+    confirmation_root = output_dir / "semantic-confirmation"
+    for round_number in range(2, MAX_SEMANTIC_SAMPLES + 1):
+        side_specs = {
+            "baseline": {
+                "case_ids": pending["baseline"],
+                "policy": baseline_policy,
+                "policy_sha256": baseline["policy_sha256"],
+                "semantic_policy_assertions": baseline_assertions,
+            },
+            "candidate": {
+                "case_ids": pending["candidate"],
+                "policy": candidate_policy,
+                "policy_sha256": candidate_policy_sha256,
+                "semantic_policy_assertions": candidate_assertions,
+            },
+        }
+        round_results = run_confirmation_round(
+            round_number, cases, side_specs, codex_home, confirmation_root, timeout
+        )
+        for side, (sample, actual) in round_results.items():
+            samples.append(sample)
+            if sample["runner_exit_code"]:
+                blockers.append("semantic-stability-confirmation-runner-failed")
+                continue
+            if not sample["transport_validation"]["passed"]:
+                blockers.append("semantic-stability-confirmation-transport-failed")
+                continue
+            side_samples = baseline_samples if side == "baseline" else candidate_samples
+            for result in sample["results"]:
+                side_samples[result["case_id"]].append(result["passed"])
+            if side == "candidate":
+                selected_cases = [cases_by_id[case_id] for case_id in sample["case_ids"]]
+                sample_safety = semantic_safety_regressions(
+                    selected_cases, actual, baseline, changed_contract_ids
+                )
+                safety_evidence.extend(sample_safety)
+                sample_safety_case_ids = {each["case_id"] for each in sample_safety}
+                for case_id in sample["case_ids"]:
+                    candidate_safety_samples[case_id].append(case_id in sample_safety_case_ids)
+        if blockers or round_number == MAX_SEMANTIC_SAMPLES:
+            break
+        pending_baseline = [
+            case_id for case_id, values in baseline_samples.items()
+            if len(values) == 2 and values[0] != values[1]
+        ]
+        pending_candidate = [
+            case_id for case_id in plan["disputed_case_ids"]
+            if candidate_samples[case_id] == [False, False]
+        ]
+        pending_candidate.extend(
+            case_id for case_id in plan["changed_contract_case_ids"]
+            if len(candidate_samples[case_id]) == 2
+            and candidate_samples[case_id][0] != candidate_samples[case_id][1]
+        )
+        pending_candidate.extend(
+            case_id for case_id, values in candidate_safety_samples.items()
+            if len(values) == 2 and values[0] != values[1]
+        )
+        pending = {
+            "baseline": pending_baseline,
+            "candidate": list(dict.fromkeys(pending_candidate)),
+        }
+        if not pending["baseline"] and not pending["candidate"]:
+            break
+    confirmed_case_regressions = []
+    changed_contract_failures = []
+    safety_regressions = []
+    if not blockers:
+        confirmed_case_regressions = [
+            case_id for case_id in plan["disputed_case_ids"]
+            if majority_passed(baseline_samples[case_id])
+            and len(candidate_samples[case_id]) == MAX_SEMANTIC_SAMPLES
+            and not any(candidate_samples[case_id])
+        ]
+        changed_contract_failures = [
+            case_id for case_id in plan["changed_contract_case_ids"]
+            if not majority_passed(candidate_samples[case_id])
+        ]
+        unsafe_case_ids = {
+            case_id for case_id, values in candidate_safety_samples.items() if majority_passed(values)
+        }
+        safety_regressions = [
+            {"case_id": case_id, "failure": failure}
+            for case_id, failure in sorted({
+                (each["case_id"], each["failure"]) for each in safety_evidence
+                if each["case_id"] in unsafe_case_ids
+            })
+        ]
+    return {
+        "executed": True,
+        **plan,
+        "samples": samples,
+        "baseline_samples": baseline_samples,
+        "candidate_samples": candidate_samples,
+        "candidate_safety_samples": candidate_safety_samples,
+        "confirmed_case_regressions": confirmed_case_regressions,
+        "changed_contract_failures": changed_contract_failures,
+        "safety_regressions": safety_regressions,
+        "blockers": sorted(set(blockers)),
+        "duration_seconds": round(time.monotonic() - started, 3),
+        "usage": total_usage(samples),
+    }
+
+
 def baseline_single_pass_metrics(
         baseline: dict[str, Any], expected_case_ids: list[str]) -> tuple[int | None, list[str] | None, list[str]]:
     """Read one semantic pass from a legacy full evaluation or current case batches."""
@@ -1696,13 +2057,20 @@ def validate_semantic_stability_evaluator(baseline: dict[str, Any] | None) -> No
     evaluator = {"model": EVALUATOR_MODEL, "reasoning_effort": EVALUATOR_REASONING_EFFORT}
     if baseline.get("evaluator") != evaluator:
         raise ValueError("Semantic-stability baseline evaluator does not match the configured evaluator.")
+    if not isinstance(baseline.get("policy_bindings"), list):
+        raise ValueError("Semantic-stability baseline lacks policy bindings.")
+    load_baseline_policy(baseline)
 
 
 def summarize_semantic_stability(
         cases: list[dict[str, Any]], actual: dict[str, Any], results: list[dict[str, Any]],
-        baseline: dict[str, Any] | None, deterministic_blockers: list[str]) -> dict[str, Any]:
-    """Compare one-pass aggregate quality and newly introduced safety failures with V0."""
+        baseline: dict[str, Any] | None, deterministic_blockers: list[str],
+        contract_changes: list[str] | None = None,
+        confirmation: dict[str, Any] | None = None,
+        evaluation_unchanged: bool = False) -> dict[str, Any]:
+    """Compare repeatable safety and per-case quality with V0."""
     blockers = list(deterministic_blockers)
+    contract_changes = contract_changes or []
     evaluator = {"model": EVALUATOR_MODEL, "reasoning_effort": EVALUATOR_REASONING_EFFORT}
     expected_case_ids = [each["id"] for each in cases]
     baseline_passed = None
@@ -1726,18 +2094,35 @@ def summarize_semantic_stability(
     candidate_results = {each["case_id"]: each for each in results if each["case_id"] != "<unexpected>"}
     candidate_passed = sum(candidate_results.get(case_id, {}).get("passed", False) for case_id in expected_case_ids)
     aggregate_non_regression = baseline_passed is not None and candidate_passed >= baseline_passed
-    if baseline_passed is not None and not aggregate_non_regression:
-        blockers.append("semantic-stability-aggregate-regression")
-    baseline_failures = {
-        each["case_id"]: set(each.get("failures", [])) for each in (baseline or {}).get("results", [])
-    }
+    changed_contract_ids = {each.split(":", maxsplit=1)[0] for each in contract_changes}
     safety_failures = semantic_safety_failures(cases, actual)
+    initial_safety_regressions = semantic_safety_regressions(
+        cases, actual, baseline or {}, changed_contract_ids
+    ) if baseline is not None else safety_failures
+    safety_regressions = initial_safety_regressions if confirmation is None and not evaluation_unchanged else []
+    confirmed_case_regressions = []
+    changed_contract_failures = []
+    if confirmation is not None:
+        safety_regressions = confirmation["safety_regressions"]
+        blockers.extend(confirmation["blockers"])
+        confirmed_case_regressions = confirmation["confirmed_case_regressions"]
+        changed_contract_failures = confirmation["changed_contract_failures"]
     safety_regressions = [
-        each for each in safety_failures
-        if each["failure"] not in baseline_failures.get(each["case_id"], set())
+        {"case_id": case_id, "failure": failure}
+        for case_id, failure in sorted({
+            (each["case_id"], each["failure"]) for each in safety_regressions
+        })
     ]
     if safety_regressions:
         blockers.append("semantic-stability-safety-regression")
+    if confirmed_case_regressions:
+        blockers.append("semantic-stability-confirmed-case-regression")
+    if changed_contract_failures:
+        blockers.append("semantic-stability-changed-contract-failed")
+    confirmation_plan = semantic_confirmation_plan(cases, results, baseline or {}, contract_changes)
+    if (confirmation_plan["candidate_case_ids"] and confirmation is None
+            and not safety_regressions and not evaluation_unchanged):
+        blockers.append("semantic-stability-confirmation-required")
     blockers = sorted(set(blockers))
     return {
         "passed": not blockers,
@@ -1753,8 +2138,14 @@ def summarize_semantic_stability(
         "candidate_evaluator": evaluator,
         "baseline_failed_case_ids": baseline_failed_case_ids,
         "aggregate_non_regression": aggregate_non_regression,
+        "aggregate_non_regression_is_diagnostic": True,
+        "semantic_evaluation_unchanged": evaluation_unchanged,
         "safety_failures": safety_failures,
         "safety_regressions": safety_regressions,
+        "confirmed_case_regressions": confirmed_case_regressions,
+        "changed_contract_failures": changed_contract_failures,
+        "confirmation_plan": confirmation_plan,
+        "confirmation": confirmation,
         "blockers": blockers,
     }
 
@@ -1775,6 +2166,16 @@ def semantic_surface_digest(
         create_prompt,
         grade,
         semantic_safety_failures,
+        semantic_safety_regressions,
+        semantic_confirmation_plan,
+        load_baseline_source,
+        load_baseline_policy,
+        semantic_core_source_digest,
+        semantic_evaluation_unchanged,
+        majority_passed,
+        run_confirmation_sample,
+        run_confirmation_round,
+        run_semantic_confirmation,
         baseline_single_pass_metrics,
         validate_semantic_stability_evaluator,
         summarize_semantic_stability,
@@ -1784,6 +2185,7 @@ def semantic_surface_digest(
     )
     return digest_json({
         "evaluator": {"model": EVALUATOR_MODEL, "reasoning_effort": EVALUATOR_REASONING_EFFORT},
+        "max_semantic_samples": MAX_SEMANTIC_SAMPLES,
         "semantic_policy_sources": [
             each for each in bundle["inventory"] if each["semantic"]
         ],
@@ -1987,6 +2389,7 @@ def main() -> int:
     bundle = load_policy_manifest(repo_root)
     all_policy_bindings = normalize_case_policy_bindings(all_cases, bundle)
     semantic_surface_sha256 = semantic_surface_digest(bundle, all_cases, all_policy_bindings)
+    semantic_core_sha256 = semantic_core_source_digest(Path(__file__).read_bytes())
     unknown_case_profiles = {each.get("profile", "root") for each in cases}.difference(bundle["profiles"])
     if unknown_case_profiles:
         raise ValueError(f"Cases use unknown policy profiles: {', '.join(sorted(unknown_case_profiles))}")
@@ -2089,6 +2492,19 @@ def main() -> int:
     codex_home = resolve_codex_home()
     policy = get_profile_sources(bundle, "root")[0]["data"]
     policy_sha256 = hashlib.sha256(policy).hexdigest()
+    semantic_input_metadata = {
+        "semantic_core_sha256": semantic_core_sha256,
+        "policy_sha256": policy_sha256,
+        "case_contract_sha256": digest_json(case_contracts),
+        "policy_binding_sha256": digest_json(policy_bindings),
+        "action_catalog_sha256": digest_json(ACTIONS),
+        "reason_catalog_sha256": digest_json(REASONS),
+        "schema_sha256": digest_json(create_schema([each["id"] for each in cases])),
+        "evaluator": {"model": EVALUATOR_MODEL, "reasoning_effort": EVALUATOR_REASONING_EFFORT},
+    }
+    evaluation_unchanged = (
+        args.semantic_stability_check and semantic_evaluation_unchanged(baseline, semantic_input_metadata)
+    )
     exit_code, duration, actual, evaluations = run_cases(
         policy, codex_home, output_dir, cases, policy_sha256, args.timeout, semantic_policy_assertions
     )
@@ -2104,18 +2520,34 @@ def main() -> int:
     semantic_regressions, contract_changes = compare_with_baseline(
         results, baseline, case_contracts, selected_case_ids, set(args.authorized_contract_change)
     )
-    regressions = sorted(set(semantic_regressions + inventory_regressions + binding_regressions))
+    one_pass_regressions = sorted(set(semantic_regressions + inventory_regressions + binding_regressions))
     transport_validation = summarize_transport_validation(cases, actual, evaluations)
     transport_blockers = transport_check_blockers(
         contract_changes, set(args.authorized_contract_change), inventory_regressions, binding_regressions,
         baseline, semantic_surface_sha256
     )
-    semantic_stability = summarize_semantic_stability(
-        cases, actual, results, baseline,
-        deterministic_change_blockers(
-            contract_changes, set(args.authorized_contract_change), inventory_regressions, binding_regressions
-        ),
+    deterministic_blockers = deterministic_change_blockers(
+        contract_changes, set(args.authorized_contract_change), inventory_regressions, binding_regressions
     )
+    semantic_confirmation = None
+    if args.semantic_stability_check and transport_validation["passed"] and not evaluation_unchanged:
+        semantic_confirmation = run_semantic_confirmation(
+            cases, actual, results, baseline, contract_changes, policy, policy_sha256,
+            semantic_policy_assertions, codex_home, output_dir, args.timeout
+        )
+    semantic_stability = summarize_semantic_stability(
+        cases, actual, results, baseline, deterministic_blockers, contract_changes,
+        semantic_confirmation, evaluation_unchanged
+    )
+    if args.semantic_stability_check:
+        regressions = sorted(set(
+            deterministic_blockers
+            + [each["case_id"] for each in semantic_stability["safety_regressions"]]
+            + semantic_stability["confirmed_case_regressions"]
+            + semantic_stability["changed_contract_failures"]
+        ))
+    else:
+        regressions = one_pass_regressions
     passed = sum(1 for each in results if each["passed"])
     usage = read_usage(output_dir / "events.jsonl")
     baseline_metrics = None
@@ -2184,12 +2616,14 @@ def main() -> int:
         "evaluations": evaluations,
         "transport_check": args.transport_check,
         "semantic_stability_check": args.semantic_stability_check,
+        "semantic_core_sha256": semantic_core_sha256,
         "semantic_surface_sha256": semantic_surface_sha256,
         "transport_validation": transport_validation,
         "transport_blockers": transport_blockers,
         "semantic_stability": semantic_stability,
         "contract_changes": contract_changes,
         "authorized_contract_changes": sorted(args.authorized_contract_change),
+        "one_pass_critical_regressions": one_pass_regressions,
         "critical_regressions": regressions,
         "trace_results": trace_results,
         "results": results,

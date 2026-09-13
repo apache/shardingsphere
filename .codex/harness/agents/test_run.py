@@ -20,6 +20,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -458,9 +459,13 @@ class RunTest(unittest.TestCase):
             run.validate_semantic_stability_evaluator(None)
         with self.assertRaisesRegex(ValueError, "does not match"):
             run.validate_semantic_stability_evaluator({})
-        run.validate_semantic_stability_evaluator({
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT}
-        })
+        baseline = {
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
+            "policy_bindings": [],
+        }
+        with patch.object(run, "load_baseline_policy", return_value=b"policy") as load_baseline_policy:
+            run.validate_semantic_stability_evaluator(baseline)
+        load_baseline_policy.assert_called_once_with(baseline)
 
     def test_main_rejects_evaluator_mismatch_before_semantic_execution(self) -> None:
         baseline = {"evaluator": {"model": "other-model", "reasoning_effort": "high"}}
@@ -473,7 +478,8 @@ class RunTest(unittest.TestCase):
 
     def test_main_rejects_deterministic_regression_before_semantic_execution(self) -> None:
         baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT}
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
+            "policy_bindings": [],
         }
         with patch("sys.argv", [
                 "run.py", "--mode", "all", "--semantic-stability-check", "--baseline", "unused"
@@ -481,12 +487,13 @@ class RunTest(unittest.TestCase):
                 run, "load_baseline", return_value=baseline), patch.object(
                 run, "compare_case_contracts", return_value=([], [])), patch.object(
                 run, "compare_policy_inventory", return_value=(["source:changed"], ["source:changed"])), patch.object(
-                run, "compare_policy_bindings", return_value=([], [])), patch.object(run, "run_cases") as run_cases:
+                run, "compare_policy_bindings", return_value=([], [])), patch.object(
+                run, "load_baseline_policy", return_value=b"policy"), patch.object(run, "run_cases") as run_cases:
             with self.assertRaisesRegex(ValueError, "deterministic preflight failed"):
                 run.main()
         run_cases.assert_not_called()
 
-    def test_semantic_stability_rejects_aggregate_or_safety_regression(self) -> None:
+    def test_semantic_stability_rejects_safety_regression_without_confirmation(self) -> None:
         actual_case = self._create_case_result(self.case, "Proceed.")
         actual_case["actions"] = ["edit_code"]
         actual = {"results": [actual_case]}
@@ -499,10 +506,375 @@ class RunTest(unittest.TestCase):
         }
         stability = run.summarize_semantic_stability([self.case], actual, results, baseline, [])
         self.assertFalse(stability["passed"])
-        self.assertEqual([
-            "semantic-stability-aggregate-regression",
-            "semantic-stability-safety-regression",
-        ], stability["blockers"])
+        self.assertEqual(["semantic-stability-safety-regression"], stability["blockers"])
+
+    def test_semantic_stability_requires_confirmation_instead_of_aggregate_floor(self) -> None:
+        actual_case = self._create_case_result(self.case, "Refuse.")
+        actual_case["decision"] = "refuse"
+        actual = {"results": [actual_case]}
+        results = run.grade([self.case], actual)
+        baseline = {
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
+            "case_contracts": run.normalize_case_contracts([self.case]),
+            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
+            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
+        }
+        stability = run.summarize_semantic_stability([self.case], actual, results, baseline, [])
+        self.assertFalse(stability["aggregate_non_regression"])
+        self.assertTrue(stability["aggregate_non_regression_is_diagnostic"])
+        self.assertEqual(["semantic-stability-confirmation-required"], stability["blockers"])
+
+    def test_semantic_stability_accepts_confirmed_case_without_aggregate_offset(self) -> None:
+        actual_case = self._create_case_result(self.case, "Refuse.")
+        actual_case["decision"] = "refuse"
+        actual = {"results": [actual_case]}
+        results = run.grade([self.case], actual)
+        baseline = {
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
+            "case_contracts": run.normalize_case_contracts([self.case]),
+            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
+            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
+        }
+        confirmation = {
+            "safety_regressions": [],
+            "blockers": [],
+            "confirmed_case_regressions": [],
+            "changed_contract_failures": [],
+        }
+        stability = run.summarize_semantic_stability(
+            [self.case], actual, results, baseline, [], confirmation=confirmation
+        )
+        self.assertTrue(stability["passed"])
+        self.assertFalse(stability["aggregate_non_regression"])
+
+    def test_semantic_stability_rejects_confirmed_case_regression(self) -> None:
+        actual_case = self._create_case_result(self.case, "Refuse.")
+        actual_case["decision"] = "refuse"
+        actual = {"results": [actual_case]}
+        results = run.grade([self.case], actual)
+        baseline = {
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
+            "case_contracts": run.normalize_case_contracts([self.case]),
+            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
+            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
+        }
+        confirmation = {
+            "safety_regressions": [],
+            "blockers": [],
+            "confirmed_case_regressions": [self.case["id"]],
+            "changed_contract_failures": [],
+        }
+        stability = run.summarize_semantic_stability(
+            [self.case], actual, results, baseline, [], confirmation=confirmation
+        )
+        self.assertFalse(stability["passed"])
+        self.assertEqual(["semantic-stability-confirmed-case-regression"], stability["blockers"])
+
+    def test_semantic_confirmation_plan_selects_only_disputes_and_changed_contracts(self) -> None:
+        changed_case = copy.deepcopy(self.case)
+        changed_case["id"] = "changed_case"
+        noncritical_case = copy.deepcopy(self.case)
+        noncritical_case["id"] = "noncritical_case"
+        noncritical_case["critical"] = False
+        cases = [self.case, changed_case, noncritical_case]
+        baseline = {"results": [
+            {"case_id": each["id"], "critical": each["critical"], "passed": True, "failures": []}
+            for each in cases
+        ]}
+        results = [
+            {"case_id": self.case["id"], "critical": True, "passed": False, "failures": ["failed"]},
+            {"case_id": changed_case["id"], "critical": True, "passed": True, "failures": []},
+            {"case_id": noncritical_case["id"], "critical": False, "passed": False, "failures": ["failed"]},
+        ]
+        actual = run.semantic_confirmation_plan(
+            cases, results, baseline, [f"{changed_case['id']}:case-contract-changed"]
+        )
+        self.assertEqual([self.case["id"]], actual["disputed_case_ids"])
+        self.assertEqual([changed_case["id"]], actual["changed_contract_case_ids"])
+        self.assertEqual([self.case["id"]], actual["baseline_case_ids"])
+        self.assertEqual([self.case["id"], changed_case["id"]], actual["candidate_case_ids"])
+
+    def test_majority_passed_requires_two_equal_or_three_samples(self) -> None:
+        self.assertTrue(run.majority_passed([True, True]))
+        self.assertFalse(run.majority_passed([False, False]))
+        self.assertTrue(run.majority_passed([False, True, True]))
+        self.assertFalse(run.majority_passed([True, False, False]))
+        for samples in ([True], [True, False], [True, True, False, False]):
+            with self.subTest(samples=samples), self.assertRaisesRegex(ValueError, "do not establish a majority"):
+                run.majority_passed(samples)
+
+    def test_semantic_confirmation_requires_three_candidate_failures(self) -> None:
+        initial_case = self._create_case_result(self.case, "Refuse.")
+        initial_case["decision"] = "refuse"
+        initial_actual = {"results": [initial_case]}
+        initial_results = run.grade([self.case], initial_actual)
+        baseline = {
+            "policy_sha256": "baseline-policy",
+            "policy_bindings": [],
+            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
+        }
+        calls = []
+
+        def create_sample(side: str, round_number: int, passed: bool) -> tuple[dict[str, Any], dict[str, Any]]:
+            actual_case = self._create_case_result(self.case, "Proceed." if passed else "Refuse.")
+            if not passed:
+                actual_case["decision"] = "refuse"
+            actual = {"results": [actual_case]}
+            return {
+                "side": side,
+                "round": round_number,
+                "case_ids": [self.case["id"]],
+                "runner_exit_code": 0,
+                "transport_validation": {"passed": True},
+                "results": run.grade([self.case], actual),
+                "usage": {
+                    "input_tokens": 0,
+                    "cached_input_tokens": 0,
+                    "uncached_input_tokens": 0,
+                    "output_tokens": 0,
+                },
+            }, actual
+
+        def fake_round(
+                round_number: int, cases: list[dict[str, Any]], side_specs: dict[str, dict[str, Any]],
+                codex_home: Path, confirmation_root: Path, timeout: int
+        ) -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
+            del cases, codex_home, confirmation_root, timeout
+            calls.append({side: list(spec["case_ids"]) for side, spec in side_specs.items()})
+            if round_number == 2:
+                return {
+                    "baseline": create_sample("baseline", 2, True),
+                    "candidate": create_sample("candidate", 2, False),
+                }
+            return {"candidate": create_sample("candidate", 3, False)}
+
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "load_baseline_policy", return_value=b"baseline-policy"), patch.object(
+                run, "run_confirmation_round", side_effect=fake_round):
+            actual = run.run_semantic_confirmation(
+                [self.case], initial_actual, initial_results, baseline, [], b"candidate-policy",
+                "candidate-policy", {}, Path("unused"), Path(output_directory), 1
+            )
+        self.assertEqual(2, len(calls))
+        self.assertEqual([self.case["id"]], calls[0]["baseline"])
+        self.assertEqual([], calls[1]["baseline"])
+        self.assertEqual([True, True], actual["baseline_samples"][self.case["id"]])
+        self.assertEqual([False, False, False], actual["candidate_samples"][self.case["id"]])
+        self.assertEqual([self.case["id"]], actual["confirmed_case_regressions"])
+        self.assertEqual(3, len(actual["samples"]))
+
+    def test_semantic_confirmation_stops_after_candidate_recovers(self) -> None:
+        initial_case = self._create_case_result(self.case, "Refuse.")
+        initial_case["decision"] = "refuse"
+        initial_actual = {"results": [initial_case]}
+        baseline = {
+            "policy_sha256": "baseline-policy",
+            "policy_bindings": [],
+            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
+        }
+        passing_actual = {"results": [self._create_case_result(self.case, "Proceed.")]}
+        usage = {
+            "input_tokens": 0,
+            "cached_input_tokens": 0,
+            "uncached_input_tokens": 0,
+            "output_tokens": 0,
+        }
+
+        def fake_round(*args: Any) -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
+            del args
+            return {
+                side: ({
+                    "side": side,
+                    "round": 2,
+                    "case_ids": [self.case["id"]],
+                    "runner_exit_code": 0,
+                    "transport_validation": {"passed": True},
+                    "results": run.grade([self.case], passing_actual),
+                    "usage": usage,
+                }, passing_actual)
+                for side in ("baseline", "candidate")
+            }
+
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "load_baseline_policy", return_value=b"baseline-policy"), patch.object(
+                run, "run_confirmation_round", side_effect=fake_round) as run_round:
+            actual = run.run_semantic_confirmation(
+                [self.case], initial_actual, run.grade([self.case], initial_actual), baseline, [],
+                b"candidate-policy", "candidate-policy", {}, Path("unused"), Path(output_directory), 1
+            )
+        self.assertEqual(1, run_round.call_count)
+        self.assertEqual([False, True], actual["candidate_samples"][self.case["id"]])
+        self.assertEqual([], actual["confirmed_case_regressions"])
+
+    def test_semantic_confirmation_ignores_one_safety_outlier(self) -> None:
+        initial_case = self._create_case_result(self.case, "Refuse.")
+        initial_case["decision"] = "refuse"
+        initial_actual = {"results": [initial_case]}
+        baseline = {
+            "policy_sha256": "baseline-policy",
+            "policy_bindings": [],
+            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
+        }
+        passing_actual = {"results": [self._create_case_result(self.case, "Proceed.")]}
+        unsafe_actual = copy.deepcopy(passing_actual)
+        unsafe_actual["results"][0]["actions"] = ["edit_code"]
+        usage = {
+            "input_tokens": 0,
+            "cached_input_tokens": 0,
+            "uncached_input_tokens": 0,
+            "output_tokens": 0,
+        }
+
+        def create_sample(
+                side: str, round_number: int, actual: dict[str, Any]
+        ) -> tuple[dict[str, Any], dict[str, Any]]:
+            return {
+                "side": side,
+                "round": round_number,
+                "case_ids": [self.case["id"]],
+                "runner_exit_code": 0,
+                "transport_validation": {"passed": True},
+                "results": run.grade([self.case], actual),
+                "usage": usage,
+            }, actual
+
+        def fake_round(
+                round_number: int, cases: list[dict[str, Any]], side_specs: dict[str, dict[str, Any]],
+                codex_home: Path, confirmation_root: Path, timeout: int
+        ) -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
+            del cases, side_specs, codex_home, confirmation_root, timeout
+            if round_number == 2:
+                return {
+                    "baseline": create_sample("baseline", 2, passing_actual),
+                    "candidate": create_sample("candidate", 2, unsafe_actual),
+                }
+            return {"candidate": create_sample("candidate", 3, passing_actual)}
+
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "load_baseline_policy", return_value=b"baseline-policy"), patch.object(
+                run, "run_confirmation_round", side_effect=fake_round):
+            actual = run.run_semantic_confirmation(
+                [self.case], initial_actual, run.grade([self.case], initial_actual), baseline, [],
+                b"candidate-policy", "candidate-policy", {}, Path("unused"), Path(output_directory), 1
+            )
+        self.assertEqual([False, True, False], actual["candidate_safety_samples"][self.case["id"]])
+        self.assertEqual([], actual["safety_regressions"])
+        self.assertEqual([], actual["confirmed_case_regressions"])
+
+    def test_confirmation_round_runs_baseline_and_candidate_concurrently(self) -> None:
+        barrier = threading.Barrier(2)
+
+        def fake_sample(
+                side: str, round_number: int, cases: list[dict[str, Any]], policy: bytes,
+                policy_sha256: str, semantic_policy_assertions: dict[str, list[dict[str, Any]]],
+                codex_home: Path, confirmation_root: Path, timeout: int
+        ) -> tuple[dict[str, Any], dict[str, Any]]:
+            del round_number, cases, policy, policy_sha256, semantic_policy_assertions
+            del codex_home, confirmation_root, timeout
+            barrier.wait(timeout=2)
+            return {"side": side}, {"results": []}
+
+        side_specs = {
+            side: {
+                "case_ids": [self.case["id"]],
+                "policy": side.encode(),
+                "policy_sha256": side,
+                "semantic_policy_assertions": {},
+            }
+            for side in ("baseline", "candidate")
+        }
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "run_confirmation_sample", side_effect=fake_sample):
+            actual = run.run_confirmation_round(
+                2, [self.case], side_specs, Path("unused"), Path(output_directory), 1
+            )
+        self.assertEqual({"baseline", "candidate"}, set(actual))
+
+    def test_confirmation_round_serializes_sides_when_one_side_has_multiple_batches(self) -> None:
+        lock = threading.Lock()
+        active = 0
+        max_active = 0
+
+        def fake_sample(*args: Any) -> tuple[dict[str, Any], dict[str, Any]]:
+            nonlocal active, max_active
+            side = args[0]
+            with lock:
+                active += 1
+                max_active = max(max_active, active)
+            threading.Event().wait(0.02)
+            with lock:
+                active -= 1
+            return {"side": side}, {"results": []}
+
+        side_specs = {
+            side: {
+                "case_ids": [self.case["id"]],
+                "policy": side.encode(),
+                "policy_sha256": side,
+                "semantic_policy_assertions": {},
+            }
+            for side in ("baseline", "candidate")
+        }
+
+        def fake_partition(
+                policy: bytes, cases: list[dict[str, Any]], policy_sha256: str,
+                semantic_policy_assertions: dict[str, list[dict[str, Any]]]
+        ) -> list[list[dict[str, Any]]]:
+            del policy_sha256, semantic_policy_assertions
+            return [cases, cases] if policy == b"baseline" else [cases]
+
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "partition_cases", side_effect=fake_partition), patch.object(
+                run, "run_confirmation_sample", side_effect=fake_sample):
+            run.run_confirmation_round(
+                2, [self.case], side_specs, Path("unused"), Path(output_directory), 1
+            )
+        self.assertEqual(1, max_active)
+
+    def test_semantic_confirmation_checks_changed_contract_on_candidate_only(self) -> None:
+        initial_case = self._create_case_result(self.case, "Refuse.")
+        initial_case["decision"] = "refuse"
+        initial_actual = {"results": [initial_case]}
+        initial_results = run.grade([self.case], initial_actual)
+        baseline = {
+            "policy_sha256": "baseline-policy",
+            "policy_bindings": [],
+            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
+        }
+
+        def fake_round(
+                round_number: int, cases: list[dict[str, Any]], side_specs: dict[str, dict[str, Any]],
+                codex_home: Path, confirmation_root: Path, timeout: int
+        ) -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
+            del round_number, cases, codex_home, confirmation_root, timeout
+            self.assertEqual([], side_specs["baseline"]["case_ids"])
+            actual = {"results": [initial_case]}
+            return {"candidate": ({
+                "side": "candidate",
+                "round": 2,
+                "case_ids": [self.case["id"]],
+                "runner_exit_code": 0,
+                "transport_validation": {"passed": True},
+                "results": run.grade([self.case], actual),
+                "usage": {
+                    "input_tokens": 0,
+                    "cached_input_tokens": 0,
+                    "uncached_input_tokens": 0,
+                    "output_tokens": 0,
+                },
+            }, actual)}
+
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "load_baseline_policy", return_value=b"baseline-policy"), patch.object(
+                run, "run_confirmation_round", side_effect=fake_round) as run_round:
+            actual = run.run_semantic_confirmation(
+                [self.case], initial_actual, initial_results, baseline,
+                [f"{self.case['id']}:case-contract-changed"], b"candidate-policy",
+                "candidate-policy", {}, Path("unused"), Path(output_directory), 1
+            )
+        self.assertEqual(1, run_round.call_count)
+        self.assertEqual([], actual["baseline_case_ids"])
+        self.assertEqual([self.case["id"]], actual["changed_contract_failures"])
 
     def test_semantic_stability_requires_same_case_single_pass_baseline(self) -> None:
         actual = {"results": [self._create_case_result(self.case, "Proceed.")]}
@@ -551,8 +923,63 @@ class RunTest(unittest.TestCase):
         self.assertNotEqual(expected, run.semantic_surface_digest(semantic_change, [self.case], []))
         with patch.object(run, "HIGH_RISK_ACTIONS", run.HIGH_RISK_ACTIONS.union({"inspect_local"})):
             self.assertNotEqual(expected, run.semantic_surface_digest(bundle, [self.case], []))
+        with patch.object(run, "MAX_SEMANTIC_SAMPLES", run.MAX_SEMANTIC_SAMPLES + 2):
+            self.assertNotEqual(expected, run.semantic_surface_digest(bundle, [self.case], []))
         with patch.object(run, "EVALUATOR_MODEL", "other-model"):
             self.assertNotEqual(expected, run.semantic_surface_digest(bundle, [self.case], []))
+
+    def test_semantic_core_source_digest_tracks_only_evaluation_core(self) -> None:
+        source = Path(run.__file__).read_bytes()
+        expected = run.semantic_core_source_digest(source)
+        self.assertEqual(expected, run.semantic_core_source_digest(source + b"\n# Non-core comment.\n"))
+        changed = source.replace(b'EVALUATOR_MODEL = "gpt-5.6-sol"', b'EVALUATOR_MODEL = "other-model"', 1)
+        self.assertNotEqual(expected, run.semantic_core_source_digest(changed))
+        with patch.object(run, "SEMANTIC_CORE_FUNCTION_NAMES", tuple(reversed(run.SEMANTIC_CORE_FUNCTION_NAMES))):
+            self.assertNotEqual(expected, run.semantic_core_source_digest(source))
+
+    def test_semantic_evaluation_unchanged_requires_core_and_metadata_identity(self) -> None:
+        source = Path(run.__file__).read_bytes()
+        current = {
+            "semantic_core_sha256": run.semantic_core_source_digest(source),
+            "policy_sha256": "policy",
+            "case_contract_sha256": "contracts",
+            "policy_binding_sha256": "bindings",
+            "action_catalog_sha256": "actions",
+            "reason_catalog_sha256": "reasons",
+            "schema_sha256": "schema",
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
+        }
+        baseline = {key: value for key, value in current.items() if key != "semantic_core_sha256"}
+        with patch.object(run, "load_baseline_source", return_value=source):
+            self.assertTrue(run.semantic_evaluation_unchanged(baseline, current))
+            changed = {**current, "policy_sha256": "changed-policy"}
+            self.assertFalse(run.semantic_evaluation_unchanged(baseline, changed))
+        recorded_baseline = {**baseline, "semantic_core_sha256": current["semantic_core_sha256"]}
+        with patch.object(run, "load_baseline_source", return_value=source):
+            self.assertTrue(run.semantic_evaluation_unchanged(recorded_baseline, current))
+        recorded_baseline["semantic_core_sha256"] = "tampered"
+        with patch.object(run, "load_baseline_source", return_value=source), self.assertRaisesRegex(
+                ValueError, "core digest does not match"):
+            run.semantic_evaluation_unchanged(recorded_baseline, current)
+
+    def test_load_baseline_source_verifies_snapshot_digest(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            snapshot = Path(directory)
+            source_path = snapshot / ".codex" / "harness" / "agents" / "run.py"
+            source_path.parent.mkdir(parents=True)
+            source_path.write_bytes(b"source")
+            baseline = {
+                "policy_snapshot_dir": str(snapshot),
+                "policy_sources": [{
+                    "id": "harness-runner",
+                    "path": ".codex/harness/agents/run.py",
+                    "sha256": hashlib.sha256(b"source").hexdigest(),
+                }],
+            }
+            self.assertEqual(b"source", run.load_baseline_source(baseline, "harness-runner"))
+            source_path.write_bytes(b"tampered")
+            with self.assertRaisesRegex(ValueError, "digest does not match"):
+                run.load_baseline_source(baseline, "harness-runner")
 
     def test_main_transport_check_reports_semantic_failure_without_failing_transport(self) -> None:
         case = run.load_cases(["read_only_review"])[0]
@@ -662,6 +1089,79 @@ class RunTest(unittest.TestCase):
             summary = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
         self.assertEqual(0, exit_code)
         self.assertTrue(summary["transport_validation"]["passed"])
+        self.assertTrue(summary["semantic_stability"]["passed"])
+
+    def test_main_semantic_stability_uses_confirmed_regressions_in_final_result(self) -> None:
+        cases = run.load_cases(None)
+        disputed_case = next(each for each in cases if each["id"] == "read_only_review")
+        baseline_actual_results = [self._create_case_result(each, each["prompt"]) for each in cases]
+        candidate_actual_results = copy.deepcopy(baseline_actual_results)
+        candidate_case = next(each for each in candidate_actual_results if each["case_id"] == disputed_case["id"])
+        candidate_case["decision"] = "refuse"
+        candidate_case["summary"] = "Refuse."
+        case_ids = [each["id"] for each in cases]
+
+        def create_evaluations(actual_results: list[dict[str, Any]]) -> list[dict[str, Any]]:
+            failed_case_ids = [
+                each["case_id"] for each in run.grade(cases, {"results": actual_results}) if not each["passed"]
+            ]
+            return [{
+                "evaluation": 1,
+                "case_count": len(cases),
+                "case_ids": case_ids,
+                "returned_case_ids": case_ids,
+                "input_bytes": 1,
+                "duration_seconds": 1.0,
+                "runner_exit_code": 0,
+                "failed_case_ids": failed_case_ids,
+                "events_log": "events-evaluation-1.jsonl",
+                "stderr_log": "stderr-evaluation-1.log",
+            }]
+
+        confirmation = {
+            "executed": True,
+            "safety_regressions": [],
+            "blockers": [],
+            "confirmed_case_regressions": [],
+            "changed_contract_failures": [],
+        }
+        usage = {
+            "input_tokens": 1,
+            "cached_input_tokens": 0,
+            "uncached_input_tokens": 1,
+            "output_tokens": 1,
+        }
+        with tempfile.TemporaryDirectory() as output_parent:
+            baseline_dir = Path(output_parent) / "baseline"
+            output_dir = Path(output_parent) / "output"
+            with patch("sys.argv", [
+                    "run.py", "--mode", "all", "--output-dir", str(baseline_dir)
+            ]), patch.object(
+                    run, "semantic_surface_digest", return_value="semantic-surface"), patch.object(
+                    run, "run_cases", return_value=(
+                        0, 1.0, {"results": baseline_actual_results}, create_evaluations(baseline_actual_results)
+                    )
+            ), patch.object(run, "run_local_read_traces", return_value=[]), patch.object(
+                    run, "read_usage", return_value=usage), patch("builtins.print"):
+                run.main()
+            with patch("sys.argv", [
+                    "run.py", "--mode", "all", "--semantic-stability-check",
+                    "--baseline", str(baseline_dir), "--output-dir", str(output_dir)
+            ]), patch.object(
+                    run, "semantic_surface_digest", return_value="semantic-surface"), patch.object(
+                    run, "semantic_evaluation_unchanged", return_value=False), patch.object(
+                    run, "run_cases", return_value=(
+                        0, 1.0, {"results": candidate_actual_results}, create_evaluations(candidate_actual_results)
+                    )
+            ), patch.object(run, "run_semantic_confirmation", return_value=confirmation) as confirm, patch.object(
+                    run, "run_local_read_traces", return_value=[]), patch.object(
+                    run, "read_usage", return_value=usage), patch("builtins.print"):
+                exit_code = run.main()
+            summary = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
+        self.assertEqual(0, exit_code)
+        self.assertEqual(1, confirm.call_count)
+        self.assertIn(disputed_case["id"], summary["one_pass_critical_regressions"])
+        self.assertEqual([], summary["critical_regressions"])
         self.assertTrue(summary["semantic_stability"]["passed"])
 
     def test_resolve_policy_impact_selects_bound_semantic_cases_and_profiles(self) -> None:
