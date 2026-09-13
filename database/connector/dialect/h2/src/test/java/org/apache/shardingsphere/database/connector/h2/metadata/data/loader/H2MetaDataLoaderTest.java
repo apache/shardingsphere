@@ -64,7 +64,8 @@ class H2MetaDataLoaderTest {
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL')")
+                "SELECT TABLE_NAME, INDEX_NAME, COLUMN_NAME, IS_UNIQUE FROM INFORMATION_SCHEMA.INDEX_COLUMNS"
+                        + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL') ORDER BY TABLE_NAME, INDEX_NAME, ORDINAL_POSITION")
                 .executeQuery()).thenReturn(indexResultSet);
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
@@ -91,7 +92,8 @@ class H2MetaDataLoaderTest {
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL')")
+                "SELECT TABLE_NAME, INDEX_NAME, COLUMN_NAME, IS_UNIQUE FROM INFORMATION_SCHEMA.INDEX_COLUMNS"
+                        + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL') ORDER BY TABLE_NAME, INDEX_NAME, ORDINAL_POSITION")
                 .executeQuery()).thenReturn(indexResultSet);
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
@@ -198,10 +200,11 @@ class H2MetaDataLoaderTest {
     
     private ResultSet mockIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, false);
-        when(result.getString("INDEX_NAME")).thenReturn("id");
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getString("INDEX_NAME")).thenReturn("foo_composite_idx", "foo_composite_idx", "foo_primary_idx");
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("INDEX_TYPE_NAME")).thenReturn("UNIQUE INDEX");
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "id");
+        when(result.getBoolean("IS_UNIQUE")).thenReturn(false, true);
         return result;
     }
     
@@ -218,11 +221,16 @@ class H2MetaDataLoaderTest {
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, true, true, false, true, false, false));
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true));
-        assertThat(actualTableMetaData.getIndexes().size(), is(1));
-        Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
-        IndexMetaData indexMetaData = new IndexMetaData("id");
-        indexMetaData.setUnique(true);
-        assertIndexMetaData(indexesIterator.next(), indexMetaData);
+        Map<String, IndexMetaData> actualIndexes = new HashMap<>(actualTableMetaData.getIndexes().size(), 1F);
+        for (IndexMetaData each : actualTableMetaData.getIndexes()) {
+            actualIndexes.put(each.getName(), each);
+        }
+        assertThat(actualIndexes.size(), is(2));
+        IndexMetaData expectedCompositeIndex = new IndexMetaData("foo_composite_idx", Arrays.asList("id", "name"));
+        assertIndexMetaData(actualIndexes.get(expectedCompositeIndex.getName()), expectedCompositeIndex);
+        IndexMetaData expectedPrimaryIndex = new IndexMetaData("foo_primary_idx", Collections.singletonList("id"));
+        expectedPrimaryIndex.setUnique(true);
+        assertIndexMetaData(actualIndexes.get(expectedPrimaryIndex.getName()), expectedPrimaryIndex);
     }
     
     private void assertColumnMetaData(final ColumnMetaData actual, final ColumnMetaData expected) {
