@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.e2e.sql.env.container.compose.mode.Cluster
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.mode.StandaloneContainerComposer;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,16 +90,20 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     @Override
     public void close() {
         synchronized (containerComposers) {
-            for (DataSource each : targetDataSources.values()) {
-                closeTargetDataSource(each);
-            }
             for (ContainerComposer each : containerComposers.values()) {
+                closeTargetDataSources(each.getTargetDataSources());
                 closeDataSourceMap(each.getActualDataSourceMap());
                 closeDataSourceMap(each.getExpectedDataSourceMap());
                 closeContainer(each);
             }
             targetDataSources.clear();
             containerComposers.clear();
+        }
+    }
+    
+    private void closeTargetDataSources(final Collection<DataSource> targetDataSources) {
+        for (DataSource each : targetDataSources) {
+            closeTargetDataSource(each);
         }
     }
     

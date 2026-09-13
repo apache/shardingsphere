@@ -148,8 +148,7 @@ class FirebirdBatchedStatementsExecutorTest {
                 .thenReturn(firstPreparedStatement, secondPreparedStatement);
         ContextManager contextManager = mockContextManager("ds_0", "ds_1");
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        FirebirdServerPreparedStatement firebirdPreparedStatement = new FirebirdServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)",
-                mockInsertStatementContext(), new HintValueContext());
+        FirebirdServerPreparedStatement firebirdPreparedStatement = new FirebirdServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)", mockInsertStatementContext(), new HintValueContext());
         List<Object> params = Arrays.asList(1, "foo_1");
         ExecutionUnit firstExecutionUnit = new ExecutionUnit("ds_0", new SQLUnit(firebirdPreparedStatement.getSql(), params));
         ExecutionUnit secondExecutionUnit = new ExecutionUnit("ds_1", new SQLUnit(firebirdPreparedStatement.getSql(), params));

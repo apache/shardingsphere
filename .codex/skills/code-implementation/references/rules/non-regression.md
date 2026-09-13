@@ -17,7 +17,7 @@
 
 # Functional and Performance Non-Regression
 
-Apply this gate to every task that changes a production, test, script, or other implementation artifact, including build logic, generated source, and behavior-affecting configuration. Verification must be proportionate to the affected behavior and credible cost risk; it must not become an unbounded demand to benchmark unrelated paths.
+Apply this full gate when a change affects a public or shared contract, crosses behavior owners, or has credible functional or performance risk. Lower-risk local changes still preserve supported behavior outside the exact authorized change, but use the implementation rules and focused owner checks without loading this reference. Verification must remain proportionate to affected behavior and credible cost risk.
 
 ## Baseline and Supported Behavior
 
@@ -31,7 +31,7 @@ Apply this gate to every task that changes a production, test, script, or other 
 1. Before the first relevant write, map the existing supported scenarios that the proposed change can affect, including successful paths, boundary inputs, failure behavior, compatibility surfaces, registrations, and indirect consumers when applicable.
 2. Identify the evidence that protects each affected scenario. Use maintained focused tests and contract checks where they express the behavior; add or change tests only under `.codex/skills/code-implementation/references/rules/testing.md` and only when focused regression protection is necessary.
 3. Do not weaken, delete, or rewrite a valid existing assertion, fixture, baseline, or contract merely to make changed behavior pass. First prove that it expresses the exact authorized behavior change or is itself incorrect under stronger contract evidence.
-4. After the last relevant write, repeat the mapped checks against the same baseline and inspect the effective delta for untested losses. Any task-introduced loss, weakening, or incompatible change outside the exact authorized behavior is a blocking regression and must be repaired before handoff.
+4. After the last relevant write, run each mapped check whose current-state result is not already valid and inspect the effective delta for untested losses. Any task-introduced loss, weakening, or incompatible change outside the exact authorized behavior is a blocking regression and must be repaired before handoff.
 
 ## Performance Risk and Evidence
 

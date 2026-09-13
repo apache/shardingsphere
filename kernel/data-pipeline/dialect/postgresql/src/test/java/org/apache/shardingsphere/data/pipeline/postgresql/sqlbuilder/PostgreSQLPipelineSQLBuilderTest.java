@@ -47,7 +47,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -159,7 +158,7 @@ class PostgreSQLPipelineSQLBuilderTest {
                         mockConstruction(PostgreSQLIndexSQLGenerator.class, (mocked, mockContext) -> when(mocked.generate(materials)).thenReturn("CREATE INDEX foo_index"))) {
             freemarkerManager.when(() -> PostgreSQLPipelineFreemarkerManager.getSQLByVersion(materials, "component/table/%s/create.ftl", 10, 1)).thenReturn("CREATE TABLE foo;");
             Collection<String> actual = sqlBuilder.buildCreateTableSQLs(dataSource, "public", "foo_tbl");
-            List<String> actualList = actual.stream().map(String::trim).collect(Collectors.toList());
+            List<String> actualList = actual.stream().map(String::trim).toList();
             assertThat(actualList.size(), is(2));
             assertThat(actualList.get(0), is("CREATE TABLE foo"));
             assertThat(actualList.get(1), is("CREATE INDEX foo_index"));

@@ -186,7 +186,7 @@ public final class DataConsistencyCheckUtils {
      * @param thatList that list
      * @return true if lists equals, otherwise false
      */
-    public static boolean compareLists(final @Nullable Collection<?> thisList, final @Nullable Collection<?> thatList) {
+    public static boolean compareLists(@Nullable final Collection<?> thisList, @Nullable final Collection<?> thatList) {
         if (null == thisList && null == thatList) {
             return true;
         }
@@ -213,7 +213,7 @@ public final class DataConsistencyCheckUtils {
      * @param uniqueKey unique key
      * @return first unique key value
      */
-    public static Object getFirstUniqueKeyValue(final Map<String, Object> record, final @Nullable String uniqueKey) {
+    public static Object getFirstUniqueKeyValue(final Map<String, Object> record, @Nullable final String uniqueKey) {
         return record.isEmpty() || null == uniqueKey ? null : record.get(uniqueKey);
     }
 }

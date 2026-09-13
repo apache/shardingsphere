@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-jdbc</artifactId>
-            <version>${hive-jdbc.version}</version>
+            <version>${hive.version}</version>
             <classifier>standalone</classifier>
             <scope>test</scope>
         </dependency>
