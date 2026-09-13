@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.identifier.ExpectedIdentifier;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -31,17 +32,17 @@ import javax.xml.bind.annotation.XmlElement;
 public final class MigrateTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "source-resource-name")
-    private String sourceResourceName;
+    private ExpectedIdentifier sourceResourceName;
     
     @XmlElement(name = "source-table-name")
-    private String sourceTableName;
+    private ExpectedIdentifier sourceTableName;
     
     @XmlElement(name = "source-schema-name")
-    private String sourceSchemaName;
+    private ExpectedIdentifier sourceSchemaName;
     
     @XmlElement(name = "target-database-name")
     private String targetDatabaseName;
     
     @XmlElement(name = "target-table-name")
-    private String targetTableName;
+    private ExpectedIdentifier targetTableName;
 }

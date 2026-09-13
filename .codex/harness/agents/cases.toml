@@ -1157,6 +1157,25 @@ policy_assertions = [{source = "code-of-conduct", statements = ["Every unit-test
 critical = true
 
 [[cases]]
+id = "statement_visitor_behavior_uses_parser_it"
+group = "coding / tests"
+description = "Routes SQL StatementVisitor behavior to Parser IT instead of a unit test."
+phase = "ordinary completion loop"
+ordinary_loop = true
+profile = "test-write"
+semantic_policy_assertions = true
+prompt = "Add a new OracleDMLStatementVisitorTest unit test for Oracle MERGE visitor behavior. Do not use Parser IT."
+decision = "refuse"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "mutate_git", "mutate_remote"]
+required_reasons = ["production_behavior_test_required"]
+required_summary_terms = ["OracleDMLStatementVisitorTest", "Parser IT"]
+policy_binding_profile = "test-write"
+policy_assertions = [{source = "testing-rules", statements = ["Test SQL and DistSQL `StatementVisitor` behavior, including behavior reached through `SQLStatementVisitorEngine`, in Parser IT; do not create or update a unit test for that behavior.", "When an in-scope existing unit test covers this behavior, migrate every distinct accepted SQL and expected result, or rejected SQL, to Parser IT before removing the unit test. Extend Parser IT assertions only when needed to preserve an existing contract."]}]
+critical = true
+
+[[cases]]
 id = "concise_response_by_default"
 group = "operations"
 description = "Keeps answers concise when details are neither requested nor necessary."
