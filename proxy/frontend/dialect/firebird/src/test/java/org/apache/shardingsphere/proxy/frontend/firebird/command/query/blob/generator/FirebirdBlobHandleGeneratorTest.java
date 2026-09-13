@@ -30,7 +30,9 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdBlobHandleGeneratorTest {
     
@@ -116,6 +118,31 @@ class FirebirdBlobHandleGeneratorTest {
     @Test
     void assertResolveBlobHandleWithPlaceholderAndUnknownConnectionExpectsPlaceholder() {
         assertThat(FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(92, INVALID_OBJECT_HANDLE), is(INVALID_OBJECT_HANDLE));
+    }
+    
+    @Test
+    void assertIsAllocatedWithActiveHandle() {
+        FirebirdBlobHandleGenerator generator = FirebirdBlobHandleGenerator.getInstance();
+        assertTrue(generator.isAllocated(CONNECTION_ID, generator.nextBlobHandle(CONNECTION_ID)));
+    }
+    
+    @Test
+    void assertIsAllocatedAfterRelease() {
+        FirebirdBlobHandleGenerator generator = FirebirdBlobHandleGenerator.getInstance();
+        int blobHandle = generator.nextBlobHandle(CONNECTION_ID);
+        generator.releaseBlobHandle(CONNECTION_ID, blobHandle);
+        assertFalse(generator.isAllocated(CONNECTION_ID, blobHandle));
+    }
+    
+    @Test
+    void assertIsAllocatedWhenConnectionIsNotRegistered() {
+        assertFalse(FirebirdBlobHandleGenerator.getInstance().isAllocated(92, 1));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidBlobHandleProvider")
+    void assertIsAllocatedWhenHandleIsOutsideValidRange(final String name, final int blobHandle) {
+        assertFalse(FirebirdBlobHandleGenerator.getInstance().isAllocated(CONNECTION_ID, blobHandle));
     }
     
     @Test
