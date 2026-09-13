@@ -69,7 +69,9 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
     private static final String ADVANCE_INDEX_META_DATA_SQL =
             "SELECT idx.relname as index_name, insp.nspname as index_schema, tbl.relname as table_name, att.attname AS column_name, pgi.indisunique as is_unique"
                     + " FROM pg_index pgi JOIN pg_class idx ON idx.oid = pgi.indexrelid JOIN pg_namespace insp ON insp.oid = idx.relnamespace JOIN pg_class tbl ON tbl.oid = pgi.indrelid"
-                    + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = ANY(pgi.indkey) WHERE tnsp.nspname IN (%s)";
+                    + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace JOIN generate_subscripts(pgi.indkey, 1) AS index_position(position) ON TRUE"
+                    + " JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = pgi.indkey[index_position.position] WHERE tnsp.nspname IN (%s)"
+                    + " ORDER BY insp.nspname, idx.relname, index_position.position";
     
     private static final String BASIC_VIEW_META_DATA_SQL = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN (%s)";
     
