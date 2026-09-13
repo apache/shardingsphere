@@ -1,10 +1,10 @@
 ---
 name: coding-standards
 description: >-
-  Apply Apache ShardingSphere's written coding standards during implementation, fixes, refactoring, code review, or Maven POM modification and review.
+  Apply Apache ShardingSphere's written coding standards when explicitly requested, or when code-implementation routes task-changed production, test, script, build, generated, or Maven POM artifacts through repository standards.
   Also perform a standalone read-only compliance audit of a user-specified scope.
   Use CODE_OF_CONDUCT.md, applicable AGENTS.md rules, Checkstyle, Spotless, and other repository-defined standards, including naming and evidence-based defensive-code rules.
-  Do not independently audit architecture, runtime ownership, caches, or lifecycle.
+  Do not invoke independently for an ordinary implementation already governed by code-implementation, and do not independently audit architecture, runtime ownership, caches, or lifecycle.
 ---
 
 <!--
