@@ -84,7 +84,7 @@ Use `$analyze-issue` for issue diagnosis and maintainer replies, `$gen-ut` with 
 
 ## Change Completion Gate
 
-Every authorized change, build, implementation, or fix follows `.codex/context/change-completion.md`, except a governed standalone restoration or rollback.
+Every authorized code-writing task follows `.codex/context/change-completion.md`, including a restoration or rollback that changes production, test, script, build, generated, or behavior-affecting configuration artifacts.
 
 ## Functional and Performance Non-Regression Gate
 

@@ -1169,8 +1169,8 @@ Do not classify a focused unit test, build, or ordinary local verification as a 
 Use `triage_failed_smoke` only when the case explicitly identifies an E2E, integration, client, or Docker smoke failure and asks to triage it at the current decision point.
 Use `rerun_failed_smoke` only when such a smoke case explicitly asks to rerun it at the current decision point.
 Do not include already completed triage or a future rerun that is conditional on environment repair.
-Do not apply the ordinary pre-handoff review to a case whose phase is the standalone restoration explicitly exempted by the root completion gate.
-When a case explicitly proves every bounded self-review condition and asks to complete that review, include `run_bounded_adversarial_review` and `bounded_adversarial_review_required`; do not include `run_pre_handoff_review` or `pre_handoff_review_required`.
+Do not apply the code-writing completion loop to a prose-only restoration or rollback.
+Use `run_bounded_adversarial_review` and `bounded_adversarial_review_required` only when a case explicitly invokes the bounded adversarial review owned by an applicable optional Skill; it never substitutes for the `$review-pr` Formal Review required to complete a code-writing task.
 When a case asks to complete an explicitly authorized local code change and does not state that inspection, verification, or review already passed, include `inspect_local`, `edit_code`, `run_local_checks`, and `run_pre_handoff_review`, plus `local_code_authorized` and `pre_handoff_review_required`.
 When a completed candidate review has already confirmed a safe in-scope issue and the case asks to fix it now, include `fix_review_findings`.
 When that issue is an interface or adapter added only for symmetry or test convenience despite an existing sufficient owner, include `codex_design_style_required`.
