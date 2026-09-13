@@ -21,6 +21,11 @@
         <assertion />
     </test-case>
 
+    <test-case sql="SELECT DATABASE()" db-types="MySQL" scenario-types="passthrough" adapters="proxy">
+        <assertion expected-data-file="select_default_database.xml" />
+        <assertion target-data-source-name="passthrough_secondary" expected-data-file="select_secondary_database.xml" />
+    </test-case>
+
     <test-case sql="SELECT 1 as a" db-types="PostgreSQL,openGauss" smoke="true" scenario-types="passthrough" >
         <assertion />
     </test-case>

@@ -82,7 +82,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertQueryForStatementWithXmlExpected(final SQLE2EITContext context) throws SQLException {
         try (
-                Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                Connection connection = getEnvironmentEngine().getTargetDataSource(context.getAssertion().getTargetDataSourceName()).getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(context.getSQL())) {
             assertResultSet(context, resultSet);
@@ -91,7 +91,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertQueryForPreparedStatementWithXmlExpected(final SQLE2EITContext context) throws SQLException {
         try (
-                Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                Connection connection = getEnvironmentEngine().getTargetDataSource(context.getAssertion().getTargetDataSourceName()).getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(context.getSQL())) {
             for (SQLValue each : context.getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
@@ -105,7 +105,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     private void assertExecuteQueryWithExpectedDataSource(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {
         try (
                 Connection expectedConnection = getExpectedDataSource().getConnection();
-                Connection actualConnection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
+                Connection actualConnection = getEnvironmentEngine().getTargetDataSource(context.getAssertion().getTargetDataSourceName()).getConnection()) {
             if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 assertExecuteQueryForStatement(context, actualConnection, expectedConnection, testParam);
             } else {
@@ -182,7 +182,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertExecuteForStatementWithXmlExpected(final SQLE2EITContext context) throws SQLException {
         try (
-                Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                Connection connection = getEnvironmentEngine().getTargetDataSource(context.getAssertion().getTargetDataSourceName()).getConnection();
                 Statement statement = connection.createStatement()) {
             assertTrue(statement.execute(context.getSQL()), "Not a query statement.");
             ResultSet resultSet = statement.getResultSet();
@@ -192,7 +192,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertExecuteForPreparedStatementWithXmlExpected(final SQLE2EITContext context) throws SQLException {
         try (
-                Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                Connection connection = getEnvironmentEngine().getTargetDataSource(context.getAssertion().getTargetDataSourceName()).getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(context.getSQL())) {
             for (SQLValue each : context.getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
@@ -206,7 +206,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertExecuteWithExpectedDataSource(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {
         try (
-                Connection actualConnection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                Connection actualConnection = getEnvironmentEngine().getTargetDataSource(context.getAssertion().getTargetDataSourceName()).getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 assertExecuteForStatement(context, actualConnection, expectedConnection, testParam);
