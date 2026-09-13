@@ -1466,10 +1466,10 @@ class RunTest(unittest.TestCase):
         self.assertIn("Use `triage_failed_smoke` only when the case explicitly identifies an E2E", prompt)
         self.assertIn("Use `rerun_failed_smoke` only when such a smoke case explicitly asks to rerun it", prompt)
 
-    def test_create_prompt_distinguishes_bounded_from_formal_review(self) -> None:
+    def test_create_prompt_limits_bounded_review_to_optional_skill(self) -> None:
         prompt = run.create_prompt([self.case], "sha256")
-        self.assertIn("explicitly proves every bounded self-review condition", prompt)
-        self.assertIn("do not include `run_pre_handoff_review` or `pre_handoff_review_required`", prompt)
+        self.assertIn("bounded adversarial review owned by an applicable optional Skill", prompt)
+        self.assertIn("never substitutes for the `$review-pr` Formal Review", prompt)
 
     def test_semantic_metadata_disclaims_profile_content_evaluation(self) -> None:
         metadata = run.semantic_evaluation_metadata()

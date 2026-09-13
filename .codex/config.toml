@@ -13,8 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+[[hooks.PreToolUse]]
+matcher = "^(Bash|exec_command|write_stdin)$"
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = '/usr/bin/python3 "$(git rev-parse --show-toplevel)/.codex/harness/agents/code_handoff_hook.py"'
+command_windows = 'py -3 "$(git rev-parse --show-toplevel)/.codex/harness/agents/code_handoff_hook.py"'
+timeout = 5
+
 [[hooks.PostToolUse]]
-matcher = "^apply_patch$"
+matcher = "^(Bash|apply_patch|exec_command|write_stdin)$"
 
 [[hooks.PostToolUse.hooks]]
 type = "command"
