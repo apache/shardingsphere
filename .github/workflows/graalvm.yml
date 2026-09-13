@@ -42,15 +42,15 @@ jobs:
   nativetest:
     if: github.repository == 'apache/shardingsphere'
     needs: global-environment
-    name: GraalVM - GraalVM CE for JDK ${{ matrix.java-version }} on ${{ matrix.os }}
+    name: GraalVM - GraalVM CE ${{ matrix.java-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
       max-parallel: 15
       fail-fast: false
       matrix:
-        os: [ 'ubuntu-latest', 'windows-latest' ]
-        java-version: [ '25.0.2' ]
+        # TODO After the issue at https://github.com/apache/shardingsphere/issues/38857 is resolved, add `windows-latest`
+        os: [ 'ubuntu-latest' ]
     steps:
       - uses: actions/checkout@v6.0.1
       - name: Free Disk Space on Ubuntu
@@ -61,15 +61,12 @@ jobs:
         run: ./test/native/src/test/resources/test-native/ps1/config-rdctl.ps1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          java-version: ${{ matrix.java-version }}
-          distribution: 'graalvm'
+          distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
-          cache-suffix: 'native-test'
       # TODO Remove this workaround after. The graalvm native image built with windows server is missing some GRMs for testcontainers
       - name: Run test with GraalVM CE
         if: matrix.os == 'windows-latest'
         run: ./mvnw -PgenerateMetadata -e -T 1C clean verify
-      - name: Run nativeTest with GraalVM CE for ${{ matrix.java-version }}
+      - name: Run nativeTest with GraalVM CE ${{ matrix.java-version }}
         if: matrix.os == 'ubuntu-latest'
         run: ./mvnw -PnativeTestInShardingSphere -e clean verify

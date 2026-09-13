@@ -330,6 +330,12 @@
       "condition": {
         "typeReached": "org.apache.calcite.linq4j.tree.Types"
       },
+      "type": "org.apache.calcite.linq4j.tree.UnsignedType"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
       "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$AllPredicates"
     },
     {
@@ -379,6 +385,18 @@
         "typeReached": "org.apache.calcite.linq4j.tree.Types"
       },
       "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$ExpressionLineage"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$FunctionalDependency"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.calcite.linq4j.tree.Types"
+      },
+      "type": "org.apache.calcite.rel.metadata.BuiltInMetadata$InputFieldsUsed"
     },
     {
       "condition": {
