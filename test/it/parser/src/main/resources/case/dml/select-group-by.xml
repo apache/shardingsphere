@@ -1087,7 +1087,7 @@
         <group-by>
             <expression-item expression="NULL" start-index="38" stop-index="41">
                 <expr>
-                    <literal-expression value="null" start-index="38" stop-index="41" />
+                    <literal-expression value="null" null-literal="true" start-index="38" stop-index="41" />
                 </expr>
             </expression-item>
         </group-by>

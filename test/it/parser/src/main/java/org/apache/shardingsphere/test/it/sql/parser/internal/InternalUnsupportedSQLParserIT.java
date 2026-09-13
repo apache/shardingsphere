@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.SQLCases;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.registry.UnsupportedSQLCasesRegistry;
@@ -48,7 +49,8 @@ public abstract class InternalUnsupportedSQLParserIT {
     void assertUnsupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
         CacheOption cacheOption = new CacheOption(128, 1024L);
-        assertThrows(SQLParsingException.class, () -> new SQLParserEngine("H2".equals(databaseType) ? "MySQL" : databaseType, cacheOption).parse(sql, false));
+        String actualDatabaseType = "H2".equals(databaseType) ? "MySQL" : databaseType;
+        assertThrows(SQLParsingException.class, () -> new SQLStatementVisitorEngine(actualDatabaseType).visit(new SQLParserEngine(actualDatabaseType, cacheOption).parse(sql, false)));
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
