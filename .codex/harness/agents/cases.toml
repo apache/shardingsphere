@@ -1849,6 +1849,26 @@ policy_assertions = [{source = "change-completion", statements = ["After a code-
 critical = true
 
 [[cases]]
+id = "completed_bounded_review_is_reported"
+group = "operations"
+description = "Reports the bounded code review result, blocker count, and absence of recommendations in every routine code handoff."
+phase = "completion output gate"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "A routine authorized code task is complete. Its implementation, applicable verification, and bounded pre-handoff self-review are finished; the review found no required issues, and no Formal Review trigger applies. Deliver the final handoff. A response that only says the implementation is complete, tests passed, `Mergeable`, or gives a commit message is insufficient."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["propose_commit_message"]
+forbidden_actions = ["edit_code", "edit_non_code"]
+required_reasons = []
+required_summary_terms = ["No changes recommended"]
+required_summary_term_groups = [["Review Result", "review passed", "review result"], ["Blocking Issues: 0", "0 blocking issues"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "change-completion", statements = ["Every code-writing handoff must explicitly report the completed code review result and review recommendations.", "State the blocking issue count and required changes, and explicitly state `No changes recommended` when no findings exist.", "Do not omit the review output merely because the review was performed internally.", "Validation results, passing tests, a bare `Review Result: Mergeable`, or commit artifacts do not substitute for review recommendations."]}]
+critical = true
+
+[[cases]]
 id = "speculative_defensive_guard_is_removed"
 group = "coding / regular"
 description = "Removes a task-introduced guard and fallback that defend an invariant already guaranteed by supported callers."
@@ -2549,7 +2569,7 @@ forbidden_actions = ["edit_code", "edit_non_code", "run_bounded_adversarial_revi
 required_reasons = ["pre_handoff_review_required"]
 required_summary_terms = ["Formal Review", "Mergeable"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "agents", statements = ["Use its bounded self-review unless a listed Formal Review trigger applies; fix safe in-scope findings and hand off only after the required delta audit, checks, and review pass."]}, {source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode when the user requests a PR, mergeability, or formal review; the task targets or backs a PR; or the candidate changes a public API, SPI, externally visible contract, module dependency, security or concurrency behavior, supported product, build, or user-visible runtime performance, or contains deletion, an irreversible action, last-consumer removal, or unresolved evidence.", "Hand off a Formal Review candidate only after the latest complete report returns `Review Result: Mergeable`; include that report when the user requested review output or when it materially explains a high-risk decision."]}]
+policy_assertions = [{source = "agents", statements = ["Use its bounded self-review unless a listed Formal Review trigger applies; fix safe in-scope findings and hand off only after the required delta audit, checks, and review pass."]}, {source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode when the user requests a PR, mergeability, or formal review; the task targets or backs a PR; or the candidate changes a public API, SPI, externally visible contract, module dependency, security or concurrency behavior, supported product, build, or user-visible runtime performance, or contains deletion, an irreversible action, last-consumer removal, or unresolved evidence.", "Hand off a Formal Review candidate only after the latest complete report returns `Review Result: Mergeable`, and include the complete Formal Review report in the final handoff."]}]
 critical = true
 
 [[cases]]
@@ -2568,26 +2588,27 @@ required_reasons = ["safe_in_scope_review_finding", "pre_handoff_review_required
 required_summary_terms = ["Spotless", "Checkstyle"]
 required_summary_term_groups = [["Formal Review", "review"], ["Mergeable", "passing"]]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["Fix every safe in-scope required finding, repeat the task-delta audit, rerun invalidated checks, and repeat the applicable review.", "Hand off a Formal Review candidate only after the latest complete report returns `Review Result: Mergeable`; include that report when the user requested review output or when it materially explains a high-risk decision."]}, {source = "code-verification", statements = ["Capture high-volume output according to `.codex/context/token-efficiency.md`; report commands, exit codes, and decisive log excerpts instead of dumping raw logs.", "Any later edit invalidates only the Spotless, Checkstyle, or RAT evidence whose governed files or configuration changed; rerun those checks before the applicable review."]}]
+policy_assertions = [{source = "change-completion", statements = ["Fix every safe in-scope required finding, repeat the task-delta audit, rerun invalidated checks, and repeat the applicable review.", "Hand off a Formal Review candidate only after the latest complete report returns `Review Result: Mergeable`, and include the complete Formal Review report in the final handoff."]}, {source = "code-verification", statements = ["Capture high-volume output according to `.codex/context/token-efficiency.md`; report commands, exit codes, and decisive log excerpts instead of dumping raw logs.", "Any later edit invalidates only the Spotless, Checkstyle, or RAT evidence whose governed files or configuration changed; rerun those checks before the applicable review."]}]
 critical = true
 
 [[cases]]
 id = "final_review_and_git_artifacts_are_separate"
 group = "operations"
-description = "Outputs task-file commit artifacts after the passing Formal Review was returned separately."
+description = "Includes the complete passing Formal Review with task-file commit artifacts in the final handoff."
 phase = "completion output gate"
 ordinary_loop = true
 profile = "code-write"
-prompt = "The latest `$review-pr` Formal Review of a standalone local task returned `Review Result: Mergeable`, and its complete formal report was already returned as a separate artifact. The only task-owned tracked files are `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`, neither contains unrelated hunks, and no Git write is authorized. Return only the proposed commit message and exact manual commit commands now."
+semantic_policy_assertions = true
+prompt = "The latest `$review-pr` Formal Review of a standalone local code task returned `Review Result: Mergeable` with zero blocking issues and no recommended changes. The only task-owned tracked files are `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`, neither contains unrelated hunks, and no Git write is authorized. Deliver the final handoff with the complete Formal Review report, the proposed commit message, and exact manual commit commands."
 decision = "proceed"
 required_actions = ["propose_commit_message"]
 allowed_actions = ["inspect_local", "propose_commit_message"]
 forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
 required_reasons = ["review_passed", "git_read_only"]
-required_summary_terms = ["git commit --dry-run --only", "git commit --only", "Foo.java", "FooTest.java"]
-forbidden_summary_terms = ["### Result", "### Evidence", "### Coverage"]
+required_summary_terms = ["### Result", "Review Result: Mergeable", "No changes recommended", "### Evidence", "### Coverage", "git commit --dry-run --only", "git commit --only", "Foo.java", "FooTest.java"]
+required_summary_term_groups = [["Blocking Issues: 0", "Blocking issue count: 0"]]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "agents", statements = ["For requested manual steps, use `git commit --dry-run --only`, then `git commit --only`, for exact task paths; prepend `git add --` only for new task files."]}, {source = "change-completion", statements = ["Provide manual Git commands only when the user requests them.", "Propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks, list a required `git add -- <new-task-paths>` first for untracked task files, and never execute a Git write without exact current-task authorization."]}]
+policy_assertions = [{source = "agents", statements = ["For requested manual steps, use `git commit --dry-run --only`, then `git commit --only`, for exact task paths; prepend `git add --` only for new task files."]}, {source = "change-completion", statements = ["Hand off a Formal Review candidate only after the latest complete report returns `Review Result: Mergeable`, and include the complete Formal Review report in the final handoff.", "Every code-writing handoff must explicitly report the completed code review result and review recommendations.", "State the blocking issue count and required changes, and explicitly state `No changes recommended` when no findings exist.", "Provide manual Git commands only when the user requests them.", "Propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks, list a required `git add -- <new-task-paths>` first for untracked task files, and never execute a Git write without exact current-task authorization."]}]
 critical = true
 
 [[cases]]
