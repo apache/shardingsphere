@@ -74,7 +74,8 @@ public final class ColumnMetaDataLoader {
                 String tableName = resultSet.getString(TABLE_NAME);
                 if (Objects.equals(tableNamePattern, tableName)) {
                     String columnName = resultSet.getString(COLUMN_NAME);
-                    columnTypes.add(resultSet.getInt(DATA_TYPE));
+                    int columnType = resultSet.getInt(DATA_TYPE);
+                    columnTypes.add(columnType);
                     primaryKeyFlags.add(primaryKeys.contains(columnName));
                     nullableFlags.add("YES".equals(resultSet.getString(IS_NULLABLE)));
                     columnNames.add(columnName);
