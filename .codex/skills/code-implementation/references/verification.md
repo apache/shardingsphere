@@ -19,6 +19,8 @@
 
 Run the narrowest meaningful checks first. Derive explicit Maven modules from changed owners, affected tests, and consuming runtime modules.
 
+Plan the verification route once per unchanged task state. Reuse a passing result while no relevant write, failure, scope change, configuration change, or new evidence invalidates it; do not repeat a check merely because the workflow reaches another phase. Combine compatible focused goals for the same owner set when their filters remain exact and failures remain attributable.
+
 Select the smallest route that covers the task risk:
 
 - Prose-only: run the owning policy or documentation validation; run Spotless only when it governs the changed file.
