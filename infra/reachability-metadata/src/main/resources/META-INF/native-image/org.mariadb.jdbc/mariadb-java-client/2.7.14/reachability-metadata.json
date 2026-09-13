@@ -1,0 +1,11 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "org.mariadb.jdbc.util.DefaultOptions"
+      },
+      "type": "org.mariadb.jdbc.util.Options",
+      "allPublicFields": true
+    }
+  ]
+}
