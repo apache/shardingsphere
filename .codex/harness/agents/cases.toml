@@ -1863,14 +1863,13 @@ profile = "code-write"
 semantic_policy_assertions = true
 prompt = "A routine authorized code task is complete. Its implementation, applicable verification, and bounded pre-handoff self-review are finished; the review found no required issues, and no Formal Review trigger applies. Deliver the final handoff. A response that only says the implementation is complete, tests passed, `Mergeable`, or gives a commit message is insufficient."
 decision = "proceed"
-required_actions = []
+required_actions = ["propose_commit_message"]
 allowed_actions = ["propose_commit_message"]
 forbidden_actions = ["edit_code", "edit_non_code"]
 required_reasons = []
-required_summary_terms = ["No changes recommended"]
-required_summary_term_groups = [["Review Result", "review passed", "review result"], ["Blocking Issues: 0", "0 blocking issues"]]
+required_summary_terms = ["Review Result:", "Blocking Issues: 0", "Required Changes:", "Review Recommendations:", "No changes recommended", "Commit Message:"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["Every code-writing handoff must explicitly report the completed code review result and review recommendations.", "State the blocking issue count and required changes, and explicitly state `No changes recommended` when no findings exist.", "Do not omit the review output merely because the review was performed internally.", "Validation results, passing tests, a bare `Review Result: Mergeable`, or commit artifacts do not substitute for review recommendations."]}]
+policy_assertions = [{source = "change-completion", statements = ["Every code-writing handoff must explicitly report the completed code review result and review recommendations.", "Put a value on separate `Review Result:`, `Blocking Issues:`, `Required Changes:`, and `Review Recommendations:` lines so the project Stop hook can validate the handoff after `apply_patch` changes a non-prose file.", "State the blocking issue count and required changes, and explicitly state `No changes recommended` when no findings exist.", "Include a non-empty `Commit Message:` line when the blocking issue count is zero, and omit it when the task cannot be completed.", "Do not omit the review output merely because the review was performed internally.", "Validation results, passing tests, a bare `Review Result: Mergeable`, or commit artifacts do not substitute for review recommendations."]}]
 critical = true
 
 [[cases]]
