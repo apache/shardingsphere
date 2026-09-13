@@ -46,9 +46,9 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public int getColumnCount() throws SQLException {
-        return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()
+        return ShardingSphereResultSetUtils.useExpandedProjections(sqlStatementContext, resultSetMetaData)
                 ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size()
-                : resultSetMetaData.getColumnCount();
+                : ShardingSphereResultSetUtils.getVisibleColumnCount(sqlStatementContext, resultSetMetaData);
     }
     
     @Override
@@ -88,20 +88,20 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnLabel(final int column) throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
+        if (ShardingSphereResultSetUtils.useExpandedProjections(sqlStatementContext, resultSetMetaData)) {
             checkColumnIndex(column);
             return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1).getColumnLabel();
         }
-        return resultSetMetaData.getColumnLabel(column);
+        return resultSetMetaData.getColumnLabel(ShardingSphereResultSetUtils.getVisibleColumnIndex(sqlStatementContext, resultSetMetaData, column));
     }
     
     @Override
     public String getColumnName(final int column) throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
+        if (ShardingSphereResultSetUtils.useExpandedProjections(sqlStatementContext, resultSetMetaData)) {
             checkColumnIndex(column);
             return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1).getColumnName();
         }
-        return resultSetMetaData.getColumnName(column);
+        return resultSetMetaData.getColumnName(ShardingSphereResultSetUtils.getVisibleColumnIndex(sqlStatementContext, resultSetMetaData, column));
     }
     
     private void checkColumnIndex(final int column) throws SQLException {
