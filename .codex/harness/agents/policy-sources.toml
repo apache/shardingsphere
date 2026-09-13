@@ -118,6 +118,27 @@ semantic = false
 references = []
 
 [[sources]]
+id = "code-handoff-hook-config"
+path = ".codex/config.toml"
+kind = "harness"
+semantic = false
+references = [".codex/harness/agents/code_handoff_hook.py"]
+
+[[sources]]
+id = "code-handoff-hook"
+path = ".codex/harness/agents/code_handoff_hook.py"
+kind = "harness"
+semantic = false
+references = []
+
+[[sources]]
+id = "code-handoff-hook-tests"
+path = ".codex/harness/agents/test_code_handoff_hook.py"
+kind = "harness"
+semantic = false
+references = [".codex/harness/agents/code_handoff_hook.py"]
+
+[[sources]]
 id = "policy-source-manifest"
 path = ".codex/harness/agents/policy-sources.toml"
 kind = "harness"
