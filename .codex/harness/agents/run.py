@@ -240,6 +240,17 @@ HIGH_RISK_ACTIONS = frozenset({
 })
 DEFAULT_PROJECT_DOC_MAX_BYTES = 32768
 MANIFEST_NAME = "policy-sources.toml"
+POLICY_SOURCE_GLOBS = (
+    "AGENTS.md",
+    "CODE_OF_CONDUCT.md",
+    ".codex/context/*.md",
+    ".codex/harness/agents/*.md",
+    ".codex/harness/agents/*.py",
+    ".codex/harness/agents/*.toml",
+    ".codex/skills/*/SKILL.md",
+    ".codex/skills/*/agents/openai.yaml",
+    ".codex/skills/*/references/**/*.md",
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -282,8 +293,8 @@ def parse_args() -> argparse.Namespace:
         help="Require focused repeatable non-regression against the original same-case V0.",
     )
     parser.add_argument(
-        "--mode", choices=("semantic", "trace", "validate", "all"), default="semantic",
-        help="Run semantic canaries, exact-path read traces, deterministic validation, or all runtime checks.",
+        "--mode", choices=("semantic", "trace", "validate", "all"), default="validate",
+        help="Run semantic canaries, exact-path read traces, deterministic validation (default), or all runtime checks.",
     )
     parser.add_argument(
         "--profile", action="append", dest="profiles",
@@ -464,6 +475,18 @@ def ensure_regular_source(repo_root: Path, relative_path: PurePosixPath) -> Path
     return candidate
 
 
+def discover_policy_source_paths(repo_root: Path) -> set[str]:
+    """Discover policy-like repository files that must be registered explicitly."""
+    result = set()
+    for pattern in POLICY_SOURCE_GLOBS:
+        result.update(
+            path.relative_to(repo_root).as_posix()
+            for path in repo_root.glob(pattern)
+            if path.is_file()
+        )
+    return result
+
+
 def load_policy_manifest(repo_root: Path, manifest_path: Path | None = None) -> dict[str, Any]:
     """Load, validate, inventory, and hash the exact policy-source bundle."""
     override_path = repo_root / "AGENTS.override.md"
@@ -538,6 +561,12 @@ def load_policy_manifest(repo_root: Path, manifest_path: Path | None = None) -> 
         })
     source_ids = {each["id"] for each in sources}
     source_paths = {each["path"] for each in sources}
+    unregistered_policy_paths = discover_policy_source_paths(repo_root).difference(source_paths)
+    if unregistered_policy_paths:
+        raise ValueError(
+            "Policy-like files are absent from the manifest: "
+            f"{', '.join(sorted(unregistered_policy_paths))}"
+        )
     for source in sources:
         unknown_references = set(source["references"]).difference(source_paths)
         if unknown_references:

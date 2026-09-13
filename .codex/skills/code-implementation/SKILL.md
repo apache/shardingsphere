@@ -32,6 +32,6 @@ Specialized repository Skills compose with this Skill when they write code. Thei
 5. After each coherent precise edit, inspect every path and hunk the action may have changed. Inspect immediately after a formatter, generator, bulk replacement, or other action whose write set is not exact. Stop at the existing scope or authority gate when a required change lies outside the frozen boundary.
 6. Complete this step when Coding Standards applies. After the last implementation write, reapply the Coding Standards Implementation Guidance Mode to affected files and complete its final manual checklist recheck before final verification. Any later write returns the affected files and rules to this step.
 7. Run the narrowest meaningful checks under `.codex/skills/code-implementation/references/verification.md`, then verify functional and performance non-regression with evidence proportionate to the classified risk.
-8. Complete the repository completion loop, fix every safe in-scope required finding, rerun invalidated checks, and hand off only after a complete review finds no new required issue.
+8. After verification, follow `.codex/context/change-completion.md` as the sole completion-loop orchestration owner.
 
 Do not treat a passing build, test, formatter, benchmark, or review tool as proof by itself. Judge the requested behavior, supported existing behavior, contracts, architecture, and affected performance paths directly.

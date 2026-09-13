@@ -72,7 +72,7 @@ Before editing, restate the goal, non-goals, forbidden tools, and output constra
 
 ### Architecture Change Gate
 
-Architecture changes include public contracts, SPIs, extension or loading contracts, `final`, visibility, inheritance, constructors, signatures, module dependencies, and shared ownership. Before editing, report ownership, reuse or delegation, compatibility, and minimum files and tests. Make only the requested change; confirm materially different choices and always gate an SPI change.
+Architecture changes include public contracts, SPIs, extension or loading contracts, module dependencies, shared ownership, and changes to `final`, visibility, inheritance, constructors, or signatures at a public or shared module boundary. A private internal signature or constructor change is not architectural by itself; still verify its owner, callers, compatibility, and minimum files and tests under the ordinary scope rules. Before an architecture edit, report ownership, reuse or delegation, compatibility, and minimum files and tests. Make only the requested change; confirm materially different choices and always gate an SPI change.
 
 If the user rejects a design, stop patching it. Remove only its proven task changes, preserve unrelated work, and redesign from the last confirmed boundary. Use precise edits unless the task authorizes an exact Git restore.
 

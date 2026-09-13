@@ -19,6 +19,15 @@
 
 Run the narrowest meaningful checks first. Derive explicit Maven modules from changed owners, affected tests, and consuming runtime modules.
 
+Select the smallest route that covers the task risk:
+
+- Prose-only: run the owning policy or documentation validation; run Spotless only when it governs the changed file.
+- Test-only: run the focused changed tests, then the owning scoped test suite when focused execution cannot cover the affected contract.
+- Ordinary production, script, build, or behavior configuration: run focused owner checks plus the smallest affected-consumer checks and applicable style gates.
+- Public-contract, cross-module, security, concurrency, deletion, irreversible, or credible performance-risk work: add the applicable compatibility, consumer, non-regression, and completion gates to the ordinary route.
+
+For repository policy or harness changes, prefer the focused harness unit tests, `run.py --mode validate`, affected source-read traces, and only the semantic cases required by `.codex/harness/agents/semantic-verification.md`.
+
 - Focused test: `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=<FullyQualifiedTestClassName> -Dsurefire.failIfNoSpecifiedTests=false test`
 - Scoped tests: `./mvnw test -pl <explicit-module-set>`
 - Scoped package: `./mvnw -pl <explicit-module-set> -DskipTests package`

@@ -56,6 +56,13 @@ class RunTest(unittest.TestCase):
             "critical": True,
         }
 
+    def test_bare_invocation_defaults_to_validate_without_semantic_execution(self) -> None:
+        with tempfile.TemporaryDirectory() as directory, patch(
+                "sys.argv", ["run.py", "--output-dir", str(Path(directory) / "output")]
+        ), patch.object(run, "run_cases") as run_cases, patch("builtins.print"):
+            self.assertEqual(0, run.main())
+        run_cases.assert_not_called()
+
     @staticmethod
     def _create_case_result(case: dict[str, Any], summary: str) -> dict[str, Any]:
         return {
@@ -1013,7 +1020,7 @@ class RunTest(unittest.TestCase):
                 patch("builtins.print"),
             )
             with patch("sys.argv", [
-                    "run.py", "--case", case["id"], "--output-dir", str(baseline_dir)
+                    "run.py", "--mode", "semantic", "--case", case["id"], "--output-dir", str(baseline_dir)
             ]), patch.object(
                     run, "run_cases", return_value=(
                         0, 1.0, {"results": [passing_result]}, passing_evaluations
@@ -1021,7 +1028,7 @@ class RunTest(unittest.TestCase):
             ), common_patches[0], common_patches[1]:
                 self.assertEqual(0, run.main())
             with patch("sys.argv", [
-                    "run.py", "--case", case["id"], "--transport-check",
+                    "run.py", "--mode", "semantic", "--case", case["id"], "--transport-check",
                     "--baseline", str(baseline_dir), "--output-dir", str(output_dir)
             ]), patch.object(
                     run, "run_cases", return_value=(
@@ -1725,6 +1732,23 @@ references = []
             )
             with self.assertRaisesRegex(ValueError, "must belong to a routing profile"):
                 run.load_policy_manifest(root, manifest_path)
+
+    def test_load_policy_manifest_rejects_unregistered_skill_policy_files(self) -> None:
+        for relative_path in (
+                ".codex/context/example.md",
+                ".codex/harness/agents/example.md",
+                ".codex/skills/example/SKILL.md",
+                ".codex/skills/example/agents/openai.yaml",
+                ".codex/skills/example/references/rules/example.md",
+        ):
+            with self.subTest(path=relative_path), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                manifest_path = self.create_bundle(root)
+                policy_path = root / relative_path
+                policy_path.parent.mkdir(parents=True, exist_ok=True)
+                policy_path.write_text("Policy.\n", encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, "absent from the manifest"):
+                    run.load_policy_manifest(root, manifest_path)
 
     def test_load_policy_manifest_rejects_undeclared_manifest_path_in_source(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

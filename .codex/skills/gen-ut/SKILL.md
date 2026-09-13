@@ -2,7 +2,7 @@
 name: gen-ut
 description: >-
   Generate standard unit tests for one or more target classes in Apache ShardingSphere;
-  by default, target 100% class/line/branch coverage and pass quality gates;
+  cover requested behavior and every affected SUT-owned branch, enforce an explicitly requested numeric coverage target, and pass quality gates;
   perform explicit merge analysis, suitability filtering, and refactor optimization for parameterized tests.
 ---
 
@@ -112,7 +112,7 @@ Use exactly one state:
 - `R10-C`: an out-of-scope failure is evidenced under `R11`.
 - `R10-D`: work remains; continue instead of claiming completion.
 
-Priority is `INPUT_BLOCKED > B > C > A > D`. Default coverage is 100% CLASS, LINE, and BRANCH unless the user lowers it.
+Priority is `INPUT_BLOCKED > B > C > A > D`. By default, cover the requested behavior and every affected SUT-owned branch. Apply a numeric CLASS, LINE, or BRANCH target only when the user states it; an explicit 100% target remains mandatory.
 
 ### R11: Failures
 
