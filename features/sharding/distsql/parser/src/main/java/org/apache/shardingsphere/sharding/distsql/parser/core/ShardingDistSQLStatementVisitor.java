@@ -298,8 +298,9 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitShardingTableRule(final ShardingTableRuleContext ctx) {
         KeyGenerateStrategySegment keyGenerateSegment = null == ctx.keyGenerateDefinition() ? null : (KeyGenerateStrategySegment) visit(ctx.keyGenerateDefinition());
-        AuditStrategySegment auditStrategySegment =
-                null == ctx.auditDefinition() ? null : (AuditStrategySegment) visitAuditDefinition(IdentifierValueUtils.getValue(ctx.tableName()), ctx.auditDefinition());
+        AuditStrategySegment auditStrategySegment = null == ctx.auditDefinition()
+                ? null
+                : (AuditStrategySegment) visitAuditDefinition(IdentifierValueUtils.getValue(ctx.tableName()), ctx.auditDefinition());
         TableRuleSegment result = new TableRuleSegment(IdentifierValueUtils.getValue(ctx.tableName()), getDataNodes(ctx.dataNodes()), keyGenerateSegment, auditStrategySegment);
         Optional.ofNullable(ctx.tableStrategy()).ifPresent(optional -> result.setTableStrategySegment((ShardingStrategySegment) visit(ctx.tableStrategy().shardingStrategy())));
         Optional.ofNullable(ctx.databaseStrategy()).ifPresent(optional -> result.setDatabaseStrategySegment((ShardingStrategySegment) visit(ctx.databaseStrategy().shardingStrategy())));
@@ -328,10 +329,11 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitShardingAutoTableRule(final ShardingAutoTableRuleContext ctx) {
-        AutoTableRuleSegment result = new AutoTableRuleSegment(IdentifierValueUtils.getValue(ctx.tableName()), getResources(ctx.storageUnits()));
-        Optional.ofNullable(ctx.keyGenerateDefinition()).ifPresent(optional -> result.setKeyGenerateStrategySegment((KeyGenerateStrategySegment) visit(ctx.keyGenerateDefinition())));
-        Optional.ofNullable(ctx.auditDefinition()).ifPresent(optional -> result.setAuditStrategySegment((AuditStrategySegment) visitAuditDefinition(IdentifierValueUtils.getValue(ctx.tableName()),
-                ctx.auditDefinition())));
+        KeyGenerateStrategySegment keyGenerateSegment = null == ctx.keyGenerateDefinition() ? null : (KeyGenerateStrategySegment) visit(ctx.keyGenerateDefinition());
+        AuditStrategySegment auditStrategySegment = null == ctx.auditDefinition()
+                ? null
+                : (AuditStrategySegment) visitAuditDefinition(IdentifierValueUtils.getValue(ctx.tableName()), ctx.auditDefinition());
+        AutoTableRuleSegment result = new AutoTableRuleSegment(IdentifierValueUtils.getValue(ctx.tableName()), getResources(ctx.storageUnits()), keyGenerateSegment, auditStrategySegment);
         Optional.ofNullable(ctx.autoShardingColumnDefinition()).ifPresent(optional -> result.setShardingColumn(buildShardingColumn(ctx.autoShardingColumnDefinition())));
         Optional.ofNullable(ctx.algorithmDefinition()).ifPresent(optional -> result.setShardingAlgorithmSegment((AlgorithmSegment) visit(ctx.algorithmDefinition())));
         return result;
