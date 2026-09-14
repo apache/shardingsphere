@@ -46,6 +46,6 @@ public final class LinkedServerTableMapperRuleAttribute implements TableMapperRu
     
     @Override
     public Collection<String> getEnhancedTableNames() {
-        return logicalTableNames;
+        return Collections.emptySet();
     }
 }

@@ -30,6 +30,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LinkedServerRuleTest {
@@ -39,33 +40,44 @@ class LinkedServerRuleTest {
     @BeforeEach
     void setUp() {
         Map<String, String> tables = new LinkedHashMap<>();
-        tables.put("Department", "t_department");
-        tables.put("Employee", "t_employee");
+        tables.put("HumanResources.dbo.Department", "t_department");
+        tables.put("HumanResources.dbo.Employee", "t_employee");
         LinkedServerConfiguration server = new LinkedServerConfiguration("MyLinkedServer", "FIXTURE", tables);
         LinkedServerRuleConfiguration config = new LinkedServerRuleConfiguration(Arrays.asList(server));
         rule = new LinkedServerRule(config);
     }
-    
+
     @Test
     void assertFindLogicalTable() {
-        assertTrue(rule.findLogicalTable("MyLinkedServer", "Department").isPresent());
-        assertThat(rule.findLogicalTable("MyLinkedServer", "Department").get(), is("t_department"));
+        assertTrue(rule.findLogicalTable("MyLinkedServer", "HumanResources.dbo.Department").isPresent());
+        assertThat(rule.findLogicalTable("MyLinkedServer", "HumanResources.dbo.Department").get(), is("t_department"));
     }
-    
+
     @Test
     void assertFindLogicalTableCaseInsensitive() {
-        assertTrue(rule.findLogicalTable("mylinkedserver", "department").isPresent());
-        assertThat(rule.findLogicalTable("mylinkedserver", "department").get(), is("t_department"));
+        assertTrue(rule.findLogicalTable("mylinkedserver", "humanresources.dbo.department").isPresent());
+        assertThat(rule.findLogicalTable("mylinkedserver", "humanresources.dbo.department").get(), is("t_department"));
     }
-    
+
     @Test
     void assertFindLogicalTableWithNonExistentServer() {
-        assertFalse(rule.findLogicalTable("NonExistent", "Department").isPresent());
+        assertFalse(rule.findLogicalTable("NonExistent", "HumanResources.dbo.Department").isPresent());
     }
-    
+
     @Test
     void assertFindLogicalTableWithNonExistentTable() {
-        assertFalse(rule.findLogicalTable("MyLinkedServer", "NonExistent").isPresent());
+        assertFalse(rule.findLogicalTable("MyLinkedServer", "NonExistent.dbo.NonExistent").isPresent());
+    }
+
+    @Test
+    void assertDistinctCatalogSchemaWithSameTableName() {
+        Map<String, String> tables = new LinkedHashMap<>();
+        tables.put("HumanResources.dbo.Department", "t_hr_department");
+        tables.put("Sales.dbo.Department", "t_sales_department");
+        LinkedServerConfiguration server = new LinkedServerConfiguration("MultiSchemaServer", "FIXTURE", tables);
+        LinkedServerRule multiRule = new LinkedServerRule(new LinkedServerRuleConfiguration(Arrays.asList(server)));
+        assertThat(multiRule.findLogicalTable("MultiSchemaServer", "HumanResources.dbo.Department").get(), is("t_hr_department"));
+        assertThat(multiRule.findLogicalTable("MultiSchemaServer", "Sales.dbo.Department").get(), is("t_sales_department"));
     }
     
     @Test
@@ -95,5 +107,12 @@ class LinkedServerRuleTest {
         LinkedServerRule emptyRule = new LinkedServerRule(new LinkedServerRuleConfiguration(Collections.emptyList()));
         assertFalse(emptyRule.containsServer("Any"));
         assertFalse(emptyRule.findLogicalTable("Any", "Any").isPresent());
+    }
+
+    @Test
+    void assertBareTableNameRejected() {
+        Map<String, String> tables = new LinkedHashMap<>();
+        tables.put("Department", "t_department");
+        assertThrows(IllegalArgumentException.class, () -> new LinkedServerConfiguration("Server", "FIXTURE", tables));
     }
 }

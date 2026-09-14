@@ -51,18 +51,18 @@ public final class LinkedServerRule implements DatabaseRule {
     }
     
     /**
-     * Find logical table name by linked server name and remote table name.
+     * Find logical table name by linked server name and qualified remote table identity.
      *
      * @param serverName linked server name
-     * @param remoteTableName remote table name
+     * @param qualifiedRemoteTable fully qualified remote table identity (catalog.schema.table)
      * @return logical table name
      */
-    public Optional<String> findLogicalTable(final String serverName, final String remoteTableName) {
+    public Optional<String> findLogicalTable(final String serverName, final String qualifiedRemoteTable) {
         LinkedServerTable serverTable = servers.get(serverName);
         if (null == serverTable) {
             return Optional.empty();
         }
-        return serverTable.findLogicalTable(remoteTableName);
+        return serverTable.findLogicalTable(qualifiedRemoteTable);
     }
     
     /**

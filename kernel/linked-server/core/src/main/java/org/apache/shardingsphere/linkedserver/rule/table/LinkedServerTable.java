@@ -46,12 +46,12 @@ public final class LinkedServerTable {
     }
     
     /**
-     * Find logical table name by remote table name.
+     * Find logical table name by qualified remote table identity.
      *
-     * @param remoteTableName remote table name
+     * @param qualifiedRemoteTable fully qualified remote table identity (catalog.schema.table)
      * @return logical table name
      */
-    public Optional<String> findLogicalTable(final String remoteTableName) {
-        return Optional.ofNullable(tables.get(remoteTableName));
+    public Optional<String> findLogicalTable(final String qualifiedRemoteTable) {
+        return Optional.ofNullable(tables.get(qualifiedRemoteTable));
     }
 }

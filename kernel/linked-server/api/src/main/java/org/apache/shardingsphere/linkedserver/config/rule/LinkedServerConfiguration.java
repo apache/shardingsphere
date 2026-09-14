@@ -17,21 +17,35 @@
 
 package org.apache.shardingsphere.linkedserver.config.rule;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
 /**
  * Linked server configuration.
+ *
+ * <p>The {@code tables} map uses fully qualified remote table identities
+ * ({@code catalog.schema.table}) as keys and logical table names as values.
+ * Bare terminal table names are rejected to prevent ambiguous resolution
+ * when the same table name exists in different remote catalogs or schemas.</p>
  */
-@RequiredArgsConstructor
 @Getter
 public final class LinkedServerConfiguration {
-    
+
     private final String name;
-    
+
     private final String databaseType;
-    
+
     private final Map<String, String> tables;
+
+    public LinkedServerConfiguration(final String name, final String databaseType, final Map<String, String> tables) {
+        this.name = name;
+        this.databaseType = databaseType;
+        for (String key : tables.keySet()) {
+            Preconditions.checkArgument(key.contains("."),
+                    "Remote table identity '%s' in linked server '%s' must be fully qualified (catalog.schema.table), bare terminal names are not allowed.", key, name);
+        }
+        this.tables = tables;
+    }
 }
