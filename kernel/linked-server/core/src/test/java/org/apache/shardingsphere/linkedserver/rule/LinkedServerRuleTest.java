@@ -46,29 +46,29 @@ class LinkedServerRuleTest {
         LinkedServerRuleConfiguration config = new LinkedServerRuleConfiguration(Arrays.asList(server));
         rule = new LinkedServerRule(config);
     }
-
+    
     @Test
     void assertFindLogicalTable() {
         assertTrue(rule.findLogicalTable("MyLinkedServer", "HumanResources.dbo.Department").isPresent());
         assertThat(rule.findLogicalTable("MyLinkedServer", "HumanResources.dbo.Department").get(), is("t_department"));
     }
-
+    
     @Test
     void assertFindLogicalTableCaseInsensitive() {
         assertTrue(rule.findLogicalTable("mylinkedserver", "humanresources.dbo.department").isPresent());
         assertThat(rule.findLogicalTable("mylinkedserver", "humanresources.dbo.department").get(), is("t_department"));
     }
-
+    
     @Test
     void assertFindLogicalTableWithNonExistentServer() {
         assertFalse(rule.findLogicalTable("NonExistent", "HumanResources.dbo.Department").isPresent());
     }
-
+    
     @Test
     void assertFindLogicalTableWithNonExistentTable() {
         assertFalse(rule.findLogicalTable("MyLinkedServer", "NonExistent.dbo.NonExistent").isPresent());
     }
-
+    
     @Test
     void assertDistinctCatalogSchemaWithSameTableName() {
         Map<String, String> tables = new LinkedHashMap<>();
@@ -108,7 +108,7 @@ class LinkedServerRuleTest {
         assertFalse(emptyRule.containsServer("Any"));
         assertFalse(emptyRule.findLogicalTable("Any", "Any").isPresent());
     }
-
+    
     @Test
     void assertBareTableNameRejected() {
         Map<String, String> tables = new LinkedHashMap<>();

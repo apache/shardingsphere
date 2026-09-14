@@ -32,13 +32,13 @@ import java.util.Map;
  */
 @Getter
 public final class LinkedServerConfiguration {
-
+    
     private final String name;
-
+    
     private final String databaseType;
-
+    
     private final Map<String, String> tables;
-
+    
     public LinkedServerConfiguration(final String name, final String databaseType, final Map<String, String> tables) {
         this.name = name;
         this.databaseType = databaseType;

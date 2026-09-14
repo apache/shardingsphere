@@ -49,7 +49,7 @@ class YamlLinkedServerRuleConfigurationSwapperTest {
         assertThat(yamlServer.getDatabaseType(), is("SQLServer"));
         assertThat(yamlServer.getTables().get("HumanResources.dbo.Department"), is("t_department"));
     }
-
+    
     @Test
     void assertSwapToObject() {
         YamlLinkedServerConfiguration yamlServer = new YamlLinkedServerConfiguration();
