@@ -74,7 +74,7 @@ public final class DatabaseRuleConfigurationManager {
         }
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     private boolean isRuleConfigurationEmpty(final RuleConfiguration ruleConfig) {
         if (!(ruleConfig instanceof DatabaseRuleConfiguration)) {
             return false;
@@ -82,7 +82,7 @@ public final class DatabaseRuleConfigurationManager {
         return TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, ruleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) ruleConfig);
     }
     
-    private void refreshMetadata(final String databaseName, final RuleConfiguration ruleConfig, final boolean addRuleConfig, final Collection<ShardingSphereRule> rules) throws SQLException {
+    private void refreshMetadata(final String databaseName, final RuleConfiguration ruleConfig, final boolean addRuleConfig, final Collection<ShardingSphereRule> rules) {
         Collection<ShardingSphereRule> toBeRemovedRules = rules.stream().filter(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass())).collect(Collectors.toList());
         rules.removeAll(toBeRemovedRules);
         Collection<RuleConfiguration> ruleConfigs = rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
@@ -92,7 +92,7 @@ public final class DatabaseRuleConfigurationManager {
         refreshMetadata(databaseName, ruleConfigs, toBeRemovedRules);
     }
     
-    private void refreshMetadata(final String databaseName, final Collection<RuleConfiguration> ruleConfigs, final Collection<ShardingSphereRule> toBeRemovedRules) throws SQLException {
+    private void refreshMetadata(final String databaseName, final Collection<RuleConfiguration> ruleConfigs, final Collection<ShardingSphereRule> toBeRemovedRules) {
         metaDataContexts.update(new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).createByAlterRule(databaseName, ruleConfigs, metaDataContexts));
         closeOriginalRules(toBeRemovedRules);
     }

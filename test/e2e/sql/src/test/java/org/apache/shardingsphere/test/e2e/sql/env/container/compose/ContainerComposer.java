@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.sql.env.container.compose;
 import org.testcontainers.lifecycle.Startable;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -33,6 +34,21 @@ public interface ContainerComposer extends Startable {
      * @return target data source
      */
     DataSource getTargetDataSource();
+    
+    /**
+     * Get target data source.
+     *
+     * @param dataSourceName data source name
+     * @return target data source
+     */
+    DataSource getTargetDataSource(String dataSourceName);
+    
+    /**
+     * Get target data sources.
+     *
+     * @return target data sources
+     */
+    Collection<DataSource> getTargetDataSources();
     
     /**
      * Get actual data source map.

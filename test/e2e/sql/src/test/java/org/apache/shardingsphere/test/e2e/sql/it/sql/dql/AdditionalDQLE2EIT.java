@@ -118,7 +118,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
             return;
         }
         try (
-                Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                Connection connection = getEnvironmentEngine().getTargetDataSource(context.getAssertion().getTargetDataSourceName()).getConnection();
                 Statement statement = 2 == resultSetTypes.length ? connection.createStatement(resultSetTypes[0], resultSetTypes[1])
                         : connection.createStatement(resultSetTypes[0], resultSetTypes[1], resultSetTypes[2]);
                 ResultSet resultSet = statement.executeQuery(context.getSQL())) {
@@ -128,7 +128,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertExecuteQueryWithExpectedDataSource(final AssertionTestParameter testParam, final SQLE2EITContext context, final int... resultSetTypes) throws SQLException {
         try (
-                Connection actualConnection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                Connection actualConnection = getEnvironmentEngine().getTargetDataSource(context.getAssertion().getTargetDataSourceName()).getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 assertExecuteQueryForStatementWithResultSetTypes(context, actualConnection, expectedConnection, testParam, resultSetTypes);
@@ -177,7 +177,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
             return;
         }
         try (
-                Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                Connection connection = getEnvironmentEngine().getTargetDataSource(context.getAssertion().getTargetDataSourceName()).getConnection();
                 Statement statement = 2 == resultSetTypes.length ? connection.createStatement(resultSetTypes[0], resultSetTypes[1])
                         : connection.createStatement(resultSetTypes[0], resultSetTypes[1], resultSetTypes[2])) {
             assertTrue(statement.execute(context.getSQL()), "Not a query statement.");
@@ -188,7 +188,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertExecuteWithExpectedDataSource(final AssertionTestParameter testParam, final SQLE2EITContext context, final int... resultSetTypes) throws SQLException {
         try (
-                Connection actualConnection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                Connection actualConnection = getEnvironmentEngine().getTargetDataSource(context.getAssertion().getTargetDataSourceName()).getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 assertExecuteForStatementWithResultSetTypes(context, actualConnection, expectedConnection, testParam, resultSetTypes);

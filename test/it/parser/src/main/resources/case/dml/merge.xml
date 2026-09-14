@@ -50,6 +50,273 @@
         </error-logging>
     </merge>
 
+    <merge sql-case-id="merge_update_with_scalar_subquery" parameters="1, 1">
+        <target>
+            <simple-table name="t_user" alias="target" start-index="11" stop-index="23" />
+        </target>
+        <source>
+            <subquery-table alias="source" start-index="31" stop-index="65">
+                <subquery>
+                    <select>
+                        <from>
+                            <simple-table name="DUAL" start-index="54" stop-index="57" />
+                        </from>
+                        <projections start-index="39" stop-index="47">
+                            <parameter-marker-expression parameter-index="0" start-index="39" stop-index="47" />
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </source>
+        <expr>
+            <binary-operation-expression start-index="71" stop-index="101">
+                <left>
+                    <column name="user_id" start-index="71" stop-index="84">
+                        <owner name="target" start-index="71" stop-index="76" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="user_id" start-index="88" stop-index="101">
+                        <owner name="source" start-index="88" stop-index="93" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <update>
+            <set start-index="133" stop-index="202">
+                <assignment start-index="133" stop-index="202">
+                    <column name="email" start-index="133" stop-index="144">
+                        <owner name="target" start-index="133" stop-index="138" />
+                    </column>
+                    <assignment-value>
+                        <subquery text="(SELECT MAX(u.email) FROM t_user u WHERE u.user_id &lt; ?)" start-index="148" stop-index="202">
+                            <select>
+                                <from>
+                                    <simple-table name="t_user" alias="u" start-index="174" stop-index="181" />
+                                </from>
+                                <projections start-index="156" stop-index="167">
+                                    <aggregation-projection type="MAX" expression="MAX(u.email)" start-index="156" stop-index="167" />
+                                </projections>
+                                <where start-index="183" stop-index="201">
+                                    <expr>
+                                        <binary-operation-expression start-index="189" stop-index="201">
+                                            <left>
+                                                <column name="user_id" start-index="189" stop-index="197">
+                                                    <owner name="u" start-index="189" stop-index="189" />
+                                                </column>
+                                            </left>
+                                            <operator>&lt;</operator>
+                                            <right>
+                                                <parameter-marker-expression parameter-index="1" start-index="201" stop-index="201" />
+                                            </right>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </select>
+                        </subquery>
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </merge>
+
+    <merge sql-case-id="merge_insert_with_scalar_subquery" parameters="1, 1">
+        <target>
+            <simple-table name="t_user" alias="target" start-index="11" stop-index="23" />
+        </target>
+        <source>
+            <subquery-table alias="source" start-index="31" stop-index="65">
+                <subquery>
+                    <select>
+                        <from>
+                            <simple-table name="DUAL" start-index="54" stop-index="57" />
+                        </from>
+                        <projections start-index="39" stop-index="47">
+                            <parameter-marker-expression parameter-index="0" start-index="39" stop-index="47" />
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </source>
+        <expr>
+            <binary-operation-expression start-index="71" stop-index="101">
+                <left>
+                    <column name="user_id" start-index="71" stop-index="84">
+                        <owner name="target" start-index="71" stop-index="76" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="user_id" start-index="88" stop-index="101">
+                        <owner name="source" start-index="88" stop-index="93" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <insert>
+            <columns start-index="133" stop-index="148">
+                <column name="user_id" start-index="134" stop-index="140" />
+                <column name="email" start-index="143" stop-index="147" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <column name="user_id" start-index="158" stop-index="171">
+                            <owner name="source" start-index="158" stop-index="163" />
+                        </column>
+                    </assignment-value>
+                    <assignment-value>
+                        <subquery text="(SELECT MAX(u.email) FROM t_user u WHERE u.user_id &lt; ?)" start-index="174" stop-index="228">
+                            <select>
+                                <from>
+                                    <simple-table name="t_user" alias="u" start-index="200" stop-index="207" />
+                                </from>
+                                <projections start-index="182" stop-index="193">
+                                    <aggregation-projection type="MAX" expression="MAX(u.email)" start-index="182" stop-index="193" />
+                                </projections>
+                                <where start-index="209" stop-index="227">
+                                    <expr>
+                                        <binary-operation-expression start-index="215" stop-index="227">
+                                            <left>
+                                                <column name="user_id" start-index="215" stop-index="223">
+                                                    <owner name="u" start-index="215" stop-index="215" />
+                                                </column>
+                                            </left>
+                                            <operator>&lt;</operator>
+                                            <right>
+                                                <parameter-marker-expression parameter-index="1" start-index="227" stop-index="227" />
+                                            </right>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </select>
+                        </subquery>
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </merge>
+
+    <merge sql-case-id="merge_with_system_datetime_functions" parameters="1">
+        <target>
+            <simple-table name="t_user" alias="target" start-index="11" stop-index="23" />
+        </target>
+        <source>
+            <subquery-table alias="source" start-index="31" stop-index="65">
+                <subquery>
+                    <select>
+                        <from>
+                            <simple-table name="DUAL" start-index="54" stop-index="57" />
+                        </from>
+                        <projections start-index="39" stop-index="47">
+                            <parameter-marker-expression parameter-index="0" start-index="39" stop-index="47" />
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </source>
+        <expr>
+            <binary-operation-expression start-index="71" stop-index="101">
+                <left>
+                    <column name="user_id" start-index="71" stop-index="84">
+                        <owner name="target" start-index="71" stop-index="76" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="user_id" start-index="88" stop-index="101">
+                        <owner name="source" start-index="88" stop-index="93" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <update>
+            <set start-index="133" stop-index="162">
+                <assignment start-index="133" stop-index="162">
+                    <column name="creation_date" start-index="133" stop-index="152">
+                        <owner name="target" start-index="133" stop-index="138" />
+                    </column>
+                    <assignment-value>
+                        <function function-name="SYSDATE" text="SYSDATE" start-index="156" stop-index="162" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+        <insert>
+            <columns start-index="193" stop-index="216">
+                <column name="user_id" start-index="194" stop-index="200" />
+                <column name="creation_date" start-index="203" stop-index="215" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <column name="user_id" start-index="226" stop-index="239">
+                            <owner name="source" start-index="226" stop-index="231" />
+                        </column>
+                    </assignment-value>
+                    <assignment-value>
+                        <function function-name="CAST" text="CAST(SYSTIMESTAMP AS TIMESTAMP)" start-index="242" stop-index="272">
+                            <parameter>
+                                <function function-name="SYSTIMESTAMP" text="SYSTIMESTAMP" start-index="247" stop-index="258" />
+                            </parameter>
+                            <parameter>
+                                <data-type value="TIMESTAMP" start-index="263" stop-index="271" />
+                            </parameter>
+                        </function>
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </merge>
+
+    <merge sql-case-id="merge_with_quoted_system_datetime_column" parameters="1">
+        <target>
+            <simple-table name="t_user" alias="target" start-index="11" stop-index="23" />
+        </target>
+        <source>
+            <subquery-table alias="source" start-index="31" stop-index="65">
+                <subquery>
+                    <select>
+                        <from>
+                            <simple-table name="DUAL" start-index="54" stop-index="57" />
+                        </from>
+                        <projections start-index="39" stop-index="47">
+                            <parameter-marker-expression parameter-index="0" start-index="39" stop-index="47" />
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </source>
+        <expr>
+            <binary-operation-expression start-index="71" stop-index="101">
+                <left>
+                    <column name="user_id" start-index="71" stop-index="84">
+                        <owner name="target" start-index="71" stop-index="76" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="user_id" start-index="88" stop-index="101">
+                        <owner name="source" start-index="88" stop-index="93" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <update>
+            <set start-index="133" stop-index="164">
+                <assignment start-index="133" stop-index="164">
+                    <column name="creation_date" start-index="133" stop-index="152">
+                        <owner name="target" start-index="133" stop-index="138" />
+                    </column>
+                    <assignment-value>
+                        <column name="SYSDATE" start-delimiter="&quot;" end-delimiter="&quot;" start-index="156" stop-index="164" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </merge>
+
     <merge sql-case-id="merge_into_table_using_table" >
         <target>
             <simple-table name="people_target" start-index="11" stop-index="23" />

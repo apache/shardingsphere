@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.adapter.impl;
 
+import com.google.common.base.Strings;
 import io.netty.channel.ChannelFuture;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +60,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -67,7 +69,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ShardingSphere proxy embedded container.
@@ -87,7 +89,7 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
     
     private final int proxyPort;
     
-    private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
+    private final Map<String, DataSource> targetDataSources = new ConcurrentHashMap<>();
     
     @Getter
     private final Set<Startable> dependencies = new HashSet<>();
@@ -240,13 +242,24 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
     
     @Override
     public DataSource getTargetDataSource(final String serverLists) {
-        DataSource dataSource = targetDataSourceProvider.get();
-        if (null == dataSource) {
-            StorageContainerConnectOption storageContainerConnectOption = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption();
-            targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(storageContainerConnectOption.getURL(
-                    "127.0.0.1", getProxyPort(), config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2));
-        }
-        return targetDataSourceProvider.get();
+        return getTargetDataSource(serverLists, config.getProxyDataSourceName());
+    }
+    
+    @Override
+    public DataSource getTargetDataSource(final String serverLists, final String dataSourceName) {
+        String effectiveDataSourceName = Strings.isNullOrEmpty(dataSourceName) ? config.getProxyDataSourceName() : dataSourceName;
+        return targetDataSources.computeIfAbsent(effectiveDataSourceName, this::createTargetDataSource);
+    }
+    
+    private DataSource createTargetDataSource(final String dataSourceName) {
+        StorageContainerConnectOption storageContainerConnectOption = DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption();
+        return StorageContainerUtils.generateDataSource(storageContainerConnectOption.getURL(
+                "127.0.0.1", getProxyPort(), dataSourceName), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2);
+    }
+    
+    @Override
+    public Collection<DataSource> getTargetDataSources() {
+        return targetDataSources.values();
     }
     
     @Override

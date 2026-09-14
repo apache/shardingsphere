@@ -19,6 +19,17 @@
 
 Run the narrowest meaningful checks first. Derive explicit Maven modules from changed owners, affected tests, and consuming runtime modules.
 
+Plan the verification route once per unchanged task state. Reuse a passing result while no relevant write, failure, scope change, configuration change, or new evidence invalidates it; do not repeat a check merely because the workflow reaches another phase. Combine compatible focused goals for the same owner set when their filters remain exact and failures remain attributable.
+
+Select the smallest route that covers the task risk:
+
+- Prose-only: run the owning policy or documentation validation; run Spotless only when it governs the changed file.
+- Test-only: run the focused changed tests, then the owning scoped test suite when focused execution cannot cover the affected contract.
+- Ordinary production, script, build, or behavior configuration: run focused owner checks plus the smallest affected-consumer checks and applicable style gates.
+- Public-contract, cross-module, security, concurrency, deletion, irreversible, or credible performance-risk work: add the applicable compatibility, consumer, non-regression, and completion gates to the ordinary route.
+
+For repository policy or harness changes, prefer the focused harness unit tests, `run.py --mode validate`, affected source-read traces, and only the semantic cases required by `.codex/harness/agents/semantic-verification.md`.
+
 - Focused test: `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=<FullyQualifiedTestClassName> -Dsurefire.failIfNoSpecifiedTests=false test`
 - Scoped tests: `./mvnw test -pl <explicit-module-set>`
 - Scoped package: `./mvnw -pl <explicit-module-set> -DskipTests package`
@@ -31,14 +42,15 @@ Keep background unit tests under 60 seconds. Capture high-volume output accordin
 
 For every user-forbidden tool, API, assertion, or pattern, run a scoped final search and report the command and result. Do not rely only on plan compliance.
 
-After the last code-affecting action and before the pre-handoff Formal Review, run both Spotless and Checkstyle for every applicable task-changed code file; run Spotless for a documentation-only change when the configured formatter governs that file.
+After the last code-affecting action and before the applicable pre-handoff review, run read-only Spotless and Checkstyle checks for every applicable task-changed code file; run Spotless for a documentation-only change only when the configured formatter governs that file.
 
-After the last file-changing action and before the pre-handoff Formal Review, run Apache RAT when applicable.
+After the last file-changing action and before the applicable pre-handoff review, run Apache RAT when applicable.
 
-1. Skip Apache RAT only when `src/resources/rat.txt` is unchanged and excludes every task-changed file; this includes a Markdown-only task. Otherwise, run `./mvnw apache-rat:check -Pcheck -T1C` from the repository root after the last write. A nonzero or inconclusive RAT result blocks Formal Review and handoff; fix only in-scope violations and stop at the scope gate for an unrelated violation.
-2. Resolve the exact task-changed files governed by Spotless and their owning Maven projects, then run `./mvnw -pl <explicit-owner> -DspotlessFiles='<comma-separated exact absolute-path regular expressions>' spotless:apply -Pcheck -T1C` for each smallest owner set. Construct each regular expression from the current workspace and repository-relative task path without hard-coding a local workspace path, and ensure it can match only an allowlisted task file before running this file-modifying goal.
-3. For production or test Java changes, run `./mvnw -pl <explicit-owner> -Dcheckstyle.includes='<comma-separated source-root-relative task files>' -Dcheckstyle.includeResources=false -Dcheckstyle.includeTestResources=false checkstyle:check -Pcheck -T1C` once per owning Maven project. For a changed resource or project-rule file governed by Checkstyle, use its exact supported resource filter; if the configured plugin cannot isolate that file, stop and report the minimum unavoidable scope instead of silently widening the check.
-4. Treat a filtered command as passing only after its output and the post-command task-delta inspection prove that every applicable task file was selected, no non-allowlisted file was written, and the command exited successfully. A successful command that matched no intended file is not evidence.
-5. Do not manually reformat afterward. Any later edit invalidates the affected Spotless and Checkstyle evidence and requires both applicable checks to run again before another Formal Review. It also invalidates Apache RAT evidence when the later edit changes `src/resources/rat.txt` or a RAT-covered file.
+1. Run `./mvnw apache-rat:check -Pcheck -T1C` from the repository root when the task adds a file that is not unambiguously excluded by an existing `src/resources/rat.txt` pattern, changes a license header, changes RAT/POM configuration, or explicitly requires CI-equivalent verification. When every new file matches an explicit existing RAT exclusion, record each exact path and matching pattern and skip full RAT; an ambiguous match requires RAT. A nonzero or inconclusive required result blocks review and handoff; fix only in-scope violations.
+2. Resolve the exact task-changed files governed by Spotless or Checkstyle and their smallest owning Maven project sets. When both tools govern the same owner set, run them once with both exact filters: `./mvnw -pl <explicit-owner-set> -DspotlessFiles='<comma-separated exact absolute-path regular expressions>' -Dcheckstyle.includes='<comma-separated source-root-relative task files>' -Dcheckstyle.includeResources=false -Dcheckstyle.includeTestResources=false spotless:check checkstyle:check -Pcheck -T1C`. When the owner sets differ or only one tool applies, run the applicable goal with the same exact filter in a separate narrow command. Construct Spotless expressions from the current workspace and task path without hard-coding a local workspace path, and ensure every filter selects only allowlisted files.
+3. Run `spotless:apply` only after `spotless:check` reports an in-scope formatting failure and the user authorizes every file it can modify. Inspect every resulting hunk and rerun the same `spotless:check`; do not use a modifying formatter as the default verification path.
+4. For production or test Java changes not already checked by the combined command, run `./mvnw -pl <explicit-owner> -Dcheckstyle.includes='<comma-separated source-root-relative task files>' -Dcheckstyle.includeResources=false -Dcheckstyle.includeTestResources=false checkstyle:check -Pcheck -T1C` once per owning Maven project. For a changed resource or project-rule file governed by Checkstyle, use its exact supported resource filter; if the configured plugin cannot isolate that file, stop and report the minimum unavoidable scope instead of silently widening the check.
+5. Treat a filtered command as passing only after its output and the post-command task-delta inspection prove that every applicable task file was selected, no non-allowlisted file was written, and the command exited successfully. A successful command that matched no intended file is not evidence.
+6. Any later edit invalidates only the Spotless, Checkstyle, or RAT evidence whose governed files or configuration changed; rerun those checks before the applicable review.
 
 Record every required command, exit code, decisive result, and remaining unverified path. A required check with missing, incomparable, unstable, or inconclusive evidence is not a pass.

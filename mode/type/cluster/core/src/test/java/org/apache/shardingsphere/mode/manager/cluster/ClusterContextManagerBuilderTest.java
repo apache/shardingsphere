@@ -70,12 +70,9 @@ class ClusterContextManagerBuilderTest {
     }
     
     private void assertBuild(final InstanceMetaData instanceMetaData) throws SQLException {
-        ContextManager actual = builder.build(new ContextManagerBuilderParameter(createModeConfiguration(),
+        ModeConfiguration modeConfig = new ModeConfiguration("CLUSTER", new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()));
+        ContextManager actual = builder.build(new ContextManagerBuilderParameter(modeConfig,
                 Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), new Properties(), instanceMetaData), mock(EventBusContext.class));
         assertThat(actual.getComputeNodeInstanceContext().getInstance().getMetaData(), is(instanceMetaData));
-    }
-    
-    private static ModeConfiguration createModeConfiguration() {
-        return new ModeConfiguration("CLUSTER", new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()));
     }
 }

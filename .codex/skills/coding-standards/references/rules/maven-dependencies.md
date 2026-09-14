@@ -42,10 +42,34 @@ Apply these rules to project dependencies under a project or profile `<dependenc
 - Keep that override only after verifying the compatibility or release contract that requires it.
 - A possible future version change does not justify repeating the currently managed version.
 
+## Shared Version Override Ownership
+
+- In Implementation Guidance Mode, perform this ownership check only when the current task adds or modifies the same explicit dependency version override in multiple child POMs; do not scan historical duplicate overrides.
+- Treat overrides as the same only when their model-interpolated `groupId`, `artifactId`, `type`, `classifier`, and version match in every supported activation path.
+- Consider a common POM as the ownership candidate only when it is the actual Maven parent of every affected child, not merely an aggregator, and repository structure or existing dependency-management entries prove that it owns dependency version management for those modules.
+- Move the shared version to that parent's `<dependencyManagement>` only when the parent POM and every child declaration changed by the consolidation are within the task's authorized scope.
+- Before moving the version, compare the effective POM before and after for every affected supported activation path and prove that the dependency's version, scope, type, classifier, exclusions, and profile behavior do not change.
+- Inspect every other supported consumer that inherits the parent and prove that the consolidation causes no unintended effective dependency change.
+- Keep the overrides in their child POMs when their complete coordinates or versions differ, when they implement different compatibility or profile contracts, when ownership is not proven, when the effective model cannot be verified completely, or when a required parent or child change is outside the authorized scope.
+- Do not expand the current task to a parent POM or another child module only to centralize a version.
+- Report a possible consolidation as out of scope when it cannot be completed within the authorized boundary, and do not classify the unchanged out-of-scope declarations as a current-task violation.
+- In Standalone Compliance Audit Mode, report a shared-version-ownership violation only when the user-specified audit scope includes the common parent POM and the affected child POMs and complete evidence proves every consolidation condition above.
+
+## Task-Caused Unused Version Properties
+
+- When the current task modifies or removes a project dependency version declaration, inspect only a version property that may have lost its last consumer because that task removed a reference.
+- Delete such a property only when repository search and the Maven effective model both prove that no child-module override, profile, plugin, resource-filtering path, or other consumer remains.
+- Do not use this check to scan, report, or remove unrelated existing version properties.
+- When evidence about any possible consumer is incomplete, preserve the property in Implementation Guidance Mode and mark the affected check as blocked in Standalone Compliance Audit Mode.
+
 ## Verification and Inspection Boundaries
 
-- Before removing a redundant version, compare the effective dependency before and after the change for every supported activation path that can affect it.
+- Before removing a redundant version, compare the effective POM before and after the change for every supported activation path that can affect it.
+- Use the effective POM to confirm each affected dependency's complete `groupId:artifactId:type:classifier` coordinate and final dependency management.
 - Verify that the effective `version`, `scope`, `type`, `classifier`, `exclusions`, and profile behavior are unchanged.
+- When a change may affect a resolved dependency version or the transitive dependency graph, compare the dependency tree before and after the change.
+- Do not require a dependency-tree comparison for every POM change; use it only when the result depends on the actual resolved dependency graph.
+- Do not use the dependency tree as a substitute for the effective POM, supported profile activation paths, or complete `groupId:artifactId:type:classifier` matching.
 - When an outcome-sensitive management source, property value, or activation path cannot be resolved, preserve the explicit version in Implementation Guidance Mode and mark the affected check as blocked in Standalone Compliance Audit Mode.
 - In Implementation Guidance Mode, inspect only project dependency declarations added or modified by the current task and do not scan, clean up, or report unrequested existing violations.
 - In Standalone Compliance Audit Mode, inspect every target POM only when the user explicitly requested a Maven standards audit and specified its exact scope.
