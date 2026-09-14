@@ -137,7 +137,7 @@ class SeataATShardingSphereTransactionManagerTest {
     }
     
     @Test
-    void assertCloseConnectionWhenTransactionOptionReplayFailed() throws SQLException {
+    void assertCloseConnectionWhenTransactionOptionReplayFailed() {
         SQLException expectedException = new SQLException("replay transaction option failed");
         assertThat(assertThrows(SQLException.class, () -> seataTransactionManager.getConnection("sharding_db", "ds_0", connection -> {
             throw expectedException;

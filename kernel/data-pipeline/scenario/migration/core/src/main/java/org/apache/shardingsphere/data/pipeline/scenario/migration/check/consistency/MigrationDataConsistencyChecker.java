@@ -36,6 +36,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
@@ -101,6 +102,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
                 .forEach(dataNode -> sourceTableNames.add(new QualifiedTable(dataNode.getSchemaName(), dataNode.getTableName()).format()))));
         progressContext.setRecordsCount(getRecordsCount());
         progressContext.getTableNames().addAll(sourceTableNames);
+        progressContext.setStatus(JobStatus.PREPARING);
         progressContext.onProgressUpdated(new PipelineJobUpdateProgress(0));
         Map<QualifiedTable, TableDataConsistencyCheckResult> checkResultMap = new LinkedHashMap<>();
         try (
@@ -111,6 +113,8 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
             if (progressContext.getTableCheckRangePositions().isEmpty()) {
                 progressContext.getTableCheckRangePositions().addAll(splitCrossTables());
             }
+            progressContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK);
+            progressContext.onProgressUpdated(new PipelineJobUpdateProgress(0));
             for (TableCheckRangePosition each : progressContext.getTableCheckRangePositions()) {
                 TableDataConsistencyCheckResult checkResult = checkSingleTableInventoryData(each, tableChecker, dataSourceManager);
                 log.info("checkResult: {}, table: {}, checkRangePosition: {}", checkResult, each.getSourceDataNode(), each);
@@ -181,15 +185,12 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         IdentifierCasePolicy targetSchemaIdentifierPolicy = IdentifierNormalizeEngine.resolvePolicy(jobConfig.getTargetDatabaseType(), targetDataSource, IdentifierScope.SCHEMA);
         IdentifierCasePolicy targetTableIdentifierPolicy = IdentifierNormalizeEngine.resolvePolicy(jobConfig.getTargetDatabaseType(), targetDataSource, IdentifierScope.TABLE);
         IdentifierCasePolicy targetColumnIdentifierPolicy = IdentifierNormalizeEngine.resolvePolicy(jobConfig.getTargetDatabaseType(), targetDataSource, IdentifierScope.COLUMN);
-        String targetSchemaName = null != dataNode.getSchemaName()
-                && new DatabaseTypeRegistry(jobConfig.getTargetDatabaseType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()
-                        ? IdentifierNormalizeEngine.normalize(targetSchemaIdentifierPolicy, dataNode.getSchemaName())
-                        : null;
+        String targetSchemaName = null != dataNode.getSchemaName() && new DatabaseTypeRegistry(jobConfig.getTargetDatabaseType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()
+                ? IdentifierNormalizeEngine.normalize(targetSchemaIdentifierPolicy, dataNode.getSchemaName())
+                : null;
         QualifiedTable targetTable = new QualifiedTable(targetSchemaName, IdentifierNormalizeEngine.normalize(targetTableIdentifierPolicy, targetTableName));
         List<String> targetColumnNames = columnNames.stream().map(each -> IdentifierNormalizeEngine.normalize(targetColumnIdentifierPolicy, each)).collect(Collectors.toList());
-        List<PipelineColumnMetaData> targetUniqueKeys = uniqueKeys.stream().map(each -> new PipelineColumnMetaData(each.getOrdinalPosition(),
-                IdentifierNormalizeEngine.normalize(targetColumnIdentifierPolicy, each.getName()), each.getDataType(), each.getDataTypeName(),
-                each.isNullable(), each.isPrimaryKey(), each.isUniqueKey())).collect(Collectors.toList());
+        List<PipelineColumnMetaData> targetUniqueKeys = uniqueKeys.stream().map(each -> getTargetColumnMetaData(targetColumnIdentifierPolicy, each)).collect(Collectors.toList());
         TableInventoryCheckParameter param = new TableInventoryCheckParameter(
                 jobConfig.getJobId(), checkRangePosition.getSplittingItem(), sourceDataSource, targetDataSource, sourceTable, targetTable,
                 columnNames, uniqueKeys, targetColumnNames, targetUniqueKeys, readRateLimitAlgorithm, progressContext, checkRangePosition.getQueryCondition());
@@ -200,6 +201,12 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         tableInventoryChecker.cancel();
         currentTableInventoryChecker.set(null);
         return result;
+    }
+    
+    private PipelineColumnMetaData getTargetColumnMetaData(final IdentifierCasePolicy targetColumnIdentifierPolicy, final PipelineColumnMetaData sourceColumnMetaData) {
+        return new PipelineColumnMetaData(sourceColumnMetaData.getOrdinalPosition(), IdentifierNormalizeEngine.normalize(targetColumnIdentifierPolicy, sourceColumnMetaData.getName()),
+                sourceColumnMetaData.getDataType(), sourceColumnMetaData.getDataTypeName(), sourceColumnMetaData.isNullable(),
+                sourceColumnMetaData.isPrimaryKey(), sourceColumnMetaData.isUniqueKey());
     }
     
     @Override

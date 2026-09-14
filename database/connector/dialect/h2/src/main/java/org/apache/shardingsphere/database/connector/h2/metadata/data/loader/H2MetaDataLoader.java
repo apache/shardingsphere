@@ -53,8 +53,8 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
     
     private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_NO_ORDER + " AND UPPER(TABLE_NAME) IN (%s)" + ORDER_BY_ORDINAL_POSITION;
     
-    private static final String INDEX_META_DATA_SQL = "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES"
-            + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN (%s)";
+    private static final String INDEX_META_DATA_SQL = "SELECT TABLE_NAME, INDEX_NAME, COLUMN_NAME, IS_UNIQUE FROM INFORMATION_SCHEMA.INDEX_COLUMNS"
+            + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN (%s) ORDER BY TABLE_NAME, INDEX_NAME, ORDINAL_POSITION";
     
     private static final String PRIMARY_KEY_COLUMN_META_DATA_SQL = "SELECT KCU.TABLE_NAME, KCU.COLUMN_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU"
             + " USING (CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA, CONSTRAINT_NAME) WHERE KCU.TABLE_CATALOG=? AND KCU.TABLE_SCHEMA=? AND TC.CONSTRAINT_TYPE='PRIMARY KEY'";
@@ -142,7 +142,7 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final Connection connection, final Collection<String> tableNames) throws SQLException {
-        Map<String, Collection<IndexMetaData>> result = new HashMap<>();
+        Map<String, Map<String, IndexMetaData>> tableToIndex = new HashMap<>(tableNames.size(), 1F);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
             preparedStatement.setString(1, connection.getCatalog());
             preparedStatement.setString(2, "PUBLIC");
@@ -150,18 +150,19 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
                 while (resultSet.next()) {
                     String indexName = resultSet.getString("INDEX_NAME");
                     String tableName = resultSet.getString("TABLE_NAME");
-                    boolean uniqueIndex = "UNIQUE INDEX".equals(resultSet.getString("INDEX_TYPE_NAME"));
-                    if (!result.containsKey(tableName)) {
-                        result.put(tableName, new LinkedList<>());
+                    Map<String, IndexMetaData> indexMap = tableToIndex.computeIfAbsent(tableName, key -> new HashMap<>());
+                    String columnName = resultSet.getString("COLUMN_NAME");
+                    if (indexMap.containsKey(indexName)) {
+                        indexMap.get(indexName).getColumns().add(columnName);
+                    } else {
+                        IndexMetaData indexMetaData = new IndexMetaData(indexName, new LinkedList<>(Collections.singleton(columnName)));
+                        indexMetaData.setUnique(resultSet.getBoolean("IS_UNIQUE"));
+                        indexMap.put(indexName, indexMetaData);
                     }
-                    IndexMetaData indexMetaData = new IndexMetaData(indexName);
-                    indexMetaData.setUnique(uniqueIndex);
-                    result.get(tableName).add(indexMetaData);
-                    
                 }
             }
         }
-        return result;
+        return tableToIndex.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().values()));
     }
     
     private String getIndexMetaDataSQL(final Collection<String> tableNames) {

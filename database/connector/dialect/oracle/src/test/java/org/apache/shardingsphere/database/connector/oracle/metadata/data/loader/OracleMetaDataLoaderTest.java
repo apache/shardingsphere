@@ -71,7 +71,8 @@ class OracleMetaDataLoaderTest {
     
     private static final String ALL_INDEXES_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME, UNIQUENESS FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN ('tbl')";
     
-    private static final String ALL_INDEX_COLUMNS_SQL_WITH_MULTIPLE_INDEXES = "SELECT INDEX_NAME, COLUMN_NAME FROM ALL_IND_COLUMNS WHERE INDEX_OWNER = ? AND INDEX_NAME IN ('id','id_2')";
+    private static final String ALL_INDEX_COLUMNS_SQL_WITH_MULTIPLE_INDEXES =
+            "SELECT INDEX_NAME, COLUMN_NAME FROM ALL_IND_COLUMNS WHERE INDEX_OWNER = ? AND INDEX_NAME IN ('id','id_2') ORDER BY INDEX_NAME, COLUMN_POSITION";
     
     private static final String ALL_VIEWS_SQL = "SELECT VIEW_NAME FROM ALL_VIEWS WHERE OWNER = ? AND VIEW_NAME IN ('tbl')";
     
@@ -186,7 +187,7 @@ class OracleMetaDataLoaderTest {
         assertThat(actualTableMetaData.getIndexes().size(), is(2));
         List<IndexMetaData> actualIndexes = new ArrayList<>(actualTableMetaData.getIndexes());
         assertIndexMetaData(actualIndexes.get(0), new IndexMetaData("id"), true, Collections.singletonList("id"));
-        assertIndexMetaData(actualIndexes.get(1), new IndexMetaData("id_2"), false, Collections.singletonList("name"));
+        assertIndexMetaData(actualIndexes.get(1), new IndexMetaData("id_2"), false, Arrays.asList("name", "creation_time"));
     }
     
     @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
@@ -254,9 +255,9 @@ class OracleMetaDataLoaderTest {
     
     private ResultSet mockIndexColumnMetaDataResultSetWithMultipleIndexes() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, false);
-        when(result.getString("INDEX_NAME")).thenReturn("id", "id_2");
-        when(result.getString("COLUMN_NAME")).thenReturn("id", "name");
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getString("INDEX_NAME")).thenReturn("id", "id_2", "id_2");
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "creation_time");
         return result;
     }
     

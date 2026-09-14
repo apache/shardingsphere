@@ -82,50 +82,15 @@ unchanged basis.
 
 ## Repository Code Policy References
 
-Standalone review is read-only and must not invoke `code-implementation` or activate its write workflow.
-Read each applicable canonical reference directly through EOF before judging the effective candidate:
-
-- Read [implementation rules](../code-implementation/references/rules/implementation.md) for every production, test, script, or other implementation artifact, including build logic, generated source, and behavior-affecting configuration.
-- Read [testing rules](../code-implementation/references/rules/testing.md) when the candidate changes tests or the assessment depends on test validity or coverage.
-- Read [artifact removal and contract impact rules](../code-implementation/references/rules/artifact-removal-and-contract-impact.md) for every implementation candidate. Apply each contract, impact, or removal rule only when its own trigger matches.
-- Read [non-regression rules](../code-implementation/references/rules/non-regression.md) for functional or performance regression assessment of any changed code candidate.
-- Read [verification rules](../code-implementation/references/verification.md) before choosing, running, or assessing local verification.
-
-A Formal Review of a local candidate invoked from an active implementation task may reuse an applicable reference only when the outer workflow already read that exact file through EOF.
-This Skill does not call `code-implementation` back, acquire write authority, or create a circular workflow.
+Standalone review is read-only and does not activate `code-implementation` or acquire write authority. Before judging the effective candidate, read [implementation rules](../code-implementation/references/rules/implementation.md), [non-regression rules](../code-implementation/references/rules/non-regression.md), and [verification rules](../code-implementation/references/verification.md) through EOF. Also read [testing rules](../code-implementation/references/rules/testing.md) when tests or coverage matter, and [artifact removal and contract impact rules](../code-implementation/references/rules/artifact-removal-and-contract-impact.md) when their trigger matches. Reuse an exact reference already read by the outer implementation workflow.
 
 ## Scope and Evidence
 
-For formal reviews:
+Read [evidence-access.md](references/evidence-access.md) and complete its GitHub Access Preflight before any GitHub request. It owns public-read selection, current-head identity, authoritative file scope, local-style evidence, failure attribution, CI, external behavior, and evidence hygiene. Apply its Local Style Verification Evidence to every public-PR or PR-backed local-candidate Formal Review.
 
-- Resolve PR metadata, latest head SHA, base ref and SHA, authoritative GitHub
-  file list, linked issue scope, public comments, and relevant reviews.
-- Fetch every required page. When local Git is used, record the merge-base and
-  whether the local file list matches GitHub.
-- Review latest deltas after new commits; earlier findings never establish
-  current-head readiness.
-- Prefer PR facts, same-repository issues, code and tests, ShardingSphere
-  documentation and conventions, then external official specifications.
+For formal reviews, establish the latest head and base, authoritative files and requirements, relevant public discussion, and any authorized local delta. For discussion replies, establish the complete current thread and affected paths; obtain the full file list when scope or readiness is disputed. Earlier findings do not prove current-head readiness.
 
-For Formal Review of a local candidate targeting an existing PR, resolve the same public requirements and code-correctness evidence before applying the authorized local delta. Record any explicit local requirement that extends the public PR scope as a distinct part of the review basis.
-
-For discussion replies, establish the latest public head, complete thread
-context, relevant earlier review, and affected production or test paths. Fetch
-the complete file list when scope is disputed or the reply changes an overall
-readiness conclusion.
-
-Before the first GitHub request, read and complete `GitHub Access Preflight` in [evidence-access.md](references/evidence-access.md).
-Do not invoke a browser, search, connector, `gh`, or anonymous HTTP route before the preflight selects the read route.
-Read `Local Style Verification Evidence` in that reference for every public-PR or PR-backed local-candidate Formal Review, regardless of Review Focus.
-Read the remaining reference whenever CI, Actions, or third-party behavior evidence is required.
-
-AI-assistance disclosure is a mergeability concern, not a code-correctness
-signal. In Mergeability Review or an explicit policy-compliance review, apply
-`AI_POLICY.md` only when public PR evidence explicitly establishes material AI
-assistance. Verify that the PR description names the tool and affected files or
-scope. Never infer AI use from code, prose style, metadata, or an automated
-classifier; without explicit public evidence, missing disclosure is neither a
-finding nor an evidence gap.
+Treat AI-assistance disclosure only as an explicit mergeability or policy-compliance concern. Apply `AI_POLICY.md` only when public evidence establishes material AI assistance; never infer it from code, prose, metadata, or a classifier.
 
 ## Mandatory Style Verification Gate
 
@@ -180,92 +145,40 @@ If authoritative scope cannot be established, state the exact unavailable scope 
 
 ## Behavior Clusters and Risk Triage
 
-Before deep review, group the scope into the smallest independently meaningful
-behavior changes. A behavior cluster may cross several files, and one file may
-belong to several clusters. Map every substantive changed file to at least one
-cluster; treat churn-only files explicitly rather than silently dropping them.
+Map every substantive file to the smallest meaningful behavior cluster and identify each cluster's root cause, owner, entry paths, consumers, contracts, changed decisions, and validation points. Account explicitly for churn-only files.
 
-For every cluster, identify its root cause, behavior owner, entry paths,
-callers or consumers, contracts, changed conditions or state transitions, and
-validation points. Then consider every risk axis and deepen only the triggered
-ones:
-
-- Root cause and linked-issue completeness.
-- Functional behavior, important boundaries, disabled paths, adjacent features,
-  and old-scenario regression.
-- Ownership, module boundaries, public APIs and SPIs, metadata, implicit state,
-  lifecycle, and shared-code blast radius.
-- Configuration, protocol, SQL and dialect semantics, supported versions,
-  compatibility, migration, and rollback.
-- Test validity and meaningful coverage of the owning production path.
-- Concurrency, performance, allocation, I/O, memory, and resource cleanup.
-- Diagnostics, security, user documentation, and release-note necessity.
-- Dependencies, licenses, packaging, native metadata, generated resources, and
-  distribution impact.
-
-This triage is mandatory even when no risk is ultimately found. Read only the
-triggered sections in
-[high-risk-review.md](references/high-risk-review.md). For SQL grammar,
-visitors, parser tests, syntax documentation, dialect behavior, or parser
-baselines, also read
-[sql-parser-review.md](references/sql-parser-review.md).
+Triage functional boundaries, ownership and shared contracts, compatibility and rollback, test validity, concurrency and performance, security and operations, dependencies, packaging, and generated artifacts. Read only the triggered sections of [high-risk-review.md](references/high-risk-review.md). Also read [sql-parser-review.md](references/sql-parser-review.md) for SQL grammar, visitors, parser tests, syntax documentation, dialect behavior, or parser baselines.
 
 ## Review Workflow
 
-Apply this workflow to the canonical review basis without using output mode or
-a previous result to influence the assessment:
+Apply this workflow to the canonical review basis without letting output mode or a previous result influence the assessment:
 
 1. Complete `Repository Code Policy References`, then establish the authoritative effective-candidate scope and applicable requirements.
 2. Confirm the selected review focus and admissible evidence.
 3. Build behavior clusters and complete the mandatory risk triage.
-4. Discover candidates across the complete scope before classifying the
-   assessment.
-   Use three distinct lenses:
-   - `Root Cause and Behavior`: intended fix, changed decisions, boundaries,
-     disabled paths, adjacent cases, and old-scenario regression.
-   - `Blast Radius and Contracts`: callers, consumers, shared state, public
-     contracts, compatibility, dependencies, packaging, and generated outputs.
-   - `Tests, Runtime, and Operations`: realistic regressions that can still
-     pass, error and lifecycle paths, runtime verification, diagnostics,
-     documentation, rollout, and rollback.
+4. Discover candidates across the complete scope through three lenses: root cause and behavior; blast radius and contracts; tests, runtime, and operations.
 5. Apply the Finding Proof Gate to every candidate. Keep discovery notes
    private and classify every candidate before publication.
 6. Complete the Mandatory Style Verification Gate for a public PR or PR-backed local candidate.
-7. Consolidate confirmed findings by independent fix boundary and identify any
-   evidence or coverage gap that could still change the blocker set.
-8. Review the latest delta and run a full-scope convergence pass after the most
-   recent candidate change. If it finds a new independent candidate, return to
-   step 5 and repeat. Freeze the canonical assessment only after the Completion
-   Gate evaluation, then map it to the selected mode's status.
+7. Consolidate findings by independent fix boundary and identify any gap that could change the blocker set.
+8. Review the latest delta and run a full-scope convergence pass. If it finds a new independent candidate, return to step 5; otherwise freeze the assessment after the Completion Gate.
 
 If an outcome-sensitive decisive fact passes the Review Incomplete Proof Gate, return the mode-appropriate incomplete result.
 Otherwise continue the review or request a split; do not produce a complete verdict from a partial review.
 
 ## Completion Gate and Scripts
 
-Apply the Completion Gate to every Formal Review.
-Apply it to a discussion reply only when the reply makes or changes an overall
-readiness conclusion.
+Apply the Completion Gate to every Formal Review and to a discussion reply that makes or changes an overall readiness conclusion.
 
-- Complete the behavior-cluster mapping and risk triage for every authoritative
-  file; classify churn-only files explicitly.
+- Complete behavior-cluster mapping and risk triage for every authoritative file, including churn-only files.
 - Finish all three discovery lenses and classify every candidate.
 - Complete the Mandatory Style Verification Gate against the latest effective candidate for every public PR or PR-backed local candidate.
-- Leave no unresolved evidence or coverage gap that could change the blocker
-  set.
-- Require a full-scope convergence pass after the latest candidate change with
-  zero new independent candidates.
-- Use `scripts/build_review_inventory.py --format json` when local refs are
-  available. Its Markdown output is a bounded human summary, not the
-  authoritative file list.
-- Use `scripts/review_ledger.py` for multi-file, high-risk, or otherwise
-  omission-prone review. It mechanically accounts for files, clusters, risk
-  axes, finding classifications, proof fields, and review passes; it does not
-  judge semantic correctness.
+- Leave no unresolved gap that could change the blocker set and require a latest-candidate convergence pass with zero new independent candidates.
+- Use `scripts/build_review_inventory.py --format json` when local refs are available; its Markdown is only a bounded summary.
+- Use `scripts/review_ledger.py` for multi-file, high-risk, or omission-prone review; it accounts for review state but does not judge correctness.
 - For a standalone local candidate with index or working-tree changes, provide the same exact task-path file to both scripts with `--candidate-files <path>`. The scripts resolve those paths from the computed merge-base through the working tree, include matching untracked files, and fail when a listed path is unchanged.
 - Mutate one ledger sequentially; do not run ledger commands concurrently.
-- Keep temporary ledger data private and remove only the exact ledger created
-  for the current review.
+- Keep ledger data private and remove only the exact current-review ledger.
 
 If the gate cannot pass because a gap satisfies the Review Incomplete Proof Gate, return `Review Incomplete` in Formal Review and state the incomplete evidence without a formal verdict in a discussion reply.
 When confirmed blockers coexist with a proven gap that could hide more blockers, list them as confirmed partial facts but do not present them as the complete change-request set.
@@ -302,15 +215,7 @@ unclear.
 
 ## Multi-Round and Challenged Findings
 
-Read [review-corrections.md](references/review-corrections.md) when previous
-public feedback exists, new commits address earlier findings, or any finding is
-challenged.
-
-Always re-evaluate the latest head. Treat a prior finding as a hypothesis to
-disprove, inspect challenger-provided public evidence first, and withdraw or
-downgrade any unsupported blocker rather than defending it. Classify every
-finding first reported after an earlier formal review as introduced by the
-latest commits, exposed by the previous fix, or missed in the previous review.
+Read [review-corrections.md](references/review-corrections.md) for previous feedback, finding-fix commits, or challenged findings. Re-evaluate the latest head, test prior findings against challenger evidence, withdraw unsupported blockers, and classify later findings under that reference.
 
 ## Output Contract
 

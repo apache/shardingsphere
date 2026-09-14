@@ -78,7 +78,9 @@ public final class JDBCRepositorySQLLoader {
         XMLInputFactory result = XMLInputFactory.newFactory();
         result.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         result.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
-        result.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        if (result.isPropertySupported(XMLConstants.ACCESS_EXTERNAL_DTD)) {
+            result.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        }
         result.setXMLResolver((publicId, systemId, baseUri, namespace) -> {
             throw new XMLStreamException("External XML resources are not allowed.");
         });

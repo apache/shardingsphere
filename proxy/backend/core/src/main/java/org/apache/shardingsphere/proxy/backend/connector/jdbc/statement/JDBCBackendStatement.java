@@ -66,15 +66,8 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
         PreparedStatement result = getPreparedStatement(connection, sql, option.isReturnGeneratedKeys());
         result.clearParameters();
         Iterator<Object> paramIterator = params.iterator();
-        int index = 0;
-        while (paramIterator.hasNext()) {
-            Object param = paramIterator.next();
-            if (param instanceof TypeUnspecifiedSQLParameter) {
-                result.setObject(index + 1, param, Types.OTHER);
-            } else {
-                result.setObject(index + 1, param);
-            }
-            index++;
+        for (int index = 1; paramIterator.hasNext(); index++) {
+            setParameter(result, index, paramIterator.next());
         }
         if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
             setFetchSize(result, databaseType);
@@ -93,6 +86,14 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
     
     private PreparedStatement createPreparedStatement(final Connection connection, final String sql, final boolean returnGeneratedKeys) throws SQLException {
         return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
+    }
+    
+    private void setParameter(final PreparedStatement preparedStatement, final int index, final Object param) throws SQLException {
+        if (param instanceof TypeUnspecifiedSQLParameter) {
+            preparedStatement.setObject(index, param, Types.OTHER);
+            return;
+        }
+        preparedStatement.setObject(index, param);
     }
     
     private void setFetchSize(final Statement statement, final DatabaseType databaseType) throws SQLException {
