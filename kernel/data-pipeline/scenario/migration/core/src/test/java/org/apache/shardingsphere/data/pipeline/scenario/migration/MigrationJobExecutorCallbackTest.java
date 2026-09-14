@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.importer.PipelineRequiredColumnsExtractor;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
@@ -44,13 +45,18 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -60,10 +66,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -108,6 +117,45 @@ class MigrationJobExecutorCallbackTest {
             CreateTableConfiguration actualCreateTableConfig = actualTaskConfig.getCreateTableConfigurations().iterator().next();
             assertThat(getMaxPoolSize((StandardPipelineDataSourceConfiguration) actualCreateTableConfig.getSourceDataSourceConfig()), is("10"));
             assertThat(getRootDataSourceMaxPoolSize((ShardingSpherePipelineDataSourceConfiguration) actualCreateTableConfig.getTargetDataSourceConfig()), is("30"));
+        }
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Test
+    void assertBuildJobItemContextWithConvertedRuleConfigurations() {
+        YamlRuleConfiguration yamlRuleConfig = mock(YamlRuleConfiguration.class);
+        Collection<YamlRuleConfiguration> yamlRuleConfigs = Collections.singleton(yamlRuleConfig);
+        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
+        Collection<RuleConfiguration> ruleConfigs = Collections.singleton(ruleConfig);
+        PipelineRequiredColumnsExtractor extractor = mock(PipelineRequiredColumnsExtractor.class);
+        Map<ShardingSphereIdentifier, Collection<String>> requiredColumns = Collections.singletonMap(new ShardingSphereIdentifier("t_order"), Collections.singleton("id"));
+        when(extractor.getTableAndRequiredColumnsMap(eq(ruleConfig), anyCollection())).thenReturn(requiredColumns);
+        AtomicReference<Collection<YamlRuleConfiguration>> capturedYamlRuleConfigs = new AtomicReference<>();
+        AtomicReference<Collection<RuleConfiguration>> capturedRuleConfigs = new AtomicReference<>();
+        try (
+                MockedConstruction<YamlRuleConfigurationSwapperEngine> ignoredRuleConfigSwapper = mockConstruction(
+                        YamlRuleConfigurationSwapperEngine.class, (mock, context) -> when(mock.swapToRuleConfigurations(anyCollection())).thenAnswer(invocation -> {
+                            capturedYamlRuleConfigs.set(invocation.getArgument(0));
+                            return ruleConfigs;
+                        }));
+                MockedStatic<OrderedSPILoader> orderedSPILoader = mockStatic(OrderedSPILoader.class);
+                MockedStatic<DatabaseTypeFactory> databaseTypeFactory = mockStatic(DatabaseTypeFactory.class);
+                MockedStatic<PipelineAPIFactory> pipelineAPIFactory = mockStatic(PipelineAPIFactory.class);
+                MockedStatic<PipelineContextManager> pipelineContextManager = mockStatic(PipelineContextManager.class)) {
+            orderedSPILoader.when(() -> OrderedSPILoader.getServices(eq(PipelineRequiredColumnsExtractor.class), anyCollection())).thenAnswer(invocation -> {
+                capturedRuleConfigs.set(invocation.getArgument(1));
+                return Collections.singletonMap(ruleConfig, extractor);
+            });
+            mockDatabaseTypeFactory(databaseTypeFactory);
+            MigrationJobConfiguration jobConfig = createJobConfiguration();
+            ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().setRules(yamlRuleConfigs);
+            mockGovernanceFacade(pipelineAPIFactory, createSourceDataSourceYaml(10, 20));
+            mockProxyContext(pipelineContextManager);
+            MigrationJobItemContext actual = new MigrationJobExecutorCallback().buildJobItemContext(
+                    jobConfig, 0, null, mockProcessContext(), mock(PipelineDataSourceManager.class));
+            assertThat(capturedYamlRuleConfigs.get(), sameInstance(yamlRuleConfigs));
+            assertThat(capturedRuleConfigs.get(), sameInstance(ruleConfigs));
+            assertThat(actual.getTaskConfig().getImporterConfig().getShardingColumns("t_order"), is(Collections.singleton("id")));
         }
     }
     
