@@ -142,7 +142,9 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
                 continue;
             }
             if (blobId < 0L) {
-                params.set(i, FirebirdBlobBinaryProtocolValue.getBlobContent(connectionSession.getConnectionId(), blobId));
+                byte[] resultBlobContent = FirebirdBlobBinaryProtocolValue.getBlobContent(connectionSession.getConnectionId(), blobId);
+                ShardingSpherePreconditions.checkNotNull(resultBlobContent, () -> new InvalidSegstrIdException(blobId));
+                params.set(i, resultBlobContent);
                 continue;
             }
             ShardingSpherePreconditions.checkState(FirebirdBlobWriteCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId), () -> new InvalidSegstrIdException(blobId));
