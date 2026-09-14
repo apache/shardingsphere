@@ -19,10 +19,12 @@ package org.apache.shardingsphere.linkedserver.rule;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.linkedserver.config.LinkedServerRuleConfiguration;
 import org.apache.shardingsphere.linkedserver.config.rule.LinkedServerConfiguration;
 import org.apache.shardingsphere.linkedserver.constant.LinkedServerOrder;
+import org.apache.shardingsphere.linkedserver.rule.attribute.LinkedServerTableMapperRuleAttribute;
 import org.apache.shardingsphere.linkedserver.rule.table.LinkedServerTable;
 
 import java.util.Map;
@@ -37,12 +39,15 @@ public final class LinkedServerRule implements DatabaseRule {
     
     private final Map<String, LinkedServerTable> servers;
     
+    private final RuleAttributes attributes;
+    
     public LinkedServerRule(final LinkedServerRuleConfiguration configuration) {
         this.configuration = configuration;
         servers = new CaseInsensitiveMap<>();
         for (LinkedServerConfiguration each : configuration.getServers()) {
             servers.put(each.getName(), new LinkedServerTable(each));
         }
+        attributes = new RuleAttributes(new LinkedServerTableMapperRuleAttribute(configuration.getLogicTableNames()));
     }
     
     /**
@@ -79,6 +84,11 @@ public final class LinkedServerRule implements DatabaseRule {
      */
     public boolean containsServer(final String serverName) {
         return servers.containsKey(serverName);
+    }
+    
+    @Override
+    public RuleAttributes getAttributes() {
+        return attributes;
     }
     
     @Override

@@ -52,15 +52,18 @@ public final class OpenQueryUtils {
      * Extract linked server name from OPENQUERY function segment.
      *
      * @param functionSegment OPENQUERY function segment
-     * @return linked server name
+     * @return linked server name, or empty if parameters are absent
      */
-    public static String extractLinkedServerName(final FunctionSegment functionSegment) {
+    public static Optional<String> extractLinkedServerName(final FunctionSegment functionSegment) {
         List<ExpressionSegment> params = new ArrayList<>(functionSegment.getParameters());
+        if (params.isEmpty()) {
+            return Optional.empty();
+        }
         ExpressionSegment firstParam = params.get(0);
         if (firstParam instanceof ColumnSegment) {
-            return ((ColumnSegment) firstParam).getIdentifier().getValue();
+            return Optional.of(((ColumnSegment) firstParam).getIdentifier().getValue());
         }
-        return firstParam.getText();
+        return Optional.of(firstParam.getText());
     }
     
     /**
