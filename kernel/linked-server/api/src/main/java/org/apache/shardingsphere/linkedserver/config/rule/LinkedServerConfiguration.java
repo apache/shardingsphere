@@ -1,0 +1,51 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.linkedserver.config.rule;
+
+import com.google.common.base.Preconditions;
+import lombok.Getter;
+
+import java.util.Map;
+
+/**
+ * Linked server configuration.
+ *
+ * <p>The {@code tables} map uses fully qualified remote table identities
+ * ({@code catalog.schema.table}) as keys and logical table names as values.
+ * Bare terminal table names are rejected to prevent ambiguous resolution
+ * when the same table name exists in different remote catalogs or schemas.</p>
+ */
+@Getter
+public final class LinkedServerConfiguration {
+    
+    private final String name;
+    
+    private final String databaseType;
+    
+    private final Map<String, String> tables;
+    
+    public LinkedServerConfiguration(final String name, final String databaseType, final Map<String, String> tables) {
+        this.name = name;
+        this.databaseType = databaseType;
+        for (String key : tables.keySet()) {
+            Preconditions.checkArgument(key.chars().filter(c -> '.' == c).count() >= 2,
+                    "Remote table identity '%s' in linked server '%s' must be fully qualified (catalog.schema.table), bare or two-part names are not allowed.", key, name);
+        }
+        this.tables = tables;
+    }
+}
