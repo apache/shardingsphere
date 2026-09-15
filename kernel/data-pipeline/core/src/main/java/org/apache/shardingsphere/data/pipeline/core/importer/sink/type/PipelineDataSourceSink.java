@@ -19,7 +19,9 @@ package org.apache.shardingsphere.data.pipeline.core.importer.sink.type;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImporterJobWriteException;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
@@ -66,8 +68,10 @@ public final class PipelineDataSourceSink implements PipelineSink {
     
     public PipelineDataSourceSink(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
-        dataSource = dataSourceManager.getDataSource(importerConfig.getDataSourceConfig());
-        importSQLBuilder = new PipelineImportSQLBuilder(importerConfig.getDataSourceConfig().getDatabaseType());
+        PipelineDataSource pipelineDataSource = dataSourceManager.getDataSource(importerConfig.getDataSourceConfig());
+        dataSource = pipelineDataSource;
+        importSQLBuilder = new PipelineImportSQLBuilder(importerConfig.getDataSourceConfig().getDatabaseType(), pipelineDataSource.getIdentifierContext(),
+                importerConfig.getDataSourceConfig() instanceof ShardingSpherePipelineDataSourceConfiguration);
         groupEngine = new DataRecordGroupEngine();
         runningStatement = new AtomicReference<>();
     }

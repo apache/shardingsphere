@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperatio
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.PostgreSQLLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.column.PostgreSQLColumnPropertiesAppender;
@@ -28,8 +29,11 @@ import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.constra
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.index.PostgreSQLIndexSQLGenerator;
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.table.PostgreSQLTablePropertiesLoader;
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template.PostgreSQLPipelineFreemarkerManager;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
@@ -74,13 +78,15 @@ class PostgreSQLPipelineSQLBuilderTest {
     @Test
     void assertBuildInsertSQLOnDuplicateClauseWithEmptyUniqueKey() {
         Optional<String> actual = sqlBuilder.buildInsertOnDuplicateClause(
-                new DataRecord(PipelineSQLOperationType.INSERT, "foo_tbl", new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))), 2));
+                new DataRecord(PipelineSQLOperationType.INSERT, "foo_tbl", new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))), 2),
+                new PipelineSQLSegmentBuilder(databaseType, new DatabaseIdentifierContext(IdentifierCasePolicyResolver.resolveProtocol(databaseType))));
         assertFalse(actual.isPresent());
     }
     
     @Test
     void assertBuildInsertSQLOnDuplicateClause() {
-        Optional<String> actual = sqlBuilder.buildInsertOnDuplicateClause(createDataRecord());
+        Optional<String> actual = sqlBuilder.buildInsertOnDuplicateClause(createDataRecord(),
+                new PipelineSQLSegmentBuilder(databaseType, new DatabaseIdentifierContext(IdentifierCasePolicyResolver.resolveProtocol(databaseType))));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("ON CONFLICT (\"order_id\") DO UPDATE SET \"user_id\"=EXCLUDED.\"user_id\",\"status\"=EXCLUDED.\"status\""));
     }
@@ -91,6 +97,13 @@ class PostgreSQLPipelineSQLBuilderTest {
         result.addColumn(new NormalColumn("user_id", 2, true, false));
         result.addColumn(new NormalColumn("status", "ok", true, false));
         return result;
+    }
+    
+    @Test
+    void assertBuildInsertOnDuplicateClauseWithStorageColumnPolicy() {
+        PipelineSQLSegmentBuilder segmentBuilder = new PipelineSQLSegmentBuilder(databaseType, new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newUpperCasePolicySet()));
+        Optional<String> actual = sqlBuilder.buildInsertOnDuplicateClause(createDataRecord(), segmentBuilder);
+        assertThat(actual, is(Optional.of("ON CONFLICT (\"ORDER_ID\") DO UPDATE SET \"USER_ID\"=EXCLUDED.\"USER_ID\",\"STATUS\"=EXCLUDED.\"STATUS\"")));
     }
     
     @Test

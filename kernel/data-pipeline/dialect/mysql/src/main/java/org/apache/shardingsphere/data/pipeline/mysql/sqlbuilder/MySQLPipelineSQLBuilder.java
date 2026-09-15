@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -38,12 +39,12 @@ import java.util.Optional;
 public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
-    public Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord) {
+    public Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord, final PipelineSQLSegmentBuilder sqlSegmentBuilder) {
         StringBuilder result = new StringBuilder("ON DUPLICATE KEY UPDATE ");
-        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
-            result.append(sqlSegmentBuilder.getEscapedIdentifier(column.getName())).append("=VALUES(").append(sqlSegmentBuilder.getEscapedIdentifier(column.getName())).append("),");
+            result.append(sqlSegmentBuilder.getEscapedIdentifier(IdentifierScope.COLUMN, column.getName())).append("=VALUES(")
+                    .append(sqlSegmentBuilder.getEscapedIdentifier(IdentifierScope.COLUMN, column.getName())).append("),");
         }
         result.setLength(result.length() - 1);
         return Optional.of(result.toString());
