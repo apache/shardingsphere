@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare;
 
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,7 +32,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -85,9 +83,7 @@ class FirebirdPrepareStatementReturnPacketTest {
     
     private FirebirdReturnColumnPacket createColumnPacket(final Collection<FirebirdSQLInfoPacketType> requestedItems,
                                                           final String tableAlias, final String columnAlias, final String owner) {
-        ShardingSphereColumn column = new ShardingSphereColumn("col", Types.INTEGER, false, false, false, true, false, true);
-        ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
-        return new FirebirdReturnColumnPacket(requestedItems, 1, table, column, tableAlias, columnAlias, owner, null, false, null);
+        return new FirebirdReturnColumnPacket(requestedItems, 1, "tbl", "col", FirebirdBinaryColumnType.LONG, tableAlias, columnAlias, owner, null, null);
     }
     
     private static Stream<Arguments> assertWriteWithNullStringMetadataArguments() {

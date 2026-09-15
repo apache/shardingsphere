@@ -359,6 +359,7 @@ regularFunctionName
     | UPPER | LOWER
     | NULLIF
     | COALESCE
+    | LEFT | RIGHT
     ;
 
 matchExpression
