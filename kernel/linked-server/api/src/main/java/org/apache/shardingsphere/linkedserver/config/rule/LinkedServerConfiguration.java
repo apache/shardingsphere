@@ -43,8 +43,8 @@ public final class LinkedServerConfiguration {
         this.name = name;
         this.databaseType = databaseType;
         for (String key : tables.keySet()) {
-            Preconditions.checkArgument(key.contains("."),
-                    "Remote table identity '%s' in linked server '%s' must be fully qualified (catalog.schema.table), bare terminal names are not allowed.", key, name);
+            Preconditions.checkArgument(key.chars().filter(c -> '.' == c).count() >= 2,
+                    "Remote table identity '%s' in linked server '%s' must be fully qualified (catalog.schema.table), bare or two-part names are not allowed.", key, name);
         }
         this.tables = tables;
     }

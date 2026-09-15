@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.linkedserver.rule;
 
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.linkedserver.config.LinkedServerRuleConfiguration;
 import org.apache.shardingsphere.linkedserver.config.rule.LinkedServerConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,9 +111,23 @@ class LinkedServerRuleTest {
     }
     
     @Test
+    void assertEnhancedTableNamesEmpty() {
+        TableMapperRuleAttribute attribute = rule.getAttributes().getAttribute(TableMapperRuleAttribute.class);
+        assertTrue(attribute.getEnhancedTableNames().isEmpty());
+        assertFalse(attribute.getLogicTableNames().isEmpty());
+    }
+    
+    @Test
     void assertBareTableNameRejected() {
         Map<String, String> tables = new LinkedHashMap<>();
         tables.put("Department", "t_department");
+        assertThrows(IllegalArgumentException.class, () -> new LinkedServerConfiguration("Server", "FIXTURE", tables));
+    }
+    
+    @Test
+    void assertTwoPartTableNameRejected() {
+        Map<String, String> tables = new LinkedHashMap<>();
+        tables.put("dbo.Department", "t_department");
         assertThrows(IllegalArgumentException.class, () -> new LinkedServerConfiguration("Server", "FIXTURE", tables));
     }
 }
