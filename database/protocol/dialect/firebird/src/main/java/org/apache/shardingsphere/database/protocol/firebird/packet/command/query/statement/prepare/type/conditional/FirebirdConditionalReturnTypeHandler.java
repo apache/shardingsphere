@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Firebird Conditional functions return type handler.
@@ -39,9 +40,18 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class FirebirdConditionalReturnTypeHandler implements FirebirdFunctionReturnTypeHandler {
     
+    private final int skipCount;
+    
     @Override
     public FirebirdReturnBinaryColumn getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
-        for (ExpressionSegment parameter : parameters) {
+        Iterator<ExpressionSegment> iterator = parameters.iterator();
+        for (int i = 0; i < skipCount; i++) {
+            if (iterator.hasNext()) {
+                iterator.next();
+            }
+        }
+        if (iterator.hasNext()) {
+            ExpressionSegment parameter = iterator.next();
             if (parameter instanceof ColumnSegment) {
                 ColumnSegmentBoundInfo columnBoundInfo = ((ColumnSegment) parameter).getColumnBoundInfo();
                 ShardingSphereColumn column = schema.getTable(columnBoundInfo.getOriginalTable()).getColumn(columnBoundInfo.getOriginalColumn());

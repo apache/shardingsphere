@@ -35,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,7 +46,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class FirebirdConditionalReturnTypeHandlerTest {
     
-    private final FirebirdConditionalReturnTypeHandler handler = new FirebirdConditionalReturnTypeHandler();
+    private final FirebirdConditionalReturnTypeHandler handler = new FirebirdConditionalReturnTypeHandler(0);
     
     @Mock
     private ShardingSphereSchema schema;
@@ -93,5 +94,11 @@ class FirebirdConditionalReturnTypeHandlerTest {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "MAX", "MAX");
         functionSegment.getParameters().add(new ParameterMarkerExpressionSegment(0, 0, 0));
         assertThat(handler.getReturnType(schema, Collections.singletonList(functionSegment)).getType(), is(FirebirdBinaryColumnType.LONG));
+    }
+    
+    @Test
+    void assertGetReturnTypeWithSkipCount() {
+        FirebirdConditionalReturnTypeHandler handler = new FirebirdConditionalReturnTypeHandler(1);
+        assertThat(handler.getReturnType(schema, Arrays.asList(otherSegment, new LiteralExpressionSegment(0, 0, 1))).getType(), is(FirebirdBinaryColumnType.LONG));
     }
 }

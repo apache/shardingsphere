@@ -150,12 +150,12 @@ public enum FirebirdFunctionType {
     GEN_ID(FirebirdBinaryColumnType.INT64),
     
     // Conditional Functions
-    COALESCE(new FirebirdConditionalReturnTypeHandler()),
-    DECODE(new FirebirdConditionalReturnTypeHandler()),
-    IIF(new FirebirdConditionalReturnTypeHandler()),
-    MAXVALUE(new FirebirdConditionalReturnTypeHandler()),
-    MINVALUE(new FirebirdConditionalReturnTypeHandler()),
-    NULLIF(new FirebirdConditionalReturnTypeHandler()),
+    COALESCE(new FirebirdConditionalReturnTypeHandler(0)),
+    DECODE(new FirebirdConditionalReturnTypeHandler(2)),
+    IIF(new FirebirdConditionalReturnTypeHandler(1)),
+    MAXVALUE(new FirebirdConditionalReturnTypeHandler(0)),
+    MINVALUE(new FirebirdConditionalReturnTypeHandler(0)),
+    NULLIF(new FirebirdConditionalReturnTypeHandler(0)),
     
     // Special Functions for DECFLOAT
     COMPARE_DECFLOAT(FirebirdBinaryColumnType.SHORT),
