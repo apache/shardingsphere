@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -30,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,6 +47,11 @@ class FirebirdFunctionTypeTest {
     @MethodSource("getReturnTypeArguments")
     void assertGetReturnType(final String name, final Collection<ExpressionSegment> parameters, final FirebirdBinaryColumnType expected) {
         assertThat(FirebirdFunctionType.getReturnType(name, schema, parameters).getType(), is(expected));
+    }
+    
+    @Test
+    void assertGetReturnTypeWithNonEnglishLocale() {
+        assertThat(FirebirdFunctionType.getReturnType(String.format(Locale.forLanguageTag("tr-TR"),"sign"), schema, Collections.emptyList()).getType(), is(FirebirdBinaryColumnType.SHORT));
     }
     
     private static Stream<Arguments> getReturnTypeArguments() {

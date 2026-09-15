@@ -44,6 +44,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
 import java.util.Collection;
+import java.util.Locale;
 
 /**
  * Firebird function return type.
@@ -260,7 +261,7 @@ public enum FirebirdFunctionType {
      */
     public static FirebirdReturnBinaryColumn getReturnType(final String functionName, final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
         try {
-            return FirebirdFunctionType.valueOf(functionName.toUpperCase()).getReturnType(schema, parameters);
+            return FirebirdFunctionType.valueOf(functionName.toUpperCase(Locale.ENGLISH)).getReturnType(schema, parameters);
         } catch (final IllegalArgumentException | NullPointerException ignored) {
             return new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.LONG);
         }
