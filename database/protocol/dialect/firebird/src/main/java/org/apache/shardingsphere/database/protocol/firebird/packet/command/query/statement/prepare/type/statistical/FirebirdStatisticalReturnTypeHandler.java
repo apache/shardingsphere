@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdReturnBinaryColumn;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type.FirebirdFunctionReturnTypeHandler;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type.mathematical.FirebirdMathematicalReturnTypeConverter;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -49,7 +50,7 @@ public final class FirebirdStatisticalReturnTypeHandler implements FirebirdFunct
     }
     
     @Override
-    public FirebirdBinaryColumnType getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
+    public FirebirdReturnBinaryColumn getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
         return FirebirdMathematicalReturnTypeConverter.convert(schema, parameters, FirebirdBinaryColumnType.DOUBLE, COLUMN_TYPE_MAP);
     }
 }

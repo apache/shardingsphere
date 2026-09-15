@@ -56,41 +56,41 @@ class FirebirdUpperLowerReturnTypeHandlerTest {
     @Test
     void assertGetReturnTypeWithVarcharColumn() {
         stubColumn(Types.VARCHAR);
-        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)), is(FirebirdBinaryColumnType.VARYING));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)).getType(), is(FirebirdBinaryColumnType.VARYING));
     }
     
     @Test
     void assertGetReturnTypeWithLongVarcharColumn() {
         stubColumn(Types.LONGVARCHAR);
-        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)), is(FirebirdBinaryColumnType.BLOB_SUBTYPE_TEXT));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)).getType(), is(FirebirdBinaryColumnType.BLOB_SUBTYPE_TEXT));
     }
     
     @Test
     void assertGetReturnTypeWithUnmappedColumn() {
         stubColumn(Types.INTEGER);
-        assertNull(handler.getReturnType(schema, Collections.singletonList(columnSegment)));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertGetReturnTypeWithStringLiteral() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, "text"))), is(FirebirdBinaryColumnType.VARYING));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, "text"))).getType(), is(FirebirdBinaryColumnType.VARYING));
     }
     
     @Test
     void assertGetReturnTypeWithNonStringLiteral() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))), is(FirebirdBinaryColumnType.VARYING));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))).getType(), is(FirebirdBinaryColumnType.VARYING));
     }
     
     @Test
     void assertGetReturnTypeWithParameterMarker() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))), is(FirebirdBinaryColumnType.VARYING));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))).getType(), is(FirebirdBinaryColumnType.VARYING));
     }
     
     @Test
     void assertGetReturnTypeWithFunctionSegment() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "LOWER", "LOWER");
         functionSegment.getParameters().add(new ParameterMarkerExpressionSegment(0, 0, 0));
-        assertThat(handler.getReturnType(schema, Collections.singletonList(functionSegment)), is(FirebirdBinaryColumnType.VARYING));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(functionSegment)).getType(), is(FirebirdBinaryColumnType.VARYING));
     }
     
     private void stubColumn(final int dataType) {

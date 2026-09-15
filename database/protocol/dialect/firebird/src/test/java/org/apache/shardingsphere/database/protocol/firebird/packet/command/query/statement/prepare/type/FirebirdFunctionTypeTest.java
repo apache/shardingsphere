@@ -44,7 +44,7 @@ class FirebirdFunctionTypeTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("getReturnTypeArguments")
     void assertGetReturnType(final String name, final Collection<ExpressionSegment> parameters, final FirebirdBinaryColumnType expected) {
-        assertThat(FirebirdFunctionType.getReturnType(name, schema, parameters), is(expected));
+        assertThat(FirebirdFunctionType.getReturnType(name, schema, parameters).getType(), is(expected));
     }
     
     private static Stream<Arguments> getReturnTypeArguments() {

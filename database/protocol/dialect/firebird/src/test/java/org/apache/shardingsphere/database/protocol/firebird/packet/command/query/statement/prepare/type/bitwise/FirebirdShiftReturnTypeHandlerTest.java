@@ -47,7 +47,7 @@ class FirebirdShiftReturnTypeHandlerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("getReturnTypeArguments")
     void assertGetReturnType(final String name, final ExpressionSegment parameter, final FirebirdBinaryColumnType expected) {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(parameter)), is(expected));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(parameter)).getType(), is(expected));
     }
     
     private static Stream<Arguments> getReturnTypeArguments() {

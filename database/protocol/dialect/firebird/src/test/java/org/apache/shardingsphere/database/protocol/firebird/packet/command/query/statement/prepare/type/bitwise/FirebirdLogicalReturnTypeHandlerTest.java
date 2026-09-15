@@ -61,86 +61,86 @@ class FirebirdLogicalReturnTypeHandlerTest {
     
     @Test
     void assertGetReturnTypeWithSingleParameterMarker() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))), is(FirebirdBinaryColumnType.LONG));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertGetReturnTypeWithBigIntegerLiteral() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, BigInteger.ONE))), is(FirebirdBinaryColumnType.INT128));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, BigInteger.ONE))).getType(), is(FirebirdBinaryColumnType.INT128));
     }
     
     @Test
     void assertGetReturnTypeWithNonBigIntegerLiteral() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))), is(FirebirdBinaryColumnType.LONG));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertGetReturnTypeWithColumnSegment() {
         stubColumn(Types.BIGINT);
-        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)), is(FirebirdBinaryColumnType.INT64));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)).getType(), is(FirebirdBinaryColumnType.INT64));
     }
     
     @Test
     void assertGetReturnTypeWithLargerSecondLiteral() {
-        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, BigInteger.ONE))),
+        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, BigInteger.ONE))).getType(),
                 is(FirebirdBinaryColumnType.INT128));
     }
     
     @Test
     void assertGetReturnTypeWithIntegerThenInteger() {
-        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2))),
+        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2))).getType(),
                 is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertGetReturnTypeWithNumericColumnComparison() {
         stubColumn(Types.NUMERIC);
-        assertThat(handler.getReturnType(schema, Arrays.asList(new ParameterMarkerExpressionSegment(0, 0, 0), columnSegment)),
+        assertThat(handler.getReturnType(schema, Arrays.asList(new ParameterMarkerExpressionSegment(0, 0, 0), columnSegment)).getType(),
                 is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertGetReturnTypeWithWiderColumnComparison() {
         stubColumn(Types.BIGINT);
-        assertThat(handler.getReturnType(schema, Arrays.asList(new ParameterMarkerExpressionSegment(0, 0, 0), columnSegment)),
+        assertThat(handler.getReturnType(schema, Arrays.asList(new ParameterMarkerExpressionSegment(0, 0, 0), columnSegment)).getType(),
                 is(FirebirdBinaryColumnType.INT64));
     }
     
     @Test
     void assertGetReturnTypeWithLargerFirstLiteralThanSecond() {
-        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, BigInteger.ONE), new LiteralExpressionSegment(0, 0, 1))),
+        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, BigInteger.ONE), new LiteralExpressionSegment(0, 0, 1))).getType(),
                 is(FirebirdBinaryColumnType.INT128));
     }
     
     @Test
     void assertGetReturnTypeWithWiderThanNumericColumn() {
         stubColumn(Types.NUMERIC);
-        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, BigInteger.ONE), columnSegment)),
+        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, BigInteger.ONE), columnSegment)).getType(),
                 is(FirebirdBinaryColumnType.INT128));
     }
     
     @Test
     void assertGetReturnTypeWithWiderThanDecimalColumn() {
         stubColumn(Types.DECIMAL);
-        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, BigInteger.ONE), columnSegment)),
+        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, BigInteger.ONE), columnSegment)).getType(),
                 is(FirebirdBinaryColumnType.INT128));
     }
     
     @Test
     void assertGetReturnTypeWithOtherSegment() {
-        assertNull(handler.getReturnType(schema, Collections.singletonList(otherSegment)));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(otherSegment)).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertGetReturnTypeWithEmptyParameters() {
-        assertNull(handler.getReturnType(schema, Collections.emptyList()));
+        assertThat(handler.getReturnType(schema, Collections.emptyList()).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertGetReturnTypeWithFunctionSegment() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "MAX", "MAX");
         functionSegment.getParameters().add(new ParameterMarkerExpressionSegment(0, 0, 0));
-        assertThat(handler.getReturnType(schema, Collections.singletonList(functionSegment)), is(FirebirdBinaryColumnType.LONG));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(functionSegment)).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     private void stubColumn(final int dataType) {

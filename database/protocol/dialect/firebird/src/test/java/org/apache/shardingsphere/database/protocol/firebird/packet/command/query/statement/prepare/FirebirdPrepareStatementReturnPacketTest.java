@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare;
 
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdReturnBinaryColumn;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
@@ -83,7 +84,7 @@ class FirebirdPrepareStatementReturnPacketTest {
     
     private FirebirdReturnColumnPacket createColumnPacket(final Collection<FirebirdSQLInfoPacketType> requestedItems,
                                                           final String tableAlias, final String columnAlias, final String owner) {
-        return new FirebirdReturnColumnPacket(requestedItems, 1, "tbl", "col", FirebirdBinaryColumnType.LONG, tableAlias, columnAlias, owner, null, null);
+        return new FirebirdReturnColumnPacket(requestedItems, 1, "tbl", "col", new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.LONG), tableAlias, columnAlias, owner, null, null);
     }
     
     private static Stream<Arguments> assertWriteWithNullStringMetadataArguments() {

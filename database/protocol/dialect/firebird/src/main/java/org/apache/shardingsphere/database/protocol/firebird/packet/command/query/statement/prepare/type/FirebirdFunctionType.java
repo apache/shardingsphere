@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdReturnBinaryColumn;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type.aggregate.FirebirdAVGReturnTypeHandler;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type.aggregate.FirebirdMinMaxReturnTypeConverter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type.aggregate.FirebirdSUMReturnTypeHandler;
@@ -217,7 +218,7 @@ public enum FirebirdFunctionType {
     
     FirebirdFunctionType(final FirebirdBinaryColumnType type) {
         this.type = type;
-        this.length = -1;
+        this.length = type.getLength();
         this.returnTypeHandler = null;
     }
     
@@ -229,7 +230,7 @@ public enum FirebirdFunctionType {
     
     FirebirdFunctionType(final FirebirdFunctionReturnTypeHandler returnTypeHandler) {
         this.type = FirebirdBinaryColumnType.NULL;
-        this.length = -1;
+        this.length = 0;
         this.returnTypeHandler = returnTypeHandler;
     }
     
@@ -240,11 +241,11 @@ public enum FirebirdFunctionType {
      * @param parameters function parameters
      * @return return type of function
      */
-    public FirebirdBinaryColumnType getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
+    public FirebirdReturnBinaryColumn getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
         if (null == returnTypeHandler) {
-            return type;
+            return new FirebirdReturnBinaryColumn(type, length);
         }
-        FirebirdBinaryColumnType type = returnTypeHandler.getReturnType(schema, parameters);
+        FirebirdReturnBinaryColumn type = returnTypeHandler.getReturnType(schema, parameters);
         Preconditions.checkNotNull(type, "Can not get return type of function `%s`", this.name());
         return type;
     }
@@ -257,11 +258,11 @@ public enum FirebirdFunctionType {
      * @param parameters function parameters
      * @return return type of function
      */
-    public static FirebirdBinaryColumnType getReturnType(final String functionName, final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
+    public static FirebirdReturnBinaryColumn getReturnType(final String functionName, final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
         try {
             return FirebirdFunctionType.valueOf(functionName.toUpperCase()).getReturnType(schema, parameters);
         } catch (final IllegalArgumentException | NullPointerException ignored) {
-            return FirebirdBinaryColumnType.LONG;
+            return new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.LONG);
         }
     }
 }

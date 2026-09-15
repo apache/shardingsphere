@@ -45,23 +45,23 @@ class FirebirdCastReturnTypeHandlerTest {
     void assertGetReturnTypeWithDataTypeSegment() {
         DataTypeSegment dataTypeSegment = new DataTypeSegment();
         dataTypeSegment.setDataTypeName("INTEGER");
-        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, "1"), dataTypeSegment)), is(FirebirdBinaryColumnType.LONG));
+        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, "1"), dataTypeSegment)).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertGetReturnTypeWithUnknownDataTypeName() {
         DataTypeSegment dataTypeSegment = new DataTypeSegment();
         dataTypeSegment.setDataTypeName("UNKNOWN");
-        assertNull(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, "1"), dataTypeSegment)));
+        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, "1"), dataTypeSegment)).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertGetReturnTypeWithNonDataTypeSegment() {
-        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, "1"), new LiteralExpressionSegment(0, 0, "2"))), is(FirebirdBinaryColumnType.LONG));
+        assertThat(handler.getReturnType(schema, Arrays.asList(new LiteralExpressionSegment(0, 0, "1"), new LiteralExpressionSegment(0, 0, "2"))).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertGetReturnTypeWithSingleParameter() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, "1"))), is(FirebirdBinaryColumnType.LONG));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, "1"))).getType(), is(FirebirdBinaryColumnType.LONG));
     }
 }

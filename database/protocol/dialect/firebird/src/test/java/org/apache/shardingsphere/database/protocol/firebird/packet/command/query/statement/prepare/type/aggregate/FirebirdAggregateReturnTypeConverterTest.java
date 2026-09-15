@@ -67,26 +67,26 @@ class FirebirdAggregateReturnTypeConverterTest {
         when(schema.getTable(table)).thenReturn(tableSegment);
         Map<Integer, FirebirdBinaryColumnType> columnTypeMap = new HashMap<>();
         columnTypeMap.put(Types.BIGINT, FirebirdBinaryColumnType.INT64);
-        assertThat(FirebirdAggregateReturnTypeConverter.convert(schema, Collections.singletonList(columnSegment), FirebirdBinaryColumnType.DOUBLE, columnTypeMap),
+        assertThat(FirebirdAggregateReturnTypeConverter.convert(schema, Collections.singletonList(columnSegment), FirebirdBinaryColumnType.DOUBLE, columnTypeMap).getType(),
                 is(FirebirdBinaryColumnType.INT64));
     }
     
     @Test
     void assertConvertWithLiteral() {
         assertThat(FirebirdAggregateReturnTypeConverter.convert(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1)),
-                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()), is(FirebirdBinaryColumnType.LONG));
+                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertConvertWithParameterMarker() {
         assertThat(FirebirdAggregateReturnTypeConverter.convert(schema, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)),
-                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()), is(FirebirdBinaryColumnType.DOUBLE));
+                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()).getType(), is(FirebirdBinaryColumnType.DOUBLE));
     }
     
     @Test
     void assertConvertWithOtherSegment() {
         assertThat(FirebirdAggregateReturnTypeConverter.convert(schema, Collections.singletonList(otherSegment),
-                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()), is(FirebirdBinaryColumnType.LONG));
+                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
@@ -94,6 +94,6 @@ class FirebirdAggregateReturnTypeConverterTest {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "MAX", "MAX");
         functionSegment.getParameters().add(new ParameterMarkerExpressionSegment(0, 0, 0));
         assertThat(FirebirdAggregateReturnTypeConverter.convert(schema, Collections.singletonList(functionSegment),
-                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()), is(FirebirdBinaryColumnType.LONG));
+                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()).getType(), is(FirebirdBinaryColumnType.LONG));
     }
 }

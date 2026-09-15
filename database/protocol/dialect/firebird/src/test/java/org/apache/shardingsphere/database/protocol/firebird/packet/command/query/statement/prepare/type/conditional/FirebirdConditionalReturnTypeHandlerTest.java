@@ -65,33 +65,33 @@ class FirebirdConditionalReturnTypeHandlerTest {
         ShardingSphereColumn columnInfo = new ShardingSphereColumn("order_id", Types.BIGINT, false, false, false, true, false, false);
         when(tableSegment.getColumn(column)).thenReturn(columnInfo);
         when(schema.getTable(table)).thenReturn(tableSegment);
-        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)), is(FirebirdBinaryColumnType.INT64));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)).getType(), is(FirebirdBinaryColumnType.INT64));
     }
     
     @Test
     void assertGetReturnTypeWithLiteral() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))), is(FirebirdBinaryColumnType.LONG));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertGetReturnTypeWithParameterMarker() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))), is(FirebirdBinaryColumnType.VARYING));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))).getType(), is(FirebirdBinaryColumnType.VARYING));
     }
     
     @Test
     void assertGetReturnTypeWithNoParameter() {
-        assertThat(handler.getReturnType(schema, Collections.emptyList()), is(FirebirdBinaryColumnType.NULL));
+        assertThat(handler.getReturnType(schema, Collections.emptyList()).getType(), is(FirebirdBinaryColumnType.NULL));
     }
     
     @Test
     void assertGetReturnTypeWithOtherSegment() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(otherSegment)), is(FirebirdBinaryColumnType.NULL));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(otherSegment)).getType(), is(FirebirdBinaryColumnType.NULL));
     }
     
     @Test
     void assertGetReturnTypeWithFunctionSegment() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "MAX", "MAX");
         functionSegment.getParameters().add(new ParameterMarkerExpressionSegment(0, 0, 0));
-        assertThat(handler.getReturnType(schema, Collections.singletonList(functionSegment)), is(FirebirdBinaryColumnType.LONG));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(functionSegment)).getType(), is(FirebirdBinaryColumnType.LONG));
     }
 }

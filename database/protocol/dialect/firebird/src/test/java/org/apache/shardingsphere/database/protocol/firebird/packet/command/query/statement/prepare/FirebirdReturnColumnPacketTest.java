@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdReturnBinaryColumn;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
@@ -93,7 +94,7 @@ class FirebirdReturnColumnPacketTest {
     
     private FirebirdReturnColumnPacket createPacket(final Collection<FirebirdSQLInfoPacketType> requestedItems, final FirebirdBinaryColumnType dataType,
                                                     final Integer columnLength, final Integer blobSubType) {
-        return new FirebirdReturnColumnPacket(requestedItems, 1, "tbl", "col", dataType, "t", "c", "o", columnLength, blobSubType);
+        return new FirebirdReturnColumnPacket(requestedItems, 1, "tbl", "col", new FirebirdReturnBinaryColumn(dataType), "t", "c", "o", columnLength, blobSubType);
     }
     
     private static Stream<Arguments> assertWriteLengthArguments() {

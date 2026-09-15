@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdReturnBinaryColumn;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type.FirebirdFunctionReturnTypeHandler;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type.FirebirdFunctionType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -41,9 +42,9 @@ import java.util.Iterator;
 public final class FirebirdLogicalReturnTypeHandler implements FirebirdFunctionReturnTypeHandler {
     
     @Override
-    public FirebirdBinaryColumnType getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
+    public FirebirdReturnBinaryColumn getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
         Iterator<ExpressionSegment> iterator = parameters.iterator();
-        FirebirdBinaryColumnType result = null;
+        FirebirdBinaryColumnType result = FirebirdBinaryColumnType.LONG;
         while (iterator.hasNext()) {
             ExpressionSegment parameter = iterator.next();
             if (parameter instanceof ColumnSegment) {
@@ -64,7 +65,7 @@ public final class FirebirdLogicalReturnTypeHandler implements FirebirdFunctionR
                 return FirebirdFunctionType.getReturnType(functionSegment.getFunctionName(), schema, functionSegment.getParameters());
             }
         }
-        return result;
+        return new FirebirdReturnBinaryColumn(result);
     }
     
     private FirebirdBinaryColumnType compare(final FirebirdBinaryColumnType current, final FirebirdBinaryColumnType compareTo) {

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdReturnBinaryColumn;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type.FirebirdFunctionReturnTypeHandler;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type.FirebirdFunctionType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -39,22 +40,22 @@ import java.util.Collection;
 public final class FirebirdConditionalReturnTypeHandler implements FirebirdFunctionReturnTypeHandler {
     
     @Override
-    public FirebirdBinaryColumnType getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
+    public FirebirdReturnBinaryColumn getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
         for (ExpressionSegment parameter : parameters) {
             if (parameter instanceof ColumnSegment) {
                 ColumnSegmentBoundInfo columnBoundInfo = ((ColumnSegment) parameter).getColumnBoundInfo();
                 ShardingSphereColumn column = schema.getTable(columnBoundInfo.getOriginalTable()).getColumn(columnBoundInfo.getOriginalColumn());
-                return FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType());
+                return new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType()));
             } else if (parameter instanceof LiteralExpressionSegment) {
                 Object literals = ((LiteralExpressionSegment) parameter).getLiterals();
-                return FirebirdBinaryColumnType.valueOfJavaType(literals);
+                return new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.valueOfJavaType(literals));
             } else if (parameter instanceof ParameterMarkerExpressionSegment) {
-                return FirebirdBinaryColumnType.VARYING;
+                return new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.VARYING);
             } else if (parameter instanceof FunctionSegment) {
                 FunctionSegment functionSegment = (FunctionSegment) parameter;
                 return FirebirdFunctionType.getReturnType(functionSegment.getFunctionName(), schema, functionSegment.getParameters());
             }
         }
-        return FirebirdBinaryColumnType.NULL;
+        return new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.NULL);
     }
 }

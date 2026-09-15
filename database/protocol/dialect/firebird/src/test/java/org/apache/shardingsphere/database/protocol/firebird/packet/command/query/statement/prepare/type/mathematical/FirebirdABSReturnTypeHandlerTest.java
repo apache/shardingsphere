@@ -40,6 +40,6 @@ class FirebirdABSReturnTypeHandlerTest {
     
     @Test
     void assertGetReturnTypeWithParameterMarker() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))), is(FirebirdBinaryColumnType.DOUBLE));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))).getType(), is(FirebirdBinaryColumnType.DOUBLE));
     }
 }

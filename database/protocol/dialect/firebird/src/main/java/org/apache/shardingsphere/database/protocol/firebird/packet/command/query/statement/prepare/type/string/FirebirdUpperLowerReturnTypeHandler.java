@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdReturnBinaryColumn;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type.FirebirdFunctionReturnTypeHandler;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type.FirebirdFunctionType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -53,22 +54,22 @@ public final class FirebirdUpperLowerReturnTypeHandler implements FirebirdFuncti
     }
     
     @Override
-    public FirebirdBinaryColumnType getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
+    public FirebirdReturnBinaryColumn getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
         ExpressionSegment parameter = parameters.iterator().next();
         if (parameter instanceof ColumnSegment) {
             ColumnSegmentBoundInfo columnBoundInfo = ((ColumnSegment) parameter).getColumnBoundInfo();
             ShardingSphereColumn column = schema.getTable(columnBoundInfo.getOriginalTable()).getColumn(columnBoundInfo.getOriginalColumn());
-            return COLUMN_TYPE_MAP.get(column.getDataType());
+            return new FirebirdReturnBinaryColumn(COLUMN_TYPE_MAP.get(column.getDataType()));
         } else if (parameter instanceof LiteralExpressionSegment) {
             Object literals = ((LiteralExpressionSegment) parameter).getLiterals();
             if (literals instanceof String) {
-                return FirebirdBinaryColumnType.VARYING;
+                return new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.VARYING);
             }
         } else if (parameter instanceof FunctionSegment) {
             FunctionSegment functionSegment = (FunctionSegment) parameter;
             return FirebirdFunctionType.getReturnType(functionSegment.getFunctionName(), schema, functionSegment.getParameters());
         }
         // TODO replace with TEXT when CHAR type is fixed
-        return FirebirdBinaryColumnType.VARYING;
+        return new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.VARYING);
     }
 }

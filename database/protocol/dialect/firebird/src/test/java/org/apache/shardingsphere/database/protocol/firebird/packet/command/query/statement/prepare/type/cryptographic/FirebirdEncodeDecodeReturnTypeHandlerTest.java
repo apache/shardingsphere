@@ -60,21 +60,21 @@ class FirebirdEncodeDecodeReturnTypeHandlerTest {
         ShardingSphereColumn columnInfo = new ShardingSphereColumn("order_id", Types.BIGINT, false, false, false, true, false, false);
         when(tableSegment.getColumn(column)).thenReturn(columnInfo);
         when(schema.getTable(table)).thenReturn(tableSegment);
-        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)), is(FirebirdBinaryColumnType.INT64));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)).getType(), is(FirebirdBinaryColumnType.INT64));
     }
     
     @Test
     void assertGetReturnTypeWithByteArrayLiteral() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, new byte[0]))), is(FirebirdBinaryColumnType.BLOB));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, new byte[0]))).getType(), is(FirebirdBinaryColumnType.BLOB));
     }
     
     @Test
     void assertGetReturnTypeWithOtherLiteral() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, "text"))), is(FirebirdBinaryColumnType.BLOB_SUBTYPE_TEXT));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, "text"))).getType(), is(FirebirdBinaryColumnType.BLOB_SUBTYPE_TEXT));
     }
     
     @Test
     void assertGetReturnTypeWithParameterMarker() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))), is(FirebirdBinaryColumnType.BLOB_SUBTYPE_TEXT));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))).getType(), is(FirebirdBinaryColumnType.BLOB_SUBTYPE_TEXT));
     }
 }

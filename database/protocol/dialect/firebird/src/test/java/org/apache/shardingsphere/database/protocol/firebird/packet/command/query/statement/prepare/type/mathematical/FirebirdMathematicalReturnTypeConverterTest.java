@@ -69,38 +69,38 @@ class FirebirdMathematicalReturnTypeConverterTest {
         when(schema.getTable(table)).thenReturn(tableSegment);
         Map<Integer, FirebirdBinaryColumnType> columnTypeMap = new HashMap<>();
         columnTypeMap.put(Types.INTEGER, FirebirdBinaryColumnType.LONG);
-        assertThat(FirebirdMathematicalReturnTypeConverter.convert(schema, Collections.singletonList(columnSegment), FirebirdBinaryColumnType.DOUBLE, columnTypeMap),
+        assertThat(FirebirdMathematicalReturnTypeConverter.convert(schema, Collections.singletonList(columnSegment), FirebirdBinaryColumnType.DOUBLE, columnTypeMap).getType(),
                 is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertConvertWithBigIntegerLiteral() {
         assertThat(FirebirdMathematicalReturnTypeConverter.convert(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, BigInteger.ONE)),
-                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()), is(FirebirdBinaryColumnType.INT128));
+                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()).getType(), is(FirebirdBinaryColumnType.INT128));
     }
     
     @Test
     void assertConvertWithBigDecimalLiteral() {
         assertThat(FirebirdMathematicalReturnTypeConverter.convert(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, BigDecimal.ONE)),
-                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()), is(FirebirdBinaryColumnType.NUMERIC));
+                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()).getType(), is(FirebirdBinaryColumnType.NUMERIC));
     }
     
     @Test
     void assertConvertWithOtherLiteral() {
         assertThat(FirebirdMathematicalReturnTypeConverter.convert(schema, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1L)),
-                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()), is(FirebirdBinaryColumnType.LONG));
+                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertConvertWithParameterMarker() {
         assertThat(FirebirdMathematicalReturnTypeConverter.convert(schema, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)),
-                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()), is(FirebirdBinaryColumnType.DOUBLE));
+                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()).getType(), is(FirebirdBinaryColumnType.DOUBLE));
     }
     
     @Test
     void assertConvertWithOtherSegment() {
         assertThat(FirebirdMathematicalReturnTypeConverter.convert(schema, Collections.singletonList(otherSegment),
-                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()), is(FirebirdBinaryColumnType.LONG));
+                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
@@ -108,6 +108,6 @@ class FirebirdMathematicalReturnTypeConverterTest {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "MAX", "MAX");
         functionSegment.getParameters().add(new ParameterMarkerExpressionSegment(0, 0, 0));
         assertThat(FirebirdMathematicalReturnTypeConverter.convert(schema, Collections.singletonList(functionSegment),
-                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()), is(FirebirdBinaryColumnType.LONG));
+                FirebirdBinaryColumnType.DOUBLE, Collections.emptyMap()).getType(), is(FirebirdBinaryColumnType.LONG));
     }
 }

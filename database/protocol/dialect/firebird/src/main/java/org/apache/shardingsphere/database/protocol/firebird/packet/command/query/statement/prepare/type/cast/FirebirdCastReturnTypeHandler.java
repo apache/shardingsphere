@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdReturnBinaryColumn;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type.FirebirdFunctionReturnTypeHandler;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -66,7 +67,7 @@ public final class FirebirdCastReturnTypeHandler implements FirebirdFunctionRetu
     }
     
     @Override
-    public FirebirdBinaryColumnType getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
+    public FirebirdReturnBinaryColumn getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
         Iterator<ExpressionSegment> iterator = parameters.iterator();
         ExpressionSegment parameter = iterator.next();
         try {
@@ -76,8 +77,8 @@ public final class FirebirdCastReturnTypeHandler implements FirebirdFunctionRetu
         // TODO add support for custom domains
         if (parameter instanceof DataTypeSegment) {
             String typeName = ((DataTypeSegment) parameter).getDataTypeName();
-            return COLUMN_TYPE_MAP.get(typeName);
+            return new FirebirdReturnBinaryColumn(COLUMN_TYPE_MAP.get(typeName));
         }
-        return FirebirdBinaryColumnType.LONG;
+        return new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.LONG);
     }
 }

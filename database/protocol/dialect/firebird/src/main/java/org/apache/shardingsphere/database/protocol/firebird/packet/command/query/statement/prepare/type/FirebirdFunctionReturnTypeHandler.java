@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type;
 
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdReturnBinaryColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
@@ -35,5 +35,5 @@ public interface FirebirdFunctionReturnTypeHandler {
      * @param parameters function parameters
      * @return return type of function
      */
-    FirebirdBinaryColumnType getReturnType(ShardingSphereSchema schema, Collection<ExpressionSegment> parameters);
+    FirebirdReturnBinaryColumn getReturnType(ShardingSphereSchema schema, Collection<ExpressionSegment> parameters);
 }

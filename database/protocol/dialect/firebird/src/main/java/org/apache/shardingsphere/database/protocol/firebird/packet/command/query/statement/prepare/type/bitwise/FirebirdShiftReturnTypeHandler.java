@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdReturnBinaryColumn;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type.FirebirdFunctionReturnTypeHandler;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -34,16 +35,16 @@ import java.util.Collection;
 public final class FirebirdShiftReturnTypeHandler implements FirebirdFunctionReturnTypeHandler {
     
     @Override
-    public FirebirdBinaryColumnType getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
+    public FirebirdReturnBinaryColumn getReturnType(final ShardingSphereSchema schema, final Collection<ExpressionSegment> parameters) {
         ExpressionSegment parameter = parameters.iterator().next();
         // TODO add support for INT128 column type
         if (parameter instanceof LiteralExpressionSegment) {
             Object literals = ((LiteralExpressionSegment) parameter).getLiterals();
             if (literals instanceof BigInteger) {
-                return FirebirdBinaryColumnType.INT128;
+                return new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.INT128);
             }
-            return FirebirdBinaryColumnType.INT64;
+            return new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.INT64);
         }
-        return FirebirdBinaryColumnType.INT64;
+        return new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.INT64);
     }
 }

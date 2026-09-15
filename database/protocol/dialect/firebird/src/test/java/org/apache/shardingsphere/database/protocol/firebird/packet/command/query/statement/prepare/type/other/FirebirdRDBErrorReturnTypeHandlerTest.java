@@ -39,6 +39,6 @@ class FirebirdRDBErrorReturnTypeHandlerTest {
     
     @Test
     void assertGetReturnType() {
-        assertThat(handler.getReturnType(schema, Collections.emptyList()), is(FirebirdBinaryColumnType.VARYING));
+        assertThat(handler.getReturnType(schema, Collections.emptyList()).getType(), is(FirebirdBinaryColumnType.VARYING));
     }
 }

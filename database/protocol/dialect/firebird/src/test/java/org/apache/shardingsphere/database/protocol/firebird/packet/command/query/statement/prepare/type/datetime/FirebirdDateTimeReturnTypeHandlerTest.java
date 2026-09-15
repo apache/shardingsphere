@@ -39,6 +39,6 @@ class FirebirdDateTimeReturnTypeHandlerTest {
     
     @Test
     void assertGetReturnType() {
-        assertThat(handler.getReturnType(schema, Collections.emptyList()), is(FirebirdBinaryColumnType.TIMESTAMP));
+        assertThat(handler.getReturnType(schema, Collections.emptyList()).getType(), is(FirebirdBinaryColumnType.TIMESTAMP));
     }
 }

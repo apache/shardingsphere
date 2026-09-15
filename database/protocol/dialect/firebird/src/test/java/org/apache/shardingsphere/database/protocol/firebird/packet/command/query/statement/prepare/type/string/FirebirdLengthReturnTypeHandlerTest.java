@@ -53,24 +53,24 @@ class FirebirdLengthReturnTypeHandlerTest {
     @Test
     void assertGetReturnTypeWithLongVarcharColumn() {
         stubColumn(Types.LONGVARCHAR);
-        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)), is(FirebirdBinaryColumnType.INT64));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)).getType(), is(FirebirdBinaryColumnType.INT64));
     }
     
     @Test
     void assertGetReturnTypeWithClobColumn() {
         stubColumn(Types.CLOB);
-        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)), is(FirebirdBinaryColumnType.INT64));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)).getType(), is(FirebirdBinaryColumnType.INT64));
     }
     
     @Test
     void assertGetReturnTypeWithOtherColumn() {
         stubColumn(Types.VARCHAR);
-        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)), is(FirebirdBinaryColumnType.LONG));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(columnSegment)).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     @Test
     void assertGetReturnTypeWithNonColumnSegment() {
-        assertThat(handler.getReturnType(schema, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))), is(FirebirdBinaryColumnType.LONG));
+        assertThat(handler.getReturnType(schema, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))).getType(), is(FirebirdBinaryColumnType.LONG));
     }
     
     private void stubColumn(final int dataType) {
