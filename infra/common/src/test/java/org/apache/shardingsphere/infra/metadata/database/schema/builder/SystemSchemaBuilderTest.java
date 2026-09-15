@@ -59,6 +59,23 @@ class SystemSchemaBuilderTest {
     }
     
     @Test
+    void assertBuildForOracle() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        Map<String, ShardingSphereSchema> actual = SystemSchemaBuilder.build("sys", databaseType, new ConfigurationProperties(PropertiesBuilder.build()));
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.containsKey("sys"));
+        assertTrue(actual.containsKey("system_lobs"));
+        assertThat(actual.get("sys").getAllTables().size(), is(6));
+        assertTrue(actual.get("sys").containsTable("all_sequences"));
+        assertTrue(actual.get("sys").containsTable("all_synonyms"));
+        assertTrue(actual.get("sys").containsTable("all_tab_columns"));
+        assertTrue(actual.get("sys").containsTable("all_tables"));
+        assertTrue(actual.get("sys").containsTable("all_views"));
+        assertTrue(actual.get("sys").containsTable("user_tables"));
+        assertThat(actual.get("system_lobs").getAllTables().size(), is(0));
+    }
+    
+    @Test
     void assertBuildForPostgreSQL() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         Map<String, ShardingSphereSchema> actual = SystemSchemaBuilder.build("sharding_db", databaseType, new ConfigurationProperties(PropertiesBuilder.build()));
