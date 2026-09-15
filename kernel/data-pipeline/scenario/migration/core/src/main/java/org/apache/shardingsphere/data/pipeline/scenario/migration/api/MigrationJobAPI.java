@@ -45,6 +45,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.co
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.swapper.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
@@ -57,6 +58,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storag
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.EmptyRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.json.JsonEngine;
@@ -67,6 +69,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.constant.SingleTableConstants;
 import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -354,9 +357,11 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
         try (
                 PipelineDataSource dataSource = new PipelineDataSource(jobConfig.getTarget());
                 Connection connection = dataSource.getConnection()) {
+            DatabaseIdentifierContext identifierContext = dataSource.getIdentifierContext();
             for (String each : jobConfig.getTargetTableNames()) {
                 String targetSchemaName = mapping.getSchemaName(each);
-                String sql = pipelineSQLBuilder.buildDropSQL(targetSchemaName, each);
+                String actualSchemaName = null == targetSchemaName ? null : identifierContext.normalizeStorage(IdentifierScope.SCHEMA, new IdentifierValue(targetSchemaName));
+                String sql = pipelineSQLBuilder.buildDropSQL(actualSchemaName, each);
                 log.info("cleanTempTableOnRollback, targetSchemaName={}, targetTableName={}, sql={}", targetSchemaName, each, sql);
                 try (Statement statement = connection.createStatement()) {
                     statement.execute(sql);

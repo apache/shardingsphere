@@ -30,12 +30,14 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -103,7 +105,6 @@ class MigrateTableExecutorTest {
     @BeforeEach
     void setUp() {
         executor.setDatabase(database);
-        when(database.getName()).thenReturn(TARGET_DATABASE_NAME);
         when(contextManager.getMetaDataContexts().getMetaData().containsDatabase(TARGET_DATABASE_NAME)).thenReturn(true);
     }
     
@@ -206,11 +207,43 @@ class MigrateTableExecutorTest {
         }
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideTargetIdentifiers")
+    void assertExecuteUpdateNormalizesTargetIdentifier(final String name, final IdentifierCasePolicySet policySet,
+                                                       final IdentifierValue targetIdentifier, final String expectedTableName) {
+        ShardingSphereDatabase targetDatabase = mock(ShardingSphereDatabase.class);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(TARGET_DATABASE_NAME)).thenReturn(targetDatabase);
+        when(targetDatabase.getIdentifierContext()).thenReturn(new DatabaseIdentifierContext(policySet));
+        MigrationSourceTargetSegment entry = new MigrationSourceTargetSegment(new IdentifierValue(SOURCE_DATABASE_NAME), null,
+                new IdentifierValue("source_table"), targetIdentifier);
+        try (
+                MockedConstruction<PipelineDataSourcePersistService> ignored = mockConstruction(PipelineDataSourcePersistService.class,
+                        (mock, context) -> when(mock.load(any(PipelineContextKey.class), eq("MIGRATION"))).thenReturn(Collections.emptyMap()));
+                MockedStatic<TypedSPILoader> spiLoader = mockStatic(TypedSPILoader.class, Answers.CALLS_REAL_METHODS)) {
+            spiLoader.when(() -> TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION")).thenReturn(jobAPI);
+            executor.executeUpdate(new MigrateTableStatement(TARGET_DATABASE_NAME, Collections.singleton(entry)), contextManager);
+            verify(jobAPI).schedule(any(PipelineContextKey.class), entriesCaptor.capture(), eq(TARGET_DATABASE_NAME));
+            assertThat(entriesCaptor.getValue().iterator().next().getTargetTableName(), is(expectedTableName));
+            verify(database, never()).getIdentifierContext();
+        }
+    }
+    
+    private static Stream<Arguments> provideTargetIdentifiers() {
+        return Stream.of(
+                Arguments.of("unquoted uppercase target", IdentifierCasePolicyFactory.newLowerCasePolicySet(), new IdentifierValue("T_ORDER"), "t_order"),
+                Arguments.of("quoted uppercase target", IdentifierCasePolicyFactory.newLowerCasePolicySet(), new IdentifierValue("T_ORDER", QuoteCharacter.QUOTE), "T_ORDER"),
+                Arguments.of("quoted mixed-case target", IdentifierCasePolicyFactory.newLowerCasePolicySet(), new IdentifierValue("T_Order", QuoteCharacter.BACK_QUOTE), "T_Order"),
+                Arguments.of("case-sensitive storage target", IdentifierCasePolicyFactory.newSensitivePolicySet(), new IdentifierValue("T_ORDER"), "T_ORDER"));
+    }
+    
     private MigrateTableStatement createStatement(final String sourceSchemaName) {
         return createStatement(sourceSchemaName, new IdentifierValue("FOO_TBL", QuoteCharacter.BACK_QUOTE));
     }
     
     private MigrateTableStatement createStatement(final String sourceSchemaName, final IdentifierValue sourceTableIdentifier) {
+        when(database.getName()).thenReturn(TARGET_DATABASE_NAME);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(TARGET_DATABASE_NAME)).thenReturn(database);
+        when(database.getIdentifierContext()).thenReturn(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
         MigrationSourceTargetSegment entry = new MigrationSourceTargetSegment(new IdentifierValue(SOURCE_DATABASE_NAME, QuoteCharacter.BACK_QUOTE),
                 null == sourceSchemaName ? null : new IdentifierValue(sourceSchemaName), sourceTableIdentifier,
                 new IdentifierValue("foo_tbl", QuoteCharacter.NONE));
