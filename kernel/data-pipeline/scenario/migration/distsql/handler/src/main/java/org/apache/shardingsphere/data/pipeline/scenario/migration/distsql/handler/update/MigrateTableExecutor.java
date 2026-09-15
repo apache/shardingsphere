@@ -65,13 +65,16 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
                 () -> new MissingRequiredTargetDatabaseException(targetDatabaseName));
         MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
         PipelineContextKey contextKey = new PipelineContextKey(InstanceType.PROXY);
-        jobAPI.schedule(contextKey, getMigrationSourceTargetEntries(contextKey, sqlStatement), targetDatabaseName);
+        jobAPI.schedule(contextKey, getMigrationSourceTargetEntries(contextKey, sqlStatement,
+                contextManager.getMetaDataContexts().getMetaData().getDatabase(targetDatabaseName)), targetDatabaseName);
     }
     
-    private Collection<MigrationSourceTargetEntry> getMigrationSourceTargetEntries(final PipelineContextKey contextKey, final MigrateTableStatement sqlStatement) {
+    private Collection<MigrationSourceTargetEntry> getMigrationSourceTargetEntries(final PipelineContextKey contextKey, final MigrateTableStatement sqlStatement,
+                                                                                   final ShardingSphereDatabase targetDatabase) {
         Collection<MigrationSourceTargetEntry> result = new LinkedList<>();
         for (MigrationSourceTargetSegment each : sqlStatement.getSourceTargetEntries()) {
-            result.add(new MigrationSourceTargetEntry(getSourceDataNode(contextKey, each), each.getTargetTableName()));
+            String targetTableName = targetDatabase.getIdentifierContext().normalizeStorage(IdentifierScope.TABLE, each.getTargetTableIdentifier());
+            result.add(new MigrationSourceTargetEntry(getSourceDataNode(contextKey, each), targetTableName));
         }
         return result;
     }

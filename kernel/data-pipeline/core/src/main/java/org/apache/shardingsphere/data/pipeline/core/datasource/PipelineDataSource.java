@@ -21,10 +21,16 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineLazyInitializer;
 import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
@@ -49,10 +55,31 @@ public final class PipelineDataSource implements DataSource, AutoCloseable {
     
     private final AtomicBoolean closed = new AtomicBoolean(false);
     
+    private final PipelineLazyInitializer<DatabaseIdentifierContext> identifierContext = new PipelineLazyInitializer<DatabaseIdentifierContext>() {
+        
+        @Override
+        protected DatabaseIdentifierContext doInitialize() {
+            return dataSource instanceof ShardingSphereDataSource
+                    ? new DatabaseIdentifierContext(IdentifierCasePolicyResolver.resolveProtocol(databaseType))
+                    : DatabaseIdentifierContextFactory.create(databaseType, dataSource);
+        }
+    };
+    
     @SneakyThrows(SQLException.class)
     public PipelineDataSource(final PipelineDataSourceConfiguration pipelineDataSourceConfig) {
         dataSource = TypedSPILoader.getService(PipelineDataSourceCreator.class, pipelineDataSourceConfig.getType()).create(pipelineDataSourceConfig.getDataSourceConfiguration());
         databaseType = pipelineDataSourceConfig.getDatabaseType();
+    }
+    
+    /**
+     * Get the SQL endpoint's identifier context, resolved once for this data source.
+     * ShardingSphere JDBC receives protocol identifiers; native data sources use their storage policy.
+     *
+     * @return identifier context
+     */
+    @SneakyThrows(ConcurrentException.class)
+    public DatabaseIdentifierContext getIdentifierContext() {
+        return identifierContext.get();
     }
     
     /**
