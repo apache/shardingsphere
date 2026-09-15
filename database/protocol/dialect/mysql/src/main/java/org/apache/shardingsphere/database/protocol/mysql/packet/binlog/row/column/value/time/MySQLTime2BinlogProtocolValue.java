@@ -26,6 +26,7 @@ import java.time.LocalTime;
 
 /**
  * TIME2 type value of MySQL binlog protocol.
+ * The 3-byte value is the packed time offset by 0x800000, so it is signed: MySQL TIME ranges from -838:59:59 to 838:59:59.
  * Stored as 3-byte value The number of decimals for the fractional part is stored in the table metadata as a one byte value.
  * The number of bytes that follow the 3 byte time value can be calculated with the following formula: (decimals + 1) / 2
  *
@@ -37,16 +38,37 @@ import java.time.LocalTime;
  */
 public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolValue {
     
+    private static final int INT_OFFSET = 0x800000;
+    
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        int time = payload.getByteBuf().readUnsignedMedium();
+        int packedTime = payload.getByteBuf().readUnsignedMedium() - INT_OFFSET;
         MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-        if (0x800000 == time) {
+        if (0 == packedTime) {
             return MySQLTimeValueUtils.ZERO_OF_TIME;
         }
-        int hour = (time >> 12) % (1 << 10);
-        int minute = (time >> 6) % (1 << 6);
-        int second = time % (1 << 6);
-        return LocalTime.of(hour, minute, second).withNano(fractionalSeconds.getNanos());
+        int magnitude = Math.abs(packedTime);
+        int hour = (magnitude >> 12) % (1 << 10);
+        int minute = (magnitude >> 6) % (1 << 6);
+        int second = magnitude % (1 << 6);
+        return packedTime > 0 && hour < 24
+                ? LocalTime.of(hour, minute, second).withNano(fractionalSeconds.getNanos())
+                : formatOutOfLocalTimeRange(packedTime < 0, hour, minute, second, fractionalSeconds.getNanos());
+    }
+    
+    /**
+     * Formats a value that {@link LocalTime} cannot hold, which is any negative time and any time from 24:00:00 up to the MySQL maximum of 838:59:59.
+     * The text form matches what {@link MySQLTimeBinlogProtocolValue} returns for every value and what {@link MySQLTimeValueUtils#ZERO_OF_TIME} returns from this same method.
+     *
+     * @param negative whether the time is negative
+     * @param hour hour
+     * @param minute minute
+     * @param second second
+     * @param nanos nanoseconds, always a whole number of microseconds
+     * @return time in MySQL text form
+     */
+    private String formatOutOfLocalTimeRange(final boolean negative, final int hour, final int minute, final int second, final int nanos) {
+        String result = String.format("%s%02d:%02d:%02d", negative ? "-" : "", hour, minute, second);
+        return 0 == nanos ? result : result + String.format(".%06d", nanos / 1000);
     }
 }
