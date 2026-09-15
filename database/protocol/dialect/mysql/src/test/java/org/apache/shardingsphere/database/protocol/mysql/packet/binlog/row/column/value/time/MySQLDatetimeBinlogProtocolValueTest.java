@@ -41,6 +41,18 @@ class MySQLDatetimeBinlogProtocolValueTest {
     private MySQLBinlogColumnDef columnDef;
     
     @Test
+    void assertReadDatetimeWithZeroMonth() {
+        when(payload.readInt8()).thenReturn(20230015100000L);
+        assertThat(new MySQLDatetimeBinlogProtocolValue().read(columnDef, payload), is("2023-00-15 10:00:00"));
+    }
+    
+    @Test
+    void assertReadDatetimeWithZeroDay() {
+        when(payload.readInt8()).thenReturn(20230500100000L);
+        assertThat(new MySQLDatetimeBinlogProtocolValue().read(columnDef, payload), is("2023-05-00 10:00:00"));
+    }
+    
+    @Test
     void assertRead() {
         when(payload.readInt8()).thenReturn(99991231235959L);
         LocalDateTime expected = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
