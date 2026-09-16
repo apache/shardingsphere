@@ -36,7 +36,7 @@ public final class FirebirdReturnBinaryColumn {
     private final int scale;
     
     public FirebirdReturnBinaryColumn(final FirebirdBinaryColumnType type) {
-        if (type == null) {
+        if (null == type) {
             this.type = FirebirdBinaryColumnType.LONG;
             this.length = FirebirdBinaryColumnType.LONG.getLength();
             this.subtype = FirebirdBinaryColumnType.LONG.getSubtype();
@@ -49,7 +49,7 @@ public final class FirebirdReturnBinaryColumn {
     }
     
     public FirebirdReturnBinaryColumn(final FirebirdBinaryColumnType type, final int length) {
-        if (type == null) {
+        if (null == type) {
             this.type = FirebirdBinaryColumnType.LONG;
             this.subtype = FirebirdBinaryColumnType.LONG.getSubtype();
         } else {
@@ -61,7 +61,7 @@ public final class FirebirdReturnBinaryColumn {
     }
     
     public FirebirdReturnBinaryColumn(final FirebirdBinaryColumnType type, final int length, final int subtype) {
-        if (type == null) {
+        if (null == type) {
             this.type = FirebirdBinaryColumnType.LONG;
         } else {
             this.type = type;
