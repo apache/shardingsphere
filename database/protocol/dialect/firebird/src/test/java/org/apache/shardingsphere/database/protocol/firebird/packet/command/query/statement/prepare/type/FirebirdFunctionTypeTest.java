@@ -51,7 +51,7 @@ class FirebirdFunctionTypeTest {
     
     @Test
     void assertGetReturnTypeWithNonEnglishLocale() {
-        assertThat(FirebirdFunctionType.getReturnType(String.format(Locale.forLanguageTag("tr-TR"),"sign"), schema, Collections.emptyList()).getType(), is(FirebirdBinaryColumnType.SHORT));
+        assertThat(FirebirdFunctionType.getReturnType(String.format(Locale.forLanguageTag("tr-TR"), "sign"), schema, Collections.emptyList()).getType(), is(FirebirdBinaryColumnType.SHORT));
     }
     
     private static Stream<Arguments> getReturnTypeArguments() {

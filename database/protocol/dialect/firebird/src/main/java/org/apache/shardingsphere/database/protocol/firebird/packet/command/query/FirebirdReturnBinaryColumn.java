@@ -19,13 +19,6 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementReturnPacket;
-import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
-
-import java.util.Collection;
 
 /**
  * Firebird return column packet.
@@ -41,7 +34,6 @@ public final class FirebirdReturnBinaryColumn {
     private final int subtype;
     
     private final int scale;
-    
     
     public FirebirdReturnBinaryColumn(final FirebirdBinaryColumnType type) {
         if (type == null) {
