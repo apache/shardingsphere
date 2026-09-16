@@ -177,7 +177,7 @@ public final class SimpleTableSegmentBinder {
         }
         Optional<String> defaultSystemSchema = dialectDatabaseMetaData.getSchemaOption().getDefaultSystemSchema();
         if (!isCreateTargetStatement(segment, binderContext) && defaultSystemSchema.isPresent() && isSystemDictionaryTable(
-                databaseType, defaultSystemSchema.get(), binderContext.getMetaData().getDatabase(databaseName).getSchema(defaultSystemSchema.get()), segment.getTableName().getIdentifier())) {
+                databaseType, defaultSystemSchema.get(), binderContext.getMetaData().getDatabase(databaseName), segment.getTableName().getIdentifier())) {
             return Optional.of(new IdentifierValue(defaultSystemSchema.get()));
         }
         if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
@@ -226,10 +226,11 @@ public final class SimpleTableSegmentBinder {
         return false;
     }
     
-    private static boolean isSystemDictionaryTable(final DatabaseType databaseType, final String systemSchemaName, final ShardingSphereSchema systemSchema, final IdentifierValue tableName) {
+    private static boolean isSystemDictionaryTable(final DatabaseType databaseType, final String systemSchemaName, final ShardingSphereDatabase database, final IdentifierValue tableName) {
         if (QuoteCharacter.NONE == tableName.getQuoteCharacter()) {
             return SystemSchemaManager.isSystemTable(databaseType.getType(), systemSchemaName, tableName.getValue());
         }
+        ShardingSphereSchema systemSchema = database.getSchema(systemSchemaName);
         return null != systemSchema && systemSchema.containsTable(tableName);
     }
     
