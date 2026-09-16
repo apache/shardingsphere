@@ -17,23 +17,34 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.OrderByToken;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,19 +59,26 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class ShardingOrderByTokenGeneratorTest {
     
-    private static final String TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL = "TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL";
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    private static final String TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL = "TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL";
+    private final RouteUnit routeUnit = new RouteUnit(new RouteMapper("foo_db", "foo_db_0"), Collections.singleton(new RouteMapper("t_account", "t_account_0")));
     
-    private static final int TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX = 5;
+    private final RouteUnit otherRouteUnit = new RouteUnit(new RouteMapper("foo_db", "foo_db_1"), Collections.singleton(new RouteMapper("t_account", "t_account_1")));
     
-    private final ShardingOrderByTokenGenerator generator = new ShardingOrderByTokenGenerator();
+    private final ShardingRule rule = mock(ShardingRule.class);
     
-    @Mock
-    private OrderDirection orderDirection;
+    private ShardingOrderByTokenGenerator generator;
+    
+    @BeforeEach
+    void setUp() {
+        RouteContext routeContext = new RouteContext();
+        routeContext.getRouteUnits().add(routeUnit);
+        routeContext.getRouteUnits().add(otherRouteUnit);
+        generator = new ShardingOrderByTokenGenerator(rule);
+        generator.setRouteContext(routeContext);
+    }
     
     @Test
     void assertIsNotGenerateSQLTokenWithNotSelectStatementContext() {
@@ -83,12 +101,8 @@ class ShardingOrderByTokenGeneratorTest {
     void assertGenerateSQLTokenWithWindow() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getWindow()).thenReturn(Optional.of(new WindowSegment(0, 10)));
-        SelectStatementContext selectStatementContext = mockSelectStatementContext(selectStatement);
-        OrderByToken actual = generator.generateSQLToken(selectStatementContext);
-        assertThat(actual.getColumnLabels().get(0), is(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
-        assertThat(actual.getColumnLabels().get(1), is(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
-        assertThat(actual.getColumnLabels().get(2), is(String.valueOf(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX)));
-        assertThat(actual.getOrderDirections().get(0), is(orderDirection));
+        OrderByToken actual = generator.generateSQLToken(mockSelectStatementContext(selectStatement, createOrderByItems()));
+        assertThat(actual.toString(routeUnit), is(" ORDER BY foo_col ASC,foo_expr ASC,5 ASC "));
         assertThat(actual.getStopIndex(), is(11));
     }
     
@@ -96,12 +110,8 @@ class ShardingOrderByTokenGeneratorTest {
     void assertGenerateSQLTokenWithHaving() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getHaving()).thenReturn(Optional.of(new HavingSegment(0, 10, mock())));
-        SelectStatementContext selectStatementContext = mockSelectStatementContext(selectStatement);
-        OrderByToken actual = generator.generateSQLToken(selectStatementContext);
-        assertThat(actual.getColumnLabels().get(0), is(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
-        assertThat(actual.getColumnLabels().get(1), is(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
-        assertThat(actual.getColumnLabels().get(2), is(String.valueOf(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX)));
-        assertThat(actual.getOrderDirections().get(0), is(orderDirection));
+        OrderByToken actual = generator.generateSQLToken(mockSelectStatementContext(selectStatement, createOrderByItems()));
+        assertThat(actual.toString(routeUnit), is(" ORDER BY foo_col ASC,foo_expr ASC,5 ASC "));
         assertThat(actual.getStopIndex(), is(11));
     }
     
@@ -109,12 +119,8 @@ class ShardingOrderByTokenGeneratorTest {
     void assertGenerateSQLTokenWithGroupBy() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getGroupBy()).thenReturn(Optional.of(new GroupBySegment(0, 10, Collections.emptyList())));
-        SelectStatementContext selectStatementContext = mockSelectStatementContext(selectStatement);
-        OrderByToken actual = generator.generateSQLToken(selectStatementContext);
-        assertThat(actual.getColumnLabels().get(0), is(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
-        assertThat(actual.getColumnLabels().get(1), is(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
-        assertThat(actual.getColumnLabels().get(2), is(String.valueOf(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX)));
-        assertThat(actual.getOrderDirections().get(0), is(orderDirection));
+        OrderByToken actual = generator.generateSQLToken(mockSelectStatementContext(selectStatement, createOrderByItems()));
+        assertThat(actual.toString(routeUnit), is(" ORDER BY foo_col ASC,foo_expr ASC,5 ASC "));
         assertThat(actual.getStopIndex(), is(11));
     }
     
@@ -122,51 +128,77 @@ class ShardingOrderByTokenGeneratorTest {
     void assertGenerateSQLTokenWithWhere() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 10, mock())));
-        SelectStatementContext selectStatementContext = mockSelectStatementContext(selectStatement);
-        OrderByToken actual = generator.generateSQLToken(selectStatementContext);
-        assertThat(actual.getColumnLabels().get(0), is(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
-        assertThat(actual.getColumnLabels().get(1), is(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
-        assertThat(actual.getColumnLabels().get(2), is(String.valueOf(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX)));
-        assertThat(actual.getOrderDirections().get(0), is(orderDirection));
+        OrderByToken actual = generator.generateSQLToken(mockSelectStatementContext(selectStatement, createOrderByItems()));
+        assertThat(actual.toString(routeUnit), is(" ORDER BY foo_col ASC,foo_expr ASC,5 ASC "));
         assertThat(actual.getStopIndex(), is(11));
     }
     
     @Test
     void assertGenerateSQLTokenWithNothing() {
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        SelectStatementContext selectStatementContext = mockSelectStatementContext(selectStatement);
-        OrderByToken actual = generator.generateSQLToken(selectStatementContext);
-        assertThat(actual.getColumnLabels().get(0), is(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
-        assertThat(actual.getColumnLabels().get(1), is(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
-        assertThat(actual.getColumnLabels().get(2), is(String.valueOf(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX)));
-        assertThat(actual.getOrderDirections().get(0), is(orderDirection));
+        OrderByToken actual = generator.generateSQLToken(mockSelectStatementContext(mock(SelectStatement.class), createOrderByItems()));
+        assertThat(actual.toString(routeUnit), is(" ORDER BY foo_col ASC,foo_expr ASC,5 ASC "));
         assertThat(actual.getStopIndex(), is(1));
     }
     
-    private SelectStatementContext mockSelectStatementContext(final SelectStatement selectStatement) {
+    @Test
+    void assertGenerateSQLTokenWithTableOwner() {
+        SelectStatementContext selectStatementContext = mockSelectStatementContext(mock(SelectStatement.class), Collections.singleton(createColumnOrderByItem("t_account", "status")));
+        OrderByToken actual = generator.generateSQLToken(selectStatementContext);
+        assertThat(actual.toString(routeUnit), is(" ORDER BY t_account_0.status ASC "));
+        assertThat(actual.toString(otherRouteUnit), is(" ORDER BY t_account_1.status ASC "));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithQuotedTableOwner() {
+        SelectStatementContext selectStatementContext = mockSelectStatementContext(mock(SelectStatement.class), Collections.singleton(createColumnOrderByItem("`t_account`", "`status`")));
+        OrderByToken actual = generator.generateSQLToken(selectStatementContext);
+        assertThat(actual.toString(routeUnit), is(" ORDER BY `t_account_0`.`status` ASC "));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithBindingTableOwner() {
+        Collection<String> tableNames = Arrays.asList("t_account", "t_account_detail");
+        when(rule.getLogicAndActualTablesFromBindingTable("foo_db", "t_account", "t_account_0", tableNames)).thenReturn(Collections.singletonMap("t_account_detail", "t_account_detail_0"));
+        SelectStatementContext selectStatementContext = mockSelectStatementContext(mock(SelectStatement.class),
+                Arrays.asList(createColumnOrderByItem("t_account", "status"), createColumnOrderByItem("t_account_detail", "amount")));
+        when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
+        OrderByToken actual = generator.generateSQLToken(selectStatementContext);
+        assertThat(actual.toString(routeUnit), is(" ORDER BY t_account_0.status ASC,t_account_detail_0.amount ASC "));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithAliasOwner() {
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_account")));
+        table.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).from(table).build();
+        OrderByToken actual = generator.generateSQLToken(mockSelectStatementContext(selectStatement, Collections.singleton(createColumnOrderByItem("a", "status"))));
+        assertThat(actual.toString(routeUnit), is(" ORDER BY a.status ASC "));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithNotRoutedTableOwner() {
+        SelectStatementContext selectStatementContext = mockSelectStatementContext(mock(SelectStatement.class), Collections.singleton(createColumnOrderByItem("t_single", "status")));
+        OrderByToken actual = generator.generateSQLToken(selectStatementContext);
+        assertThat(actual.toString(routeUnit), is(" ORDER BY t_single.status ASC "));
+    }
+    
+    private SelectStatementContext mockSelectStatementContext(final SelectStatement selectStatement, final Collection<OrderByItem> orderByItems) {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(selectStatement);
-        Collection<OrderByItem> orderByItems = createOrderByItems();
         when(result.getOrderByContext().getItems()).thenReturn(orderByItems);
         return result;
     }
     
     private Collection<OrderByItem> createOrderByItems() {
-        ColumnOrderByItemSegment columnOrderByItemSegment = mock(ColumnOrderByItemSegment.class);
-        when(columnOrderByItemSegment.getText()).thenReturn(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL);
-        when(columnOrderByItemSegment.getOrderDirection()).thenReturn(orderDirection);
-        OrderByItem columnOrderByItem = mock(OrderByItem.class);
-        when(columnOrderByItem.getSegment()).thenReturn(columnOrderByItemSegment);
-        ExpressionOrderByItemSegment expressionOrderByItemSegment = mock(ExpressionOrderByItemSegment.class);
-        when(expressionOrderByItemSegment.getText()).thenReturn(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL);
-        when(expressionOrderByItemSegment.getOrderDirection()).thenReturn(orderDirection);
-        OrderByItem expressionOrderByItem = mock(OrderByItem.class);
-        when(expressionOrderByItem.getSegment()).thenReturn(expressionOrderByItemSegment);
-        OrderByItemSegment orderByItemSegment = mock(OrderByItemSegment.class);
-        when(orderByItemSegment.getOrderDirection()).thenReturn(orderDirection);
-        OrderByItem otherClassOrderByItem = mock(OrderByItem.class);
-        when(otherClassOrderByItem.getSegment()).thenReturn(orderByItemSegment);
-        when(otherClassOrderByItem.getIndex()).thenReturn(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX);
-        return Arrays.asList(columnOrderByItem, expressionOrderByItem, otherClassOrderByItem);
+        OrderByItem indexOrderByItem = new OrderByItem(new IndexOrderByItemSegment(0, 0, 5, OrderDirection.ASC, NullsOrderType.FIRST));
+        indexOrderByItem.setIndex(5);
+        return Arrays.asList(new OrderByItem(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("foo_col")), OrderDirection.ASC, NullsOrderType.FIRST)),
+                new OrderByItem(new ExpressionOrderByItemSegment(0, 0, "foo_expr", OrderDirection.ASC, NullsOrderType.FIRST)), indexOrderByItem);
+    }
+    
+    private OrderByItem createColumnOrderByItem(final String owner, final String column) {
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(column));
+        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue(owner)));
+        return new OrderByItem(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderType.FIRST));
     }
 }
