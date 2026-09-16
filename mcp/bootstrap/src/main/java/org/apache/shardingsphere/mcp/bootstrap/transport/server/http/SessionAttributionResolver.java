@@ -36,8 +36,8 @@ import java.util.function.Function;
 /**
  * Session attribution resolver.
  */
-@Getter
 @AllArgsConstructor
+@Getter
 public final class SessionAttributionResolver {
     
     private final SessionAttributionSourceConfiguration config;

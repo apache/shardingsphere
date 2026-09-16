@@ -213,8 +213,8 @@ public final class LLME2EConfiguration {
      * LLM model metadata.
      */
     @RequiredArgsConstructor
-    @EqualsAndHashCode
     @Getter
+    @EqualsAndHashCode
     public static final class ModelMetadata {
         
         private final String repository;

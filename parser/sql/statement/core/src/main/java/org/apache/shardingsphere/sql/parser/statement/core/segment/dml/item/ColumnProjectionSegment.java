@@ -31,8 +31,8 @@ import java.util.Optional;
  * Column projection segment.
  */
 @RequiredArgsConstructor
-@Setter
 @Getter
+@Setter
 public final class ColumnProjectionSegment implements ProjectionSegment, AliasAvailable {
     
     private final ColumnSegment column;

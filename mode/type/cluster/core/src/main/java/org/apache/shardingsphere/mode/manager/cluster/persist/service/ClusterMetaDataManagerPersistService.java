@@ -43,6 +43,7 @@ import org.apache.shardingsphere.mode.retry.RetryExecutor;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -283,7 +284,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         return metaDataContextManager.getMetaDataContexts();
     }
     
-    @SneakyThrows
+    @SneakyThrows(SQLException.class)
     private ShardingSphereDatabase rebuildDatabaseSchemaIndex(final String databaseName, final MetaDataContexts reloadMetaDataContexts) {
         ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), database.getRuleMetaData().getRules(),

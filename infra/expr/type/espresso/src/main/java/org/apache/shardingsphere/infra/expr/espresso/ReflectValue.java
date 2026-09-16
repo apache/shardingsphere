@@ -38,7 +38,7 @@ public class ReflectValue {
      * @param identifier the member identifier
      * @return {@link org.apache.shardingsphere.infra.expr.espresso.ReflectValue}
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public ReflectValue getMember(final String identifier) {
         Object resultValueInstance = Class.forName(VALUE_CLASS_NAME)
                 .getMethod("getMember", String.class)
@@ -51,7 +51,7 @@ public class ReflectValue {
      * @param arguments the arguments
      * @return {@link org.apache.shardingsphere.infra.expr.espresso.ReflectValue}
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public ReflectValue newInstance(final Object... arguments) {
         Object resultValueInstance = Class.forName(VALUE_CLASS_NAME)
                 .getMethod("newInstance", Object[].class)
@@ -65,7 +65,7 @@ public class ReflectValue {
      * @param arguments the invocation arguments
      * @return {@link org.apache.shardingsphere.infra.expr.espresso.ReflectValue}
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public ReflectValue invokeMember(final String identifier, final Object... arguments) {
         Object resultValueInstance = Class.forName(VALUE_CLASS_NAME)
                 .getMethod("invokeMember", String.class, Object[].class)
@@ -77,7 +77,7 @@ public class ReflectValue {
      * Returns true if this value represents a string.
      * @return Returns true if this value represents a string.
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public boolean isString() {
         return (boolean) Class.forName(VALUE_CLASS_NAME)
                 .getMethod("isString")
@@ -90,7 +90,7 @@ public class ReflectValue {
      * @param <T> target type
      * @return target type
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     public <T> T as(final Class<T> targetType) {
         return (T) Class.forName(VALUE_CLASS_NAME)

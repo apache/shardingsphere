@@ -15,42 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.registrycenter.elasticjob;
+package org.apache.shardingsphere.mode.repository.cluster.zookeeper;
 
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
-
-import java.util.Properties;
+import org.apache.shardingsphere.schedule.spi.CoordinatorRegistryCenterProvider;
 
 /**
- * {@linkplain CoordinatorRegistryCenter} initializer.
+ * ZooKeeper coordinator registry center provider.
  */
-public final class CoordinatorRegistryCenterInitializer {
+public final class ZookeeperCoordinatorRegistryCenterProvider implements CoordinatorRegistryCenterProvider {
     
-    /**
-     * Create ZooKeeper registry center instance.
-     *
-     * @param modeConfig mode configuration
-     * @param namespaceRelativePath namespace relative path
-     * @return registry center instance
-     */
-    public CoordinatorRegistryCenter createZookeeperRegistryCenter(final ModeConfiguration modeConfig, final String namespaceRelativePath) {
-        ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
-        // TODO Add registry center cache. Refer to RegistryCenterFactory.createCoordinatorRegistryCenter
-        CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfig(repositoryConfig, namespaceRelativePath));
-        result.init();
-        return result;
+    @Override
+    public CoordinatorRegistryCenter create(final ClusterPersistRepositoryConfiguration repositoryConfig, final String namespaceRelativePath) {
+        CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(createConfiguration(repositoryConfig, namespaceRelativePath));
+        try {
+            result.init();
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            try {
+                result.close();
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException closeEx) {
+                // CHECKSTYLE:ON
+                ex.addSuppressed(closeEx);
+            }
+            throw ex;
+        }
     }
     
-    private ZookeeperConfiguration getZookeeperConfig(final ClusterPersistRepositoryConfiguration repositoryConfig, final String namespaceRelativePath) {
-        // TODO Merge registry center code in ElasticJob and ShardingSphere mode; Use SPI to load impl
-        Properties props = repositoryConfig.getProps();
-        ZookeeperProperties zookeeperProps = new ZookeeperProperties(props);
+    private ZookeeperConfiguration createConfiguration(final ClusterPersistRepositoryConfiguration repositoryConfig, final String namespaceRelativePath) {
+        ZookeeperProperties zookeeperProps = new ZookeeperProperties(repositoryConfig.getProps());
         String namespace = repositoryConfig.getNamespace() + (null == namespaceRelativePath ? "" : namespaceRelativePath);
         ZookeeperConfiguration result = new ZookeeperConfiguration(repositoryConfig.getServerLists(), namespace);
         int retryIntervalMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
@@ -68,5 +69,10 @@ public final class CoordinatorRegistryCenterInitializer {
         }
         result.setDigest(zookeeperProps.getValue(ZookeeperPropertyKey.DIGEST));
         return result;
+    }
+    
+    @Override
+    public String getType() {
+        return "ZooKeeper";
     }
 }

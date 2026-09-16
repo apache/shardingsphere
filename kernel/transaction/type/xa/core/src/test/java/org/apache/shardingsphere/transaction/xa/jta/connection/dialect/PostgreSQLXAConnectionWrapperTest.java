@@ -27,6 +27,7 @@ import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.postgresql.core.BaseConnection;
 import org.postgresql.xa.PGXAConnection;
 
@@ -38,7 +39,11 @@ import java.sql.SQLException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class PostgreSQLXAConnectionWrapperTest {
@@ -47,8 +52,20 @@ class PostgreSQLXAConnectionWrapperTest {
     
     @Test
     void assertWrap() throws SQLException {
-        XAConnection actual = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType).wrap(createXADataSource(), mockConnection());
+        Connection connection = mockConnection();
+        when(connection.getAutoCommit()).thenReturn(true);
+        XAConnection actual = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType).wrap(createXADataSource(), connection);
         assertThat(actual.getXAResource(), isA(PGXAConnection.class));
+        InOrder ordered = inOrder(connection);
+        ordered.verify(connection).setAutoCommit(false);
+        ordered.verify(connection).unwrap(BaseConnection.class);
+    }
+    
+    @Test
+    void assertWrapWithAutoCommitDisabled() throws SQLException {
+        Connection connection = mockConnection();
+        DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType).wrap(createXADataSource(), connection);
+        verify(connection, never()).setAutoCommit(anyBoolean());
     }
     
     private XADataSource createXADataSource() {

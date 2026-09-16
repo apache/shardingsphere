@@ -151,7 +151,7 @@ public final class EnumerableScanImplementor implements ScanImplementor {
     private AbstractEnumerable<Object> createJDBCEnumerable(final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext executionContext) {
         return new AbstractEnumerable<Object>() {
             
-            @SneakyThrows
+            @SneakyThrows(SQLException.class)
             @Override
             public Enumerator<Object> enumerator() {
                 computeConnectionOffsets(executionContext);

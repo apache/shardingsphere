@@ -71,7 +71,7 @@ public final class FirebirdSRPAuthenticationData {
     
     private byte[] sessionKey;
     
-    @SneakyThrows
+    @SneakyThrows(NoSuchAlgorithmException.class)
     public FirebirdSRPAuthenticationData(final String hashAlgorithm, final String username, final String password, final String userPublicKey) {
         sha1Md = MessageDigest.getInstance("SHA-1");
         clientProofHashAlgorithm = hashAlgorithm;

@@ -108,6 +108,9 @@ public final class RowNumberPaginationContextEngine {
         RowNumberValueSegment offset = null;
         RowNumberValueSegment rowCount = null;
         for (BinaryOperationExpression each : rowNumberPredicates) {
+            if (each.getRight() instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) each.getRight()).isNullLiteral()) {
+                continue;
+            }
             String operator = each.getOperator();
             switch (operator) {
                 case ">":

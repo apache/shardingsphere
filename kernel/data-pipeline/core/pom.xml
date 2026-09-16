@@ -34,13 +34,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+            <artifactId>shardingsphere-schedule-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- TODO remove cluster mode dependency after 3 modes have equivalent features -->
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-cluster-mode-repository-zookeeper</artifactId>
+            <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

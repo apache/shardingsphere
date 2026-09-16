@@ -1076,4 +1076,20 @@
             <column-item name="department_id" order-direction="ASC" start-index="62" stop-index="74" />
         </group-by>
     </select>
+
+    <select sql-case-id="select_group_by_null_expression">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="7" stop-index="14" />
+        </projections>
+        <group-by>
+            <expression-item expression="NULL" start-index="38" stop-index="41">
+                <expr>
+                    <literal-expression value="null" start-index="38" stop-index="41" />
+                </expr>
+            </expression-item>
+        </group-by>
+    </select>
 </sql-parser-test-cases>

@@ -42,8 +42,8 @@ import java.util.Optional;
  *
  * @param <T> metadata object type
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class IdentifierIndex<T> {
     
     private final DatabaseIdentifierContext databaseIdentifierContext;
@@ -325,8 +325,8 @@ public final class IdentifierIndex<T> {
         return snapshot.getExactValues().toString();
     }
     
-    @Getter(AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter(AccessLevel.PRIVATE)
     private static final class Snapshot<T> {
         
         private static final Snapshot<?> EMPTY = new Snapshot<>(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());

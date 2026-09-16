@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 /**
  * Fixture DistSQL update statement.
  */
-@Getter
 @AllArgsConstructor
+@Getter
 public final class FixtureDistSQLUpdateStatement extends DistSQLStatement {
     
     private final ShardingSphereRule expectedRule;

@@ -62,7 +62,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
      * @return return value of target invocation
      */
     @RuntimeType
-    @SneakyThrows
+    @SneakyThrows(Throwable.class)
     public Object advice(@This final TargetAdviceObject target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
         adviceBefore(target, method, args);
         Object result = null;
