@@ -44,11 +44,15 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     private final SQLStatementContext sqlStatementContext;
     
+    private volatile ClientVisibleColumnLayout clientVisibleColumnLayout;
+    
     @Override
     public int getColumnCount() throws SQLException {
-        return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()
-                ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size()
-                : resultSetMetaData.getColumnCount();
+        ClientVisibleColumnLayout columnLayout = getClientVisibleColumnLayout();
+        if (columnLayout.isUseExpandedProjections()) {
+            return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size();
+        }
+        return columnLayout.isPassthrough() ? resultSetMetaData.getColumnCount() : columnLayout.getVisibleColumnCount();
     }
     
     @Override
@@ -88,20 +92,35 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnLabel(final int column) throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
+        ClientVisibleColumnLayout columnLayout = getClientVisibleColumnLayout();
+        if (columnLayout.isUseExpandedProjections()) {
             checkColumnIndex(column);
             return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1).getColumnLabel();
         }
-        return resultSetMetaData.getColumnLabel(column);
+        return resultSetMetaData.getColumnLabel(getReturnedColumnIndex(columnLayout, column));
     }
     
     @Override
     public String getColumnName(final int column) throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
+        ClientVisibleColumnLayout columnLayout = getClientVisibleColumnLayout();
+        if (columnLayout.isUseExpandedProjections()) {
             checkColumnIndex(column);
             return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1).getColumnName();
         }
-        return resultSetMetaData.getColumnName(column);
+        return resultSetMetaData.getColumnName(getReturnedColumnIndex(columnLayout, column));
+    }
+    
+    private int getReturnedColumnIndex(final ClientVisibleColumnLayout columnLayout, final int column) throws SQLException {
+        return columnLayout.isPassthrough() ? column : columnLayout.getVisibleColumnIndex(column);
+    }
+    
+    private ClientVisibleColumnLayout getClientVisibleColumnLayout() throws SQLException {
+        ClientVisibleColumnLayout result = clientVisibleColumnLayout;
+        if (null == result) {
+            result = ClientVisibleColumnLayout.create(sqlStatementContext, resultSetMetaData);
+            clientVisibleColumnLayout = result;
+        }
+        return result;
     }
     
     private void checkColumnIndex(final int column) throws SQLException {
