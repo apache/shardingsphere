@@ -15305,5 +15305,55 @@
             <column-projection name="SYSTEM_USER" start-index="7" stop-index="17" />
         </projections>
     </select>
-
+    <select sql-case-id="select_left_function_firebird">
+        <projections start-index="7" stop-index="21">
+            <expression-projection text="LEFT('test', 2)" start-index="7" stop-index="21">
+                <expr>
+                    <function function-name="LEFT" text="LEFT('test', 2)" start-index="7" stop-index="21">
+                        <parameter>
+                            <literal-expression value="test" start-index="12" stop-index="17" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="20" stop-index="20" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="RDB$DATABASE" start-index="28" stop-index="39" />
+        </from>
+    </select>
+    <select sql-case-id="select_right_function_firebird">
+        <projections start-index="7" stop-index="22">
+            <expression-projection text="RIGHT('test', 2)" start-index="7" stop-index="22">
+                <expr>
+                    <function function-name="RIGHT" text="RIGHT('test', 2)" start-index="7" stop-index="22">
+                        <parameter>
+                            <literal-expression value="test" start-index="13" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="21" stop-index="21" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="RDB$DATABASE" start-index="29" stop-index="40" />
+        </from>
+    </select>
+    <select sql-case-id="select_gen_uuid_function_firebird">
+        <projections start-index="7" stop-index="16">
+            <expression-projection text="GEN_UUID()" start-index="7" stop-index="16">
+                <expr>
+                    <function function-name="GEN_UUID" text="GEN_UUID()" start-index="7" stop-index="16"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="RDB$DATABASE" start-index="23" stop-index="34" />
+        </from>
+    </select>
+  
 </sql-parser-test-cases>

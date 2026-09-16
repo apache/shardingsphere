@@ -578,4 +578,7 @@
     <sql-case id="select_chinese_columns_with_ascii_comma_from_dual" value="SELECT 中文列一, 中文列二 AS RESULT FROM DUAL" db-types="Oracle" />
     <sql-case id="select_chinese_columns_from_table" value="SELECT 中文列一，中文列二 AS RESULT FROM t_order" db-types="Oracle" />
     <sql-case id="select_for_system_version_as_of_hive" value="SELECT * FROM table_a FOR SYSTEM_VERSION AS OF 1234567;" db-types="Hive" />
+    <sql-case id="select_left_function_firebird" value="SELECT LEFT('test', 2) FROM RDB$DATABASE;" db-types="Firebird" />
+    <sql-case id="select_right_function_firebird" value="SELECT RIGHT('test', 2) FROM RDB$DATABASE;" db-types="Firebird" />
+    <sql-case id="select_gen_uuid_function_firebird" value="SELECT GEN_UUID() FROM RDB$DATABASE;" db-types="Firebird" />
 </sql-cases>
