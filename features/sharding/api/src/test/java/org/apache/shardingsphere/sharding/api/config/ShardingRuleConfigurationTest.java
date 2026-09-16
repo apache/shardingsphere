@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.api.config;
 
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -39,5 +40,17 @@ class ShardingRuleConfigurationTest {
         assertTrue(actual.contains("bar_tbl"));
         assertTrue(actual.contains("FOO_TBL"));
         assertTrue(actual.contains("BAR_tbl"));
+    }
+    
+    @Test
+    void assertGetLogicTableNamesWithAutoTables() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getTables().add(new ShardingTableRuleConfiguration("foo_tbl", "foo_tbl_0"));
+        ruleConfig.getAutoTables().add(new ShardingAutoTableRuleConfiguration("bar_auto_tbl", "foo_ds_0,foo_ds_1"));
+        Collection<String> actual = ruleConfig.getLogicTableNames();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.contains("foo_tbl"));
+        assertTrue(actual.contains("bar_auto_tbl"));
+        assertTrue(actual.contains("BAR_AUTO_TBL"));
     }
 }
