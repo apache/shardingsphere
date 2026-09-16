@@ -19,6 +19,8 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +31,8 @@ import static org.hamcrest.Matchers.is;
 
 class PipelineDataConsistencyCalculateSQLBuilderTest {
     
-    private final PipelineDataConsistencyCalculateSQLBuilder sqlBuilder = new PipelineDataConsistencyCalculateSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+    private final PipelineDataConsistencyCalculateSQLBuilder sqlBuilder = new PipelineDataConsistencyCalculateSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),
+            new DatabaseIdentifierContext(IdentifierCasePolicyResolver.resolveProtocol(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"))));
     
     @Test
     void assertBuildCRC32SQL() {

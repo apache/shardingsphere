@@ -123,12 +123,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
-      },
-      "type": "java.io.Serializable"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"
       },
       "type": "java.io.Writer"
@@ -614,7 +608,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.util.yaml.YamlEngine"
+        "typeReached": "org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory"
       },
       "type": "java.sql.Date"
     },
@@ -626,7 +620,13 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.mysql.metadata.identifier.MySQLIdentifierCaseRuleProvider"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine"
+      },
+      "type": "java.sql.Statement[]"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.database.DatabaseTypeEngine"
       },
       "type": "java.sql.Statement[]"
     },
@@ -662,7 +662,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.util.yaml.YamlEngine"
+        "typeReached": "org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory"
       },
       "type": "java.sql.Timestamp"
     },
@@ -1396,9 +1396,15 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory"
       },
       "type": "org.apache.shardingsphere.database.connector.clickhouse.database.ClickHouseDatabaseMetaData"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase"
+      },
+      "type": "org.apache.shardingsphere.database.connector.clickhouse.database.system.ClickHouseSystemDatabase"
     },
     {
       "condition": {
@@ -1414,7 +1420,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory"
       },
       "type": "org.apache.shardingsphere.database.connector.firebird.metadata.database.FirebirdDatabaseMetaData"
     },
@@ -1444,7 +1450,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory"
       },
       "type": "org.apache.shardingsphere.database.connector.h2.metadata.database.H2DatabaseMetaData"
     },
@@ -1462,15 +1468,27 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
+      },
+      "type": "org.apache.shardingsphere.database.connector.hive.jdbcurl.HiveJdbcUrlFetcher"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader"
       },
       "type": "org.apache.shardingsphere.database.connector.hive.metadata.data.loader.HiveMetaDataLoader"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory"
       },
       "type": "org.apache.shardingsphere.database.connector.hive.metadata.database.HiveDatabaseMetaData"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase"
+      },
+      "type": "org.apache.shardingsphere.database.connector.hive.metadata.database.system.HiveSystemDatabase"
     },
     {
       "condition": {
@@ -1480,7 +1498,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory"
       },
       "type": "org.apache.shardingsphere.database.connector.mariadb.metadata.database.MariaDBDatabaseMetaData"
     },
@@ -1504,7 +1522,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory"
       },
       "type": "org.apache.shardingsphere.database.connector.mysql.metadata.database.MySQLDatabaseMetaData"
     },
@@ -1534,7 +1552,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory"
       },
       "type": "org.apache.shardingsphere.database.connector.opengauss.metadata.database.OpenGaussDatabaseMetaData"
     },
@@ -1558,9 +1576,15 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory"
       },
       "type": "org.apache.shardingsphere.database.connector.oracle.metadata.database.OracleDatabaseMetaData"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase"
+      },
+      "type": "org.apache.shardingsphere.database.connector.oracle.metadata.database.system.OracleSystemDatabase"
     },
     {
       "condition": {
@@ -1582,7 +1606,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory"
       },
       "type": "org.apache.shardingsphere.database.connector.postgresql.metadata.database.PostgreSQLDatabaseMetaData"
     },
@@ -1606,9 +1630,15 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory"
       },
       "type": "org.apache.shardingsphere.database.connector.presto.metadata.database.PrestoDatabaseMetaData"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase"
+      },
+      "type": "org.apache.shardingsphere.database.connector.presto.metadata.database.system.PrestoSystemDatabase"
     },
     {
       "condition": {
@@ -1618,7 +1648,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory"
       },
       "type": "org.apache.shardingsphere.database.connector.sql92.metadata.database.SQL92DatabaseMetaData"
     },
@@ -1630,9 +1660,15 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory"
       },
       "type": "org.apache.shardingsphere.database.connector.sql92.sqlserver.metadata.database.SQLServerDatabaseMetaData"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase"
+      },
+      "type": "org.apache.shardingsphere.database.connector.sql92.sqlserver.metadata.database.system.SQLServerSystemDatabase"
     },
     {
       "condition": {
@@ -1724,7 +1760,13 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.mysql.metadata.identifier.MySQLIdentifierCaseRuleProvider"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine"
+      },
+      "type": "org.apache.shardingsphere.driver.ShardingSphereDriver"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.database.DatabaseTypeEngine"
       },
       "type": "org.apache.shardingsphere.driver.ShardingSphereDriver"
     },
@@ -3456,6 +3498,12 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"
+      },
+      "type": "org.apache.shardingsphere.proxy.backend.opengauss.connector.jdbc.OpenGaussJDBCResultMetadataChecker"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement"
       },
       "type": "org.apache.shardingsphere.proxy.backend.opengauss.connector.jdbc.statement.OpenGaussStatementMemoryStrictlyFetchSizeSetter"
@@ -3471,6 +3519,12 @@
         "typeReached": "org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine"
       },
       "type": "org.apache.shardingsphere.proxy.backend.opengauss.response.header.query.OpenGaussQueryHeaderBuilder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"
+      },
+      "type": "org.apache.shardingsphere.proxy.backend.postgresql.connector.jdbc.PostgreSQLJDBCResultMetadataChecker"
     },
     {
       "condition": {
@@ -5032,7 +5086,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryBackendHandlerFactory"
       },
       "type": "org.apache.shardingsphere.sql.parser.engine.mysql.parser.MySQLLexer",
       "methods": [
@@ -5060,7 +5114,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryBackendHandlerFactory"
       },
       "type": "org.apache.shardingsphere.sql.parser.engine.mysql.parser.MySQLParser",
       "methods": [
@@ -5074,7 +5128,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryBackendHandlerFactory"
       },
       "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.type.MySQLDALStatementVisitor",
       "methods": [
@@ -5102,7 +5156,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryBackendHandlerFactory"
       },
       "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.type.MySQLDDLStatementVisitor",
       "methods": [
@@ -5130,7 +5184,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryBackendHandlerFactory"
       },
       "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.type.MySQLDMLStatementVisitor",
       "methods": [
@@ -5144,7 +5198,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryBackendHandlerFactory"
       },
       "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.type.MySQLTCLStatementVisitor",
       "methods": [
@@ -6084,6 +6138,12 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"
+      },
+      "glob": "META-INF/services/javax.xml.stream.XMLInputFactory"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
       },
       "glob": "META-INF/services/org.apache.seata.config.ConfigurationProvider"
@@ -6168,13 +6228,19 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
+      },
+      "glob": "META-INF/services/org.apache.shardingsphere.database.connector.core.jdbcurl.DialectJdbcUrlFetcher"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.database.connector.core.metadata.data.loader.DialectMetaDataLoader"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData"
     },
@@ -6264,12 +6330,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine"
-      },
-      "glob": "META-INF/services/org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.infra.executor.sql.prepare.driver.SQLExecutionUnitBuilder"
@@ -6351,6 +6411,12 @@
         "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.proxy.backend.connector.AdvancedProxySQLExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"
+      },
+      "glob": "META-INF/services/org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectJDBCResultMetadataChecker"
     },
     {
       "condition": {

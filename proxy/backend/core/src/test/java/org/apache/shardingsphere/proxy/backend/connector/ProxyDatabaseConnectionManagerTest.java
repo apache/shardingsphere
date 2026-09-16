@@ -317,7 +317,6 @@ class ProxyDatabaseConnectionManagerTest {
         }
     }
     
-    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertCreateStorageResourceCorrectlyWhenConnectionModeMemoryStrictly() throws SQLException {
         Connection connection = mock(Connection.class);

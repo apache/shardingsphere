@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.quer
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,6 +71,7 @@ class CRC32TableInventoryCheckCalculatorTest {
         parameter = new TableInventoryCalculateParameter(pipelineDataSource, new QualifiedTable(null, "foo_tbl"),
                 Arrays.asList("foo_col", "bar_col"), uniqueKeys, QueryType.RANGE_QUERY, null);
         when(pipelineDataSource.getDatabaseType()).thenReturn(databaseType);
+        when(pipelineDataSource.getIdentifierContext()).thenReturn(DatabaseIdentifierContextFactory.createDefault());
         when(pipelineDataSource.getConnection()).thenReturn(connection);
     }
     

@@ -36,6 +36,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -66,8 +67,11 @@ class OpenGaussMetaDataLoaderTest {
     
     private static final String ADVANCE_INDEX_META_DATA_SQL =
             "SELECT idx.relname as index_name, insp.nspname as index_schema, tbl.relname as table_name, att.attname AS column_name, pgi.indisunique as is_unique"
-                    + " FROM pg_index pgi JOIN pg_class idx ON idx.oid = pgi.indexrelid JOIN pg_namespace insp ON insp.oid = idx.relnamespace JOIN pg_class tbl ON tbl.oid = pgi.indrelid"
-                    + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = ANY(pgi.indkey) WHERE tnsp.nspname IN ('public')";
+                    + " FROM (SELECT indexrelid, indrelid, indisunique, indkey, generate_subscripts(indkey, 1) AS position FROM pg_index) pgi"
+                    + " JOIN pg_class idx ON idx.oid = pgi.indexrelid JOIN pg_namespace insp ON insp.oid = idx.relnamespace JOIN pg_class tbl ON tbl.oid = pgi.indrelid"
+                    + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace"
+                    + " JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = pgi.indkey[pgi.position] WHERE tnsp.nspname IN ('public')"
+                    + " ORDER BY insp.nspname, idx.relname, pgi.position";
     
     private static final String VIEW_META_DATA_SQL_WITHOUT_TABLES = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN ('public')";
     
@@ -144,23 +148,23 @@ class OpenGaussMetaDataLoaderTest {
     
     private static ResultSet mockAdvanceIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, false);
-        when(result.getString("table_name")).thenReturn("tbl");
-        when(result.getString("column_name")).thenReturn("id");
-        when(result.getString("index_name")).thenReturn("id");
-        when(result.getString("index_schema")).thenReturn("public");
-        when(result.getBoolean("is_unique")).thenReturn(true);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("table_name")).thenReturn("tbl", "tbl");
+        when(result.getString("column_name")).thenReturn("name", "id");
+        when(result.getString("index_name")).thenReturn("id", "id");
+        when(result.getString("index_schema")).thenReturn("public", "public");
+        when(result.getBoolean("is_unique")).thenReturn(true, true);
         return result;
     }
     
     private static ResultSet mockAdvanceIndexMetaDataResultSetWithUnmatchedRows() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, false);
-        when(result.getString("table_name")).thenReturn("tbl", "tbl", "tbl");
-        when(result.getString("column_name")).thenReturn("id", "id", "id");
-        when(result.getString("index_name")).thenReturn("missing_index", "not_matched", "id");
-        when(result.getString("index_schema")).thenReturn("ignored_schema", "public", "public");
-        when(result.getBoolean("is_unique")).thenReturn(false, true, true);
+        when(result.next()).thenReturn(true, true, true, true, false);
+        when(result.getString("table_name")).thenReturn("tbl", "tbl", "tbl", "tbl");
+        when(result.getString("column_name")).thenReturn("id", "id", "name", "id");
+        when(result.getString("index_name")).thenReturn("missing_index", "not_matched", "id", "id");
+        when(result.getString("index_schema")).thenReturn("ignored_schema", "public", "public", "public");
+        when(result.getBoolean("is_unique")).thenReturn(false, true, true, true);
         return result;
     }
     
@@ -182,7 +186,7 @@ class OpenGaussMetaDataLoaderTest {
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, expectedNameColumnCaseSensitive, true, false, true));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
-        IndexMetaData indexMetaData = new IndexMetaData("id", Collections.singletonList("id"));
+        IndexMetaData indexMetaData = new IndexMetaData("id", Arrays.asList("name", "id"));
         indexMetaData.setUnique(true);
         assertIndexMetaData(indexesIterator.next(), indexMetaData);
     }

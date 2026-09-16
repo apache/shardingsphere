@@ -17,6 +17,29 @@
 
 # Standalone Coding Standards Audit
 
+Use this mode only when the user explicitly asks to audit, check, or report coding-standards compliance.
+
+- Require an exact file, package, Maven module, directory, or whole-repository scope before starting.
+- Audit the current working tree rather than a pull request or diff.
+- Remain read-only throughout the audit.
+- Do not edit code, generate patches, run formatting, or change Git or external state.
+- When the scope contains a `pom.xml`, read the [Maven dependency version rules](rules/maven-dependencies.md) through EOF.
+- Check every target POM only within the exact user-specified Maven audit scope.
+- When the scope contains Java, read the [Java naming rules](rules/java-naming.md), [Java type rules](rules/java-types.md), [Java constructor rules](rules/java-constructors.md), [Java expression rules](rules/java-expressions.md), and [Java line-wrapping rules](rules/java-line-wrapping.md) through EOF.
+- When the scope contains a Java declaration with at least two covered declaration annotations, read the [Java declaration annotation order rules](rules/java-annotation-order.md) through EOF.
+- When the scope contains Java `throw` statements, conditional exception paths, validation or precondition calls, or calls to `ShardingSpherePreconditions`, read the [Java precondition rules](rules/java-preconditions.md) through EOF.
+- When the scope contains Java methods annotated with `lombok.SneakyThrows`, read the [Java exception handling rules](rules/java-exceptions.md) through EOF.
+- When the scope contains Java collection declarations, read the [Java collection declaration rules](rules/java-collections.md) through EOF.
+- When the scope contains Java expressions that copy `Collections.singleton`, `Collections.singletonMap`, or `Arrays.asList` into `ArrayList`, `LinkedList`, `HashMap`, or `LinkedHashMap`, read the [Java collection rules](rules/java-collections.md) through EOF.
+- When the scope contains Java tests, read the [Java test code rules](rules/java-testing.md) through EOF.
+- When the scope contains implementation artifacts, read the [defensive-code rules](rules/defensive-code.md) through EOF.
+- Before auditing, run `scripts/build_audit_inventory.py` with the repository root and every user-specified repository-relative scope.
+- Check every constrained file and every physical line in scope without sampling.
+- Record applicable rules, checked files, checked physical lines, excluded files, and blocked checks.
+- Use exactly one of these conclusions: `Strictly compliant`, `Non-compliant`, `Partial audit`, or `Not applicable`.
+- Report only confirmed violations of applicable written standards.
+- Do not assign severity labels or independently report architecture, caching, lifecycle, ownership, or other semantic-design issues.
+
 ## Audit Targets
 
 Audit every production, test, grammar, configuration, workflow, and other file in scope that a written coding standard explicitly covers. Do not assume that only Java files are subject to the audit.

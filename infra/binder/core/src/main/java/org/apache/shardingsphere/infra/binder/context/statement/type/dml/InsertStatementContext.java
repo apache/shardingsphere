@@ -41,9 +41,9 @@ import java.util.Optional;
 /**
  * Insert SQL statement context.
  */
+@Getter
 public final class InsertStatementContext implements SQLStatementContext, ParameterAware, WhereContextAvailable {
     
-    @Getter
     private final InsertStatementBaseContext baseContext;
     
     private InsertStatementBindingContext bindingContext;

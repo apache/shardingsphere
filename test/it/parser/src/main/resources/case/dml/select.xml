@@ -15300,6 +15300,11 @@
             <simple-table name="t_order" start-index="32" stop-index="38" />
         </from>
     </select>
+    <select sql-case-id="select_system_user_postgresql">
+        <projections start-index="7" stop-index="17">
+            <column-projection name="SYSTEM_USER" start-index="7" stop-index="17" />
+        </projections>
+    </select>
     <select sql-case-id="select_left_function_firebird">
         <projections start-index="7" stop-index="21">
             <expression-projection text="LEFT('test', 2)" start-index="7" stop-index="21">
@@ -15350,4 +15355,5 @@
             <simple-table name="RDB$DATABASE" start-index="23" stop-index="34" />
         </from>
     </select>
+  
 </sql-parser-test-cases>

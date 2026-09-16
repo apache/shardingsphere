@@ -21,8 +21,6 @@
     <property name="severity" value="error" />
     <property name="fileExtensions" value="java, xml, properties" />
     
-    <module name="SeverityMatchFilter" />
-    
     <module name="Header">
         <property name="fileExtensions" value="java" />
     </module>
@@ -62,6 +60,10 @@
             <property name="allowSamelineMultipleAnnotations" value="true" />
         </module>
         <module name="AnnotationUseStyle" />
+        <module name="MatchXpath">
+            <property name="query" value="//MODIFIERS[FINAL/following-sibling::ANNOTATION]" />
+            <message key="matchxpath.match" value="Place annotations before the final modifier." />
+        </module>
         <module name="MissingDeprecated" />
         <module name="MissingOverride" />
         <module name="MissingOverrideOnRecordAccessor" />
@@ -179,7 +181,9 @@
         <module name="UnusedLocalVariable">
             <property name="jdkVersion" value="21" />
         </module>
-        <module name="VariableDeclarationUsageDistance" />
+        <module name="VariableDeclarationUsageDistance">
+            <property name="allowedDistance" value="7" />
+        </module>
         <module name="RegexpSinglelineJava">
             <property name="format" value="^(?!\s*import\s+java\.util\.Map\.Entry\s*;).*\b(?:java\.util\.)?Map\.Entry\b" />
             <property name="ignoreComments" value="true" />

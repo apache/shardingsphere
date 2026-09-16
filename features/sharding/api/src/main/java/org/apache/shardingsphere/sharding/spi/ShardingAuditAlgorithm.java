@@ -21,12 +21,14 @@ import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.util.List;
 
 /**
  * Sharding audit algorithm.
  */
+@SingletonSPI
 public interface ShardingAuditAlgorithm extends ShardingSphereAlgorithm {
     
     /**

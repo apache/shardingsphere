@@ -14,28 +14,31 @@
 # limitations under the License.
 
 version = 1
-root_max_bytes = 26000
+root_max_bytes = 13000
 
 [profiles]
 root = ["agents"]
-code-write = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
-test-write = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
-code-review = ["agents", "code-of-conduct", "coding-standards", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification"]
+code-write = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "maven-dependencies", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
+test-write = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "maven-dependencies", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
+code-review = ["agents", "code-of-conduct", "coding-standards", "maven-dependencies", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification"]
+code-analysis = ["agents", "implementation-rules"]
 code-design = ["agents", "implementation-rules", "java-collections", "testing-rules", "contracts-and-removal", "cross-cutting-skills"]
-coding-standards-audit = ["agents", "code-of-conduct", "coding-standards", "standalone-audit", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code"]
+coding-standards-audit = ["agents", "code-of-conduct", "coding-standards", "standalone-audit", "maven-dependencies", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code"]
 runtime-diagnosis = ["agents", "runtime-triage", "code-verification"]
 command-execution = ["agents", "token-efficiency", "code-verification"]
 cross-cutting = ["agents", "cross-cutting-skills"]
-gen-ut = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "gen-ut", "gen-ut-verification", "change-completion"]
-review-pr = ["agents", "code-of-conduct", "coding-standards", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "review-pr", "review-pr-evidence", "review-pr-high-risk", "review-pr-sql-parser", "review-pr-corrections"]
-policy-maintenance = ["agents", "policy-maintenance", "policy-source-manifest"]
+documentation = ["agents", "documentation-wording"]
+analyze-issue = ["agents", "analyze-issue", "analyze-issue-output"]
+gen-ut = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "maven-dependencies", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "gen-ut", "gen-ut-verification", "change-completion"]
+review-pr = ["agents", "code-of-conduct", "coding-standards", "maven-dependencies", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "review-pr", "review-pr-evidence", "review-pr-high-risk", "review-pr-sql-parser", "review-pr-corrections"]
+policy-maintenance = ["agents", "policy-maintenance", "semantic-verification", "policy-source-manifest"]
 
 [[sources]]
 id = "agents"
 path = "AGENTS.md"
 kind = "instructions"
 semantic = true
-references = ["CODE_OF_CONDUCT.md", ".codex/context/token-efficiency.md", ".codex/context/cross-cutting-skills.md", ".codex/context/runtime-triage.md", ".codex/context/change-completion.md", ".codex/harness/agents/policy-maintenance.md", ".codex/harness/agents/policy-sources.toml", ".codex/skills/code-implementation/SKILL.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
+references = ["CODE_OF_CONDUCT.md", ".codex/context/token-efficiency.md", ".codex/context/cross-cutting-skills.md", ".codex/context/runtime-triage.md", ".codex/context/change-completion.md", ".codex/context/documentation-wording.md", ".codex/harness/agents/policy-maintenance.md", ".codex/harness/agents/policy-sources.toml", ".codex/skills/code-implementation/SKILL.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
 
 [[sources]]
 id = "code-of-conduct"
@@ -59,6 +62,13 @@ semantic = true
 references = ["AGENTS.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md", ".codex/skills/code-implementation/references/rules/non-regression.md"]
 
 [[sources]]
+id = "documentation-wording"
+path = ".codex/context/documentation-wording.md"
+kind = "context"
+semantic = true
+references = []
+
+[[sources]]
 id = "runtime-triage"
 path = ".codex/context/runtime-triage.md"
 kind = "context"
@@ -77,7 +87,14 @@ id = "policy-maintenance"
 path = ".codex/harness/agents/policy-maintenance.md"
 kind = "maintenance"
 semantic = true
-references = ["AGENTS.md", ".codex/harness/agents/run.py", ".codex/harness/agents/cases.toml", ".codex/harness/agents/policy-sources.toml", ".codex/context/change-completion.md"]
+references = ["AGENTS.md", ".codex/harness/agents/run.py", ".codex/harness/agents/cases.toml", ".codex/harness/agents/policy-sources.toml", ".codex/harness/agents/semantic-verification.md", ".codex/context/change-completion.md"]
+
+[[sources]]
+id = "semantic-verification"
+path = ".codex/harness/agents/semantic-verification.md"
+kind = "maintenance"
+semantic = true
+references = ["AGENTS.md", ".codex/harness/agents/cases.toml"]
 
 [[sources]]
 id = "harness-runner"
@@ -101,6 +118,27 @@ semantic = false
 references = []
 
 [[sources]]
+id = "code-handoff-hook-config"
+path = ".codex/config.toml"
+kind = "harness"
+semantic = false
+references = [".codex/harness/agents/code_handoff_hook.py"]
+
+[[sources]]
+id = "code-handoff-hook"
+path = ".codex/harness/agents/code_handoff_hook.py"
+kind = "harness"
+semantic = false
+references = []
+
+[[sources]]
+id = "code-handoff-hook-tests"
+path = ".codex/harness/agents/test_code_handoff_hook.py"
+kind = "harness"
+semantic = false
+references = [".codex/harness/agents/code_handoff_hook.py"]
+
+[[sources]]
 id = "policy-source-manifest"
 path = ".codex/harness/agents/policy-sources.toml"
 kind = "harness"
@@ -108,11 +146,32 @@ semantic = true
 references = []
 
 [[sources]]
+id = "analyze-issue"
+path = ".codex/skills/analyze-issue/SKILL.md"
+kind = "skill"
+semantic = true
+references = ["AGENTS.md", ".codex/skills/analyze-issue/references/output-contract.md"]
+
+[[sources]]
+id = "analyze-issue-output"
+path = ".codex/skills/analyze-issue/references/output-contract.md"
+kind = "reference"
+semantic = true
+references = []
+
+[[sources]]
+id = "analyze-issue-metadata"
+path = ".codex/skills/analyze-issue/agents/openai.yaml"
+kind = "metadata"
+semantic = false
+references = []
+
+[[sources]]
 id = "code-implementation"
 path = ".codex/skills/code-implementation/SKILL.md"
 kind = "skill"
 semantic = true
-references = ["AGENTS.md", ".codex/skills/coding-standards/SKILL.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
+references = ["AGENTS.md", ".codex/context/change-completion.md", ".codex/skills/coding-standards/SKILL.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
 
 [[sources]]
 id = "code-implementation-metadata"
@@ -126,7 +185,7 @@ id = "coding-standards"
 path = ".codex/skills/coding-standards/SKILL.md"
 kind = "skill"
 semantic = true
-references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/coding-standards/references/standalone-audit.md", ".codex/skills/coding-standards/references/rules/java-naming.md", ".codex/skills/coding-standards/references/rules/java-types.md", ".codex/skills/coding-standards/references/rules/java-annotation-order.md", ".codex/skills/coding-standards/references/rules/java-constructors.md", ".codex/skills/coding-standards/references/rules/java-preconditions.md", ".codex/skills/coding-standards/references/rules/java-exceptions.md", ".codex/skills/coding-standards/references/rules/java-collections.md", ".codex/skills/coding-standards/references/rules/java-expressions.md", ".codex/skills/coding-standards/references/rules/java-line-wrapping.md", ".codex/skills/coding-standards/references/rules/java-testing.md", ".codex/skills/coding-standards/references/rules/defensive-code.md"]
+references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/coding-standards/references/standalone-audit.md", ".codex/skills/coding-standards/references/rules/maven-dependencies.md", ".codex/skills/coding-standards/references/rules/java-naming.md", ".codex/skills/coding-standards/references/rules/java-types.md", ".codex/skills/coding-standards/references/rules/java-annotation-order.md", ".codex/skills/coding-standards/references/rules/java-constructors.md", ".codex/skills/coding-standards/references/rules/java-preconditions.md", ".codex/skills/coding-standards/references/rules/java-exceptions.md", ".codex/skills/coding-standards/references/rules/java-collections.md", ".codex/skills/coding-standards/references/rules/java-expressions.md", ".codex/skills/coding-standards/references/rules/java-line-wrapping.md", ".codex/skills/coding-standards/references/rules/java-testing.md", ".codex/skills/coding-standards/references/rules/defensive-code.md"]
 
 [[sources]]
 id = "coding-standards-metadata"
@@ -140,7 +199,14 @@ id = "standalone-audit"
 path = ".codex/skills/coding-standards/references/standalone-audit.md"
 kind = "reference"
 semantic = true
-references = ["AGENTS.md", "CODE_OF_CONDUCT.md"]
+references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/coding-standards/references/rules/maven-dependencies.md", ".codex/skills/coding-standards/references/rules/java-naming.md", ".codex/skills/coding-standards/references/rules/java-types.md", ".codex/skills/coding-standards/references/rules/java-annotation-order.md", ".codex/skills/coding-standards/references/rules/java-constructors.md", ".codex/skills/coding-standards/references/rules/java-preconditions.md", ".codex/skills/coding-standards/references/rules/java-exceptions.md", ".codex/skills/coding-standards/references/rules/java-collections.md", ".codex/skills/coding-standards/references/rules/java-expressions.md", ".codex/skills/coding-standards/references/rules/java-line-wrapping.md", ".codex/skills/coding-standards/references/rules/java-testing.md", ".codex/skills/coding-standards/references/rules/defensive-code.md"]
+
+[[sources]]
+id = "maven-dependencies"
+path = ".codex/skills/coding-standards/references/rules/maven-dependencies.md"
+kind = "rules"
+semantic = true
+references = []
 
 [[sources]]
 id = "java-naming"
@@ -252,7 +318,7 @@ id = "code-verification"
 path = ".codex/skills/code-implementation/references/verification.md"
 kind = "verification"
 semantic = true
-references = [".codex/context/token-efficiency.md"]
+references = [".codex/context/token-efficiency.md", ".codex/harness/agents/semantic-verification.md"]
 
 [[sources]]
 id = "gen-ut"
@@ -260,6 +326,13 @@ path = ".codex/skills/gen-ut/SKILL.md"
 kind = "skill"
 semantic = true
 references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/gen-ut/references/verification.md", ".codex/skills/code-implementation/SKILL.md"]
+
+[[sources]]
+id = "gen-ut-metadata"
+path = ".codex/skills/gen-ut/agents/openai.yaml"
+kind = "metadata"
+semantic = false
+references = []
 
 [[sources]]
 id = "gen-ut-verification"
@@ -274,6 +347,13 @@ path = ".codex/skills/review-pr/SKILL.md"
 kind = "skill"
 semantic = true
 references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/context/change-completion.md", ".codex/skills/review-pr/references/evidence-access.md", ".codex/skills/review-pr/references/high-risk-review.md", ".codex/skills/review-pr/references/sql-parser-review.md", ".codex/skills/review-pr/references/review-corrections.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
+
+[[sources]]
+id = "review-pr-metadata"
+path = ".codex/skills/review-pr/agents/openai.yaml"
+kind = "metadata"
+semantic = false
+references = []
 
 [[sources]]
 id = "review-pr-evidence"

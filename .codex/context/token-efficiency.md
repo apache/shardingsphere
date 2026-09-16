@@ -1,92 +1,26 @@
 # Token Efficiency Rules
 
-This file defines token-efficient handling rules for Apache ShardingSphere high-output commands and large structured output.
+Use this file before Maven, E2E, Proxy startup, database clients, IDE or MCP run configurations, commands that may exceed 100 output lines, or large structured analysis. Reuse the exact file during the same session unless it changed.
 
-## High-Output Command Constraints
+## Command Contract
 
-### Trigger
+Before execution, determine the command's writes, network use, authority, platform approval, output destination, timeout, success evidence, and output risk.
 
-Before running Maven, E2E, Proxy startup, database client, IDE/MCP run configuration, or any command that may output more than 100 lines, read or reuse this file.
+- `Must Wrap`: output may be large, streaming, repeated, failure-prone, or over 100 lines; use the wrapper below.
+- `May Run Raw`: output and failure output are known to be small and bounded.
+- `Unsure`: treat as `Must Wrap`.
 
-If this exact file from the current repository has already been read in this session and there is no evidence it changed, reuse the loaded content.
+Maven build, test, package, install, verification, and plugin goals are usually `Must Wrap`. E2E, shell-launched services, unbounded database or metadata queries, broad log searches, and commands that may emit dependency logs or stack traces are also `Must Wrap`. Version and help commands, `git status --short`, exact-path searches, and explicitly limited queries may run raw.
 
-### Mandatory Execution Contract
+For `Must Wrap`, keep full output out of the conversation and expose only the command, exit code, log path, and one filtered success line or focused failure excerpt. Redact secrets, credentials, private addresses, personal data, and undisclosed vulnerability details.
 
-Reading or reusing this file is not sufficient.
+When a required command needs network access that the current sandbox is known to deny, invoke its command-bound platform approval with the first execution attempt. Do not make a knowingly blocked trial run, and do not repeat already granted task authority when requesting platform approval.
 
-Before emitting any command, classify it first:
+After a nonzero exit, timeout, or missing expected result, inspect the exit code and the smallest relevant stdout, stderr, event, result, and summary evidence before deciding the next action. If an expected output directory is empty, inspect the parent command result and launcher stderr. Classify the cause as syntax, permission or sandbox, network or external service, timeout, runner or tool, or candidate behavior. Until evidence supports that classification, do not rerun the command unchanged or in parallel and do not edit the candidate, canary, or runner to hide the failure. Retry only after correcting the cause, and report it when the same cause repeats.
 
-- `Must Wrap`: use the Canonical Shell Wrapper before execution.
-- `May Run Raw`: run directly only when output is known to be small and bounded.
-- `Unsure`: use the Canonical Shell Wrapper.
-- Do not run a raw `Must Wrap` shell command directly.
-- If a prepared command is raw but should be `Must Wrap`, rewrite it into the wrapper before execution.
-- The visible output for `Must Wrap` commands must contain only a filtered summary, log path, and exit code.
-- IDE/MCP tool calls do not need shell redirection. For run or execution tools that support `fullOutputPath`, prefer a mode that returns it for potentially high-output runs.
+## Canonical Shell Wrapper
 
-### Execution Environment and Retry Gate
-
-Before execution, determine the command's expected writes, network use, required task authority, command-bound platform approval, log and output paths, timeout, and success evidence in addition to its output risk.
-
-When a required command needs network access that the current sandbox is known to deny, invoke its command-bound platform approval with the first execution attempt.
-Do not make a knowingly blocked trial run, and do not repeat already granted task authority when requesting platform approval.
-
-After a nonzero exit, timeout, or missing expected result, inspect the exit code and the smallest relevant stdout, stderr, event, result, and summary evidence before deciding the next action.
-If the expected output directory is empty, inspect the parent command result and launcher stderr; do not classify the candidate from the empty directory alone.
-Classify the failure as command syntax, permission or sandbox, network or external service, timeout, runner or tool, or candidate behavior.
-Until evidence supports that classification, do not rerun the command unchanged or in parallel and do not edit the candidate, canary, or runner to hide the failure.
-Retry only after correcting the identified cause, and stop to report the evidence when the same cause repeats.
-
-### Core Rules
-
-Do not print full high-output command logs directly into the conversation context.
-
-Use a log file or the output file returned by a tool to hold command output. In the final report, include only the command, exit code, log path, and a small filtered summary.
-
-Before sharing a log summary, avoid exposing secrets, passwords, tokens, private addresses, or undisclosed vulnerability details.
-
-### Output Risk Classification
-
-Use output risk as the primary classification. Command categories are hints, not absolute rules.
-
-#### Must Wrap
-
-Use the Canonical Shell Wrapper when output is likely large, streaming, repeated, failure-prone, or more than 100 lines.
-
-Typical `Must Wrap` commands include:
-
-- Maven build, test, package, install, verification, and plugin goals.
-- E2E runs.
-- Proxy or service startup from shell.
-- Database queries that return rows, metadata, diagnostics, or `SHOW` output.
-- Log inspection commands that may return large or repeated matches.
-- Commands whose failure may print long stack traces or dependency/build logs.
-
-#### May Run Raw
-
-Small and bounded commands may run without the wrapper.
-
-Typical `May Run Raw` commands include:
-
-- Version or help checks such as `./mvnw -version`, `java -version`, `mysql --version`, or `psql --version`.
-- Short status commands such as `git status --short`.
-- Targeted searches expected to return only a few lines.
-- Commands that are intentionally limited by object name, row count, file path, or explicit filters.
-
-#### Unsure
-
-If output size or failure output is unclear, use the Canonical Shell Wrapper.
-
-### Canonical Shell Wrapper
-
-All `Must Wrap` shell commands MUST use this wrapper. Do not duplicate category-specific wrapper scripts elsewhere in this file.
-
-- Redirect stdout and stderr to a temporary log file for the command classified as `Must Wrap`.
-- Save the exit code with `rc=$?`. Do not use `status=$?`, because `status` is a read-only special parameter in zsh and may make the wrapper fail before preserving the real command result.
-- Do not use `tee` to copy full Maven, Proxy, or E2E logs to the terminal.
-- If a command has already started producing large output without log capture, stop waiting and rerun it with a log-file wrapper.
-- Decide success or failure from the exit code. Read log content only when extracting summaries or diagnosing failures.
-- Prefer whichever filtering tool is available in the current environment, such as `rg`, `grep`, `awk`, or `sed`.
+Redirect both streams to a temporary log, preserve the exit code in `rc` because zsh reserves `status`, and never use `tee` to copy the full log. Decide the result from the exit code and read log content only for bounded summaries or diagnosis. If a command starts producing large uncaptured output, stop waiting and rerun it through this wrapper.
 
 ```sh
 log_file="$(mktemp -t shardingsphere-verify.XXXXXX.log)"
@@ -101,79 +35,29 @@ printf 'log=%s exit=%s\n' "$log_file" "$rc"
 exit "$rc"
 ```
 
+## Execution-Specific Rules
+
 ### Maven
 
-Maven build, test, package, install, verification, and plugin goals are usually `Must Wrap`. Small and bounded version or help checks may run raw.
+- Prefer explicit `-pl` modules derived from changed owners, affected tests, and consumers. Add `-am` only for dependency freshness, missing reactor artifacts, CI equivalence, or required reactor participation, and record why the explicit set was insufficient.
+- For PR readiness, normally run `-am` at most once per unchanged head; rerun only after a relevant failure, code change, or widened scope.
+- Verify multi-module changes bottom-up. On success extract `BUILD SUCCESS`, `Tests run:`, or the runner summary. On failure inspect the last 30 log lines, then search for `ERROR`, `FAILURE`, `Caused by`, or the failed test.
 
-- Run scoped commands when possible instead of defaulting to whole-repository builds.
-- Prefer an explicit `-pl <moduleA>,<moduleB>` set when changed modules, affected test modules, and runtime entry modules are known.
-- Add `-am` only when there is a clear reason, such as missing reactor dependencies, stale dependent module artifacts, CI-equivalent builds, or commands that require reactor participation.
-- For PR-readiness or mergeability checks, treat `-am` as a current-head freshness gate that normally runs at most once per unchanged head.
-  Rerun it only after a relevant failure, a code change, or a widened verification scope.
-- When a Maven command uses `-am`, record why the explicit module set or smaller command was insufficient.
-- For multi-module checks, prefer bottom-up verification: run lower-level changed modules first, then higher-level adapter or runtime modules that consume them.
-- On Maven success, extract one summary line such as `BUILD SUCCESS`, `Tests run:`, or the runner summary from the log.
-- On Maven failure, inspect `tail -n 30 "$log_file"` first, then use an available filtering tool to find `ERROR`, `FAILURE`, `Caused by`, or the failed test name.
+### IDE, Proxy, E2E, and Services
 
-### IDE/MCP Tool Runs
-
-- IDE/MCP runs are tool-managed. Classify them by expected output and runtime behavior.
-- Do not force IDE/MCP tool calls through the Canonical Shell Wrapper solely because the tool does not provide a log path.
-- For run or execution tools that support a log-path field such as `fullOutputPath`, treat that path as the log file for the run.
-- For long-running Proxy, E2E, service configurations, or other potentially high-output runs, prefer a mode that returns `fullOutputPath`, such as `waitForExit=false` when supported.
-- If the IDE or MCP tool already returned a log path, do not analyze a large output snapshot directly.
-- Small and bounded tool outputs, or tools intentionally used to read content such as `read_file`, do not need a separate log path.
-- When a log path is available, use an available filtering tool to find startup markers, port readiness, `BUILD SUCCESS`, `Process finished`, `testFailed`, `Caused by`, or feature-specific keywords.
-
-### Proxy, E2E, and Service Startup
-
-- Treat Proxy startup, E2E, and debug logs as `Must Wrap` when launched from shell, especially when SQL show or debug logging is enabled.
-- Record the startup command or run configuration, exit code when available, `fullOutputPath` or log path, and a small filtered readiness or failure summary.
-- If behavior is verified through a running Proxy or service, first confirm the process uses the current branch code or artifacts rebuilt from this change before using the result as evidence.
-- Stop temporary long-running processes after verification to avoid occupying ports or debug sessions.
+- Tool-managed runs do not need shell redirection. Prefer a mode that returns `fullOutputPath` for long or high-output runs and analyze that file instead of a large snapshot.
+- Filter logs for startup, readiness, `BUILD SUCCESS`, `Process finished`, `testFailed`, `Caused by`, or feature-specific markers.
+- Before using a running service as evidence, prove that it uses current-source or rebuilt task artifacts. Stop temporary processes after verification.
 
 ### Database Queries
 
-- Database clients are not automatically `Must Wrap`; classify them by expected output.
-- Small and bounded version or help checks may run raw.
-- Queries, metadata inspection, diagnostics, and commands with unbounded rows are `Must Wrap`.
-- Prefer read-only queries for verification.
-- Limit row and column counts. Do not use `SELECT *` unless there is a clear reason.
-- Add filters, object names, or result limits to `SHOW`, `information_schema`, or database dictionary queries.
-- Write query output to a file or intentionally keep terminal output very small.
-- If verification requires a write operation, explain the purpose, impact scope, and rollback plan, then wait for explicit user confirmation.
-
-### Final Report
-
-For each high-output command, report only:
-
-- Command or IDE run configuration name.
-- Exit code or tool-returned status.
-- Log path or `fullOutputPath`.
-- One success summary line or a focused failure snippet.
-- Skipped verification items and the exact command that can rerun them.
+- Prefer read-only queries and bound rows, columns, object names, and metadata filters. Avoid `SELECT *` without a specific reason.
+- Wrap unbounded rows, metadata, diagnostics, and broad `SHOW` output. A database write requires its purpose, exact impact, rollback plan, and explicit confirmation.
 
 ## Structured Output Constraints
 
-### Trigger
+Apply this section only to large analysis, review, handoff, or repeated evidence output.
 
-Before producing large analysis, review, implementation handoff, or repeated evidence output, use this section to keep the response compact and easy to inspect.
-
-### Core Rules
-
-1. Prefer structured formats for code changes when the tool supports them. Use JSON Patch, unified diff, or exact edit-tool replacements instead of free-form change descriptions.
-   Structured formats are usually shorter and easier to verify than natural-language descriptions of the same edit.
-2. Use tables or lists for analysis conclusions. For comparisons, option evaluation, triage results, or review evidence, prefer Markdown tables, numbered lists,
-   or short bullet lists instead of long prose paragraphs.
-3. Template repeated structures. When reporting the same kind of analysis for multiple modules, files, tests, or review findings, define the format once and fill only the data for each item.
-4. Avoid restating user input or already-loaded context. Output the conclusion, action, evidence, and remaining risk directly.
-
-### Boundaries
-
-- User-facing explanations do not need to be rigidly structured when readability would suffer.
-- Very short replies do not need artificial tables or lists.
-- This section optimizes output tokens. Input-token reduction still depends on scoped file reads, filtered searches, and the high-output command rules above.
-
-### Final Report
-
-For large structured output, report only the structure needed to preserve evidence, decision, and next action. Do not add a table or template when a short paragraph is clearer.
+- Prefer exact edits, patches, or compact structured data over repeated prose when supported.
+- Use a table or list for genuine comparisons or repeated records, define repeated structure once, and include only conclusion, action, evidence, and remaining risk.
+- Do not restate the request or loaded context. Do not impose structure on a short answer or when it harms readability.

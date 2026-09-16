@@ -176,6 +176,7 @@ public final class ConsistencyCheckJobAPI {
             return result;
         }
         ConsistencyCheckJobItemProgress jobItemProgress = progress.get();
+        result.setStatus(jobItemProgress.getStatus());
         if (null == jobItemProgress.getRecordsCount() || null == jobItemProgress.getCheckedRecordsCount()) {
             result.setInventoryFinishedPercentage(0);
             result.setCheckSuccess(null);
