@@ -94,7 +94,7 @@ public final class ShardingRuleConfigurationChecker implements DatabaseRuleConfi
         for (ShardingAutoTableRuleConfiguration each : autoTables) {
             checkLogicTable(databaseName, each.getLogicTable());
             checkAuditStrategy(databaseName, each.getAuditStrategy(), auditors);
-            checkShardingStrategy(databaseName, each.getShardingStrategy(), shardingAlgorithms);
+            checkAutoTableShardingStrategy(databaseName, each.getShardingStrategy(), shardingAlgorithms);
         }
     }
     
@@ -141,6 +141,12 @@ public final class ShardingRuleConfigurationChecker implements DatabaseRuleConfi
     
     private void checkSequenceKeyGenerateStrategy(final String databaseName, final SequenceKeyGenerateStrategiesRuleConfiguration keyGenerateStrategy) {
         ShardingSpherePreconditions.checkNotEmpty(keyGenerateStrategy.getKeyGenerateSequence(), () -> new MissingRequiredShardingConfigurationException("Key generate sequence", databaseName));
+    }
+    
+    private void checkAutoTableShardingStrategy(final String databaseName, final ShardingStrategyConfiguration shardingStrategy, final Collection<String> shardingAlgorithms) {
+        ShardingSpherePreconditions.checkState(null != shardingStrategy && !(shardingStrategy instanceof NoneShardingStrategyConfiguration),
+                () -> new MissingRequiredShardingConfigurationException("Auto table sharding strategy", databaseName));
+        checkShardingStrategy(databaseName, shardingStrategy, shardingAlgorithms);
     }
     
     private void checkShardingStrategy(final String databaseName, final ShardingStrategyConfiguration shardingStrategy, final Collection<String> shardingAlgorithms) {
