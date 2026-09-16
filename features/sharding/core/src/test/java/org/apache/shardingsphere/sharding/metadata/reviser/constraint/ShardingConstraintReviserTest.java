@@ -69,6 +69,14 @@ class ShardingConstraintReviserTest {
     }
     
     @Test
+    void assertReviseWhenConstraintNameContainsActualTableSuffix() {
+        ConstraintMetaData originalMetaData = new ConstraintMetaData("foo_table_name_1_fk_table_name_1", "referenced_table_name");
+        Optional<ConstraintMetaData> actual = reviser.revise("table_name_1", originalMetaData, shardingRule);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getName(), is("foo_table_name_1_fk"));
+    }
+    
+    @Test
     void assertReviseWhenTableDoesNotMatch() {
         assertFalse(reviser.revise("table_name_1", new ConstraintMetaData("test_table_name_2", "referenced_table_name"), shardingRule).isPresent());
     }
