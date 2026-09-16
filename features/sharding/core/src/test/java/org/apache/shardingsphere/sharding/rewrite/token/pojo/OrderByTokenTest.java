@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -27,20 +31,12 @@ class OrderByTokenTest {
     
     @Test
     void assertGetStopIndex() {
-        assertThat(new OrderByToken(10).getStopIndex(), is(10));
+        assertThat(new OrderByToken(10, Collections.emptyMap()).getStopIndex(), is(10));
     }
     
     @Test
     void assertToString() {
-        assertThat(createOrderByToken().toString(), is(" ORDER BY foo_col ASC,bar_col ASC "));
-    }
-    
-    private OrderByToken createOrderByToken() {
-        OrderByToken result = new OrderByToken(0);
-        result.getColumnLabels().add(0, "foo_col");
-        result.getColumnLabels().add(1, "bar_col");
-        result.getOrderDirections().add(0, OrderDirection.ASC);
-        result.getOrderDirections().add(1, OrderDirection.ASC);
-        return result;
+        RouteUnit routeUnit = new RouteUnit(new RouteMapper("foo_ds", "foo_ds_0"), Collections.singleton(new RouteMapper("foo_tbl", "foo_tbl_0")));
+        assertThat(new OrderByToken(0, Collections.singletonMap(routeUnit, Arrays.asList("foo_col ASC", "bar_col DESC"))).toString(routeUnit), is(" ORDER BY foo_col ASC,bar_col DESC "));
     }
 }

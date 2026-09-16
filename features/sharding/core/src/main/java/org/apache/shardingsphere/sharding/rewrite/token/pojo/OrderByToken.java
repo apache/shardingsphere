@@ -17,26 +17,24 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.RouteUnitAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Order by token.
  */
-@Getter
-public final class OrderByToken extends SQLToken implements Attachable {
+public final class OrderByToken extends SQLToken implements Attachable, RouteUnitAware {
     
-    private final List<String> columnLabels = new ArrayList<>();
+    private final Map<RouteUnit, Collection<String>> orderByItems;
     
-    private final List<OrderDirection> orderDirections = new ArrayList<>();
-    
-    public OrderByToken(final int startIndex) {
+    public OrderByToken(final int startIndex, final Map<RouteUnit, Collection<String>> orderByItems) {
         super(startIndex);
+        this.orderByItems = orderByItems;
     }
     
     @Override
@@ -45,17 +43,7 @@ public final class OrderByToken extends SQLToken implements Attachable {
     }
     
     @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append(" ORDER BY ");
-        for (int i = 0; i < columnLabels.size(); i++) {
-            if (0 == i) {
-                result.append(columnLabels.get(0)).append(' ').append(orderDirections.get(i).name());
-            } else {
-                result.append(',').append(columnLabels.get(i)).append(' ').append(orderDirections.get(i).name());
-            }
-        }
-        result.append(' ');
-        return result.toString();
+    public String toString(final RouteUnit routeUnit) {
+        return " ORDER BY " + String.join(",", orderByItems.get(routeUnit)) + " ";
     }
 }
