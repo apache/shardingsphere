@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -48,6 +49,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -257,6 +261,52 @@ class ShardingSphereResultSetMetaDataTest {
         assertThat(columnCount, is(5));
         assertThat(countReadCount.get(), lessThanOrEqualTo(backendColumnLabels.length));
         assertThat(labelReadCount.get(), lessThanOrEqualTo(4 * backendColumnLabels.length));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("aggregationDistinctColumns")
+    void assertAggregationDistinctMetadataWithSchemaDrift(final String name, final AggregationType type, final String alias,
+                                                          final String returnedLabel, final String expectedLabel) throws SQLException {
+        AggregationDistinctProjectionSegment aggregation = new AggregationDistinctProjectionSegment(0, 0, type, type.name() + "(DISTINCT user_id)", "user_id");
+        if (!alias.isEmpty()) {
+            aggregation.setAlias(new AliasSegment(0, 0, new IdentifierValue(alias)));
+        }
+        ShorthandProjectionSegment shorthand = new ShorthandProjectionSegment(0, 0);
+        shorthand.getActualProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        shorthand.getActualProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(shorthand);
+        projections.getProjections().add(aggregation);
+        GroupBySegment groupBy = new GroupBySegment(0, 0, Collections.singletonList(new ExpressionOrderByItemSegment(0, 0, "user_id + 0", OrderDirection.ASC, NullsOrderType.LAST)));
+        SelectStatementContext context = createSelectStatementContext(projections, groupBy);
+        assertTrue(context.getProjectionsContext().getProjections().stream().anyMatch(DerivedProjection.class::isInstance));
+        ResultSetMetaData returnedMetadata = mock(ResultSetMetaData.class);
+        String[] returnedLabels = AggregationType.AVG == type
+                ? new String[]{"order_id", "add_test", "user_id", returnedLabel, "AVG_DERIVED_COUNT_0", "AVG_DERIVED_SUM_0", "GROUP_BY_DERIVED_0"}
+                : new String[]{"order_id", "add_test", "user_id", returnedLabel, "GROUP_BY_DERIVED_0"};
+        when(returnedMetadata.getColumnCount()).thenReturn(returnedLabels.length);
+        stubBackendColumnLabels(returnedMetadata, returnedLabels);
+        when(returnedMetadata.getColumnName(1)).thenReturn("order_id");
+        when(returnedMetadata.getColumnName(2)).thenReturn("add_test");
+        when(returnedMetadata.getColumnName(3)).thenReturn("user_id");
+        when(returnedMetadata.getColumnName(4)).thenReturn("user_id");
+        ShardingSphereResultSetMetaData actual = new ShardingSphereResultSetMetaData(returnedMetadata, null, context);
+        assertThat(actual.getColumnCount(), is(4));
+        String[] expected = {"order_id", "add_test", "user_id", expectedLabel};
+        for (int columnIndex = 1; columnIndex <= expected.length; columnIndex++) {
+            assertThat(actual.getColumnLabel(columnIndex), is(expected[columnIndex - 1]));
+            assertThat(actual.getColumnName(columnIndex), is(expected[columnIndex - 1]));
+        }
+        assertThrows(SQLException.class, () -> actual.getColumnLabel(5));
+    }
+    
+    private static Collection<Arguments> aggregationDistinctColumns() {
+        return Arrays.asList(
+                Arguments.of("count", AggregationType.COUNT, "", "AGGREGATION_DISTINCT_DERIVED_0", "COUNT(DISTINCT user_id)"),
+                Arguments.of("folded count", AggregationType.COUNT, "", "aggregation_distinct_derived_0", "COUNT(DISTINCT user_id)"),
+                Arguments.of("aliased count", AggregationType.COUNT, "foo_count", "foo_count", "foo_count"),
+                Arguments.of("sum", AggregationType.SUM, "", "AGGREGATION_DISTINCT_DERIVED_0", "SUM(DISTINCT user_id)"),
+                Arguments.of("average", AggregationType.AVG, "", "AGGREGATION_DISTINCT_DERIVED_0", "AVG(DISTINCT user_id)"));
     }
     
     private void stubBackendColumnLabels(final ResultSetMetaData resultSetMetaData, final String... columnLabels) throws SQLException {

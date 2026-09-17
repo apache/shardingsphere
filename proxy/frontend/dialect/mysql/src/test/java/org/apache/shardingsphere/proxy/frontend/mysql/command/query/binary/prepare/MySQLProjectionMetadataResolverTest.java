@@ -27,6 +27,8 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.My
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -50,6 +52,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -65,6 +68,56 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ProxyContext.class, MySQLPreparedStatementMetadataFactory.class})
 class MySQLProjectionMetadataResolverTest {
+    
+    @Test
+    void assertResolveProjectionPacketsWithAggregationDistinctSchemaDrift() throws SQLException {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        AggregationDistinctProjection count = new AggregationDistinctProjection(0, 0, AggregationType.COUNT,
+                new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(DISTINCT user_id)"),
+                new IdentifierValue("AGGREGATION_DISTINCT_DERIVED_0"), "user_id", databaseType);
+        SelectStatementContext context = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(context.containsDerivedProjections()).thenReturn(true);
+        when(context.getTablesContext().getDatabaseName()).thenReturn(Optional.of("foo_db"));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false,
+                Arrays.asList(new ColumnProjection(null, "user_id", null, databaseType), count));
+        when(context.getProjectionsContext()).thenReturn(projectionsContext);
+        ResultSetMetaData returnedMetadata = mock(ResultSetMetaData.class);
+        String[] returnedLabels = {"user_id", "add_test", "AGGREGATION_DISTINCT_DERIVED_0", "GROUP_BY_DERIVED_0"};
+        when(returnedMetadata.getColumnCount()).thenReturn(returnedLabels.length);
+        for (int columnIndex = 1; columnIndex <= returnedLabels.length; columnIndex++) {
+            when(returnedMetadata.getColumnLabel(columnIndex)).thenReturn(returnedLabels[columnIndex - 1]);
+        }
+        for (int columnIndex = 1; columnIndex <= 3; columnIndex++) {
+            if (columnIndex < 3) {
+                when(returnedMetadata.getColumnName(columnIndex)).thenReturn(returnedLabels[columnIndex - 1]);
+            }
+            when(returnedMetadata.getColumnType(columnIndex)).thenReturn(Types.INTEGER);
+            when(returnedMetadata.getColumnTypeName(columnIndex)).thenReturn("INT");
+            when(returnedMetadata.getTableName(columnIndex)).thenReturn("");
+        }
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        when(preparedStatement.getMetaData()).thenReturn(returnedMetadata);
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        MySQLServerPreparedStatement serverPreparedStatement = mock(MySQLServerPreparedStatement.class);
+        when(MySQLPreparedStatementMetadataFactory.load(connectionSession, serverPreparedStatement)).thenReturn(preparedStatement);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        when(database.getProtocolType()).thenReturn(databaseType);
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        Collection<MySQLPacket> actual = MySQLProjectionMetadataResolver.resolveProjectionPackets(connectionSession, serverPreparedStatement, context, MySQLCharacterSets.UTF8MB4_UNICODE_CI.getId());
+        assertThat(actual.size(), is(3));
+        String[] expectedLabels = {"user_id", "add_test", "COUNT(DISTINCT user_id)"};
+        int columnIndex = 0;
+        for (MySQLPacket each : actual) {
+            MySQLPacketPayload payload = createPayload((MySQLColumnDefinition41Packet) each);
+            assertThat(readColumnName(payload), is(expectedLabels[columnIndex]));
+            assertThat(payload.readStringLenenc(), is(expectedLabels[columnIndex++]));
+        }
+        verify(preparedStatement).close();
+    }
     
     @Test
     void assertResolveProjectionPackets() throws SQLException {

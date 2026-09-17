@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +47,37 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShardingSphereResultSetUtilsTest {
+    
+    @Test
+    void assertCreateColumnLabelAndIndexMapWithAggregationDistinctSchemaDrift() throws SQLException {
+        DatabaseType databaseType = mock(DatabaseType.class);
+        AggregationDistinctProjection count = new AggregationDistinctProjection(0, 0, AggregationType.COUNT,
+                new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(DISTINCT user_id)"),
+                new IdentifierValue("AGGREGATION_DISTINCT_DERIVED_0"), "user_id", databaseType);
+        AggregationDistinctProjection sum = new AggregationDistinctProjection(0, 0, AggregationType.SUM,
+                new AggregationProjectionSegment(0, 0, AggregationType.SUM, "SUM(DISTINCT user_id)"),
+                new IdentifierValue("AGGREGATION_DISTINCT_DERIVED_1"), "user_id", databaseType);
+        SelectStatementContext context = mock(SelectStatementContext.class);
+        when(context.containsDerivedProjections()).thenReturn(true);
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false,
+                Arrays.asList(new ColumnProjection(null, "user_id", null, databaseType), count, sum));
+        when(context.getProjectionsContext()).thenReturn(projectionsContext);
+        ResultSetMetaData returnedMetadata = mock(ResultSetMetaData.class);
+        when(returnedMetadata.getColumnCount()).thenReturn(5);
+        when(returnedMetadata.getColumnLabel(1)).thenReturn("add_test");
+        when(returnedMetadata.getColumnLabel(2)).thenReturn("user_id");
+        when(returnedMetadata.getColumnLabel(3)).thenReturn("aggregation_distinct_derived_0");
+        when(returnedMetadata.getColumnLabel(4)).thenReturn("AGGREGATION_DISTINCT_DERIVED_1");
+        when(returnedMetadata.getColumnLabel(5)).thenReturn("GROUP_BY_DERIVED_0");
+        Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(context, returnedMetadata);
+        Map<String, Integer> expected = new HashMap<>(4, 1F);
+        expected.put("add_test", 1);
+        expected.put("user_id", 2);
+        expected.put("COUNT(DISTINCT user_id)", 3);
+        expected.put("SUM(DISTINCT user_id)", 4);
+        assertThat(actual, is(expected));
+        assertThat(actual.get("count(distinct user_id)"), is(3));
+    }
     
     @Test
     void assertCreateColumnLabelAndIndexMapWithSelectWithoutExpandProjections() throws SQLException {

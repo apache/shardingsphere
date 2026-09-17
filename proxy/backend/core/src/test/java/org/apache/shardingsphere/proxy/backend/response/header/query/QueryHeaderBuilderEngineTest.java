@@ -20,15 +20,23 @@ package org.apache.shardingsphere.proxy.backend.response.header.query;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -40,6 +48,34 @@ import static org.mockito.Mockito.when;
 class QueryHeaderBuilderEngineTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    @Test
+    void assertBuildWithAggregationDistinctSchemaDrift() throws SQLException {
+        DatabaseType mysql = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        AggregationDistinctProjection count = new AggregationDistinctProjection(0, 0, AggregationType.COUNT,
+                new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(DISTINCT user_id)"),
+                new IdentifierValue("AGGREGATION_DISTINCT_DERIVED_0"), "user_id", mysql);
+        SelectStatementContext context = mock(SelectStatementContext.class);
+        when(context.containsDerivedProjections()).thenReturn(true);
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false,
+                Arrays.asList(new ColumnProjection(null, "user_id", null, mysql), count));
+        when(context.getProjectionsContext()).thenReturn(projectionsContext);
+        ResultSetMetaData returnedMetadata = mock(ResultSetMetaData.class);
+        when(returnedMetadata.getColumnCount()).thenReturn(4);
+        when(returnedMetadata.getColumnLabel(1)).thenReturn("user_id");
+        when(returnedMetadata.getColumnLabel(2)).thenReturn("add_test");
+        when(returnedMetadata.getColumnLabel(3)).thenReturn("AGGREGATION_DISTINCT_DERIVED_0");
+        when(returnedMetadata.getColumnLabel(4)).thenReturn("ORDER_BY_DERIVED_0");
+        when(returnedMetadata.getColumnName(3)).thenReturn("user_id");
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        ShardingSphereResultSetMetaData metadata = new ShardingSphereResultSetMetaData(returnedMetadata, database, context);
+        try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
+            spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, mysql)).thenReturn(queryHeaderBuilder);
+            new QueryHeaderBuilderEngine(mysql).build(context, metadata, database, 3);
+            verify(queryHeaderBuilder).build(metadata, database, "COUNT(DISTINCT user_id)", "COUNT(DISTINCT user_id)", 3);
+        }
+    }
     
     @Test
     void assertBuildWithoutProjections() throws SQLException {

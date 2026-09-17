@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -29,6 +30,8 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -52,33 +55,30 @@ public final class ShardingSphereResultSetUtils {
         if (useExpandedProjections(sqlStatementContext, resultSetMetaData)) {
             return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getColumnLabelAndIndexMap();
         }
-        Map<String, Integer> result = new CaseInsensitiveMap<>(resultSetMetaData.getColumnCount(), 1F);
-        for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
-            if (!isDerivedColumn(sqlStatementContext, resultSetMetaData.getColumnLabel(columnIndex))) {
-                result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
+        Map<String, String> aggregationDistinctColumnLabels = createAggregationDistinctColumnLabels(sqlStatementContext);
+        int columnCount = resultSetMetaData.getColumnCount();
+        Map<String, Integer> result = new CaseInsensitiveMap<>(columnCount, 1F);
+        for (int columnIndex = columnCount; columnIndex > 0; columnIndex--) {
+            String columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
+            if (!isDerivedColumn(sqlStatementContext, columnLabel)) {
+                result.put(aggregationDistinctColumnLabels.getOrDefault(columnLabel, columnLabel), columnIndex);
             }
         }
         return result;
     }
     
-    /**
-     * Whether to use expanded projections of select statement to describe the result set.
-     *
-     * <p>The expanded projections describe the result set delivered to the client. The count check is skipped only when
-     * the count mismatch is fully explained by the derived columns the rewrite appends: the SUM and COUNT columns of an
-     * AVG rewrite and the derived order-by and group-by columns are appended only by a multi-route rewrite (the
-     * projection token generators are ignored for single routes). An in-place aggregation-distinct stand-in, e.g.
-     * {@code user_id AS AGGREGATION_DISTINCT_DERIVED_0} for {@code COUNT(DISTINCT user_id)}, keeps the position of its
-     * client column and is matched by its alias. After removing the appended derived columns, the returned metadata
-     * still has to name the expanded projections position by position, because backend schema drift and appended
-     * derived columns can occur together. Any other mismatch is genuine metadata drift, and the returned metadata
-     * stays authoritative for the client-facing columns, with the appended derived columns hidden.</p>
-     *
-     * @param sqlStatementContext SQL statement context
-     * @param resultSetMetaData meta data of result set
-     * @return use expanded projections or not
-     * @throws SQLException SQL exception
-     */
+    static Map<String, String> createAggregationDistinctColumnLabels(final SQLStatementContext sqlStatementContext) {
+        if (!mayAppendDerivedColumns(sqlStatementContext)) {
+            return Collections.emptyMap();
+        }
+        Collection<AggregationDistinctProjection> projections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections();
+        Map<String, String> result = new CaseInsensitiveMap<>(projections.size(), 1F);
+        for (AggregationDistinctProjection each : projections) {
+            each.getAlias().ifPresent(alias -> result.put(alias.getValue(), each.getColumnLabel()));
+        }
+        return result;
+    }
+    
     static boolean useExpandedProjections(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
         if (!(sqlStatementContext instanceof SelectStatementContext)) {
             return false;

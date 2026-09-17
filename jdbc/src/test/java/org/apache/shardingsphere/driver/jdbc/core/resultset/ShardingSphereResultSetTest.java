@@ -18,17 +18,26 @@
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -40,18 +49,22 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -80,6 +93,73 @@ class ShardingSphereResultSetTest {
     private MetaDataContexts metaDataContexts;
     
     private ShardingSphereStatement statement;
+    
+    @Test
+    void assertFindColumn() throws SQLException {
+        assertThat(shardingSphereResultSet.findColumn("LABEL"), is(1));
+    }
+    
+    @Test
+    void assertFindColumnWithUnknownLabel() {
+        assertThrows(SQLException.class, () -> shardingSphereResultSet.findColumn("absent_label"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("aggregationDistinctQueries")
+    void assertAggregationDistinctWithSchemaDrift(final String name, final int routeCount, final boolean schemaDrift, final String sql, final String expectedLabel) throws SQLException {
+        JdbcDataSource backend = new JdbcDataSource();
+        backend.setURL("jdbc:h2:mem:foo_distinct_drift;MODE=MySQL;DATABASE_TO_UPPER=false");
+        try (Connection backendConnection = backend.getConnection(); Statement backendStatement = backendConnection.createStatement()) {
+            for (int index = 0; index < routeCount; index++) {
+                backendStatement.execute("CREATE TABLE t_order_" + index + " (order_id INT PRIMARY KEY, user_id INT)");
+                backendStatement.execute("INSERT INTO t_order_" + index + " VALUES (" + index + ", " + (index + 8) + ")");
+            }
+            ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
+            rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0.." + (routeCount - 1) + "}"));
+            try (
+                    ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
+                            Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties())) {
+                if (schemaDrift) {
+                    for (int index = 0; index < routeCount; index++) {
+                        backendStatement.execute("ALTER TABLE t_order_" + index + " ADD add_test INT DEFAULT 99 BEFORE user_id");
+                    }
+                }
+                assertAggregationDistinctResult(dataSource, routeCount, schemaDrift, sql, expectedLabel);
+            }
+        }
+    }
+    
+    private void assertAggregationDistinctResult(final ShardingSphereDataSource dataSource, final int expectedRowCount, final boolean schemaDrift,
+                                                 final String sql, final String expectedLabel) throws SQLException {
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement(); ResultSet actual = statement.executeQuery(sql)) {
+            String[] expected = schemaDrift ? new String[]{expectedLabel, "order_id", "add_test", "user_id"} : new String[]{expectedLabel, "order_id", "user_id"};
+            ResultSetMetaData actualMetadata = actual.getMetaData();
+            assertThat(actualMetadata.getColumnCount(), is(expected.length));
+            for (int columnIndex = 1; columnIndex <= expected.length; columnIndex++) {
+                assertThat(actualMetadata.getColumnLabel(columnIndex), is(expected[columnIndex - 1]));
+                assertThat(actualMetadata.getColumnName(columnIndex), is(expected[columnIndex - 1]));
+                assertThat(actual.findColumn(expected[columnIndex - 1]), is(columnIndex));
+            }
+            int actualRowCount = 0;
+            while (actual.next()) {
+                assertThat(actual.getInt(expectedLabel), is(1));
+                assertThat(actual.getInt("user_id"), is(actual.getInt("order_id") + 8));
+                if (schemaDrift) {
+                    assertThat(actual.getInt("add_test"), is(99));
+                }
+                actualRowCount++;
+            }
+            assertThat(actualRowCount, is(expectedRowCount));
+        }
+    }
+    
+    private static Collection<Arguments> aggregationDistinctQueries() {
+        return Arrays.asList(
+                Arguments.of("multiple routes without drift", 2, false, "SELECT COUNT(DISTINCT user_id), t_order.* FROM t_order GROUP BY order_id", "COUNT(DISTINCT user_id)"),
+                Arguments.of("multiple routes with drift", 2, true, "SELECT COUNT(DISTINCT user_id), t_order.* FROM t_order GROUP BY order_id + 0", "COUNT(DISTINCT user_id)"),
+                Arguments.of("explicit alias with drift", 2, true, "SELECT COUNT(DISTINCT user_id) AS foo_count, t_order.* FROM t_order GROUP BY order_id", "foo_count"),
+                Arguments.of("single route with drift", 1, true, "SELECT COUNT(DISTINCT user_id), t_order.* FROM t_order GROUP BY order_id", "COUNT(DISTINCT user_id)"));
+    }
     
     @BeforeEach
     void setUp() throws SQLException {
