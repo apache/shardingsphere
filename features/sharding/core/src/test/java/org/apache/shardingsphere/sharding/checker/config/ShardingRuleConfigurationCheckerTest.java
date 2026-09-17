@@ -163,6 +163,24 @@ class ShardingRuleConfigurationCheckerTest {
     }
     
     @Test
+    void assertCheckAutoTableWithoutShardingStrategyFailed() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
+        ruleConfig.setAutoTables(Collections.singleton(new ShardingAutoTableRuleConfiguration("bar_tbl", "ds_1")));
+        MissingRequiredShardingConfigurationException actual = assertThrows(MissingRequiredShardingConfigurationException.class,
+                () -> checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
+        assertThat(actual.getMessage(), is("Auto table sharding strategy configuration does not exist in database 'foo_db'."));
+    }
+    
+    @Test
+    void assertCheckAutoTableWithNoneShardingStrategyFailed() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
+        ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(new NoneShardingStrategyConfiguration(), null)));
+        MissingRequiredShardingConfigurationException actual = assertThrows(MissingRequiredShardingConfigurationException.class,
+                () -> checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
+        assertThat(actual.getMessage(), is("Auto table sharding strategy configuration does not exist in database 'foo_db'."));
+    }
+    
+    @Test
     void assertGetRequiredDataSourceNames() {
         ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
         ShardingAuditStrategyConfiguration shardingAuditStrategyConfig = new ShardingAuditStrategyConfiguration(Collections.singleton("foo_audit"), false);
