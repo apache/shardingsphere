@@ -22,22 +22,30 @@ import org.apache.shardingsphere.test.e2e.operation.transaction.engine.base.Tran
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.awaitility.Awaitility;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * PostgreSQL DDL meta data refresh in transaction integration test.
+ *
+ * <p>Meta data altered by a refresh is persisted to the governance center and applied to the in-memory meta data asynchronously,
+ * so the assertions below wait for that propagation instead of reading the meta data immediately after the transaction ends.</p>
  */
 @TransactionTestCase(dbTypes = TransactionTestConstants.POSTGRESQL, adapters = TransactionTestConstants.PROXY, transactionTypes = TransactionType.LOCAL)
 public final class PostgreSQLDDLMetaDataRefreshTestCase extends BaseTransactionTestCase {
     
     private static final String ADDED_COLUMN_NAME = "deferred_refresh_column";
+    
+    private static final long REFRESH_TIMEOUT_SECONDS = 30L;
+    
+    private static final long REFRESH_SETTLE_SECONDS = 5L;
     
     public PostgreSQLDDLMetaDataRefreshTestCase(final TransactionTestCaseParameter testCaseParam) {
         super(testCaseParam);
@@ -56,7 +64,8 @@ public final class PostgreSQLDDLMetaDataRefreshTestCase extends BaseTransactionT
             connection.commit();
         }
         try (Connection connection = getDataSource().getConnection()) {
-            assertTrue(containsAddedColumn(connection), "Added column is not refreshed into meta data after transaction commit.");
+            Awaitility.await("Added column is not refreshed into meta data after transaction commit.")
+                    .atMost(REFRESH_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> containsAddedColumn(connection));
             executeWithLog(connection, String.format("ALTER TABLE account DROP COLUMN %s;", ADDED_COLUMN_NAME));
         }
     }
@@ -67,6 +76,7 @@ public final class PostgreSQLDDLMetaDataRefreshTestCase extends BaseTransactionT
             executeWithLog(connection, String.format("ALTER TABLE account ADD COLUMN %s INT;", ADDED_COLUMN_NAME));
             connection.rollback();
         }
+        Awaitility.await().pollDelay(REFRESH_SETTLE_SECONDS, TimeUnit.SECONDS).until(() -> true);
         try (Connection connection = getDataSource().getConnection()) {
             assertFalse(containsAddedColumn(connection), "Rolled back column is refreshed into meta data after transaction rollback.");
         }
