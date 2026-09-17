@@ -156,7 +156,7 @@ deleteSpecification
     ;
 
 select
-    : selectSubquery forUpdateClause?
+    : selectSubquery forUpdateClause? orderByClause?
     ;
 
 selectSubquery
@@ -173,7 +173,7 @@ parenthesisSelectSubquery
 
 queryBlock
     : unquotedTextQueryBlock
-    | withClause? SELECT hint? duplicateSpecification? selectList selectIntoClause? selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
+    | withClause? SELECT hint? duplicateSpecification? selectList selectIntoClause? selectFromClause whereClause? hierarchicalQueryClause? groupByClause? havingClause? modelClause?
     ;
 
 unquotedTextQueryBlock
@@ -679,7 +679,7 @@ hierarchicalQueryClause
     ;
 
 groupByClause
-    : GROUP BY groupByItem (COMMA_ groupByItem)* havingClause?
+    : GROUP BY groupByItem (COMMA_ groupByItem)*
     ;
 
 groupByItem
