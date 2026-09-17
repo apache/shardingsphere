@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.metadata.manager.rule;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -32,6 +34,7 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -49,6 +52,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -87,6 +91,21 @@ class DatabaseRuleConfigurationManagerTest {
             verify(metaDataContexts).update(any(MetaDataContexts.class));
             assertDoesNotThrow(() -> verify((AutoCloseable) closableRule).close());
         }
+    }
+    
+    @Test
+    void assertRefreshWithInvalidRuleConfiguration() {
+        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
+        ShardingSphereRule partialRule = mock(ShardingSphereRule.class, withSettings().extraInterfaces(PartialRuleUpdateSupported.class));
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(partialRule)));
+        DatabaseRuleConfigurationManager manager = new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock());
+        try (MockedStatic<RuleConfigurationValidator> mockedValidator = mockStatic(RuleConfigurationValidator.class)) {
+            mockedValidator.when(() -> RuleConfigurationValidator.validate(ruleConfig)).thenThrow(new InvalidRuleConfigurationException("fixture", "invalid"));
+            assertThrows(InvalidRuleConfigurationException.class, () -> manager.refresh(DATABASE_NAME, ruleConfig));
+        }
+        verify((PartialRuleUpdateSupported) partialRule, never()).partialUpdate(ruleConfig);
+        verify(metaDataContexts, never()).update(any(MetaDataContexts.class));
     }
     
     @Test

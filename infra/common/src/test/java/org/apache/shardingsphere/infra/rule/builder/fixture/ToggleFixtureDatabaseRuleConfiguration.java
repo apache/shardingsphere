@@ -17,15 +17,24 @@
 
 package org.apache.shardingsphere.infra.rule.builder.fixture;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 
-@AllArgsConstructor
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.NotBlank;
+
+@RequiredArgsConstructor
 public final class ToggleFixtureDatabaseRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
     @Getter
+    @AssertFalse(message = "must be false")
     private final boolean empty;
+    
+    @Setter
+    @NotBlank(message = "is required")
+    private String name = "fixture";
     
 }

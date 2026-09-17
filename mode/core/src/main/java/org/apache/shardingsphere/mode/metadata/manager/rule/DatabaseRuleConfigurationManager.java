@@ -22,6 +22,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -62,6 +63,7 @@ public final class DatabaseRuleConfigurationManager {
             refreshMetadata(databaseName, ruleConfig, false, rules);
             return;
         }
+        RuleConfigurationValidator.validate(ruleConfig);
         Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
         if (toBeChangedRule.isPresent() && toBeChangedRule.get() instanceof PartialRuleUpdateSupported) {
             boolean needRefreshSchemas = ((PartialRuleUpdateSupported) toBeChangedRule.get()).partialUpdate(ruleConfig);

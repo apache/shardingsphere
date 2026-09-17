@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.support.descriptor.yaml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.validator.MCPMetadataKey;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
@@ -48,7 +47,6 @@ public final class YamlMCPCompletionTargetDescriptor {
     private String reference;
     
     @NotEmpty(message = "is required")
-    @UniqueElements(message = "must not contain duplicate values")
     private Collection<@NotBlank(message = "is required") String> arguments = new LinkedList<>();
     
     @Max(value = 100, message = "must not exceed 100")
