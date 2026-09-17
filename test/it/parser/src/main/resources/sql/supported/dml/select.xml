@@ -581,4 +581,6 @@
     <sql-case id="select_left_function_firebird" value="SELECT LEFT('test', 2) FROM RDB$DATABASE;" db-types="Firebird" />
     <sql-case id="select_right_function_firebird" value="SELECT RIGHT('test', 2) FROM RDB$DATABASE;" db-types="Firebird" />
     <sql-case id="select_gen_uuid_function_firebird" value="SELECT GEN_UUID() FROM RDB$DATABASE;" db-types="Firebird" />
+    <sql-case id="select_in_with_owner_column_rhs_oracle" value="SELECT * FROM t_order o WHERE o.user_id IN o.order_id" db-types="Oracle" />
+    <sql-case id="select_in_with_function_rhs_oracle" value="SELECT * FROM t_order o WHERE o.user_id IN NVL(o.order_id, 0)" db-types="Oracle" />
 </sql-cases>

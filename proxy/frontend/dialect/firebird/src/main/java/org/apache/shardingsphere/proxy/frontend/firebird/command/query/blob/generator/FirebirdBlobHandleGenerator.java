@@ -105,6 +105,23 @@ public final class FirebirdBlobHandleGenerator {
     }
     
     /**
+     * Judge whether BLOB handle is allocated for connection.
+     *
+     * @param connectionId connection ID
+     * @param blobHandle BLOB handle
+     * @return whether BLOB handle is allocated
+     */
+    public boolean isAllocated(final int connectionId, final int blobHandle) {
+        ConnectionBlobHandles connectionBlobHandles = connectionRegistry.get(connectionId);
+        if (null == connectionBlobHandles || blobHandle <= 0 || blobHandle > MAX_OBJECT_HANDLE) {
+            return false;
+        }
+        synchronized (connectionBlobHandles) {
+            return connectionBlobHandles.handles.get(blobHandle - 1);
+        }
+    }
+    
+    /**
      * Release BLOB handle for connection.
      *
      * @param connectionId connection ID
