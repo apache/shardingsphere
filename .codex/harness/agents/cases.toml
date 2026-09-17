@@ -2053,6 +2053,26 @@ policy_assertions = [{source = "review-pr", statements = ["`Review Incomplete` i
 critical = true
 
 [[cases]]
+id = "public_pr_manual_coding_standard_violation_not_mergeable"
+group = "review-pr coding standards"
+description = "Applies the coding-standards manual checklist even when Checkstyle and Spotless pass."
+phase = "review-pr coding standards"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "A public PR Formal Review changes `module-a/src/main/java/example/Foo.java` by adding the local variable `mySQLConfig`. Current-candidate Checkstyle and Spotless both selected that file and exited 0. Inspection confirms that no contract fixes the identifier, the PR introduced the violation, and the finding passes the Finding Proof Gate. Every other review and completion gate is satisfied. Return the Code Correctness Review result without editing, rerunning checks, querying CI, or changing Git or remote state."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["inspect_local", "run_bounded_adversarial_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Not Mergeable", "Feedback Mode", "Change Request", "Blocking Issues", "mySQLConfig", "mysqlConfig", "### Coverage"]
+forbidden_summary_terms = ["Review Result: Mergeable", "Review Result: Review Incomplete"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["Before judging reviewed code or Maven POM changes, read [coding standards](../coding-standards/SKILL.md) through EOF and use its Implementation Guidance Mode.", "If at least one candidate passes the Finding Proof Gate, use `Not Mergeable` with `Feedback Mode: Change Request`.", "`Not Mergeable`: `### Result` with exactly one bold `Review Result: Not Mergeable` line, one `Feedback Mode`, a bold `Blocking Issues: N` line, and a concise reason; `### Blocking Issues`; `### Coverage`."]}, {source = "coding-standards", statements = ["Use this mode when implementing, fixing, refactoring, or reviewing code, or when modifying or reviewing a Maven POM, unless the user explicitly requests a standalone coding-standards compliance audit.", "Treat passing Checkstyle and Spotless as evidence only for the rules those tools enforce; neither result replaces the manual recheck."]}, {source = "java-naming", statements = ["Spell the MySQL component of a variable identifier `mysql`; `mySQL` is prohibited."]}]
+critical = true
+
+[[cases]]
 id = "public_pr_missing_style_verification_cannot_merge"
 group = "review-pr style verification"
 description = "Prevents a public PR with applicable Java changes from receiving Mergeable before current-candidate Checkstyle and Spotless verification."
