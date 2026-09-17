@@ -21,7 +21,9 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
@@ -51,18 +53,20 @@ public final class MySQLShardingShowIndexMergedResult extends MemoryMergedResult
             while (each.next()) {
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
-                String actualIndexName = memoryResultSetRow.getCell(3).toString();
                 Optional<ShardingTable> shardingTable = shardingRule.findShardingTableByActualTable(actualTableName);
-                Collection<String> candidateLogicIndexNames = new LinkedList<>();
                 if (shardingTable.isPresent()) {
                     String logicTableName = shardingTable.get().getLogicTable();
                     memoryResultSetRow.setCell(1, logicTableName);
-                    candidateLogicIndexNames = schema.getTable(logicTableName).getAllIndexes().stream().map(eachIndex -> eachIndex.getName()).collect(Collectors.toList());
+                    memoryResultSetRow.setCell(3, findLogicIndexName(memoryResultSetRow.getCell(3).toString(), actualTableName, schema.getTable(logicTableName)));
                 }
-                memoryResultSetRow.setCell(3, IndexMetaDataUtils.findGeneratedLogicIndexName(actualIndexName, actualTableName, candidateLogicIndexNames).orElse(actualIndexName));
                 result.add(memoryResultSetRow);
             }
         }
         return result;
+    }
+    
+    private String findLogicIndexName(final String actualIndexName, final String actualTableName, final ShardingSphereTable logicTable) {
+        Collection<String> candidateLogicIndexNames = logicTable.getAllIndexes().stream().map(ShardingSphereIndex::getName).collect(Collectors.toList());
+        return IndexMetaDataUtils.findGeneratedLogicIndexName(actualIndexName, actualTableName, candidateLogicIndexNames).orElse(actualIndexName);
     }
 }
