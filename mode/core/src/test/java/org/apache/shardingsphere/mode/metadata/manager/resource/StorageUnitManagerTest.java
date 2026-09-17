@@ -133,7 +133,8 @@ class StorageUnitManagerTest {
         MetaDataContexts reloadMetaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(reloadMetaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(reloadDatabase);
         when(reloadMetaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class));
+        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(schema));
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
@@ -165,7 +166,8 @@ class StorageUnitManagerTest {
         MetaDataContexts reloadMetaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(reloadMetaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(reloadDatabase);
         when(reloadMetaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class));
+        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(schema));
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
