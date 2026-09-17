@@ -130,4 +130,18 @@ class LinkedServerRuleTest {
         tables.put("dbo.Department", "t_department");
         assertThrows(IllegalArgumentException.class, () -> new LinkedServerConfiguration("Server", "FIXTURE", tables));
     }
+    
+    @Test
+    void assertOmittedSchemaRejected() {
+        Map<String, String> tables = new LinkedHashMap<>();
+        tables.put("HumanResources..Department", "t_department");
+        assertThrows(IllegalArgumentException.class, () -> new LinkedServerConfiguration("Server", "FIXTURE", tables));
+    }
+    
+    @Test
+    void assertSurplusComponentsRejected() {
+        Map<String, String> tables = new LinkedHashMap<>();
+        tables.put("server.catalog.dbo.Department", "t_department");
+        assertThrows(IllegalArgumentException.class, () -> new LinkedServerConfiguration("Server", "FIXTURE", tables));
+    }
 }

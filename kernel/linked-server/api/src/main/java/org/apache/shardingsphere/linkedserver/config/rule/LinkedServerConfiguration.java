@@ -43,8 +43,9 @@ public final class LinkedServerConfiguration {
         this.name = name;
         this.databaseType = databaseType;
         for (String key : tables.keySet()) {
-            Preconditions.checkArgument(key.chars().filter(c -> '.' == c).count() >= 2,
-                    "Remote table identity '%s' in linked server '%s' must be fully qualified (catalog.schema.table), bare or two-part names are not allowed.", key, name);
+            String[] segments = key.split("\\.", -1);
+            Preconditions.checkArgument(3 == segments.length && segments[0].length() > 0 && segments[1].length() > 0 && segments[2].length() > 0,
+                    "Remote table identity '%s' in linked server '%s' must be exactly three non-empty components (catalog.schema.table).", key, name);
         }
         this.tables = tables;
     }
