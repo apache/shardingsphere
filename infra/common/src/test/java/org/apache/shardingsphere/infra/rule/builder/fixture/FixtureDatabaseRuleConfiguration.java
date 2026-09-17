@@ -17,7 +17,14 @@
 
 package org.apache.shardingsphere.infra.rule.builder.fixture;
 
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 
+import javax.validation.constraints.NotBlank;
+
 public final class FixtureDatabaseRuleConfiguration implements DatabaseRuleConfiguration {
+    
+    @Setter
+    @NotBlank(message = "is required")
+    private String name = "fixture";
 }

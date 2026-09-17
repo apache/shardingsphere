@@ -28,16 +28,17 @@ import java.util.Set;
 /**
  * Unique MCP prompt argument names validator.
  */
-public final class UniqueMCPPromptArgumentNamesValidator implements ConstraintValidator<UniqueMCPPromptArgumentNames, Collection<YamlMCPPromptArgumentDescriptor>> {
+public final class UniqueMCPPromptArgumentNamesValidator implements ConstraintValidator<UniqueMCPPromptArgumentNames, Collection<?>> {
     
     @Override
-    public boolean isValid(final Collection<YamlMCPPromptArgumentDescriptor> value, final ConstraintValidatorContext context) {
+    public boolean isValid(final Collection<?> value, final ConstraintValidatorContext context) {
         if (null == value) {
             return true;
         }
         Set<String> names = new HashSet<>(value.size(), 1F);
-        for (YamlMCPPromptArgumentDescriptor each : value) {
-            if (null != each && null != each.getName() && !each.getName().isBlank() && !names.add(each.getName())) {
+        for (Object each : value) {
+            YamlMCPPromptArgumentDescriptor argument = (YamlMCPPromptArgumentDescriptor) each;
+            if (null != argument && null != argument.getName() && !argument.getName().isBlank() && !names.add(argument.getName())) {
                 return false;
             }
         }
