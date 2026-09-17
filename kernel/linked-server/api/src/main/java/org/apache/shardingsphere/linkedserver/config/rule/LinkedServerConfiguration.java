@@ -20,7 +20,9 @@ package org.apache.shardingsphere.linkedserver.config.rule;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Linked server configuration.
@@ -42,10 +44,13 @@ public final class LinkedServerConfiguration {
     public LinkedServerConfiguration(final String name, final String databaseType, final Map<String, String> tables) {
         this.name = name;
         this.databaseType = databaseType;
+        Set<String> seen = new HashSet<>();
         for (String key : tables.keySet()) {
             String[] segments = key.split("\\.", -1);
             Preconditions.checkArgument(3 == segments.length && segments[0].length() > 0 && segments[1].length() > 0 && segments[2].length() > 0,
                     "Remote table identity '%s' in linked server '%s' must be exactly three non-empty components (catalog.schema.table).", key, name);
+            Preconditions.checkArgument(seen.add(key.toLowerCase()),
+                    "Remote table identity '%s' in linked server '%s' conflicts with an existing case-equivalent key.", key, name);
         }
         this.tables = tables;
     }

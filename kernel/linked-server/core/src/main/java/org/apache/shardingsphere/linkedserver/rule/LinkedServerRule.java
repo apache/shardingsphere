@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.linkedserver.rule;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
@@ -45,6 +46,8 @@ public final class LinkedServerRule implements DatabaseRule {
         this.configuration = configuration;
         servers = new CaseInsensitiveMap<>();
         for (LinkedServerConfiguration each : configuration.getServers()) {
+            Preconditions.checkArgument(!servers.containsKey(each.getName()),
+                    "Linked server name '%s' conflicts with an existing case-equivalent name.", each.getName());
             servers.put(each.getName(), new LinkedServerTable(each));
         }
         attributes = new RuleAttributes(new LinkedServerTableMapperRuleAttribute(configuration.getLogicTableNames()));

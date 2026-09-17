@@ -144,4 +144,23 @@ class LinkedServerRuleTest {
         tables.put("server.catalog.dbo.Department", "t_department");
         assertThrows(IllegalArgumentException.class, () -> new LinkedServerConfiguration("Server", "FIXTURE", tables));
     }
+
+    @Test
+    void assertCaseEquivalentTableKeysRejected() {
+        Map<String, String> tables = new LinkedHashMap<>();
+        tables.put("HumanResources.dbo.Department", "t_hr_department");
+        tables.put("humanresources.dbo.department", "t_hr_dept_lower");
+        assertThrows(IllegalArgumentException.class, () -> new LinkedServerConfiguration("Server", "FIXTURE", tables));
+    }
+
+    @Test
+    void assertCaseEquivalentServerNamesRejected() {
+        Map<String, String> tablesA = new LinkedHashMap<>();
+        tablesA.put("HumanResources.dbo.Department", "t_department_a");
+        LinkedServerConfiguration serverA = new LinkedServerConfiguration("MyServer", "FIXTURE", tablesA);
+        Map<String, String> tablesB = new LinkedHashMap<>();
+        tablesB.put("Sales.dbo.Order", "t_order_b");
+        LinkedServerConfiguration serverB = new LinkedServerConfiguration("myserver", "FIXTURE", tablesB);
+        assertThrows(IllegalArgumentException.class, () -> new LinkedServerRule(new LinkedServerRuleConfiguration(Arrays.asList(serverA, serverB))));
+    }
 }
