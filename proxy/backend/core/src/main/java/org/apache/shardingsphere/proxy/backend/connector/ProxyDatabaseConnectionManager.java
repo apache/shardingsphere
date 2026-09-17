@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionResourceLock;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.DeferredMetaDataRefreshContext;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
@@ -75,6 +76,8 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     
     @Getter(AccessLevel.NONE)
     private final Set<Connection> pendingReplayConnections = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    
+    private final DeferredMetaDataRefreshContext deferredMetaDataRefreshContext = new DeferredMetaDataRefreshContext();
     
     private final ConnectionResourceLock connectionResourceLock = new ConnectionResourceLock();
     

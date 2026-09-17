@@ -80,7 +80,7 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, true, false, true, true,
+        return new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, true, true, true, true,
                 Collections.singleton("org.postgresql.xa.PGXADataSource"));
     }
     
