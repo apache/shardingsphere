@@ -144,7 +144,7 @@ class LinkedServerRuleTest {
         tables.put("server.catalog.dbo.Department", "t_department");
         assertThrows(IllegalArgumentException.class, () -> new LinkedServerConfiguration("Server", "FIXTURE", tables));
     }
-
+    
     @Test
     void assertCaseEquivalentTableKeysRejected() {
         Map<String, String> tables = new LinkedHashMap<>();
@@ -152,7 +152,7 @@ class LinkedServerRuleTest {
         tables.put("humanresources.dbo.department", "t_hr_dept_lower");
         assertThrows(IllegalArgumentException.class, () -> new LinkedServerConfiguration("Server", "FIXTURE", tables));
     }
-
+    
     @Test
     void assertCaseEquivalentServerNamesRejected() {
         Map<String, String> tablesA = new LinkedHashMap<>();
