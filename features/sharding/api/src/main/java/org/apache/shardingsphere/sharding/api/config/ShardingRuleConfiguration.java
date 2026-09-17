@@ -35,7 +35,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Sharding rule configuration.
@@ -70,6 +69,9 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     
     @Override
     public Collection<String> getLogicTableNames() {
-        return new CaseInsensitiveSet<>(tables.stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
+        Collection<String> result = new CaseInsensitiveSet<>(tables.size() + autoTables.size());
+        tables.forEach(each -> result.add(each.getLogicTable()));
+        autoTables.forEach(each -> result.add(each.getLogicTable()));
+        return result;
     }
 }
