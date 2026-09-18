@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.type.C
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowAlgorithmSegment;
 
 /**
- * Create default shadow algorithm rule statement.
+ * Create default shadow algorithm statement.
  */
 @Getter
 public final class CreateDefaultShadowAlgorithmStatement extends CreateRuleStatement {
