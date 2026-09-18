@@ -242,11 +242,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
             transactionManager.commit();
         }
-        PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(queryContext.getSqlStatementContext());
-        if (pushDownMetaDataRefreshEngine.isNeedRefresh()) {
-            pushDownMetaDataRefreshEngine.refresh(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(),
-                    database, contextManager.getMetaDataContexts().getMetaData().getProps(), executionContext.getRouteContext().getRouteUnits());
-        }
+        refreshMetaData(executionContext);
         Object executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(queryContext.getSqlStatementContext(), executeResults.stream().map(QueryResult.class::cast).collect(Collectors.toList()), (QueryResult) executeResultSample)
@@ -257,6 +253,19 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
         return !databaseConnectionManager.getConnectionSession().isAutoCommit() && sqlStatement instanceof DDLStatement
                 && DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION == transactionOption.getDDLCommitPolicy();
+    }
+    
+    private void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
+        PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(queryContext.getSqlStatementContext());
+        if (!pushDownMetaDataRefreshEngine.isNeedRefresh()) {
+            return;
+        }
+        if (databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()) {
+            databaseConnectionManager.getDeferredMetaDataRefreshContext().add(database.getName(), queryContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
+            return;
+        }
+        pushDownMetaDataRefreshEngine.refresh(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(),
+                database, contextManager.getMetaDataContexts().getMetaData().getProps(), executionContext.getRouteContext().getRouteUnits());
     }
     
     private ResponseHeader doExecuteFederation() throws SQLException {

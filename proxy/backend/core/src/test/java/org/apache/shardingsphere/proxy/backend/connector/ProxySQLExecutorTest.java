@@ -246,9 +246,9 @@ class ProxySQLExecutorTest {
         return Stream.of(
                 Arguments.of("ddl-create-mysql-xa-throws", createCreateTableStatement(mysqlDatabaseType), TransactionType.XA, true, true, true),
                 Arguments.of("ddl-truncate-mysql-xa-throws", createTruncateStatement(mysqlDatabaseType), TransactionType.XA, true, true, true),
-                Arguments.of("ddl-create-postgresql-local-throws", createCreateTableStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, true, true),
-                Arguments.of("ddl-create-postgresql-xa-throws", createCreateTableStatement(postgresqlDatabaseType), TransactionType.XA, true, true, true),
-                Arguments.of("ddl-create-postgresql-local-empty-table-throws", createCreateTableStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, false, true),
+                Arguments.of("ddl-create-postgresql-local-pass", createCreateTableStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, true, false),
+                Arguments.of("ddl-create-postgresql-xa-pass", createCreateTableStatement(postgresqlDatabaseType), TransactionType.XA, true, true, false),
+                Arguments.of("ddl-create-mysql-xa-empty-table-throws", createCreateTableStatement(mysqlDatabaseType), TransactionType.XA, true, false, true),
                 Arguments.of("ddl-create-mysql-local-pass", createCreateTableStatement(mysqlDatabaseType), TransactionType.LOCAL, true, true, false),
                 Arguments.of("ddl-truncate-mysql-local-pass", createTruncateStatement(mysqlDatabaseType), TransactionType.LOCAL, true, true, false),
                 Arguments.of("ddl-create-base-transaction-pass", createCreateTableStatement(mysqlDatabaseType), TransactionType.BASE, true, true, false),

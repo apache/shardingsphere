@@ -92,7 +92,7 @@ class PostgreSQLDatabaseMetaDataTest {
         assertThat(actual.getDDLCommitPolicy(), is(DDLCommitPolicy.NO_ADDITIONAL_COMMIT));
         assertFalse(actual.isSupportAutoCommitInNestedTransaction());
         assertTrue(actual.isSupportDDLInXATransaction());
-        assertFalse(actual.isSupportMetaDataRefreshInTransaction());
+        assertTrue(actual.isSupportMetaDataRefreshInTransaction());
         assertTrue(actual.isReturnRollbackStatementWhenCommitFailed());
         assertTrue(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));

@@ -130,6 +130,7 @@ public final class ProxyBackendTransactionManager {
             } else {
                 distributedTransactionManager.commit(transactionContext.isExceptionOccur());
             }
+            connection.getDeferredMetaDataRefreshContext().refresh(ProxyContext.getInstance().getContextManager());
         } finally {
             clear();
         }
@@ -150,6 +151,7 @@ public final class ProxyBackendTransactionManager {
         }
         connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
         connection.getConnectionSession().getConnectionContext().close();
+        connection.getDeferredMetaDataRefreshContext().clear();
     }
     
     /**
@@ -192,6 +194,7 @@ public final class ProxyBackendTransactionManager {
             ConnectionSavepointManager.getInstance().setSavepoint(each, savepointName);
         }
         connection.getConnectionPostProcessors().add(target -> ConnectionSavepointManager.getInstance().setSavepoint(target, savepointName));
+        connection.getDeferredMetaDataRefreshContext().markSavepoint(savepointName);
     }
     
     /**
@@ -209,8 +212,11 @@ public final class ProxyBackendTransactionManager {
                 result.add(ex);
             }
         }
-        if (result.isEmpty() && transactionContext.isExceptionOccur()) {
-            transactionContext.setExceptionOccur(false);
+        if (result.isEmpty()) {
+            connection.getDeferredMetaDataRefreshContext().rollbackToSavepoint(savepointName);
+            if (transactionContext.isExceptionOccur()) {
+                transactionContext.setExceptionOccur(false);
+            }
         }
         throwSQLExceptionIfNecessary(result);
     }
