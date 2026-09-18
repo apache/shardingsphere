@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.config.rule.checker;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -46,6 +47,7 @@ public final class DatabaseRuleConfigurationCheckEngine {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void check(final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
+        RuleConfigurationValidator.validate(ruleConfig);
         DatabaseRuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         if (null == checker) {
             // TODO Remove after implementing the checker of BroadcastRuleConfiguration and SingleRuleConfiguration
