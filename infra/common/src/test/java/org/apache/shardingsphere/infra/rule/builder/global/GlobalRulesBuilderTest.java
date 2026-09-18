@@ -51,8 +51,7 @@ class GlobalRulesBuilderTest {
     void assertBuildRulesWithInvalidRuleConfiguration() {
         FixtureGlobalRuleConfiguration ruleConfig = new FixtureGlobalRuleConfiguration();
         ruleConfig.setName("");
-        assertThrows(InvalidRuleConfigurationException.class,
-                () -> GlobalRulesBuilder.buildRules(Collections.singletonList(ruleConfig), Collections.singleton(buildDatabase()), mock()));
+        assertThrows(InvalidRuleConfigurationException.class, () -> GlobalRulesBuilder.buildRules(Collections.singletonList(ruleConfig), Collections.singleton(buildDatabase()), mock()));
     }
     
     @Test
@@ -65,8 +64,7 @@ class GlobalRulesBuilderTest {
     void assertBuildSingleRulesWithInvalidRuleConfiguration() {
         FixtureGlobalRuleConfiguration ruleConfig = new FixtureGlobalRuleConfiguration();
         ruleConfig.setName("");
-        assertThrows(InvalidRuleConfigurationException.class,
-                () -> GlobalRulesBuilder.buildSingleRules(ruleConfig, Collections.singleton(buildDatabase()), mock()));
+        assertThrows(InvalidRuleConfigurationException.class, () -> GlobalRulesBuilder.buildSingleRules(ruleConfig, Collections.singleton(buildDatabase()), mock()));
     }
     
     private ShardingSphereDatabase buildDatabase() {

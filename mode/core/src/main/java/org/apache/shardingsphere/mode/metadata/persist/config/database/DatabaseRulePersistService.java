@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
@@ -36,7 +37,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -79,9 +79,7 @@ public final class DatabaseRulePersistService {
         Collection<DatabaseRuleNodePath> nodePaths = new LinkedList<>();
         nodePaths.addAll(getUniqueItemNodePaths(databaseName, databaseRuleNode.getRuleType(), databaseRuleNode.getUniqueItems()));
         nodePaths.addAll(getNamedItemNodePaths(databaseName, databaseRuleNode.getRuleType(), databaseRuleNode.getNamedItems()));
-        return nodePaths.stream()
-                .map(each -> new RuleNodeTuple(each, versionPersistService.loadContent(new VersionNodePath(each)))).filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        return nodePaths.stream().map(each -> new RuleNodeTuple(each, versionPersistService.loadContent(new VersionNodePath(each)))).collect(Collectors.toList());
     }
     
     private Collection<DatabaseRuleNodePath> getUniqueItemNodePaths(final String databaseName, final String ruleType, final Collection<String> uniqueItems) {
@@ -105,6 +103,7 @@ public final class DatabaseRulePersistService {
      * @return meta data versions
      */
     public Collection<MetaDataVersion> persist(final String databaseName, final Collection<RuleConfiguration> configs) {
+        RuleConfigurationValidator.validate(configs);
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (YamlRuleConfiguration each : yamlSwapperEngine.swapToYamlRuleConfigurations(configs)) {
             result.addAll(persistTuples(tupleSwapperEngine.swapToTuples(databaseName, each)));
