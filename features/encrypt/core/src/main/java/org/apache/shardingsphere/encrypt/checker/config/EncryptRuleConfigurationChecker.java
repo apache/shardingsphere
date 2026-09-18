@@ -22,10 +22,8 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfig
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
-import org.apache.shardingsphere.encrypt.exception.metadata.MissingRequiredEncryptColumnException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -69,10 +67,6 @@ public final class EncryptRuleConfigurationChecker implements DatabaseRuleConfig
     
     private void checkEncryptColumnItem(final String databaseName, final String tableName, final String logicColumnName,
                                         final EncryptColumnItemRuleConfiguration columnItem, final Map<String, AlgorithmConfiguration> encryptors, final String itemType) {
-        ShardingSpherePreconditions.checkNotEmpty(columnItem.getName(),
-                () -> new MissingRequiredEncryptColumnException(itemType, new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
-        ShardingSpherePreconditions.checkNotEmpty(columnItem.getEncryptorName(),
-                () -> new MissingRequiredAlgorithmException(itemType + " encrypt", new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
         ShardingSpherePreconditions.checkContainsKey(encryptors, columnItem.getEncryptorName(),
                 () -> new UnregisteredAlgorithmException(itemType + " encrypt", columnItem.getEncryptorName(), new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
     }

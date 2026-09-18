@@ -25,6 +25,9 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,9 +39,12 @@ import java.util.stream.Collectors;
 @Getter
 public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
-    private final Collection<EncryptTableRuleConfiguration> tables;
+    @NotNull
+    @Valid
+    private final Collection<@NotNull EncryptTableRuleConfiguration> tables;
     
-    private final Map<String, AlgorithmConfiguration> encryptors;
+    @NotNull
+    private final Map<@NotBlank String, @NotNull AlgorithmConfiguration> encryptors;
     
     @Override
     public Collection<String> getLogicTableNames() {

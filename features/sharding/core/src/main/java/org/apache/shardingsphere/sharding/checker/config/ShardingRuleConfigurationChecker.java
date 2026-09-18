@@ -37,7 +37,6 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleC
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
@@ -51,7 +50,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -79,34 +77,27 @@ public final class ShardingRuleConfigurationChecker implements DatabaseRuleConfi
     }
     
     private void checkKeyGeneratorAlgorithms(final Collection<AlgorithmConfiguration> algorithmConfigs) {
-        algorithmConfigs.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, each.getType(), each.getProps()));
+        algorithmConfigs.forEach(each -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, each.getType(), each.getProps()));
     }
     
     private void checkTables(final String databaseName, final Collection<ShardingTableRuleConfiguration> tables,
                              final Collection<ShardingAutoTableRuleConfiguration> autoTables, final Collection<String> auditors, final Collection<String> shardingAlgorithms) {
         for (ShardingTableRuleConfiguration each : tables) {
-            checkLogicTable(databaseName, each.getLogicTable());
             checkAuditStrategy(databaseName, each.getAuditStrategy(), auditors);
             checkShardingStrategy(databaseName, each.getDatabaseShardingStrategy(), shardingAlgorithms);
             checkShardingStrategy(databaseName, each.getTableShardingStrategy(), shardingAlgorithms);
             checkDataNodeSchemas(each);
         }
         for (ShardingAutoTableRuleConfiguration each : autoTables) {
-            checkLogicTable(databaseName, each.getLogicTable());
             checkAuditStrategy(databaseName, each.getAuditStrategy(), auditors);
             checkShardingStrategy(databaseName, each.getShardingStrategy(), shardingAlgorithms);
         }
-    }
-    
-    private void checkLogicTable(final String databaseName, final String logicTable) {
-        ShardingSpherePreconditions.checkNotEmpty(logicTable, () -> new MissingRequiredShardingConfigurationException("Sharding logic table", databaseName));
     }
     
     private void checkKeyGenerateStrategy(final String databaseName, final KeyGenerateStrategyConfiguration keyGenerateStrategy, final Collection<String> keyGenerators) {
         if (null == keyGenerateStrategy) {
             return;
         }
-        ShardingSpherePreconditions.checkNotEmpty(keyGenerateStrategy.getColumn(), () -> new MissingRequiredShardingConfigurationException("Key generate column", databaseName));
         ShardingSpherePreconditions.checkContains(keyGenerators, keyGenerateStrategy.getKeyGeneratorName(),
                 () -> new UnregisteredAlgorithmException("Key generate", keyGenerateStrategy.getKeyGeneratorName(), new SQLExceptionIdentifier(databaseName)));
     }
@@ -121,37 +112,17 @@ public final class ShardingRuleConfigurationChecker implements DatabaseRuleConfi
     
     private void checkKeyGenerateStrategies(final String databaseName, final Collection<KeyGenerateStrategiesConfiguration> keyGenerateStrategies, final Collection<String> keyGenerators) {
         for (KeyGenerateStrategiesConfiguration each : keyGenerateStrategies) {
-            ShardingSpherePreconditions.checkNotEmpty(each.getKeyGeneratorName(), () -> new MissingRequiredShardingConfigurationException("Key generator name", databaseName));
             ShardingSpherePreconditions.checkContains(keyGenerators, each.getKeyGeneratorName(),
                     () -> new UnregisteredAlgorithmException("Key generate", each.getKeyGeneratorName(), new SQLExceptionIdentifier(databaseName)));
-            if (each instanceof ColumnKeyGenerateStrategiesRuleConfiguration) {
-                checkColumnKeyGenerateStrategy(databaseName, (ColumnKeyGenerateStrategiesRuleConfiguration) each);
-            } else if (each instanceof SequenceKeyGenerateStrategiesRuleConfiguration) {
-                checkSequenceKeyGenerateStrategy(databaseName, (SequenceKeyGenerateStrategiesRuleConfiguration) each);
-            } else {
-                throw new MissingRequiredShardingConfigurationException("Key generate type should be column or sequence", databaseName);
-            }
+            ShardingSpherePreconditions.checkState(each instanceof ColumnKeyGenerateStrategiesRuleConfiguration || each instanceof SequenceKeyGenerateStrategiesRuleConfiguration,
+                    () -> new MissingRequiredShardingConfigurationException("Key generate type should be column or sequence", databaseName));
         }
-    }
-    
-    private void checkColumnKeyGenerateStrategy(final String databaseName, final ColumnKeyGenerateStrategiesRuleConfiguration keyGenerateStrategy) {
-        ShardingSpherePreconditions.checkNotEmpty(keyGenerateStrategy.getLogicTable(), () -> new MissingRequiredShardingConfigurationException("Sharding logic table", databaseName));
-        ShardingSpherePreconditions.checkNotEmpty(keyGenerateStrategy.getKeyGenerateColumn(), () -> new MissingRequiredShardingConfigurationException("Key generate column", databaseName));
-    }
-    
-    private void checkSequenceKeyGenerateStrategy(final String databaseName, final SequenceKeyGenerateStrategiesRuleConfiguration keyGenerateStrategy) {
-        ShardingSpherePreconditions.checkNotEmpty(keyGenerateStrategy.getKeyGenerateSequence(), () -> new MissingRequiredShardingConfigurationException("Key generate sequence", databaseName));
     }
     
     private void checkShardingStrategy(final String databaseName, final ShardingStrategyConfiguration shardingStrategy, final Collection<String> shardingAlgorithms) {
         if (null == shardingStrategy || shardingStrategy instanceof NoneShardingStrategyConfiguration) {
             return;
         }
-        if (shardingStrategy instanceof ComplexShardingStrategyConfiguration) {
-            ShardingSpherePreconditions.checkNotEmpty(((ComplexShardingStrategyConfiguration) shardingStrategy).getShardingColumns(),
-                    () -> new MissingRequiredShardingConfigurationException("Complex sharding columns", databaseName));
-        }
-        ShardingSpherePreconditions.checkNotNull(shardingStrategy.getShardingAlgorithmName(), () -> new MissingRequiredShardingConfigurationException("Sharding algorithm name", databaseName));
         ShardingSpherePreconditions.checkContains(shardingAlgorithms, shardingStrategy.getShardingAlgorithmName(),
                 () -> new UnregisteredAlgorithmException("sharding", shardingStrategy.getShardingAlgorithmName(), new SQLExceptionIdentifier(databaseName)));
     }

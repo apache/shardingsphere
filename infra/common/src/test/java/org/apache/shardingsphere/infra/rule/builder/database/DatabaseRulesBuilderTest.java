@@ -99,6 +99,14 @@ class DatabaseRulesBuilderTest {
     }
     
     @Test
+    void assertBuildWithInvalidEmptyRuleConfiguration() {
+        ToggleFixtureDatabaseRuleConfiguration ruleConfig = new ToggleFixtureDatabaseRuleConfiguration(true);
+        ruleConfig.setName("");
+        assertThrows(InvalidRuleConfigurationException.class, () -> DatabaseRulesBuilder.build("foo_db", null,
+                new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(ruleConfig)), null, EMPTY_RESOURCE_META_DATA));
+    }
+    
+    @Test
     void assertBuildSingleRule() {
         assertThat(DatabaseRulesBuilder.build("foo_db", null, Collections.emptyList(), new FixtureDatabaseRuleConfiguration(), null, EMPTY_RESOURCE_META_DATA), isA(FixtureRule.class));
     }

@@ -31,6 +31,9 @@ import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAudi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -44,29 +47,44 @@ import java.util.stream.Collectors;
 @Setter
 public final class ShardingRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
-    private Collection<ShardingTableRuleConfiguration> tables = new LinkedList<>();
+    @NotNull
+    @Valid
+    private Collection<@NotNull ShardingTableRuleConfiguration> tables = new LinkedList<>();
     
-    private Collection<ShardingAutoTableRuleConfiguration> autoTables = new LinkedList<>();
+    @NotNull
+    @Valid
+    private Collection<@NotNull ShardingAutoTableRuleConfiguration> autoTables = new LinkedList<>();
     
-    private Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups = new LinkedList<>();
+    @NotNull
+    @Valid
+    private Collection<@NotNull ShardingTableReferenceRuleConfiguration> bindingTableGroups = new LinkedList<>();
     
+    @Valid
     private ShardingStrategyConfiguration defaultDatabaseShardingStrategy;
     
+    @Valid
     private ShardingStrategyConfiguration defaultTableShardingStrategy;
     
+    @Valid
     private KeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
+    @Valid
     private ShardingAuditStrategyConfiguration defaultAuditStrategy;
     
     private String defaultShardingColumn;
     
-    private Map<String, KeyGenerateStrategiesConfiguration> keyGenerateStrategies = new LinkedHashMap<>();
+    @NotNull
+    @Valid
+    private Map<@NotBlank String, @NotNull KeyGenerateStrategiesConfiguration> keyGenerateStrategies = new LinkedHashMap<>();
     
-    private Map<String, AlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
+    @NotNull
+    private Map<@NotBlank String, @NotNull AlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
-    private Map<String, AlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
+    @NotNull
+    private Map<@NotBlank String, @NotNull AlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
-    private Map<String, AlgorithmConfiguration> auditors = new LinkedHashMap<>();
+    @NotNull
+    private Map<@NotBlank String, @NotNull AlgorithmConfiguration> auditors = new LinkedHashMap<>();
     
     @Override
     public Collection<String> getLogicTableNames() {

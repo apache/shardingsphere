@@ -24,6 +24,9 @@ import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfi
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Map;
 
@@ -34,7 +37,10 @@ import java.util.Map;
 @Getter
 public final class ReadwriteSplittingRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
-    private final Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups;
+    @NotNull
+    @Valid
+    private final Collection<@NotNull ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups;
     
-    private final Map<String, AlgorithmConfiguration> loadBalancers;
+    @NotNull
+    private final Map<@NotBlank String, @NotNull AlgorithmConfiguration> loadBalancers;
 }

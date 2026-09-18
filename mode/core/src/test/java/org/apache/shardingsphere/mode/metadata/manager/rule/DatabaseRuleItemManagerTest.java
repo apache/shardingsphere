@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.mode.metadata.manager.rule;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -36,6 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
+import javax.validation.constraints.NotBlank;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -44,6 +48,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -86,6 +91,20 @@ class DatabaseRuleItemManagerTest {
     }
     
     @Test
+    void assertAlterWithInvalidRuleItemConfiguration() throws SQLException {
+        MetaDataPersistFacade persistFacade = mockPersistFacade();
+        RuleConfiguration currentRuleConfig = mock(DatabaseRuleConfiguration.class);
+        RuleItemConfigurationChangedProcessor processor = mock(RuleItemConfigurationChangedProcessor.class);
+        when(processor.findRuleConfiguration(any(ShardingSphereDatabase.class))).thenReturn(currentRuleConfig);
+        when(processor.swapRuleItemConfiguration(any(), any())).thenReturn(new FixtureRuleItemConfiguration(""));
+        when((TypedSPI) TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("ruleType", "type"))).thenReturn(processor);
+        DatabaseRuleItemManager manager = new DatabaseRuleItemManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS), ruleConfigManager, persistFacade);
+        assertThrows(InvalidRuleConfigurationException.class, () -> manager.alter(new DatabaseRuleNodePath(DATABASE_NAME, "ruleType", new DatabaseRuleItem("type/item"))));
+        verify(processor, never()).changeRuleItemConfiguration(any(), any(), any());
+        verify(ruleConfigManager, never()).refresh(any(), any());
+    }
+    
+    @Test
     void assertDropSuccess() throws SQLException {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
@@ -119,5 +138,13 @@ class DatabaseRuleItemManagerTest {
         when(versionService.loadContent(any())).thenReturn("yaml-content");
         when(result.getVersionService()).thenReturn(versionService);
         return result;
+    }
+    
+    @RequiredArgsConstructor
+    @Getter
+    private static final class FixtureRuleItemConfiguration {
+        
+        @NotBlank
+        private final String name;
     }
 }

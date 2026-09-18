@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.config.rule.validator;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.junit.jupiter.api.Test;
@@ -26,7 +28,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -41,7 +43,8 @@ class RuleConfigurationValidatorTest {
     void assertValidateRuleConfigurationWithViolation() {
         InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class,
                 () -> RuleConfigurationValidator.validate(new FixtureRuleConfiguration("")));
-        assertThat(actual.getMessage(), is("Invalid 'FixtureRuleConfiguration' rule, error message is: Property `nested.name` is required."));
+        assertThat(actual.getMessage(), containsString("Invalid 'FixtureRuleConfiguration' rule"));
+        assertThat(actual.getMessage(), containsString("Property `nested.name`"));
     }
     
     @Test
@@ -50,6 +53,15 @@ class RuleConfigurationValidatorTest {
                 () -> RuleConfigurationValidator.validate(Arrays.asList(new FixtureRuleConfiguration("fixture"), new FixtureRuleConfiguration(""))));
     }
     
+    @Test
+    void assertValidateRuleItemWithViolation() {
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class,
+                () -> RuleConfigurationValidator.validateRuleItem(new FixtureRuleConfiguration("fixture"), new NestedConfiguration("")));
+        assertThat(actual.getMessage(), containsString("Invalid 'FixtureRuleConfiguration' rule"));
+        assertThat(actual.getMessage(), containsString("Property `name`"));
+    }
+    
+    @Getter
     private static final class FixtureRuleConfiguration implements RuleConfiguration {
         
         @Valid
@@ -60,13 +72,11 @@ class RuleConfigurationValidatorTest {
         }
     }
     
+    @RequiredArgsConstructor
+    @Getter
     private static final class NestedConfiguration {
         
-        @NotBlank(message = "is required")
+        @NotBlank
         private final String name;
-        
-        private NestedConfiguration(final String name) {
-            this.name = name;
-        }
     }
 }

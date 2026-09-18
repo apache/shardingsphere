@@ -109,6 +109,19 @@ class DatabaseRuleConfigurationManagerTest {
     }
     
     @Test
+    void assertRefreshWithInvalidDatabaseRuleConfiguration() {
+        DatabaseRuleConfiguration ruleConfig = mock(DatabaseRuleConfiguration.class);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        DatabaseRuleConfigurationManager manager = new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock());
+        try (MockedStatic<RuleConfigurationValidator> mockedValidator = mockStatic(RuleConfigurationValidator.class)) {
+            mockedValidator.when(() -> RuleConfigurationValidator.validate(ruleConfig)).thenThrow(new InvalidRuleConfigurationException("fixture", "invalid"));
+            assertThrows(InvalidRuleConfigurationException.class, () -> manager.refresh(DATABASE_NAME, ruleConfig));
+        }
+        verify(metaDataContexts, never()).update(any(MetaDataContexts.class));
+    }
+    
+    @Test
     void assertRefreshWithPartialUpdateSkipMetadata() throws SQLException {
         DatabaseRuleConfiguration ruleConfig = mockDatabaseRuleConfiguration(false);
         ShardingSphereRule partialRule = mock(ShardingSphereRule.class, withSettings().extraInterfaces(PartialRuleUpdateSupported.class));
