@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.Properties;
 
 /**
@@ -34,6 +35,7 @@ import java.util.Properties;
 public final class TransactionRuleConfiguration implements GlobalRuleConfiguration {
     
     @NotBlank
+    @Pattern(regexp = "LOCAL|XA|BASE", flags = Pattern.Flag.CASE_INSENSITIVE)
     private final String defaultType;
     
     private final String providerType;

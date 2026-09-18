@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.config;
+package org.apache.shardingsphere.sqltranslator.config;
 
 import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
@@ -29,35 +29,30 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class TransactionRuleConfigurationTest {
+class SQLTranslatorRuleConfigurationTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("validRuleConfigurationArguments")
-    void assertValidateValidRuleConfiguration(final String name, final TransactionRuleConfiguration ruleConfig) {
+    void assertValidateValidRuleConfiguration(final String name, final SQLTranslatorRuleConfiguration ruleConfig) {
         assertDoesNotThrow(() -> RuleConfigurationValidator.validate(ruleConfig));
     }
     
     private static Stream<Arguments> validRuleConfigurationArguments() {
         return Stream.of(
-                Arguments.of("Null optional values", new TransactionRuleConfiguration("LOCAL", null, null)),
-                Arguments.of("Lowercase default type", new TransactionRuleConfiguration("local", null, null)),
-                Arguments.of("Mixed case default type", new TransactionRuleConfiguration("Base", null, null)),
-                Arguments.of("Provider type", new TransactionRuleConfiguration("XA", "Atomikos", null)),
-                Arguments.of("Properties", new TransactionRuleConfiguration("BASE", null, new Properties())));
+                Arguments.of("Null type and properties", new SQLTranslatorRuleConfiguration(null, null, true)),
+                Arguments.of("Type and properties", new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), false)));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidRuleConfigurationArguments")
-    void assertValidateInvalidRuleConfiguration(final String name, final TransactionRuleConfiguration ruleConfig) {
+    void assertValidateInvalidRuleConfiguration(final String name, final SQLTranslatorRuleConfiguration ruleConfig) {
         assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
     }
     
     private static Stream<Arguments> invalidRuleConfigurationArguments() {
         return Stream.of(
-                Arguments.of("Null default type", new TransactionRuleConfiguration(null, null, null)),
-                Arguments.of("Empty default type", new TransactionRuleConfiguration("", null, null)),
-                Arguments.of("Blank default type", new TransactionRuleConfiguration(" ", null, null)),
-                Arguments.of("Unsupported default type", new TransactionRuleConfiguration("FOO", null, null)),
-                Arguments.of("Padded default type", new TransactionRuleConfiguration(" XA ", null, null)));
+                Arguments.of("Empty type", new SQLTranslatorRuleConfiguration("", null, true)),
+                Arguments.of("Blank type", new SQLTranslatorRuleConfiguration(" ", null, true)),
+                Arguments.of("Multiline blank type", new SQLTranslatorRuleConfiguration("\n\t", null, true)));
     }
 }
