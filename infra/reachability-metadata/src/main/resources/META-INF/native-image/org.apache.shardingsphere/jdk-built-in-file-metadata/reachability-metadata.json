@@ -2,6 +2,12 @@
   "reflection": [
     {
       "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.guava.reflect.TypeResolver"
+      },
+      "type": "int[][]"
+    },
+    {
+      "condition": {
         "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
       },
       "type": "com.oracle.svm.core.jdk.management.SubstrateRuntimeMXBean"
@@ -110,9 +116,27 @@
     },
     {
       "condition": {
+        "typeReached": "io.netty.util.internal.CleanerJava24Linker"
+      },
+      "type": "java.lang.foreign.MemoryLayout",
+      "methods": [
+        {
+          "name": "byteSize",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
       },
       "type": "java.lang.foreign.AddressLayout"
+    },
+    {
+      "condition": {
+        "typeReached": "io.netty.util.internal.CleanerJava24Linker"
+      },
+      "type": "java.lang.foreign.ValueLayout"
     },
     {
       "condition": {
@@ -190,6 +214,18 @@
     },
     {
       "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.deser.DeserializerCache"
+      },
+      "type": "java.util.SequencedMap"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.deser.DeserializerCache"
+      },
+      "type": "java.util.SequencedCollection"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.calcite.linq4j.tree.Types"
       },
       "type": "java.util.TimeZone"
@@ -234,5 +270,35 @@
         ]
       }
     }
-  ]
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "com.mysql.cj.jdbc.AbandonedConnectionCleanupThread"
+      },
+      "glob": ""
+    }
+  ],
+  "foreign": {
+    "downcalls": [
+      {
+        "condition": {
+          "typeReached": "io.netty.util.internal.CleanerJava24Linker"
+        },
+        "returnType": "jlong",
+        "parameterTypes": [
+          "jlong"
+        ]
+      },
+      {
+        "condition": {
+          "typeReached": "io.netty.util.internal.CleanerJava24Linker"
+        },
+        "returnType": "void",
+        "parameterTypes": [
+          "jlong"
+        ]
+      }
+    ]
+  }
 }
