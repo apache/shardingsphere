@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.metadata.manager.rule;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -58,7 +59,9 @@ public final class DatabaseRuleItemManager {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         String itemName = databaseRuleNodePath.getDatabaseRuleItem().getName();
         synchronized (this) {
-            processor.changeRuleItemConfiguration(itemName, currentRuleConfig, processor.swapRuleItemConfiguration(itemName, yamlContent));
+            Object ruleItemConfig = processor.swapRuleItemConfiguration(itemName, yamlContent);
+            RuleConfigurationValidator.validateRuleItem(currentRuleConfig, ruleItemConfig);
+            processor.changeRuleItemConfiguration(itemName, currentRuleConfig, ruleItemConfig);
             try {
                 databaseRuleConfigManager.refresh(databaseName, currentRuleConfig);
             } catch (final SQLException ex) {

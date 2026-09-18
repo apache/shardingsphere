@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Properties;
 
 /**
@@ -32,6 +33,7 @@ import java.util.Properties;
 @EqualsAndHashCode
 public final class TransactionRuleConfiguration implements GlobalRuleConfiguration {
     
+    @NotBlank
     private final String defaultType;
     
     private final String providerType;

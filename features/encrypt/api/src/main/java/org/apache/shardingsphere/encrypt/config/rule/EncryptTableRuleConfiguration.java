@@ -20,6 +20,9 @@ package org.apache.shardingsphere.encrypt.config.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 /**
@@ -29,7 +32,10 @@ import java.util.Collection;
 @Getter
 public final class EncryptTableRuleConfiguration {
     
+    @NotBlank
     private final String name;
     
-    private final Collection<EncryptColumnRuleConfiguration> columns;
+    @NotNull
+    @Valid
+    private final Collection<@NotNull EncryptColumnRuleConfiguration> columns;
 }

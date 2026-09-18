@@ -59,11 +59,11 @@ public final class DatabaseRuleConfigurationManager {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public synchronized void refresh(final String databaseName, final RuleConfiguration ruleConfig) throws SQLException {
         Collection<ShardingSphereRule> rules = new LinkedList<>(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
+        RuleConfigurationValidator.validate(ruleConfig);
         if (isRuleConfigurationEmpty(ruleConfig)) {
             refreshMetadata(databaseName, ruleConfig, false, rules);
             return;
         }
-        RuleConfigurationValidator.validate(ruleConfig);
         Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
         if (toBeChangedRule.isPresent() && toBeChangedRule.get() instanceof PartialRuleUpdateSupported) {
             boolean needRefreshSchemas = ((PartialRuleUpdateSupported) toBeChangedRule.get()).partialUpdate(ruleConfig);

@@ -74,9 +74,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements Databas
     public Collection<String> getRequiredDataSourceNames(final ReadwriteSplittingRuleConfiguration ruleConfig) {
         Collection<String> result = new LinkedHashSet<>();
         for (ReadwriteSplittingDataSourceGroupRuleConfiguration each : ruleConfig.getDataSourceGroups()) {
-            if (null != each.getWriteDataSourceName()) {
-                result.addAll(getActualDataSourceNames(Collections.singleton(each.getWriteDataSourceName())));
-            }
+            result.addAll(getActualDataSourceNames(Collections.singleton(each.getWriteDataSourceName())));
             result.addAll(getActualDataSourceNames(each.getReadDataSourceNames()));
         }
         return result;

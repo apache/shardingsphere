@@ -56,12 +56,26 @@ public final class RuleConfigurationValidator {
      * @param ruleConfig rule configuration
      */
     public static void validate(final RuleConfiguration ruleConfig) {
-        Set<ConstraintViolation<RuleConfiguration>> violations = VALIDATOR.validate(ruleConfig);
-        ShardingSpherePreconditions.checkMustEmpty(violations, () -> new InvalidRuleConfigurationException(
-                ruleConfig.getClass().getSimpleName(), violations.stream().map(RuleConfigurationValidator::formatViolation).sorted().collect(Collectors.joining("; "))));
+        validate(ruleConfig, ruleConfig.getClass().getSimpleName());
     }
     
-    private static String formatViolation(final ConstraintViolation<RuleConfiguration> violation) {
+    private static void validate(final Object config, final String ruleType) {
+        Set<ConstraintViolation<Object>> violations = VALIDATOR.validate(config);
+        ShardingSpherePreconditions.checkMustEmpty(violations, () -> new InvalidRuleConfigurationException(
+                ruleType, violations.stream().map(RuleConfigurationValidator::formatViolation).sorted().collect(Collectors.joining("; "))));
+    }
+    
+    /**
+     * Validate rule item configuration.
+     *
+     * @param ruleConfig owner rule configuration
+     * @param ruleItemConfig rule item configuration
+     */
+    public static void validateRuleItem(final RuleConfiguration ruleConfig, final Object ruleItemConfig) {
+        validate(ruleItemConfig, ruleConfig.getClass().getSimpleName());
+    }
+    
+    private static String formatViolation(final ConstraintViolation<?> violation) {
         if (violation.getPropertyPath().toString().isEmpty()) {
             return violation.getMessage();
         }

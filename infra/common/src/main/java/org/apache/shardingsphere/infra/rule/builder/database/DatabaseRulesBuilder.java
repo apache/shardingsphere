@@ -64,6 +64,7 @@ public final class DatabaseRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> build(final String databaseName, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                        final ComputeNodeInstanceContext computeNodeInstanceContext, final ResourceMetaData resourceMetaData) {
+        RuleConfigurationValidator.validate(databaseConfig.getRuleConfigurations());
         Map<RuleConfiguration, DatabaseRuleBuilder> ruleBuilderMap = getRuleBuilderMap(databaseConfig);
         RuleConfigurationValidator.validate(ruleBuilderMap.keySet());
         Collection<ShardingSphereRule> result = new LinkedList<>();

@@ -38,7 +38,6 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -84,7 +83,6 @@ public final class ShadowRuleConfigurationChecker implements DatabaseRuleConfigu
     
     private void checkShadowTableAlgorithmsReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Map<String, AlgorithmConfiguration> shadowAlgorithms, final String databaseName) {
         for (ShadowTableConfiguration each : shadowTables.values()) {
-            ShardingSpherePreconditions.checkNotEmpty(each.getShadowAlgorithmNames(), () -> new MissingRequiredAlgorithmException("Shadow", new SQLExceptionIdentifier(databaseName)));
             each.getShadowAlgorithmNames().forEach(shadowAlgorithmName -> ShardingSpherePreconditions.checkContainsKey(shadowAlgorithms, shadowAlgorithmName,
                     () -> new MissingRequiredAlgorithmException("Shadow", new SQLExceptionIdentifier(databaseName))));
         }
@@ -94,8 +92,8 @@ public final class ShadowRuleConfigurationChecker implements DatabaseRuleConfigu
     public Collection<String> getRequiredDataSourceNames(final ShadowRuleConfiguration ruleConfig) {
         Collection<String> result = new LinkedHashSet<>();
         for (ShadowDataSourceConfiguration each : ruleConfig.getDataSources()) {
-            Optional.ofNullable(each.getShadowDataSourceName()).ifPresent(result::add);
-            Optional.ofNullable(each.getProductionDataSourceName()).ifPresent(result::add);
+            result.add(each.getShadowDataSourceName());
+            result.add(each.getProductionDataSourceName());
         }
         return result;
     }

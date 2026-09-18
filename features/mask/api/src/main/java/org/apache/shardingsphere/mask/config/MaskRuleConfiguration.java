@@ -25,6 +25,9 @@ import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfigur
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,9 +39,12 @@ import java.util.stream.Collectors;
 @Getter
 public final class MaskRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
-    private final Collection<MaskTableRuleConfiguration> tables;
+    @NotNull
+    @Valid
+    private final Collection<@NotNull MaskTableRuleConfiguration> tables;
     
-    private final Map<String, AlgorithmConfiguration> maskAlgorithms;
+    @NotNull
+    private final Map<@NotBlank String, @NotNull AlgorithmConfiguration> maskAlgorithms;
     
     @Override
     public Collection<String> getLogicTableNames() {
