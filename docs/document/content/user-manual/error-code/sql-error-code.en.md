@@ -43,6 +43,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 10202       | 42S02     | %s rules '%s' do not exist in database '%s'.                                        |
 | 10203       | 44000     | %s rules '%s' in database '%s' are still in used by %s.                             |
 | 10204       | 42S01     | Duplicate %s rule names '%s' in database '%s'.                                      |
+| 10205       | HY000     | Can not validate '%s' rule configuration.                                           |
 | 10210       | 42S02     | %s strategies '%s' do not exist.                                                    |
 | 10300       | HY000     | Invalid format for data node '%s', reason is: %s.                                   |
 | 10301       | 0A000     | Can not support 3-tier structure for actual data node '%s.%s' with JDBC '%s'.       |

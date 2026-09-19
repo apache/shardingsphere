@@ -59,8 +59,8 @@ public final class SPITypeExistsValidator implements ConstraintValidator<SPIType
             Class<?> spiClass = Class.forName(spiClassName, false, Thread.currentThread().getContextClassLoader());
             ShardingSpherePreconditions.checkState(TypedSPI.class.isAssignableFrom(spiClass), () -> new ValidationException(String.format("Class `%s` does not implement TypedSPI.", spiClassName)));
             return TypedSPILoader.containsService(spiClass.asSubclass(TypedSPI.class), type);
-        } catch (final ClassNotFoundException ignored) {
-            return false;
+        } catch (final ClassNotFoundException ex) {
+            throw new ValidationException(String.format("Can not load SPI class `%s`.", spiClassName), ex);
         }
     }
     

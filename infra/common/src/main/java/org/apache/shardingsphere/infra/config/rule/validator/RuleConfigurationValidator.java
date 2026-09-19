@@ -23,9 +23,11 @@ import org.apache.bval.jsr.ApacheValidationProvider;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.RuleConfigurationValidationException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
+import javax.validation.ValidationException;
 import javax.validation.Validator;
 import java.util.Collection;
 import java.util.Set;
@@ -60,7 +62,12 @@ public final class RuleConfigurationValidator {
     }
     
     private static void validate(final Object config, final String ruleType) {
-        Set<ConstraintViolation<Object>> violations = VALIDATOR.validate(config);
+        Set<ConstraintViolation<Object>> violations;
+        try {
+            violations = VALIDATOR.validate(config);
+        } catch (final ValidationException ex) {
+            throw new RuleConfigurationValidationException(ruleType, ex);
+        }
         ShardingSpherePreconditions.checkMustEmpty(violations, () -> new InvalidRuleConfigurationException(
                 ruleType, violations.stream().map(RuleConfigurationValidator::formatViolation).sorted().collect(Collectors.joining("; "))));
     }
