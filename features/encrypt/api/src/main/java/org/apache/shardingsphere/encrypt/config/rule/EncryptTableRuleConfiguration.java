@@ -19,6 +19,8 @@ package org.apache.shardingsphere.encrypt.config.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.config.validator.ValidEncryptTableRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -30,6 +32,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
+@ValidEncryptTableRuleConfiguration(groups = RuleConfigurationTypeValidationGroup.class)
 public final class EncryptTableRuleConfiguration {
     
     @NotBlank
