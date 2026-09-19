@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -62,6 +63,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -86,25 +88,30 @@ public abstract class SQLBinderIT {
     }
     
     protected final SQLStatement bindSQLStatement(final String databaseType, final String sql) {
+        return bindSQLStatement(databaseType, sql, IDENTIFIER_INSENSITIVE_PROPS);
+    }
+    
+    // Use explicit props instead of IDENTIFIER_INSENSITIVE_PROPS when a regression needs the real, dialect-driven identifier case sensitivity or system schema assembly behavior.
+    protected final SQLStatement bindSQLStatement(final String databaseType, final String sql, final ConfigurationProperties props) {
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
         SQLStatement sqlStatement = new SQLStatementVisitorEngine(databaseType).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
-        return new SQLBindEngine(mockMetaData(TypedSPILoader.getService(DatabaseType.class, databaseType)), "foo_db_1", hintValueContext).bind(sqlStatement).getSqlStatement();
+        return new SQLBindEngine(mockMetaData(TypedSPILoader.getService(DatabaseType.class, databaseType), props), "foo_db_1", hintValueContext).bind(sqlStatement).getSqlStatement();
     }
     
-    private ShardingSphereMetaData mockMetaData(final DatabaseType databaseType) {
+    private ShardingSphereMetaData mockMetaData(final DatabaseType databaseType, final ConfigurationProperties props) {
         Collection<ShardingSphereDatabase> databases = new LinkedList<>();
-        databases.add(new ShardingSphereDatabase("foo_db_1", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), mockSchemas(databaseType, "foo_db_1"),
-                IDENTIFIER_INSENSITIVE_PROPS));
-        databases.add(new ShardingSphereDatabase("foo_db_2", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), mockSchemas(databaseType, "foo_db_2"),
-                IDENTIFIER_INSENSITIVE_PROPS));
-        return new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), IDENTIFIER_INSENSITIVE_PROPS);
+        databases.add(new ShardingSphereDatabase("foo_db_1", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), mockSchemas(databaseType, "foo_db_1", props), props));
+        databases.add(new ShardingSphereDatabase("foo_db_2", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), mockSchemas(databaseType, "foo_db_2", props), props));
+        return new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), props);
     }
     
-    private Collection<ShardingSphereSchema> mockSchemas(final DatabaseType databaseType, final String databaseName) {
+    private Collection<ShardingSphereSchema> mockSchemas(final DatabaseType databaseType, final String databaseName, final ConfigurationProperties props) {
         Collection<ShardingSphereSchema> result = new LinkedList<>();
         String defaultSchemaName = DefaultSchemaNameResolver.resolveProtocol(databaseType, databaseName);
         Collection<ShardingSphereTable> tables = "foo_db_1".equalsIgnoreCase(databaseName) ? mockFooDB1Tables() : mockFooDB2Tables();
         result.add(new ShardingSphereSchema(defaultSchemaName, databaseType, tables, Collections.emptyList()));
+        Map<String, ShardingSphereSchema> systemSchemas = SystemSchemaBuilder.build(databaseName, databaseType, props);
+        result.addAll(systemSchemas.values());
         return result;
     }
     
@@ -148,6 +155,10 @@ public abstract class SQLBinderIT {
                 new ShardingSphereColumn("merchant_id", Types.INTEGER, false, false, false, true, false, true),
                 new ShardingSphereColumn("remark", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        result.add(new ShardingSphereTable("ALL_VIEWS", Collections.singletonList(
+                new ShardingSphereColumn("USER_COL", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        result.add(new ShardingSphereTable("pg_class", Collections.singletonList(
+                new ShardingSphereColumn("USER_COL", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         return result;
     }
     
