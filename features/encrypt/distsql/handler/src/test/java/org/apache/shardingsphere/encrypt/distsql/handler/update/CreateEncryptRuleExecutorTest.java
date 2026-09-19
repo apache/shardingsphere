@@ -64,7 +64,7 @@ class CreateEncryptRuleExecutorTest {
     }
     
     @Test
-    void assertExecuteUpdateWithoutToBeCreatedEncryptors() {
+    void assertExecuteUpdateWithInvalidEncryptorType() {
         assertThrows(ServiceProviderNotFoundException.class,
                 () -> new DistSQLUpdateExecuteEngine(createSQLStatement("INVALID_TYPE"), "foo_db", mockContextManager(mock(EncryptRule.class)), null).executeUpdate());
     }
