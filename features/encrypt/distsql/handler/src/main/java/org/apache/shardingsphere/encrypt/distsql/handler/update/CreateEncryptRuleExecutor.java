@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitial
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
@@ -53,7 +52,6 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
         if (!sqlStatement.isIfNotExists()) {
             checkDuplicateRuleNames(sqlStatement);
         }
-        checkColumnNames(sqlStatement);
         checkAlgorithmTypes(sqlStatement);
         checkDataSources();
     }
@@ -65,18 +63,6 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
     
     private Collection<String> getDuplicatedRuleNames(final CreateEncryptRuleStatement sqlStatement) {
         return null == rule ? Collections.emptyList() : sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(rule.getAllTableNames()::contains).collect(Collectors.toSet());
-    }
-    
-    private void checkColumnNames(final CreateEncryptRuleStatement sqlStatement) {
-        for (EncryptRuleSegment each : sqlStatement.getRules()) {
-            ShardingSpherePreconditions.checkState(isColumnNameNotConflicts(each),
-                    () -> new InvalidRuleConfigurationException("encrypt", "assisted query column or like query column conflicts with logic column"));
-        }
-    }
-    
-    private boolean isColumnNameNotConflicts(final EncryptRuleSegment rule) {
-        return rule.getColumns().stream().noneMatch(each -> null != each.getLikeQuery() && each.getName().equals(each.getLikeQuery().getName())
-                || null != each.getAssistedQuery() && each.getName().equals(each.getAssistedQuery().getName()));
     }
     
     private void checkAlgorithmTypes(final CreateEncryptRuleStatement sqlStatement) {
