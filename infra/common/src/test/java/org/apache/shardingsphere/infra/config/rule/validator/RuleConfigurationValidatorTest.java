@@ -100,6 +100,7 @@ class RuleConfigurationValidatorTest {
         private final String name;
     }
     
+    @Getter
     private static final class MissingSPIClassRuleConfiguration implements RuleConfiguration {
         
         @SPITypeExists(spiClassName = "org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.fixture.MissingSPITypeFixture")
