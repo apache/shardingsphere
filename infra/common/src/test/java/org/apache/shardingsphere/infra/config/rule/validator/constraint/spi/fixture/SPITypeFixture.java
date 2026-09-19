@@ -15,37 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.type.typed.fixture.impl;
+package org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.fixture;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.spi.type.typed.fixture.TypedSPIFixture;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Properties;
-
-@Getter
-public final class TypedSPIFixtureImpl implements TypedSPIFixture {
-    
-    private String value;
-    
-    @Override
-    public void init(final Properties props) {
-        value = props.getProperty("key");
-    }
-    
-    @Override
-    public String getType() {
-        return "TYPED.FIXTURE";
-    }
-    
-    @Override
-    public Collection<Object> getTypeAliases() {
-        return Collections.singleton("TYPED.ALIAS");
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
+@SingletonSPI
+public interface SPITypeFixture extends TypedSPI {
 }

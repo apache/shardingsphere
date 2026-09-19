@@ -42,7 +42,8 @@ class TransactionRuleConfigurationTest {
                 Arguments.of("Null optional values", new TransactionRuleConfiguration("LOCAL", null, null)),
                 Arguments.of("Lowercase default type", new TransactionRuleConfiguration("local", null, null)),
                 Arguments.of("Mixed case default type", new TransactionRuleConfiguration("Base", null, null)),
-                Arguments.of("Provider type", new TransactionRuleConfiguration("XA", "Atomikos", null)),
+                Arguments.of("Provider ignored for local transaction", new TransactionRuleConfiguration("LOCAL", "MISSING", null)),
+                Arguments.of("Provider ignored for base transaction", new TransactionRuleConfiguration("BASE", "MISSING", null)),
                 Arguments.of("Properties", new TransactionRuleConfiguration("BASE", null, new Properties())));
     }
     
@@ -58,6 +59,7 @@ class TransactionRuleConfigurationTest {
                 Arguments.of("Empty default type", new TransactionRuleConfiguration("", null, null)),
                 Arguments.of("Blank default type", new TransactionRuleConfiguration(" ", null, null)),
                 Arguments.of("Unsupported default type", new TransactionRuleConfiguration("FOO", null, null)),
-                Arguments.of("Padded default type", new TransactionRuleConfiguration(" XA ", null, null)));
+                Arguments.of("Padded default type", new TransactionRuleConfiguration(" XA ", null, null)),
+                Arguments.of("XA module is unavailable", new TransactionRuleConfiguration("XA", "Atomikos", null)));
     }
 }

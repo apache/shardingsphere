@@ -15,37 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.type.typed.fixture.impl;
+package org.apache.shardingsphere.authority.config.fixture;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.spi.type.typed.fixture.TypedSPIFixture;
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Properties;
-
-@Getter
-public final class TypedSPIFixtureImpl implements TypedSPIFixture {
-    
-    private String value;
+public final class PrivilegeProviderFixture implements PrivilegeProvider {
     
     @Override
-    public void init(final Properties props) {
-        value = props.getProperty("key");
+    public ShardingSpherePrivileges build(final AuthorityRuleConfiguration ruleConfig, final Grantee grantee) {
+        return database -> true;
     }
     
     @Override
     public String getType() {
-        return "TYPED.FIXTURE";
-    }
-    
-    @Override
-    public Collection<Object> getTypeAliases() {
-        return Collections.singleton("TYPED.ALIAS");
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+        return "FIXTURE";
     }
 }
