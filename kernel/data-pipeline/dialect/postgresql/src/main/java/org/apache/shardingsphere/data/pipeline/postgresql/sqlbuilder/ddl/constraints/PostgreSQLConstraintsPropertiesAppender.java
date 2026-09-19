@@ -130,8 +130,8 @@ public final class PostgreSQLConstraintsPropertiesAppender {
         params.put("col_count", exclusionConstraintsProps.get("col_count"));
         Collection<Map<String, Object>> columns = new LinkedList<>();
         for (Map<String, Object> each : templateExecutor.executeByTemplate(params, "component/exclusion_constraint/%s/get_constraint_cols.ftl")) {
-            boolean order = 0 == (((int) each.get("options")) & 1);
-            boolean nullsOrder = 0 != (((int) each.get("options")) & 2);
+            boolean order = 0 == ((int) each.get("options") & 1);
+            boolean nullsOrder = 0 != ((int) each.get("options") & 2);
             Map<String, Object> col = new HashMap<>(7, 1F);
             col.put("column", strip((String) each.get("coldef")));
             col.put("oper_class", each.get("opcname"));
