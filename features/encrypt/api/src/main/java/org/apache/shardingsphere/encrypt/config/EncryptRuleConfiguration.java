@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfigurati
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -44,6 +45,7 @@ public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration
     private final Collection<@NotNull EncryptTableRuleConfiguration> tables;
     
     @NotNull
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm")
     private final Map<@NotBlank String, @NotNull AlgorithmConfiguration> encryptors;
     
     @Override

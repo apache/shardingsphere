@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigura
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.shadow.exception.metadata.MissingRequiredProduc
 import org.apache.shardingsphere.shadow.exception.metadata.MissingRequiredShadowDataSourceException;
 import org.apache.shardingsphere.shadow.exception.metadata.NotImplementHintShadowAlgorithmException;
 import org.apache.shardingsphere.shadow.exception.metadata.ShadowDataSourceMappingNotFoundException;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -47,15 +45,10 @@ public final class ShadowRuleConfigurationChecker implements DatabaseRuleConfigu
     
     @Override
     public void check(final String databaseName, final ShadowRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        checkShadowAlgorithms(ruleConfig.getShadowAlgorithms());
         checkDefaultShadowAlgorithm(ruleConfig.getDefaultShadowAlgorithmName(), ruleConfig.getShadowAlgorithms());
         checkDataSources(ruleConfig.getDataSources(), dataSourceMap, databaseName);
         checkShadowTableDataSourcesReferences(ruleConfig.getTables(), ruleConfig.getDataSources());
         checkShadowTableAlgorithmsReferences(ruleConfig.getTables(), ruleConfig.getShadowAlgorithms(), databaseName);
-    }
-    
-    private void checkShadowAlgorithms(final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
-        shadowAlgorithmConfigs.values().forEach(each -> TypedSPILoader.checkService(ShadowAlgorithm.class, each.getType(), each.getProps()));
     }
     
     private void checkDefaultShadowAlgorithm(final String defaultShadowAlgorithmName, final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
