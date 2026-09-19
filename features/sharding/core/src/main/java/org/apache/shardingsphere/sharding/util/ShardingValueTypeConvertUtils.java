@@ -267,15 +267,15 @@ public final class ShardingValueTypeConvertUtils {
             return new Time(((Date) value).getTime());
         }
         if (value instanceof LocalTime) {
-            return java.sql.Time.valueOf((LocalTime) value);
+            return Time.valueOf((LocalTime) value);
         }
         if (value instanceof LocalDateTime) {
-            return java.sql.Time.valueOf(((LocalDateTime) value).toLocalTime());
+            return Time.valueOf(((LocalDateTime) value).toLocalTime());
         }
         if (value instanceof Number) {
             return new Time(((Number) value).longValue());
         }
-        return java.sql.Time.valueOf(parseLocalTime(value.toString()));
+        return Time.valueOf(parseLocalTime(value.toString()));
     }
     
     private static Timestamp convertToTimestamp(final Comparable<?> value) {
@@ -286,15 +286,15 @@ public final class ShardingValueTypeConvertUtils {
             return new Timestamp(((Date) value).getTime());
         }
         if (value instanceof LocalDateTime) {
-            return java.sql.Timestamp.valueOf((LocalDateTime) value);
+            return Timestamp.valueOf((LocalDateTime) value);
         }
         if (value instanceof Instant) {
-            return java.sql.Timestamp.from((Instant) value);
+            return Timestamp.from((Instant) value);
         }
         if (value instanceof Number) {
             return new Timestamp(((Number) value).longValue());
         }
-        return java.sql.Timestamp.from(parseInstant(value.toString()));
+        return Timestamp.from(parseInstant(value.toString()));
     }
     
     private static LocalDate convertToLocalDate(final Comparable<?> value) {

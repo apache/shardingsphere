@@ -37,6 +37,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -204,6 +205,6 @@ class WorkflowPlanningContextValidatorTest {
     }
     
     private MCPColumnMetadata createColumnMetadata() {
-        return new MCPColumnMetadata("orders", "phone", 1, java.sql.Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
+        return new MCPColumnMetadata("orders", "phone", 1, Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
     }
 }
