@@ -986,7 +986,13 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.authority.rule.AuthorityRule"
       },
-      "type": "org.apache.shardingsphere.authority.provider.simple.AllPermittedPrivilegeProvider"
+      "type": "org.apache.shardingsphere.authority.provider.simple.AllPermittedPrivilegeProvider",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "condition": {
@@ -4052,13 +4058,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.sharding.rule.ShardingRule"
       },
-      "type": "org.apache.shardingsphere.sharding.algorithm.audit.DMLShardingConditionsShardingAuditAlgorithm",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
+      "type": "org.apache.shardingsphere.sharding.algorithm.audit.DMLShardingConditionsShardingAuditAlgorithm"
     },
     {
       "condition": {
@@ -6210,12 +6210,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.authority.rule.AuthorityRule"
-      },
-      "glob": "META-INF/services/org.apache.shardingsphere.authority.spi.PrivilegeProvider"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.update.DropStreamingExecutor"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI"
@@ -6327,6 +6321,12 @@
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.infra.executor.checker.SQLExecutionChecker"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine"
+      },
+      "glob": "META-INF/services/org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook"
     },
     {
       "condition": {
@@ -6465,6 +6465,12 @@
         "typeReached": "org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.sharding.rule.ShardingRule"
+      },
+      "glob": "META-INF/services/org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm"
     },
     {
       "condition": {
