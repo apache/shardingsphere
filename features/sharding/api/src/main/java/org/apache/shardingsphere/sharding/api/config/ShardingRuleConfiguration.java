@@ -25,12 +25,14 @@ import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfig
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.validator.ValidShardingRuleConfiguration;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -46,6 +48,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
+@ValidShardingRuleConfiguration(groups = RuleConfigurationTypeValidationGroup.class)
 public final class ShardingRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
     @NotNull
@@ -87,6 +90,7 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     private Map<@NotBlank String, @NotNull AlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
     @NotNull
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm")
     private Map<@NotBlank String, @NotNull AlgorithmConfiguration> auditors = new LinkedHashMap<>();
     
     @Override

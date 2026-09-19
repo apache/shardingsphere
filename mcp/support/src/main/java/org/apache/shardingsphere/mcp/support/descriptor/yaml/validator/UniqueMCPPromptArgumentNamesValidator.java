@@ -36,12 +36,7 @@ public final class UniqueMCPPromptArgumentNamesValidator implements ConstraintVa
             return true;
         }
         Set<String> names = new HashSet<>(value.size(), 1F);
-        for (Object each : value) {
-            YamlMCPPromptArgumentDescriptor argument = (YamlMCPPromptArgumentDescriptor) each;
-            if (null != argument && null != argument.getName() && !argument.getName().isBlank() && !names.add(argument.getName())) {
-                return false;
-            }
-        }
-        return true;
+        return value.stream().map(each -> (YamlMCPPromptArgumentDescriptor) each)
+                .noneMatch(argument -> null != argument && null != argument.getName() && !argument.getName().isBlank() && !names.add(argument.getName()));
     }
 }

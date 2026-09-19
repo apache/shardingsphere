@@ -52,7 +52,7 @@ class ReadwriteSplittingRuleConfigurationTest {
                                 "foo_group", "foo_write", Collections.singletonList("foo_read"), null)),
                         Collections.emptyMap())),
                 Arguments.of("Complete configuration", new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceGroupConfig),
-                        Collections.singletonMap("foo_load_balancer", new AlgorithmConfiguration("ROUND_ROBIN", new Properties())))));
+                        Collections.singletonMap("foo_load_balancer", new AlgorithmConfiguration("FIXTURE", new Properties())))));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -62,7 +62,7 @@ class ReadwriteSplittingRuleConfigurationTest {
     }
     
     private static Stream<Arguments> invalidRuleConfigurationArguments() {
-        AlgorithmConfiguration loadBalancer = new AlgorithmConfiguration("ROUND_ROBIN", new Properties());
+        AlgorithmConfiguration loadBalancer = new AlgorithmConfiguration("FIXTURE", new Properties());
         return Stream.of(
                 Arguments.of("Null data source groups", new ReadwriteSplittingRuleConfiguration(null, Collections.emptyMap())),
                 Arguments.of("Null data source group", new ReadwriteSplittingRuleConfiguration(Collections.singleton(null), Collections.emptyMap())),
@@ -71,6 +71,12 @@ class ReadwriteSplittingRuleConfigurationTest {
                         Collections.emptyList(), Collections.singletonMap("", loadBalancer))),
                 Arguments.of("Null load balancer", new ReadwriteSplittingRuleConfiguration(
                         Collections.emptyList(), Collections.singletonMap("foo_load_balancer", null))),
+                Arguments.of("Missing load balancer type", new ReadwriteSplittingRuleConfiguration(
+                        Collections.emptyList(), Collections.singletonMap("foo_load_balancer", new AlgorithmConfiguration("MISSING", new Properties())))),
+                Arguments.of("Unconfigured group load balancer", new ReadwriteSplittingRuleConfiguration(Collections.singleton(
+                        new ReadwriteSplittingDataSourceGroupRuleConfiguration(
+                                "foo_group", "foo_write", Collections.singletonList("foo_read"), TransactionalReadQueryStrategy.PRIMARY, "bar_load_balancer")),
+                        Collections.singletonMap("foo_load_balancer", loadBalancer))),
                 Arguments.of("Blank group name", createRuleConfiguration(new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                         "", "foo_write", Collections.singletonList("foo_read"), TransactionalReadQueryStrategy.PRIMARY, null))),
                 Arguments.of("Blank write data source", createRuleConfiguration(new ReadwriteSplittingDataSourceGroupRuleConfiguration(

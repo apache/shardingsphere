@@ -74,6 +74,7 @@ class ShardingRuleConfigurationTest {
         ShardingRuleConfiguration defaultShardingColumnRuleConfig = new ShardingRuleConfiguration();
         defaultShardingColumnRuleConfig.setDefaultShardingColumn("user_id");
         defaultShardingColumnRuleConfig.getTables().add(createTableRuleConfiguration(new StandardShardingStrategyConfiguration(null, "foo_standard")));
+        defaultShardingColumnRuleConfig.getShardingAlgorithms().put("foo_standard", new AlgorithmConfiguration("FIXTURE", new Properties()));
         return Stream.of(
                 Arguments.of("Empty configuration", new ShardingRuleConfiguration()),
                 Arguments.of("Table with nullable optional values", tableRuleConfig),
@@ -100,8 +101,12 @@ class ShardingRuleConfigurationTest {
         result.setDefaultShardingColumn("user_id");
         result.getKeyGenerateStrategies().put("foo_column", new ColumnKeyGenerateStrategiesRuleConfiguration("foo_key_generator", "foo_tbl", "order_id"));
         result.getKeyGenerateStrategies().put("foo_sequence", new SequenceKeyGenerateStrategiesRuleConfiguration("foo_key_generator", "foo_sequence"));
-        result.getShardingAlgorithms().put("foo_sharding", new AlgorithmConfiguration("FIXTURE", new Properties()));
-        result.getAuditors().put("foo_auditor", new AlgorithmConfiguration("INLINE", new Properties()));
+        AlgorithmConfiguration shardingAlgorithmConfig = new AlgorithmConfiguration("FIXTURE", new Properties());
+        result.getShardingAlgorithms().put("foo_standard", shardingAlgorithmConfig);
+        result.getShardingAlgorithms().put("foo_complex", shardingAlgorithmConfig);
+        result.getShardingAlgorithms().put("foo_hint", shardingAlgorithmConfig);
+        result.getKeyGenerators().put("foo_key_generator", new AlgorithmConfiguration("FIXTURE", new Properties()));
+        result.getAuditors().put("foo_auditor", new AlgorithmConfiguration("FIXTURE_AUDIT", new Properties()));
         return result;
     }
     
@@ -162,9 +167,13 @@ class ShardingRuleConfigurationTest {
                         "foo_sharding", new AlgorithmConfiguration("MISSING", new Properties()))),
                 Arguments.of("Null key generators", nullKeyGenerators),
                 Arguments.of("Null key generator", createKeyGeneratorsRuleConfiguration("foo_key_generator", null)),
+                Arguments.of("Missing key generator type", createKeyGeneratorsRuleConfiguration(
+                        "foo_key_generator", new AlgorithmConfiguration("MISSING", new Properties()))),
                 Arguments.of("Null auditors", nullAuditors),
                 Arguments.of("Blank auditor name", createAuditorsRuleConfiguration("", algorithmConfig)),
                 Arguments.of("Null auditor", createAuditorsRuleConfiguration("foo_auditor", null)),
+                Arguments.of("Missing auditor type", createAuditorsRuleConfiguration(
+                        "foo_auditor", new AlgorithmConfiguration("MISSING", new Properties()))),
                 Arguments.of("Blank table logic name", createRuleConfiguration(new ShardingTableRuleConfiguration("", null))),
                 Arguments.of("Invalid table sharding strategy", createRuleConfiguration(invalidTableStrategy)),
                 Arguments.of("Invalid table audit strategy", createRuleConfiguration(invalidTableAuditStrategy)),
@@ -204,6 +213,52 @@ class ShardingRuleConfigurationTest {
                         new SequenceKeyGenerateStrategiesRuleConfiguration("", "foo_sequence"))),
                 Arguments.of("Blank sequence strategy sequence", createKeyGenerateStrategiesRuleConfiguration("foo_strategy",
                         new SequenceKeyGenerateStrategiesRuleConfiguration("foo_key_generator", ""))));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidReferenceRuleConfigurationArguments")
+    void assertValidateInvalidReferenceRuleConfiguration(final String name, final ShardingRuleConfiguration ruleConfig) {
+        assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+    }
+    
+    private static Stream<Arguments> invalidReferenceRuleConfigurationArguments() {
+        ShardingRuleConfiguration unconfiguredTableDatabaseShardingAlgorithm = createValidRuleConfiguration();
+        unconfiguredTableDatabaseShardingAlgorithm.getTables().iterator().next()
+                .setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "bar_standard"));
+        ShardingRuleConfiguration unconfiguredTableShardingAlgorithm = createValidRuleConfiguration();
+        unconfiguredTableShardingAlgorithm.getTables().iterator().next()
+                .setTableShardingStrategy(new ComplexShardingStrategyConfiguration("order_id,user_id", "bar_complex"));
+        ShardingRuleConfiguration unconfiguredAutoTableShardingAlgorithm = createValidRuleConfiguration();
+        unconfiguredAutoTableShardingAlgorithm.getAutoTables().iterator().next().setShardingStrategy(new HintShardingStrategyConfiguration("bar_hint"));
+        ShardingRuleConfiguration unconfiguredDefaultDatabaseShardingAlgorithm = createValidRuleConfiguration();
+        unconfiguredDefaultDatabaseShardingAlgorithm.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "bar_standard"));
+        ShardingRuleConfiguration unconfiguredDefaultTableShardingAlgorithm = createValidRuleConfiguration();
+        unconfiguredDefaultTableShardingAlgorithm.setDefaultTableShardingStrategy(new ComplexShardingStrategyConfiguration("order_id,user_id", "bar_complex"));
+        ShardingRuleConfiguration unconfiguredTableAuditor = createValidRuleConfiguration();
+        unconfiguredTableAuditor.getTables().iterator().next().setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("bar_auditor"), false));
+        ShardingRuleConfiguration unconfiguredAutoTableAuditor = createValidRuleConfiguration();
+        unconfiguredAutoTableAuditor.getAutoTables().iterator().next().setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("bar_auditor"), false));
+        ShardingRuleConfiguration unconfiguredDefaultAuditor = createValidRuleConfiguration();
+        unconfiguredDefaultAuditor.setDefaultAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("bar_auditor"), false));
+        ShardingRuleConfiguration unconfiguredDefaultKeyGenerator = createValidRuleConfiguration();
+        unconfiguredDefaultKeyGenerator.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "bar_key_generator"));
+        ShardingRuleConfiguration unconfiguredKeyGenerateStrategiesKeyGenerator = createValidRuleConfiguration();
+        unconfiguredKeyGenerateStrategiesKeyGenerator.getKeyGenerateStrategies().put(
+                "bar_column", new ColumnKeyGenerateStrategiesRuleConfiguration("bar_key_generator", "foo_tbl", "order_id"));
+        ShardingRuleConfiguration unsupportedKeyGenerateStrategies = createValidRuleConfiguration();
+        unsupportedKeyGenerateStrategies.getKeyGenerateStrategies().put("bar_strategy", new UnsupportedKeyGenerateStrategiesConfiguration());
+        return Stream.of(
+                Arguments.of("Unconfigured table database sharding algorithm", unconfiguredTableDatabaseShardingAlgorithm),
+                Arguments.of("Unconfigured table sharding algorithm", unconfiguredTableShardingAlgorithm),
+                Arguments.of("Unconfigured auto table sharding algorithm", unconfiguredAutoTableShardingAlgorithm),
+                Arguments.of("Unconfigured default database sharding algorithm", unconfiguredDefaultDatabaseShardingAlgorithm),
+                Arguments.of("Unconfigured default table sharding algorithm", unconfiguredDefaultTableShardingAlgorithm),
+                Arguments.of("Unconfigured table auditor", unconfiguredTableAuditor),
+                Arguments.of("Unconfigured auto table auditor", unconfiguredAutoTableAuditor),
+                Arguments.of("Unconfigured default auditor", unconfiguredDefaultAuditor),
+                Arguments.of("Unconfigured default key generator", unconfiguredDefaultKeyGenerator),
+                Arguments.of("Unconfigured key generate strategies key generator", unconfiguredKeyGenerateStrategiesKeyGenerator),
+                Arguments.of("Unsupported key generate strategies type", unsupportedKeyGenerateStrategies));
     }
     
     private static ShardingAutoTableRuleConfiguration createValidAutoTableRuleConfiguration() {
@@ -281,5 +336,18 @@ class ShardingRuleConfigurationTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getBindingTableGroups().add(tableGroupConfig);
         return result;
+    }
+    
+    private static final class UnsupportedKeyGenerateStrategiesConfiguration implements KeyGenerateStrategiesConfiguration {
+        
+        @Override
+        public String getKeyGenerateType() {
+            return "unsupported";
+        }
+        
+        @Override
+        public String getKeyGeneratorName() {
+            return "foo_key_generator";
+        }
     }
 }

@@ -21,10 +21,12 @@ import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.validator.ValidEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -38,6 +40,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
+@ValidEncryptRuleConfiguration(groups = RuleConfigurationTypeValidationGroup.class)
 public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
     @NotNull

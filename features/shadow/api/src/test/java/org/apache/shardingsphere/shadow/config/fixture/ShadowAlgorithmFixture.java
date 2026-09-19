@@ -19,10 +19,18 @@ package org.apache.shardingsphere.shadow.config.fixture;
 
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
+import java.util.Collection;
+import java.util.Collections;
+
 public final class ShadowAlgorithmFixture implements ShadowAlgorithm {
     
     @Override
     public String getType() {
         return "FIXTURE";
+    }
+    
+    @Override
+    public Collection<Object> getTypeAliases() {
+        return Collections.singleton("SQL_HINT");
     }
 }

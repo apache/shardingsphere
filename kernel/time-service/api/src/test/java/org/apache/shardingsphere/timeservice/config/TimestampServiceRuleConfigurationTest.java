@@ -39,8 +39,8 @@ class TimestampServiceRuleConfigurationTest {
     
     private static Stream<Arguments> validRuleConfigurationArguments() {
         return Stream.of(
-                Arguments.of("Null properties", new TimestampServiceRuleConfiguration("System", null)),
-                Arguments.of("Empty properties", new TimestampServiceRuleConfiguration("System", new Properties())));
+                Arguments.of("Null properties", new TimestampServiceRuleConfiguration("FIXTURE", null)),
+                Arguments.of("Empty properties", new TimestampServiceRuleConfiguration("FIXTURE", new Properties())));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -53,6 +53,7 @@ class TimestampServiceRuleConfigurationTest {
         return Stream.of(
                 Arguments.of("Null type", new TimestampServiceRuleConfiguration(null, null)),
                 Arguments.of("Empty type", new TimestampServiceRuleConfiguration("", null)),
-                Arguments.of("Blank type", new TimestampServiceRuleConfiguration(" ", null)));
+                Arguments.of("Blank type", new TimestampServiceRuleConfiguration(" ", null)),
+                Arguments.of("Missing type", new TimestampServiceRuleConfiguration("MISSING", null)));
     }
 }

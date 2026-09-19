@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.exception.metadata;
+package org.apache.shardingsphere.sharding.api.config.fixture;
 
-import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.shadow.exception.ShadowSQLException;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Not implement hint shadow algorithm exception.
+ * Key generate algorithm fixture.
  */
-public final class NotImplementHintShadowAlgorithmException extends ShadowSQLException {
+public final class KeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
-    private static final long serialVersionUID = -5012158924968675485L;
+    @Override
+    public Collection<? extends Comparable<?>> generateKeys(final AlgorithmSQLContext context, final int keyGenerateCount) {
+        return Collections.emptyList();
+    }
     
-    public NotImplementHintShadowAlgorithmException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Default shadow algorithm class should be implement HintShadowAlgorithm.");
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }
