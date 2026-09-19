@@ -61,8 +61,7 @@ class SPITypeExistsValidatorTest {
                 Arguments.of("Empty map", new MapConfiguration(Collections.emptyMap()), true),
                 Arguments.of("Map type", new MapConfiguration(Collections.singletonMap("foo", new SPIConfiguration("FIXTURE"))), true),
                 Arguments.of("Missing map type", new MapConfiguration(Collections.singletonMap("foo", new SPIConfiguration("MISSING"))), false),
-                Arguments.of("Null map value", new MapConfiguration(Collections.singletonMap("foo", null)), true),
-                Arguments.of("Missing SPI class", new MissingSPIClassConfiguration("FIXTURE"), false));
+                Arguments.of("Null map value", new MapConfiguration(Collections.singletonMap("foo", null)), true));
     }
     
     @Test
@@ -74,6 +73,11 @@ class SPITypeExistsValidatorTest {
     @Test
     void assertInvalidSPIClass() {
         assertThrows(ValidationException.class, () -> VALIDATOR.validate(new InvalidSPIClassConfiguration("FIXTURE")));
+    }
+    
+    @Test
+    void assertMissingSPIClass() {
+        assertThrows(ValidationException.class, () -> VALIDATOR.validate(new MissingSPIClassConfiguration("FIXTURE")));
     }
     
     @Test
