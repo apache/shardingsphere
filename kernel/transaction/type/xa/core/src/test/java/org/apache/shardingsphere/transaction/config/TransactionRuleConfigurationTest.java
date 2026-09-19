@@ -19,6 +19,7 @@ package org.apache.shardingsphere.transaction.config;
 
 import org.apache.bval.jsr.ApacheValidationProvider;
 import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -65,7 +66,8 @@ class TransactionRuleConfigurationTest {
     
     @Test
     void assertInvalidProviderTypePropertyPath() {
-        Collection<ConstraintViolation<TransactionRuleConfiguration>> actual = VALIDATOR.validate(new TransactionRuleConfiguration("XA", "MISSING", null));
+        Collection<ConstraintViolation<TransactionRuleConfiguration>> actual = VALIDATOR.validate(
+                new TransactionRuleConfiguration("XA", "MISSING", null), RuleConfigurationTypeValidationGroup.class);
         assertThat(actual.iterator().next().getPropertyPath().toString(), is("providerType"));
     }
 }

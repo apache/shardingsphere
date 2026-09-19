@@ -92,7 +92,8 @@ class MaskRuleConfigurationTest {
                 Arguments.of("Null column", new MaskRuleConfiguration(
                         Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.singleton(null))), Collections.emptyMap())),
                 Arguments.of("Blank logic column", createRuleConfiguration(new MaskColumnRuleConfiguration("", "foo_mask"))),
-                Arguments.of("Blank column mask algorithm", createRuleConfiguration(new MaskColumnRuleConfiguration("foo_col", ""))));
+                Arguments.of("Blank column mask algorithm", createRuleConfiguration(new MaskColumnRuleConfiguration("foo_col", ""))),
+                Arguments.of("Unconfigured column mask algorithm", createRuleConfiguration(new MaskColumnRuleConfiguration("foo_col", "foo_mask"))));
     }
     
     private static MaskRuleConfiguration createRuleConfiguration(final MaskColumnRuleConfiguration columnConfig) {

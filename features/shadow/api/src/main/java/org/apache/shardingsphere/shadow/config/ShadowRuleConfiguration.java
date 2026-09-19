@@ -23,8 +23,10 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.config.validator.ValidShadowRuleConfiguration;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -39,6 +41,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
+@ValidShadowRuleConfiguration(groups = RuleConfigurationTypeValidationGroup.class)
 public final class ShadowRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
     @NotNull

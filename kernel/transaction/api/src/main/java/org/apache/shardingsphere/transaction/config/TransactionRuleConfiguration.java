@@ -21,6 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 import org.apache.shardingsphere.transaction.config.validator.ValidTransactionProviderType;
 
 import javax.validation.constraints.NotBlank;
@@ -30,7 +31,7 @@ import java.util.Properties;
 /**
  * Transaction rule configuration.
  */
-@ValidTransactionProviderType
+@ValidTransactionProviderType(groups = RuleConfigurationTypeValidationGroup.class)
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode

@@ -15,19 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.exception.metadata;
-
-import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.shadow.exception.ShadowSQLException;
+package org.apache.shardingsphere.infra.config.rule.validator.group;
 
 /**
- * Shadow data source mapping not found exception.
+ * Rule configuration type validation group.
  */
-public final class ShadowDataSourceMappingNotFoundException extends ShadowSQLException {
-    
-    private static final long serialVersionUID = 4141501883104032467L;
-    
-    public ShadowDataSourceMappingNotFoundException(final String tableName) {
-        super(XOpenSQLState.NOT_FOUND, 2, "No available shadow data sources mappings in shadow table '%s'.", tableName);
-    }
+public interface RuleConfigurationTypeValidationGroup {
 }

@@ -32,7 +32,7 @@ public final class TransactionProviderTypeValidator implements ConstraintValidat
     
     @Override
     public boolean isValid(final TransactionRuleConfiguration value, final ConstraintValidatorContext context) {
-        if (null == value || !TransactionType.XA.name().equalsIgnoreCase(value.getDefaultType())) {
+        if (!TransactionType.XA.name().equalsIgnoreCase(value.getDefaultType())) {
             return true;
         }
         if (containsProviderType(value.getProviderType())) {

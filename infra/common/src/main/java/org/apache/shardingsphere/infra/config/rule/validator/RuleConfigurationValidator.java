@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.bval.jsr.ApacheValidationProvider;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.RuleConfigurationValidationException;
@@ -29,6 +30,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
+import javax.validation.groups.Default;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,9 +64,14 @@ public final class RuleConfigurationValidator {
     }
     
     private static void validate(final Object config, final String ruleType) {
+        validate(config, ruleType, Default.class);
+        validate(config, ruleType, RuleConfigurationTypeValidationGroup.class);
+    }
+    
+    private static void validate(final Object config, final String ruleType, final Class<?> group) {
         Set<ConstraintViolation<Object>> violations;
         try {
-            violations = VALIDATOR.validate(config);
+            violations = VALIDATOR.validate(config, group);
         } catch (final ValidationException ex) {
             throw new RuleConfigurationValidationException(ruleType, ex);
         }

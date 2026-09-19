@@ -31,6 +31,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
 
@@ -92,6 +93,10 @@ class EncryptRuleConfigurationTest {
         invalidLikeQueryName.setLikeQuery(new EncryptColumnItemRuleConfiguration("", "foo_encryptor"));
         EncryptColumnRuleConfiguration invalidLikeQueryEncryptor = createValidColumnConfiguration();
         invalidLikeQueryEncryptor.setLikeQuery(new EncryptColumnItemRuleConfiguration("foo_like", ""));
+        EncryptColumnRuleConfiguration missingAssistedQueryEncryptor = createValidColumnConfiguration();
+        missingAssistedQueryEncryptor.setAssistedQuery(new EncryptColumnItemRuleConfiguration("foo_assisted", "bar_encryptor"));
+        EncryptColumnRuleConfiguration missingLikeQueryEncryptor = createValidColumnConfiguration();
+        missingLikeQueryEncryptor.setLikeQuery(new EncryptColumnItemRuleConfiguration("foo_like", "bar_encryptor"));
         AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("FIXTURE", new Properties());
         return Stream.of(
                 Arguments.of("Null tables", new EncryptRuleConfiguration(null, Collections.emptyMap())),
@@ -117,7 +122,12 @@ class EncryptRuleConfigurationTest {
                 Arguments.of("Blank assisted query name", createRuleConfiguration(invalidAssistedQueryName)),
                 Arguments.of("Blank assisted query encryptor", createRuleConfiguration(invalidAssistedQueryEncryptor)),
                 Arguments.of("Blank like query name", createRuleConfiguration(invalidLikeQueryName)),
-                Arguments.of("Blank like query encryptor", createRuleConfiguration(invalidLikeQueryEncryptor)));
+                Arguments.of("Blank like query encryptor", createRuleConfiguration(invalidLikeQueryEncryptor)),
+                Arguments.of("Unconfigured cipher encryptor", createRuleConfiguration(createValidColumnConfiguration())),
+                Arguments.of("Unconfigured assisted query encryptor", createRuleConfiguration(missingAssistedQueryEncryptor,
+                        Collections.singletonMap("foo_encryptor", algorithmConfig))),
+                Arguments.of("Unconfigured like query encryptor", createRuleConfiguration(missingLikeQueryEncryptor,
+                        Collections.singletonMap("foo_encryptor", algorithmConfig))));
     }
     
     private static EncryptColumnRuleConfiguration createValidColumnConfiguration() {
@@ -125,7 +135,11 @@ class EncryptRuleConfigurationTest {
     }
     
     private static EncryptRuleConfiguration createRuleConfiguration(final EncryptColumnRuleConfiguration columnConfig) {
+        return createRuleConfiguration(columnConfig, Collections.emptyMap());
+    }
+    
+    private static EncryptRuleConfiguration createRuleConfiguration(final EncryptColumnRuleConfiguration columnConfig, final Map<String, AlgorithmConfiguration> encryptors) {
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("foo_tbl", Collections.singleton(columnConfig));
-        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), Collections.emptyMap());
+        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), encryptors);
     }
 }

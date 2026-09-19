@@ -17,44 +17,18 @@
 
 package org.apache.shardingsphere.mask.checker;
 
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.external.sql.identifier.SQLExceptionIdentifier;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.constant.MaskOrder;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Mask rule configuration checker.
  */
 public final class MaskRuleConfigurationChecker implements DatabaseRuleConfigurationChecker<MaskRuleConfiguration> {
-    
-    @Override
-    public void check(final String databaseName, final MaskRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        checkTables(databaseName, ruleConfig.getTables(), ruleConfig.getMaskAlgorithms());
-    }
-    
-    private void checkTables(final String databaseName, final Collection<MaskTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
-        tables.forEach(each -> checkColumns(databaseName, each, maskAlgorithms));
-    }
-    
-    private void checkColumns(final String databaseName, final MaskTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
-        tableRuleConfig.getColumns().forEach(each -> checkColumn(databaseName, tableRuleConfig.getName(), each, maskAlgorithms));
-    }
-    
-    private void checkColumn(final String databaseName, final String tableName, final MaskColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
-        ShardingSpherePreconditions.checkContainsKey(maskAlgorithms, columnRuleConfig.getMaskAlgorithm(),
-                () -> new UnregisteredAlgorithmException("Mask", columnRuleConfig.getMaskAlgorithm(), new SQLExceptionIdentifier(databaseName, tableName, columnRuleConfig.getLogicColumn())));
-    }
     
     @Override
     public Collection<String> getTableNames(final MaskRuleConfiguration ruleConfig) {

@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
+import org.apache.shardingsphere.infra.config.rule.validator.fixture.ValidRuleConfigurationTypeFixture;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.RuleConfigurationValidationException;
@@ -37,6 +39,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RuleConfigurationValidatorTest {
@@ -81,6 +84,21 @@ class RuleConfigurationValidatorTest {
         assertThat(actualSQLException.getErrorCode(), is(10205));
     }
     
+    @Test
+    void assertValidateDefaultGroupBeforeTypeGroup() {
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class,
+                () -> RuleConfigurationValidator.validate(new TypeValidationFixtureRuleConfiguration("")));
+        assertThat(actual.getMessage(), containsString("Property `name`"));
+        assertFalse(actual.getMessage().contains("contains invalid type configuration"));
+    }
+    
+    @Test
+    void assertValidateTypeGroup() {
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class,
+                () -> RuleConfigurationValidator.validate(new TypeValidationFixtureRuleConfiguration("fixture")));
+        assertThat(actual.getMessage(), containsString("contains invalid type configuration"));
+    }
+    
     @Getter
     private static final class FixtureRuleConfiguration implements RuleConfiguration {
         
@@ -105,5 +123,14 @@ class RuleConfigurationValidatorTest {
         
         @SPITypeExists(spiClassName = "org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.fixture.MissingSPITypeFixture")
         private final String type = "FIXTURE";
+    }
+    
+    @RequiredArgsConstructor
+    @Getter
+    @ValidRuleConfigurationTypeFixture(groups = RuleConfigurationTypeValidationGroup.class)
+    private static final class TypeValidationFixtureRuleConfiguration implements RuleConfiguration {
+        
+        @NotBlank
+        private final String name;
     }
 }

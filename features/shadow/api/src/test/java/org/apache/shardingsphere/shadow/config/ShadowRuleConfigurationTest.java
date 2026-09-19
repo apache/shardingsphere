@@ -26,7 +26,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -45,6 +44,10 @@ class ShadowRuleConfigurationTest {
     }
     
     private static Stream<Arguments> validRuleConfigurationArguments() {
+        ShadowRuleConfiguration defaultAlgorithmRuleConfig = createRuleConfiguration(
+                Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "foo_primary", "foo_shadow")), Collections.emptyMap(),
+                Collections.singletonMap("foo_shadow_algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties())));
+        defaultAlgorithmRuleConfig.setDefaultShadowAlgorithmName("foo_shadow_algorithm");
         return Stream.of(
                 Arguments.of("Empty configuration", new ShadowRuleConfiguration()),
                 Arguments.of("Data source configuration", createRuleConfiguration(
@@ -53,8 +56,9 @@ class ShadowRuleConfigurationTest {
                 Arguments.of("Complete configuration", createRuleConfiguration(
                         Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "foo_primary", "foo_shadow")),
                         Collections.singletonMap("foo_tbl", new ShadowTableConfiguration(
-                                Arrays.asList("foo_ds", "bar_ds"), Collections.singleton("foo_shadow_algorithm"))),
-                        Collections.singletonMap("foo_shadow_algorithm", new AlgorithmConfiguration("FIXTURE", new Properties())))));
+                                Collections.singleton("foo_ds"), Collections.singleton("foo_shadow_algorithm"))),
+                        Collections.singletonMap("foo_shadow_algorithm", new AlgorithmConfiguration("FIXTURE", new Properties())))),
+                Arguments.of("Default SQL hint algorithm", defaultAlgorithmRuleConfig));
     }
     
     private static ShadowRuleConfiguration createRuleConfiguration(final Collection<ShadowDataSourceConfiguration> dataSources,
@@ -75,6 +79,12 @@ class ShadowRuleConfigurationTest {
     
     private static Stream<Arguments> invalidRuleConfigurationArguments() {
         AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("FIXTURE", new Properties());
+        ShadowRuleConfiguration missingDefaultAlgorithm = createRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
+                Collections.singletonMap("foo_shadow_algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties())));
+        missingDefaultAlgorithm.setDefaultShadowAlgorithmName("bar_shadow_algorithm");
+        ShadowRuleConfiguration invalidDefaultAlgorithmType = createRuleConfiguration(
+                Collections.emptyList(), Collections.emptyMap(), Collections.singletonMap("foo_shadow_algorithm", algorithmConfig));
+        invalidDefaultAlgorithmType.setDefaultShadowAlgorithmName("foo_shadow_algorithm");
         return Stream.of(
                 Arguments.of("Null data sources", createRuleConfiguration(null, Collections.emptyMap(), Collections.emptyMap())),
                 Arguments.of("Null data source", createRuleConfiguration(Collections.singleton(null), Collections.emptyMap(), Collections.emptyMap())),
@@ -108,7 +118,19 @@ class ShadowRuleConfigurationTest {
                 Arguments.of("Null shadow algorithm", createRuleConfiguration(
                         Collections.emptyList(), Collections.emptyMap(), Collections.singletonMap("foo_shadow_algorithm", null))),
                 Arguments.of("Missing shadow algorithm type", createRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
-                        Collections.singletonMap("foo_shadow_algorithm", new AlgorithmConfiguration("MISSING", new Properties())))));
+                        Collections.singletonMap("foo_shadow_algorithm", new AlgorithmConfiguration("MISSING", new Properties())))),
+                Arguments.of("Unconfigured table data source", createRuleConfiguration(
+                        Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "foo_primary", "foo_shadow")),
+                        Collections.singletonMap("foo_tbl", new ShadowTableConfiguration(
+                                Collections.singleton("bar_ds"), Collections.singleton("foo_shadow_algorithm"))),
+                        Collections.singletonMap("foo_shadow_algorithm", algorithmConfig))),
+                Arguments.of("Unconfigured table shadow algorithm", createRuleConfiguration(
+                        Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "foo_primary", "foo_shadow")),
+                        Collections.singletonMap("foo_tbl", new ShadowTableConfiguration(
+                                Collections.singleton("foo_ds"), Collections.singleton("bar_shadow_algorithm"))),
+                        Collections.singletonMap("foo_shadow_algorithm", algorithmConfig))),
+                Arguments.of("Unconfigured default shadow algorithm", missingDefaultAlgorithm),
+                Arguments.of("Default shadow algorithm without SQL hint type", invalidDefaultAlgorithmType));
     }
     
 }
