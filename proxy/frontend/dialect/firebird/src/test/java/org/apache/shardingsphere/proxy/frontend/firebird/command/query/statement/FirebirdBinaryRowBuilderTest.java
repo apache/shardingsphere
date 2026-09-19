@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -40,7 +41,8 @@ class FirebirdBinaryRowBuilderTest {
     void assertBuildPreservesCellOrderAndData() {
         byte[] expectedData = new byte[]{1, 2};
         QueryResponseRow row = new QueryResponseRow(Arrays.asList(new QueryResponseCell(Types.BLOB, expectedData), new QueryResponseCell(Types.INTEGER, null)));
-        BinaryRow actual = FirebirdBinaryRowBuilder.build(row);
+        List<FirebirdBinaryColumnType> parameterTypes = Arrays.asList(FirebirdBinaryColumnType.BLOB, FirebirdBinaryColumnType.LONG);
+        BinaryRow actual = FirebirdBinaryRowBuilder.build(row, parameterTypes);
         assertThat(actual.getCells().size(), is(2));
         Iterator<BinaryCell> iterator = actual.getCells().iterator();
         BinaryCell firstCell = iterator.next();
