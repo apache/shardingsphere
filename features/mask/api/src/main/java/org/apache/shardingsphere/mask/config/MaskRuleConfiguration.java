@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 
 import javax.validation.Valid;
@@ -44,6 +45,7 @@ public final class MaskRuleConfiguration implements DatabaseRuleConfiguration, E
     private final Collection<@NotNull MaskTableRuleConfiguration> tables;
     
     @NotNull
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.mask.spi.MaskAlgorithm")
     private final Map<@NotBlank String, @NotNull AlgorithmConfiguration> maskAlgorithms;
     
     @Override

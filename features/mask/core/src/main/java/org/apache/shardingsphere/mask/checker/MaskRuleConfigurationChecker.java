@@ -23,12 +23,10 @@ import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigura
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.constant.MaskOrder;
-import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -42,12 +40,7 @@ public final class MaskRuleConfigurationChecker implements DatabaseRuleConfigura
     
     @Override
     public void check(final String databaseName, final MaskRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        checkMaskAlgorithms(ruleConfig.getMaskAlgorithms());
         checkTables(databaseName, ruleConfig.getTables(), ruleConfig.getMaskAlgorithms());
-    }
-    
-    private void checkMaskAlgorithms(final Map<String, AlgorithmConfiguration> maskAlgorithms) {
-        maskAlgorithms.values().forEach(each -> TypedSPILoader.checkService(MaskAlgorithm.class, each.getType(), each.getProps()));
     }
     
     private void checkTables(final String databaseName, final Collection<MaskTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> maskAlgorithms) {

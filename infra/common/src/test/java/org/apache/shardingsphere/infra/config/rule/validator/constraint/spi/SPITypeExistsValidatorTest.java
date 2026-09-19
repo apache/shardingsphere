@@ -30,6 +30,8 @@ import javax.validation.Validation;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -56,6 +58,10 @@ class SPITypeExistsValidatorTest {
                 Arguments.of("Blank type", new DirectConfiguration(" "), false),
                 Arguments.of("Nested type", new NestedConfiguration(new SPIConfiguration("FIXTURE")), true),
                 Arguments.of("Missing nested type", new NestedConfiguration(new SPIConfiguration("MISSING")), false),
+                Arguments.of("Empty map", new MapConfiguration(Collections.emptyMap()), true),
+                Arguments.of("Map type", new MapConfiguration(Collections.singletonMap("foo", new SPIConfiguration("FIXTURE"))), true),
+                Arguments.of("Missing map type", new MapConfiguration(Collections.singletonMap("foo", new SPIConfiguration("MISSING"))), false),
+                Arguments.of("Null map value", new MapConfiguration(Collections.singletonMap("foo", null)), true),
                 Arguments.of("Missing SPI class", new MissingSPIClassConfiguration("FIXTURE"), false));
     }
     
@@ -87,6 +93,13 @@ class SPITypeExistsValidatorTest {
         
         @SPITypeExists(spiClassName = "org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.fixture.SPITypeFixture")
         private final SPIConfiguration provider;
+    }
+    
+    @RequiredArgsConstructor
+    private static final class MapConfiguration {
+        
+        @SPITypeExists(spiClassName = "org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.fixture.SPITypeFixture")
+        private final Map<String, SPIConfiguration> providers;
     }
     
     @RequiredArgsConstructor

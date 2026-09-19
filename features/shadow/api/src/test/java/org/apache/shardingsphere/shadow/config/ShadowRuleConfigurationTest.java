@@ -54,7 +54,7 @@ class ShadowRuleConfigurationTest {
                         Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "foo_primary", "foo_shadow")),
                         Collections.singletonMap("foo_tbl", new ShadowTableConfiguration(
                                 Arrays.asList("foo_ds", "bar_ds"), Collections.singleton("foo_shadow_algorithm"))),
-                        Collections.singletonMap("foo_shadow_algorithm", new AlgorithmConfiguration("VALUE_MATCH", new Properties())))));
+                        Collections.singletonMap("foo_shadow_algorithm", new AlgorithmConfiguration("FIXTURE", new Properties())))));
     }
     
     private static ShadowRuleConfiguration createRuleConfiguration(final Collection<ShadowDataSourceConfiguration> dataSources,
@@ -74,7 +74,7 @@ class ShadowRuleConfigurationTest {
     }
     
     private static Stream<Arguments> invalidRuleConfigurationArguments() {
-        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("VALUE_MATCH", new Properties());
+        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("FIXTURE", new Properties());
         return Stream.of(
                 Arguments.of("Null data sources", createRuleConfiguration(null, Collections.emptyMap(), Collections.emptyMap())),
                 Arguments.of("Null data source", createRuleConfiguration(Collections.singleton(null), Collections.emptyMap(), Collections.emptyMap())),
@@ -106,7 +106,9 @@ class ShadowRuleConfigurationTest {
                 Arguments.of("Blank shadow algorithm key", createRuleConfiguration(
                         Collections.emptyList(), Collections.emptyMap(), Collections.singletonMap("", algorithmConfig))),
                 Arguments.of("Null shadow algorithm", createRuleConfiguration(
-                        Collections.emptyList(), Collections.emptyMap(), Collections.singletonMap("foo_shadow_algorithm", null))));
+                        Collections.emptyList(), Collections.emptyMap(), Collections.singletonMap("foo_shadow_algorithm", null))),
+                Arguments.of("Missing shadow algorithm type", createRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
+                        Collections.singletonMap("foo_shadow_algorithm", new AlgorithmConfiguration("MISSING", new Properties())))));
     }
     
 }

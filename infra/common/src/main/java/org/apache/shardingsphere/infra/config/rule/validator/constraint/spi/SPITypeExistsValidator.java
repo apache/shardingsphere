@@ -25,6 +25,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.ValidationException;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * SPI type exists validator.
@@ -40,6 +41,16 @@ public final class SPITypeExistsValidator implements ConstraintValidator<SPIType
     
     @Override
     public boolean isValid(final Object value, final ConstraintValidatorContext context) {
+        if (null == value) {
+            return true;
+        }
+        if (value instanceof Map) {
+            return ((Map<?, ?>) value).values().stream().allMatch(this::isSPITypeExists);
+        }
+        return isSPITypeExists(value);
+    }
+    
+    private boolean isSPITypeExists(final Object value) {
         return null == value || containsService(spiClassName, getTypeValue(value));
     }
     

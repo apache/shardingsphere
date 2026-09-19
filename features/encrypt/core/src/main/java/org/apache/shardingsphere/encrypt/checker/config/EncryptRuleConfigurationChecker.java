@@ -22,14 +22,12 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfig
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -43,12 +41,7 @@ public final class EncryptRuleConfigurationChecker implements DatabaseRuleConfig
     
     @Override
     public void check(final String databaseName, final EncryptRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        checkEncryptors(ruleConfig.getEncryptors());
         checkTables(databaseName, ruleConfig.getTables(), ruleConfig.getEncryptors());
-    }
-    
-    private void checkEncryptors(final Map<String, AlgorithmConfiguration> encryptors) {
-        encryptors.values().forEach(each -> TypedSPILoader.checkService(EncryptAlgorithm.class, each.getType(), each.getProps()));
     }
     
     private void checkTables(final String databaseName, final Collection<EncryptTableRuleConfiguration> tableRuleConfigs, final Map<String, AlgorithmConfiguration> encryptors) {

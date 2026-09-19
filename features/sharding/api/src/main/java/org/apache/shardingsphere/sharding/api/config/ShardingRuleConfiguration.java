@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -78,9 +79,11 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     private Map<@NotBlank String, @NotNull KeyGenerateStrategiesConfiguration> keyGenerateStrategies = new LinkedHashMap<>();
     
     @NotNull
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.sharding.spi.ShardingAlgorithm")
     private Map<@NotBlank String, @NotNull AlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
     @NotNull
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm")
     private Map<@NotBlank String, @NotNull AlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
     @NotNull

@@ -66,7 +66,7 @@ class MaskRuleConfigurationTest {
                 Arguments.of("Table without columns", new MaskRuleConfiguration(
                         Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList())), Collections.emptyMap())),
                 Arguments.of("Complete configuration", new MaskRuleConfiguration(Collections.singleton(tableConfig),
-                        Collections.singletonMap("foo_mask", new AlgorithmConfiguration("MD5", new Properties())))));
+                        Collections.singletonMap("foo_mask", new AlgorithmConfiguration("FIXTURE", new Properties())))));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -76,13 +76,15 @@ class MaskRuleConfigurationTest {
     }
     
     private static Stream<Arguments> invalidRuleConfigurationArguments() {
-        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("MD5", new Properties());
+        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("FIXTURE", new Properties());
         return Stream.of(
                 Arguments.of("Null tables", new MaskRuleConfiguration(null, Collections.emptyMap())),
                 Arguments.of("Null table", new MaskRuleConfiguration(Collections.singleton(null), Collections.emptyMap())),
                 Arguments.of("Null mask algorithms", new MaskRuleConfiguration(Collections.emptyList(), null)),
                 Arguments.of("Blank mask algorithm name", new MaskRuleConfiguration(Collections.emptyList(), Collections.singletonMap("", algorithmConfig))),
                 Arguments.of("Null mask algorithm", new MaskRuleConfiguration(Collections.emptyList(), Collections.singletonMap("foo_mask", null))),
+                Arguments.of("Missing mask algorithm type", new MaskRuleConfiguration(Collections.emptyList(),
+                        Collections.singletonMap("foo_mask", new AlgorithmConfiguration("MISSING", new Properties())))),
                 Arguments.of("Blank table name", new MaskRuleConfiguration(
                         Collections.singleton(new MaskTableRuleConfiguration("", Collections.emptyList())), Collections.emptyMap())),
                 Arguments.of("Null columns", new MaskRuleConfiguration(

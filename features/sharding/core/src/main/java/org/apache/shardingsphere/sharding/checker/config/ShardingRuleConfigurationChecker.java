@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.sharding.checker.config;
 
 import com.google.common.base.Joiner;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
-import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
 import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.config.keygen.impl.SequenceKeyGenerateStrategiesRuleConfiguration;
@@ -31,7 +29,6 @@ import org.apache.shardingsphere.infra.exception.external.sql.identifier.SQLExce
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -41,7 +38,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -59,8 +55,6 @@ public final class ShardingRuleConfigurationChecker implements DatabaseRuleConfi
     
     @Override
     public void check(final String databaseName, final ShardingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        checkShardingAlgorithms(ruleConfig.getShardingAlgorithms().values());
-        checkKeyGeneratorAlgorithms(ruleConfig.getKeyGenerators().values());
         Collection<String> keyGenerators = ruleConfig.getKeyGenerators().keySet();
         Collection<String> auditors = ruleConfig.getAuditors().keySet();
         Collection<String> shardingAlgorithms = ruleConfig.getShardingAlgorithms().keySet();
@@ -70,14 +64,6 @@ public final class ShardingRuleConfigurationChecker implements DatabaseRuleConfi
         checkAuditStrategy(databaseName, ruleConfig.getDefaultAuditStrategy(), auditors);
         checkShardingStrategy(databaseName, ruleConfig.getDefaultDatabaseShardingStrategy(), shardingAlgorithms);
         checkShardingStrategy(databaseName, ruleConfig.getDefaultTableShardingStrategy(), shardingAlgorithms);
-    }
-    
-    private void checkShardingAlgorithms(final Collection<AlgorithmConfiguration> algorithmConfigs) {
-        algorithmConfigs.forEach(each -> TypedSPILoader.checkService(ShardingAlgorithm.class, each.getType(), each.getProps()));
-    }
-    
-    private void checkKeyGeneratorAlgorithms(final Collection<AlgorithmConfiguration> algorithmConfigs) {
-        algorithmConfigs.forEach(each -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, each.getType(), each.getProps()));
     }
     
     private void checkTables(final String databaseName, final Collection<ShardingTableRuleConfiguration> tables,

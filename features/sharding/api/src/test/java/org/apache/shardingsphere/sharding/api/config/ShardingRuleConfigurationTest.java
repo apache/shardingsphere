@@ -100,10 +100,8 @@ class ShardingRuleConfigurationTest {
         result.setDefaultShardingColumn("user_id");
         result.getKeyGenerateStrategies().put("foo_column", new ColumnKeyGenerateStrategiesRuleConfiguration("foo_key_generator", "foo_tbl", "order_id"));
         result.getKeyGenerateStrategies().put("foo_sequence", new SequenceKeyGenerateStrategiesRuleConfiguration("foo_key_generator", "foo_sequence"));
-        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("INLINE", new Properties());
-        result.getShardingAlgorithms().put("foo_sharding", algorithmConfig);
-        result.getKeyGenerators().put("foo_key_generator", algorithmConfig);
-        result.getAuditors().put("foo_auditor", algorithmConfig);
+        result.getShardingAlgorithms().put("foo_sharding", new AlgorithmConfiguration("FIXTURE", new Properties()));
+        result.getAuditors().put("foo_auditor", new AlgorithmConfiguration("INLINE", new Properties()));
         return result;
     }
     
@@ -145,7 +143,7 @@ class ShardingRuleConfigurationTest {
         invalidDefaultKeyGenerateStrategy.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("", "foo_key_generator"));
         ShardingRuleConfiguration invalidDefaultAuditStrategy = new ShardingRuleConfiguration();
         invalidDefaultAuditStrategy.setDefaultAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton(""), false));
-        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("INLINE", new Properties());
+        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("FIXTURE", new Properties());
         return Stream.of(
                 Arguments.of("Null tables", nullTables),
                 Arguments.of("Null table", createRuleConfiguration((ShardingTableRuleConfiguration) null)),
@@ -160,8 +158,9 @@ class ShardingRuleConfigurationTest {
                 Arguments.of("Null sharding algorithms", nullShardingAlgorithms),
                 Arguments.of("Blank sharding algorithm name", createShardingAlgorithmsRuleConfiguration("", algorithmConfig)),
                 Arguments.of("Null sharding algorithm", createShardingAlgorithmsRuleConfiguration("foo_sharding", null)),
+                Arguments.of("Missing sharding algorithm type", createShardingAlgorithmsRuleConfiguration(
+                        "foo_sharding", new AlgorithmConfiguration("MISSING", new Properties()))),
                 Arguments.of("Null key generators", nullKeyGenerators),
-                Arguments.of("Blank key generator name", createKeyGeneratorsRuleConfiguration("", algorithmConfig)),
                 Arguments.of("Null key generator", createKeyGeneratorsRuleConfiguration("foo_key_generator", null)),
                 Arguments.of("Null auditors", nullAuditors),
                 Arguments.of("Blank auditor name", createAuditorsRuleConfiguration("", algorithmConfig)),

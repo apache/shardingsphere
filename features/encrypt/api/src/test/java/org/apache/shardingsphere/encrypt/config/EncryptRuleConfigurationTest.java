@@ -74,7 +74,7 @@ class EncryptRuleConfigurationTest {
         columnConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("foo_like", "foo_encryptor"));
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("foo_tbl", Collections.singleton(columnConfig));
         return new EncryptRuleConfiguration(Collections.singleton(tableConfig),
-                Collections.singletonMap("foo_encryptor", new AlgorithmConfiguration("AES", new Properties())));
+                Collections.singletonMap("foo_encryptor", new AlgorithmConfiguration("FIXTURE", new Properties())));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -92,13 +92,15 @@ class EncryptRuleConfigurationTest {
         invalidLikeQueryName.setLikeQuery(new EncryptColumnItemRuleConfiguration("", "foo_encryptor"));
         EncryptColumnRuleConfiguration invalidLikeQueryEncryptor = createValidColumnConfiguration();
         invalidLikeQueryEncryptor.setLikeQuery(new EncryptColumnItemRuleConfiguration("foo_like", ""));
-        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("AES", new Properties());
+        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("FIXTURE", new Properties());
         return Stream.of(
                 Arguments.of("Null tables", new EncryptRuleConfiguration(null, Collections.emptyMap())),
                 Arguments.of("Null table", new EncryptRuleConfiguration(Collections.singleton(null), Collections.emptyMap())),
                 Arguments.of("Null encryptors", new EncryptRuleConfiguration(Collections.emptyList(), null)),
                 Arguments.of("Blank encryptor name", new EncryptRuleConfiguration(Collections.emptyList(), Collections.singletonMap("", algorithmConfig))),
                 Arguments.of("Null encryptor", new EncryptRuleConfiguration(Collections.emptyList(), Collections.singletonMap("foo_encryptor", null))),
+                Arguments.of("Missing encryptor type", new EncryptRuleConfiguration(Collections.emptyList(),
+                        Collections.singletonMap("foo_encryptor", new AlgorithmConfiguration("MISSING", new Properties())))),
                 Arguments.of("Blank table name", new EncryptRuleConfiguration(
                         Collections.singleton(new EncryptTableRuleConfiguration("", Collections.emptyList())), Collections.emptyMap())),
                 Arguments.of("Null columns", new EncryptRuleConfiguration(
