@@ -40,7 +40,7 @@ class SQLTranslatorRuleConfigurationTest {
     private static Stream<Arguments> validRuleConfigurationArguments() {
         return Stream.of(
                 Arguments.of("Null type and properties", new SQLTranslatorRuleConfiguration(null, null, true)),
-                Arguments.of("Type and properties", new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), false)));
+                Arguments.of("Type and properties", new SQLTranslatorRuleConfiguration("FIXTURE", new Properties(), false)));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -53,6 +53,7 @@ class SQLTranslatorRuleConfigurationTest {
         return Stream.of(
                 Arguments.of("Empty type", new SQLTranslatorRuleConfiguration("", null, true)),
                 Arguments.of("Blank type", new SQLTranslatorRuleConfiguration(" ", null, true)),
-                Arguments.of("Multiline blank type", new SQLTranslatorRuleConfiguration("\n\t", null, true)));
+                Arguments.of("Multiline blank type", new SQLTranslatorRuleConfiguration("\n\t", null, true)),
+                Arguments.of("Missing type", new SQLTranslatorRuleConfiguration("MISSING", null, true)));
     }
 }

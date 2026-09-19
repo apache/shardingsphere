@@ -40,7 +40,7 @@ class AuthorityRuleConfigurationTest {
     }
     
     private static Stream<Arguments> validRuleConfigurationArguments() {
-        AlgorithmConfiguration privilegeProvider = createAlgorithmConfiguration("ALL_PERMITTED");
+        AlgorithmConfiguration privilegeProvider = createAlgorithmConfiguration("FIXTURE");
         UserConfiguration userConfig = new UserConfiguration("foo_user", null, "%", null, false);
         return Stream.of(
                 Arguments.of("Empty users and authenticators", new AuthorityRuleConfiguration(
@@ -65,7 +65,7 @@ class AuthorityRuleConfigurationTest {
     }
     
     private static Stream<Arguments> invalidRuleConfigurationArguments() {
-        AlgorithmConfiguration privilegeProvider = createAlgorithmConfiguration("ALL_PERMITTED");
+        AlgorithmConfiguration privilegeProvider = createAlgorithmConfiguration("FIXTURE");
         AlgorithmConfiguration authenticator = createAlgorithmConfiguration("MD5");
         return Stream.of(
                 Arguments.of("Null users", new AuthorityRuleConfiguration(null, privilegeProvider, Collections.emptyMap(), null)),
@@ -74,6 +74,8 @@ class AuthorityRuleConfigurationTest {
                 Arguments.of("Empty username", createRuleConfiguration(new UserConfiguration("", null, "%", null, false))),
                 Arguments.of("Blank username", createRuleConfiguration(new UserConfiguration(" ", null, "%", null, false))),
                 Arguments.of("Null privilege provider", new AuthorityRuleConfiguration(Collections.emptyList(), null, Collections.emptyMap(), null)),
+                Arguments.of("Missing privilege provider", new AuthorityRuleConfiguration(
+                        Collections.emptyList(), createAlgorithmConfiguration("MISSING"), Collections.emptyMap(), null)),
                 Arguments.of("Null authenticators", new AuthorityRuleConfiguration(Collections.emptyList(), privilegeProvider, null, null)),
                 Arguments.of("Null authenticator name", new AuthorityRuleConfiguration(
                         Collections.emptyList(), privilegeProvider, Collections.singletonMap(null, authenticator), null)),
@@ -86,6 +88,6 @@ class AuthorityRuleConfigurationTest {
     }
     
     private static AuthorityRuleConfiguration createRuleConfiguration(final UserConfiguration userConfig) {
-        return new AuthorityRuleConfiguration(Collections.singleton(userConfig), createAlgorithmConfiguration("ALL_PERMITTED"), Collections.emptyMap(), null);
+        return new AuthorityRuleConfiguration(Collections.singleton(userConfig), createAlgorithmConfiguration("FIXTURE"), Collections.emptyMap(), null);
     }
 }
