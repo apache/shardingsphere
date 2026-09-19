@@ -52,7 +52,7 @@ public final class MySQLShardingShowIndexMergedResult extends MemoryMergedResult
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
                 String actualIndexName = memoryResultSetRow.getCell(3).toString();
-                Optional<ShardingTable> shardingTable = shardingRule.findShardingTableByActualTable(actualTableName);
+                Optional<ShardingTable> shardingTable = findShardingTable(shardingRule, sqlStatementContext, actualTableName);
                 Collection<String> candidateLogicIndexNames = new LinkedList<>();
                 if (shardingTable.isPresent()) {
                     String logicTableName = shardingTable.get().getLogicTable();
@@ -64,5 +64,10 @@ public final class MySQLShardingShowIndexMergedResult extends MemoryMergedResult
             }
         }
         return result;
+    }
+    
+    private Optional<ShardingTable> findShardingTable(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final String actualTableName) {
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        return tableNames.isEmpty() ? shardingRule.findShardingTableByActualTable(actualTableName) : shardingRule.findShardingTable(tableNames.iterator().next());
     }
 }
