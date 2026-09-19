@@ -90,6 +90,11 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     }
     
     @Override
+    public int findColumn(final String columnLabel) throws SQLException {
+        return getIndexFromColumnLabelAndIndexMap(columnLabel);
+    }
+    
+    @Override
     public boolean next() throws SQLException {
         return mergeResultSet.next();
     }

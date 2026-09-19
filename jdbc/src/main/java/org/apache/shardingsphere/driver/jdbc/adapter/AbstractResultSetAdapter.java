@@ -72,7 +72,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     }
     
     @Override
-    public final int findColumn(final String columnLabel) throws SQLException {
+    public int findColumn(final String columnLabel) throws SQLException {
         return resultSets.get(0).findColumn(columnLabel);
     }
     
