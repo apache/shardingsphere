@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationCheckEngine;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
@@ -72,6 +73,7 @@ public final class DatabaseRulesBuilder {
             DatabaseRuleConfigurationChecker configChecker = OrderedSPILoader.getServicesByClass(
                     DatabaseRuleConfigurationChecker.class, Collections.singleton(entry.getKey().getClass())).get(entry.getKey().getClass());
             if (null != configChecker) {
+                DatabaseRuleConfigurationCheckEngine.checkTableNamesNotDuplicated(entry.getKey(), databaseName, configChecker);
                 configChecker.check(databaseName, entry.getKey(), resourceMetaData.getDataSourceMap(), result);
             }
             DatabaseRule rule = entry.getValue().build(entry.getKey(), databaseName, protocolType, resourceMetaData, result, computeNodeInstanceContext);
@@ -99,6 +101,7 @@ public final class DatabaseRulesBuilder {
         DatabaseRuleConfigurationChecker configChecker =
                 OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         if (null != configChecker) {
+            DatabaseRuleConfigurationCheckEngine.checkTableNamesNotDuplicated(ruleConfig, databaseName, configChecker);
             configChecker.check(databaseName, ruleConfig, resourceMetaData.getDataSourceMap(), rules);
         }
         return databaseRuleBuilder.build(ruleConfig, databaseName, protocolType, resourceMetaData, rules, computeNodeInstanceContext);
