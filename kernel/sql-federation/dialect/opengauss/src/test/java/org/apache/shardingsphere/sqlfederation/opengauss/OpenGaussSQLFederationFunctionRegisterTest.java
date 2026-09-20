@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -65,6 +66,11 @@ class OpenGaussSQLFederationFunctionRegisterTest {
         assertThat(schemaPlus.getFunctions("opengauss_version").size(), is(0));
         assertThat(schemaPlus.getFunctions("pg_table_is_visible").size(), is(0));
         assertThat(schemaPlus.getFunctions("pg_get_userbyid").size(), is(0));
+    }
+    
+    @Test
+    void assertGetUnsupportedFunctionNames() {
+        assertThat(register.getUnsupportedFunctionNames(), contains("NLSSORT"));
     }
     
     private void assertFunction(final Collection<Function> functions, final Class<?> expectedClass, final String expectedMethod) {

@@ -17,8 +17,17 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter;
 
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlFunctionCategory;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.SqlOrderBy;
+import org.apache.calcite.sql.SqlUnresolvedFunction;
+import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
@@ -36,15 +45,22 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statem
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.MergeStatementConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.SelectStatementConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.UpdateStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.DialectSQLFederationFunctionRegister;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
+
+import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class SQLNodeConverterEngineTest {
@@ -96,6 +112,58 @@ class SQLNodeConverterEngineTest {
                         (mock, context) -> when(mock.convert(any(ExplainStatement.class))).thenReturn(explainSqlNode))) {
             assertThat(SQLNodeConverterEngine.convert(explainStatement), is(explainSqlNode));
         }
+    }
+    
+    @Test
+    void assertConvertUnsupportedFunction() {
+        SqlNode sqlNode = createOrderByWithFunction("nlssort");
+        DialectSQLFederationFunctionRegister register = mock(DialectSQLFederationFunctionRegister.class);
+        when(register.getUnsupportedFunctionNames()).thenReturn(Collections.singleton("NLSSORT"));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
+        try (
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
+                        (mock, context) -> when(mock.convert(any(SelectStatement.class))).thenReturn(sqlNode))) {
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSQLFederationFunctionRegister.class, databaseType)).thenReturn(Optional.of(register));
+            UnsupportedSQLOperationException actual = assertThrows(UnsupportedSQLOperationException.class, () -> SQLNodeConverterEngine.convert(selectStatement));
+            assertThat(actual.getMessage(), is("Unsupported SQL operation: FIXTURE NLSSORT function in SQL Federation."));
+        }
+    }
+    
+    @Test
+    void assertConvertUnconfiguredFunction() {
+        SqlNode sqlNode = createOrderByWithFunction("foo_func");
+        DialectSQLFederationFunctionRegister register = mock(DialectSQLFederationFunctionRegister.class);
+        when(register.getUnsupportedFunctionNames()).thenReturn(Collections.singleton("NLSSORT"));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
+        try (
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
+                        (mock, context) -> when(mock.convert(any(SelectStatement.class))).thenReturn(sqlNode))) {
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSQLFederationFunctionRegister.class, databaseType)).thenReturn(Optional.of(register));
+            assertThat(SQLNodeConverterEngine.convert(selectStatement), is(sqlNode));
+        }
+    }
+    
+    @Test
+    void assertConvertWithoutUnsupportedFunctions() {
+        SqlNode sqlNode = mock(SqlNode.class);
+        DialectSQLFederationFunctionRegister register = mock(DialectSQLFederationFunctionRegister.class);
+        when(register.getUnsupportedFunctionNames()).thenReturn(Collections.emptyList());
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
+        try (
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
+                        (mock, context) -> when(mock.convert(any(SelectStatement.class))).thenReturn(sqlNode))) {
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSQLFederationFunctionRegister.class, databaseType)).thenReturn(Optional.of(register));
+            assertThat(SQLNodeConverterEngine.convert(selectStatement), is(sqlNode));
+        }
+    }
+    
+    private SqlNode createOrderByWithFunction(final String functionName) {
+        SqlUnresolvedFunction function = new SqlUnresolvedFunction(new SqlIdentifier(functionName, SqlParserPos.ZERO), null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION);
+        SqlNode functionCall = new SqlBasicCall(function, Collections.emptyList(), SqlParserPos.ZERO);
+        return new SqlOrderBy(SqlParserPos.ZERO, mock(SqlNode.class), new SqlNodeList(Collections.singleton(functionCall), SqlParserPos.ZERO), null, null);
     }
     
     @Test
