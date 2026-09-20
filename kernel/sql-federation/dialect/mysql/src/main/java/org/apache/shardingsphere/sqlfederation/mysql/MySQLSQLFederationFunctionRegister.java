@@ -22,6 +22,7 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.DialectSQLFederationFunctionRegister;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLBinFunction;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLDatabaseFunction;
 
 /**
  * SQL federation function register for MySQL.
@@ -33,6 +34,7 @@ public final class MySQLSQLFederationFunctionRegister implements DialectSQLFeder
         schemaPlus.add("bin", ScalarFunctionImpl.create(MySQLBinFunction.class, "bin"));
         schemaPlus.add("atan", ScalarFunctionImpl.create(SqlFunctions.class, "atan2"));
         schemaPlus.add("atan2", ScalarFunctionImpl.create(SqlFunctions.class, "atan"));
+        schemaPlus.add("database", new MySQLDatabaseFunction(schemaName));
     }
     
     @Override
