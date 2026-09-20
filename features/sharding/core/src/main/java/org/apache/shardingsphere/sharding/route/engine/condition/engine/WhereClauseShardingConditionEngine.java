@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.util.SafeNumberOperat
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -183,6 +184,10 @@ public final class WhereClauseShardingConditionEngine {
         if (null == value2) {
             return value1;
         }
+        if (value1.stream().allMatch(Number.class::isInstance) && value2.stream().allMatch(Number.class::isInstance)) {
+            value1.removeIf(each -> value2.stream().noneMatch(value -> isSameNumber(each, value)));
+            return value1;
+        }
         Collection<Comparable<?>> convertedValue2 = value2;
         if (!value1.isEmpty() && !value2.isEmpty() && isDifferentType(value1, value2)) {
             convertedValue2 = ShardingValueTypeConvertUtils.convertCollectionType(value2, value1.iterator().next().getClass());
@@ -195,6 +200,21 @@ public final class WhereClauseShardingConditionEngine {
         Collection<Comparable<?>> caseInSensitiveValue2 = new CaseInsensitiveSet<>(convertedValue2);
         caseInSensitiveValue1.retainAll(caseInSensitiveValue2);
         return caseInSensitiveValue1;
+    }
+    
+    private boolean isSameNumber(final Comparable<?> value1, final Comparable<?> value2) {
+        Number number1 = (Number) value1;
+        Number number2 = (Number) value2;
+        if (!isFiniteNumber(number1) || !isFiniteNumber(number2)) {
+            return 0 == Double.compare(number1.doubleValue(), number2.doubleValue());
+        }
+        BigDecimal decimal1 = ShardingValueTypeConvertUtils.convertToTargetType(value1, BigDecimal.class);
+        BigDecimal decimal2 = ShardingValueTypeConvertUtils.convertToTargetType(value2, BigDecimal.class);
+        return 0 == decimal1.compareTo(decimal2);
+    }
+    
+    private boolean isFiniteNumber(final Number value) {
+        return (!(value instanceof Double) || Double.isFinite(value.doubleValue())) && (!(value instanceof Float) || Float.isFinite(value.floatValue()));
     }
     
     private boolean isDifferentType(final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {

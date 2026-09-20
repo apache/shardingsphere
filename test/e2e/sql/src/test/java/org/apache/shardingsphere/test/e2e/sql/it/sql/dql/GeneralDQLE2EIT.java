@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.sql.it.sql.dql;
 
+import com.google.common.base.Splitter;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.sql.cases.casse.assertion.SQLE2ETestCaseAssertionSQL;
 import org.apache.shardingsphere.test.e2e.sql.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.sql.framework.SQLE2EITArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.sql.framework.SQLE2EITSettings;
@@ -50,10 +52,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecuteQuery(final AssertionTestParameter testParam) throws SQLException, IOException, JAXBException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
-        executeDQL(context, () -> {
-            init(testParam, context);
-            assertExecuteQuery(testParam, context);
-        });
+        executeDQLWithLifecycleSQL(testParam, context, () -> assertExecuteQuery(testParam, context));
     }
     
     private void assertExecuteQuery(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {
@@ -150,10 +149,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecute(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
-        executeDQL(context, () -> {
-            init(testParam, context);
-            assertExecute(testParam, context);
-        });
+        executeDQLWithLifecycleSQL(testParam, context, () -> assertExecute(testParam, context));
     }
     
     private void assertExecute(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {
@@ -161,6 +157,39 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
             assertExecuteWithXmlExpected(testParam, context);
         } else {
             assertExecuteWithExpectedDataSource(testParam, context);
+        }
+    }
+    
+    private void executeDQLWithLifecycleSQL(final AssertionTestParameter testParam, final SQLE2EITContext context,
+                                            final DQLExecutionCallback callback) throws SQLException, IOException, JAXBException {
+        executeDQL(context, () -> {
+            init(testParam, context);
+            try {
+                executeLifecycleSQL(context.getAssertion().getInitialSQL());
+                callback.execute();
+            } finally {
+                executeLifecycleSQL(context.getAssertion().getDestroySQL());
+            }
+        });
+    }
+    
+    private void executeLifecycleSQL(final SQLE2ETestCaseAssertionSQL lifecycleSQL) throws SQLException {
+        if (null == lifecycleSQL || null == lifecycleSQL.getSql()) {
+            return;
+        }
+        try (
+                Connection actualConnection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                Connection expectedConnection = getExpectedDataSource().getConnection()) {
+            executeLifecycleSQL(lifecycleSQL.getSql(), actualConnection);
+            executeLifecycleSQL(lifecycleSQL.getSql(), expectedConnection);
+        }
+    }
+    
+    private void executeLifecycleSQL(final String sql, final Connection connection) throws SQLException {
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(sql)) {
+            try (Statement statement = connection.createStatement()) {
+                statement.executeUpdate(each);
+            }
         }
     }
     

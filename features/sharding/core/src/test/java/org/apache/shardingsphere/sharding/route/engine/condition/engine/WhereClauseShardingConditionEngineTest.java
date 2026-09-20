@@ -34,18 +34,25 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InEx
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -115,6 +122,33 @@ class WhereClauseShardingConditionEngineTest {
         List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
         assertThat(actual.get(0).getStartIndex(), is(0));
         assertThat(actual.get(0).getValues().get(0), isA(ListShardingConditionValue.class));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("heterogeneousNumberArguments")
+    void assertCreateShardingConditionsForHeterogeneousNumbers(final String name, final Comparable<?> firstValue, final Comparable<?> secondValue) {
+        ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
+        BinaryOperationExpression firstPredicate = new BinaryOperationExpression(0, 0, column, new ParameterMarkerExpressionSegment(0, 0, 0), "=", null);
+        BinaryOperationExpression secondPredicate = new BinaryOperationExpression(0, 0, column, new ParameterMarkerExpressionSegment(0, 0, 1), "=", null);
+        when(whereSegment.getExpr()).thenReturn(new BinaryOperationExpression(0, 0, firstPredicate, secondPredicate, "AND", null));
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
+        List<Object> params = Arrays.asList(firstValue, secondValue);
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, params);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getValues().size(), is(1));
+        assertThat(actual.get(0).getValues().get(0), isA(ListShardingConditionValue.class));
+        ListShardingConditionValue<?> actualValue = (ListShardingConditionValue<?>) actual.get(0).getValues().get(0);
+        assertThat(actualValue.getValues().size(), is(1));
+        Number actualNumber = (Number) actualValue.getValues().iterator().next();
+        assertThat(new BigDecimal(actualNumber.toString()).compareTo(new BigDecimal("9007199254740993")), is(0));
+    }
+    
+    private static Stream<Arguments> heterogeneousNumberArguments() {
+        return Stream.of(
+                Arguments.of("Long then BigDecimal", 9007199254740993L, new BigDecimal("9007199254740993")),
+                Arguments.of("BigDecimal then Long", new BigDecimal("9007199254740993"), 9007199254740993L),
+                Arguments.of("Long then scaled BigDecimal", 9007199254740993L, new BigDecimal("9007199254740993.0")),
+                Arguments.of("Scaled BigDecimal then Long", new BigDecimal("9007199254740993.0"), 9007199254740993L));
     }
     
     @Test

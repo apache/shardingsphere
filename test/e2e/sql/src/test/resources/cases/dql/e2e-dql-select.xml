@@ -44,6 +44,13 @@
         <assertion parameters="1000:int, 1001:int" expected-data-source-name="read_dataset" />
     </test-case>
 
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? AND order_id = ? FOR UPDATE" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
+        <assertion parameters="9007199254740993:long, 9007199254740993.0:decimal">
+            <initial-sql sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (9007199254740993, 21, 'init', 21, 'test', '2017-08-08')" />
+            <destroy-sql sql="DELETE FROM t_order WHERE order_id = 9007199254740993" />
+        </assertion>
+    </test-case>
+
     <test-case sql="SELECT * /* this is &#x000D;&#x000A; block comment */ FROM /* this is another &#x000A; block comment */ t_order where status='1'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
