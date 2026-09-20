@@ -57,12 +57,25 @@ public final class DatabaseRuleConfigurationCheckEngine {
         if (!requiredDataSourceNames.isEmpty()) {
             database.checkStorageUnitsExisted(requiredDataSourceNames);
         }
-        Collection<String> tableNames = checker.getTableNames(ruleConfig);
-        if (!tableNames.isEmpty()) {
-            checkTablesNotDuplicated(ruleConfig, database.getName(), tableNames);
-        }
+        checkTableNamesNotDuplicated(ruleConfig, database.getName(), checker);
         Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource()));
         checker.check(database.getName(), ruleConfig, dataSources, database.getRuleMetaData().getRules());
+    }
+    
+    /**
+     * Check table names in rule configuration are not duplicated.
+     *
+     * @param ruleConfig rule configuration to be checked
+     * @param databaseName database name
+     * @param checker rule configuration checker
+     * @param <T> type of rule configuration
+     * @throws DuplicateRuleException when table names are duplicated
+     */
+    public static <T extends RuleConfiguration> void checkTableNamesNotDuplicated(final T ruleConfig, final String databaseName, final DatabaseRuleConfigurationChecker<T> checker) {
+        Collection<String> tableNames = checker.getTableNames(ruleConfig);
+        if (!tableNames.isEmpty()) {
+            checkTablesNotDuplicated(ruleConfig, databaseName, tableNames);
+        }
     }
     
     private static void checkTablesNotDuplicated(final RuleConfiguration ruleConfig, final String databaseName, final Collection<String> tableNames) {

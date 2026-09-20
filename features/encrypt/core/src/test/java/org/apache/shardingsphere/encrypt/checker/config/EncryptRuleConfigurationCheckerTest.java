@@ -39,13 +39,13 @@ class EncryptRuleConfigurationCheckerTest {
         checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(EncryptRuleConfiguration.class)).get(EncryptRuleConfiguration.class);
     }
     
-    private EncryptRuleConfiguration createValidRuleConfiguration() {
-        return new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList())), Collections.emptyMap());
-    }
-    
     @SuppressWarnings("unchecked")
     @Test
     void assertGetTableNames() {
         assertThat(checker.getTableNames(createValidRuleConfiguration()), is(Collections.singletonList("t_encrypt")));
+    }
+    
+    private EncryptRuleConfiguration createValidRuleConfiguration() {
+        return new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList())), Collections.emptyMap());
     }
 }
