@@ -105,7 +105,7 @@
         
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
         <bval.version>2.0.6</bval.version>
-
+        
         <netty.version>4.2.9.Final</netty.version>
         <bouncycastle.version>1.84</bouncycastle.version>
         
@@ -156,6 +156,7 @@
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <os-detector-maven-plugin.version>0.3.1</os-detector-maven-plugin.version>
         <native-maven-plugin.version>1.1.12</native-maven-plugin.version>
+        <transformer-maven-plugin.version>1.0.0</transformer-maven-plugin.version>
         
         <!-- Compile plugin versions -->
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
@@ -317,7 +318,7 @@
                 <artifactId>bval-jsr</artifactId>
                 <version>${bval.version}</version>
             </dependency>
-
+            
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>

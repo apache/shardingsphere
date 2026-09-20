@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.Collection;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -52,13 +52,10 @@ class JakartaNamespaceTransformationIT {
     void assertNoJakartaEE8NamespaceRemains() throws IOException {
         Path artifact = findMainArtifact();
         try (JarFile jarFile = new JarFile(artifact.toFile())) {
-            List<byte[]> classBytes = jarFile.stream()
-                    .filter(entry -> entry.getName().endsWith(".class"))
-                    .map(entry -> readEntry(jarFile, entry))
-                    .collect(Collectors.toList());
-            assertFalse(classBytes.isEmpty());
-            assertTrue(classBytes.stream().anyMatch(bytes -> indexOf(bytes, JAKARTA_TRANSACTION, 0) >= 0));
-            assertTrue(classBytes.stream().noneMatch(JakartaNamespaceTransformationIT::hasJakartaEE8Reference));
+            Collection<byte[]> actualClassBytes = jarFile.stream().filter(entry -> entry.getName().endsWith(".class")).map(entry -> readEntry(jarFile, entry)).collect(Collectors.toList());
+            assertFalse(actualClassBytes.isEmpty());
+            assertTrue(actualClassBytes.stream().anyMatch(bytes -> indexOf(bytes, JAKARTA_TRANSACTION, 0) >= 0));
+            assertTrue(actualClassBytes.stream().noneMatch(JakartaNamespaceTransformationIT::hasJakartaEE8Reference));
         }
     }
     
@@ -72,8 +69,8 @@ class JakartaNamespaceTransformationIT {
         }
     }
     
-    private static byte[] readEntry(final JarFile jarFile, final JarEntry entry) {
-        try (InputStream inputStream = jarFile.getInputStream(entry)) {
+    private static byte[] readEntry(final JarFile jarFile, final JarEntry jarEntry) {
+        try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             byte[] block = new byte[8192];
             int read;

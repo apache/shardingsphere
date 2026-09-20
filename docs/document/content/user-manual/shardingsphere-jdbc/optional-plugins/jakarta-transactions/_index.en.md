@@ -189,6 +189,18 @@ Need to be changed to,
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-transaction-xa-core</artifactId>
             </exclusion>
+            <exclusion>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-xa-spi</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+            </exclusion>
         </exclusions>
     </dependency>
     <dependency>
@@ -198,6 +210,10 @@ Need to be changed to,
     </dependency>
 </dependencies>
 ```
+
+Replace the legacy XA dependencies instead of adding the Jakarta dependencies alongside them.
+Do not activate the `default-dep`, `all`, `transaction-atomikos`, or `transaction-narayana` profiles together with the Jakarta modules, otherwise the Proxy classpath mixes `javax.transaction` and `jakarta.transaction` providers and fails with `ServiceConfigurationError` caused by `NoClassDefFoundError: javax/transaction/SystemException`.
+Verify that the built Proxy classpath contains only the Jakarta provider and that Proxy starts with the configured provider.
 
 For Proxy's `global.yaml`, possible configuration items are as follows,
 
@@ -243,6 +259,18 @@ Need to be changed to,
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-transaction-xa-core</artifactId>
             </exclusion>
+            <exclusion>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-xa-spi</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+            </exclusion>
         </exclusions>
     </dependency>
     <dependency>
@@ -273,6 +301,10 @@ Need to be changed to,
     </dependency>
 </dependencies>
 ```
+
+Replace the legacy XA dependencies instead of adding the Jakarta dependencies alongside them.
+Do not activate the `default-dep`, `all`, `transaction-atomikos`, or `transaction-narayana` profiles together with the Jakarta modules, otherwise the Proxy classpath mixes `javax.transaction` and `jakarta.transaction` providers and fails with `ServiceConfigurationError` caused by `NoClassDefFoundError: javax/transaction/SystemException`.
+Verify that the built Proxy classpath contains only the Jakarta provider and that Proxy starts with the configured provider.
 
 For Proxy's `global.yaml`, possible configuration items are as follows,
 

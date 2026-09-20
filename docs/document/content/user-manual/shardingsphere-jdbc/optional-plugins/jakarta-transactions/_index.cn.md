@@ -183,6 +183,18 @@ transaction:
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-transaction-xa-core</artifactId>
             </exclusion>
+            <exclusion>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-xa-spi</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+            </exclusion>
         </exclusions>
     </dependency>
     <dependency>
@@ -192,6 +204,10 @@ transaction:
     </dependency>
 </dependencies>
 ```
+
+必须替换旧的 XA 依赖，而不是在保留旧依赖的同时追加 Jakarta 依赖。
+不要将 `default-dep`、`all`、`transaction-atomikos` 或 `transaction-narayana` Profile 与 Jakarta 模块一起激活，否则 Proxy 类路径会同时混入 `javax.transaction` 与 `jakarta.transaction` 的 Provider，并以 `ServiceConfigurationError`（由 `NoClassDefFoundError: javax/transaction/SystemException` 引起）启动失败。
+构建完成后需确认 Proxy 类路径中仅包含 Jakarta Provider，并验证 Proxy 能够使用所配置的 Provider 正常启动。
 
 对于 Proxy 的 `global.yaml`, 可能的配置项如下，
 
@@ -236,6 +252,18 @@ transaction:
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-transaction-xa-core</artifactId>
             </exclusion>
+            <exclusion>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-xa-spi</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+            </exclusion>
         </exclusions>
     </dependency>
     <dependency>
@@ -266,6 +294,10 @@ transaction:
     </dependency>
 </dependencies>
 ```
+
+必须替换旧的 XA 依赖，而不是在保留旧依赖的同时追加 Jakarta 依赖。
+不要将 `default-dep`、`all`、`transaction-atomikos` 或 `transaction-narayana` Profile 与 Jakarta 模块一起激活，否则 Proxy 类路径会同时混入 `javax.transaction` 与 `jakarta.transaction` 的 Provider，并以 `ServiceConfigurationError`（由 `NoClassDefFoundError: javax/transaction/SystemException` 引起）启动失败。
+构建完成后需确认 Proxy 类路径中仅包含 Jakarta Provider，并验证 Proxy 能够使用所配置的 Provider 正常启动。
 
 对于 Proxy 的 `global.yaml`, 可能的配置项如下，
 
