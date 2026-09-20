@@ -166,6 +166,7 @@ class ShardingRuleConfigurationTest {
                 Arguments.of("Missing sharding algorithm type", createShardingAlgorithmsRuleConfiguration(
                         "foo_sharding", new AlgorithmConfiguration("MISSING", new Properties()))),
                 Arguments.of("Null key generators", nullKeyGenerators),
+                Arguments.of("Blank key generator name", createKeyGeneratorsRuleConfiguration("", algorithmConfig)),
                 Arguments.of("Null key generator", createKeyGeneratorsRuleConfiguration("foo_key_generator", null)),
                 Arguments.of("Missing key generator type", createKeyGeneratorsRuleConfiguration(
                         "foo_key_generator", new AlgorithmConfiguration("MISSING", new Properties()))),
