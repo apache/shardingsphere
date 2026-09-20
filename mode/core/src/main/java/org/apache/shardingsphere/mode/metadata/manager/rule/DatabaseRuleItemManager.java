@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
@@ -56,14 +57,16 @@ public final class DatabaseRuleItemManager {
                 new RuleChangedItemType(databaseRuleNodePath.getRuleType(), databaseRuleNodePath.getDatabaseRuleItem().getType()));
         String yamlContent = metaDataPersistFacade.getVersionService().loadContent(new VersionNodePath(databaseRuleNodePath));
         String databaseName = databaseRuleNodePath.getDatabase().getDatabaseName();
-        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         String itemName = databaseRuleNodePath.getDatabaseRuleItem().getName();
         synchronized (this) {
             Object ruleItemConfig = processor.swapRuleItemConfiguration(itemName, yamlContent);
+            RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
             RuleConfigurationValidator.validateRuleItem(currentRuleConfig, ruleItemConfig);
-            processor.changeRuleItemConfiguration(itemName, currentRuleConfig, ruleItemConfig);
+            YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
+            RuleConfiguration candidateRuleConfig = swapperEngine.swapToRuleConfiguration(swapperEngine.swapToYamlRuleConfiguration(currentRuleConfig));
+            processor.changeRuleItemConfiguration(itemName, candidateRuleConfig, ruleItemConfig);
             try {
-                databaseRuleConfigManager.refresh(databaseName, currentRuleConfig);
+                databaseRuleConfigManager.refresh(databaseName, candidateRuleConfig);
             } catch (final SQLException ex) {
                 throw new SQLWrapperException(ex);
             }
@@ -82,12 +85,14 @@ public final class DatabaseRuleItemManager {
         Preconditions.checkState(metaDataContexts.getMetaData().containsDatabase(databaseName), "No database '%s' exists.", databaseName);
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class,
                 new RuleChangedItemType(databaseRuleNodePath.getRuleType(), null == databaseRuleNodePath.getDatabaseRuleItem() ? null : databaseRuleNodePath.getDatabaseRuleItem().getType()));
-        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         String itemName = null == databaseRuleNodePath.getDatabaseRuleItem() ? null : databaseRuleNodePath.getDatabaseRuleItem().getName();
         synchronized (this) {
-            processor.dropRuleItemConfiguration(itemName, currentRuleConfig);
+            RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
+            YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
+            RuleConfiguration candidateRuleConfig = swapperEngine.swapToRuleConfiguration(swapperEngine.swapToYamlRuleConfiguration(currentRuleConfig));
+            processor.dropRuleItemConfiguration(itemName, candidateRuleConfig);
             try {
-                databaseRuleConfigManager.refresh(databaseName, currentRuleConfig);
+                databaseRuleConfigManager.refresh(databaseName, candidateRuleConfig);
             } catch (final SQLException ex) {
                 throw new SQLWrapperException(ex);
             }
