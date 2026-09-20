@@ -116,8 +116,8 @@ public final class SQLNodeConverterEngine {
             public Void visit(final SqlCall call) {
                 if (call.getOperator() instanceof SqlFunction) {
                     for (String each : unsupportedFunctionNames) {
-                        ShardingSpherePreconditions.checkState(!each.equalsIgnoreCase(call.getOperator().getName()), () -> new UnsupportedSQLOperationException(
-                                String.format("%s %s function in SQL Federation", sqlStatement.getDatabaseType().getType(), each)));
+                        ShardingSpherePreconditions.checkState(!each.equalsIgnoreCase(call.getOperator().getName()),
+                                () -> new UnsupportedSQLOperationException(String.format("%s %s function in SQL Federation", sqlStatement.getDatabaseType().getType(), each)));
                     }
                 }
                 return super.visit(call);
