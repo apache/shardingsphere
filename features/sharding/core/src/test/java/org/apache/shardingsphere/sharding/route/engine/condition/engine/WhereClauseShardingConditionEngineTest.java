@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
@@ -48,6 +49,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -149,6 +151,34 @@ class WhereClauseShardingConditionEngineTest {
                 Arguments.of("BigDecimal then Long", new BigDecimal("9007199254740993"), 9007199254740993L),
                 Arguments.of("Long then scaled BigDecimal", 9007199254740993L, new BigDecimal("9007199254740993.0")),
                 Arguments.of("Scaled BigDecimal then Long", new BigDecimal("9007199254740993.0"), 9007199254740993L));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("finiteAndInfiniteNumberArguments")
+    void assertCreateAlwaysFalseShardingConditionForFiniteAndInfiniteNumbers(final String name, final Comparable<?> firstValue, final Comparable<?> secondValue) {
+        ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
+        BinaryOperationExpression firstPredicate = new BinaryOperationExpression(0, 0, column, new ParameterMarkerExpressionSegment(0, 0, 0), "=", null);
+        BinaryOperationExpression secondPredicate = new BinaryOperationExpression(0, 0, column, new ParameterMarkerExpressionSegment(0, 0, 1), "=", null);
+        when(whereSegment.getExpr()).thenReturn(new BinaryOperationExpression(0, 0, firstPredicate, secondPredicate, "AND", null));
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
+        List<Object> params = Arrays.asList(firstValue, secondValue);
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, params);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), isA(AlwaysFalseShardingCondition.class));
+    }
+    
+    private static Stream<Arguments> finiteAndInfiniteNumberArguments() {
+        BigDecimal largeDecimal = new BigDecimal("1E10000");
+        BigInteger largeInteger = BigInteger.TEN.pow(10000);
+        return Stream.of(
+                Arguments.of("Positive BigDecimal then positive infinity", largeDecimal, Double.POSITIVE_INFINITY),
+                Arguments.of("Positive infinity then positive BigDecimal", Double.POSITIVE_INFINITY, largeDecimal),
+                Arguments.of("Negative BigDecimal then negative infinity", largeDecimal.negate(), Double.NEGATIVE_INFINITY),
+                Arguments.of("Negative infinity then negative BigDecimal", Double.NEGATIVE_INFINITY, largeDecimal.negate()),
+                Arguments.of("Positive BigInteger then positive infinity", largeInteger, Double.POSITIVE_INFINITY),
+                Arguments.of("Positive infinity then positive BigInteger", Double.POSITIVE_INFINITY, largeInteger),
+                Arguments.of("Negative BigInteger then negative infinity", largeInteger.negate(), Double.NEGATIVE_INFINITY),
+                Arguments.of("Negative infinity then negative BigInteger", Double.NEGATIVE_INFINITY, largeInteger.negate()));
     }
     
     @Test

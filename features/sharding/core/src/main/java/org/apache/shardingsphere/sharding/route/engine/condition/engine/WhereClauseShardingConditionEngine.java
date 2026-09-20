@@ -185,7 +185,13 @@ public final class WhereClauseShardingConditionEngine {
             return value1;
         }
         if (value1.stream().allMatch(Number.class::isInstance) && value2.stream().allMatch(Number.class::isInstance)) {
-            value1.removeIf(each -> value2.stream().noneMatch(value -> isSameNumber(each, value)));
+            if (isSameType(value1, value2)) {
+                value1.retainAll(value2);
+                return value1;
+            }
+            Set<Comparable<?>> normalizedValue2 = new HashSet<>(value2.size(), 1F);
+            value2.forEach(each -> normalizedValue2.add(normalizeNumber(each)));
+            value1.removeIf(each -> !normalizedValue2.contains(normalizeNumber(each)));
             return value1;
         }
         Collection<Comparable<?>> convertedValue2 = value2;
@@ -202,15 +208,21 @@ public final class WhereClauseShardingConditionEngine {
         return caseInSensitiveValue1;
     }
     
-    private boolean isSameNumber(final Comparable<?> value1, final Comparable<?> value2) {
-        Number number1 = (Number) value1;
-        Number number2 = (Number) value2;
-        if (!isFiniteNumber(number1) || !isFiniteNumber(number2)) {
-            return 0 == Double.compare(number1.doubleValue(), number2.doubleValue());
+    private boolean isSameType(final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {
+        if (value1.isEmpty() || value2.isEmpty()) {
+            return true;
         }
-        BigDecimal decimal1 = ShardingValueTypeConvertUtils.convertToTargetType(value1, BigDecimal.class);
-        BigDecimal decimal2 = ShardingValueTypeConvertUtils.convertToTargetType(value2, BigDecimal.class);
-        return 0 == decimal1.compareTo(decimal2);
+        Class<?> valueType = value1.iterator().next().getClass();
+        return value1.stream().allMatch(each -> valueType == each.getClass()) && value2.stream().allMatch(each -> valueType == each.getClass());
+    }
+    
+    private Comparable<?> normalizeNumber(final Comparable<?> value) {
+        Number number = (Number) value;
+        if (!isFiniteNumber(number)) {
+            return number.doubleValue();
+        }
+        BigDecimal result = ShardingValueTypeConvertUtils.convertToTargetType(value, BigDecimal.class);
+        return result.stripTrailingZeros();
     }
     
     private boolean isFiniteNumber(final Number value) {
