@@ -583,7 +583,7 @@ collectionVariableDecl
       (
       collectionTypeName (ASSIGNMENT_OPERATOR_ (qualifiedExpression | functionCall | variableName))?
       | collectionTypeName (ASSIGNMENT_OPERATOR_  (collectionConstructor | variableName))?
-      | collectionTypeName MOD_ TYPE
+      | typeName MOD_ TYPE
       )
       SEMI_
     ;

@@ -771,7 +771,11 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             }
         }
         if (null != ctx.orderByClause()) {
+            SelectStatement previous = result;
             result = createSelectStatementBuilder(result).orderBy((OrderBySegment) visit(ctx.orderByClause())).build();
+            result.addParameterMarkers(previous.getParameterMarkers());
+            result.getVariableNames().addAll(previous.getVariableNames());
+            result.getComments().addAll(previous.getComments());
         }
         result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         result.getVariableNames().addAll(getVariableNames());

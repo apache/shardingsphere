@@ -2381,8 +2381,8 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         
         @Override
         public Void visitCollectionVariableDecl(final CollectionVariableDeclContext ctx) {
-            TypeNameContext typeName = ctx.collectionTypeName().typeName();
-            if (null != ctx.TYPE() && null != ctx.MOD_() && null != typeName && null != typeName.owner()) {
+            TypeNameContext typeName = null == ctx.typeName() ? ctx.collectionTypeName().typeName() : ctx.typeName();
+            if (null != ctx.TYPE() && null != ctx.MOD_() && null != typeName.owner()) {
                 result.getTables().add(createTypeAttributeTable(typeName));
                 result.getColumns().add(createTypeAttributeColumn(typeName));
             }

@@ -24,6 +24,8 @@ import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -38,6 +40,12 @@ class OracleDMLStatementVisitorTest {
     void assertVisitWithParenthesizedMainQuery() {
         SelectStatement actual = parse("WITH q AS (SELECT 1 AS n FROM DUAL) (SELECT n FROM q)");
         assertTrue(actual.getWith().isPresent());
+    }
+    
+    @Test
+    void assertVisitWithParenthesizedMainQueryWithOrderBy() {
+        SelectStatement actual = parse("WITH q AS (SELECT 1 AS n FROM DUAL) (SELECT ? FROM q) ORDER BY 1");
+        assertThat(actual.getParameterMarkers().size(), is(1));
     }
     
     private SelectStatement parse(final String sql) {
