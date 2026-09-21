@@ -49,6 +49,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -74,6 +75,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -109,6 +111,9 @@ class ProxyBackendTransactionManagerTest {
     @Mock
     private ExclusiveOperatorEngine exclusiveOperatorEngine;
     
+    @Mock
+    private DeferredMetaDataRefreshContext deferredMetaDataRefreshContext;
+    
     @BeforeEach
     void setUp() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
@@ -117,6 +122,7 @@ class ProxyBackendTransactionManagerTest {
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         when(connectionContext.getTransactionContext()).thenReturn(transactionContext);
         when(databaseConnectionManager.getConnectionPostProcessors()).thenReturn(connectionPostProcessors);
+        when(databaseConnectionManager.getDeferredMetaDataRefreshContext()).thenReturn(deferredMetaDataRefreshContext);
         mockCachedConnections(connection);
     }
     
@@ -292,6 +298,47 @@ class ProxyBackendTransactionManagerTest {
             verify(transactionStatus, never()).setInTransaction(false);
             verify(connectionContext, never()).close();
         }
+    }
+    
+    @Test
+    void assertCommitRefreshesDeferredMetaDataAfterUnderlyingCommit() throws SQLException {
+        when(transactionStatus.isInTransaction()).thenReturn(true);
+        when(ConnectionSavepointManager.getInstance()).thenReturn(mock(ConnectionSavepointManager.class));
+        mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
+        transactionManager.commit();
+        InOrder inOrder = inOrder(localTransactionManager, deferredMetaDataRefreshContext);
+        inOrder.verify(localTransactionManager).commit();
+        inOrder.verify(deferredMetaDataRefreshContext).reload(ProxyContext.getInstance().getContextManager());
+        inOrder.verify(deferredMetaDataRefreshContext).clear();
+    }
+    
+    @Test
+    void assertCommitNotRefreshesDeferredMetaDataWhenUnderlyingCommitFailed() throws SQLException {
+        when(transactionStatus.isInTransaction()).thenReturn(true);
+        when(ConnectionSavepointManager.getInstance()).thenReturn(mock(ConnectionSavepointManager.class));
+        mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
+        doThrow(new SQLException("commit failed")).when(localTransactionManager).commit();
+        assertThrows(SQLException.class, transactionManager::commit);
+        verify(deferredMetaDataRefreshContext, never()).reload(any());
+        verify(deferredMetaDataRefreshContext).clear();
+    }
+    
+    @Test
+    void assertRollbackReloadsDeferredMetaDataAfterUnderlyingRollback() throws SQLException {
+        when(transactionStatus.isInTransaction()).thenReturn(true);
+        when(ConnectionSavepointManager.getInstance()).thenReturn(mock(ConnectionSavepointManager.class));
+        mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
+        transactionManager.rollback();
+        InOrder inOrder = inOrder(localTransactionManager, deferredMetaDataRefreshContext);
+        inOrder.verify(localTransactionManager).rollback();
+        inOrder.verify(deferredMetaDataRefreshContext).reload(ProxyContext.getInstance().getContextManager());
+        inOrder.verify(deferredMetaDataRefreshContext).clear();
     }
     
     @Test
