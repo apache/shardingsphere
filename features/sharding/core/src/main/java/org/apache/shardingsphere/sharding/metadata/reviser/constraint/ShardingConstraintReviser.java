@@ -53,6 +53,6 @@ public final class ShardingConstraintReviser implements ConstraintReviser<Shardi
     
     private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
         String indexNameSuffix = "_" + actualTableName;
-        return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.empty();
+        return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.substring(0, actualIndexName.length() - indexNameSuffix.length())) : Optional.empty();
     }
 }
