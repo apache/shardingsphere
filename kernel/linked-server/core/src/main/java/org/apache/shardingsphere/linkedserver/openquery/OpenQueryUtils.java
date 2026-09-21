@@ -19,6 +19,7 @@ package org.apache.shardingsphere.linkedserver.openquery;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -63,7 +64,7 @@ public final class OpenQueryUtils {
         if (firstParam instanceof ColumnSegment) {
             return Optional.of(((ColumnSegment) firstParam).getIdentifier().getValue());
         }
-        return Optional.of(firstParam.getText());
+        return Optional.of(QuoteCharacter.unwrapText(firstParam.getText()));
     }
     
     /**

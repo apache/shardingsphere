@@ -63,6 +63,62 @@ class OpenQueryUtilsTest {
     }
     
     @Test
+    void assertExtractBracketedLinkedServerNameViaColumnSegment() {
+        FunctionSegment funcSeg = new FunctionSegment(0, 70, "OPENQUERY", "OPENQUERY([MyLinkedServer], 'SELECT GroupName FROM Department')");
+        funcSeg.getParameters().add(new ColumnSegment(10, 25, new IdentifierValue("[MyLinkedServer]")));
+        funcSeg.getParameters().add(new LiteralExpressionSegment(29, 60, "SELECT GroupName FROM Department"));
+        Optional<String> result = OpenQueryUtils.extractLinkedServerName(funcSeg);
+        assertTrue(result.isPresent());
+        assertThat(result.get(), is("MyLinkedServer"));
+    }
+    
+    @Test
+    void assertExtractBracketedLinkedServerNameViaFallback() {
+        FunctionSegment funcSeg = new FunctionSegment(0, 70, "OPENQUERY", "OPENQUERY([MyLinkedServer], 'SELECT GroupName FROM Department')");
+        funcSeg.getParameters().add(new LiteralExpressionSegment(10, 25, "[MyLinkedServer]"));
+        funcSeg.getParameters().add(new LiteralExpressionSegment(29, 60, "SELECT GroupName FROM Department"));
+        Optional<String> result = OpenQueryUtils.extractLinkedServerName(funcSeg);
+        assertTrue(result.isPresent());
+        assertThat(result.get(), is("MyLinkedServer"));
+    }
+    
+    @Test
+    void assertExtractDoubleQuotedLinkedServerNameViaColumnSegment() {
+        FunctionSegment funcSeg = new FunctionSegment(0, 70, "OPENQUERY", "OPENQUERY(\"MyLinkedServer\", 'SELECT 1')");
+        funcSeg.getParameters().add(new ColumnSegment(10, 25, new IdentifierValue("\"MyLinkedServer\"")));
+        funcSeg.getParameters().add(new LiteralExpressionSegment(29, 38, "SELECT 1"));
+        Optional<String> result = OpenQueryUtils.extractLinkedServerName(funcSeg);
+        assertTrue(result.isPresent());
+        assertThat(result.get(), is("MyLinkedServer"));
+    }
+    
+    @Test
+    void assertExtractSingleQuotedLinkedServerNameViaFallback() {
+        FunctionSegment funcSeg = new FunctionSegment(0, 70, "OPENQUERY", "OPENQUERY('MyLinkedServer', 'SELECT 1')");
+        funcSeg.getParameters().add(new LiteralExpressionSegment(10, 25, "MyLinkedServer"));
+        funcSeg.getParameters().add(new LiteralExpressionSegment(29, 38, "SELECT 1"));
+        Optional<String> result = OpenQueryUtils.extractLinkedServerName(funcSeg);
+        assertTrue(result.isPresent());
+        assertThat(result.get(), is("MyLinkedServer"));
+    }
+    
+    @Test
+    void assertExtractLinkedServerNameWithSpacesViaBrackets() {
+        FunctionSegment funcSeg = new FunctionSegment(0, 70, "OPENQUERY", "OPENQUERY([My Server], 'SELECT 1')");
+        funcSeg.getParameters().add(new ColumnSegment(10, 20, new IdentifierValue("[My Server]")));
+        funcSeg.getParameters().add(new LiteralExpressionSegment(24, 33, "SELECT 1"));
+        Optional<String> result = OpenQueryUtils.extractLinkedServerName(funcSeg);
+        assertTrue(result.isPresent());
+        assertThat(result.get(), is("My Server"));
+    }
+    
+    @Test
+    void assertExtractLinkedServerNameEmptyParams() {
+        FunctionSegment funcSeg = new FunctionSegment(0, 10, "OPENQUERY", "OPENQUERY()");
+        assertFalse(OpenQueryUtils.extractLinkedServerName(funcSeg).isPresent());
+    }
+    
+    @Test
     void assertExtractInnerSQLSegment() {
         FunctionSegment funcSeg = createOpenQueryFunctionSegment();
         Optional<LiteralExpressionSegment> result = OpenQueryUtils.extractInnerSQLSegment(funcSeg);
