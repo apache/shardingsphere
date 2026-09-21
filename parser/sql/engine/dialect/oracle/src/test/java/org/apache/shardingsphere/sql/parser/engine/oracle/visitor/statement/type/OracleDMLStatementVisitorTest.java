@@ -28,18 +28,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OracleDMLStatementVisitorTest {
-
+    
     @Test
     void assertVisitSelect() {
         assertThrows(SQLParsingException.class, () -> parse("SELECT 1 FROM DUAL ORDER BY 1 FOR UPDATE NOWAIT ORDER BY 1"));
     }
-
+    
     @Test
     void assertVisitWithParenthesizedMainQuery() {
         SelectStatement actual = parse("WITH q AS (SELECT 1 AS n FROM DUAL) (SELECT n FROM q)");
         assertTrue(actual.getWith().isPresent());
     }
-
+    
     private SelectStatement parse(final String sql) {
         CacheOption cacheOption = new CacheOption(128, 1024L);
         SQLParserEngine parserEngine = new SQLParserEngine("Oracle", cacheOption);
