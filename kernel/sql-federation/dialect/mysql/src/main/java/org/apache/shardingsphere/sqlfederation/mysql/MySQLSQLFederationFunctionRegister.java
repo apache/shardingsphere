@@ -44,7 +44,6 @@ public final class MySQLSQLFederationFunctionRegister implements DialectSQLFeder
                 "AES_DECRYPT",
                 "AES_ENCRYPT",
                 "BENCHMARK",
-                "BIN",
                 "BIT_LENGTH",
                 "CEILING",
                 "CHAR",
