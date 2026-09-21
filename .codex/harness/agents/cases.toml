@@ -2756,3 +2756,84 @@ forbidden_summary_terms = ["Strictly compliant"]
 policy_binding_profile = "coding-standards-audit"
 policy_assertions = [{source = "standalone-audit", statements = ["When the scope contains a Java declaration with at least two covered declaration annotations, read the [Java declaration annotation order rules](rules/java-annotation-order.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling.", "An existing-code violation of an applicable written standard is sufficient to report non-compliance."]}, {source = "java-annotation-order", statements = ["The canonical relative order is `org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation`, `lombok.AllArgsConstructor`, `lombok.RequiredArgsConstructor`, `lombok.NoArgsConstructor`, `lombok.Builder`, `lombok.Getter`, `lombok.Setter`, `lombok.EqualsAndHashCode`, `lombok.ToString`, and `lombok.extern.slf4j.Slf4j`.", "Filter the declaration's annotations to the recognized fully qualified types and report a violation only when that filtered sequence is not in canonical order.", "Test-framework, dependency-injection, framework, and serialization annotations are outside this order unless their fully qualified type appears in the canonical list.", "A declaration annotation annotates the declaration itself, while a `TYPE_USE` annotation annotates a use of a type and does not participate in this rule."]}]
 critical = true
+
+[[cases]]
+id = "issue_enhancement_requires_acceptance_before_pr"
+group = "issue project commitment"
+description = "Keeps a popular enhancement request from becoming an accepted project commitment before a maintainer decision."
+phase = "issue problem validity and project commitment gate"
+ordinary_loop = false
+profile = "analyze-issue"
+semantic_policy_assertions = true
+prompt = "Draft the default maintainer reply for a ShardingSphere feature request. The requested database-upper-layer behavior is plausible but not currently supported. The issue is open, labeled as an enhancement, highly popular, has an available contributor and a ready patch, but official docs, maintained contracts, and public maintainer comments do not accept the new behavior boundary yet. The facts are sufficient for classification, and no reproduction details are needed. Classify the issue and give the next action without editing files, querying GitHub, or inviting implementation before the project decision."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["enhancement", "maintainer", "discussion", "accept"]
+forbidden_summary_terms = ["Contributors are welcome", "submit a PR", "Out of Scope", "status: invalid"]
+policy_binding_profile = "analyze-issue"
+policy_assertions = [{source = "analyze-issue", statements = ["When project responsibility or acceptance of a new commitment remains a maintainer choice, classify the request as an `Enhancement` that requires maintainer discussion rather than declaring it accepted or out of scope.", "An open issue, labels, popularity, available contributors, or submitted code do not establish project acceptance, and an exact existing behavior or special case does not authorize a broader generalization.", "Do not invite a PR or recommend `status: volunteer wanted` until public evidence establishes ShardingSphere ownership and acceptance of the requested behavior boundary."]}, {source = "analyze-issue-output", statements = ["Classifying this as an enhancement does not by itself accept implementation or expand the supported contract."]}]
+critical = true
+
+[[cases]]
+id = "issue_out_of_scope_requires_direct_ownership_evidence"
+group = "issue project commitment"
+description = "Closes a request as out of scope only when official evidence assigns the behavior to another owner."
+phase = "issue problem validity and project commitment gate"
+ordinary_loop = false
+profile = "analyze-issue"
+semantic_policy_assertions = true
+prompt = "Draft the default maintainer reply for an issue asking ShardingSphere to implement database-engine physical WAL replication and storage compaction. Official project positioning states that ShardingSphere is an upper-layer Database Plus platform and does not create a database, maintained contracts assign this behavior to the database engine, and there is no contrary public maintainer decision. The issue already contains enough evidence to decide project responsibility. Classify it and give the next action without requesting reproduction details, editing files, querying GitHub, or inviting a PR."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["Out of Scope", "database engine"]
+required_summary_term_groups = [["close", "closing", "closed"]]
+forbidden_summary_terms = ["status: volunteer wanted", "Contributors are welcome", "Needs More Info", "stack trace"]
+policy_binding_profile = "analyze-issue"
+policy_assertions = [{source = "analyze-issue", statements = ["Classify `Out of Scope / Won't Fix` only when official project positioning, maintained contracts, or an explicit public maintainer decision proves that another owner is responsible or that the request conflicts with the project boundary.", "Identify the official project-positioning, maintained-contract, or explicit public maintainer evidence that assigns the behavior to another owner or conflicts with the project boundary.", "Recommend closure without inviting a PR, and use only an existing label supported by repository or target-issue evidence."]}, {source = "analyze-issue-output", statements = ["The usefulness or availability of an implementation does not establish a ShardingSphere support commitment.", "I suggest closing this request without inviting a PR."]}]
+critical = true
+
+[[cases]]
+id = "public_pr_small_diff_unaccepted_commitment_needs_discussion"
+group = "review-pr project commitment"
+description = "Rejects a locally correct small diff that introduces an unaccepted cross-dialect behavior commitment."
+phase = "review-pr problem and project commitment gate"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "Complete a public-PR Code Correctness Review. A five-line fallback is locally correct and fully tested, but it makes Proxy accept and rewrite a previously unsupported vendor administration command for every dialect. The linked issue is open, popular, labeled as an enhancement, and has willing contributors, but official docs, maintained contracts, and public maintainer comments do not accept this new cross-dialect semantic commitment. Current-candidate Checkstyle and Spotless pass on every applicable file, and every other review, risk, and Completion Gate is complete with no independent finding or gap. Return the Formal Review result without editing, rerunning checks, querying CI, or changing Git or remote state."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["inspect_local", "run_bounded_adversarial_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Not Mergeable", "Feedback Mode: Needs Discussion", "Blocking Issues", "project", "commitment", "### Coverage"]
+forbidden_summary_terms = ["Review Result: Mergeable", "Feedback Mode: Change Request"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["An open or labeled issue, popularity, contributor effort, available code, passing tests, or a small diff do not establish project acceptance.", "When evidence disproves the problem, expected behavior, applicable project ownership, or an asserted accepted commitment, or when a new commitment still requires a maintainer decision, record a `Needs Discussion` condition.", "If admissible evidence disproves the problem model, expected behavior, ownership, protocol or SQL semantics, compatibility assumption, accepted project commitment, or solution direction, or establishes that a new project commitment still requires a maintainer decision, use `Not Mergeable` with `Feedback Mode: Needs Discussion`.", "`Not Mergeable`: `### Result` with exactly one bold `Review Result: Not Mergeable` line, one `Feedback Mode`, a bold `Blocking Issues: N` line, and a concise reason; `### Blocking Issues`; `### Coverage`."]}]
+critical = true
+
+[[cases]]
+id = "public_pr_accepted_behavior_overdesign_is_change_request"
+group = "review-pr project commitment"
+description = "Treats unjustified implementation surface for an accepted behavior as a change request rather than a direction dispute."
+phase = "review-pr problem and project commitment gate"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "Complete a public-PR Code Correctness Review. Official documentation and an explicit public maintainer decision accept one local metadata-validation behavior owned by an existing class. The PR implements it through a new public SPI, a result hierarchy, and three forwarding types, although the existing owner can express the behavior directly and no real stable variation, external consumer, compatibility contract, or reuse exists. The full path and strongest counter-evidence confirm the extra public surface is introduced by this PR and violates the applicable smallest-clear-implementation rules, and the finding passes all five Finding Proof Gate conditions. Current-candidate Checkstyle and Spotless pass on every applicable file, and every other review, risk, and Completion Gate is complete with no independent finding or gap. Return the Formal Review result without editing, rerunning checks, querying CI, or changing Git or remote state."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["inspect_local", "run_bounded_adversarial_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Not Mergeable", "Feedback Mode: Change Request", "Blocking Issues", "public SPI", "### Coverage"]
+forbidden_summary_terms = ["Review Result: Mergeable", "Feedback Mode: Needs Discussion"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["When the behavior is accepted but the patch adds unsupported generalization, public surface, parallel models, or abstractions without a real stable boundary, treat the excess as a finding candidate under the implementation rules; patch size or novelty alone is not evidence of overdesign.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable.", "If at least one candidate passes the Finding Proof Gate, use `Not Mergeable` with `Feedback Mode: Change Request`.", "`Not Mergeable`: `### Result` with exactly one bold `Review Result: Not Mergeable` line, one `Feedback Mode`, a bold `Blocking Issues: N` line, and a concise reason; `### Blocking Issues`; `### Coverage`."]}, {source = "implementation-rules", statements = ["Second, within the preserved architecture or an explicitly authorized architecture change, use the smallest clear implementation, prioritize local readability over line count, and minimize conceptual surface.", "A new abstraction must own production behavior, state, or a contract that existing types cannot express and must represent a real, stable variation or boundary."]}]
+critical = true
