@@ -103,7 +103,7 @@ transaction:
 
 #### 配置
 
-与 `org.apache.shardingsphere:shardingsphere-transaction-xa-narayana` 一致，可以通过在项目的 classpath 中添加 `jbossts-properties.xml` 来定制化 Atomikos 配置项。
+与 `org.apache.shardingsphere:shardingsphere-transaction-xa-narayana` 一致，可以通过在项目的 classpath 中添加 `jbossts-properties.xml` 来定制化 Narayana 配置项。
 
 对于 `jbossts-properties.xml` 的最小配置，ShardingSphere 要求定义 Narayana 的 `CoreEnvironmentBean.nodeIdentifier` 属性。
 如果 Narayana 的 object store 并非在不同的 Narayana 实例之间共享，你可以将此值设置为 `1`。一个可能的 `jbossts-properties.xml` 配置如下，
@@ -167,11 +167,15 @@ transaction:
 需更改为，
 
 ```xml
-<properties>
-    <jakarta.jakartaee-bom.version>9.0.0</jakarta.jakartaee-bom.version>
-    <glassfish-jaxb.version>3.0.2</glassfish-jaxb.version>
-    <jboss-logging.version>3.4.3.Final</jboss-logging.version>
-</properties>
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
 
 <dependencies>
     <dependency>
@@ -205,9 +209,25 @@ transaction:
 </dependencies>
 ```
 
+仅将 `jakarta.transaction-api` 固定为 `2.0.0`，不要把整个 `jakarta.jakartaee-bom` 覆盖为 `9.0.0`，因为已验证整 BOM 覆盖会把 `jakarta.validation-api` 升级到 `3.0.0`，而 `bval-jsr` 仍使用 `javax.validation` 命名空间，Proxy 启动随即以 `NoClassDefFoundError: javax/validation/ValidationException` 失败。
 必须替换旧的 XA 依赖，而不是在保留旧依赖的同时追加 Jakarta 依赖。
-不要将 `default-dep`、`all`、`transaction-atomikos` 或 `transaction-narayana` Profile 与 Jakarta 模块一起激活，否则 Proxy 类路径会同时混入 `javax.transaction` 与 `jakarta.transaction` 的 Provider，并以 `ServiceConfigurationError`（由 `NoClassDefFoundError: javax/transaction/SystemException` 引起）启动失败。
-构建完成后需确认 Proxy 类路径中仅包含 Jakarta Provider，并验证 Proxy 能够使用所配置的 Provider 正常启动。
+使用显式停用 `default-dep` 且不激活 `all`、`transaction-atomikos`、`transaction-narayana` 的命令构建 binary，因为 `default-dep` 为 `activeByDefault`，而 `default-dep` 与 `all` 都会带入旧 Provider，重新制造混合 `javax.transaction`/`jakarta.transaction` 类路径。
+
+```shell
+./mvnw clean package -pl distribution/proxy,distribution/agent -am -DskipTests -P 'release,!default-dep'
+```
+
+使用相同的 Profile 选择再加上 `docker` Profile 构建容器镜像。
+
+```shell
+./mvnw clean package -pl distribution/proxy,distribution/agent -am -DskipTests -P 'release,!default-dep,docker'
+```
+
+不要追加 `-T1C` 之类的并行 Reactor 参数，因为 `shardingsphere-proxy-distribution` 与产出其装配所需目录的 `shardingsphere-agent-distribution` 之间没有 Maven Reactor 依赖边，并行构建会在该目录上竞态。
+
+保持 `shardingsphere-proxy-bootstrap` 的 `dev` Profile 处于激活状态，因为它携带方言、权限、模式仓储与 DistSQL 处理器依赖，且不包含旧事务依赖。
+确认构建产物的 `lib` 目录包含 `shardingsphere-transaction-xa-jakarta-core`、`shardingsphere-transaction-xa-jakarta-spi`、`shardingsphere-transaction-xa-jakarta-atomikos` 与 `jakarta.transaction-api-2.0.0.jar`，且不包含 `shardingsphere-transaction-xa-core`、`shardingsphere-transaction-xa-spi`、`shardingsphere-transaction-xa-atomikos`、`shardingsphere-transaction-xa-narayana`。
+正式使用前需验证 Proxy 能够使用所配置的 Provider 正常启动。
 
 对于 Proxy 的 `global.yaml`, 可能的配置项如下，
 
@@ -236,11 +256,15 @@ transaction:
 需更改为，
 
 ```xml
-<properties>
-    <jakarta.jakartaee-bom.version>9.0.0</jakarta.jakartaee-bom.version>
-    <glassfish-jaxb.version>3.0.2</glassfish-jaxb.version>
-    <jboss-logging.version>3.4.3.Final</jboss-logging.version>
-</properties>
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
 
 <dependencies>
     <dependency>
@@ -283,21 +307,41 @@ transaction:
     <dependency>
         <groupId>org.jboss.narayana.jta</groupId>
         <artifactId>narayana-jta-jakarta</artifactId>
+        <version>5.12.7.Final</version>
     </dependency>
     <dependency>
         <groupId>org.jboss.narayana.jts</groupId>
         <artifactId>narayana-jts-integration-jakarta</artifactId>
+        <version>5.12.7.Final</version>
     </dependency>
     <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging</artifactId>
+        <version>3.4.3.Final</version>
     </dependency>
 </dependencies>
 ```
 
+仅将 `jakarta.transaction-api` 固定为 `2.0.0`，不要把整个 `jakarta.jakartaee-bom` 覆盖为 `9.0.0`，因为已验证整 BOM 覆盖会把 `jakarta.validation-api` 升级到 `3.0.0`，而 `bval-jsr` 仍使用 `javax.validation` 命名空间，Proxy 启动随即以 `NoClassDefFoundError: javax/validation/ValidationException` 失败。
+Narayana Jakarta 产物必须声明显式版本，因为它们在 `shardingsphere-transaction-xa-jakarta-narayana` 中为 `provided` 范围，不会传递引入，且本模块没有管理其版本的 BOM。
 必须替换旧的 XA 依赖，而不是在保留旧依赖的同时追加 Jakarta 依赖。
-不要将 `default-dep`、`all`、`transaction-atomikos` 或 `transaction-narayana` Profile 与 Jakarta 模块一起激活，否则 Proxy 类路径会同时混入 `javax.transaction` 与 `jakarta.transaction` 的 Provider，并以 `ServiceConfigurationError`（由 `NoClassDefFoundError: javax/transaction/SystemException` 引起）启动失败。
-构建完成后需确认 Proxy 类路径中仅包含 Jakarta Provider，并验证 Proxy 能够使用所配置的 Provider 正常启动。
+使用显式停用 `default-dep` 且不激活 `all`、`transaction-atomikos`、`transaction-narayana` 的命令构建 binary，因为 `default-dep` 为 `activeByDefault`，而 `default-dep` 与 `all` 都会带入旧 Provider，重新制造混合 `javax.transaction`/`jakarta.transaction` 类路径。
+
+```shell
+./mvnw clean package -pl distribution/proxy,distribution/agent -am -DskipTests -P 'release,!default-dep'
+```
+
+使用相同的 Profile 选择再加上 `docker` Profile 构建容器镜像。
+
+```shell
+./mvnw clean package -pl distribution/proxy,distribution/agent -am -DskipTests -P 'release,!default-dep,docker'
+```
+
+不要追加 `-T1C` 之类的并行 Reactor 参数，因为 `shardingsphere-proxy-distribution` 与产出其装配所需目录的 `shardingsphere-agent-distribution` 之间没有 Maven Reactor 依赖边，并行构建会在该目录上竞态。
+
+保持 `shardingsphere-proxy-bootstrap` 的 `dev` Profile 处于激活状态，因为它携带方言、权限、模式仓储与 DistSQL 处理器依赖，且不包含旧事务依赖。
+确认构建产物的 `lib` 目录在 Jakarta core、SPI 与事务 API 之外还包含 `shardingsphere-transaction-xa-jakarta-narayana` 与 `narayana-jta-jakarta-5.12.7.Final.jar`，且不包含 `shardingsphere-transaction-xa-core`、`shardingsphere-transaction-xa-spi`、`shardingsphere-transaction-xa-atomikos`、`shardingsphere-transaction-xa-narayana`。
+正式使用前需验证 Proxy 能够使用所配置的 Provider 正常启动。
 
 对于 Proxy 的 `global.yaml`, 可能的配置项如下，
 

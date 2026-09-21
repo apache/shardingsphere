@@ -106,7 +106,7 @@ the possible Maven dependencies are as follows,
 #### Configuration
 
 In line with `org.apache.shardingsphere:shardingsphere-transaction-xa-narayana`,
-Atomikos configuration items can be customized by adding `jbossts-properties.xml` to the project's classpath.
+Narayana configuration items can be customized by adding `jbossts-properties.xml` to the project's classpath.
 
 For the minimal configuration of `jbossts-properties.xml`, ShardingSphere requires the definition of Narayana's `CoreEnvironmentBean.nodeIdentifier` property.
 If Narayana's object store is not shared between different Narayana instances, you can set this value to `1`.
@@ -173,11 +173,15 @@ For the following part of the `distribution/proxy/pom.xml` file,
 Need to be changed to,
 
 ```xml
-<properties>
-    <jakarta.jakartaee-bom.version>9.0.0</jakarta.jakartaee-bom.version>
-    <glassfish-jaxb.version>3.0.2</glassfish-jaxb.version>
-    <jboss-logging.version>3.4.3.Final</jboss-logging.version>
-</properties>
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
 
 <dependencies>
     <dependency>
@@ -211,9 +215,25 @@ Need to be changed to,
 </dependencies>
 ```
 
+Pin only `jakarta.transaction-api` to `2.0.0` instead of overriding the whole `jakarta.jakartaee-bom` to `9.0.0`, because the whole-BOM override was verified to upgrade `jakarta.validation-api` to `3.0.0` while `bval-jsr` still uses the `javax.validation` namespace, and Proxy then fails at startup with `NoClassDefFoundError: javax/validation/ValidationException`.
 Replace the legacy XA dependencies instead of adding the Jakarta dependencies alongside them.
-Do not activate the `default-dep`, `all`, `transaction-atomikos`, or `transaction-narayana` profiles together with the Jakarta modules, otherwise the Proxy classpath mixes `javax.transaction` and `jakarta.transaction` providers and fails with `ServiceConfigurationError` caused by `NoClassDefFoundError: javax/transaction/SystemException`.
-Verify that the built Proxy classpath contains only the Jakarta provider and that Proxy starts with the configured provider.
+Build the binary with an invocation that explicitly deactivates `default-dep` and does not activate `all`, `transaction-atomikos`, or `transaction-narayana`, because `default-dep` is `activeByDefault` and both `default-dep` and `all` add a legacy provider that recreates the mixed `javax.transaction`/`jakarta.transaction` classpath.
+
+```shell
+./mvnw clean package -pl distribution/proxy,distribution/agent -am -DskipTests -P 'release,!default-dep'
+```
+
+Build the container image with the same profile selection plus the `docker` profile.
+
+```shell
+./mvnw clean package -pl distribution/proxy,distribution/agent -am -DskipTests -P 'release,!default-dep,docker'
+```
+
+Do not add a parallel reactor flag such as `-T1C`, because no Maven reactor dependency edge connects `shardingsphere-proxy-distribution` to `shardingsphere-agent-distribution` whose output directory the Proxy assembly consumes, and parallel builds race on that directory.
+
+Keep the `dev` profile of `shardingsphere-proxy-bootstrap` active, because it carries the dialect, authority, mode repository, and DistSQL handler dependencies and contains no legacy transaction dependency.
+Verify that the built `lib` directory contains `shardingsphere-transaction-xa-jakarta-core`, `shardingsphere-transaction-xa-jakarta-spi`, `shardingsphere-transaction-xa-jakarta-atomikos`, and `jakarta.transaction-api-2.0.0.jar`, and that it contains neither `shardingsphere-transaction-xa-core`, `shardingsphere-transaction-xa-spi`, `shardingsphere-transaction-xa-atomikos`, nor `shardingsphere-transaction-xa-narayana`.
+Verify that Proxy starts successfully with the configured provider before using it.
 
 For Proxy's `global.yaml`, possible configuration items are as follows,
 
@@ -243,11 +263,15 @@ For the following part of the `distribution/proxy/pom.xml` file,
 Need to be changed to,
 
 ```xml
-<properties>
-    <jakarta.jakartaee-bom.version>9.0.0</jakarta.jakartaee-bom.version>
-    <glassfish-jaxb.version>3.0.2</glassfish-jaxb.version>
-    <jboss-logging.version>3.4.3.Final</jboss-logging.version>
-</properties>
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
 
 <dependencies>
     <dependency>
@@ -290,21 +314,41 @@ Need to be changed to,
     <dependency>
         <groupId>org.jboss.narayana.jta</groupId>
         <artifactId>narayana-jta-jakarta</artifactId>
+        <version>5.12.7.Final</version>
     </dependency>
     <dependency>
         <groupId>org.jboss.narayana.jts</groupId>
         <artifactId>narayana-jts-integration-jakarta</artifactId>
+        <version>5.12.7.Final</version>
     </dependency>
     <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging</artifactId>
+        <version>3.4.3.Final</version>
     </dependency>
 </dependencies>
 ```
 
+Pin only `jakarta.transaction-api` to `2.0.0` instead of overriding the whole `jakarta.jakartaee-bom` to `9.0.0`, because the whole-BOM override was verified to upgrade `jakarta.validation-api` to `3.0.0` while `bval-jsr` still uses the `javax.validation` namespace, and Proxy then fails at startup with `NoClassDefFoundError: javax/validation/ValidationException`.
+Declare explicit versions for the Narayana Jakarta artifacts, because they are `provided` scope in `shardingsphere-transaction-xa-jakarta-narayana` and therefore do not arrive transitively, and no repository BOM manages them for this module.
 Replace the legacy XA dependencies instead of adding the Jakarta dependencies alongside them.
-Do not activate the `default-dep`, `all`, `transaction-atomikos`, or `transaction-narayana` profiles together with the Jakarta modules, otherwise the Proxy classpath mixes `javax.transaction` and `jakarta.transaction` providers and fails with `ServiceConfigurationError` caused by `NoClassDefFoundError: javax/transaction/SystemException`.
-Verify that the built Proxy classpath contains only the Jakarta provider and that Proxy starts with the configured provider.
+Build the binary with an invocation that explicitly deactivates `default-dep` and does not activate `all`, `transaction-atomikos`, or `transaction-narayana`, because `default-dep` is `activeByDefault` and both `default-dep` and `all` add a legacy provider that recreates the mixed `javax.transaction`/`jakarta.transaction` classpath.
+
+```shell
+./mvnw clean package -pl distribution/proxy,distribution/agent -am -DskipTests -P 'release,!default-dep'
+```
+
+Build the container image with the same profile selection plus the `docker` profile.
+
+```shell
+./mvnw clean package -pl distribution/proxy,distribution/agent -am -DskipTests -P 'release,!default-dep,docker'
+```
+
+Do not add a parallel reactor flag such as `-T1C`, because no Maven reactor dependency edge connects `shardingsphere-proxy-distribution` to `shardingsphere-agent-distribution` whose output directory the Proxy assembly consumes, and parallel builds race on that directory.
+
+Keep the `dev` profile of `shardingsphere-proxy-bootstrap` active, because it carries the dialect, authority, mode repository, and DistSQL handler dependencies and contains no legacy transaction dependency.
+Verify that the built `lib` directory contains `shardingsphere-transaction-xa-jakarta-narayana` and `narayana-jta-jakarta-5.12.7.Final.jar` in addition to the Jakarta core, SPI, and transaction API jars, and that it contains neither `shardingsphere-transaction-xa-core`, `shardingsphere-transaction-xa-spi`, `shardingsphere-transaction-xa-atomikos`, nor `shardingsphere-transaction-xa-narayana`.
+Verify that Proxy starts successfully with the configured provider before using it.
 
 For Proxy's `global.yaml`, possible configuration items are as follows,
 
