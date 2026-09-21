@@ -581,11 +581,16 @@ itemDeclaration
 collectionVariableDecl
     : variableName
       (
-      typeName (ASSIGNMENT_OPERATOR_ (qualifiedExpression | functionCall | variableName))?
-      | typeName (ASSIGNMENT_OPERATOR_  (collectionConstructor | variableName))?
-      | typeName MOD_ TYPE
+      collectionTypeName (ASSIGNMENT_OPERATOR_ (qualifiedExpression | functionCall | variableName))?
+      | collectionTypeName (ASSIGNMENT_OPERATOR_  (collectionConstructor | variableName))?
+      | collectionTypeName MOD_ TYPE
       )
       SEMI_
+    ;
+
+collectionTypeName
+    : typeName
+    | schemaName DOT_ owner DOT_ name
     ;
 
 qualifiedExpression

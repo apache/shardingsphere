@@ -21,17 +21,28 @@ import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OracleDMLStatementVisitorTest {
-    
+
     @Test
     void assertVisitSelect() {
+        assertThrows(SQLParsingException.class, () -> parse("SELECT 1 FROM DUAL ORDER BY 1 FOR UPDATE NOWAIT ORDER BY 1"));
+    }
+
+    @Test
+    void assertVisitWithParenthesizedMainQuery() {
+        SelectStatement actual = parse("WITH q AS (SELECT 1 AS n FROM DUAL) (SELECT n FROM q)");
+        assertTrue(actual.getWith().isPresent());
+    }
+
+    private SelectStatement parse(final String sql) {
         CacheOption cacheOption = new CacheOption(128, 1024L);
         SQLParserEngine parserEngine = new SQLParserEngine("Oracle", cacheOption);
-        SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("Oracle");
-        assertThrows(SQLParsingException.class, () -> visitorEngine.visit(parserEngine.parse("SELECT 1 FROM DUAL ORDER BY 1 FOR UPDATE NOWAIT ORDER BY 1", false)));
+        return (SelectStatement) new SQLStatementVisitorEngine("Oracle").visit(parserEngine.parse(sql, false));
     }
 }
