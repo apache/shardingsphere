@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -55,6 +56,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -180,18 +182,26 @@ public final class WhereClauseShardingConditionEngine {
                 : new ListShardingConditionValue<>(column.getName(), column.getTableName(), listValue, new ArrayList<>(parameterMarkerIndexes));
     }
     
+    @HighFrequencyInvocation
     private Collection<Comparable<?>> mergeListShardingValues(final HashColumn column, final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {
         if (null == value2) {
             return value1;
         }
-        if (value1.stream().allMatch(Number.class::isInstance) && value2.stream().allMatch(Number.class::isInstance)) {
+        if (areAllNumbers(value1) && areAllNumbers(value2)) {
             if (isSameType(value1, value2)) {
                 value1.retainAll(value2);
                 return value1;
             }
             Set<Comparable<?>> normalizedValue2 = new HashSet<>(value2.size(), 1F);
-            value2.forEach(each -> normalizedValue2.add(normalizeNumber(each)));
-            value1.removeIf(each -> !normalizedValue2.contains(normalizeNumber(each)));
+            for (Comparable<?> each : value2) {
+                normalizedValue2.add(normalizeNumber(each));
+            }
+            Iterator<Comparable<?>> iterator = value1.iterator();
+            while (iterator.hasNext()) {
+                if (!normalizedValue2.contains(normalizeNumber(iterator.next()))) {
+                    iterator.remove();
+                }
+            }
             return value1;
         }
         Collection<Comparable<?>> convertedValue2 = value2;
@@ -208,12 +218,31 @@ public final class WhereClauseShardingConditionEngine {
         return caseInSensitiveValue1;
     }
     
+    private boolean areAllNumbers(final Collection<Comparable<?>> values) {
+        for (Comparable<?> each : values) {
+            if (!(each instanceof Number)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     private boolean isSameType(final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {
         if (value1.isEmpty() || value2.isEmpty()) {
             return true;
         }
         Class<?> valueType = value1.iterator().next().getClass();
-        return value1.stream().allMatch(each -> valueType == each.getClass()) && value2.stream().allMatch(each -> valueType == each.getClass());
+        for (Comparable<?> each : value1) {
+            if (valueType != each.getClass()) {
+                return false;
+            }
+        }
+        for (Comparable<?> each : value2) {
+            if (valueType != each.getClass()) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private Comparable<?> normalizeNumber(final Comparable<?> value) {
