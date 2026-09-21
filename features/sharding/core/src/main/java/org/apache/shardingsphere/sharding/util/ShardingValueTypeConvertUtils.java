@@ -174,6 +174,9 @@ public final class ShardingValueTypeConvertUtils {
         if (value instanceof BigInteger) {
             return new BigDecimal((BigInteger) value);
         }
+        if (value instanceof Byte || value instanceof Short || value instanceof Integer || value instanceof Long) {
+            return BigDecimal.valueOf(((Number) value).longValue());
+        }
         if (value instanceof Number) {
             return BigDecimal.valueOf(((Number) value).doubleValue());
         }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -49,11 +50,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.util.SafeNumberOperat
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -179,8 +182,26 @@ public final class WhereClauseShardingConditionEngine {
                 : new ListShardingConditionValue<>(column.getName(), column.getTableName(), listValue, new ArrayList<>(parameterMarkerIndexes));
     }
     
+    @HighFrequencyInvocation
     private Collection<Comparable<?>> mergeListShardingValues(final HashColumn column, final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {
         if (null == value2) {
+            return value1;
+        }
+        if (areAllNumbers(value1) && areAllNumbers(value2)) {
+            if (isSameType(value1, value2)) {
+                value1.retainAll(value2);
+                return value1;
+            }
+            Set<Comparable<?>> normalizedValue2 = new HashSet<>(value2.size(), 1F);
+            for (Comparable<?> each : value2) {
+                normalizedValue2.add(normalizeNumber(each));
+            }
+            Iterator<Comparable<?>> iterator = value1.iterator();
+            while (iterator.hasNext()) {
+                if (!normalizedValue2.contains(normalizeNumber(iterator.next()))) {
+                    iterator.remove();
+                }
+            }
             return value1;
         }
         Collection<Comparable<?>> convertedValue2 = value2;
@@ -195,6 +216,46 @@ public final class WhereClauseShardingConditionEngine {
         Collection<Comparable<?>> caseInSensitiveValue2 = new CaseInsensitiveSet<>(convertedValue2);
         caseInSensitiveValue1.retainAll(caseInSensitiveValue2);
         return caseInSensitiveValue1;
+    }
+    
+    private boolean areAllNumbers(final Collection<Comparable<?>> values) {
+        for (Comparable<?> each : values) {
+            if (!(each instanceof Number)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isSameType(final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {
+        if (value1.isEmpty() || value2.isEmpty()) {
+            return true;
+        }
+        Class<?> valueType = value1.iterator().next().getClass();
+        for (Comparable<?> each : value1) {
+            if (valueType != each.getClass()) {
+                return false;
+            }
+        }
+        for (Comparable<?> each : value2) {
+            if (valueType != each.getClass()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private Comparable<?> normalizeNumber(final Comparable<?> value) {
+        Number number = (Number) value;
+        if (!isFiniteNumber(number)) {
+            return number.doubleValue();
+        }
+        BigDecimal result = ShardingValueTypeConvertUtils.convertToTargetType(value, BigDecimal.class);
+        return result.stripTrailingZeros();
+    }
+    
+    private boolean isFiniteNumber(final Number value) {
+        return (!(value instanceof Double) || Double.isFinite(value.doubleValue())) && (!(value instanceof Float) || Float.isFinite(value.floatValue()));
     }
     
     private boolean isDifferentType(final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {
