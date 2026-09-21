@@ -64,7 +64,6 @@ class MySQLSQLFederationFunctionRegisterTest {
                 "AES_DECRYPT",
                 "AES_ENCRYPT",
                 "BENCHMARK",
-                "BIN",
                 "BIT_LENGTH",
                 "CEILING",
                 "CHAR",
