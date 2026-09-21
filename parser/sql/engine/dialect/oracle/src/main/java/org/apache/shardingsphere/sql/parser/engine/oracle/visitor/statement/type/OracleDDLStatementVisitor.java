@@ -744,7 +744,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             if (null != each.modifyColumnSpecification()) {
                 result.getValue().add((ModifyColumnDefinitionSegment) visit(each.modifyColumnSpecification()));
             }
-            if (null != each.dropColumnClause()) {
+            if (null != each.dropColumnClause() && null == each.dropColumnClause().dropUnusedColumnsClause()) {
                 result.getValue().add((DropColumnDefinitionSegment) visit(each.dropColumnClause()));
             }
         }
