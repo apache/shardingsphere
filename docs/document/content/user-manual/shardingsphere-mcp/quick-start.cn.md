@@ -45,7 +45,7 @@ runtimeDatabases:
 
 根据 ShardingSphere-Proxy 的实际连接信息调整 `logic_db`、`127.0.0.1`、`3307`、`root` 和空密码。
 MCP Server 会从 `jdbcUrl` 解析数据库类型。
-如果目标数据库驱动没有随发行包提供，请在启动前把对应 JDBC 驱动 jar 放入 `plugins/`。
+发行包不包含 MySQL Connector/J，请在启动前把兼容的 MySQL Connector/J jar 放入 `plugins/`。
 
 ## 启动 HTTP MCP Server
 

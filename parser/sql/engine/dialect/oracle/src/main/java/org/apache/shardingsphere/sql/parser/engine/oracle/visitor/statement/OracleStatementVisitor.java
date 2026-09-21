@@ -739,9 +739,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         ExpressionSegment right;
         if (null == ctx.subquery()) {
             if (null == ctx.LP_() || null == ctx.RP_()) {
-                StringLiteralsContext stringLiteralsContext = ctx.stringLiterals();
-                right = new LiteralExpressionSegment(stringLiteralsContext.start.getStartIndex(), stringLiteralsContext.stop.getStopIndex(),
-                        ((StringLiteralValue) visit(stringLiteralsContext)).getValue());
+                right = (ExpressionSegment) visit(ctx.bitExpr(1));
             } else {
                 ListExpression listExpression = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
                 for (ExprContext each : ctx.expr()) {

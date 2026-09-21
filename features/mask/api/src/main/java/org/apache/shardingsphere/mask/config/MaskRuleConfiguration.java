@@ -23,8 +23,14 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.config.validator.ValidMaskRuleConfiguration;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,11 +40,16 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
+@ValidMaskRuleConfiguration(groups = RuleConfigurationTypeValidationGroup.class)
 public final class MaskRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
-    private final Collection<MaskTableRuleConfiguration> tables;
+    @NotNull
+    @Valid
+    private final Collection<@NotNull MaskTableRuleConfiguration> tables;
     
-    private final Map<String, AlgorithmConfiguration> maskAlgorithms;
+    @NotNull
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.mask.spi.MaskAlgorithm")
+    private final Map<@NotBlank String, @NotNull AlgorithmConfiguration> maskAlgorithms;
     
     @Override
     public Collection<String> getLogicTableNames() {

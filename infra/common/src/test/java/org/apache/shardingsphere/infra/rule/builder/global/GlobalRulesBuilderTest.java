@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rule.builder.global;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -34,6 +35,7 @@ import java.util.Properties;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 class GlobalRulesBuilderTest {
@@ -46,9 +48,23 @@ class GlobalRulesBuilderTest {
     }
     
     @Test
+    void assertBuildRulesWithInvalidRuleConfiguration() {
+        FixtureGlobalRuleConfiguration ruleConfig = new FixtureGlobalRuleConfiguration();
+        ruleConfig.setName("");
+        assertThrows(InvalidRuleConfigurationException.class, () -> GlobalRulesBuilder.buildRules(Collections.singletonList(ruleConfig), Collections.singleton(buildDatabase()), mock()));
+    }
+    
+    @Test
     void assertBuildSingleRules() {
         Collection<ShardingSphereRule> rules = GlobalRulesBuilder.buildSingleRules(new FixtureGlobalRuleConfiguration(), Collections.singleton(buildDatabase()), mock());
         assertThat(rules.size(), is(1));
+    }
+    
+    @Test
+    void assertBuildSingleRulesWithInvalidRuleConfiguration() {
+        FixtureGlobalRuleConfiguration ruleConfig = new FixtureGlobalRuleConfiguration();
+        ruleConfig.setName("");
+        assertThrows(InvalidRuleConfigurationException.class, () -> GlobalRulesBuilder.buildSingleRules(ruleConfig, Collections.singleton(buildDatabase()), mock()));
     }
     
     private ShardingSphereDatabase buildDatabase() {

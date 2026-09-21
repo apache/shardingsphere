@@ -49,6 +49,7 @@ import org.mockito.AdditionalAnswers;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -396,7 +397,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     private MCPColumnMetadata createColumnMetadata(final String tableName, final String columnName) {
-        return new MCPColumnMetadata(tableName, columnName, 1, java.sql.Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
+        return new MCPColumnMetadata(tableName, columnName, 1, Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
     }
     
     private EncryptWorkflowPlanningService createService(final EncryptRuleInspectionService ruleInspectionService,

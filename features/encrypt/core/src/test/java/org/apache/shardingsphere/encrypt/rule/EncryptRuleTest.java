@@ -24,6 +24,8 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfigurati
 import org.apache.shardingsphere.encrypt.enums.EncryptColumnItemType;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.MismatchedEncryptAlgorithmTypeException;
+import org.apache.shardingsphere.encrypt.rule.attribute.EncryptTableMapperRuleAttribute;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -108,6 +110,62 @@ class EncryptRuleTest {
         EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Collections.singleton(tableConfig), getEncryptors(new AlgorithmConfiguration("CORE.FIXTURE", new Properties()),
                 new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties()), new AlgorithmConfiguration("CORE.QUERY_LIKE.FIXTURE", new Properties())));
         assertThrows(MismatchedEncryptAlgorithmTypeException.class, () -> new EncryptRule("foo_db", ruleConfig));
+    }
+    
+    @Test
+    void assertPartialUpdateWhenAddedEncryptorTypeMismatched() {
+        EncryptRule encryptRule = new EncryptRule("foo_db", createEncryptRuleConfiguration());
+        Map<String, AlgorithmConfiguration> toBeUpdatedEncryptors = new HashMap<>(createEncryptRuleConfiguration().getEncryptors());
+        toBeUpdatedEncryptors.put("invalid_encryptor", new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties()));
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("foo_col", new EncryptColumnItemRuleConfiguration("foo_cipher", "invalid_encryptor"));
+        EncryptRuleConfiguration toBeUpdatedRuleConfig = new EncryptRuleConfiguration(
+                Collections.singleton(new EncryptTableRuleConfiguration("foo_tbl", Collections.singleton(columnRuleConfig))), toBeUpdatedEncryptors);
+        assertThrows(MismatchedEncryptAlgorithmTypeException.class, () -> encryptRule.partialUpdate(toBeUpdatedRuleConfig));
+        assertRuleStateUnchanged(encryptRule);
+    }
+    
+    @Test
+    void assertPartialUpdateWithAddedEncryptor() {
+        EncryptRule encryptRule = new EncryptRule("foo_db", createEncryptRuleConfiguration());
+        Map<String, AlgorithmConfiguration> toBeUpdatedEncryptors = new HashMap<>(createEncryptRuleConfiguration().getEncryptors());
+        toBeUpdatedEncryptors.put("foo_encryptor", new AlgorithmConfiguration("CORE.FIXTURE", new Properties()));
+        EncryptRuleConfiguration addedEncryptorRuleConfig = new EncryptRuleConfiguration(createEncryptRuleConfiguration().getTables(), toBeUpdatedEncryptors);
+        assertFalse(encryptRule.partialUpdate(addedEncryptorRuleConfig));
+        encryptRule.updateConfiguration(addedEncryptorRuleConfig);
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("foo_col", new EncryptColumnItemRuleConfiguration("foo_cipher", "foo_encryptor"));
+        EncryptRuleConfiguration addedTableRuleConfig = new EncryptRuleConfiguration(
+                Collections.singleton(new EncryptTableRuleConfiguration("foo_tbl", Collections.singleton(columnRuleConfig))), toBeUpdatedEncryptors);
+        assertTrue(encryptRule.partialUpdate(addedTableRuleConfig));
+        assertTrue(encryptRule.findEncryptor("foo_tbl", "foo_col", EncryptColumnItemType.CIPHER).isPresent());
+    }
+    
+    @Test
+    void assertPartialUpdateWhenUpdatedEncryptorTypeMismatched() {
+        EncryptRule encryptRule = new EncryptRule("foo_db", createEncryptRuleConfiguration());
+        EncryptRuleConfiguration toBeUpdatedRuleConfig = createEncryptRuleConfiguration();
+        toBeUpdatedRuleConfig.getEncryptors().put("standard_encryptor", new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties()));
+        assertThrows(MismatchedEncryptAlgorithmTypeException.class, () -> encryptRule.partialUpdate(toBeUpdatedRuleConfig));
+        assertRuleStateUnchanged(encryptRule);
+    }
+    
+    @Test
+    void assertPartialUpdateWhenExistingEncryptorTypeMismatched() {
+        EncryptRule encryptRule = new EncryptRule("foo_db", createEncryptRuleConfiguration());
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("foo_col", new EncryptColumnItemRuleConfiguration("foo_cipher", "assisted_encryptor"));
+        EncryptRuleConfiguration toBeUpdatedRuleConfig = new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration("foo_tbl", Collections.singleton(columnRuleConfig))),
+                createEncryptRuleConfiguration().getEncryptors());
+        assertThrows(MismatchedEncryptAlgorithmTypeException.class, () -> encryptRule.partialUpdate(toBeUpdatedRuleConfig));
+        assertRuleStateUnchanged(encryptRule);
+    }
+    
+    private void assertRuleStateUnchanged(final EncryptRule encryptRule) {
+        assertThat(encryptRule.getAllTableNames(), is(Collections.singleton("t_encrypt")));
+        Optional<EncryptAlgorithm> actualEncryptor = encryptRule.findEncryptor("t_encrypt", "credit_card", EncryptColumnItemType.CIPHER);
+        assertTrue(actualEncryptor.isPresent());
+        assertTrue(actualEncryptor.get().getMetaData().isSupportDecrypt());
+        Optional<EncryptTableMapperRuleAttribute> actualAttribute = encryptRule.getAttributes().findAttribute(EncryptTableMapperRuleAttribute.class);
+        assertTrue(actualAttribute.isPresent());
+        assertThat(actualAttribute.get().getLogicTableNames(), is(Collections.singleton("t_encrypt")));
     }
     
     private EncryptColumnRuleConfiguration createEncryptColumnRuleConfiguration(final String encryptorName, final String assistedQueryEncryptorName, final String likeEncryptorName) {

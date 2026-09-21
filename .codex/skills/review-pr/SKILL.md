@@ -83,6 +83,7 @@ unchanged basis.
 ## Repository Code Policy References
 
 Standalone review is read-only and does not activate `code-implementation` or acquire write authority. Before judging the effective candidate, read [implementation rules](../code-implementation/references/rules/implementation.md), [non-regression rules](../code-implementation/references/rules/non-regression.md), and [verification rules](../code-implementation/references/verification.md) through EOF. Also read [testing rules](../code-implementation/references/rules/testing.md) when tests or coverage matter, and [artifact removal and contract impact rules](../code-implementation/references/rules/artifact-removal-and-contract-impact.md) when their trigger matches. Reuse an exact reference already read by the outer implementation workflow.
+Before judging reviewed code or Maven POM changes, read [coding standards](../coding-standards/SKILL.md) through EOF and use its Implementation Guidance Mode.
 
 ## Scope and Evidence
 

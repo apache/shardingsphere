@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContextFactory;
-import org.apache.shardingsphere.sqlfederation.compiler.exception.InvalidExecutionPlanCacheConfigException;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
@@ -32,26 +31,11 @@ import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 
 class SQLFederationRuleTest {
-    
-    @Test
-    void assertConstructThrowsWhenInitialCapacityNotPositive() {
-        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, true, new SQLFederationCacheOption(0, 1L));
-        InvalidExecutionPlanCacheConfigException exception = assertThrows(InvalidExecutionPlanCacheConfigException.class, () -> new SQLFederationRule(ruleConfig, Collections.emptyList()));
-        assertThat(exception.getMessage(), is("Invalid execution plan cache config: `initialCapacity`=`0`, the value must be positive."));
-    }
-    
-    @Test
-    void assertConstructThrowsWhenMaximumSizeNotPositive() {
-        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, true, new SQLFederationCacheOption(1, 0L));
-        InvalidExecutionPlanCacheConfigException exception = assertThrows(InvalidExecutionPlanCacheConfigException.class, () -> new SQLFederationRule(ruleConfig, Collections.emptyList()));
-        assertThat(exception.getMessage(), is("Invalid execution plan cache config: `maximumSize`=`0`, the value must be positive."));
-    }
     
     @Test
     void assertConstructSuccess() {

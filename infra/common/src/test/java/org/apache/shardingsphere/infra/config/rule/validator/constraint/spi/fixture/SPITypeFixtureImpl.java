@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.exception.metadata;
+package org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.fixture;
 
-import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.shadow.exception.ShadowSQLException;
+import java.util.Collection;
+import java.util.Collections;
 
-/**
- * Not implement hint shadow algorithm exception.
- */
-public final class NotImplementHintShadowAlgorithmException extends ShadowSQLException {
+public final class SPITypeFixtureImpl implements SPITypeFixture {
     
-    private static final long serialVersionUID = -5012158924968675485L;
+    @Override
+    public String getType() {
+        return "FIXTURE";
+    }
     
-    public NotImplementHintShadowAlgorithmException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Default shadow algorithm class should be implement HintShadowAlgorithm.");
+    @Override
+    public Collection<Object> getTypeAliases() {
+        return Collections.singleton("ALIAS");
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

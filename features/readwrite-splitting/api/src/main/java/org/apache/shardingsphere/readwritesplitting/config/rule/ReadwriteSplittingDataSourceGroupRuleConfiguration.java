@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -30,12 +33,16 @@ import java.util.List;
 @Getter
 public final class ReadwriteSplittingDataSourceGroupRuleConfiguration {
     
+    @NotBlank
     private final String name;
     
+    @NotBlank
     private final String writeDataSourceName;
     
-    private final List<String> readDataSourceNames;
+    @NotEmpty
+    private final List<@NotBlank String> readDataSourceNames;
     
+    @NotNull
     private final TransactionalReadQueryStrategy transactionalReadQueryStrategy;
     
     private final String loadBalancerName;

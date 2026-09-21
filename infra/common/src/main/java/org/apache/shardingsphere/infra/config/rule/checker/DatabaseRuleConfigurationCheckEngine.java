@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.config.rule.checker;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -46,6 +47,7 @@ public final class DatabaseRuleConfigurationCheckEngine {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void check(final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
+        RuleConfigurationValidator.validate(ruleConfig);
         DatabaseRuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         if (null == checker) {
             // TODO Remove after implementing the checker of BroadcastRuleConfiguration and SingleRuleConfiguration
@@ -55,12 +57,25 @@ public final class DatabaseRuleConfigurationCheckEngine {
         if (!requiredDataSourceNames.isEmpty()) {
             database.checkStorageUnitsExisted(requiredDataSourceNames);
         }
-        Collection<String> tableNames = checker.getTableNames(ruleConfig);
-        if (!tableNames.isEmpty()) {
-            checkTablesNotDuplicated(ruleConfig, database.getName(), tableNames);
-        }
+        checkTableNamesNotDuplicated(ruleConfig, database.getName(), checker);
         Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource()));
         checker.check(database.getName(), ruleConfig, dataSources, database.getRuleMetaData().getRules());
+    }
+    
+    /**
+     * Check table names in rule configuration are not duplicated.
+     *
+     * @param ruleConfig rule configuration to be checked
+     * @param databaseName database name
+     * @param checker rule configuration checker
+     * @param <T> type of rule configuration
+     * @throws DuplicateRuleException when table names are duplicated
+     */
+    public static <T extends RuleConfiguration> void checkTableNamesNotDuplicated(final T ruleConfig, final String databaseName, final DatabaseRuleConfigurationChecker<T> checker) {
+        Collection<String> tableNames = checker.getTableNames(ruleConfig);
+        if (!tableNames.isEmpty()) {
+            checkTablesNotDuplicated(ruleConfig, databaseName, tableNames);
+        }
     }
     
     private static void checkTablesNotDuplicated(final RuleConfiguration ruleConfig, final String databaseName, final Collection<String> tableNames) {

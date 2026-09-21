@@ -23,6 +23,9 @@ import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+
 /**
  * Sharding table rule configuration.
  */
@@ -31,13 +34,17 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 @Setter
 public final class ShardingTableRuleConfiguration {
     
+    @NotBlank
     private final String logicTable;
     
     private final String actualDataNodes;
     
+    @Valid
     private ShardingStrategyConfiguration databaseShardingStrategy;
     
+    @Valid
     private ShardingStrategyConfiguration tableShardingStrategy;
     
+    @Valid
     private ShardingAuditStrategyConfiguration auditStrategy;
 }

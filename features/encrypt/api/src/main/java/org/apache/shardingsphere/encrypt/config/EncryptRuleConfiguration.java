@@ -21,10 +21,16 @@ import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.validator.ValidEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,11 +40,16 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
+@ValidEncryptRuleConfiguration(groups = RuleConfigurationTypeValidationGroup.class)
 public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
-    private final Collection<EncryptTableRuleConfiguration> tables;
+    @NotNull
+    @Valid
+    private final Collection<@NotNull EncryptTableRuleConfiguration> tables;
     
-    private final Map<String, AlgorithmConfiguration> encryptors;
+    @NotNull
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm")
+    private final Map<@NotBlank String, @NotNull AlgorithmConfiguration> encryptors;
     
     @Override
     public Collection<String> getLogicTableNames() {

@@ -221,7 +221,13 @@
             <property name="illegalClasses" value=".*[.]StringUtils([.].*)?,.*[.]CollectionUtils([.].*)?,org[.]junit[.]jupiter[.]api[.](Assertions|Assumptions),org[.]hamcrest[.](CoreMatchers|MatcherAssert|Matchers),org[.]mockito[.](ArgumentMatchers|Mockito),org[.]apache[.]shardingsphere[.]test[.]infra[.]framework[.]matcher[.](ShardingSphereArgumentVerifyMatchers|ShardingSphereAssertionMatchers)" />
         </module>
         <module name="RedundantImport" />
+        <module name="UnnecessaryFullyQualifiedType" />
         <module name="UnusedImports" />
+        <module name="MatchXpath">
+            <property name="query"
+                      value="//DOT[not(ancestor::IMPORT) and ((./IDENT[@text='AccessLevel'] and ./IDENT[@text='lombok']) or (./IDENT[@text='Arrays'] and ./DOT[./IDENT[@text='util'] and ./IDENT[@text='java']]) or (./IDENT[@text='Collectors'] and ./DOT[./IDENT[@text='stream'] and ./DOT[./IDENT[@text='util'] and ./IDENT[@text='java']]]) or (./IDENT[@text=('Types', 'Time', 'Timestamp')] and ./DOT[./IDENT[@text='sql'] and ./IDENT[@text='java']]) or (./IDENT[@text='Date'] and ./DOT[./IDENT[@text='sql'] and ./IDENT[@text='java']] and ancestor::COMPILATION_UNIT/IMPORT/DOT[./IDENT[@text='Date'] and ./DOT[./IDENT[@text='sql'] and ./IDENT[@text='java']]]))]" />
+            <message key="matchxpath.match" value="Import and use the simple type name instead of a package-qualified type name." />
+        </module>
         
         <!-- Javadoc Comments -->
         <module name="AtclauseOrder">

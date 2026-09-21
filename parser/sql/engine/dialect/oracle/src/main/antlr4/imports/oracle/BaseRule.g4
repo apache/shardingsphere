@@ -452,7 +452,7 @@ predicate
     | PRIOR predicate
     | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
     | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_ AND predicate
-    | bitExpr NOT? IN stringLiterals
+    | bitExpr NOT? IN bitExpr
     | bitExpr NOT? BETWEEN bitExpr AND predicate
     | bitExpr NOT? (LIKE | LIKEC | LIKE2 | LIKE4) simpleExpr (ESCAPE simpleExpr)?
     | bitExpr

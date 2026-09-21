@@ -122,6 +122,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Update
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UsingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WithClauseContext;
+import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
@@ -576,6 +577,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.groupByClause()) {
             result.groupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
+        if (null != ctx.havingClause()) {
+            result.having((HavingSegment) visit(ctx.havingClause()));
+        }
         if (null != ctx.modelClause()) {
             result.model((ModelSegment) visit(ctx.modelClause()));
         }
@@ -608,9 +612,19 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         SelectStatement result = (SelectStatement) visit(ctx.selectSubquery());
-        if (null != ctx.forUpdateClause()) {
+        if (null != ctx.orderByClause() && result.getOrderBy().isPresent()) {
+            throw new SQLParsingException("Duplicated ORDER BY clause.");
+        }
+        if (null != ctx.forUpdateClause() || null != ctx.orderByClause()) {
             SelectStatement previous = result;
-            result = createSelectStatementBuilder(previous).lock((LockSegment) visit(ctx.forUpdateClause())).build();
+            SelectStatement.SelectStatementBuilder builder = createSelectStatementBuilder(previous);
+            if (null != ctx.forUpdateClause()) {
+                builder.lock((LockSegment) visit(ctx.forUpdateClause()));
+            }
+            if (null != ctx.orderByClause()) {
+                builder.orderBy((OrderBySegment) visit(ctx.orderByClause()));
+            }
+            result = builder.build();
             result.addParameterMarkers(previous.getParameterMarkers());
             result.getVariableNames().addAll(previous.getVariableNames());
             result.getComments().addAll(previous.getComments());
@@ -806,9 +820,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         }
         if (null != ctx.groupByClause()) {
             result.groupBy((GroupBySegment) visit(ctx.groupByClause()));
-            if (null != ctx.groupByClause().havingClause()) {
-                result.having((HavingSegment) visit(ctx.groupByClause().havingClause()));
-            }
+        }
+        if (null != ctx.havingClause()) {
+            result.having((HavingSegment) visit(ctx.havingClause()));
         }
         if (null != ctx.modelClause()) {
             result.model((ModelSegment) visit(ctx.modelClause()));
