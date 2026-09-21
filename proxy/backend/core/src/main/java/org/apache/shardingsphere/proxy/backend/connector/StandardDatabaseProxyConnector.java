@@ -59,6 +59,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefreshEngine;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.refresher.util.SchemaRefreshUtils;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
@@ -74,12 +75,14 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;
@@ -242,11 +245,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
             transactionManager.commit();
         }
-        PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(queryContext.getSqlStatementContext());
-        if (pushDownMetaDataRefreshEngine.isNeedRefresh()) {
-            pushDownMetaDataRefreshEngine.refresh(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(),
-                    database, contextManager.getMetaDataContexts().getMetaData().getProps(), executionContext.getRouteContext().getRouteUnits());
-        }
+        refreshMetaData(executionContext);
         Object executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(queryContext.getSqlStatementContext(), executeResults.stream().map(QueryResult.class::cast).collect(Collectors.toList()), (QueryResult) executeResultSample)
@@ -257,6 +256,36 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
         return !databaseConnectionManager.getConnectionSession().isAutoCommit() && sqlStatement instanceof DDLStatement
                 && DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION == transactionOption.getDDLCommitPolicy();
+    }
+    
+    private void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
+        PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(queryContext.getSqlStatementContext());
+        if (!pushDownMetaDataRefreshEngine.isNeedRefresh()) {
+            return;
+        }
+        if (isDeferredMetaDataRefreshRequired()) {
+            databaseConnectionManager.getDeferredMetaDataRefreshContext().add(database.getName(),
+                    SchemaRefreshUtils.getActualSchemaName(database, queryContext.getSqlStatementContext()), getDeferredTableNames());
+            return;
+        }
+        pushDownMetaDataRefreshEngine.refresh(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(),
+                database, contextManager.getMetaDataContexts().getMetaData().getProps(), executionContext.getRouteContext().getRouteUnits());
+    }
+    
+    private boolean isDeferredMetaDataRefreshRequired() {
+        if (!databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()) {
+            return false;
+        }
+        DatabaseType databaseType = queryContext.getSqlStatementContext().getSqlStatement().getDatabaseType();
+        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption().isSupportTransactionalDDL();
+    }
+    
+    private Collection<IdentifierValue> getDeferredTableNames() {
+        Collection<IdentifierValue> result = new LinkedList<>();
+        for (SimpleTableSegment each : queryContext.getSqlStatementContext().getTablesContext().getSimpleTables()) {
+            result.add(each.getTableName().getIdentifier());
+        }
+        return result;
     }
     
     private ResponseHeader doExecuteFederation() throws SQLException {

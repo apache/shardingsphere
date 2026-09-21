@@ -76,6 +76,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DD
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.RenameTableStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
@@ -148,13 +152,19 @@ public final class ProxySQLExecutor {
     private boolean isSupportDDLInTransaction(final DatabaseType databaseType, final DDLStatement sqlStatement) {
         DialectTransactionOption transactionOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption();
         boolean isDDLWithoutMetaDataChanged = isDDLWithoutMetaDataChanged(sqlStatement);
+        boolean isRefreshableInTransaction = transactionOption.isSupportMetaDataRefreshInTransaction() || isDeferrableTableDDL(transactionOption, sqlStatement);
         if (isInXATransaction()) {
-            return transactionOption.isSupportDDLInXATransaction() && (isDDLWithoutMetaDataChanged || transactionOption.isSupportMetaDataRefreshInTransaction());
+            return transactionOption.isSupportDDLInXATransaction() && (isDDLWithoutMetaDataChanged || isRefreshableInTransaction);
         }
         if (isInLocalTransaction()) {
-            return transactionOption.isSupportMetaDataRefreshInTransaction() || isDDLWithoutMetaDataChanged;
+            return isRefreshableInTransaction || isDDLWithoutMetaDataChanged;
         }
         return true;
+    }
+    
+    private boolean isDeferrableTableDDL(final DialectTransactionOption transactionOption, final DDLStatement sqlStatement) {
+        return transactionOption.isSupportTransactionalDDL() && (sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement
+                || sqlStatement instanceof DropTableStatement || sqlStatement instanceof RenameTableStatement);
     }
     
     private boolean isInXATransaction() {

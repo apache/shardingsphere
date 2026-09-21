@@ -246,9 +246,9 @@ class ProxySQLExecutorTest {
         return Stream.of(
                 Arguments.of("ddl-create-mysql-xa-throws", createCreateTableStatement(mysqlDatabaseType), TransactionType.XA, true, true, true),
                 Arguments.of("ddl-truncate-mysql-xa-throws", createTruncateStatement(mysqlDatabaseType), TransactionType.XA, true, true, true),
-                Arguments.of("ddl-create-postgresql-local-throws", createCreateTableStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, true, true),
-                Arguments.of("ddl-create-postgresql-xa-throws", createCreateTableStatement(postgresqlDatabaseType), TransactionType.XA, true, true, true),
-                Arguments.of("ddl-create-postgresql-local-empty-table-throws", createCreateTableStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, false, true),
+                Arguments.of("ddl-create-postgresql-local-pass", createCreateTableStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, true, false),
+                Arguments.of("ddl-create-postgresql-xa-pass", createCreateTableStatement(postgresqlDatabaseType), TransactionType.XA, true, true, false),
+                Arguments.of("ddl-create-mysql-xa-empty-table-throws", createCreateTableStatement(mysqlDatabaseType), TransactionType.XA, true, false, true),
                 Arguments.of("ddl-create-mysql-local-pass", createCreateTableStatement(mysqlDatabaseType), TransactionType.LOCAL, true, true, false),
                 Arguments.of("ddl-truncate-mysql-local-pass", createTruncateStatement(mysqlDatabaseType), TransactionType.LOCAL, true, true, false),
                 Arguments.of("ddl-create-base-transaction-pass", createCreateTableStatement(mysqlDatabaseType), TransactionType.BASE, true, true, false),
@@ -420,7 +420,7 @@ class ProxySQLExecutorTest {
         final DatabaseType databaseType = mock(DatabaseType.class);
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(
-                new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, true, true, false, false, Collections.emptyList()));
+                new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, true, true, false, false, false, Collections.emptyList()));
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.XA);
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         try (MockedStatic<DatabaseTypedSPILoader> mockedDatabaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
