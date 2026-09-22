@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.datasource.yaml;
+package org.apache.shardingsphere.data.pipeline.core.datasource.rule;
 
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
 /**
- * Pipeline YAML rule configuration reviser.
- * 
- * @param <T> type of YAML rule configuration
+ * Pipeline rule configuration reviser.
+ *
+ * @param <T> type of rule configuration
  */
 @SingletonSPI
-public interface PipelineYamlRuleConfigurationReviser<T extends YamlRuleConfiguration> extends OrderedSPI<T> {
+public interface PipelineRuleConfigurationReviser<T extends RuleConfiguration> extends OrderedSPI<T> {
     
     /**
-     * Revise YAML rule configuration.
+     * Revise rule configuration.
      *
-     * @param yamlRuleConfig to be revised YAML rule configuration
+     * @param ruleConfig rule configuration to revise
      */
-    void revise(T yamlRuleConfig);
+    void revise(T ruleConfig);
 }
