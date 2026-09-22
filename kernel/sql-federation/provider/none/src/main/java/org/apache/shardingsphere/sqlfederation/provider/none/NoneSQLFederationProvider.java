@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecution;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 
 import java.util.Collection;
@@ -43,9 +43,9 @@ public final class NoneSQLFederationProvider implements SQLFederationProvider {
     
     @HighFrequencyInvocation
     @Override
-    public SQLFederationExecution createExecution(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereStatistics statistics,
-                                                  final JDBCExecutor jdbcExecutor, final ProcessEngine processEngine) {
-        return new NoneSQLFederationExecution();
+    public SQLFederationExecutor createExecution(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereStatistics statistics,
+                                                 final JDBCExecutor jdbcExecutor, final ProcessEngine processEngine) {
+        return new NoneSQLFederationExecutor();
     }
     
     @Override

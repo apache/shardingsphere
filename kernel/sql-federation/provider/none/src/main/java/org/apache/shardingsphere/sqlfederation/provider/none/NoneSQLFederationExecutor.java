@@ -15,34 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.spi;
+package org.apache.shardingsphere.sqlfederation.provider.none;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
- * Per-engine SQL federation execution provided by a selected provider.
+ * None SQL federation executor.
  */
-public interface SQLFederationExecution extends AutoCloseable {
+public final class NoneSQLFederationExecutor implements SQLFederationExecutor {
     
-    /**
-     * Execute a federated query.
-     *
-     * @param prepareEngine prepare engine
-     * @param callback execution callback
-     * @param federationContext federation context
-     * @return query result set
-     */
-    ResultSet executeQuery(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                           JDBCExecutorCallback<? extends ExecuteResult> callback, SQLFederationContext federationContext);
+    @HighFrequencyInvocation
+    @Override
+    public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                                  final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationContext federationContext) {
+        throw new SQLFederationProviderUnsupportedException();
+    }
     
     @Override
-    void close() throws SQLException;
+    public void close() {
+    }
 }

@@ -56,7 +56,7 @@ public interface SQLFederationProvider extends TypedSPI {
      * @param processEngine process engine
      * @return SQL federation execution
      */
-    SQLFederationExecution createExecution(String currentDatabaseName, String currentSchemaName, ShardingSphereStatistics statistics, JDBCExecutor jdbcExecutor, ProcessEngine processEngine);
+    SQLFederationExecutor createExecution(String currentDatabaseName, String currentSchemaName, ShardingSphereStatistics statistics, JDBCExecutor jdbcExecutor, ProcessEngine processEngine);
     
     @Override
     String getType();

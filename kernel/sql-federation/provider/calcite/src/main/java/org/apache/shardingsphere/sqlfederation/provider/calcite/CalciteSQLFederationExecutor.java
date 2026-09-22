@@ -57,7 +57,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederat
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor.SQLFederationProcessor;
 import org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor.SQLFederationProcessorFactory;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecution;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -71,11 +71,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * SQL federation engine.
+ * Calcite SQL federation executor.
  */
 @Getter
 @Slf4j
-public final class CalciteSQLFederationExecution implements SQLFederationExecution {
+public final class CalciteSQLFederationExecutor implements SQLFederationExecutor {
     
     private static final Collection<Class<?>> NEED_THROW_EXCEPTION_TYPES = Arrays.asList(SQLExecutionInterruptedException.class, SQLIntegrityConstraintViolationException.class);
     
@@ -97,8 +97,8 @@ public final class CalciteSQLFederationExecution implements SQLFederationExecuti
     
     private ResultSet resultSet;
     
-    public CalciteSQLFederationExecution(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereStatistics statistics,
-                                         final JDBCExecutor jdbcExecutor, final ProcessEngine processEngine, final CalciteSQLFederationProvider provider) {
+    public CalciteSQLFederationExecutor(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereStatistics statistics,
+                                        final JDBCExecutor jdbcExecutor, final ProcessEngine processEngine, final CalciteSQLFederationProvider provider) {
         this.currentDatabaseName = currentDatabaseName;
         this.currentSchemaName = currentSchemaName;
         this.processEngine = processEngine;

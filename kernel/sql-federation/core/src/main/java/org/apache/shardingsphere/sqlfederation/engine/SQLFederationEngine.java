@@ -41,7 +41,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecution;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -70,7 +70,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     private final SQLFederationRule sqlFederationRule;
     
-    private final SQLFederationExecution execution;
+    private final SQLFederationExecutor execution;
     
     private QueryContext queryContext;
     

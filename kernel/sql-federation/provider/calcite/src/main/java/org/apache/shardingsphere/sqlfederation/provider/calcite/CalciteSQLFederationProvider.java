@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContextFactory;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecution;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 
 import java.util.Collection;
@@ -62,9 +62,9 @@ public final class CalciteSQLFederationProvider implements SQLFederationProvider
     
     @HighFrequencyInvocation
     @Override
-    public SQLFederationExecution createExecution(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereStatistics statistics,
-                                                  final JDBCExecutor jdbcExecutor, final ProcessEngine processEngine) {
-        return new CalciteSQLFederationExecution(currentDatabaseName, currentSchemaName, statistics, jdbcExecutor, processEngine, this);
+    public SQLFederationExecutor createExecution(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereStatistics statistics,
+                                                 final JDBCExecutor jdbcExecutor, final ProcessEngine processEngine) {
+        return new CalciteSQLFederationExecutor(currentDatabaseName, currentSchemaName, statistics, jdbcExecutor, processEngine, this);
     }
     
     @Override
