@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.linkedserver.rule.table;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.linkedserver.config.rule.LinkedServerConfiguration;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -41,8 +41,7 @@ public final class LinkedServerTable {
     public LinkedServerTable(final LinkedServerConfiguration config) {
         name = config.getName();
         databaseType = TypedSPILoader.getService(DatabaseType.class, config.getDatabaseType());
-        tables = new CaseInsensitiveMap<>();
-        tables.putAll(config.getTables());
+        tables = new LinkedHashMap<>(config.getTables());
     }
     
     /**

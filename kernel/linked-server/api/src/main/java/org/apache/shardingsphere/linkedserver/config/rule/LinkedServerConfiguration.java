@@ -55,10 +55,8 @@ public final class LinkedServerConfiguration {
             Preconditions.checkArgument(3 == segments.length && segments[0].length() > 0 && segments[1].length() > 0 && segments[2].length() > 0,
                     "Remote table identity '%s' in linked server '%s' must be exactly three non-empty components (catalog.schema.table).", key, name);
             String value = tables.get(key);
-            Preconditions.checkArgument(null != value && !value.isEmpty(),
-                    "Logical table name for remote identity '%s' in linked server '%s' must not be null or empty.", key, name);
-            Preconditions.checkArgument(seen.add(key.toLowerCase(Locale.ROOT)),
-                    "Remote table identity '%s' in linked server '%s' conflicts with an existing case-equivalent key.", key, name);
+            Preconditions.checkArgument(null != value && !value.isEmpty(), "Logical table name for remote identity '%s' in linked server '%s' must not be null or empty.", key, name);
+            Preconditions.checkArgument(seen.add(key.toLowerCase(Locale.ROOT)), "Remote table identity '%s' in linked server '%s' conflicts with an existing case-equivalent key.", key, name);
         }
         this.tables = Collections.unmodifiableMap(new LinkedHashMap<>(tables));
     }

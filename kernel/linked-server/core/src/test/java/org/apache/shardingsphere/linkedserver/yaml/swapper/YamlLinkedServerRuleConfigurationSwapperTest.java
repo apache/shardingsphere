@@ -42,10 +42,10 @@ class YamlLinkedServerRuleConfigurationSwapperTest {
         tables.put("HumanResources.dbo.Department", "t_department");
         LinkedServerConfiguration server = new LinkedServerConfiguration("MyServer", "SQLServer", tables);
         LinkedServerRuleConfiguration config = new LinkedServerRuleConfiguration(Arrays.asList(server));
-        YamlLinkedServerRuleConfiguration result = swapper.swapToYamlConfiguration(config);
-        assertThat(result.getServers().size(), is(1));
-        assertTrue(result.getServers().containsKey("MyServer"));
-        YamlLinkedServerConfiguration yamlServer = result.getServers().get("MyServer");
+        YamlLinkedServerRuleConfiguration actualYamlConfig = swapper.swapToYamlConfiguration(config);
+        assertThat(actualYamlConfig.getServers().size(), is(1));
+        assertTrue(actualYamlConfig.getServers().containsKey("MyServer"));
+        YamlLinkedServerConfiguration yamlServer = actualYamlConfig.getServers().get("MyServer");
         assertThat(yamlServer.getDatabaseType(), is("SQLServer"));
         assertThat(yamlServer.getTables().get("HumanResources.dbo.Department"), is("t_department"));
     }
@@ -59,9 +59,9 @@ class YamlLinkedServerRuleConfigurationSwapperTest {
         yamlServer.setTables(tables);
         YamlLinkedServerRuleConfiguration yamlConfig = new YamlLinkedServerRuleConfiguration();
         yamlConfig.getServers().put("MyServer", yamlServer);
-        LinkedServerRuleConfiguration result = swapper.swapToObject(yamlConfig);
-        assertThat(result.getServers().size(), is(1));
-        LinkedServerConfiguration server = result.getServers().iterator().next();
+        LinkedServerRuleConfiguration actualConfig = swapper.swapToObject(yamlConfig);
+        assertThat(actualConfig.getServers().size(), is(1));
+        LinkedServerConfiguration server = actualConfig.getServers().iterator().next();
         assertThat(server.getName(), is("MyServer"));
         assertThat(server.getDatabaseType(), is("SQLServer"));
         assertThat(server.getTables().get("HumanResources.dbo.Department"), is("t_department"));

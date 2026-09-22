@@ -55,9 +55,14 @@ class LinkedServerRuleTest {
     }
     
     @Test
-    void assertFindLogicalTableCaseInsensitive() {
-        assertTrue(rule.findLogicalTable("mylinkedserver", "humanresources.dbo.department").isPresent());
-        assertThat(rule.findLogicalTable("mylinkedserver", "humanresources.dbo.department").get(), is("t_department"));
+    void assertFindLogicalTableWithCaseInsensitiveServerName() {
+        assertTrue(rule.findLogicalTable("mylinkedserver", "HumanResources.dbo.Department").isPresent());
+        assertThat(rule.findLogicalTable("mylinkedserver", "HumanResources.dbo.Department").get(), is("t_department"));
+    }
+
+    @Test
+    void assertFindLogicalTableWithCaseDifferentTableIdentityReturnsEmpty() {
+        assertFalse(rule.findLogicalTable("MyLinkedServer", "humanresources.dbo.department").isPresent());
     }
     
     @Test

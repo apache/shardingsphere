@@ -46,8 +46,7 @@ public final class LinkedServerRule implements DatabaseRule {
         this.configuration = configuration;
         servers = new CaseInsensitiveMap<>();
         for (LinkedServerConfiguration each : configuration.getServers()) {
-            Preconditions.checkArgument(!servers.containsKey(each.getName()),
-                    "Linked server name '%s' conflicts with an existing case-equivalent name.", each.getName());
+            Preconditions.checkArgument(!servers.containsKey(each.getName()), "Linked server name '%s' conflicts with an existing case-equivalent name.", each.getName());
             servers.put(each.getName(), new LinkedServerTable(each));
         }
         attributes = new RuleAttributes(new LinkedServerTableMapperRuleAttribute(configuration.getLogicTableNames()));
