@@ -38,8 +38,6 @@ public final class LinkedServerRuleConfiguration implements DatabaseRuleConfigur
     
     @Override
     public Collection<String> getLogicTableNames() {
-        return new CaseInsensitiveSet<>(servers.stream()
-                .flatMap(each -> each.getTables().values().stream())
-                .collect(Collectors.toList()));
+        return new CaseInsensitiveSet<>(servers.stream().flatMap(each -> each.getTables().values().stream()).collect(Collectors.toList()));
     }
 }
