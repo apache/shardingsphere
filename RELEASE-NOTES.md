@@ -86,6 +86,7 @@
 1. Sharding: Compute the Snowflake key generator epoch in UTC instead of the JVM default timezone - [#38932](https://github.com/apache/shardingsphere/pull/38932)
 1. Sharding: Fix order-dependent data source intersection in Cartesian routing - [#39407](https://github.com/apache/shardingsphere/pull/39407)
 1. Sharding: Fix incorrect AVG(DISTINCT) merge result across shards - [#39429](https://github.com/apache/shardingsphere/pull/39429)
+1. Sharding: Fix INTERVAL sharding on one-sided range outside datetime bounds - [#39862](https://github.com/apache/shardingsphere/pull/39862)
 1. Sharding: Fix GROUP_CONCAT merge result when all values are NULL - [#39860](https://github.com/apache/shardingsphere/pull/39860)
 1. Sharding: Fix swapped start and stop offset in sharding value offset error message - [#39858](https://github.com/apache/shardingsphere/pull/39858)
 1. Sharding: Fix sharding constraint reviser removing every actual table suffix - [#39868](https://github.com/apache/shardingsphere/pull/39868)

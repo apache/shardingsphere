@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
-import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -141,10 +140,9 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         Collection<String> result = new HashSet<>();
         TemporalHandler<T> temporalHandler = TemporalHandlerFactory.newInstance(dateTimeLower);
         T dateTimeUpper = temporalHandler.convertTo(this.dateTimeUpper);
-        T dateTimeLower = temporalHandler.convertTo(this.dateTimeLower);
         T calculateTimeAsView = temporalHandler.convertTo(this.dateTimeLower);
         while (!temporalHandler.isAfter(calculateTimeAsView, dateTimeUpper, stepAmount)) {
-            if (hasIntersection(Range.closedOpen(calculateTimeAsView, temporalHandler.add(calculateTimeAsView, stepAmount, stepUnit)), range, dateTimeLower, dateTimeUpper, temporalHandler)) {
+            if (hasIntersection(Range.closedOpen(calculateTimeAsView, temporalHandler.add(calculateTimeAsView, stepAmount, stepUnit)), range, temporalHandler)) {
                 result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames, temporalHandler));
             }
             calculateTimeAsView = temporalHandler.add(calculateTimeAsView, stepAmount, stepUnit);
@@ -157,14 +155,22 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffixPattern.format(temporalHandler.convertTo(calculateTimeAsView)))).collect(Collectors.toSet());
     }
     
-    private <T extends TemporalAccessor & Comparable<?>> boolean hasIntersection(final Range<T> calculateRange, final Range<Comparable<?>> range,
-                                                                                 final T temporalLower, final T temporalUpper, final TemporalHandler<T> temporalHandler) {
-        T lower = range.hasLowerBound() ? parseTemporal(range.lowerEndpoint(), temporalHandler) : temporalLower;
-        T upper = range.hasUpperBound() ? parseTemporal(range.upperEndpoint(), temporalHandler) : temporalUpper;
-        BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
-        BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
-        Range<T> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
+    private <T extends TemporalAccessor & Comparable<?>> boolean hasIntersection(final Range<T> calculateRange, final Range<Comparable<?>> range, final TemporalHandler<T> temporalHandler) {
+        Range<T> dateTimeRange = convertToTemporalRange(range, temporalHandler);
         return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
+    }
+    
+    private <T extends TemporalAccessor & Comparable<?>> Range<T> convertToTemporalRange(final Range<Comparable<?>> range, final TemporalHandler<T> temporalHandler) {
+        if (range.hasLowerBound() && range.hasUpperBound()) {
+            return Range.range(parseTemporal(range.lowerEndpoint(), temporalHandler), range.lowerBoundType(), parseTemporal(range.upperEndpoint(), temporalHandler), range.upperBoundType());
+        }
+        if (range.hasLowerBound()) {
+            return Range.downTo(parseTemporal(range.lowerEndpoint(), temporalHandler), range.lowerBoundType());
+        }
+        if (range.hasUpperBound()) {
+            return Range.upTo(parseTemporal(range.upperEndpoint(), temporalHandler), range.upperBoundType());
+        }
+        return Range.all();
     }
     
     private <T extends TemporalAccessor> T parseTemporal(final Comparable<?> endpoint, final TemporalHandler<T> temporalHandler) {
