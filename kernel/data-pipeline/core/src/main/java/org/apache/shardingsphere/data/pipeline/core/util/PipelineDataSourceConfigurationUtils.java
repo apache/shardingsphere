@@ -111,15 +111,17 @@ public final class PipelineDataSourceConfigurationUtils {
         if (null == storageUnits || storageUnits.isEmpty()) {
             return pipelineDataSourceConfig;
         }
-        for (Entry<String, Map<String, Object>> entry : pipelineDataSourceConfig.getRootConfig().getDataSources().entrySet()) {
+        for (Entry<String, DataSourcePoolProperties> entry : pipelineDataSourceConfig.getDataSourcePoolPropertiesMap().entrySet()) {
             StorageUnit storageUnit = storageUnits.get(entry.getKey());
             if (null == storageUnit) {
                 continue;
             }
-            Map<String, Object> jobDataSourceProps = entry.getValue();
+            DataSourcePoolProperties dataSourcePoolProps = entry.getValue();
+            Map<String, Object> jobDataSourceProps = dataSourcePoolProps.getAllLocalProperties();
             Map<String, Object> storageUnitStandardProps = storageUnit.getDataSourcePoolProperties().getPoolPropertySynonyms().getStandardProperties();
             logTransformPoolSize(jobId, entry.getKey(), jobDataSourceProps, storageUnitStandardProps);
             transformPoolSize(jobDataSourceProps, storageUnitStandardProps);
+            entry.setValue(new DataSourcePoolProperties(dataSourcePoolProps.getPoolClassName(), jobDataSourceProps));
         }
         return pipelineDataSourceConfig;
     }

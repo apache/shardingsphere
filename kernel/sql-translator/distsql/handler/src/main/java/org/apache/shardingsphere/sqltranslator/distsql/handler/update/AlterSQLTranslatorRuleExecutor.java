@@ -19,11 +19,9 @@ package org.apache.shardingsphere.sqltranslator.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.updateable.AlterSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
-import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 
 /**
  * Alter SQL translator rule executor.
@@ -32,11 +30,6 @@ import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 public final class AlterSQLTranslatorRuleExecutor implements GlobalRuleDefinitionExecutor<AlterSQLTranslatorRuleStatement, SQLTranslatorRule> {
     
     private SQLTranslatorRule rule;
-    
-    @Override
-    public void checkBeforeUpdate(final AlterSQLTranslatorRuleStatement sqlStatement) {
-        TypedSPILoader.checkService(SQLTranslator.class, sqlStatement.getProvider().getName(), sqlStatement.getProvider().getProps());
-    }
     
     @Override
     public SQLTranslatorRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterSQLTranslatorRuleStatement sqlStatement) {

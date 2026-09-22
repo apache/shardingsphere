@@ -22,7 +22,8 @@ Before changing this guide, a canonical policy source, or its harness, read `.co
 
 ## Response Style
 
-- Use plain language and the shortest complete answer.
+- Restrain the urge to elaborate: complete all required task actions and keep required evidence, risks, verification results, and output formats while limiting the reply's length.
+- Analyze the issue thoroughly, lead with the conclusion, and give the shortest complete answer in plain language; expand only when the user requests a detailed explanation or asks a specific follow-up.
 - For details, lead with the answer, then `---`; otherwise omit it.
 
 ## Authority and Safety
@@ -89,3 +90,43 @@ Every authorized code-writing task follows `.codex/context/change-completion.md`
 ## Functional and Performance Non-Regression Gate
 
 Preserve supported behavior outside the exact authorized change. Load the full non-regression rules when a change affects a public or shared contract, crosses owners, or has credible functional or performance risk. Do not benchmark when inspection rules out credible cost growth.
+
+## Jev/Codex Routing
+
+### Roles and Boundaries
+
+- The `typesafe-ai` skill guides Jev tool selection, request construction, and result interpretation; it does not execute requests.
+- Jev MCP executes the actual Jev judgment and returns the result.
+- Codex performs deep analysis, code changes, execution, final verification, and Jev result review.
+- When Jev MCP is unavailable, Codex is the fallback; the skill is not an MCP substitute.
+
+### Routing
+
+- Prefer Jev for bounded judgments such as classification, routing, ranking, prioritization, relevance, triage, and quick review.
+- Keep code changes, debugging, long-context analysis, multi-step reasoning, exact calculations, command execution, test execution, and high-risk or irreversible operations in Codex.
+- For a Jev-suitable task, consult the skill when available before checking MCP.
+- Call Jev MCP only when it is installed, its tools are available, and the API key is confirmed to have available quota or balance.
+- If the skill is unavailable but MCP is installed, available, and clear, MCP may be called without installing the skill.
+- If MCP is not installed or available, the key is invalid, quota or balance is insufficient, or quota is unconfirmed, do not call Jev; let Codex handle the task.
+- If a Jev MCP call reports insufficient quota, insufficient balance, authentication failure, or rate limiting, do not make further Jev calls during the current task.
+
+### Results and Safety
+
+- Treat Jev as advisory. It must not edit files, run commands, authorize destructive actions, or replace user confirmation.
+- Use the `typesafe-ai` guidance and the task's impact and risk to judge whether a Jev result is reliable.
+- If the probability, uncertainty, result meaning, or applicability is unclear, Codex must review the result.
+- Before acting, Codex must verify important conclusions with source code, tests, or command output.
+- Do not send API keys, passwords, connection strings, or unrelated private source code to Jev.
+- Deterministic rules and simple arithmetic do not need Jev.
+
+### Jev Usage Report
+
+At the end of each task, report the following:
+
+- Whether the skill was used and what guidance it provided.
+- Whether Jev MCP was called; if not, state the specific reason.
+- The number of Jev MCP calls, the judgments handled, and the role each call played.
+- Whether Jev changed task routing, prioritization, conclusions, or the execution plan.
+- Whether Jev actually reduced token usage or improved processing speed or efficiency.
+- Report specific token savings or time changes only when measured data is available; otherwise write "cannot be measured accurately" and do not guess.
+- Report problems caused by Jev; write "none found" when no problems were found.

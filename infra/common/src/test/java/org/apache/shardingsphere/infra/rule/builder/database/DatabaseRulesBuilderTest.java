@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.rule.builder.database;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -43,7 +45,9 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -52,6 +56,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class DatabaseRulesBuilderTest {
     
@@ -89,8 +94,46 @@ class DatabaseRulesBuilderTest {
     }
     
     @Test
+    @SuppressWarnings("unchecked")
+    void assertBuildWithDuplicatedTableNames() {
+        DatabaseRuleConfigurationChecker<FixtureDatabaseRuleConfiguration> checker = mock(DatabaseRuleConfigurationChecker.class);
+        when(checker.getTableNames(any())).thenReturn(Arrays.asList("foo_tbl", "bar_tbl", "foo_tbl"));
+        try (MockedStatic<OrderedSPILoader> mockedLoader = mockStatic(OrderedSPILoader.class, CALLS_REAL_METHODS)) {
+            mockedLoader.when(() -> OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class,
+                    Collections.singleton(FixtureDatabaseRuleConfiguration.class))).thenReturn(Collections.singletonMap(FixtureDatabaseRuleConfiguration.class, checker));
+            DuplicateRuleException actual = assertThrows(DuplicateRuleException.class, () -> DatabaseRulesBuilder.build("foo_db", null,
+                    new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList()), null, EMPTY_RESOURCE_META_DATA));
+            assertThat(actual.getMessage(), is("Duplicate FixtureDatabase rule names 'foo_tbl' in database 'foo_db'."));
+        }
+    }
+    
+    @Test
+    void assertBuildWithInvalidRuleConfiguration() {
+        ToggleFixtureDatabaseRuleConfiguration ruleConfig = new ToggleFixtureDatabaseRuleConfiguration(false);
+        ruleConfig.setName("");
+        assertThrows(InvalidRuleConfigurationException.class, () -> DatabaseRulesBuilder.build("foo_db", null,
+                new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(ruleConfig)), null, EMPTY_RESOURCE_META_DATA));
+    }
+    
+    @Test
+    void assertBuildWithInvalidEmptyRuleConfiguration() {
+        ToggleFixtureDatabaseRuleConfiguration ruleConfig = new ToggleFixtureDatabaseRuleConfiguration(true);
+        ruleConfig.setName("");
+        assertThrows(InvalidRuleConfigurationException.class, () -> DatabaseRulesBuilder.build("foo_db", null,
+                new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(ruleConfig)), null, EMPTY_RESOURCE_META_DATA));
+    }
+    
+    @Test
     void assertBuildSingleRule() {
         assertThat(DatabaseRulesBuilder.build("foo_db", null, Collections.emptyList(), new FixtureDatabaseRuleConfiguration(), null, EMPTY_RESOURCE_META_DATA), isA(FixtureRule.class));
+    }
+    
+    @Test
+    void assertBuildSingleRuleWithInvalidRuleConfiguration() {
+        FixtureDatabaseRuleConfiguration ruleConfig = new FixtureDatabaseRuleConfiguration();
+        ruleConfig.setName("");
+        assertThrows(InvalidRuleConfigurationException.class,
+                () -> DatabaseRulesBuilder.build("foo_db", null, Collections.emptyList(), ruleConfig, null, EMPTY_RESOURCE_META_DATA));
     }
     
     @Test
@@ -104,6 +147,21 @@ class DatabaseRulesBuilderTest {
                     Collections.singleton(FixtureDatabaseRuleConfiguration.class))).thenReturn(Collections.singletonMap(FixtureDatabaseRuleConfiguration.class, checker));
             assertThat(DatabaseRulesBuilder.build("foo_db", null, rules, ruleConfig, null, EMPTY_RESOURCE_META_DATA), isA(FixtureRule.class));
             verify(checker).check(eq("foo_db"), eq(ruleConfig), eq(EMPTY_RESOURCE_META_DATA.getDataSourceMap()), eq(rules));
+        }
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertBuildSingleRuleWithDuplicatedTableNames() {
+        DatabaseRuleConfigurationChecker<FixtureDatabaseRuleConfiguration> checker = mock(DatabaseRuleConfigurationChecker.class);
+        when(checker.getTableNames(any())).thenReturn(Arrays.asList("foo_tbl", "bar_tbl", "foo_tbl"));
+        FixtureDatabaseRuleConfiguration ruleConfig = new FixtureDatabaseRuleConfiguration();
+        try (MockedStatic<OrderedSPILoader> mockedLoader = mockStatic(OrderedSPILoader.class, CALLS_REAL_METHODS)) {
+            mockedLoader.when(() -> OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class,
+                    Collections.singleton(FixtureDatabaseRuleConfiguration.class))).thenReturn(Collections.singletonMap(FixtureDatabaseRuleConfiguration.class, checker));
+            DuplicateRuleException actual = assertThrows(DuplicateRuleException.class,
+                    () -> DatabaseRulesBuilder.build("foo_db", null, Collections.emptyList(), ruleConfig, null, EMPTY_RESOURCE_META_DATA));
+            assertThat(actual.getMessage(), is("Duplicate FixtureDatabase rule names 'foo_tbl' in database 'foo_db'."));
         }
     }
     

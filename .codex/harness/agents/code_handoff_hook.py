@@ -38,6 +38,7 @@ TEXT_BLOCK_PATTERN = re.compile(r"^```text\s*$\n(.*?)^```\s*$", re.IGNORECASE | 
 SHELL_TOOL_NAMES = frozenset({"Bash", "exec_command", "write_stdin"})
 PASSING_RESULT = "Mergeable"
 PAUSED_RESULTS = frozenset({"Not Mergeable", "Review Incomplete"})
+REQUIRED_COMMIT_COMMANDS = ("git commit --dry-run --only", "git commit --only")
 
 
 def process_event(event: dict[str, Any], state_directory: Path) -> dict[str, str]:
@@ -220,6 +221,10 @@ def validate_handoff(message: Any) -> list[str]:
     text_blocks = TEXT_BLOCK_PATTERN.findall(message) if isinstance(message, str) else []
     if not any(_field_value(each, "Commit Message") for each in text_blocks):
         failures.append("Commit Message")
+    non_review_content = FORMAL_REVIEW_PATTERN.sub("", message) if isinstance(message, str) else ""
+    failures.extend(each for each in REQUIRED_COMMIT_COMMANDS if not re.search(
+        rf"^[ \t]*{re.escape(each)}(?:[ \t]|$)", non_review_content, re.MULTILINE,
+    ))
     return failures
 
 

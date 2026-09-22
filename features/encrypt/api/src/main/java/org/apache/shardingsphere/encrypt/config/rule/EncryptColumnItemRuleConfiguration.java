@@ -20,6 +20,8 @@ package org.apache.shardingsphere.encrypt.config.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * Encrypt column item rule configuration.
  */
@@ -27,7 +29,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class EncryptColumnItemRuleConfiguration {
     
+    @NotBlank
     private final String name;
     
+    @NotBlank
     private final String encryptorName;
 }

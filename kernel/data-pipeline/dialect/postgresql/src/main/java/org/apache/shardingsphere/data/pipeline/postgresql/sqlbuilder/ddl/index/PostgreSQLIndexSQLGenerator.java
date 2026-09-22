@@ -53,7 +53,7 @@ public final class PostgreSQLIndexSQLGenerator {
     public String generate(final Map<String, Object> context) throws SQLException {
         StringBuilder result = new StringBuilder();
         for (Map<String, Object> each : getIndexNodes(context)) {
-            if (!each.containsKey("is_inherited") || !((Boolean) each.get("is_inherited"))) {
+            if (!each.containsKey("is_inherited") || !(Boolean) each.get("is_inherited")) {
                 result.append(getIndexSQL(context, each));
             }
         }
