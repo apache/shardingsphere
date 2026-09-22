@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.config.validator;
+package org.apache.shardingsphere.infra.config.rule.validator.constraint.reference;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -26,20 +26,42 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Valid encrypt rule configuration constraint.
+ * Constraint for names that reference configurations in a map on the same rule configuration.
+ * Property paths use public getters. Collections are traversed, and optional values are unwrapped.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = EncryptRuleConfigurationValidator.class)
+@Constraint(validatedBy = ConfigurationReferenceExistsValidator.class)
 @Documented
-public @interface ValidEncryptRuleConfiguration {
+public @interface ConfigurationReferenceExists {
     
     /**
-     * Get message.
+     * Get reference property paths from the annotated object.
      *
-     * @return message
+     * @return reference property paths
      */
-    String message() default "contains invalid references";
+    String[] referencePaths();
+    
+    /**
+     * Get the name of the map property containing configured values.
+     *
+     * @return configuration pool property name
+     */
+    String pool();
+    
+    /**
+     * Whether an empty reference name is allowed.
+     *
+     * @return whether an empty reference name is allowed
+     */
+    boolean allowEmpty() default false;
+    
+    /**
+     * Get the violation message. Use {pool} for the configuration pool property and {reference} for the missing name.
+     *
+     * @return violation message
+     */
+    String message() default "references unconfigured {pool} `{reference}`";
     
     /**
      * Get groups.
