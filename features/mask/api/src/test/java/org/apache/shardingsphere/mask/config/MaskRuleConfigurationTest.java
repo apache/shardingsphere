@@ -34,6 +34,7 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -73,6 +74,13 @@ class MaskRuleConfigurationTest {
     @MethodSource("invalidRuleConfigurationArguments")
     void assertValidateInvalidRuleConfiguration(final String name, final MaskRuleConfiguration ruleConfig) {
         assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+    }
+    
+    @Test
+    void assertUnconfiguredMaskAlgorithmViolation() {
+        MaskRuleConfiguration ruleConfig = createRuleConfiguration(new MaskColumnRuleConfiguration("foo_col", "bar_mask"));
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), containsString("Property `tables` references unconfigured maskAlgorithms `bar_mask`."));
     }
     
     private static Stream<Arguments> invalidRuleConfigurationArguments() {
