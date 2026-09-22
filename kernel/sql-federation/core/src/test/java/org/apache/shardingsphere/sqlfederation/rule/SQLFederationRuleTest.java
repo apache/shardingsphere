@@ -17,51 +17,71 @@
 
 package org.apache.shardingsphere.sqlfederation.rule;
 
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
-import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContextFactory;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
+import org.apache.shardingsphere.sqlfederation.exception.SQLFederationProviderDuplicatedException;
+import org.apache.shardingsphere.sqlfederation.exception.SQLFederationProviderNotFoundException;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 class SQLFederationRuleTest {
     
     @Test
-    void assertConstructSuccess() {
-        CompilerContext initialContext = mock(CompilerContext.class);
-        CompilerContext refreshedContext = mock(CompilerContext.class);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, true, new SQLFederationCacheOption(4, 64L));
-        try (MockedStatic<CompilerContextFactory> mockedFactory = mockStatic(CompilerContextFactory.class)) {
-            mockedFactory.when(() -> CompilerContextFactory.create(Collections.singleton(database))).thenReturn(initialContext, refreshedContext);
-            SQLFederationRule rule = new SQLFederationRule(ruleConfig, Collections.singleton(database));
-            assertThat(rule.getConfiguration(), is(ruleConfig));
-            assertThat(rule.getCompilerContext(), is(initialContext));
-            assertThat(rule.getOrder(), is(SQLFederationOrder.ORDER));
-            mockedFactory.verify(() -> CompilerContextFactory.create(Collections.singleton(database)));
-        }
+    void assertConstructDisabled() {
+        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(false, false, new SQLFederationCacheOption(4, 64L));
+        SQLFederationRule actual = new SQLFederationRule(ruleConfig, Collections.emptyList());
+        assertThat(actual.getConfiguration(), sameInstance(ruleConfig));
+        assertNull(actual.getProvider());
+        assertThat(actual.getOrder(), is(SQLFederationOrder.ORDER));
     }
     
     @Test
-    void assertRefresh() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, true, new SQLFederationCacheOption(4, 64L));
-        try (MockedStatic<CompilerContextFactory> mockedFactory = mockStatic(CompilerContextFactory.class)) {
-            mockedFactory.when(() -> CompilerContextFactory.create(Collections.singleton(database))).thenReturn(mock(CompilerContext.class), mock(CompilerContext.class));
-            SQLFederationRule rule = new SQLFederationRule(ruleConfig, Collections.singleton(database));
-            rule.refresh(Collections.singleton(database), GlobalRuleChangedType.DATABASE_CHANGED);
-            mockedFactory.verify(() -> CompilerContextFactory.create(Collections.singleton(database)), times(2));
+    void assertRefreshDisabled() {
+        SQLFederationRule rule = new SQLFederationRule(new SQLFederationRuleConfiguration(false, false, new SQLFederationCacheOption(4, 64L)), Collections.emptyList());
+        rule.refresh(Collections.emptyList(), GlobalRuleChangedType.DATABASE_CHANGED);
+        assertNull(rule.getProvider());
+    }
+    
+    @Test
+    void assertDefaultProviderMissing() {
+        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L));
+        SQLFederationProviderNotFoundException actual = assertThrows(SQLFederationProviderNotFoundException.class, () -> new SQLFederationRule(ruleConfig, Collections.emptyList()));
+        assertThat(actual.getMessage(), is("SQL_FEDERATION-00001: SQL Federation provider 'CALCITE' is not installed."));
+    }
+    
+    @Test
+    void assertUnknownProviderMissing() {
+        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L), "UNKNOWN");
+        SQLFederationProviderNotFoundException actual = assertThrows(SQLFederationProviderNotFoundException.class, () -> new SQLFederationRule(ruleConfig, Collections.emptyList()));
+        assertThat(actual.getMessage(), is("SQL_FEDERATION-00001: SQL Federation provider 'UNKNOWN' is not installed."));
+    }
+    
+    @Test
+    void assertDuplicateProviderTypeFails() {
+        SQLFederationProvider first = mock(SQLFederationProvider.class);
+        SQLFederationProvider second = mock(SQLFederationProvider.class);
+        when(first.getType()).thenReturn("CALCITE");
+        when(second.getType()).thenReturn("calcite");
+        try (MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
+            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Arrays.asList(first, second));
+            SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L));
+            assertThrows(SQLFederationProviderDuplicatedException.class, () -> new SQLFederationRule(config, Collections.emptyList()));
         }
     }
 }

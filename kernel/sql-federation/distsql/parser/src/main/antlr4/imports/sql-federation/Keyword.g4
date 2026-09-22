@@ -51,6 +51,10 @@ EXECUTION_PLAN_CACHE
     : E X E C U T I O N UL_ P L A N UL_ C A C H E
     ;
 
+PROVIDER_TYPE
+    : P R O V I D E R UL_ T Y P E
+    ;
+
 INITIAL_CAPACITY
     : I N I T I A L UL_ C A P A C I T Y
     ;
