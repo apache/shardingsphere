@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
+import com.mysql.cj.jdbc.Driver;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
@@ -43,8 +44,10 @@ import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
@@ -103,30 +106,30 @@ class PackagedDistributionE2ETest {
     }
     
     @Test
-    void assertLaunchPackagedDistributionOverHttp() throws IOException, InterruptedException, SQLException {
+    void assertLaunchPackagedDistributionOverHttp() throws IOException, InterruptedException, SQLException, URISyntaxException {
         PreparedPackagedDistribution distribution = prepareReusableOfficialPackagedDistribution(RuntimeTransport.HTTP);
         try (
                 PackagedDistributionHttpRuntime runtime = new PackagedDistributionHttpRuntime(distribution);
                 MCPInteractionClient interactionClient = runtime.openInteractionClient()) {
             assertOfficialRuntime(distribution.home(), RuntimeTransport.HTTP, interactionClient);
             assertMySQLMetadata(interactionClient);
-            assertExecuteQuery(interactionClient);
+            assertExecuteQuery(interactionClient, LOGICAL_DATABASE_NAME);
         }
     }
     
     @Test
-    void assertLaunchPackagedDistributionOverStdio() throws IOException, InterruptedException, SQLException {
+    void assertLaunchPackagedDistributionOverStdio() throws IOException, InterruptedException, SQLException, URISyntaxException {
         PreparedPackagedDistribution distribution = prepareReusableOfficialPackagedDistribution(RuntimeTransport.STDIO);
         try (MCPInteractionClient interactionClient = new PackagedDistributionStdioInteractionClient(distribution.home(), distribution.configFile())) {
             interactionClient.open();
             assertOfficialRuntime(distribution.home(), RuntimeTransport.STDIO, interactionClient);
             assertMySQLMetadata(interactionClient);
-            assertExecuteQuery(interactionClient);
+            assertExecuteQuery(interactionClient, LOGICAL_DATABASE_NAME);
         }
     }
     
     @Test
-    void assertDiscoverFixturePluginFromPluginsDirectory() throws IOException, InterruptedException, SQLException {
+    void assertDiscoverFixturePluginFromPluginsDirectory() throws IOException, InterruptedException, SQLException, URISyntaxException {
         PreparedPackagedDistribution distribution = preparePackagedDistribution("plugin-discovery", RuntimeTransport.STDIO);
         List<String> actualRemovedJarNames = PackagedDistributionPluginFixtureSupport.removeOfficialFeatureJars(distribution.home().resolve("lib"));
         assertTrue(actualRemovedJarNames.stream().anyMatch(each -> each.contains("shardingsphere-mcp-feature-encrypt")));
@@ -194,25 +197,38 @@ class PackagedDistributionE2ETest {
                 MCPInteractionClient interactionClient = runtime.openInteractionClient()) {
             assertOfficialRuntime(distribution.home(), RuntimeTransport.HTTP, interactionClient);
             assertPostgreSQLMetadata(interactionClient);
+            assertExecuteQuery(interactionClient, "public");
         }
     }
     
-    private PreparedPackagedDistribution preparePackagedDistribution(final String caseName, final RuntimeTransport transport) throws IOException, SQLException {
+    private PreparedPackagedDistribution preparePackagedDistribution(final String caseName, final RuntimeTransport transport) throws IOException, SQLException, URISyntaxException {
         prepareMySQLContainer();
-        return PackagedDistributionTestSupport.prepare(tempDir.resolve(caseName), transport,
+        PreparedPackagedDistribution result = PackagedDistributionTestSupport.prepare(tempDir.resolve(caseName), transport,
                 MySQLRuntimeTestSupport.createRuntimeDatabases(mysqlContainer, LOGICAL_DATABASE_NAME));
+        installMySQLDriver(result.home());
+        return result;
     }
     
-    private PreparedPackagedDistribution prepareReusableOfficialPackagedDistribution(final RuntimeTransport transport) throws IOException, SQLException {
+    private PreparedPackagedDistribution prepareReusableOfficialPackagedDistribution(final RuntimeTransport transport) throws IOException, SQLException, URISyntaxException {
         prepareMySQLContainer();
-        return PackagedDistributionTestSupport.prepareReusable(tempDir.resolve("official-distribution-home-" + transport.name().toLowerCase(Locale.ENGLISH)), transport,
+        PreparedPackagedDistribution result = PackagedDistributionTestSupport.prepareReusable(
+                tempDir.resolve("official-distribution-home-" + transport.name().toLowerCase(Locale.ENGLISH)), transport,
                 MySQLRuntimeTestSupport.createRuntimeDatabases(mysqlContainer, LOGICAL_DATABASE_NAME));
+        installMySQLDriver(result.home());
+        return result;
+    }
+    
+    private void installMySQLDriver(final Path distributionHome) throws IOException, URISyntaxException {
+        Path source = Path.of(Driver.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        Path pluginsDirectory = distributionHome.resolve("plugins");
+        Files.createDirectories(pluginsDirectory);
+        Files.copy(source, pluginsDirectory.resolve(source.getFileName()), StandardCopyOption.REPLACE_EXISTING);
     }
     
     private Path createDockerConfigurationFile(final RuntimeTransport transport) throws IOException, SQLException {
-        prepareMySQLContainer();
+        preparePostgreSQLContainer();
         return PackagedDistributionTestSupport.createDockerConfigurationFile(tempDir.resolve("container-" + transport.name().toLowerCase(Locale.ENGLISH) + ".yaml"), transport,
-                MySQLRuntimeTestSupport.createDockerHostRuntimeDatabases(mysqlContainer, LOGICAL_DATABASE_NAME));
+                PostgreSQLRuntimeTestSupport.createDockerHostRuntimeDatabases(postgresqlContainer, LOGICAL_DATABASE_NAME));
     }
     
     private void prepareMySQLContainer() throws SQLException {
@@ -257,8 +273,8 @@ class PackagedDistributionE2ETest {
         assertRuntimeDiagnostics(interactionClient.readResource("shardingsphere://runtime"), transport, "available", "ready");
         assertDatabaseNames(interactionClient.readResource("shardingsphere://databases"));
         assertOfficialToolNames(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList());
-        assertMySQLMetadata(interactionClient);
-        assertExecuteQuery(interactionClient);
+        assertPostgreSQLMetadata(interactionClient);
+        assertExecuteQuery(interactionClient, "public");
     }
     
     private void assertDefaultContainerRuntime(final RuntimeTransport transport, final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
@@ -270,6 +286,9 @@ class PackagedDistributionE2ETest {
         assertTrue(Files.isDirectory(distributionHome.resolve("data")));
         assertTrue(Files.isDirectory(distributionHome.resolve("logs")));
         assertTrue(Files.isDirectory(distributionHome.resolve("plugins")));
+        assertTrue(Files.isRegularFile(distributionHome.resolve("LICENSE")));
+        assertTrue(Files.isRegularFile(distributionHome.resolve("NOTICE")));
+        assertTrue(Files.isDirectory(distributionHome.resolve("licenses")));
     }
     
     private void assertRemovedExtensionDirectoryAbsent(final Path distributionHome) {
@@ -305,6 +324,8 @@ class PackagedDistributionE2ETest {
             for (String each : EXPECTED_RUNTIME_ARTIFACT_IDS) {
                 assertTrue(actualJarNames.stream().anyMatch(actual -> actual.contains(each)));
             }
+            assertFalse(actualJarNames.stream().anyMatch(each -> each.startsWith("mysql-connector-j-")));
+            assertFalse(actualJarNames.stream().anyMatch(each -> each.startsWith("mariadb-java-client-")));
         }
     }
     
@@ -329,9 +350,9 @@ class PackagedDistributionE2ETest {
         assertThat(actualSearchItems, hasItems("orders", "active_orders"));
     }
     
-    private void assertExecuteQuery(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
+    private void assertExecuteQuery(final MCPInteractionClient interactionClient, final String schema) throws IOException, InterruptedException {
         Map<String, Object> actualResult = interactionClient.call("database_gateway_execute_query",
-                Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));
+                Map.of("database", LOGICAL_DATABASE_NAME, "schema", schema, "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));
         assertThat(String.valueOf(actualResult.get("result_kind")), is("result_set"));
     }
     

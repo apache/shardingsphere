@@ -478,7 +478,7 @@ returnStatement
     ;
 
 selectIntoStatement
-    : SELECT (DISTINCT | UNIQUE | ALL)? selectList (selectIntoClause | bulkCollectIntoClause) FROM fromClauseList whereClause? hierarchicalQueryClause? groupByClause? modelClause? windowClause? orderByClause? rowLimitingClause? SEMI_
+    : SELECT (DISTINCT | UNIQUE | ALL)? selectList (selectIntoClause | bulkCollectIntoClause) FROM fromClauseList whereClause? hierarchicalQueryClause? groupByClause? havingClause? modelClause? windowClause? orderByClause? rowLimitingClause? SEMI_
     ;
 
 selectIntoClause
@@ -581,11 +581,16 @@ itemDeclaration
 collectionVariableDecl
     : variableName
       (
-      typeName (ASSIGNMENT_OPERATOR_ (qualifiedExpression | functionCall | variableName))?
-      | typeName (ASSIGNMENT_OPERATOR_  (collectionConstructor | variableName))?
+      collectionTypeName (ASSIGNMENT_OPERATOR_ (qualifiedExpression | functionCall | variableName))?
+      | collectionTypeName (ASSIGNMENT_OPERATOR_  (collectionConstructor | variableName))?
       | typeName MOD_ TYPE
       )
       SEMI_
+    ;
+
+collectionTypeName
+    : typeName
+    | schemaName DOT_ owner DOT_ name
     ;
 
 qualifiedExpression

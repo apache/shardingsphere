@@ -18,13 +18,10 @@
 package org.apache.shardingsphere.sqlfederation.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContextFactory;
-import org.apache.shardingsphere.sqlfederation.compiler.exception.InvalidExecutionPlanCacheConfigException;
-import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
 
@@ -44,13 +41,6 @@ public final class SQLFederationRule implements GlobalRule {
     public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig, final Collection<ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
         compilerContext = new AtomicReference<>(CompilerContextFactory.create(databases));
-        checkExecutionPlanCacheConfiguration(ruleConfig.getExecutionPlanCache());
-    }
-    
-    private void checkExecutionPlanCacheConfiguration(final SQLFederationCacheOption executionPlanCache) {
-        ShardingSpherePreconditions.checkState(executionPlanCache.getInitialCapacity() > 0,
-                () -> new InvalidExecutionPlanCacheConfigException("initialCapacity", executionPlanCache.getInitialCapacity()));
-        ShardingSpherePreconditions.checkState(executionPlanCache.getMaximumSize() > 0, () -> new InvalidExecutionPlanCacheConfigException("maximumSize", executionPlanCache.getMaximumSize()));
     }
     
     /**

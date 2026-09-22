@@ -66,7 +66,10 @@ class CodeHandoffHookTest(unittest.TestCase):
             "Review Result: Mergeable\nBlocking Issues: 0\nRequired Changes: None.\n"
             "Review Recommendations: No changes recommended.\nCommit Message: Fix metadata"
         )
-        self.assertEqual(["exactly one fenced markdown Formal Review", "Commit Message"], actual)
+        self.assertEqual([
+            "exactly one fenced markdown Formal Review", "Commit Message",
+            "git commit --dry-run --only", "git commit --only",
+        ], actual)
 
     def test_passing_formal_review_requires_evidence_and_commit_message(self) -> None:
         actual = code_handoff_hook.validate_handoff(self._mergeable_handoff(
@@ -85,6 +88,17 @@ class CodeHandoffHookTest(unittest.TestCase):
             self._mergeable_handoff().replace("```text\n", "").removesuffix("```").rstrip(),
         )
         self.assertEqual(["Commit Message"], actual)
+
+    def test_passing_formal_review_requires_manual_git_commands(self) -> None:
+        handoff = self._mergeable_handoff()
+        actual = code_handoff_hook.validate_handoff(handoff[:handoff.rfind("```bash")])
+        self.assertEqual(["git commit --dry-run --only", "git commit --only"], actual)
+
+    def test_manual_git_commands_must_start_command_lines(self) -> None:
+        actual = code_handoff_hook.validate_handoff(
+            self._mergeable_handoff().replace("git commit", "Run git commit"),
+        )
+        self.assertEqual(["git commit --dry-run --only", "git commit --only"], actual)
 
     def test_non_passing_review_blocks_successful_handoff(self) -> None:
         actual = code_handoff_hook.validate_handoff(self._incomplete_handoff(awaiting_user=False))
@@ -221,6 +235,10 @@ class CodeHandoffHookTest(unittest.TestCase):
             "```\n\n"
             "```text\n"
             f"Commit Message: {commit_message}\n"
+            "```\n\n"
+            "```bash\n"
+            f"git commit --dry-run --only -m '{commit_message}' -- src/main/Foo.java\n"
+            f"git commit --only -m '{commit_message}' -- src/main/Foo.java\n"
             "```"
         )
 

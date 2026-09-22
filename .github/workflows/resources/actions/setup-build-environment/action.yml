@@ -93,6 +93,7 @@ runs:
       with:
         distribution: 'graalvm-community'
         java-version: '25.0.2'
+        native-image-job-reports: 'true'
     - name: Verify Preinstalled Docker
       if: inputs.enable-docker-setup == 'true'
       shell: bash

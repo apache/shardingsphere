@@ -19,11 +19,9 @@ package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleCreateExecutor;
-import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnItemSegment;
-import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -32,14 +30,11 @@ import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitial
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -57,9 +52,7 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
         if (!sqlStatement.isIfNotExists()) {
             checkDuplicateRuleNames(sqlStatement);
         }
-        checkColumnNames(sqlStatement);
         checkAlgorithmTypes(sqlStatement);
-        checkToBeCreatedEncryptors(sqlStatement);
         checkDataSources();
     }
     
@@ -70,18 +63,6 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
     
     private Collection<String> getDuplicatedRuleNames(final CreateEncryptRuleStatement sqlStatement) {
         return null == rule ? Collections.emptyList() : sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(rule.getAllTableNames()::contains).collect(Collectors.toSet());
-    }
-    
-    private void checkColumnNames(final CreateEncryptRuleStatement sqlStatement) {
-        for (EncryptRuleSegment each : sqlStatement.getRules()) {
-            ShardingSpherePreconditions.checkState(isColumnNameNotConflicts(each),
-                    () -> new InvalidRuleConfigurationException("encrypt", "assisted query column or like query column conflicts with logic column"));
-        }
-    }
-    
-    private boolean isColumnNameNotConflicts(final EncryptRuleSegment rule) {
-        return rule.getColumns().stream().noneMatch(each -> null != each.getLikeQuery() && each.getName().equals(each.getLikeQuery().getName())
-                || null != each.getAssistedQuery() && each.getName().equals(each.getAssistedQuery().getName()));
     }
     
     private void checkAlgorithmTypes(final CreateEncryptRuleStatement sqlStatement) {
@@ -115,22 +96,6 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
         EncryptAlgorithm encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, itemSegment.getEncryptor().getName(), itemSegment.getEncryptor().getProps());
         ShardingSpherePreconditions.checkState(encryptAlgorithm.getMetaData().isSupportEquivalentFilter(),
                 () -> new AlgorithmInitializationException(encryptAlgorithm, "Can not support assist query"));
-    }
-    
-    private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) {
-        Collection<AlgorithmSegment> encryptors = new LinkedHashSet<>();
-        sqlStatement.getRules().forEach(each -> each.getColumns().forEach(column -> addToEncryptors(column, encryptors)));
-        encryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(EncryptAlgorithm.class, each.getName(), each.getProps()));
-    }
-    
-    private void addToEncryptors(final EncryptColumnSegment column, final Collection<AlgorithmSegment> algorithmSegments) {
-        algorithmSegments.add(column.getCipher().getEncryptor());
-        if (null != column.getAssistedQuery()) {
-            algorithmSegments.add(column.getAssistedQuery().getEncryptor());
-        }
-        if (null != column.getLikeQuery()) {
-            algorithmSegments.add(column.getLikeQuery().getEncryptor());
-        }
     }
     
     private void checkDataSources() {

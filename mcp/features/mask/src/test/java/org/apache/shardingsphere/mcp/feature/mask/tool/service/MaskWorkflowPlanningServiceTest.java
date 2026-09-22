@@ -49,6 +49,7 @@ import org.mockito.AdditionalAnswers;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -304,7 +305,7 @@ class MaskWorkflowPlanningServiceTest {
     }
     
     private MCPColumnMetadata createColumnMetadata(final String columnName) {
-        return new MCPColumnMetadata("orders", columnName, 1, java.sql.Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
+        return new MCPColumnMetadata("orders", columnName, 1, Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
     }
     
     private MaskWorkflowPlanningService createService(final MaskRuleInspectionService ruleInspectionService,

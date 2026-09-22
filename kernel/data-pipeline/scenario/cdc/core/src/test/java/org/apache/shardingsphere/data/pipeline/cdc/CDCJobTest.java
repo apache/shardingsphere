@@ -66,9 +66,6 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -198,11 +195,9 @@ class CDCJobTest {
         when(PipelineAPIFactory.getPipelineGovernanceFacade(CONTEXT_KEY)).thenReturn(mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS));
         when(PipelineDistributedBarrier.getInstance(CONTEXT_KEY)).thenReturn(mock(PipelineDistributedBarrier.class));
         when(PipelineDataSourceConfigurationFactory.newInstance(anyString(), anyString())).thenReturn(mock(PipelineDataSourceConfiguration.class));
-        YamlRuleConfiguration yamlRuleConfig = mock(YamlRuleConfiguration.class);
-        Collection<YamlRuleConfiguration> yamlRuleConfigs = Collections.singleton(yamlRuleConfig);
-        jobConfig.getDataSourceConfig().getRootConfig().setRules(yamlRuleConfigs);
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
         Collection<RuleConfiguration> ruleConfigs = Collections.singleton(ruleConfig);
+        when(jobConfig.getDataSourceConfig().getRuleConfigurations()).thenReturn(ruleConfigs);
         PipelineRequiredColumnsExtractor extractor = mock(PipelineRequiredColumnsExtractor.class);
         Map<ShardingSphereIdentifier, Collection<String>> requiredColumns = Collections.singletonMap(new ShardingSphereIdentifier("logic_tbl"), Collections.singleton("id"));
         when(extractor.getTableAndRequiredColumnsMap(eq(ruleConfig), anyCollection())).thenReturn(requiredColumns);
@@ -211,15 +206,9 @@ class CDCJobTest {
             capturedRuleConfigs.set(invocation.getArgument(1));
             return Collections.singletonMap(ruleConfig, extractor);
         });
-        AtomicReference<Collection<YamlRuleConfiguration>> capturedYamlRuleConfigs = new AtomicReference<>();
         AtomicReference<CDCJobItemContext> capturedContext = new AtomicReference<>();
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
-                MockedConstruction<YamlRuleConfigurationSwapperEngine> ignoredRuleConfigSwapper = mockConstruction(
-                        YamlRuleConfigurationSwapperEngine.class, (mock, context) -> when(mock.swapToRuleConfigurations(anyCollection())).thenAnswer(invocation -> {
-                            capturedYamlRuleConfigs.set(invocation.getArgument(0));
-                            return ruleConfigs;
-                        }));
                 MockedConstruction<PipelineProcessConfigurationPersistService> ignoredProcess = mockPersistService(processConfig);
                 MockedConstruction<CDCJobPreparer> ignoredPreparer = mockConstruction(CDCJobPreparer.class, (mock, context) -> doAnswer(invocation -> {
                     CDCJobItemContext jobItemContext = ((Collection<CDCJobItemContext>) invocation.getArgument(0)).iterator().next();
@@ -239,7 +228,6 @@ class CDCJobTest {
             new CDCJob(mock(PipelineSink.class)).execute(shardingContext);
         }
         assertThat(capturedContext.get().getStatus(), is(JobStatus.EXECUTE_INCREMENTAL_TASK));
-        assertThat(capturedYamlRuleConfigs.get(), sameInstance(yamlRuleConfigs));
         assertThat(capturedRuleConfigs.get(), sameInstance(ruleConfigs));
         assertThat(capturedContext.get().getTaskConfig().getImporterConfig().getShardingColumns("logic_tbl"), is(Collections.singleton("id")));
     }
@@ -405,15 +393,7 @@ class CDCJobTest {
         ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = mock(ShardingSpherePipelineDataSourceConfiguration.class);
         when(dataSourceConfig.getType()).thenReturn("JDBC");
         when(dataSourceConfig.getParameter()).thenReturn("param");
-        when(dataSourceConfig.getRootConfig()).thenReturn(createYAMLRootConfiguration());
         when(result.getDataSourceConfig()).thenReturn(dataSourceConfig);
-        return result;
-    }
-    
-    private YamlRootConfiguration createYAMLRootConfiguration() {
-        YamlRootConfiguration result = new YamlRootConfiguration();
-        result.setDatabaseName("logic_db");
-        result.setDataSources(Collections.singletonMap("ds_0", Collections.emptyMap()));
         return result;
     }
     

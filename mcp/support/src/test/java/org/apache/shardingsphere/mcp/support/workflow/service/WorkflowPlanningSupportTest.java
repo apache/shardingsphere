@@ -46,6 +46,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -413,6 +414,6 @@ class WorkflowPlanningSupportTest {
     }
     
     private MCPColumnMetadata createColumnMetadata(final String tableName, final String columnName) {
-        return new MCPColumnMetadata(tableName, columnName, 1, java.sql.Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
+        return new MCPColumnMetadata(tableName, columnName, 1, Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
     }
 }

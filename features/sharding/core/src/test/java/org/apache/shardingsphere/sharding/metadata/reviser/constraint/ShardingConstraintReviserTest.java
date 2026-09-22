@@ -45,10 +45,12 @@ class ShardingConstraintReviserTest {
     
     private ShardingRule shardingRule;
     
+    private ShardingTable shardingTable;
+    
     @BeforeEach
     void setUp() {
         shardingRule = createShardingRule();
-        ShardingTable shardingTable = mock(ShardingTable.class);
+        shardingTable = mock(ShardingTable.class);
         when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("schema_name", (String) null, "table_name_0"), new DataNode("schema_name", (String) null, "table_name_1")));
         reviser = new ShardingConstraintReviser(shardingTable);
     }
@@ -66,6 +68,23 @@ class ShardingConstraintReviserTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("test"));
         assertThat(actual.get().getReferencedTableName(), is("referenced_table_name"));
+    }
+    
+    @Test
+    void assertReviseWhenActualTableNameContainsAnotherActualTableNameSuffix() {
+        when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("foo_schema", (String) null, "foo_order"), new DataNode("foo_schema", (String) null, "bar_foo_order")));
+        ConstraintMetaData originalMetaData = new ConstraintMetaData("foo_fk_bar_foo_order", "foo_referenced_table");
+        Optional<ConstraintMetaData> actual = reviser.revise("bar_foo_order", originalMetaData, shardingRule);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getName(), is("foo_fk"));
+    }
+    
+    @Test
+    void assertReviseWhenConstraintNameContainsActualTableSuffix() {
+        ConstraintMetaData originalMetaData = new ConstraintMetaData("foo_table_name_1_fk_table_name_1", "referenced_table_name");
+        Optional<ConstraintMetaData> actual = reviser.revise("table_name_1", originalMetaData, shardingRule);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getName(), is("foo_table_name_1_fk"));
     }
     
     @Test

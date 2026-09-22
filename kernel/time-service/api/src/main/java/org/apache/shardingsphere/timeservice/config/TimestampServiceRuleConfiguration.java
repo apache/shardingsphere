@@ -20,7 +20,9 @@ package org.apache.shardingsphere.timeservice.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Properties;
 
 /**
@@ -30,6 +32,8 @@ import java.util.Properties;
 @Getter
 public final class TimestampServiceRuleConfiguration implements GlobalRuleConfiguration {
     
+    @NotBlank
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.timeservice.spi.TimestampService")
     private final String type;
     
     private final Properties props;
