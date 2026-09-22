@@ -23,6 +23,9 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.function.DialectSQLF
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.impl.OpenGaussSystemFunction;
 import org.apache.shardingsphere.sqlfederation.postgresql.PostgreSQLSQLFederationFunctionRegister;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * SQL federation function register for opengauss.
  */
@@ -40,6 +43,11 @@ public final class OpenGaussSQLFederationFunctionRegister implements DialectSQLF
             schemaPlus.add("opengauss_version", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "openGaussVersion"));
         }
         delegate.registerFunction(schemaPlus, schemaName);
+    }
+    
+    @Override
+    public Collection<String> getUnsupportedFunctionNames() {
+        return Collections.singleton("NLSSORT");
     }
     
     @Override

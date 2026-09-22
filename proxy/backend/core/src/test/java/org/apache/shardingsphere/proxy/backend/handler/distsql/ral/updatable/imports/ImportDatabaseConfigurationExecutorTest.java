@@ -27,11 +27,11 @@ import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigura
 import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
@@ -99,7 +99,7 @@ class ImportDatabaseConfigurationExecutorTest {
         return Stream.of(
                 Arguments.of("missing database name", "sharding_db", "/conf/import/database-empty-database-name.yaml", MissingRequiredDatabaseException.class),
                 Arguments.of("duplicated logic table", "sharding_db", "/conf/import/database-duplicated-logic-table.yaml", DuplicateRuleException.class),
-                Arguments.of("invalid algorithm", "sharding_db", "/conf/import/database-invalid-algorithm.yaml", ServiceProviderNotFoundException.class));
+                Arguments.of("invalid algorithm", "sharding_db", "/conf/import/database-invalid-algorithm.yaml", InvalidRuleConfigurationException.class));
     }
     
     private void assertExecute(final ContextManager contextManager, final String filePath) {

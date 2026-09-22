@@ -39,7 +39,8 @@ public interface PipelineDataSourceConfiguration {
     String getParameter();
     
     /**
-     * Get data source configuration, related to {@link #getParameter()}.
+     * Get the runtime data source configuration derived from {@link #getParameter()}.
+     * The returned object must not be a YAML configuration object.
      *
      * @return data source configuration
      */

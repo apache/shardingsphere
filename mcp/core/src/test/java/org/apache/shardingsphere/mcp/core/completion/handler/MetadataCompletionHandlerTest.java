@@ -39,6 +39,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -157,7 +158,7 @@ class MetadataCompletionHandlerTest {
     void assertCompleteColumn() {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumns("logic_db", "public", "t_order"))
-                .thenReturn(List.of(new MCPColumnMetadata("t_order", "order_id", 1, java.sql.Types.BIGINT, "BIGINT", Nullability.NOT_NULLABLE)));
+                .thenReturn(List.of(new MCPColumnMetadata("t_order", "order_id", 1, Types.BIGINT, "BIGINT", Nullability.NOT_NULLABLE)));
         MCPCompletionHandlerResult actual = new MetadataCompletionHandler().complete(createHandlerContext(metadataQueryFacade),
                 createRequestContext("column", Map.of("database", "logic_db", "schema", "public", "table", "t_order")));
         assertCandidate(actual, "order_id");

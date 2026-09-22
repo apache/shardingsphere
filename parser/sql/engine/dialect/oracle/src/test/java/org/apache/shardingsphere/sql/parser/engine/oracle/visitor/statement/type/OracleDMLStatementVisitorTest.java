@@ -1,0 +1,56 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.type;
+
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
+import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class OracleDMLStatementVisitorTest {
+    
+    @Test
+    void assertVisitSelect() {
+        assertThrows(SQLParsingException.class, () -> parse("SELECT 1 FROM DUAL ORDER BY 1 FOR UPDATE NOWAIT ORDER BY 1"));
+    }
+    
+    @Test
+    void assertVisitWithParenthesizedMainQuery() {
+        SelectStatement actual = parse("WITH q AS (SELECT 1 AS n FROM DUAL) (SELECT n FROM q)");
+        assertTrue(actual.getWith().isPresent());
+    }
+    
+    @Test
+    void assertVisitWithParenthesizedMainQueryWithOrderBy() {
+        SelectStatement actual = parse("WITH q AS (SELECT 1 AS n FROM DUAL) (SELECT ? FROM q) ORDER BY 1");
+        assertThat(actual.getParameterMarkers().size(), is(1));
+    }
+    
+    private SelectStatement parse(final String sql) {
+        CacheOption cacheOption = new CacheOption(128, 1024L);
+        SQLParserEngine parserEngine = new SQLParserEngine("Oracle", cacheOption);
+        return (SelectStatement) new SQLStatementVisitorEngine("Oracle").visit(parserEngine.parse(sql, false));
+    }
+}

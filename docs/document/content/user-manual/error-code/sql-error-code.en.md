@@ -43,6 +43,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 10202       | 42S02     | %s rules '%s' do not exist in database '%s'.                                        |
 | 10203       | 44000     | %s rules '%s' in database '%s' are still in used by %s.                             |
 | 10204       | 42S01     | Duplicate %s rule names '%s' in database '%s'.                                      |
+| 10205       | HY000     | Can not validate '%s' rule configuration.                                           |
 | 10210       | 42S02     | %s strategies '%s' do not exist.                                                    |
 | 10300       | HY000     | Invalid format for data node '%s', reason is: %s.                                   |
 | 10301       | 0A000     | Can not support 3-tier structure for actual data node '%s.%s' with JDBC '%s'.       |
@@ -246,8 +247,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 |-------------|-----------|-------------------------------------------------------------------------|
 | 22000       | 42S02     | Production data source configuration does not exist in database '%s'.   |
 | 22001       | 42S02     | Shadow data source configuration does not exist in database '%s'.       |
-| 22002       | 42S02     | No available shadow data sources mappings in shadow table '%s'.         |
-| 22003       | 44000     | Default shadow algorithm class should be implement HintShadowAlgorithm. |
 | 22010       | HY004     | Shadow column '%s' of table '%s' does not support '%s' type.            |
 | 22020       | 42000     | Insert value of index '%d' can not support for shadow.                  |
 

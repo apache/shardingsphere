@@ -43,7 +43,8 @@ public interface DatabaseRuleConfigurationChecker<T extends RuleConfiguration> e
      * @param dataSourceMap data sources to be checked
      * @param builtRules built rules
      */
-    void check(String databaseName, T ruleConfig, Map<String, DataSource> dataSourceMap, Collection<ShardingSphereRule> builtRules);
+    default void check(final String databaseName, final T ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
+    }
     
     /**
      * Get required data source names.
