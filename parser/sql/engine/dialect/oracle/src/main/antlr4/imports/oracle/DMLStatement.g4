@@ -160,7 +160,7 @@ select
     ;
 
 selectSubquery
-    : selectSubquery combineType selectSubquery | ((queryBlock | parenthesisSelectSubquery) pivotClause? orderByClause? rowLimitingClause)
+    : selectSubquery combineType selectSubquery | ((queryBlock | withClause parenthesisSelectSubquery | parenthesisSelectSubquery) pivotClause? orderByClause? rowLimitingClause)
     ;
 
 combineType

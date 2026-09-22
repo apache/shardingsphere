@@ -762,9 +762,20 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result = createSelectCombineClause(ctx, left);
         } else {
             result = null == ctx.queryBlock() ? (SelectStatement) visit(ctx.parenthesisSelectSubquery()) : (SelectStatement) visit(ctx.queryBlock());
+            if (null != ctx.withClause()) {
+                SelectStatement previous = result;
+                result = createSelectStatementBuilder(previous).with((WithSegment) visit(ctx.withClause())).build();
+                result.addParameterMarkers(previous.getParameterMarkers());
+                result.getVariableNames().addAll(previous.getVariableNames());
+                result.getComments().addAll(previous.getComments());
+            }
         }
         if (null != ctx.orderByClause()) {
+            SelectStatement previous = result;
             result = createSelectStatementBuilder(result).orderBy((OrderBySegment) visit(ctx.orderByClause())).build();
+            result.addParameterMarkers(previous.getParameterMarkers());
+            result.getVariableNames().addAll(previous.getVariableNames());
+            result.getComments().addAll(previous.getComments());
         }
         result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         result.getVariableNames().addAll(getVariableNames());
