@@ -56,7 +56,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -196,12 +195,7 @@ public final class WhereClauseShardingConditionEngine {
             for (Comparable<?> each : value2) {
                 normalizedValue2.add(normalizeNumber(each));
             }
-            Iterator<Comparable<?>> iterator = value1.iterator();
-            while (iterator.hasNext()) {
-                if (!normalizedValue2.contains(normalizeNumber(iterator.next()))) {
-                    iterator.remove();
-                }
-            }
+            value1.removeIf(each -> !normalizedValue2.contains(normalizeNumber(each)));
             return value1;
         }
         Collection<Comparable<?>> convertedValue2 = value2;
