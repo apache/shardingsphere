@@ -83,7 +83,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         this.currentDatabaseName = currentDatabaseName;
         this.currentSchemaName = currentSchemaName;
         sqlFederationRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
-        execution = isSQLFederationEnabled() ? sqlFederationRule.getProvider().createExecution(currentDatabaseName, currentSchemaName, statistics, jdbcExecutor, processEngine) : null;
+        execution = isSQLFederationEnabled() ? sqlFederationRule.getProvider().createExecutor(currentDatabaseName, currentSchemaName, statistics, jdbcExecutor, processEngine) : null;
     }
     
     /**

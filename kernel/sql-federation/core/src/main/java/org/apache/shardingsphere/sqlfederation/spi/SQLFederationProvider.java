@@ -47,16 +47,16 @@ public interface SQLFederationProvider extends TypedSPI {
     void refresh(Collection<ShardingSphereDatabase> databases);
     
     /**
-     * Create an execution object for one SQL federation engine.
+     * Create SQL federation executor.
      *
      * @param currentDatabaseName current database name
      * @param currentSchemaName current schema name
      * @param statistics statistics
      * @param jdbcExecutor JDBC executor
      * @param processEngine process engine
-     * @return SQL federation execution
+     * @return SQL federation executor
      */
-    SQLFederationExecutor createExecution(String currentDatabaseName, String currentSchemaName, ShardingSphereStatistics statistics, JDBCExecutor jdbcExecutor, ProcessEngine processEngine);
+    SQLFederationExecutor createExecutor(String currentDatabaseName, String currentSchemaName, ShardingSphereStatistics statistics, JDBCExecutor jdbcExecutor, ProcessEngine processEngine);
     
     @Override
     String getType();
