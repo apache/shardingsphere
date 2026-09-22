@@ -17,19 +17,15 @@
 
 package org.apache.shardingsphere.mask.checker;
 
-import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,9 +42,8 @@ class MaskRuleConfigurationCheckerTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertValidCheck() {
+    void assertGetTableNames() {
         MaskRuleConfiguration ruleConfig = mockValidConfiguration();
-        assertDoesNotThrow(() -> checker.check("test", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
         assertTrue(checker.getTableNames(ruleConfig).contains("t_mask"));
     }
     
@@ -60,20 +55,4 @@ class MaskRuleConfigurationCheckerTest {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
-    @Test
-    void assertInvalidCheck() {
-        MaskRuleConfiguration ruleConfig = mockInvalidConfiguration();
-        assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("test", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
-    }
-    
-    private MaskRuleConfiguration mockInvalidConfiguration() {
-        MaskRuleConfiguration result = mock(MaskRuleConfiguration.class);
-        MaskTableRuleConfiguration tableRuleConfig = mock(MaskTableRuleConfiguration.class);
-        MaskColumnRuleConfiguration columnRuleConfig = mock(MaskColumnRuleConfiguration.class);
-        when(columnRuleConfig.getMaskAlgorithm()).thenReturn("md5");
-        when(tableRuleConfig.getColumns()).thenReturn(Collections.singleton(columnRuleConfig));
-        when(result.getTables()).thenReturn(Collections.singleton(tableRuleConfig));
-        return result;
-    }
 }

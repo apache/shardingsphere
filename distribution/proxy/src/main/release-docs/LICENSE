@@ -219,6 +219,7 @@ The text of each license is the standard Apache 2.0 license.
     aggdesigner-algorithm 6.1: Apache 2.0
     audience-annotations 0.12.0: https://github.com/apache/yetus, Apache 2.0
     avatica-core 1.28.0: https://calcite.apache.org/avatica, Apache 2.0
+    bval-jsr 2.0.6: https://bval.apache.org/, Apache 2.0
     caffeine 2.9.3: https://github.com/ben-manes/caffeine, Apache 2.0
     calcite-core 1.42.0: https://calcite.apache.org, Apache 2.0
     calcite-linq4j 1.42.0: https://calcite.apache.org, Apache 2.0
@@ -254,6 +255,7 @@ The text of each license is the standard Apache 2.0 license.
     jackson-databind 2.18.6: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-datatype-jdk8 2.18.6: http://github.com/FasterXML/jackson-modules-java8, Apache 2.0
     jackson-datatype-jsr310 2.18.6: http://github.com/FasterXML/jackson, Apache 2.0
+    jakarta.validation-api 2.0.2: https://beanvalidation.org/, Apache 2.0
     javassist 3.29.2-GA: https://www.javassist.org/, Apache 2.0
     jcl-over-slf4j 2.0.17: https://github.com/qos-ch/slf4j, Apache 2.0
     jctools-core 4.0.5: https://github.com/JCTools/JCTools, Apache 2.0

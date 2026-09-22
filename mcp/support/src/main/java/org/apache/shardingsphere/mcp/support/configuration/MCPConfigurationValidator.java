@@ -19,13 +19,15 @@ package org.apache.shardingsphere.mcp.support.configuration;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.bval.jsr.ApacheValidationProvider;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.hibernate.validator.HibernateValidator;
-import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.ElementKind;
+import javax.validation.Path;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,8 +37,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPConfigurationValidator {
     
-    private static final Validator VALIDATOR = Validation.byProvider(HibernateValidator.class)
-            .configure().messageInterpolator(new ParameterMessageInterpolator()).buildValidatorFactory().getValidator();
+    private static final Validator VALIDATOR = Validation.byProvider(ApacheValidationProvider.class).configure().buildValidatorFactory().getValidator();
     
     /**
      * Validate MCP configuration.
@@ -48,7 +49,7 @@ public final class MCPConfigurationValidator {
         ShardingSpherePreconditions.checkNotNull(config, () -> new IllegalArgumentException(String.format("%s cannot be null.", configName)));
         Set<ConstraintViolation<Object>> violations = VALIDATOR.validate(config);
         ShardingSpherePreconditions.checkMustEmpty(violations, () -> new IllegalArgumentException(violations.stream()
-                .map(each -> formatViolation(configName, each)).sorted().collect(Collectors.joining("; "))));
+                .map(each -> formatViolation(configName, each)).distinct().sorted().collect(Collectors.joining("; "))));
     }
     
     private static String formatViolation(final String configName, final ConstraintViolation<Object> violation) {
@@ -56,6 +57,22 @@ public final class MCPConfigurationValidator {
             return violation.getMessage();
         }
         String message = violation.getMessage();
-        return String.format("%s property `%s` %s%s", configName, violation.getPropertyPath(), message, message.endsWith(".") ? "" : ".");
+        return String.format("%s property `%s` %s%s", configName, formatPropertyPath(violation.getPropertyPath()), message, message.endsWith(".") ? "" : ".");
+    }
+    
+    private static String formatPropertyPath(final Path propertyPath) {
+        String result = propertyPath.toString();
+        for (Path.Node each : propertyPath) {
+            if (ElementKind.CONTAINER_ELEMENT != each.getKind()) {
+                continue;
+            }
+            Path.ContainerElementNode containerElementNode = each.as(Path.ContainerElementNode.class);
+            if (!Map.class.equals(containerElementNode.getContainerClass())) {
+                continue;
+            }
+            String node = String.format("[%s].%s", each.getKey(), each.getName());
+            result = result.replace(node, String.format("<%s>%s", 0 == containerElementNode.getTypeArgumentIndex() ? "K" : "V", node));
+        }
+        return result;
     }
 }

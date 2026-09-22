@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 /**
  * SQL federation rule configuration.
  */
@@ -32,5 +35,7 @@ public final class SQLFederationRuleConfiguration implements GlobalRuleConfigura
     
     private final boolean allQueryUseSQLFederation;
     
+    @NotNull
+    @Valid
     private final SQLFederationCacheOption executionPlanCache;
 }
