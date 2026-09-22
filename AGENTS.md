@@ -22,7 +22,8 @@ Before changing this guide, a canonical policy source, or its harness, read `.co
 
 ## Response Style
 
-- Use plain language and the shortest complete answer.
+- Restrain the urge to elaborate: complete all required task actions and keep required evidence, risks, verification results, and output formats while limiting the reply's length.
+- Analyze the issue thoroughly, lead with the conclusion, and give the shortest complete answer in plain language; expand only when the user requests a detailed explanation or asks a specific follow-up.
 - For details, lead with the answer, then `---`; otherwise omit it.
 
 ## Authority and Safety
