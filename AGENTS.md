@@ -124,7 +124,7 @@ Preserve supported behavior outside the exact authorized change. Load the full n
 At the end of each task, report the following:
 
 - Whether the skill was used and what guidance it provided.
-- Whether Jev MCP was called; if not, state the specific reason.
+- Whether Jev MCP was called; if not, state the decisive routing reason, not an unchecked condition such as quota or balance.
 - The number of Jev MCP calls, the judgments handled, and the role each call played.
 - Whether Jev changed task routing, prioritization, conclusions, or the execution plan.
 - Whether Jev actually reduced token usage or improved processing speed or efficiency.
