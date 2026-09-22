@@ -59,7 +59,7 @@ class LinkedServerRuleTest {
         assertTrue(rule.findLogicalTable("mylinkedserver", "HumanResources.dbo.Department").isPresent());
         assertThat(rule.findLogicalTable("mylinkedserver", "HumanResources.dbo.Department").get(), is("t_department"));
     }
-
+    
     @Test
     void assertFindLogicalTableWithCaseDifferentTableIdentityReturnsEmpty() {
         assertFalse(rule.findLogicalTable("MyLinkedServer", "humanresources.dbo.department").isPresent());

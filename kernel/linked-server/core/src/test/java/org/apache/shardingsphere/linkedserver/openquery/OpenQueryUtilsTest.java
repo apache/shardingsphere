@@ -71,7 +71,7 @@ class OpenQueryUtilsTest {
         assertTrue(actualServerName.isPresent());
         assertThat(actualServerName.get(), is("MyLinkedServer"));
     }
-
+    
     @Test
     void assertExtractBracketedLinkedServerNameViaFallback() {
         FunctionSegment funcSeg = new FunctionSegment(0, 70, "OPENQUERY", "OPENQUERY([MyLinkedServer], 'SELECT GroupName FROM Department')");
@@ -81,7 +81,7 @@ class OpenQueryUtilsTest {
         assertTrue(actualServerName.isPresent());
         assertThat(actualServerName.get(), is("MyLinkedServer"));
     }
-
+    
     @Test
     void assertExtractDoubleQuotedLinkedServerNameViaColumnSegment() {
         FunctionSegment funcSeg = new FunctionSegment(0, 70, "OPENQUERY", "OPENQUERY(\"MyLinkedServer\", 'SELECT 1')");
@@ -91,7 +91,7 @@ class OpenQueryUtilsTest {
         assertTrue(actualServerName.isPresent());
         assertThat(actualServerName.get(), is("MyLinkedServer"));
     }
-
+    
     @Test
     void assertExtractSingleQuotedLinkedServerNameViaFallback() {
         FunctionSegment funcSeg = new FunctionSegment(0, 70, "OPENQUERY", "OPENQUERY('MyLinkedServer', 'SELECT 1')");
@@ -101,7 +101,7 @@ class OpenQueryUtilsTest {
         assertTrue(actualServerName.isPresent());
         assertThat(actualServerName.get(), is("MyLinkedServer"));
     }
-
+    
     @Test
     void assertExtractLinkedServerNameWithSpacesViaBrackets() {
         FunctionSegment funcSeg = new FunctionSegment(0, 70, "OPENQUERY", "OPENQUERY([My Server], 'SELECT 1')");
