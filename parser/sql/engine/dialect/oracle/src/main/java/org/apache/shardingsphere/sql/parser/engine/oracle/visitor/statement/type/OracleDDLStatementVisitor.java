@@ -744,7 +744,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             if (null != each.modifyColumnSpecification()) {
                 result.getValue().add((ModifyColumnDefinitionSegment) visit(each.modifyColumnSpecification()));
             }
-            if (null != each.dropColumnClause()) {
+            if (null != each.dropColumnClause() && null == each.dropColumnClause().dropUnusedColumnsClause()) {
                 result.getValue().add((DropColumnDefinitionSegment) visit(each.dropColumnClause()));
             }
         }
@@ -2381,9 +2381,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         
         @Override
         public Void visitCollectionVariableDecl(final CollectionVariableDeclContext ctx) {
-            if (null != ctx.TYPE() && null != ctx.MOD_() && null != ctx.typeName().owner()) {
-                result.getTables().add(createTypeAttributeTable(ctx.typeName()));
-                result.getColumns().add(createTypeAttributeColumn(ctx.typeName()));
+            TypeNameContext typeName = null == ctx.typeName() ? ctx.collectionTypeName().typeName() : ctx.typeName();
+            if (null != ctx.TYPE() && null != ctx.MOD_() && null != typeName.owner()) {
+                result.getTables().add(createTypeAttributeTable(typeName));
+                result.getColumns().add(createTypeAttributeColumn(typeName));
             }
             return super.visitCollectionVariableDecl(ctx);
         }

@@ -27,16 +27,16 @@ import java.util.Map.Entry;
 /**
  * YAML runtime database configurations validator.
  */
-public final class YamlRuntimeDatabaseConfigurationsValidator implements ConstraintValidator<ValidYamlRuntimeDatabaseConfigurations, Map<String, YamlRuntimeDatabaseConfiguration>> {
+public final class YamlRuntimeDatabaseConfigurationsValidator implements ConstraintValidator<ValidYamlRuntimeDatabaseConfigurations, Map<?, ?>> {
     
     @Override
-    public boolean isValid(final Map<String, YamlRuntimeDatabaseConfiguration> value, final ConstraintValidatorContext context) {
+    public boolean isValid(final Map<?, ?> value, final ConstraintValidatorContext context) {
         if (null == value) {
             return true;
         }
         boolean result = true;
-        for (Entry<String, YamlRuntimeDatabaseConfiguration> entry : value.entrySet()) {
-            result = validateRuntimeDatabase(entry.getKey(), entry.getValue(), context) && result;
+        for (Entry<?, ?> entry : value.entrySet()) {
+            result = validateRuntimeDatabase((String) entry.getKey(), (YamlRuntimeDatabaseConfiguration) entry.getValue(), context) && result;
         }
         return result;
     }

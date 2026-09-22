@@ -59,6 +59,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSpher
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.file.SystemResourceFileUtils;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
@@ -78,6 +79,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -104,9 +106,13 @@ public final class PipelineContextUtils {
         if (null != PipelineContextManager.getContext(contextKey)) {
             return;
         }
-        ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(
-                SystemResourceFileUtils.readFile("config_sharding_sphere_jdbc_source.yaml"));
-        YamlRootConfiguration rootConfig = (YamlRootConfiguration) pipelineDataSourceConfig.getDataSourceConfiguration();
+        String yaml = SystemResourceFileUtils.readFile("config_sharding_sphere_jdbc_source.yaml");
+        ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(yaml);
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(pipelineDataSourceConfig.getParameter(), YamlRootConfiguration.class, true);
+        Map<String, Map<String, Object>> dataSources = new LinkedHashMap<>(pipelineDataSourceConfig.getDataSourcePoolPropertiesMap().size(), 1F);
+        YamlDataSourceConfigurationSwapper swapper = new YamlDataSourceConfigurationSwapper();
+        pipelineDataSourceConfig.getDataSourcePoolPropertiesMap().forEach((name, props) -> dataSources.put(name, swapper.swapToMap(props)));
+        rootConfig.setDataSources(dataSources);
         ContextManager contextManager = getContextManager(rootConfig);
         ClusterPersistRepository persistRepository = getClusterPersistRepository(
                 (ClusterPersistRepositoryConfiguration) contextManager.getComputeNodeInstanceContext().getModeConfiguration().getRepository());
@@ -220,8 +226,7 @@ public final class PipelineContextUtils {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static Map<ShardingSphereIdentifier, Collection<String>> getTableAndRequiredColumnsMap(final MigrationJobConfiguration jobConfig) {
         Map<ShardingSphereIdentifier, Collection<String>> result = new HashMap<>();
-        Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules());
+        Collection<RuleConfiguration> ruleConfigs = ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRuleConfigurations();
         Set<ShardingSphereIdentifier> targetTableNames = jobConfig.getTargetTableNames().stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet());
         for (Entry<RuleConfiguration, PipelineRequiredColumnsExtractor> entry : OrderedSPILoader.getServices(PipelineRequiredColumnsExtractor.class, ruleConfigs).entrySet()) {
             result.putAll(entry.getValue().getTableAndRequiredColumnsMap(entry.getKey(), targetTableNames));

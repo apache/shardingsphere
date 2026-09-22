@@ -31,10 +31,7 @@ public final class MCPLaunchConfigurationValidator implements ConstraintValidato
     
     @Override
     public boolean isValid(final YamlMCPLaunchConfiguration value, final ConstraintValidatorContext context) {
-        if (null == value || null == value.getTransport()) {
-            return true;
-        }
-        return isValid(value.getTransport(), context);
+        return null == value || null == value.getTransport() || isValid(value.getTransport(), context);
     }
     
     private boolean isValid(final YamlMCPTransportConfiguration value, final ConstraintValidatorContext context) {

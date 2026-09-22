@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -39,6 +41,7 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExt
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -56,6 +59,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -72,6 +76,19 @@ class GlobalConfigurationManagerTest {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         GlobalConfigurationManager manager = new GlobalConfigurationManager(metaDataContexts, mock(MetaDataPersistFacade.class));
         manager.alterGlobalRuleConfiguration(null);
+        verify(metaDataContexts, never()).update(any(ShardingSphereMetaData.class), any(MetaDataPersistFacade.class));
+    }
+    
+    @Test
+    void assertAlterGlobalRuleConfigurationWithInvalidConfiguration() {
+        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        GlobalConfigurationManager manager = new GlobalConfigurationManager(metaDataContexts, mock(MetaDataPersistFacade.class));
+        try (MockedStatic<RuleConfigurationValidator> mockedValidator = mockStatic(RuleConfigurationValidator.class)) {
+            mockedValidator.when(() -> RuleConfigurationValidator.validate(ruleConfig)).thenThrow(new InvalidRuleConfigurationException("fixture", "invalid"));
+            assertThrows(InvalidRuleConfigurationException.class, () -> manager.alterGlobalRuleConfiguration(ruleConfig));
+        }
+        verify(metaDataContexts, never()).getMetaData();
         verify(metaDataContexts, never()).update(any(ShardingSphereMetaData.class), any(MetaDataPersistFacade.class));
     }
     
