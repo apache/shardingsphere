@@ -41,6 +41,9 @@ ShardingSphere's XA distributed transactions are not yet ready for Spring Boot 3
 This limitation also applies to other Jakarta EE 9+ based web frameworks, 
 such as Quarkus 3, Micronaut Framework 4, and Helidon 3+.
 
+If you need to use ShardingSphere's XA distributed transactions under Spring Boot 3+,
+please refer to [Jakarta Transactions of Jakarta EE 9 Spec](/en/user-manual/shardingsphere-jdbc/optional-plugins/jakarta-transactions).
+
 Users only need to configure the following.
 
 ```xml
