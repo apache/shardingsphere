@@ -40,9 +40,7 @@ fact—not CI—as the incomplete reason.
 
 ## Canonical Assessment
 
-Resolve one review basis before discovery: the effective candidate, applicable
-requirements, selected review focus, and admissible evidence. Run the Review
-Workflow against that basis and produce one mode-independent assessment:
+Resolve one review basis before discovery: the effective candidate, applicable requirements, accepted behavior and project commitments, selected review focus, and admissible evidence. Run the Review Workflow against that basis and produce one mode-independent assessment:
 confirmed findings consolidated by fix boundary, needs-discussion conditions,
 incomplete-evidence gaps, and Completion Gate state.
 
@@ -83,6 +81,22 @@ unchanged basis.
 ## Repository Code Policy References
 
 Standalone review is read-only and does not activate `code-implementation` or acquire write authority. Before judging the effective candidate, read [implementation rules](../code-implementation/references/rules/implementation.md), [non-regression rules](../code-implementation/references/rules/non-regression.md), and [verification rules](../code-implementation/references/verification.md) through EOF. Also read [testing rules](../code-implementation/references/rules/testing.md) when tests or coverage matter, and [artifact removal and contract impact rules](../code-implementation/references/rules/artifact-removal-and-contract-impact.md) when their trigger matches. Reuse an exact reference already read by the outer implementation workflow.
+Before judging reviewed code or Maven POM changes, read [coding standards](../coding-standards/SKILL.md) through EOF and use its Implementation Guidance Mode.
+
+## Problem and Project Commitment Gate
+
+Complete this gate before implementation-detail discovery; it establishes the review basis but does not waive the Finding Proof, Mandatory Style Verification, Completion, or convergence gates.
+
+1. Reconstruct the problem and expected behavior from the PR, linked issue when present, official documentation, maintained contracts, current code, and tests.
+2. Classify the requested outcome as preserving an accepted contract or adding a project commitment such as new semantics, configuration, API or SPI, compatibility, topology, database, dialect, or cross-module support.
+3. For Apache ShardingSphere, establish that ShardingSphere owns the behavior and that official project positioning, maintained contracts, or an explicit public maintainer decision accepts every new commitment; for an authorized downstream repository, apply equivalent target-project evidence available within the user-authorized repository boundary.
+4. Identify the narrowest accepted user-visible behavior and compare it with the patch's public contract, shared abstractions, compatibility surface, documentation, and tests.
+5. Check whether the change creates precedent or consistency pressure beyond the accepted behavior; an exact existing behavior or special case does not authorize broader generalization.
+
+An open or labeled issue, popularity, contributor effort, available code, passing tests, or a small diff do not establish project acceptance.
+When evidence disproves the problem, expected behavior, applicable project ownership, or an asserted accepted commitment, or when a new commitment still requires a maintainer decision, record a `Needs Discussion` condition.
+When the behavior is accepted but the patch adds unsupported generalization, public surface, parallel models, or abstractions without a real stable boundary, treat the excess as a finding candidate under the implementation rules; patch size or novelty alone is not evidence of overdesign.
+When a decisive acceptance or ownership fact is unavailable after every admissible route, apply the Review Incomplete Proof Gate instead of converting uncertainty into `Needs Discussion`.
 
 ## Scope and Evidence
 
@@ -127,8 +141,7 @@ A candidate may become a blocking issue only when all five conditions hold:
    inspect setup, wrappers, earlier calls, generators, and consuming runtime.
 3. `Counter-evidence`: check the strongest evidence that could disprove the
    finding, especially author or maintainer replies and version-specific facts.
-4. `Necessity`: the requested change is required for safety or correctness in
-   the selected focus, not merely cleaner or preferable.
+4. `Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable.
 5. `Scope`: this PR causes the problem, exposes it through behavior it owns, or
    must address it to satisfy the linked issue.
 
@@ -145,7 +158,7 @@ If authoritative scope cannot be established, state the exact unavailable scope 
 
 ## Behavior Clusters and Risk Triage
 
-Map every substantive file to the smallest meaningful behavior cluster and identify each cluster's root cause, owner, entry paths, consumers, contracts, changed decisions, and validation points. Account explicitly for churn-only files.
+Map every substantive file to the smallest meaningful behavior cluster and identify each cluster's root cause, owner, entry paths, consumers, contracts, project-commitment delta, changed decisions, and validation points. Account explicitly for churn-only files.
 
 Triage functional boundaries, ownership and shared contracts, compatibility and rollback, test validity, concurrency and performance, security and operations, dependencies, packaging, and generated artifacts. Read only the triggered sections of [high-risk-review.md](references/high-risk-review.md). Also read [sql-parser-review.md](references/sql-parser-review.md) for SQL grammar, visitors, parser tests, syntax documentation, dialect behavior, or parser baselines.
 
@@ -154,14 +167,15 @@ Triage functional boundaries, ownership and shared contracts, compatibility and 
 Apply this workflow to the canonical review basis without letting output mode or a previous result influence the assessment:
 
 1. Complete `Repository Code Policy References`, then establish the authoritative effective-candidate scope and applicable requirements.
-2. Confirm the selected review focus and admissible evidence.
-3. Build behavior clusters and complete the mandatory risk triage.
-4. Discover candidates across the complete scope through three lenses: root cause and behavior; blast radius and contracts; tests, runtime, and operations.
-5. Apply the Finding Proof Gate to every candidate. Keep discovery notes
+2. Complete the Problem and Project Commitment Gate and establish the accepted behavior boundary.
+3. Confirm the selected review focus and admissible evidence.
+4. Build behavior clusters and complete the mandatory risk triage.
+5. Discover candidates across the complete scope through three lenses: root cause and behavior; blast radius and contracts; tests, runtime, and operations.
+6. Apply the Finding Proof Gate to every candidate. Keep discovery notes
    private and classify every candidate before publication.
-6. Complete the Mandatory Style Verification Gate for a public PR or PR-backed local candidate.
-7. Consolidate findings by independent fix boundary and identify any gap that could change the blocker set.
-8. Review the latest delta and run a full-scope convergence pass. If it finds a new independent candidate, return to step 5; otherwise freeze the assessment after the Completion Gate.
+7. Complete the Mandatory Style Verification Gate for a public PR or PR-backed local candidate.
+8. Consolidate findings by independent fix boundary and identify any gap that could change the blocker set.
+9. Review the latest delta and run a full-scope convergence pass. If it finds a new independent candidate, return to step 6; otherwise freeze the assessment after the Completion Gate.
 
 If an outcome-sensitive decisive fact passes the Review Incomplete Proof Gate, return the mode-appropriate incomplete result.
 Otherwise continue the review or request a split; do not produce a complete verdict from a partial review.
@@ -191,9 +205,7 @@ evaluation:
 1. If the gate fails because a gap satisfies the Review Incomplete Proof Gate, use `Review Incomplete`, even when some blockers are already confirmed.
 2. If the Mandatory Style Verification Gate is incomplete for any applicable PR-impact file, use `Review Incomplete`, even when some blockers are already confirmed.
 3. If Checkstyle or Spotless fails on an applicable PR-impact file, use `Not Mergeable` with `Feedback Mode: Change Request`.
-4. If admissible evidence disproves the problem model, expected behavior, ownership,
-   protocol or SQL semantics, compatibility assumption, or solution direction,
-   use `Not Mergeable` with `Feedback Mode: Needs Discussion`.
+4. If admissible evidence disproves the problem model, expected behavior, ownership, protocol or SQL semantics, compatibility assumption, accepted project commitment, or solution direction, or establishes that a new project commitment still requires a maintainer decision, use `Not Mergeable` with `Feedback Mode: Needs Discussion`.
 5. If at least one candidate passes the Finding Proof Gate, use `Not Mergeable`
    with `Feedback Mode: Change Request`.
 6. Otherwise use `Mergeable` for the selected focus.
@@ -253,7 +265,7 @@ For each blocking issue include:
 
 Do not add patch-level changes after selecting Needs Discussion.
 Do not include placeholder headings.
-In `### Coverage`, report the candidate type, reviewed baseline or head, authoritative requirements and files accounted for, behavior clusters, completed discovery lenses, unresolved gaps, and CI scope.
+In `### Coverage`, report the candidate type, reviewed baseline or head, authoritative requirements and files accounted for, accepted behavior and project-commitment basis, behavior clusters, completed discovery lenses, unresolved gaps, and CI scope.
 For every public PR or PR-backed local candidate, also report the effective candidate SHA, each style-verification scope and command, each exit code, every covered applicable PR-impact file, and every `Not Applicable` check with its basis.
 For a standalone local candidate, identify the task baseline and attributed local delta; for a PR-backed candidate, identify authorized local commits, index changes, or working-tree changes separately from the public PR state.
 In Code Correctness Review, state that the result is code-scope only and CI was not reviewed while distinguishing the completed local style verification from CI.

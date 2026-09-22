@@ -733,7 +733,11 @@ modifyColSubstitutable
     ;
 
 dropColumnClause
-    : SET UNUSED columnOrColumnList cascadeOrInvalidate* | dropColumnSpecification
+    : SET UNUSED columnOrColumnList cascadeOrInvalidate* | dropUnusedColumnsClause | dropColumnSpecification
+    ;
+
+dropUnusedColumnsClause
+    : DROP UNUSED COLUMNS (CHECKPOINT INTEGER_?)?
     ;
 
 dropColumnSpecification

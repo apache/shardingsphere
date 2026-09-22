@@ -73,7 +73,7 @@ public final class ConsistencyCheckDataBuilder {
             return new Object();
         }
         if (value instanceof Boolean) {
-            return !((Boolean) value);
+            return !(Boolean) value;
         }
         if (value instanceof Byte) {
             return (byte) ((Byte) value - 1);

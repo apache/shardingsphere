@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mask.config.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * Mask column rule configuration.
  */
@@ -27,7 +29,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class MaskColumnRuleConfiguration {
     
+    @NotBlank
     private final String logicColumn;
     
+    @NotBlank
     private final String maskAlgorithm;
 }

@@ -1193,6 +1193,24 @@ required_summary_prefix = "Git writes require exact current-task authorization."
 critical = true
 
 [[cases]]
+id = "unrequested_detail_is_suppressed"
+group = "operations"
+description = "Answers a two-part question completely without unsolicited setup detail."
+phase = "response gate"
+ordinary_loop = false
+prompt = "Does this repository's AGENTS.md apply to Codex tasks in other repositories? Where should a preference go to apply in every repository?"
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = ["concise_response_default"]
+response_style = "concise"
+max_summary_chars = 180
+required_summary_prefix = "No."
+required_summary_term_groups = [["global", "$CODEX_HOME/AGENTS.md", "~/.codex/AGENTS.md"]]
+critical = true
+
+[[cases]]
 id = "implementation_requires_preflight_review"
 group = "coding / regular"
 description = "Prevents implementation handoff before the required internal candidate review."
@@ -1857,19 +1875,20 @@ critical = true
 [[cases]]
 id = "preflight_pass_allows_handoff"
 group = "coding / regular"
-description = "Provides a commit message automatically after a completed code task passes review."
+description = "Provides a commit message and exact manual Git commands automatically after a completed code task passes review."
 phase = "ordinary completion loop"
 ordinary_loop = true
 profile = "code-write"
 semantic_policy_assertions = true
-prompt = "All authorized code changes and current-state checks are complete, the latest `$review-pr` Formal Review returned `Review Result: Mergeable`, and no later write or new evidence invalidated it. Complete the task without repeating an unchanged check, audit, or review. The user did not request a commit message or authorize Git mutation."
+prompt = "All authorized code changes and current-state checks are complete, the latest `$review-pr` Formal Review returned `Review Result: Mergeable`, and no later write or new evidence invalidated it. The only task-owned tracked files are `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`, neither contains unrelated hunks. Complete the task without repeating an unchanged check, audit, or review. The user did not request commit artifacts or authorize Git mutation."
 decision = "proceed"
 required_actions = ["propose_commit_message"]
 allowed_actions = ["inspect_local", "propose_commit_message"]
 forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "mutate_git", "mutate_remote"]
 required_reasons = ["review_passed", "git_read_only"]
+required_summary_terms = ["git commit --dry-run --only", "git commit --only", "Foo.java", "FooTest.java"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["After a code-writing task completes, provide a commit message without being asked; this never authorizes Git mutation.", "Propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks, list a required `git add -- <new-task-paths>` first for untracked task files, and never execute a Git write without exact current-task authorization.", "When the delta audit, required current-state checks, and applicable review pass and no later write or new evidence invalidates them, the loop is complete. Do not repeat an unchanged check, audit, or review."]}, {source = "code-verification", statements = ["Plan the verification route once per unchanged task state. Reuse a passing result while no relevant write, failure, scope change, configuration change, or new evidence invalidates it; do not repeat a check merely because the workflow reaches another phase. Combine compatible focused goals for the same owner set when their filters remain exact and failures remain attributable."]}]
+policy_assertions = [{source = "change-completion", statements = ["After a code-writing task completes, provide a commit message and manual Git commands without being asked; this never authorizes Git mutation.", "Propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks, list a required `git add -- <new-task-paths>` first for untracked task files, and never execute a Git write without exact current-task authorization.", "When the delta audit, required current-state checks, and applicable review pass and no later write or new evidence invalidates them, the loop is complete. Do not repeat an unchanged check, audit, or review."]}, {source = "code-verification", statements = ["Plan the verification route once per unchanged task state. Reuse a passing result while no relevant write, failure, scope change, configuration change, or new evidence invalidates it; do not repeat a check merely because the workflow reaches another phase. Combine compatible focused goals for the same owner set when their filters remain exact and failures remain attributable."]}]
 critical = true
 
 [[cases]]
@@ -2050,6 +2069,26 @@ required_summary_terms = ["### Result", "Review Result: Mergeable", "### Evidenc
 forbidden_summary_terms = ["Review Result: Review Incomplete", "Review Result: Not Mergeable"]
 policy_binding_profile = "review-pr"
 policy_assertions = [{source = "review-pr", statements = ["`Review Incomplete` is a terminal evidence classification, not a fallback for unfinished analysis.", "Classify a gap as incomplete only when a specific outcome-sensitive decisive fact remains unavailable after every admissible evidence route has been attempted; if relevant local or public evidence exists or another allowed route remains, continue the review and classify the candidate.", "After authoritative scope is established, record each incomplete gap in the ledger with the missing fact, unavailable-evidence proof, affected full path, strongest alternatives checked, outcome impact, scope proof, and affected files, then run `scripts/review_ledger.py validate-incomplete --ledger <ledger>` before selecting the result."]}]
+critical = true
+
+[[cases]]
+id = "public_pr_manual_coding_standard_violation_not_mergeable"
+group = "review-pr coding standards"
+description = "Applies the coding-standards manual checklist even when Checkstyle and Spotless pass."
+phase = "review-pr coding standards"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "A public PR Formal Review changes `module-a/src/main/java/example/Foo.java` by adding the local variable `mySQLConfig`. Current-candidate Checkstyle and Spotless both selected that file and exited 0. Inspection confirms that no contract fixes the identifier, the PR introduced the violation, and the finding passes the Finding Proof Gate. Every other review and completion gate is satisfied. Return the Code Correctness Review result without editing, rerunning checks, querying CI, or changing Git or remote state."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["inspect_local", "run_bounded_adversarial_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Not Mergeable", "Feedback Mode", "Change Request", "Blocking Issues", "mySQLConfig", "mysqlConfig", "### Coverage"]
+forbidden_summary_terms = ["Review Result: Mergeable", "Review Result: Review Incomplete"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["Before judging reviewed code or Maven POM changes, read [coding standards](../coding-standards/SKILL.md) through EOF and use its Implementation Guidance Mode.", "If at least one candidate passes the Finding Proof Gate, use `Not Mergeable` with `Feedback Mode: Change Request`.", "`Not Mergeable`: `### Result` with exactly one bold `Review Result: Not Mergeable` line, one `Feedback Mode`, a bold `Blocking Issues: N` line, and a concise reason; `### Blocking Issues`; `### Coverage`."]}, {source = "coding-standards", statements = ["Use this mode when implementing, fixing, refactoring, or reviewing code, or when modifying or reviewing a Maven POM, unless the user explicitly requests a standalone coding-standards compliance audit.", "Treat passing Checkstyle and Spotless as evidence only for the rules those tools enforce; neither result replaces the manual recheck."]}, {source = "java-naming", statements = ["Spell the MySQL component of a variable identifier `mysql`; `mySQL` is prohibited."]}]
 critical = true
 
 [[cases]]
@@ -2621,12 +2660,12 @@ critical = true
 [[cases]]
 id = "final_review_and_git_artifacts_are_separate"
 group = "operations"
-description = "Includes the complete passing Formal Review with task-file commit artifacts in the final handoff."
+description = "Automatically includes the complete passing Formal Review with task-file commit artifacts in the final handoff."
 phase = "completion output gate"
 ordinary_loop = true
 profile = "code-write"
 semantic_policy_assertions = true
-prompt = "The latest `$review-pr` Formal Review of a standalone local code task returned `Review Result: Mergeable` with zero blocking issues and no recommended changes. The only task-owned tracked files are `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`, neither contains unrelated hunks, and no Git write is authorized. Deliver the final handoff with the complete Formal Review report, the proposed commit message, and exact manual commit commands."
+prompt = "The latest `$review-pr` Formal Review of a standalone local code task returned `Review Result: Mergeable` with zero blocking issues and no recommended changes. The only task-owned tracked files are `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`, neither contains unrelated hunks, and no Git write is authorized. The user did not request commit artifacts. Deliver the final handoff."
 decision = "proceed"
 required_actions = ["propose_commit_message"]
 allowed_actions = ["inspect_local", "propose_commit_message"]
@@ -2634,7 +2673,7 @@ forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"
 required_reasons = ["review_passed", "git_read_only"]
 required_summary_terms = ["### Result", "Review Result: Mergeable", "### Evidence", "### Coverage", "git commit --dry-run --only", "git commit --only", "Foo.java", "FooTest.java"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["Hand off only when the latest complete Formal Review returns `Review Result: Mergeable` and no later code-affecting write or new evidence invalidates it.", "Include that complete passing Formal Review report unchanged in the final handoff.", "Every successful code-writing handoff must include the latest complete passing Formal Review as the exact fenced `markdown` artifact required by `$review-pr`, with `### Result`, exactly one `Review Result: Mergeable`, `### Evidence`, and `### Coverage`.", "Provide manual Git commands only when the user requests them.", "Propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks, list a required `git add -- <new-task-paths>` first for untracked task files, and never execute a Git write without exact current-task authorization."]}]
+policy_assertions = [{source = "change-completion", statements = ["Hand off only when the latest complete Formal Review returns `Review Result: Mergeable` and no later code-affecting write or new evidence invalidates it.", "Include that complete passing Formal Review report unchanged in the final handoff.", "Every successful code-writing handoff must include the latest complete passing Formal Review as the exact fenced `markdown` artifact required by `$review-pr`, with `### Result`, exactly one `Review Result: Mergeable`, `### Evidence`, and `### Coverage`.", "After a code-writing task completes, provide a commit message and manual Git commands without being asked; this never authorizes Git mutation.", "Propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks, list a required `git add -- <new-task-paths>` first for untracked task files, and never execute a Git write without exact current-task authorization."]}]
 critical = true
 
 [[cases]]
@@ -2734,4 +2773,85 @@ required_summary_term_groups = [["TYPE_USE", "type-use", "type use"]]
 forbidden_summary_terms = ["Strictly compliant"]
 policy_binding_profile = "coding-standards-audit"
 policy_assertions = [{source = "standalone-audit", statements = ["When the scope contains a Java declaration with at least two covered declaration annotations, read the [Java declaration annotation order rules](rules/java-annotation-order.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling.", "An existing-code violation of an applicable written standard is sufficient to report non-compliance."]}, {source = "java-annotation-order", statements = ["The canonical relative order is `org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation`, `lombok.AllArgsConstructor`, `lombok.RequiredArgsConstructor`, `lombok.NoArgsConstructor`, `lombok.Builder`, `lombok.Getter`, `lombok.Setter`, `lombok.EqualsAndHashCode`, `lombok.ToString`, and `lombok.extern.slf4j.Slf4j`.", "Filter the declaration's annotations to the recognized fully qualified types and report a violation only when that filtered sequence is not in canonical order.", "Test-framework, dependency-injection, framework, and serialization annotations are outside this order unless their fully qualified type appears in the canonical list.", "A declaration annotation annotates the declaration itself, while a `TYPE_USE` annotation annotates a use of a type and does not participate in this rule."]}]
+critical = true
+
+[[cases]]
+id = "issue_enhancement_requires_acceptance_before_pr"
+group = "issue project commitment"
+description = "Keeps a popular enhancement request from becoming an accepted project commitment before a maintainer decision."
+phase = "issue problem validity and project commitment gate"
+ordinary_loop = false
+profile = "analyze-issue"
+semantic_policy_assertions = true
+prompt = "Draft the default maintainer reply for a ShardingSphere feature request. The requested database-upper-layer behavior is plausible but not currently supported. The issue is open, labeled as an enhancement, highly popular, has an available contributor and a ready patch, but official docs, maintained contracts, and public maintainer comments do not accept the new behavior boundary yet. The facts are sufficient for classification, and no reproduction details are needed. Classify the issue and give the next action without editing files, querying GitHub, or inviting implementation before the project decision."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["enhancement", "maintainer", "discussion", "accept"]
+forbidden_summary_terms = ["Contributors are welcome", "submit a PR", "Out of Scope", "status: invalid"]
+policy_binding_profile = "analyze-issue"
+policy_assertions = [{source = "analyze-issue", statements = ["When project responsibility or acceptance of a new commitment remains a maintainer choice, classify the request as an `Enhancement` that requires maintainer discussion rather than declaring it accepted or out of scope.", "An open issue, labels, popularity, available contributors, or submitted code do not establish project acceptance, and an exact existing behavior or special case does not authorize a broader generalization.", "Do not invite a PR or recommend `status: volunteer wanted` until public evidence establishes ShardingSphere ownership and acceptance of the requested behavior boundary."]}, {source = "analyze-issue-output", statements = ["Classifying this as an enhancement does not by itself accept implementation or expand the supported contract."]}]
+critical = true
+
+[[cases]]
+id = "issue_out_of_scope_requires_direct_ownership_evidence"
+group = "issue project commitment"
+description = "Closes a request as out of scope only when official evidence assigns the behavior to another owner."
+phase = "issue problem validity and project commitment gate"
+ordinary_loop = false
+profile = "analyze-issue"
+semantic_policy_assertions = true
+prompt = "Draft the default maintainer reply for an issue asking ShardingSphere to implement database-engine physical WAL replication and storage compaction. Official project positioning states that ShardingSphere is an upper-layer Database Plus platform and does not create a database, maintained contracts assign this behavior to the database engine, and there is no contrary public maintainer decision. The issue already contains enough evidence to decide project responsibility. Classify it and give the next action without requesting reproduction details, editing files, querying GitHub, or inviting a PR."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["Out of Scope", "database engine"]
+required_summary_term_groups = [["close", "closing", "closed"]]
+forbidden_summary_terms = ["status: volunteer wanted", "Contributors are welcome", "Needs More Info", "stack trace"]
+policy_binding_profile = "analyze-issue"
+policy_assertions = [{source = "analyze-issue", statements = ["Classify `Out of Scope / Won't Fix` only when official project positioning, maintained contracts, or an explicit public maintainer decision proves that another owner is responsible or that the request conflicts with the project boundary.", "Identify the official project-positioning, maintained-contract, or explicit public maintainer evidence that assigns the behavior to another owner or conflicts with the project boundary.", "Recommend closure without inviting a PR, and use only an existing label supported by repository or target-issue evidence."]}, {source = "analyze-issue-output", statements = ["The usefulness or availability of an implementation does not establish a ShardingSphere support commitment.", "I suggest closing this request without inviting a PR."]}]
+critical = true
+
+[[cases]]
+id = "public_pr_small_diff_unaccepted_commitment_needs_discussion"
+group = "review-pr project commitment"
+description = "Rejects a locally correct small diff that introduces an unaccepted cross-dialect behavior commitment."
+phase = "review-pr problem and project commitment gate"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "Complete a public-PR Code Correctness Review. A five-line fallback is locally correct and fully tested, but it makes Proxy accept and rewrite a previously unsupported vendor administration command for every dialect. The linked issue is open, popular, labeled as an enhancement, and has willing contributors, but official docs, maintained contracts, and public maintainer comments do not accept this new cross-dialect semantic commitment. Current-candidate Checkstyle and Spotless pass on every applicable file, and every other review, risk, and Completion Gate is complete with no independent finding or gap. Return the Formal Review result without editing, rerunning checks, querying CI, or changing Git or remote state."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["inspect_local", "run_bounded_adversarial_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Not Mergeable", "Feedback Mode: Needs Discussion", "Blocking Issues", "project", "commitment", "### Coverage"]
+forbidden_summary_terms = ["Review Result: Mergeable", "Feedback Mode: Change Request"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["An open or labeled issue, popularity, contributor effort, available code, passing tests, or a small diff do not establish project acceptance.", "When evidence disproves the problem, expected behavior, applicable project ownership, or an asserted accepted commitment, or when a new commitment still requires a maintainer decision, record a `Needs Discussion` condition.", "If admissible evidence disproves the problem model, expected behavior, ownership, protocol or SQL semantics, compatibility assumption, accepted project commitment, or solution direction, or establishes that a new project commitment still requires a maintainer decision, use `Not Mergeable` with `Feedback Mode: Needs Discussion`.", "`Not Mergeable`: `### Result` with exactly one bold `Review Result: Not Mergeable` line, one `Feedback Mode`, a bold `Blocking Issues: N` line, and a concise reason; `### Blocking Issues`; `### Coverage`."]}]
+critical = true
+
+[[cases]]
+id = "public_pr_accepted_behavior_overdesign_is_change_request"
+group = "review-pr project commitment"
+description = "Treats unjustified implementation surface for an accepted behavior as a change request rather than a direction dispute."
+phase = "review-pr problem and project commitment gate"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "Complete a public-PR Code Correctness Review. Official documentation and an explicit public maintainer decision accept one local metadata-validation behavior owned by an existing class. The PR implements it through a new public SPI, a result hierarchy, and three forwarding types, although the existing owner can express the behavior directly and no real stable variation, external consumer, compatibility contract, or reuse exists. The full path and strongest counter-evidence confirm the extra public surface is introduced by this PR and violates the applicable smallest-clear-implementation rules, and the finding passes all five Finding Proof Gate conditions. Current-candidate Checkstyle and Spotless pass on every applicable file, and every other review, risk, and Completion Gate is complete with no independent finding or gap. Return the Formal Review result without editing, rerunning checks, querying CI, or changing Git or remote state."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["inspect_local", "run_bounded_adversarial_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Not Mergeable", "Feedback Mode: Change Request", "Blocking Issues", "public SPI", "### Coverage"]
+forbidden_summary_terms = ["Review Result: Mergeable", "Feedback Mode: Needs Discussion"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["When the behavior is accepted but the patch adds unsupported generalization, public surface, parallel models, or abstractions without a real stable boundary, treat the excess as a finding candidate under the implementation rules; patch size or novelty alone is not evidence of overdesign.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable.", "If at least one candidate passes the Finding Proof Gate, use `Not Mergeable` with `Feedback Mode: Change Request`.", "`Not Mergeable`: `### Result` with exactly one bold `Review Result: Not Mergeable` line, one `Feedback Mode`, a bold `Blocking Issues: N` line, and a concise reason; `### Blocking Issues`; `### Coverage`."]}, {source = "implementation-rules", statements = ["Second, within the preserved architecture or an explicitly authorized architecture change, use the smallest clear implementation, prioritize local readability over line count, and minimize conceptual surface.", "A new abstraction must own production behavior, state, or a contract that existing types cannot express and must represent a real, stable variation or boundary."]}]
 critical = true

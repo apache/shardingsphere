@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensit
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
@@ -55,6 +56,7 @@ public final class GlobalConfigurationManager {
         if (null == ruleConfig) {
             return;
         }
+        RuleConfigurationValidator.validate(ruleConfig);
         Collection<ShardingSphereRule> rules = removeGlobalRule(ruleConfig, metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules());
         rules.addAll(GlobalRulesBuilder.buildSingleRules(ruleConfig, metaDataContexts.getMetaData().getAllDatabases(), metaDataContexts.getMetaData().getProps()));
         metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().clear();
