@@ -15,7 +15,7 @@ Apache ShardingSphere 并不负责如何采集、存储以及展示应用性能�
 Tracing 用于获取 SQL 解析与 SQL 执行的链路跟踪信息。Apache ShardingSphere 默认提供了对 OpenTelemetry，SkyWalking 的支持，也支持用户通过插件化的方式开发自定义的 Tracing 组件。
 
 - 使用 OpenTelemetry
-OpenTelemetry 在 2019 年由 OpenTracing 和 OpenCensus 合并而来。 使用这种方式，只需要在 agent 配置文件中，根据 [OpenTelemetry SDK 自动配置说明](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure) ，填写合适的配置即可。可以导出数据到 Jaeger，Zipkin。
+OpenTelemetry 在 2019 年由 OpenTracing 和 OpenCensus 合并而来。 使用这种方式，只需要在 agent 配置文件中，根据 [OpenTelemetry SDK 自动配置说明](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure) ，填写合适的配置即可。可以导出数据到任意 OTLP 接收端，例如 Jaeger、Zipkin。
 
 - 使用 SkyWalking
 需要在 agent 配置中配置启用对应插件，并且需要同时配置使用 SkyWalking 的 apm-toolkit 工具。
