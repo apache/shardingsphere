@@ -36,7 +36,6 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -99,7 +98,7 @@ class EncryptRuleConfigurationTest {
         EncryptRuleConfiguration ruleConfig = createRuleConfiguration(new EncryptColumnRuleConfiguration(
                 "foo_col", new EncryptColumnItemRuleConfiguration("foo_cipher", "bar_encryptor")));
         InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
-        assertThat(actual.getMessage(), containsString("Property `tables` references unconfigured encryptors `bar_encryptor`."));
+        assertThat(actual.getMessage(), is("Invalid 'EncryptRuleConfiguration' rule, error message is: Property `tables` references unconfigured encryptors `bar_encryptor`."));
     }
     
     private static Stream<Arguments> invalidRuleConfigurationArguments() {

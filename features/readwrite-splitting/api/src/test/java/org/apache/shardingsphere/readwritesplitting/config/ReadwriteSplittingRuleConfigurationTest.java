@@ -33,7 +33,7 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -71,7 +71,8 @@ class ReadwriteSplittingRuleConfigurationTest {
         ReadwriteSplittingRuleConfiguration ruleConfig = createRuleConfiguration(new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "foo_group", "foo_write", Collections.singletonList("foo_read"), "bar_load_balancer"));
         InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
-        assertThat(actual.getMessage(), containsString("Property `dataSourceGroups` references unconfigured loadBalancers `bar_load_balancer`."));
+        assertThat(actual.getMessage(),
+                is("Invalid 'ReadwriteSplittingRuleConfiguration' rule, error message is: Property `dataSourceGroups` references unconfigured loadBalancers `bar_load_balancer`."));
     }
     
     private static Stream<Arguments> invalidRuleConfigurationArguments() {
