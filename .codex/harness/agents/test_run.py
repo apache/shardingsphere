@@ -900,6 +900,77 @@ class RunTest(unittest.TestCase):
             "source:changed",
         ], stability["blockers"])
 
+    def test_semantic_stability_accepts_confirmed_added_case_with_original_v0(self) -> None:
+        added_case = copy.deepcopy(self.case)
+        added_case["id"] = "added_case"
+        cases = [self.case, added_case]
+        actual = {"results": [self._create_case_result(each, "Proceed.") for each in cases]}
+        results = run.grade(cases, actual)
+        baseline = {
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
+            "case_contracts": run.normalize_case_contracts([self.case]),
+            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
+            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
+        }
+        confirmation = {
+            "safety_regressions": [],
+            "blockers": [],
+            "confirmed_case_regressions": [],
+            "changed_contract_failures": [],
+        }
+        stability = run.summarize_semantic_stability(
+            cases, actual, results, baseline, [], ["added_case:case-added"], confirmation
+        )
+        self.assertTrue(stability["passed"])
+        self.assertEqual(1, stability["baseline_case_count"])
+        self.assertEqual(2, stability["candidate_case_count"])
+        self.assertIsNone(stability["aggregate_non_regression"])
+        self.assertEqual(["added_case"], stability["confirmation_plan"]["candidate_case_ids"])
+
+    def test_semantic_stability_added_case_cannot_offset_original_failure(self) -> None:
+        added_case = copy.deepcopy(self.case)
+        added_case["id"] = "added_case"
+        cases = [self.case, added_case]
+        failed_original = self._create_case_result(self.case, "Refuse.")
+        failed_original["decision"] = "refuse"
+        actual = {"results": [failed_original, self._create_case_result(added_case, "Proceed.")]}
+        results = run.grade(cases, actual)
+        baseline = {
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
+            "case_contracts": run.normalize_case_contracts([self.case]),
+            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
+            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
+        }
+        confirmation = {
+            "safety_regressions": [],
+            "blockers": [],
+            "confirmed_case_regressions": [self.case["id"]],
+            "changed_contract_failures": [],
+        }
+        stability = run.summarize_semantic_stability(
+            cases, actual, results, baseline, [], ["added_case:case-added"], confirmation
+        )
+        self.assertFalse(stability["passed"])
+        self.assertEqual(["semantic-stability-confirmed-case-regression"], stability["blockers"])
+        self.assertIsNone(stability["aggregate_non_regression"])
+
+    def test_semantic_stability_rejects_unreported_addition_and_removed_original(self) -> None:
+        added_case = copy.deepcopy(self.case)
+        added_case["id"] = "added_case"
+        baseline = {
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
+            "case_contracts": run.normalize_case_contracts([self.case]),
+            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
+            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
+        }
+        for cases, contract_changes in (([self.case, added_case], []), ([added_case], ["added_case:case-added"])):
+            with self.subTest(cases=cases, contract_changes=contract_changes):
+                actual = {"results": [self._create_case_result(each, "Proceed.") for each in cases]}
+                stability = run.summarize_semantic_stability(
+                    cases, actual, run.grade(cases, actual), baseline, [], contract_changes
+                )
+                self.assertIn("semantic-stability-case-set-changed", stability["blockers"])
+
     def test_semantic_stability_requires_matching_evaluator(self) -> None:
         actual = {"results": [self._create_case_result(self.case, "Proceed.")]}
         results = run.grade([self.case], actual)

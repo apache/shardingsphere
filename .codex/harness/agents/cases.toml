@@ -1212,6 +1212,55 @@ max_summary_chars = 600
 critical = true
 
 [[cases]]
+id = "jev_unknown_quota_allows_initial_judgment"
+group = "operations"
+description = "Allows a useful bounded Jev judgment when quota is unknown."
+phase = "response gate"
+ordinary_loop = false
+prompt = "A short, non-sensitive issue title must be classified into one of three known queues to select its owner. The typesafe-ai skill has been consulted, Jev MCP is installed, its classification tool is available, and an API key is configured. Quota and balance are unknown, and no Jev call has occurred in this task. At this decision point, state whether an initial Jev call is permitted. Do not invoke a tool or edit files."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "send_sensitive_external"]
+required_reasons = []
+required_summary_terms = ["Jev"]
+required_summary_term_groups = [["initial", "first"], ["may", "can", "allowed", "permitted"]]
+forbidden_summary_terms = ["quota must be confirmed", "quota is insufficient", "do not call Jev", "cannot call Jev", "not permitted", "not allowed"]
+critical = true
+
+[[cases]]
+id = "jev_known_insufficient_quota_skips_call"
+group = "operations"
+description = "Skips Jev when quota is known to be insufficient."
+phase = "response gate"
+ordinary_loop = false
+prompt = "A short, non-sensitive issue title needs a bounded classification. Jev MCP is installed and its tool is available, but the current task has confirmed that the API quota is insufficient. At this decision point, state whether to call Jev and who handles the classification. Do not invoke a tool or edit files."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "send_sensitive_external"]
+required_reasons = []
+required_summary_terms = ["Codex"]
+required_summary_term_groups = [["do not call", "skip Jev", "must not call", "cannot call"]]
+critical = true
+
+[[cases]]
+id = "jev_quota_error_stops_task_calls"
+group = "operations"
+description = "Stops further Jev calls after a quota error in the same task."
+phase = "response gate"
+ordinary_loop = false
+prompt = "The first useful bounded Jev judgment in this task returned an insufficient-quota error. A second independent issue title now needs a bounded classification. At this decision point, state whether to make another Jev call in this task and who handles the classification. Do not invoke a tool or edit files."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "send_sensitive_external"]
+required_reasons = []
+required_summary_terms = ["Jev", "Codex"]
+required_summary_term_groups = [["no further", "do not make another", "stop", "do not call"]]
+critical = true
+
+[[cases]]
 id = "unrequested_detail_is_suppressed"
 group = "operations"
 description = "Answers a two-part question completely without unsolicited setup detail."
@@ -1944,7 +1993,7 @@ allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_
 forbidden_actions = ["edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = ["safe_in_scope_review_finding", "pre_handoff_review_required"]
 required_summary_terms = ["null guard"]
-required_summary_term_groups = [["remove", "may not keep", "must not keep", "cannot keep"], ["fallback-only test", "test that only protects the fallback", "test that exists only to preserve the fallback"]]
+required_summary_term_groups = [["remove", "may not keep", "must not keep", "cannot keep"], ["fallback-only test", "test that only protects the fallback", "test that exists only to preserve the fallback", "test that exists solely to protect the fallback", "test whose sole purpose is protecting the unsupported fallback", "test that protects only the fallback", "test whose only purpose is preserving that fallback", "test whose only purpose is preserving that unsupported behavior", "test that protects only the unsupported fallback"]]
 forbidden_summary_terms = ["keep the null guard"]
 policy_binding_profile = "code-write"
 policy_assertions = [{source = "defensive-code", statements = ["Apply this gate to every defensive construct that the current task adds, extends, or strengthens; touching nearby code does not authorize changing a pre-existing defensive construct that the task does not alter.", "Do not add, extend, or strengthen defensive code unless qualifying evidence proves that the defended condition occurs on a supported production path or an explicit existing contract requires the defense.", "A mutable type, theoretical misuse, a possible future caller, general safety, best practice, consistency with nearby code, hypothetical reuse, and test convenience are not qualifying evidence.", "A test cannot establish the production condition or contract used to justify defensive code by itself; it may only corroborate qualifying production or contract evidence.", "When qualifying evidence does not exist, omit or remove defensive code added by the current task, undo only the task-introduced extension or strengthening of a pre-existing defensive construct, preserve its pre-task behavior, and remove every task-introduced test whose only purpose is to preserve the unsupported defense.", "Add runtime validation only when the defensive-code evidence gate proves that it is required at a real external, public, persisted, parsed, SPI, reflection, shared-state, or asynchronous boundary to preserve an existing contract or provide a concrete diagnostic for a condition that can occur there."]}]

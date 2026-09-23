@@ -105,9 +105,9 @@ Preserve supported behavior outside the exact authorized change. Load the full n
 - Prefer Jev for bounded judgments such as classification, routing, ranking, prioritization, relevance, triage, and quick review.
 - Keep code changes, debugging, long-context analysis, multi-step reasoning, exact calculations, command execution, test execution, and high-risk or irreversible operations in Codex.
 - For a Jev-suitable task, consult the skill when available before checking MCP.
-- Call Jev MCP only when it is installed, its tools are available, and the API key is confirmed to have available quota or balance.
+- Call Jev MCP only when it is installed and its tools are available. Unknown quota or balance allows an initial call for a useful bounded judgment. Later calls still require task suitability.
 - If the skill is unavailable but MCP is installed, available, and clear, MCP may be called without installing the skill.
-- If MCP is not installed or available, the key is invalid, quota or balance is insufficient, or quota is unconfirmed, do not call Jev; let Codex handle the task.
+- If MCP is unavailable, the API key is missing or known invalid, or quota or balance is known insufficient, do not call Jev; let Codex handle the task.
 - If a Jev MCP call reports insufficient quota, insufficient balance, authentication failure, or rate limiting, do not make further Jev calls during the current task.
 
 ### Results and Safety
