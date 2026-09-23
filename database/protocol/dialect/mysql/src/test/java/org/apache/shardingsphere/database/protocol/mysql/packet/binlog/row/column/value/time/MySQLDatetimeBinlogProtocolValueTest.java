@@ -26,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -50,6 +51,18 @@ class MySQLDatetimeBinlogProtocolValueTest {
     void assertReadDatetimeWithZeroDay() {
         when(payload.readInt8()).thenReturn(20230500100000L);
         assertThat(new MySQLDatetimeBinlogProtocolValue().read(columnDef, payload), is("2023-05-00 10:00:00"));
+    }
+    
+    @Test
+    void assertReadDatetimeWithZeroMonthUnderNonLatinDefaultFormatLocale() {
+        when(payload.readInt8()).thenReturn(20230015100000L);
+        Locale originalLocale = Locale.getDefault(Locale.Category.FORMAT);
+        Locale.setDefault(Locale.Category.FORMAT, Locale.forLanguageTag("th-TH-u-nu-thai"));
+        try {
+            assertThat(new MySQLDatetimeBinlogProtocolValue().read(columnDef, payload), is("2023-00-15 10:00:00"));
+        } finally {
+            Locale.setDefault(Locale.Category.FORMAT, originalLocale);
+        }
     }
     
     @Test

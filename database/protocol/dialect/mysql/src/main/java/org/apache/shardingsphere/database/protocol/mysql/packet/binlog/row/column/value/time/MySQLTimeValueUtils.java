@@ -20,6 +20,8 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.colu
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Locale;
+
 /**
  * Time value utility class of MySQL.
  */
@@ -47,7 +49,7 @@ public final class MySQLTimeValueUtils {
     }
     
     /**
-     * Format a date that {@link java.time.LocalDate} cannot hold, in the text form MySQL prints it in.
+     * Format a date that {@link java.time.LocalDate} cannot hold, in the text form MySQL prints it in, with ASCII digits whatever the default locale.
      *
      * @param year year
      * @param month month
@@ -55,11 +57,11 @@ public final class MySQLTimeValueUtils {
      * @return date in MySQL text form
      */
     public static String formatIncompleteDate(final int year, final int month, final int day) {
-        return String.format("%04d-%02d-%02d", year, month, day);
+        return String.format(Locale.ROOT, "%04d-%02d-%02d", year, month, day);
     }
     
     /**
-     * Format a datetime whose date part {@link java.time.LocalDate} cannot hold, in the text form MySQL prints it in.
+     * Format a datetime whose date part {@link java.time.LocalDate} cannot hold, in the text form MySQL prints it in, with ASCII digits whatever the default locale.
      *
      * @param year year
      * @param month month
@@ -71,7 +73,7 @@ public final class MySQLTimeValueUtils {
      * @return datetime in MySQL text form
      */
     public static String formatIncompleteDatetime(final int year, final int month, final int day, final int hour, final int minute, final int second, final int nanos) {
-        String result = String.format("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
-        return 0 == nanos ? result : result + String.format(".%06d", nanos / 1000);
+        String result = String.format(Locale.ROOT, "%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
+        return 0 == nanos ? result : result + String.format(Locale.ROOT, ".%06d", nanos / 1000);
     }
 }
