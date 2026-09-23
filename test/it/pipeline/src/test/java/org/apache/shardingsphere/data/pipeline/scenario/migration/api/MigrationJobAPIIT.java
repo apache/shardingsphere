@@ -92,7 +92,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(PipelineDistributedBarrier.class)
-class MigrationJobAPITest {
+final class MigrationJobAPIIT {
     
     private static PipelineJobType<MigrationJobConfiguration> jobType;
     

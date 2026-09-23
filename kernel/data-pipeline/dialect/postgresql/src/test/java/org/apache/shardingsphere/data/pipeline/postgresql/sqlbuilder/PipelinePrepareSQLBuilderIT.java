@@ -29,7 +29,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class PipelinePrepareSQLBuilderTest {
+final class PipelinePrepareSQLBuilderIT {
     
     private final PipelinePrepareSQLBuilder sqlBuilder = new PipelinePrepareSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"),
             new DatabaseIdentifierContext(IdentifierCasePolicyResolver.resolveProtocol(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"))));
