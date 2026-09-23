@@ -68,6 +68,13 @@ class OracleConnectionPropertiesParserTest {
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
                     Arguments.of("port", "jdbc:oracle:thin:@//127.0.0.1:9999/foo_ds", "127.0.0.1", 9999, "foo_ds", "test", new Properties()),
+                    Arguments.of("dottedService", "jdbc:oracle:thin:@//127.0.0.1:9999/foo_ds.example.com", "127.0.0.1", 9999, "foo_ds.example.com", "test", new Properties()),
+                    Arguments.of("dottedPooledService", "jdbc:oracle:thin:@//127.0.0.1:9999/foo_ds.example.com:POOLED", "127.0.0.1", 9999, "foo_ds.example.com", "test",
+                            new Properties()),
+                    Arguments.of("pooledService", "jdbc:oracle:thin:@//127.0.0.1:9999/foo_ds:POOLED", "127.0.0.1", 9999, "foo_ds", "test", new Properties()),
+                    Arguments.of("sharedService", "jdbc:oracle:thin:@//127.0.0.1:9999/foo_ds:SHARED", "127.0.0.1", 9999, "foo_ds", "test", new Properties()),
+                    Arguments.of("dottedDedicatedService", "jdbc:oracle:thin:@//127.0.0.1:9999/foo_ds.example.com:DEDICATED", "127.0.0.1", 9999, "foo_ds.example.com",
+                            "test", new Properties()),
                     Arguments.of("domainPort", "jdbc:oracle:oci:@ax-xx.frex.cc:9999/foo_ds", "ax-xx.frex.cc", 9999, "foo_ds", "test", new Properties()),
                     Arguments.of("ipDefaultPort", "jdbc:oracle:oci:@127.0.0.1/foo_ds", "127.0.0.1", 1521, "foo_ds", "test", new Properties()),
                     Arguments.of("domainDefaultPort", "jdbc:oracle:oci:@axxx.frex.cc/foo_ds", "axxx.frex.cc", 1521, "foo_ds", "test", new Properties()),
@@ -77,6 +84,8 @@ class OracleConnectionPropertiesParserTest {
                             + "(HOST = 127.0.0.1)(PORT = 1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
                             + "(SERVICE_NAME = rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "127.0.0.1", 1521, "rac", "test",
                             new Properties()),
+                    Arguments.of("connectDescriptorDottedService", "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=1521))"
+                            + "(CONNECT_DATA=(SERVICE_NAME=foo_ds.example.com)))", "127.0.0.1", 1521, "foo_ds.example.com", "test", new Properties()),
                     Arguments.of("connectDescriptorDomainUrl", "jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = axxx.frex.cc)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)"
                             + "(HOST = axxx.frex.cc)(PORT = 1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
                             + "(SERVICE_NAME = rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "axxx.frex.cc", 1521, "rac", "test",
