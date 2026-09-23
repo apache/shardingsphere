@@ -31,6 +31,7 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,9 +48,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -127,6 +132,32 @@ class ShardingSpherePipelineDataSourceConfigurationTest {
         rootConfig.getDataSources().get("ds_0").put("customPoolProps", Collections.singletonMap("minimumIdle", 7));
         ShardingSpherePipelineDataSourceConfiguration config = new ShardingSpherePipelineDataSourceConfiguration(rootConfig);
         assertThat(config.getDataSourcePoolPropertiesMap().get("ds_0").getAllLocalProperties().get("minimumIdle"), is(7));
+    }
+    
+    @Test
+    void assertRuntimeReadsDoNotParsePersistedParameter() {
+        ShardingSpherePipelineDataSourceConfiguration config = new ShardingSpherePipelineDataSourceConfiguration(
+                SystemResourceFileUtils.readFile("yaml/shardingsphere-pipeline-datasource-config.yaml"));
+        try (MockedStatic<YamlEngine> yamlEngine = mockStatic(YamlEngine.class, CALLS_REAL_METHODS)) {
+            config.getDataSourceConfiguration();
+            config.getDataSourcePoolPropertiesMap();
+            config.getRuleConfigurations();
+            config.getActualDataSourceConfiguration("ds_0");
+            yamlEngine.verify(() -> YamlEngine.unmarshal(anyString(), eq(YamlRootConfiguration.class), eq(true)), never());
+        }
+    }
+    
+    @Test
+    void assertPersistedParameterRestoresRuntimeConfiguration() {
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(SystemResourceFileUtils.readFile("yaml/shardingsphere-pipeline-datasource-config.yaml"), YamlRootConfiguration.class, true);
+        rootConfig.getDataSources().get("ds_0").put("customPoolProps", Collections.singletonMap("connectionTimeout", 30000));
+        ShardingSpherePipelineDataSourceConfiguration original = new ShardingSpherePipelineDataSourceConfiguration(rootConfig);
+        ShardingSpherePipelineDataSourceConfiguration actual = new ShardingSpherePipelineDataSourceConfiguration(original.getParameter());
+        assertThat(actual.getDataSourcePoolPropertiesMap().get("ds_0").getAllLocalProperties().get("connectionTimeout"), is(30000));
+        assertThat(actual.getActualDataSourceConfiguration("ds_0").getUrl(), is("jdbc:mock://127.0.0.1/ds_0"));
+        YamlRootConfiguration persisted = YamlEngine.unmarshal(actual.getParameter(), YamlRootConfiguration.class, true);
+        assertThat(persisted.getDataSources().get("ds_0").get("minPoolSize"), is(20));
+        assertThat(((Map<?, ?>) persisted.getDataSources().get("ds_0").get("customPoolProps")).get("connectionTimeout"), is(30000));
     }
     
     @Test

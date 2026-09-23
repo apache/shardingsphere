@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api.type;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -60,9 +61,12 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     
     private final String databaseName;
     
-    private volatile Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
+    @Getter(AccessLevel.NONE)
+    private final Map<String, Map<String, Object>> dataSources;
     
-    private volatile Collection<RuleConfiguration> ruleConfigurations;
+    private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
+    
+    private final Collection<RuleConfiguration> ruleConfigurations;
     
     private final DatabaseType databaseType;
     
@@ -76,6 +80,9 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeFactory.get(getJdbcUrl(props));
         databaseName = rootConfig.getDatabaseName();
+        dataSources = rootConfig.getDataSources();
+        dataSourcePoolPropertiesMap = createDataSourcePoolPropertiesMap(dataSources);
+        ruleConfigurations = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules());
     }
     
     public ShardingSpherePipelineDataSourceConfiguration(final YamlRootConfiguration rootConfig) {
@@ -123,48 +130,8 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         Optional<JdbcQueryPropertiesExtension> extension = DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, databaseType);
         dataSources.forEach((key, value) -> {
             Map<String, Object> customPoolProps = (Map<String, Object>) value.get("customPoolProps");
-            result.put(key, adjustDataSourcePoolProperties(swapper.swapToDataSourcePoolProperties(value), extension,
-                    null == customPoolProps ? Collections.emptyMap() : customPoolProps));
+            result.put(key, adjustDataSourcePoolProperties(swapper.swapToDataSourcePoolProperties(value), extension, null == customPoolProps ? Collections.emptyMap() : customPoolProps));
         });
-        return result;
-    }
-    
-    /**
-     * Get data source pool properties.
-     *
-     * @return data source pool properties
-     */
-    public Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap() {
-        Map<String, DataSourcePoolProperties> result = dataSourcePoolPropertiesMap;
-        if (null == result) {
-            synchronized (this) {
-                result = dataSourcePoolPropertiesMap;
-                if (null == result) {
-                    YamlRootConfiguration rootConfig = YamlEngine.unmarshal(parameter, YamlRootConfiguration.class, true);
-                    result = createDataSourcePoolPropertiesMap(rootConfig.getDataSources());
-                    dataSourcePoolPropertiesMap = result;
-                }
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Get rule configurations.
-     *
-     * @return rule configurations
-     */
-    public Collection<RuleConfiguration> getRuleConfigurations() {
-        Collection<RuleConfiguration> result = ruleConfigurations;
-        if (null == result) {
-            synchronized (this) {
-                result = ruleConfigurations;
-                if (null == result) {
-                    result = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(parameter, YamlRootConfiguration.class, true).getRules());
-                    ruleConfigurations = result;
-                }
-            }
-        }
         return result;
     }
     
@@ -179,7 +146,6 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     
     @Override
     public Object getDataSourceConfiguration() {
-        getDataSourcePoolPropertiesMap();
         return this;
     }
     
@@ -195,9 +161,9 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
      * @return actual data source configuration
      */
     public StandardPipelineDataSourceConfiguration getActualDataSourceConfiguration(final String actualDataSourceName) {
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(parameter, YamlRootConfiguration.class, true);
-        Map<String, Object> dataSourceConfig = rootConfig.getDataSources().get(actualDataSourceName);
-        Preconditions.checkNotNull(dataSourceConfig, "actualDataSourceName '{}' does not exist", actualDataSourceName);
+        Map<String, Object> sourceDataSourceConfig = dataSources.get(actualDataSourceName);
+        Preconditions.checkNotNull(sourceDataSourceConfig, "actualDataSourceName '{}' does not exist", actualDataSourceName);
+        Map<String, Object> dataSourceConfig = new LinkedHashMap<>(sourceDataSourceConfig);
         StandardPipelineDataSourceConfiguration adjusted = new StandardPipelineDataSourceConfiguration(dataSourceConfig);
         String jdbcUrlKey = dataSourceConfig.containsKey("url") ? "url" : "jdbcUrl";
         dataSourceConfig.put(jdbcUrlKey, adjusted.getUrl());
