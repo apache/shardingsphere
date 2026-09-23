@@ -40,10 +40,10 @@ public final class OracleConnectionPropertiesParser implements ConnectionPropert
     
     private static final String QUERY_DELIMITER = "?";
     
-    private static final Pattern THIN_URL_PATTERN = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?(\\d*)[:/]([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern THIN_URL_PATTERN = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?(\\d*)[:/]([\\w\\-\\.]+)", Pattern.CASE_INSENSITIVE);
     
     private static final Pattern CONNECT_DESCRIPTOR_URL_PATTERN = Pattern.compile(
-            "jdbc:oracle:(thin|oci|kprb):@[(\\w\\s=)]+HOST\\s*=\\s*([\\w\\-\\.]+).*PORT\\s*=\\s*(\\d+).*SERVICE_NAME\\s*=\\s*(\\w+)\\)");
+            "jdbc:oracle:(thin|oci|kprb):@[(\\w\\s=)]+HOST\\s*=\\s*([\\w\\-\\.]+).*PORT\\s*=\\s*(\\d+).*SERVICE_NAME\\s*=\\s*([\\w\\.]+)\\)");
     
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
