@@ -61,7 +61,7 @@ class LinkedServerRuleTest {
     }
     
     @Test
-    void assertFindLogicalTableWithCaseDifferentTableIdentityReturnsEmpty() {
+    void assertFindLogicalTableWithCaseDifferentTableIdentity() {
         assertFalse(rule.findLogicalTable("MyLinkedServer", "humanresources.dbo.department").isPresent());
     }
     
@@ -165,11 +165,14 @@ class LinkedServerRuleTest {
     }
     
     @Test
-    void assertCaseEquivalentTableKeysRejected() {
+    void assertCaseDistinctTableIdentitiesMappedIndependently() {
         Map<String, String> tables = new LinkedHashMap<>();
         tables.put("HumanResources.dbo.Department", "t_hr_department");
-        tables.put("humanresources.dbo.department", "t_hr_dept_lower");
-        assertThrows(IllegalArgumentException.class, () -> new LinkedServerConfiguration("Server", "FIXTURE", tables));
+        tables.put("HumanResources.dbo.department", "t_hr_dept_lower");
+        LinkedServerConfiguration server = new LinkedServerConfiguration("Server", "FIXTURE", tables);
+        LinkedServerRule caseRule = new LinkedServerRule(new LinkedServerRuleConfiguration(Arrays.asList(server)));
+        assertThat(caseRule.findLogicalTable("Server", "HumanResources.dbo.Department").get(), is("t_hr_department"));
+        assertThat(caseRule.findLogicalTable("Server", "HumanResources.dbo.department").get(), is("t_hr_dept_lower"));
     }
     
     @Test

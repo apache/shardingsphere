@@ -157,8 +157,8 @@ class OpenQueryUtilsTest {
     void assertRoundTripEscaping() {
         String original = "SELECT Note FROM T WHERE Note = ''it''s a test''";
         String decoded = OpenQueryUtils.decodeTSqlEscaping(original);
-        String reEncoded = OpenQueryUtils.encodeTSqlEscaping(decoded);
-        assertThat(reEncoded, is(original));
+        String actualReEncoded = OpenQueryUtils.encodeTSqlEscaping(decoded);
+        assertThat(actualReEncoded, is(original));
     }
     
     private FunctionTableSegment createOpenQueryFunctionTableSegment() {
