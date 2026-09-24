@@ -107,12 +107,18 @@ class ShardingSpherePipelineDataSourceConfigurationTest {
     void assertGetActualDataSourceConfiguration() {
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(SystemResourceFileUtils.readFile("yaml/shardingsphere-pipeline-datasource-config.yaml"), YamlRootConfiguration.class, true);
         rootConfig.getDataSources().get("ds_0").put("customPoolProps", Collections.singletonMap("connectionTimeout", 30000));
+        rootConfig.getDataSources().get("ds_0").put("maximumPoolSize", 12);
         ShardingSpherePipelineDataSourceConfiguration config = new ShardingSpherePipelineDataSourceConfiguration(rootConfig);
         StandardPipelineDataSourceConfiguration actual = config.getActualDataSourceConfiguration("ds_0");
         assertThat(actual.getDatabaseType().getType(), is("FIXTURE"));
         assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/ds_0"));
         Map<?, ?> parameter = YamlEngine.unmarshal(actual.getParameter(), Map.class);
         assertThat(((Map<?, ?>) parameter.get("customPoolProps")).get("connectionTimeout"), is(30000));
+        assertThat(parameter.get("minPoolSize"), is("1"));
+        assertThat(parameter.get("maximumPoolSize"), is(12));
+        DataSourcePoolProperties actualPoolProps = (DataSourcePoolProperties) actual.getDataSourceConfiguration();
+        assertThat(actualPoolProps.getAllLocalProperties().get("connectionTimeout"), is(30000));
+        assertThat(actualPoolProps.getAllLocalProperties().get("maximumPoolSize"), is(12));
     }
     
     @Test
@@ -132,6 +138,11 @@ class ShardingSpherePipelineDataSourceConfigurationTest {
         rootConfig.getDataSources().get("ds_0").put("customPoolProps", Collections.singletonMap("minimumIdle", 7));
         ShardingSpherePipelineDataSourceConfiguration config = new ShardingSpherePipelineDataSourceConfiguration(rootConfig);
         assertThat(config.getDataSourcePoolPropertiesMap().get("ds_0").getAllLocalProperties().get("minimumIdle"), is(7));
+        StandardPipelineDataSourceConfiguration actual = config.getActualDataSourceConfiguration("ds_0");
+        assertThat(((DataSourcePoolProperties) actual.getDataSourceConfiguration()).getAllLocalProperties().get("minimumIdle"), is(7));
+        Map<?, ?> parameter = YamlEngine.unmarshal(actual.getParameter(), Map.class);
+        assertThat(parameter.get("minimumIdle"), is("1"));
+        assertThat(((Map<?, ?>) parameter.get("customPoolProps")).get("minimumIdle"), is(7));
     }
     
     @Test
@@ -142,8 +153,9 @@ class ShardingSpherePipelineDataSourceConfigurationTest {
             config.getDataSourceConfiguration();
             config.getDataSourcePoolPropertiesMap();
             config.getRuleConfigurations();
+            config.getCreationRuleConfigurations();
             config.getActualDataSourceConfiguration("ds_0");
-            yamlEngine.verify(() -> YamlEngine.unmarshal(anyString(), eq(YamlRootConfiguration.class), eq(true)), never());
+            yamlEngine.verify(() -> YamlEngine.unmarshal(eq(config.getParameter()), eq(YamlRootConfiguration.class), eq(true)), never());
         }
     }
     
