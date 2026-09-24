@@ -25,12 +25,12 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.Properties;
@@ -57,9 +57,13 @@ class OracleConnectionPropertiesParserTest {
         assertThat(actual.getQueryProperties(), is(queryProps));
     }
     
-    @Test
-    void assertNewConstructorFailure() {
-        assertThrows(UnrecognizedDatabaseURLException.class, () -> parser.parse("jdbc:oracle:xxxxxxxx", "test", null));
+    @ParameterizedTest
+    @ValueSource(strings = {"jdbc:oracle:xxxxxxxx", "jdbc:oracle:thin:@host:123/", "jdbc:oracle:thin:@host/service:INVALID",
+            "jdbc:oracle:thin:@host/service/instance/extra", "jdbc:oracle:thin:@host/service!invalid",
+            "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(HOST=host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=service)))invalid",
+            "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(HOST=host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=service)))invalid)"})
+    void assertNewConstructorFailure(final String url) {
+        assertThrows(UnrecognizedDatabaseURLException.class, () -> parser.parse(url, "test", null));
     }
     
     private static final class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
@@ -68,7 +72,11 @@ class OracleConnectionPropertiesParserTest {
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
                     Arguments.of("port", "jdbc:oracle:thin:@//127.0.0.1:9999/foo_ds", "127.0.0.1", 9999, "foo_ds", "test", new Properties()),
+                    Arguments.of("tcpProtocol", "jdbc:oracle:thin:@tcp://db.example.com:1522/foo_ds", "db.example.com", 1522, "foo_ds", "test", new Properties()),
+                    Arguments.of("tcpsIpv6", "jdbc:oracle:thin:@tcps://[2001:db8::1]:1522/foo_ds", "2001:db8::1", 1522, "foo_ds", "test", new Properties()),
                     Arguments.of("dottedService", "jdbc:oracle:thin:@//127.0.0.1:9999/foo_ds.example.com", "127.0.0.1", 9999, "foo_ds.example.com", "test", new Properties()),
+                    Arguments.of("dottedServiceWithoutSlashes", "jdbc:oracle:thin:@db.example.com:9999/foo_ds.example.com:DEDICATED", "db.example.com", 9999,
+                            "foo_ds.example.com", "test", new Properties()),
                     Arguments.of("dottedPooledService", "jdbc:oracle:thin:@//127.0.0.1:9999/foo_ds.example.com:POOLED", "127.0.0.1", 9999, "foo_ds.example.com", "test",
                             new Properties()),
                     Arguments.of("pooledService", "jdbc:oracle:thin:@//127.0.0.1:9999/foo_ds:POOLED", "127.0.0.1", 9999, "foo_ds", "test", new Properties()),
@@ -76,6 +84,12 @@ class OracleConnectionPropertiesParserTest {
                     Arguments.of("dottedDedicatedService", "jdbc:oracle:thin:@//127.0.0.1:9999/foo_ds.example.com:DEDICATED", "127.0.0.1", 9999, "foo_ds.example.com",
                             "test", new Properties()),
                     Arguments.of("domainPort", "jdbc:oracle:oci:@ax-xx.frex.cc:9999/foo_ds", "ax-xx.frex.cc", 9999, "foo_ds", "test", new Properties()),
+                    Arguments.of("portWithoutService", "jdbc:oracle:thin:@host:123", "host", 123, null, "test", new Properties()),
+                    Arguments.of("instance", "jdbc:oracle:thin:@//host:1521/foo_ds/instance1", "host", 1521, "foo_ds", "test", new Properties()),
+                    Arguments.of("instanceWithMode", "jdbc:oracle:thin:@host:1521/foo_ds:SHARED/instance1", "host", 1521, "foo_ds", "test", new Properties()),
+                    Arguments.of("instanceWithoutService", "jdbc:oracle:thin:@host//instance1", "host", 1521, null, "test", new Properties()),
+                    Arguments.of("modeWithoutService", "jdbc:oracle:thin:@host/:DEDICATED/instance1", "host", 1521, null, "test", new Properties()),
+                    Arguments.of("legacySid", "jdbc:oracle:oci:@host:1521:foo_ds", "host", 1521, "foo_ds", "test", new Properties()),
                     Arguments.of("ipDefaultPort", "jdbc:oracle:oci:@127.0.0.1/foo_ds", "127.0.0.1", 1521, "foo_ds", "test", new Properties()),
                     Arguments.of("domainDefaultPort", "jdbc:oracle:oci:@axxx.frex.cc/foo_ds", "axxx.frex.cc", 1521, "foo_ds", "test", new Properties()),
                     Arguments.of("thinQueryProperties", "jdbc:oracle:thin:@//127.0.0.1:9999/foo_ds?oracle.jdbc.getObjectReturnsXMLType=true", "127.0.0.1", 9999, "foo_ds",
@@ -86,6 +100,8 @@ class OracleConnectionPropertiesParserTest {
                             new Properties()),
                     Arguments.of("connectDescriptorDottedService", "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=1521))"
                             + "(CONNECT_DATA=(SERVICE_NAME=foo_ds.example.com)))", "127.0.0.1", 1521, "foo_ds.example.com", "test", new Properties()),
+                    Arguments.of("connectDescriptorIpv6", "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=[2001:db8::1])(PORT=1521))"
+                            + "(CONNECT_DATA=(SERVICE_NAME=foo_ds)))", "2001:db8::1", 1521, "foo_ds", "test", new Properties()),
                     Arguments.of("connectDescriptorDomainUrl", "jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = axxx.frex.cc)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)"
                             + "(HOST = axxx.frex.cc)(PORT = 1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
                             + "(SERVICE_NAME = rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "axxx.frex.cc", 1521, "rac", "test",
