@@ -32,7 +32,6 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -40,6 +39,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -121,6 +121,6 @@ class FederationMetaDataRefreshEngineTest {
         FederationMetaDataRefreshEngine engine = new FederationMetaDataRefreshEngine(sqlStatementContext);
         engine.refresh(metaDataManagerPersistService, database);
         engine.refresh(metaDataManagerPersistService, database);
-        verify(refresher, Mockito.times(2)).refresh(metaDataManagerPersistService, databaseType, database, "foo_schema", sqlStatement);
+        verify(refresher, times(2)).refresh(metaDataManagerPersistService, databaseType, database, "foo_schema", sqlStatement);
     }
 }

@@ -24,6 +24,10 @@ import org.apache.shardingsphere.test.e2e.operation.transaction.engine.base.Tran
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Broadcast table transaction integration test.
@@ -68,9 +72,14 @@ public final class BroadcastTableTransactionTestCase extends BaseTransactionTest
             connection.setAutoCommit(false);
             executeWithLog(connection, "DELETE FROM t_address;");
             assertTableRowCount(connection, T_ADDRESS, 0);
-            executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
+            try (Statement statement = connection.createStatement()) {
+                assertThat(statement.executeUpdate("INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');"), is(1));
+            }
             assertTableRowCount(connection, T_ADDRESS, 1);
             connection.commit();
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            assertTableRowCount(connection, T_ADDRESS, 1);
         }
     }
     
@@ -79,9 +88,14 @@ public final class BroadcastTableTransactionTestCase extends BaseTransactionTest
             connection.setAutoCommit(false);
             executeWithLog(connection, "DELETE FROM t_address;");
             assertTableRowCount(connection, T_ADDRESS, 0);
-            executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
+            try (Statement statement = connection.createStatement()) {
+                assertThat(statement.executeUpdate("INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');"), is(1));
+            }
             assertTableRowCount(connection, T_ADDRESS, 1);
             connection.rollback();
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            assertTableRowCount(connection, T_ADDRESS, 0);
         }
     }
 }

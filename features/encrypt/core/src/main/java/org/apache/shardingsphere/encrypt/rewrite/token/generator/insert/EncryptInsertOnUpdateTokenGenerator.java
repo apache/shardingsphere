@@ -67,7 +67,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertStatementContext && (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getOnDuplicateKeyColumns().isPresent();
+        return sqlStatementContext instanceof InsertStatementContext && ((InsertStatementContext) sqlStatementContext).getSqlStatement().getOnDuplicateKeyColumns().isPresent();
     }
     
     @Override
@@ -79,7 +79,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
             return Collections.emptyList();
         }
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
+                .orElseGet(database::getDefaultSchemaName);
         String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         EncryptTable encryptTable = rule.getEncryptTable(tableName);
         DatabaseType databaseType = insertStatementContext.getSqlStatement().getDatabaseType();

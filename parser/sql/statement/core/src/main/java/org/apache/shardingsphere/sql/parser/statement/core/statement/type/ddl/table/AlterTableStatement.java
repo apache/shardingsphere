@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.al
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ModifyCollectionRetrievalSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.OrderByColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.RenameColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ReplaceColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
@@ -42,21 +43,21 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ExchangePartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ModifyPartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.AddRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.DropRollupDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.OrderByColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CherryPickDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.TableRollbackDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ModifyTableCommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ReplaceTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.TableRollbackDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -146,6 +147,8 @@ public final class AlterTableStatement extends DDLStatement {
     
     private final Collection<ModifyPartitionDefinitionSegment> modifyPartitionDefinitions;
     
+    private final Collection<ExchangePartitionDefinitionSegment> exchangePartitionDefinitions;
+    
     private final SQLStatementAttributes attributes;
     
     @Builder
@@ -178,7 +181,8 @@ public final class AlterTableStatement extends DDLStatement {
                                 @Singular("renamePartitionDefinition") final Collection<RenamePartitionDefinitionSegment> renamePartitionDefinitions,
                                 @Singular("addPartitionDefinition") final Collection<AddPartitionDefinitionSegment> addPartitionDefinitions,
                                 @Singular("addPartitionsSegment") final Collection<AddPartitionsSegment> addPartitionsSegments,
-                                @Singular("modifyPartitionDefinition") final Collection<ModifyPartitionDefinitionSegment> modifyPartitionDefinitions) {
+                                @Singular("modifyPartitionDefinition") final Collection<ModifyPartitionDefinitionSegment> modifyPartitionDefinitions,
+                                @Singular("exchangePartitionDefinition") final Collection<ExchangePartitionDefinitionSegment> exchangePartitionDefinitions) {
         super(databaseType);
         this.table = table;
         this.renameTable = renameTable;
@@ -215,6 +219,7 @@ public final class AlterTableStatement extends DDLStatement {
         this.addPartitionDefinitions = addPartitionDefinitions;
         this.addPartitionsSegments = addPartitionsSegments;
         this.modifyPartitionDefinitions = modifyPartitionDefinitions;
+        this.exchangePartitionDefinitions = exchangePartitionDefinitions;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(getTables()), new AlterTableConstraintSQLStatementAttribute(), new AlterTableIndexSQLStatementAttribute());
     }
     

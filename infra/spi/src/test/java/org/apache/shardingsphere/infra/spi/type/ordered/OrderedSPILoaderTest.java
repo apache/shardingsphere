@@ -37,11 +37,11 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("rawtypes")
 class OrderedSPILoaderTest {
@@ -65,18 +65,18 @@ class OrderedSPILoaderTest {
     @Test
     void assertGetServicesByClassWithMultiClass() {
         Map<Class<?>, OrderedSPIFixture> actual = OrderedSPILoader.getServicesByClass(OrderedSPIFixture.class,
-                Arrays.<Class<?>>asList(OrderedInterfaceFixtureImpl.class, ParentOrderedInterfaceFixtureImpl.class));
+                Arrays.asList(OrderedInterfaceFixtureImpl.class, ParentOrderedInterfaceFixtureImpl.class));
         assertThat(actual.keySet(), contains(ParentOrderedInterfaceFixtureImpl.class, OrderedInterfaceFixtureImpl.class));
     }
     
     @Test
     void assertGetServicesByClassWithEmptyClass() {
-        assertThat(OrderedSPILoader.getServicesByClass(OrderedSPIFixture.class, Collections.<Class<?>>emptyList()).entrySet(), empty());
+        assertTrue(OrderedSPILoader.getServicesByClass(OrderedSPIFixture.class, Collections.emptyList()).isEmpty());
     }
     
     @Test
     void assertGetServicesByClassWithNoMatchClass() {
-        assertThat(OrderedSPILoader.getServicesByClass(OrderedSPIFixture.class, Collections.<Class<?>>singleton(ChildOrderedInterfaceFixtureImpl.class)).entrySet(), empty());
+        assertTrue(OrderedSPILoader.getServicesByClass(OrderedSPIFixture.class, Collections.singleton(ChildOrderedInterfaceFixtureImpl.class)).isEmpty());
     }
     
     @Test
@@ -91,27 +91,27 @@ class OrderedSPILoaderTest {
     void assertGetServicesWithMultiObject() {
         OrderedInterfaceFixtureImpl orderedKey = new OrderedInterfaceFixtureImpl();
         ParentOrderedInterfaceFixtureImpl parentKey = new ParentOrderedInterfaceFixtureImpl();
-        Map<OrderedInterfaceFixture, OrderedSPIFixture> actual = OrderedSPILoader.getServices(OrderedSPIFixture.class, Arrays.<OrderedInterfaceFixture>asList(orderedKey, parentKey));
+        Map<OrderedInterfaceFixture, OrderedSPIFixture> actual = OrderedSPILoader.getServices(OrderedSPIFixture.class, Arrays.asList(orderedKey, parentKey));
         assertThat(actual.keySet(), contains(parentKey, orderedKey));
     }
     
     @Test
     void assertGetServicesWithEmptyObject() {
-        assertThat(OrderedSPILoader.getServices(OrderedSPIFixture.class, Collections.<OrderedInterfaceFixture>emptyList()).entrySet(), empty());
+        assertTrue(OrderedSPILoader.getServices(OrderedSPIFixture.class, Collections.<OrderedInterfaceFixture>emptyList()).isEmpty());
     }
     
     @Test
     void assertGetServicesWithExactRuntimeClass() {
         Map<OrderedInterfaceFixture, OrderedSPIFixture> actual = OrderedSPILoader.getServices(OrderedSPIFixture.class,
-                Collections.<OrderedInterfaceFixture>singleton(new ChildOrderedInterfaceFixtureImpl()));
-        assertThat(actual.entrySet(), empty());
+                Collections.singleton(new ChildOrderedInterfaceFixtureImpl()));
+        assertTrue(actual.isEmpty());
     }
     
     @Test
     void assertGetServicesWithSameClassObjects() {
         ComparableOrderedInterfaceFixtureImpl firstKey = new ComparableOrderedInterfaceFixtureImpl("foo_same_1");
         ComparableOrderedInterfaceFixtureImpl secondKey = new ComparableOrderedInterfaceFixtureImpl("foo_same_2");
-        Map<OrderedInterfaceFixture, OrderedSPIFixture> actual = OrderedSPILoader.getServices(OrderedSPIFixture.class, Arrays.<OrderedInterfaceFixture>asList(firstKey, secondKey));
+        Map<OrderedInterfaceFixture, OrderedSPIFixture> actual = OrderedSPILoader.getServices(OrderedSPIFixture.class, Arrays.asList(firstKey, secondKey));
         assertThat(actual.keySet(), contains(firstKey, secondKey));
     }
     
@@ -121,7 +121,7 @@ class OrderedSPILoaderTest {
                 new ComparableOrderedInterfaceFixtureImpl("foo_equal_2")));
         ComparableOrderedInterfaceFixtureImpl firstKey = new ComparableOrderedInterfaceFixtureImpl("foo_equal_1");
         ComparableOrderedInterfaceFixtureImpl secondKey = new ComparableOrderedInterfaceFixtureImpl("foo_equal_2");
-        Map<OrderedInterfaceFixture, OrderedSPIFixture> actual = OrderedSPILoader.getServices(OrderedSPIFixture.class, Arrays.<OrderedInterfaceFixture>asList(firstKey, secondKey));
+        Map<OrderedInterfaceFixture, OrderedSPIFixture> actual = OrderedSPILoader.getServices(OrderedSPIFixture.class, Arrays.asList(firstKey, secondKey));
         assertThat(actual.keySet(), contains(sameInstance(firstKey), sameInstance(secondKey)));
     }
     
@@ -131,7 +131,7 @@ class OrderedSPILoaderTest {
         ParentOrderedInterfaceFixtureImpl parentKey = new ParentOrderedInterfaceFixtureImpl();
         ComparableOrderedInterfaceFixtureImpl comparableKey = new ComparableOrderedInterfaceFixtureImpl("foo_comparator");
         Map<OrderedInterfaceFixture, OrderedSPIFixture> actual = OrderedSPILoader.getServices(OrderedSPIFixture.class,
-                Arrays.<OrderedInterfaceFixture>asList(parentKey, orderedKey, comparableKey), Collections.<Integer>reverseOrder());
+                Arrays.asList(parentKey, orderedKey, comparableKey), Collections.reverseOrder());
         assertThat(actual.keySet(), contains(comparableKey, orderedKey, parentKey));
     }
     

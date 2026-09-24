@@ -269,8 +269,10 @@ unreservedWord
     | MAIN
     | MAPPING
     | MATCH
+    | MATCHED
     | MATERIALIZED
     | MAXVALUE
+    | MERGE
     | METHOD
     | MINUTE
     | MINVALUE

@@ -29,6 +29,9 @@ You can report a bug, submit a new feature enhancement recommendation, or commit
  - Find a mentor in [Core developers list](https://shardingsphere.apache.org/community/en/team/), he will give you feedback for design and implements.
  - Fork to your GitHub repo and begin to work.
  - Please follow [Development conventions](https://shardingsphere.apache.org/community/en/involved/conduct/code/), and complete check before pull request submit.
+ - If AI assistance materially generated or substantially revised the
+   contribution, follow the [AI-Assisted Contribution Policy](AI_POLICY.md) and
+   disclose the tool and affected files or scope in the pull request description.
  - Submit a pull request to master branch when finished.
  - Mentor will do code review and discuss some details, include design, implement, performance and code style. Code will be merged until mentor accepted.
  - Finally, congratulations that you have become the official contributor for Apache ShardingSphere.

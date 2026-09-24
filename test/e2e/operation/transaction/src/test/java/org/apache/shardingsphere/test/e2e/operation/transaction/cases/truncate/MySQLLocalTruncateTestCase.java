@@ -25,6 +25,9 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * MySQL truncate local transaction integration test.
@@ -47,11 +50,16 @@ public final class MySQLLocalTruncateTestCase extends BaseTransactionTestCase {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
             assertAccountRowCount(connection, 8);
-            executeWithLog(connection, "TRUNCATE account");
+            try (Statement statement = connection.createStatement()) {
+                assertFalse(statement.execute("TRUNCATE account"));
+            }
             assertAccountRowCount(connection, 0);
             connection.rollback();
             // Expected truncate operation cannot be rolled back in MySQL local transaction
             assertAccountRowCount(connection, 0);
+            try (Connection queryConnection = getDataSource().getConnection()) {
+                assertAccountRowCount(queryConnection, 0);
+            }
         }
     }
     
@@ -60,10 +68,15 @@ public final class MySQLLocalTruncateTestCase extends BaseTransactionTestCase {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
             assertAccountRowCount(connection, 8);
-            executeWithLog(connection, "TRUNCATE account");
+            try (Statement statement = connection.createStatement()) {
+                assertFalse(statement.execute("TRUNCATE account"));
+            }
             assertAccountRowCount(connection, 0);
             connection.commit();
             assertAccountRowCount(connection, 0);
+            try (Connection queryConnection = getDataSource().getConnection()) {
+                assertAccountRowCount(queryConnection, 0);
+            }
         }
     }
     

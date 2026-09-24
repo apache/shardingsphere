@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +39,7 @@ class FirebirdSeekBlobCommandExecutorTest {
     void assertExecuteThrowsUnsupported() {
         when(packet.getBlobHandle()).thenReturn(42);
         FirebirdSeekBlobCommandExecutor executor = new FirebirdSeekBlobCommandExecutor(packet);
-        FirebirdProtocolException actual = assertThrows(FirebirdProtocolException.class, executor::execute);
+        DatabaseProtocolException actual = assertThrows(DatabaseProtocolException.class, executor::execute);
         assertThat(actual.getMessage(), is("SEEK BLOB is not supported at the moment, blob handle: 42"));
     }
 }

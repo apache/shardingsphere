@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
-import groovy.lang.MissingMethodException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
+import org.apache.shardingsphere.infra.expr.exception.InlineExpressionEvaluationException;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -69,7 +69,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         ShardingSpherePreconditions.checkState(algorithmExpression.contains(columnName), () -> new MismatchedInlineShardingAlgorithmExpressionAndColumnException(algorithmExpression, columnName));
         try {
             return InlineExpressionParserFactory.newInstance(algorithmExpression).evaluateWithArgs(Collections.singletonMap(columnName, shardingValue.getValue()));
-        } catch (final MissingMethodException ignored) {
+        } catch (final InlineExpressionEvaluationException ignored) {
             throw new MismatchedInlineShardingAlgorithmExpressionAndColumnException(algorithmExpression, columnName);
         }
     }

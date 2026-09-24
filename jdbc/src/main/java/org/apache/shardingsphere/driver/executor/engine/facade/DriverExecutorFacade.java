@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.executor.engine.facade;
 
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
@@ -78,7 +77,7 @@ public final class DriverExecutorFacade implements AutoCloseable {
         this.jdbcDriverType = jdbcDriverType;
         JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
         ShardingSphereMetaData metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
-        String currentSchemaName = new DatabaseTypeRegistry(currentDatabase.getProtocolType()).getDefaultSchemaName(connection.getCurrentDatabaseName());
+        String currentSchemaName = currentDatabase.getDefaultSchemaName();
         sqlFederationEngine =
                 new SQLFederationEngine(connection.getCurrentDatabaseName(), currentSchemaName, metaData, connection.getContextManager().getMetaDataContexts().getStatistics(), jdbcExecutor);
         RawExecutor rawExecutor = new RawExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());

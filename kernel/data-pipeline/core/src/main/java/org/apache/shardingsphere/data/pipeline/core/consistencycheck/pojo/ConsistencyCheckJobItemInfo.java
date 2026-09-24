@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.pojo;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 
 /**
  * Consistency check job item info.
@@ -30,6 +31,8 @@ import lombok.Setter;
 public final class ConsistencyCheckJobItemInfo {
     
     private boolean active;
+    
+    private JobStatus status;
     
     private String tableNames;
     

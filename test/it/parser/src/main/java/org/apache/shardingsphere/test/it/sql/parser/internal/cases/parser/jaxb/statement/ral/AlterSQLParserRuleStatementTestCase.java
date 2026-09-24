@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedSQLParserRule;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedSQLParserRule;
 
 import javax.xml.bind.annotation.XmlElement;
 

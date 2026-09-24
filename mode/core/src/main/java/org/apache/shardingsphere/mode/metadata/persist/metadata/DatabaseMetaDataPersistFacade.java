@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.metadata.persist.metadata;
 
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
@@ -105,7 +104,7 @@ public final class DatabaseMetaDataPersistFacade {
     public void unregisterStorageUnits(final String databaseName, final MetaDataContexts reloadMetaDataContexts) {
         ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
-                database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(), new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName),
+                database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(), database.getDefaultSchemaName(),
                 database.getIdentifierContext(), database.getAllSchemas());
         try {
             Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(database.getProtocolType(), material);
@@ -129,8 +128,7 @@ public final class DatabaseMetaDataPersistFacade {
     public Map<String, Collection<ShardingSphereTable>> persistAlteredTables(final String databaseName, final MetaDataContexts reloadMetaDataContexts, final Collection<String> needReloadTables) {
         ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
-                database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(),
-                new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName), database.getIdentifierContext(), database.getAllSchemas());
+                database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(), database.getDefaultSchemaName(), database.getIdentifierContext(), database.getAllSchemas());
         try {
             Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(needReloadTables, database.getProtocolType(), material);
             Map<String, Collection<ShardingSphereTable>> result = new HashMap<>(schemas.size(), 1F);

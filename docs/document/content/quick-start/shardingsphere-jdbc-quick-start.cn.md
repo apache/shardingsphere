@@ -14,7 +14,7 @@ Apache ShardingSphere-JDBC 可以通过 `Java` 和 `YAML` 这 2 种方式进行�
 
 ## 前提条件
 
-开发环境需要具备 Java JRE 8 或更高版本。
+编译 ShardingSphere 需要 JDK 21 或更高版本。运行依赖 ShardingSphere 的应用需要 Java JRE 8 或更高版本。
 
 ## 操作步骤
 

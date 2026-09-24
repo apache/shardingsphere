@@ -41,9 +41,9 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Bit
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BitValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BooleanPrimaryContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CastFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CaseExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CaseWhenContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CastFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ChangeTableFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameContext;
@@ -1419,7 +1419,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             ColumnSegment column = (ColumnSegment) expression;
             return new ColumnOrderByItemSegment(column, OrderDirection.ASC, null);
         }
-        if (expression instanceof LiteralExpressionSegment) {
+        if (expression instanceof LiteralExpressionSegment && !((LiteralExpressionSegment) expression).isNullLiteral()) {
             LiteralExpressionSegment literalExpression = (LiteralExpressionSegment) expression;
             return new IndexOrderByItemSegment(literalExpression.getStartIndex(), literalExpression.getStopIndex(),
                     SQLUtils.getExactlyNumber(literalExpression.getLiterals().toString(), 10).intValue(), OrderDirection.ASC, null);
@@ -2360,8 +2360,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitMergeWhenClause(final MergeWhenClauseContext ctx) {
         MergeWhenAndThenSegment result = new MergeWhenAndThenSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
-        if (null != ctx.mergeDeleteClause() && null != ctx.mergeDeleteClause().expr()) {
-            result.setAndExpr((ExpressionSegment) visit(ctx.mergeDeleteClause().expr()));
+        if (null != ctx.mergeDeleteClause()) {
+            result.setDelete(DeleteStatement.builder().databaseType(databaseType).build());
+            if (null != ctx.mergeDeleteClause().expr()) {
+                result.setAndExpr((ExpressionSegment) visit(ctx.mergeDeleteClause().expr()));
+            }
         }
         if (null != ctx.mergeUpdateClause()) {
             result.setUpdate((UpdateStatement) visit(ctx.mergeUpdateClause()));

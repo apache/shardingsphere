@@ -47,6 +47,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 
 import java.nio.charset.StandardCharsets;
@@ -54,8 +56,11 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -153,6 +158,24 @@ class CommandExecutorTaskTest {
     }
     
     @Test
+    void assertRunWithCloseSQLException() throws SQLException, BackendConnectionException {
+        mockProxyContext(false);
+        SQLException expectedException = new SQLException("foo_close");
+        when(commandExecutor.execute()).thenReturn(Collections.emptyList());
+        doThrow(expectedException).when(commandExecutor).close();
+        when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, connectionSession)).thenReturn(commandExecutor);
+        when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
+        when(engine.getCommandExecuteEngine().getErrorPacket(expectedException)).thenReturn(databasePacket);
+        when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.empty());
+        new CommandExecutorTask(engine, connectionSession, handlerContext, message).run();
+        verify(engine.getCommandExecuteEngine()).getErrorPacket(expectedException);
+        verify(commandExecutor).close();
+        verify(connectionSession).clearQueryContext();
+        verify(databaseConnectionManager).closeExecutionResources();
+        verify(message).release();
+    }
+    
+    @Test
     void assertRunWithSQLDialectException() throws SQLException, BackendConnectionException {
         mockProxyContext(true);
         when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
@@ -177,6 +200,27 @@ class CommandExecutorTaskTest {
     }
     
     @Test
+    void assertRunWithExecuteAndCloseSQLExceptions() throws SQLException {
+        mockProxyContext(false);
+        SQLException expectedException = new SQLException("foo_execute");
+        SQLException expectedCloseException = new SQLException("bar_close");
+        doThrow(expectedException).when(commandExecutor).execute();
+        doThrow(expectedCloseException).when(commandExecutor).close();
+        when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
+        when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, connectionSession)).thenReturn(commandExecutor);
+        when(engine.getCommandExecuteEngine().getErrorPacket(expectedException)).thenReturn(databasePacket);
+        when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.empty());
+        new CommandExecutorTask(engine, connectionSession, handlerContext, message).run();
+        assertThat(expectedException.getSuppressed().length, is(1));
+        assertThat(expectedException.getSuppressed()[0], is(expectedCloseException));
+        verify(engine.getCommandExecuteEngine()).getErrorPacket(expectedException);
+        InOrder inOrder = inOrder(engine, commandExecutor);
+        inOrder.verify(engine).handleException(connectionSession, expectedException);
+        inOrder.verify(commandExecutor).close();
+        verify(commandExecutor).close();
+    }
+    
+    @Test
     void assertRunWithException() throws BackendConnectionException, SQLException {
         mockProxyContext(false);
         RuntimeException mockException = new RuntimeException("foo_mock");
@@ -189,6 +233,24 @@ class CommandExecutorTaskTest {
         verify(handlerContext, times(2)).write(databasePacket);
         verify(handlerContext).flush();
         verify(databaseConnectionManager).closeExecutionResources();
+    }
+    
+    @Test
+    void assertRunWithRuntimeExceptionAndCloseSQLException() throws SQLException {
+        mockProxyContext(false);
+        RuntimeException expectedException = new RuntimeException("foo_execute");
+        SQLException expectedCloseException = new SQLException("bar_close");
+        doThrow(expectedException).when(commandExecutor).execute();
+        doThrow(expectedCloseException).when(commandExecutor).close();
+        when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
+        when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, connectionSession)).thenReturn(commandExecutor);
+        when(engine.getCommandExecuteEngine().getErrorPacket(expectedException)).thenReturn(databasePacket);
+        when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.empty());
+        new CommandExecutorTask(engine, connectionSession, handlerContext, message).run();
+        assertThat(expectedException.getSuppressed().length, is(1));
+        assertThat(expectedException.getSuppressed()[0], is(expectedCloseException));
+        verify(engine.getCommandExecuteEngine()).getErrorPacket(expectedException);
+        verify(commandExecutor).close();
     }
     
     @Test
@@ -205,10 +267,31 @@ class CommandExecutorTaskTest {
         verify(databaseConnectionManager).closeExecutionResources();
     }
     
+    @Test
+    void assertRunWithErrorAndCloseSQLException() throws SQLException {
+        mockProxyContext(false);
+        Error expectedError = new OutOfMemoryError("foo_execute");
+        SQLException expectedCloseException = new SQLException("bar_close");
+        doThrow(expectedError).when(commandExecutor).execute();
+        doThrow(expectedCloseException).when(commandExecutor).close();
+        when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
+        when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, connectionSession)).thenReturn(commandExecutor);
+        when(engine.getCommandExecuteEngine().getErrorPacket(any(RuntimeException.class))).thenReturn(databasePacket);
+        when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.empty());
+        new CommandExecutorTask(engine, connectionSession, handlerContext, message).run();
+        ArgumentCaptor<RuntimeException> exceptionCaptor = ArgumentCaptor.forClass(RuntimeException.class);
+        verify(engine.getCommandExecuteEngine()).getErrorPacket(exceptionCaptor.capture());
+        RuntimeException actualException = exceptionCaptor.getValue();
+        assertThat(actualException.getCause(), is(expectedError));
+        assertThat(expectedError.getSuppressed().length, is(1));
+        assertThat(expectedError.getSuppressed()[0], is(expectedCloseException));
+        verify(commandExecutor).close();
+    }
+    
     private void mockProxyContext(final boolean sqlShowEnabled) {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        when(metaDataContexts.getMetaData()).thenReturn(new ShardingSphereMetaData(Collections.emptyList(), mock(),
-                mock(), new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.toString(sqlShowEnabled))))));
+        when(metaDataContexts.getMetaData()).thenReturn(new ShardingSphereMetaData(Collections.emptyList(), mock(), mock(),
+                new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.toString(sqlShowEnabled))))));
         ContextManager contextManager = mock(ContextManager.class);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

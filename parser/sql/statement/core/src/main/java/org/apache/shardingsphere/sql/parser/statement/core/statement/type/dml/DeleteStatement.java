@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ErrorLoggingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
@@ -50,13 +51,16 @@ public final class DeleteStatement extends DMLStatement {
     
     private final ReturningSegment returning;
     
+    private final ErrorLoggingSegment errorLogging;
+    
     private final OutputSegment output;
     
     private final SQLStatementAttributes attributes;
     
     @Builder
     private DeleteStatement(final DatabaseType databaseType, final TableSegment table, final WhereSegment where,
-                            final OrderBySegment orderBy, final LimitSegment limit, final WithSegment with, final ReturningSegment returning, final OutputSegment output) {
+                            final OrderBySegment orderBy, final LimitSegment limit, final WithSegment with, final ReturningSegment returning,
+                            final ErrorLoggingSegment errorLogging, final OutputSegment output) {
         super(databaseType);
         this.table = table;
         this.where = where;
@@ -64,6 +68,7 @@ public final class DeleteStatement extends DMLStatement {
         this.limit = limit;
         this.with = with;
         this.returning = returning;
+        this.errorLogging = errorLogging;
         this.output = output;
         attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
@@ -111,6 +116,15 @@ public final class DeleteStatement extends DMLStatement {
      */
     public Optional<ReturningSegment> getReturning() {
         return Optional.ofNullable(returning);
+    }
+    
+    /**
+     * Get error logging segment.
+     *
+     * @return error logging segment
+     */
+    public Optional<ErrorLoggingSegment> getErrorLogging() {
+        return Optional.ofNullable(errorLogging);
     }
     
     /**

@@ -26,4 +26,5 @@
     <sql-case id="alter_function_compile" value="ALTER FUNCTION oe.get_bal COMPILE;" db-types="Oracle" />
     <sql-case id="alter_function_doris" value="ALTER FUNCTION udf_add" db-types="Doris" />
     <sql-case id="alter_function_mysql" value="ALTER FUNCTION func1" db-types="MySQL" />
+    <sql-case id="alter_function_with_owner_visitor_oracle" value="ALTER FUNCTION foo_schema.foo_func COMPILE" db-types="Oracle" />
 </sql-cases>

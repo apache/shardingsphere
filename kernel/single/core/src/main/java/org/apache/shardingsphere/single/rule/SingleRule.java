@@ -234,7 +234,7 @@ public final class SingleRule implements DatabaseRule {
             return result;
         }
         return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(IndexSQLStatementAttribute.class)
-                .map(optional -> IndexMetaDataUtils.getTableNames(database, protocolType, optional.getIndexes())).orElse(result);
+                .map(optional -> IndexMetaDataUtils.getTableNames(database, optional.getIndexes())).orElse(result);
     }
     
     private Collection<QualifiedTable> getQualifiedTables(final ShardingSphereDatabase database, final Collection<SimpleTableSegment> tableSegments) {

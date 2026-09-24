@@ -32,7 +32,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -60,16 +59,7 @@ class MySQLComQueryPacketTest {
         MySQLComQueryPacket actual = new MySQLComQueryPacket(payload);
         assertThat(actual.getSQL(), is(expectedSQL));
         assertThat(actual.getHintValueContext().isWriteRouteOnly(), is(expectedWriteRouteOnly));
-        assertFalse(actual.findOriginalSQLBytes().isPresent());
-    }
-    
-    @Test
-    void assertRetainBinaryLiteralOriginalSQLBytes() {
-        byte[] sql = "SELECT _binary'foo'".getBytes(StandardCharsets.UTF_8);
-        when(payload.readStringEOFByBytes()).thenReturn(sql);
-        when(payload.getCharset()).thenReturn(StandardCharsets.UTF_8);
-        MySQLComQueryPacket actual = new MySQLComQueryPacket(payload);
-        assertArrayEquals(sql, actual.findOriginalSQLBytes().get());
+        assertThat(actual.findOriginalSQLBytes().get(), is(inputSQL.getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test
@@ -78,7 +68,7 @@ class MySQLComQueryPacketTest {
         when(payload.readStringEOFByBytes()).thenReturn(sql);
         when(payload.getCharset()).thenReturn(StandardCharsets.UTF_8);
         MySQLComQueryPacket actual = new MySQLComQueryPacket(payload);
-        assertArrayEquals(sql, actual.findOriginalSQLBytes().get());
+        assertThat(actual.findOriginalSQLBytes().get(), is(sql));
     }
     
     @Test

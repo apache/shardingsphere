@@ -17,6 +17,7 @@
 
 notifications:
   commits: notifications@shardingsphere.apache.org
+  discussions: notifications@shardingsphere.apache.org
   issues: notifications@shardingsphere.apache.org
   pullrequests: notifications@shardingsphere.apache.org
   jobs: notifications@shardingsphere.apache.org
@@ -41,6 +42,7 @@ github:
     - data-pipeline
     - bigdata
   features:
+    discussions: true
     issues: true
     projects: true
     wiki: true

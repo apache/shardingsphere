@@ -105,7 +105,7 @@ class SingleMutableDataNodeRuleAttributeTest {
     @MethodSource("removeWithSchemaNamesArguments")
     void assertRemoveWithSchemaNames(final String name, final Collection<DataNode> initialDataNodes, final Collection<String> schemaNames,
                                      final int expectedDataNodeCount, final Collection<String> expectedTables, final boolean expectedTableInMap, final boolean expectedLogicTableExists) {
-        SingleRuleConfiguration configuration = new SingleRuleConfiguration(new LinkedList<>(createDataNodeStrings(initialDataNodes)), null);
+        SingleRuleConfiguration configuration = new SingleRuleConfiguration(new LinkedList<>(new LinkedHashSet<>(createDataNodeStrings(initialDataNodes))), null);
         Map<String, Collection<DataNode>> singleTableDataNodes = createSingleTableDataNodes(initialDataNodes);
         SingleTableMapperRuleAttribute tableMapperRuleAttribute = new SingleTableMapperRuleAttribute(singleTableDataNodes.values());
         SingleMutableDataNodeRuleAttribute ruleAttribute = createRuleAttribute(configuration, Collections.singleton("foo_ds"), singleTableDataNodes, tableMapperRuleAttribute);
@@ -194,6 +194,7 @@ class SingleMutableDataNodeRuleAttributeTest {
     private static Stream<Arguments> removeWithSchemaNamesArguments() {
         DataNode fooDataNode = new DataNode("foo_ds", "foo_schema", "foo_tbl");
         DataNode barDataNode = new DataNode("foo_ds", "bar_schema", "foo_tbl");
+        DataNode otherDataSourceNode = new DataNode("bar_ds", "bar_schema", "foo_tbl");
         return Stream.of(
                 Arguments.of("keep data node when schema not matched", Collections.singleton(fooDataNode), Collections.singleton("baz_schema"), 1,
                         Collections.singleton(SingleTableLoadUtils.getDataNodeString(DATABASE_TYPE, "foo_ds", "foo_schema", "foo_tbl")), true, true),
@@ -201,6 +202,8 @@ class SingleMutableDataNodeRuleAttributeTest {
                         Collections.singleton(SingleTableLoadUtils.getDataNodeString(DATABASE_TYPE, "foo_ds", "foo_schema", "foo_tbl")), true, true),
                 Arguments.of("remove matched schema and keep others", Arrays.asList(fooDataNode, barDataNode), Collections.singleton("foo_schema"), 1,
                         Collections.singleton(SingleTableLoadUtils.getDataNodeString(DATABASE_TYPE, "foo_ds", "bar_schema", "foo_tbl")), true, true),
+                Arguments.of("remove matched schema and keep another data source", Arrays.asList(fooDataNode, otherDataSourceNode), Collections.singleton("foo_schema"), 1,
+                        Collections.singleton(SingleTableLoadUtils.getDataNodeString(DATABASE_TYPE, "bar_ds", "bar_schema", "foo_tbl")), true, true),
                 Arguments.of("remove all matched schemas", Collections.singleton(fooDataNode), Collections.singleton("foo_schema"), 0, Collections.emptyList(), false, false));
     }
     

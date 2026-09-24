@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.in
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -86,7 +87,7 @@ class AlterIndexPushDownMetaDataRefresherTest {
         return new AlterIndexStatement(databaseType, index, new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_new"))), null);
     }
     
-    private ShardingSphereDatabase createDatabase(final java.util.Collection<ShardingSphereSchema> schemas) {
+    private ShardingSphereDatabase createDatabase(final Collection<ShardingSphereSchema> schemas) {
         return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), schemas,
                 new ConfigurationProperties(new Properties()));
     }

@@ -106,8 +106,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLC
 
 import java.util.Iterator;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -151,6 +151,9 @@ public final class ExpressionAssert {
         } else {
             assertNotNull(actual, assertContext.getText("Actual literal expression should exist."));
             assertThat(assertContext.getText("Literal assertion error: "), String.valueOf(actual.getLiterals()), is(expected.getValue()));
+            if (null != expected.getNullLiteral()) {
+                assertThat(assertContext.getText("Null literal assertion error: "), actual.isNullLiteral(), is(expected.getNullLiteral()));
+            }
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
@@ -187,6 +190,9 @@ public final class ExpressionAssert {
             assertNull(actual, assertContext.getText("Actual subquery expression should not exist."));
         } else {
             assertNotNull(actual, assertContext.getText("Actual subquery expression should exist."));
+            if (null != expected.getText()) {
+                assertThat(assertContext.getText("Subquery text assertion error: "), actual.getText(), is(expected.getText()));
+            }
             assertSubquery(assertContext, actual.getSubquery(), expected);
         }
     }
@@ -388,6 +394,9 @@ public final class ExpressionAssert {
      * @param expected expected case when expression
      */
     public static void assertCaseWhenExpression(final SQLCaseAssertContext assertContext, final CaseWhenExpression actual, final ExpectedCaseWhenExpression expected) {
+        if (null != expected.getText()) {
+            assertThat(assertContext.getText("Case when expression text assertion error: "), actual.getText(), is(expected.getText()));
+        }
         assertThat(assertContext.getText("When exprs size is not same!"), actual.getWhenExprs().size(), is(expected.getWhenExprs().size()));
         assertThat(assertContext.getText("Then exprs size is not same!"), actual.getThenExprs().size(), is(expected.getThenExprs().size()));
         Iterator<ExpectedExpression> whenExprsIterator = expected.getWhenExprs().iterator();

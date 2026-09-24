@@ -35,8 +35,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class PipelineProcessConfigurationPersistServiceTest {

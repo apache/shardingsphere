@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sqlfederation.mysql;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
 
+import java.util.Optional;
+
 /**
  * SQL federation column type converter for MySQL.
  */
@@ -40,6 +42,11 @@ public final class MySQLSQLFederationColumnTypeConverter implements DialectSQLFe
             return SqlTypeName.VARCHAR.getJdbcOrdinal();
         }
         return result;
+    }
+    
+    @Override
+    public Optional<Class<?>> convertColumnValueClass(final SqlTypeName sqlTypeName) {
+        return SqlTypeName.BOOLEAN == sqlTypeName ? Optional.of(Integer.class) : Optional.empty();
     }
     
     @Override

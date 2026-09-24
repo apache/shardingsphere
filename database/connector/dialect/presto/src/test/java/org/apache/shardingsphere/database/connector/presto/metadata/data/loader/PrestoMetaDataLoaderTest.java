@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.model.Col
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.datatype.DataTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -42,11 +43,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -59,25 +61,34 @@ class PrestoMetaDataLoaderTest {
     
     @Test
     void assertLoadWithoutTableFilter() throws SQLException {
-        Connection connectionWithoutTables = mockConnectionWithoutTables();
+        PreparedStatement columnMetaDataStatement = mock(PreparedStatement.class);
+        PreparedStatement viewMetaDataStatement = mock(PreparedStatement.class);
+        Connection connectionWithoutTables = mockConnectionWithoutTables(columnMetaDataStatement, viewMetaDataStatement);
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(connectionWithoutTables);
         when(DataTypeRegistry.getDataType("Presto", "int")).thenReturn(Optional.of(Types.INTEGER));
         when(DataTypeRegistry.getDataType("Presto", "varchar")).thenReturn(Optional.empty());
         Collection<SchemaMetaData> actualWithoutTables = loader.load(new MetaDataLoaderMaterial(Collections.emptyList(), "ds_0", dataSource, databaseType, "def_schema"));
-        SchemaMetaData schemaMetaDataWithoutTables = actualWithoutTables.iterator().next();
-        assertThat(schemaMetaDataWithoutTables.getName(), is("def_schema"));
-        TableMetaData tableMetaDataWithoutTables = schemaMetaDataWithoutTables.getTables().iterator().next();
-        assertThat(tableMetaDataWithoutTables.getName(), is("tbl_one"));
-        Iterator<ColumnMetaData> columnIterator = tableMetaDataWithoutTables.getColumns().iterator();
-        ColumnMetaData firstColumn = columnIterator.next();
-        assertThat(firstColumn.getName(), is("id"));
-        assertThat(firstColumn.getDataType(), is(Types.INTEGER));
-        assertTrue(firstColumn.isNullable());
-        ColumnMetaData secondColumn = columnIterator.next();
-        assertThat(secondColumn.getName(), is("name"));
-        assertThat(secondColumn.getDataType(), is(Types.OTHER));
-        assertFalse(secondColumn.isNullable());
+        SchemaMetaData actualSchema = actualWithoutTables.iterator().next();
+        assertThat(actualSchema.getName(), is("def_schema"));
+        TableMetaData actualTable = actualSchema.getTables().iterator().next();
+        assertThat(actualTable.getName(), is("tbl_one"));
+        assertThat(actualTable.getType(), is(TableType.VIEW));
+        Iterator<ColumnMetaData> actualColumns = actualTable.getColumns().iterator();
+        ColumnMetaData actualFirstColumn = actualColumns.next();
+        assertThat(actualFirstColumn.getName(), is("id"));
+        assertThat(actualFirstColumn.getDataType(), is(Types.INTEGER));
+        assertFalse(actualFirstColumn.isCaseSensitive());
+        assertTrue(actualFirstColumn.isNullable());
+        ColumnMetaData actualSecondColumn = actualColumns.next();
+        assertThat(actualSecondColumn.getName(), is("name"));
+        assertThat(actualSecondColumn.getDataType(), is(Types.OTHER));
+        assertTrue(actualSecondColumn.isCaseSensitive());
+        assertFalse(actualSecondColumn.isNullable());
+        verify(columnMetaDataStatement).setString(1, "catalog_one");
+        verify(columnMetaDataStatement).setString(2, "foo_schema");
+        verify(viewMetaDataStatement).setString(1, "catalog_one");
+        verify(viewMetaDataStatement).setString(2, "foo_schema");
     }
     
     @Test
@@ -87,21 +98,30 @@ class PrestoMetaDataLoaderTest {
         when(dataSource.getConnection()).thenReturn(connectionWithTables);
         when(DataTypeRegistry.getDataType("Presto", "json")).thenReturn(Optional.of(Types.JAVA_OBJECT));
         Collection<SchemaMetaData> actualWithTables = loader.load(new MetaDataLoaderMaterial(Collections.singletonList("target_table"), "ds_0", dataSource, databaseType, "def_schema"));
-        SchemaMetaData schemaMetaDataWithTables = actualWithTables.iterator().next();
-        TableMetaData tableMetaDataWithTables = schemaMetaDataWithTables.getTables().iterator().next();
-        ColumnMetaData payloadColumn = tableMetaDataWithTables.getColumns().iterator().next();
-        assertThat(tableMetaDataWithTables.getName(), is("target_table"));
-        assertThat(payloadColumn.getDataType(), is(Types.JAVA_OBJECT));
+        SchemaMetaData actualSchema = actualWithTables.iterator().next();
+        TableMetaData actualTable = actualSchema.getTables().iterator().next();
+        ColumnMetaData actualColumn = actualTable.getColumns().iterator().next();
+        assertThat(actualTable.getName(), is("target_table"));
+        assertThat(actualTable.getType(), is(TableType.TABLE));
+        assertThat(actualColumn.getDataType(), is(Types.JAVA_OBJECT));
+        assertFalse(actualColumn.isCaseSensitive());
     }
     
-    private Connection mockConnectionWithoutTables() throws SQLException {
+    private Connection mockConnectionWithoutTables(final PreparedStatement columnMetaDataStatement, final PreparedStatement viewMetaDataStatement) throws SQLException {
         Connection result = mock(Connection.class);
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
         ResultSet resultSet = mockResultSetWithoutTables();
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(columnMetaDataStatement.executeQuery()).thenReturn(resultSet);
+        ResultSet viewResultSet = mock(ResultSet.class);
+        when(viewResultSet.next()).thenReturn(true, false);
+        when(viewResultSet.getString("TABLE_NAME")).thenReturn("tbl_one");
+        when(viewMetaDataStatement.executeQuery()).thenReturn(viewResultSet);
         when(result.getCatalog()).thenReturn("catalog_one");
-        String sql = "SELECT TABLE_CATALOG,TABLE_NAME,COLUMN_NAME,DATA_TYPE,ORDINAL_POSITION,IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? ORDER BY ORDINAL_POSITION";
-        when(result.prepareStatement(sql)).thenReturn(preparedStatement);
+        when(result.getSchema()).thenReturn("foo_schema");
+        String sql = "SELECT TABLE_CATALOG,TABLE_NAME,COLUMN_NAME,DATA_TYPE,ORDINAL_POSITION,IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS"
+                + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? ORDER BY ORDINAL_POSITION";
+        when(result.prepareStatement(sql)).thenReturn(columnMetaDataStatement);
+        String viewSql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND TABLE_TYPE='VIEW' AND UPPER(TABLE_NAME) IN ('TBL_ONE')";
+        when(result.prepareStatement(viewSql)).thenReturn(viewMetaDataStatement);
         return result;
     }
     
@@ -117,13 +137,19 @@ class PrestoMetaDataLoaderTest {
     
     private Connection mockConnectionWithTables() throws SQLException {
         Connection result = mock(Connection.class);
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        PreparedStatement columnMetaDataStatement = mock(PreparedStatement.class);
         ResultSet resultSet = mockResultSetWithTables();
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(columnMetaDataStatement.executeQuery()).thenReturn(resultSet);
+        PreparedStatement viewMetaDataStatement = mock(PreparedStatement.class);
+        ResultSet viewResultSet = mock(ResultSet.class);
+        when(viewMetaDataStatement.executeQuery()).thenReturn(viewResultSet);
         String sql = "SELECT TABLE_CATALOG,TABLE_NAME,COLUMN_NAME,DATA_TYPE,ORDINAL_POSITION,IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS "
-                + "WHERE TABLE_CATALOG=? AND UPPER(TABLE_NAME) IN ('TARGET_TABLE') ORDER BY ORDINAL_POSITION";
-        when(result.prepareStatement(sql)).thenReturn(preparedStatement);
+                + "WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TARGET_TABLE') ORDER BY ORDINAL_POSITION";
+        when(result.prepareStatement(sql)).thenReturn(columnMetaDataStatement);
+        String viewSql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND TABLE_TYPE='VIEW' AND UPPER(TABLE_NAME) IN ('TARGET_TABLE')";
+        when(result.prepareStatement(viewSql)).thenReturn(viewMetaDataStatement);
         when(result.getCatalog()).thenReturn("catalog_two");
+        when(result.getSchema()).thenReturn("bar_schema");
         return result;
     }
     

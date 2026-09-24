@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.mode.node.path.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.infra.fixture.rule.MockedRuleConfiguration;
@@ -27,13 +29,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.validation.constraints.NotBlank;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -86,6 +92,13 @@ class DatabaseRulePersistServiceTest {
     }
     
     @Test
+    void assertPersistWithInvalidRuleConfiguration() {
+        Collection<RuleConfiguration> ruleConfigs = Arrays.asList(new MockedRuleConfiguration("foo_value"), new InvalidRuleConfiguration());
+        assertThrows(InvalidRuleConfigurationException.class, () -> persistService.persist("foo_db", ruleConfigs));
+        verifyNoInteractions(repository);
+    }
+    
+    @Test
     void assertDeleteWithRuleType() {
         persistService.delete("foo_db", "foo_rule");
         verify(repository).delete("/metadata/foo_db/rules/foo_rule");
@@ -96,5 +109,12 @@ class DatabaseRulePersistServiceTest {
         Collection<MetaDataVersion> actual = persistService.delete("foo_db", Collections.singleton(new MockedRuleConfiguration("test")));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getActiveVersion(), is(0));
+    }
+    
+    @Getter
+    private static final class InvalidRuleConfiguration implements RuleConfiguration {
+        
+        @NotBlank
+        private final String name = "";
     }
 }

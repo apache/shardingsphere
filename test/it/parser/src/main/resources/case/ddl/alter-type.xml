@@ -30,6 +30,9 @@
     <alter-type sql-case-id="alter_type_debug" />
     <alter-type sql-case-id="alter_type_spec" />
     <alter-type sql-case-id="alter_type_body" />
+    <alter-type sql-case-id="alter_type_spec_without_reuse_settings" />
+    <alter-type sql-case-id="alter_type_body_without_reuse_settings" />
+    <alter-type sql-case-id="alter_type_compile_without_reuse_settings" />
     <alter-type sql-case-id="alter_type_compile_bool" />
     <alter-type sql-case-id="alter_type_compile_bool_false" />
     <alter-type sql-case-id="alter_type_compile_string" />

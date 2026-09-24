@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.metadata.refresher.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -80,6 +79,6 @@ public final class SchemaRefreshUtils {
     
     private static IdentifierValue getRawSchemaName(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext.getTablesContext().getIdentifierSchemaName()
-                .orElseGet(() -> new IdentifierValue(new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName())));
+                .orElseGet(() -> new IdentifierValue(database.getDefaultSchemaName()));
     }
 }

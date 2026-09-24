@@ -26,15 +26,12 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheContext;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,7 +41,6 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -124,22 +120,20 @@ class JDBCBackendStatementTest {
         verify(preparedStatement).setObject(1, 2);
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("nonFirebirdDatabaseTypes")
-    void assertCreateStorageResourceWithoutPreparedStatementCacheWithoutActiveKey(final String scenario, final String databaseTypeName) throws SQLException {
+    @Test
+    void assertCreateStorageResourceWithoutPreparedStatementCacheWithoutActiveKey() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getCurrentPreparedStatementCacheKey()).thenReturn(Optional.empty());
         JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
         Connection connection = mock(Connection.class);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         String sql = "SELECT * FROM foo WHERE id = ?";
-        DatabaseType nonFirebirdDatabaseType = mock(DatabaseType.class);
         when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
         StatementOption statementOption = new StatementOption(false);
         backendStatement.createStorageResource(
-                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(1))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, nonFirebirdDatabaseType);
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(1))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, databaseType);
         backendStatement.createStorageResource(
-                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, nonFirebirdDatabaseType);
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, databaseType);
         verify(connection, times(2)).prepareStatement(sql);
     }
     
@@ -186,10 +180,4 @@ class JDBCBackendStatementTest {
         verify(firstPreparedStatement).close();
     }
     
-    private static Stream<Arguments> nonFirebirdDatabaseTypes() {
-        return Stream.of(
-                Arguments.of("createStorageResource_mysqlDoesNotUsePreparedStatementCache", "MySQL"),
-                Arguments.of("createStorageResource_postgresqlDoesNotUsePreparedStatementCache", "PostgreSQL"),
-                Arguments.of("createStorageResource_openGaussDoesNotUsePreparedStatementCache", "openGauss"));
-    }
 }

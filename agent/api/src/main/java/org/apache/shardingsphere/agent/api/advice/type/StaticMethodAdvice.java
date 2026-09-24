@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.agent.api.advice.type;
 
-import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 
 /**
  * Static method advice.

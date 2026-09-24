@@ -21,11 +21,10 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
@@ -44,6 +43,7 @@ import org.apache.shardingsphere.mode.retry.RetryExecutor;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -284,12 +284,11 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         return metaDataContextManager.getMetaDataContexts();
     }
     
-    @SneakyThrows
+    @SneakyThrows(SQLException.class)
     private ShardingSphereDatabase rebuildDatabaseSchemaIndex(final String databaseName, final MetaDataContexts reloadMetaDataContexts) {
         ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), database.getRuleMetaData().getRules(),
-                reloadMetaDataContexts.getMetaData().getProps(), new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName), database.getIdentifierContext(),
-                database.getAllSchemas());
+                reloadMetaDataContexts.getMetaData().getProps(), database.getDefaultSchemaName(), database.getIdentifierContext(), database.getAllSchemas());
         Collection<ShardingSphereSchema> schemas = new LinkedList<>(GenericSchemaBuilder.build(database.getProtocolType(), material).values());
         return new ShardingSphereDatabase(database.getName(), database.getProtocolType(), database.getResourceMetaData(),
                 database.getRuleMetaData(), schemas, reloadMetaDataContexts.getMetaData().getProps());

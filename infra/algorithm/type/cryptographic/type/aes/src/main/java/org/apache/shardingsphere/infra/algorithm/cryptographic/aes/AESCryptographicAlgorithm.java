@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.infra.algorithm.cryptographic.aes;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicAlgorithmValueUtils;
 import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicContext;
 import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicPropertiesProvider;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.Base64;
 import java.util.Properties;
 
 /**
@@ -45,33 +45,22 @@ public final class AESCryptographicAlgorithm implements CryptographicAlgorithm {
     @HighFrequencyInvocation
     @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public Object encrypt(final Object plainValue) {
+    public byte[] encrypt(final Object plainValue, final CryptographicContext cryptographicContext) {
         if (null == plainValue) {
             return null;
         }
-        byte[] result = getCipher(Cipher.ENCRYPT_MODE).doFinal(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8));
-        return encode(result);
-    }
-    
-    @HighFrequencyInvocation
-    private String encode(final byte[] value) {
-        return Base64.getEncoder().encodeToString(value);
+        return getCipher(Cipher.ENCRYPT_MODE).doFinal(CryptographicAlgorithmValueUtils.convertToBytes(plainValue, cryptographicContext));
     }
     
     @HighFrequencyInvocation
     @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public Object decrypt(final Object cipherValue) {
+    public Object decrypt(final byte[] cipherValue, final CryptographicContext cryptographicContext) {
         if (null == cipherValue) {
             return null;
         }
-        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(decode(cipherValue.toString().trim()));
-        return new String(result, StandardCharsets.UTF_8);
-    }
-    
-    @HighFrequencyInvocation
-    private byte[] decode(final String value) {
-        return Base64.getDecoder().decode(value);
+        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(cipherValue);
+        return CryptographicAlgorithmValueUtils.convertToPlainValue(result, cryptographicContext);
     }
     
     @HighFrequencyInvocation

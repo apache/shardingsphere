@@ -17,28 +17,43 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.hamcrest.Matchers.is;
+import java.util.stream.Stream;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PipelineSQLSegmentBuilderTest {
     
-    private final PipelineSQLSegmentBuilder mysqlBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+    private final PipelineSQLSegmentBuilder mysqlBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "MySQL"),
+            new DatabaseIdentifierContext(IdentifierCasePolicyResolver.resolveProtocol(TypedSPILoader.getService(DatabaseType.class, "MySQL"))));
     
-    private final PipelineSQLSegmentBuilder postgresqlBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+    private final PipelineSQLSegmentBuilder postgresqlBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"),
+            new DatabaseIdentifierContext(IdentifierCasePolicyResolver.resolveProtocol(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"))));
     
     @Test
     void assertGetEscapedIdentifier() {
-        assertThat(mysqlBuilder.getEscapedIdentifier("SELECT"), is("`SELECT`"));
+        assertThat(mysqlBuilder.getEscapedIdentifier(IdentifierScope.COLUMN, "SELECT"), is("`SELECT`"));
     }
     
     @Test
     void assertGetUnescapedIdentifier() {
-        assertThat(mysqlBuilder.getEscapedIdentifier("SELECT1"), is("`SELECT1`"));
+        assertThat(mysqlBuilder.getEscapedIdentifier(IdentifierScope.COLUMN, "SELECT1"), is("`SELECT1`"));
     }
     
     @Test
@@ -70,4 +85,37 @@ class PipelineSQLSegmentBuilderTest {
         assertThat(postgresqlBuilder.getQualifiedTableName(null, "foo_tbl"), is("\"foo_tbl\""));
         assertThat(postgresqlBuilder.getQualifiedTableName(new QualifiedTable(null, "foo_tbl")), is("\"foo_tbl\""));
     }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getScopedIdentifiers")
+    void assertGetEscapedIdentifierUsesScope(final String name, final IdentifierScope scope, final String identifier, final String expected) {
+        DatabaseIdentifierContext context = mock(DatabaseIdentifierContext.class);
+        when(context.normalizeStorage(eq(scope), any())).thenReturn(expected);
+        PipelineSQLSegmentBuilder builder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), context);
+        assertThat(builder.getEscapedIdentifier(scope, identifier), is("\"" + expected + "\""));
+    }
+    
+    private static Stream<Arguments> getScopedIdentifiers() {
+        return Stream.of(Arguments.of("schema", IdentifierScope.SCHEMA, "Tenant", "TENANT"),
+                Arguments.of("table", IdentifierScope.TABLE, "Orders", "orders"), Arguments.of("column", IdentifierScope.COLUMN, "OrderId", "OrderId"));
+    }
+    
+    @Test
+    void assertGetEscapedIdentifierPreservesQuotedCase() {
+        PipelineSQLSegmentBuilder builder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"),
+                new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
+        assertThat(builder.getEscapedIdentifier(IdentifierScope.COLUMN, "\"OrderId\""), is("\"OrderId\""));
+    }
+    
+    @Test
+    void assertGetEscapedIdentifierPreservesWildcardWithoutContext() {
+        PipelineSQLSegmentBuilder builder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        assertThat(builder.getEscapedIdentifier(IdentifierScope.COLUMN, "*"), is("*"));
+    }
+    
+    @Test
+    void assertGetQualifiedTableNameWithEmptySchema() {
+        assertThat(postgresqlBuilder.getQualifiedTableName("", "Orders"), is("\"orders\""));
+    }
+    
 }

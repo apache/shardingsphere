@@ -44,8 +44,8 @@ import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -113,6 +113,28 @@ class InventoryTaskSplitterTest {
         UniqueKeyIngestPosition<?> keyPosition = (UniqueKeyIngestPosition<?>) actual.get(0).getTaskProgress().getPosition();
         assertThat(keyPosition.getLowerBound(), is(BigInteger.ONE));
         assertThat(keyPosition.getUpperBound(), is(BigInteger.valueOf(999L)));
+    }
+    
+    @Test
+    void assertSplitWithEmptyStringPrimary() throws SQLException {
+        dumperContext.setUniqueKeyColumns(Collections.singletonList(new PipelineColumnMetaData(1, "order_id", Types.VARCHAR, "varchar", false, true, true)));
+        initEmptyStringPrimaryEnvironment(dumperContext.getCommonContext());
+        List<InventoryTask> actual = inventoryTaskSplitter.split(jobItemContext);
+        assertThat(actual.size(), is(1));
+        UniqueKeyIngestPosition<?> keyPosition = (UniqueKeyIngestPosition<?>) actual.get(0).getTaskProgress().getPosition();
+        assertThat(keyPosition.getLowerBound(), is(""));
+        assertThat(keyPosition.getUpperBound(), is("foo_uuid"));
+    }
+    
+    private void initEmptyStringPrimaryEnvironment(final DumperCommonContext dumperContext) throws SQLException {
+        DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute("DROP TABLE IF EXISTS t_order");
+            statement.execute("CREATE TABLE t_order (order_id VARCHAR(36) PRIMARY KEY, user_id VARCHAR(12))");
+            statement.execute("INSERT INTO t_order (order_id, user_id) VALUES ('', 'foo_user'), ('foo_uuid', 'bar_user')");
+        }
     }
     
     @Test

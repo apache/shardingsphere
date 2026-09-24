@@ -32,4 +32,6 @@ public final class EncryptAlgorithmMetaData {
     private final boolean supportEquivalentFilter;
     
     private final boolean supportLike;
+    
+    private final Class<?> cipherValueType;
 }

@@ -1037,8 +1037,8 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitSpecialAnalysisFunction(final SpecialAnalysisFunctionContext ctx) {
-        return null != ctx.geomCollectionFunction() ? visit(ctx.geomCollectionFunction())
-                : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return null == ctx.geomCollectionFunction() ? new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx))
+                : visit(ctx.geomCollectionFunction());
     }
     
     @Override

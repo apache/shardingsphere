@@ -35,7 +35,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,7 +64,7 @@ class FirebirdInt16BinaryProtocolValueTest {
         new FirebirdInt16BinaryProtocolValue().write(actualPayload, value);
         byte[] actual = new byte[16];
         actualBuffer.getBytes(0, actual);
-        assertArrayEquals(expected, actual);
+        assertThat(actual, is(expected));
     }
     
     @Test

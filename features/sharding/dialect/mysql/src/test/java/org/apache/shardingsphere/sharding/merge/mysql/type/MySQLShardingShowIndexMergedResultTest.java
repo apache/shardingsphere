@@ -62,11 +62,26 @@ class MySQLShardingShowIndexMergedResultTest {
     }
     
     @Test
-    void assertGetValueWithShortenedIndexName() throws SQLException {
+    void assertGetValueWithLegacyIndexName() throws SQLException {
+        ShardingTable shardingTable = mock(ShardingTable.class);
+        when(rule.findShardingTableByActualTable("t_order_0")).thenReturn(Optional.of(shardingTable));
+        when(shardingTable.getLogicTable()).thenReturn("t_order");
+        when(schema.getTable("t_order")).thenReturn(new ShardingSphereTable("t_order", Collections.emptyList(),
+                Collections.singleton(new ShardingSphereIndex("t_order_index", Collections.emptyList(), false)), Collections.emptyList()));
         MySQLShardingShowIndexMergedResult actual = new MySQLShardingShowIndexMergedResult(rule, mock(SQLStatementContext.class), schema,
                 Collections.singletonList(mockQueryResult(IndexMetaDataUtils.getActualIndexName("t_order_index", "t_order_0"))));
         assertTrue(actual.next());
+        assertThat(actual.getValue(1, String.class), is("t_order"));
         assertThat(actual.getValue(3, String.class), is("t_order_index"));
+    }
+    
+    @Test
+    void assertGetValueWithNonShardingTable() throws SQLException {
+        MySQLShardingShowIndexMergedResult actual = new MySQLShardingShowIndexMergedResult(rule, mock(SQLStatementContext.class), schema,
+                Collections.singletonList(mockQueryResult("t_config", "uk_t_config")));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, String.class), is("t_config"));
+        assertThat(actual.getValue(3, String.class), is("uk_t_config"));
     }
     
     @Test
@@ -100,10 +115,14 @@ class MySQLShardingShowIndexMergedResultTest {
     }
     
     private QueryResult mockQueryResult(final String actualIndexName) throws SQLException {
+        return mockQueryResult("t_order_0", actualIndexName);
+    }
+    
+    private QueryResult mockQueryResult(final String actualTableName, final String actualIndexName) throws SQLException {
         QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getColumnCount()).thenReturn(3);
         when(result.next()).thenReturn(true, false);
-        when(result.getValue(1, Object.class)).thenReturn("t_order_0");
+        when(result.getValue(1, Object.class)).thenReturn(actualTableName);
         when(result.getValue(2, Object.class)).thenReturn(1);
         when(result.getValue(3, Object.class)).thenReturn(actualIndexName);
         return result;

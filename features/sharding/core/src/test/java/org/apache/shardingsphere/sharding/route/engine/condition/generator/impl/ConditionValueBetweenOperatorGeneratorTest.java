@@ -44,8 +44,8 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -162,6 +162,16 @@ class ConditionValueBetweenOperatorGeneratorTest {
         ParameterMarkerExpressionSegment between = new ParameterMarkerExpressionSegment(0, 0, 0);
         ParameterMarkerExpressionSegment and = new ParameterMarkerExpressionSegment(0, 0, 1);
         BetweenExpression predicate = new BetweenExpression(0, 0, left, between, and, false);
+        Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>(), timestampServiceRule);
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    void assertGenerateConditionValueWithNotBetween() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, 1);
+        ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, 2);
+        BetweenExpression predicate = new BetweenExpression(0, 0, left, betweenSegment, andSegment, true);
         Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>(), timestampServiceRule);
         assertFalse(actual.isPresent());
     }

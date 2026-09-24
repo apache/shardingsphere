@@ -322,6 +322,22 @@ public final class ShardingRule implements DatabaseRule {
     }
     
     /**
+     * Find sharding table via data source name and actual table name.
+     *
+     * @param dataSourceName data source name
+     * @param actualTableName actual table name
+     * @return sharding table
+     */
+    public Optional<ShardingTable> findShardingTableByDataSourceAndActualTable(final String dataSourceName, final String actualTableName) {
+        for (ShardingTable each : shardingTables.values()) {
+            if (each.containsDataNode(dataSourceName, actualTableName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    /**
      * Get sharding table.
      *
      * @param logicTableName logic table name
@@ -504,7 +520,7 @@ public final class ShardingRule implements DatabaseRule {
     }
     
     private Optional<ColumnKeyGenerateStrategiesRuleConfiguration> findColumnKeyGenerateStrategies(final String tableName) {
-        return null != columnKeyGenerateStrategies.get(tableName) ? Optional.of(columnKeyGenerateStrategies.get(tableName)) : Optional.empty();
+        return null == columnKeyGenerateStrategies.get(tableName) ? Optional.empty() : Optional.of(columnKeyGenerateStrategies.get(tableName));
     }
     
     /**

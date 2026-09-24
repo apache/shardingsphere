@@ -21,10 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.DorisDALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.mysql.MySQLDALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.oracle.OracleDALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.postgresql.PostgreSQLDALStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.DorisDALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.standard.StandardDALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 

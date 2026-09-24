@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.spi.column;
 
-import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 
 /**
  * Column shadow algorithm.

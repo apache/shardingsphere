@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.generic;
 
-import org.apache.shardingsphere.database.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
@@ -29,8 +29,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class PostgreSQLCommandCompletePacketTest {
     

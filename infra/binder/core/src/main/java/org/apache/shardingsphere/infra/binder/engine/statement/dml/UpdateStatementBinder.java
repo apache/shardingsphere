@@ -67,6 +67,7 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
                                  final SetAssignmentSegment boundSetAssignment, final WhereSegment boundWhere, final OrderBySegment boundOrderBy) {
         UpdateStatement result = UpdateStatement.builder().databaseType(sqlStatement.getDatabaseType()).with(boundWith).table(boundTable)
                 .from(boundFrom).setAssignment(boundSetAssignment).where(boundWhere).orderBy(boundOrderBy).limit(sqlStatement.getLimit().orElse(null))
+                .errorLogging(sqlStatement.getErrorLogging().orElse(null))
                 .targetTableIsFromAlias(sqlStatement.isTargetTableIsFromAlias()).build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;

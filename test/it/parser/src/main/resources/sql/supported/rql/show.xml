@@ -36,6 +36,9 @@
     <sql-case id="show-default-single-table-storage-unit" value="SHOW DEFAULT SINGLE TABLE STORAGE UNIT FROM single_table_db" db-types="ShardingSphere" />
     <sql-case id="show-sharding-table-nodes" value="SHOW SHARDING TABLE NODES t_order FROM sharding_db" db-types="ShardingSphere" />
     <sql-case id="show-sharding-key-generators" value="SHOW SHARDING KEY GENERATORS FROM sharding_db" db-types="ShardingSphere" />
+    <sql-case id="show-sharding-key-generator" value="SHOW SHARDING KEY GENERATOR snowflake_generator FROM sharding_db" db-types="ShardingSphere" />
+    <sql-case id="show-sharding-key-generate-strategies" value="SHOW SHARDING KEY GENERATE STRATEGIES FROM sharding_db" db-types="ShardingSphere" />
+    <sql-case id="show-sharding-key-generate-strategy" value="SHOW SHARDING KEY GENERATE STRATEGY order_id_strategy FROM sharding_db" db-types="ShardingSphere" />
     <sql-case id="show-default-sharding-strategy" value="SHOW DEFAULT SHARDING STRATEGY FROM sharding_db" db-types="ShardingSphere" />
     <sql-case id="show-mask-rules" value="SHOW MASK RULES FROM mask_db" db-types="ShardingSphere" />
     <sql-case id="show-unused-sharding-algorithms" value="SHOW UNUSED SHARDING ALGORITHMS FROM databaseName" db-types="ShardingSphere" />

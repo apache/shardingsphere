@@ -26,8 +26,8 @@ import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DataMatchTableDataConsistencyCheckerTest {

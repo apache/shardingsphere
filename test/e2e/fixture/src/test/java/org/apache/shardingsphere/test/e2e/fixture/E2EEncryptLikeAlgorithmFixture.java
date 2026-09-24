@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitial
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -54,7 +55,7 @@ public final class E2EEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
     private static final int MAX_NUMERIC_LETTER_CHAR = 255;
     
     @Getter
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, true);
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, true, byte[].class);
     
     private int delta;
     
@@ -127,8 +128,8 @@ public final class E2EEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
     }
     
     @Override
-    public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
-        return null == plainValue ? null : digest(String.valueOf(plainValue));
+    public byte[] encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
+        return null == plainValue ? null : digest(String.valueOf(plainValue)).getBytes(StandardCharsets.UTF_8);
     }
     
     @Override

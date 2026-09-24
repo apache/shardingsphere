@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfigur
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingAutoTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableRuleConfigurationSwapper;
-import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateStrategyRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateStrategyConfigurationSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateStrategyRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingAuditStrategyConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingStrategyConfigurationSwapper;
 

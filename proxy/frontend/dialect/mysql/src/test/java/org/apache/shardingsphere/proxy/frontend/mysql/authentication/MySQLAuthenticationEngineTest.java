@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -47,6 +45,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErr
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -79,8 +78,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -323,7 +322,7 @@ class MySQLAuthenticationEngineTest {
         setAuthenticationResult();
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
         when(payload.readStringEOFByBytes()).thenReturn(authResponse);
-        ChannelHandlerContext context = mockDomainSocketChannelHandlerContext();
+        final ChannelHandlerContext context = mockDomainSocketChannelHandlerContext();
         AuthorityRule rule = mock(AuthorityRule.class);
         ShardingSphereUser user = new ShardingSphereUser("root", "", "local_host");
         when(rule.findUser(user.getGrantee())).thenReturn(Optional.of(user));

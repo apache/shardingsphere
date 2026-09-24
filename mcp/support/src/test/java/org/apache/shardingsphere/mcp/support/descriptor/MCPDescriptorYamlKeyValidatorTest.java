@@ -103,6 +103,11 @@ class MCPDescriptorYamlKeyValidatorTest {
     }
     
     @Test
+    void assertValidateNullRoot() {
+        assertValidationError("null", "MCP descriptor resource `test.yaml` expects map at `$`.");
+    }
+    
+    @Test
     void assertValidateUnknownRootKey() {
         assertUnknownKey("unknown: true", "$.unknown");
     }

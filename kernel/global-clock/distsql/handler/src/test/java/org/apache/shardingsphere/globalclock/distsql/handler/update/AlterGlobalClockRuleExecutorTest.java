@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.globalclock.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
-import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.update.DistSQLGlobalRuleDefinitionExecutorAssert;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.update.DistSQLRuleDefinitionExecutorSettings;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.update.DistSQLRuleDefinitionExecutorTestCaseArgumentsProvider;

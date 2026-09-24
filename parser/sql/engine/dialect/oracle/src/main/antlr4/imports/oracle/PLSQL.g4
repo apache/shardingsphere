@@ -115,6 +115,21 @@ packageInitialization
     : BEGIN plsqlStatements (EXCEPTION exceptionHandler+)?
     ;
 
+createTypeBody
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? TYPE BODY plsqlTypeBodySource
+    ;
+
+plsqlTypeBodySource
+    : typeName (IS | AS) typeBodyElement+ END typeName? SEMI_?
+    ;
+
+typeBodyElement
+    : (MEMBER | STATIC)? FUNCTION function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? returnDateType (IS | AS) declareSection? body
+    | (MEMBER | STATIC)? PROCEDURE procedureName (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? (IS | AS) declareSection? body
+    | (FINAL | INSTANTIABLE)? CONSTRUCTOR FUNCTION function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? RETURN SELF AS RESULT (IS | AS) declareSection? body
+    | (MAP | ORDER) MEMBER FUNCTION function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? returnDateType (IS | AS) declareSection? body
+    ;
+
 plsqlProcedureSource
     : (schemaName DOT_)? procedureName (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? sharingClause?
     ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body)
@@ -154,7 +169,8 @@ plsqlStatements
 
 statement
     : {isNotPlsqlBlockTerminator()}? (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_ (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_) *)?
-        (assignStatement
+        (plsqlBlock
+        | assignStatement
         | basicLoopStatement
         | caseStatement
         | closeStatement
@@ -174,7 +190,6 @@ statement
         | openStatement
         | openForStatement
         | pipeRowStatement
-        | plsqlBlock
         | raiseStatement
         | returnStatement
         | selectIntoStatement
@@ -463,7 +478,7 @@ returnStatement
     ;
 
 selectIntoStatement
-    : SELECT (DISTINCT | UNIQUE | ALL)? selectList (selectIntoClause | bulkCollectIntoClause) FROM fromClauseList whereClause? hierarchicalQueryClause? groupByClause? modelClause? windowClause? orderByClause? rowLimitingClause? SEMI_
+    : SELECT (DISTINCT | UNIQUE | ALL)? selectList (selectIntoClause | bulkCollectIntoClause) FROM fromClauseList whereClause? hierarchicalQueryClause? groupByClause? havingClause? modelClause? windowClause? orderByClause? rowLimitingClause? SEMI_
     ;
 
 selectIntoClause
@@ -566,11 +581,16 @@ itemDeclaration
 collectionVariableDecl
     : variableName
       (
-      typeName (ASSIGNMENT_OPERATOR_ (qualifiedExpression | functionCall | variableName))?
-      | typeName (ASSIGNMENT_OPERATOR_  (collectionConstructor | variableName))?
+      collectionTypeName (ASSIGNMENT_OPERATOR_ (qualifiedExpression | functionCall | variableName))?
+      | collectionTypeName (ASSIGNMENT_OPERATOR_  (collectionConstructor | variableName))?
       | typeName MOD_ TYPE
       )
       SEMI_
+    ;
+
+collectionTypeName
+    : typeName
+    | schemaName DOT_ owner DOT_ name
     ;
 
 qualifiedExpression
@@ -751,7 +771,7 @@ referencingItem
     ;
 
 triggerEditionClause
-    : (FORWARD | REVERSE) CROSSEDITION
+    : (FORWARD | REVERSE)? CROSSEDITION
     ;
 
 triggerOrderingClause

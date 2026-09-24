@@ -115,7 +115,7 @@ public final class TableAssert {
      */
     private static void assertIs(final SQLCaseAssertContext assertContext, final FunctionTableSegment actual, final ExpectedFunctionTable expected) {
         assertTableFunction(assertContext, actual.getTableFunction(), expected.getTableFunction());
-        actual.getAliasName().ifPresent(optional -> assertThat(assertContext.getText("Table function alias assertion error"), optional, is(expected.getTableAlias())));
+        assertThat(assertContext.getText("Table function alias assertion error"), actual.getAliasName().orElse(null), is(expected.getTableAlias()));
         if (!expected.getColumns().isEmpty()) {
             ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getColumns());
         }
@@ -201,6 +201,14 @@ public final class TableAssert {
                 ColumnAssert.assertIs(assertContext, each, expected.getColumns().get(count));
                 count++;
             }
+        }
+        if (!expected.getColumnAliases().isEmpty()) {
+            assertTrue(actual.getAliasSegment().isPresent(), assertContext.getText("Subquery table alias should exist."));
+            assertThat(assertContext.getText("Subquery table column aliases size assertion error: "),
+                    actual.getAliasSegment().get().getColumnAliases().size(), is(expected.getColumnAliases().size()));
+            Iterator<String> expectedIterator = expected.getColumnAliases().iterator();
+            actual.getAliasSegment().get().getColumnAliases()
+                    .forEach(each -> assertThat(assertContext.getText("Subquery table column alias assertion error: "), each.getValue(), is(expectedIterator.next())));
         }
         assertPivot(assertContext, actual.getPivot().orElse(null), expected.getPivot());
     }

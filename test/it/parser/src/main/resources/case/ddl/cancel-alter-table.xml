@@ -67,4 +67,30 @@
         </table>
         <job-id>40001</job-id>
     </cancel-alter-table>
+
+    <cancel-alter-table sql-case-id="cancel_alter_table_column_db_table" alter-type="COLUMN">
+        <table>
+            <simple-table name="my_table" start-index="31" stop-index="49">
+                <owner name="example_db" start-index="31" stop-index="40" />
+            </simple-table>
+        </table>
+    </cancel-alter-table>
+
+    <cancel-alter-table sql-case-id="cancel_alter_table_rollup_db_table_without_jobs" alter-type="ROLLUP">
+        <table>
+            <simple-table name="my_table" start-index="31" stop-index="49">
+                <owner name="example_db" start-index="31" stop-index="40" />
+            </simple-table>
+        </table>
+    </cancel-alter-table>
+
+    <cancel-alter-table sql-case-id="cancel_alter_table_rollup_db_table_with_jobs" alter-type="ROLLUP">
+        <table>
+            <simple-table name="my_table" start-index="31" stop-index="49">
+                <owner name="example_db" start-index="31" stop-index="40" />
+            </simple-table>
+        </table>
+        <job-id>12801</job-id>
+        <job-id>12802</job-id>
+    </cancel-alter-table>
 </sql-parser-test-cases>

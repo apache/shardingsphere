@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourc
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -43,6 +42,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -68,8 +68,8 @@ class ReadwriteSplittingContextManagerLifecycleListenerTest {
         ArgumentCaptor<QualifiedDataSource> qualifiedDataSourceCaptor = ArgumentCaptor.forClass(QualifiedDataSource.class);
         ArgumentCaptor<DataSourceState> stateCaptor = ArgumentCaptor.forClass(DataSourceState.class);
         verify(attribute, times(expectedUpdateCount)).updateStatus(qualifiedDataSourceCaptor.capture(), stateCaptor.capture());
-        assertThat(qualifiedDataSourceCaptor.getAllValues().stream().map(QualifiedDataSource::toString).collect(Collectors.toList()), CoreMatchers.is(expectedQualifiedDataSources));
-        assertThat(stateCaptor.getAllValues(), CoreMatchers.is(expectedStates));
+        assertThat(qualifiedDataSourceCaptor.getAllValues().stream().map(QualifiedDataSource::toString).collect(Collectors.toList()), is(expectedQualifiedDataSources));
+        assertThat(stateCaptor.getAllValues(), is(expectedStates));
     }
     
     private Collection<ShardingSphereDatabase> createDatabases(final Collection<String> databaseNames, final StaticDataSourceRuleAttribute attribute) {

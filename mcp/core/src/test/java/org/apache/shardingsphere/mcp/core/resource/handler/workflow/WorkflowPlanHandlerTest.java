@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.workflow;
 
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;

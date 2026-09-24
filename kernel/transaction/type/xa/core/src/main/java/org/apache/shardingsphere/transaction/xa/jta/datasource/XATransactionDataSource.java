@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionOptionReplayCallback;
 import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
@@ -83,17 +84,21 @@ public final class XATransactionDataSource implements AutoCloseable {
     /**
      * Get connection.
      *
+     * @param transactionOptionReplayCallback transaction option replay callback
      * @return XA transaction connection
      * @throws SQLException SQL exception
      * @throws SystemException system exception
      * @throws RollbackException rollback exception
      */
-    public Connection getConnection() throws SQLException, SystemException, RollbackException {
+    public Connection getConnection(final TransactionOptionReplayCallback transactionOptionReplayCallback) throws SQLException, SystemException, RollbackException {
         if (CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
-            return dataSource.getConnection();
+            Connection result = dataSource.getConnection();
+            replayTransactionOption(result, transactionOptionReplayCallback);
+            return result;
         }
         Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
         Connection connection = dataSource.getConnection();
+        replayTransactionOption(connection, transactionOptionReplayCallback);
         try {
             enlistResource(connection, transaction);
             // CHECKSTYLE:OFF
@@ -110,10 +115,21 @@ public final class XATransactionDataSource implements AutoCloseable {
         return connection;
     }
     
+    private void replayTransactionOption(final Connection connection, final TransactionOptionReplayCallback transactionOptionReplayCallback) throws SQLException {
+        try {
+            transactionOptionReplayCallback.replay(connection);
+        } catch (final SQLException ex) {
+            closeConnection(connection);
+            throw ex;
+        }
+    }
+    
     private void enlistResource(final Connection connection, final Transaction transaction) throws SQLException, RollbackException, SystemException {
+        boolean originalAutoCommit = connection.getAutoCommit();
         XAConnection xaConnection = xaConnectionWrapper.wrap(xaDataSource, connection);
+        boolean restoreAutoCommit = originalAutoCommit && !connection.getAutoCommit();
         transaction.enlistResource(new SingleXAResource(resourceName, String.valueOf(uniqueName.get().getAndIncrement()), xaConnection.getXAResource()));
-        registerSynchronization(transaction);
+        registerSynchronization(transaction, connection, restoreAutoCommit);
         enlistedTransactions.get().computeIfAbsent(transaction, key -> new LinkedList<>());
         enlistedTransactions.get().get(transaction).add(connection);
     }
@@ -124,11 +140,11 @@ public final class XATransactionDataSource implements AutoCloseable {
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            log.warn("Failed to close connection after enlist failure. Resource: {}", resourceName, ex);
+            log.warn("Failed to close connection after transaction setup failure. Resource: {}", resourceName, ex);
         }
     }
     
-    private void registerSynchronization(final Transaction transaction) throws RollbackException, SystemException {
+    private void registerSynchronization(final Transaction transaction, final Connection connection, final boolean restoreAutoCommit) throws RollbackException, SystemException {
         transaction.registerSynchronization(new Synchronization() {
             
             @Override
@@ -139,6 +155,13 @@ public final class XATransactionDataSource implements AutoCloseable {
             
             @Override
             public void afterCompletion(final int status) {
+                if (restoreAutoCommit) {
+                    try {
+                        connection.setAutoCommit(true);
+                    } catch (final SQLException ex) {
+                        log.warn("Failed to restore auto-commit after transaction completion. Resource: {}", resourceName, ex);
+                    }
+                }
                 enlistedTransactions.get().clear();
             }
         });

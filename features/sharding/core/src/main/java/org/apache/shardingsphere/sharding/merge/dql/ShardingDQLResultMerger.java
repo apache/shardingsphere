@@ -82,9 +82,8 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     
     private MergedResult build(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,
                                final Map<String, Integer> columnLabelIndexMap, final ShardingSphereDatabase database) throws SQLException {
-        String defaultSchemaName = new DatabaseTypeRegistry(selectStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName());
         ShardingSphereSchema schema = selectStatementContext.getTablesContext().getSchemaName()
-                .map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
+                .map(database::getSchema).orElseGet(() -> database.findDefaultSchema().orElse(null));
         if (isNeedProcessGroupBy(selectStatementContext)) {
             return getGroupByMergedResult(queryResults, selectStatementContext, columnLabelIndexMap, schema);
         }

@@ -18,12 +18,15 @@
 package org.apache.shardingsphere.single.decorator;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleTableConstants;
@@ -64,7 +67,7 @@ import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({DatabaseTypeEngine.class, SingleTableDataNodeLoader.class, SingleTableLoadUtils.class})
+@StaticMockSettings({DatabaseTypeEngine.class, DefaultSchemaNameResolver.class, SingleTableDataNodeLoader.class, SingleTableLoadUtils.class})
 class SingleRuleConfigurationDecoratorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
@@ -74,7 +77,9 @@ class SingleRuleConfigurationDecoratorTest {
     
     @BeforeEach
     void setUp() {
+        when(DatabaseTypeEngine.getDefaultStorageType()).thenReturn(databaseType);
         when(DatabaseTypeEngine.getStorageType(any(DataSource.class))).thenReturn(databaseType);
+        when(DefaultSchemaNameResolver.resolveStorage(any(DatabaseType.class), any(DataSource.class), anyString())).thenReturn("foo_db");
     }
     
     @ParameterizedTest(name = "{0}")
@@ -117,13 +122,46 @@ class SingleRuleConfigurationDecoratorTest {
     }
     
     @Test
+    void assertDecorateUsesFirstDataSourceDefaultSchema() {
+        DataSource firstDataSource = mock(DataSource.class);
+        DatabaseType firstDatabaseType = mock(DatabaseType.class);
+        when(DatabaseTypeEngine.getStorageType(firstDataSource)).thenReturn(firstDatabaseType);
+        DataSource secondDataSource = mock(DataSource.class);
+        when(DatabaseTypeEngine.getStorageType(secondDataSource)).thenReturn(mock(DatabaseType.class));
+        Map<String, DataSource> dataSources = new LinkedHashMap<>(2, 1F);
+        dataSources.put("foo_ds", firstDataSource);
+        dataSources.put("bar_ds", secondDataSource);
+        when(DefaultSchemaNameResolver.resolveStorage(firstDatabaseType, firstDataSource, "foo_db")).thenReturn("foo_schema");
+        Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap("foo_tbl", Collections.singleton(new DataNode("foo_ds", "foo_schema", "foo_tbl")));
+        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
+        Collection<String> splitTables = Collections.singleton("foo_ds.*");
+        when(SingleTableLoadUtils.splitTableLines(anyCollection())).thenReturn(splitTables);
+        when(SingleTableLoadUtils.getExcludedTables(anyCollection())).thenReturn(Collections.emptyList());
+        when(SingleTableLoadUtils.getFeatureRequiredSingleTables(anyCollection())).thenReturn(Collections.emptyList());
+        when(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName(anyString(), any(DatabaseType.class), anyCollection())).thenAnswer(invocation -> {
+            assertThat(invocation.<String>getArgument(0), is("foo_schema"));
+            assertThat(invocation.<DatabaseType>getArgument(1), is(firstDatabaseType));
+            assertThat(invocation.<Collection<String>>getArgument(2), contains("foo_ds.*"));
+            return Collections.singleton(new DataNode("foo_ds", "foo_schema", "*"));
+        });
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(splitTables, null);
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(true)) {
+            assertThat(decorator.decorate("foo_db", dataSources, Collections.emptyList(), ruleConfig).getTables(), contains("foo_ds.foo_schema.foo_tbl"));
+        }
+    }
+    
+    @Test
     void assertDecorateUsesDefaultStorageTypeWhenNoDataSourceConfigured() {
         DataNode dataNode = new DataNode("foo_ds", "foo_schema", "t_order");
         Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap(dataNode.getTableName(), Collections.singleton(dataNode));
         Collection<String> splitTables = Collections.singleton("*.foo_schema.t_order");
         Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("foo_ds", "foo_schema", "t_order"));
         when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
-        mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.emptyList());
+        when(SingleTableLoadUtils.splitTableLines(anyCollection())).thenReturn(splitTables);
+        when(SingleTableLoadUtils.getExcludedTables(anyCollection())).thenReturn(Collections.emptyList());
+        when(DefaultSchemaNameResolver.resolveProtocol(databaseType, "foo_db")).thenReturn("foo_schema");
+        when(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName("foo_schema", databaseType, splitTables)).thenReturn(configuredDataNodes);
+        when(SingleTableLoadUtils.getFeatureRequiredSingleTables(anyCollection())).thenReturn(Collections.emptyList());
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Collections.singleton("*.foo_schema.t_order"), null);
         try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(true)) {
             assertThat(decorator.decorate("foo_db", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig).getTables(),
@@ -132,17 +170,42 @@ class SingleRuleConfigurationDecoratorTest {
     }
     
     @Test
+    void assertDecorateWithAggregatedDataSource() {
+        DataSource dataSource = mock(DataSource.class);
+        DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "H2");
+        when(DatabaseTypeEngine.getStorageType(dataSource)).thenReturn(storageType);
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("ds", Collections.singleton("foo_ds")));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        Collection<String> splitTables = Collections.singleton("missing_ds.*");
+        when(SingleTableLoadUtils.splitTableLines(anyCollection())).thenReturn(splitTables);
+        when(SingleTableLoadUtils.getExcludedTables(anyCollection())).thenReturn(Collections.emptyList());
+        when(SingleTableLoadUtils.getFeatureRequiredSingleTables(anyCollection())).thenReturn(Collections.emptyList());
+        when(DefaultSchemaNameResolver.resolveStorage(storageType, dataSource, "foo_db")).thenReturn("PUBLIC");
+        when(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName(anyString(), any(DatabaseType.class), anyCollection())).thenCallRealMethod();
+        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(Collections.emptyMap());
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(splitTables, null);
+        SingleRuleConfiguration actual = decorator.decorate("foo_db", Collections.singletonMap("foo_ds", dataSource), Collections.singleton(rule), ruleConfig);
+        assertTrue(actual.getTables().isEmpty());
+    }
+    
+    @Test
     void assertDecorateThrowsWhenSpecifiedTableMismatch() {
-        DataNode dataNode = new DataNode("bar_ds", "foo_schema", "t_order");
-        Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap(dataNode.getTableName(), Collections.singleton(dataNode));
-        Collection<String> splitTables = Collections.singletonList("*.foo_schema.t_order");
-        Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("foo_ds", "foo_schema", "t_order"));
+        Map<String, Collection<DataNode>> actualDataNodes = new LinkedHashMap<>(2, 1F);
+        actualDataNodes.put("expanded_tbl", Collections.singleton(new DataNode("expand_ds", "foo_schema", "expanded_tbl")));
+        actualDataNodes.put("t_order", Collections.singleton(new DataNode("foo_ds", "bar_schema", "t_order")));
+        Collection<String> splitTables = Arrays.asList("expand_ds.foo_schema.*", "foo_ds.foo_schema.t_order");
+        Collection<DataNode> configuredDataNodes = Arrays.asList(
+                new DataNode("expand_ds", "foo_schema", SingleTableConstants.ASTERISK), new DataNode("foo_ds", "foo_schema", "t_order"));
         when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.emptyList());
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", mock(DataSource.class));
-        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Collections.singletonList("*.foo_schema.t_order"), null);
-        assertThrows(InvalidSingleRuleConfigurationException.class,
-                () -> decorator.decorate("foo_db", dataSources, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig));
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(splitTables, null);
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(true)) {
+            assertThrows(InvalidSingleRuleConfigurationException.class,
+                    () -> decorator.decorate("foo_db", dataSources, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig));
+        }
     }
     
     @Test
@@ -150,17 +213,19 @@ class SingleRuleConfigurationDecoratorTest {
         Map<String, Collection<DataNode>> actualDataNodes = new LinkedHashMap<>(3, 1F);
         actualDataNodes.put("feature_tbl", Collections.singleton(new DataNode("skip_ds", "foo_schema", "feature_tbl")));
         actualDataNodes.put("expanded_tbl", Collections.singleton(new DataNode("expand_ds", "foo_schema", "expanded_tbl")));
-        actualDataNodes.put("matched_tbl", Collections.singleton(new DataNode("bar_ds", "foo_schema", "matched_tbl")));
+        actualDataNodes.put("matched_tbl", Collections.singleton(new DataNode("bar_ds", "dbo", "matched_tbl")));
         when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
-        Collection<String> splitTables = Arrays.asList("expand_ds.*", "bar_ds.bar_tbl");
+        Collection<String> splitTables = Arrays.asList("expand_ds.*", "bar_ds.matched_tbl");
         Collection<DataNode> configuredDataNodes = Arrays.asList(
-                new DataNode("expand_ds", "foo_schema", SingleTableConstants.ASTERISK),
-                new DataNode("bar_ds", "foo_schema", "matched_tbl"));
+                new DataNode("expand_ds", SingleTableConstants.ASTERISK, SingleTableConstants.ASTERISK),
+                new DataNode("bar_ds", SingleTableConstants.ASTERISK, "matched_tbl"));
         mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.singleton("feature_tbl"));
-        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Arrays.asList("expand_ds.*", "bar_ds.bar_tbl"), null);
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(splitTables, null);
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", mock(DataSource.class));
-        assertThat(decorator.decorate("foo_db", dataSources, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig).getTables(),
-                contains("expand_ds.expanded_tbl", "bar_ds.matched_tbl"));
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(false)) {
+            assertThat(decorator.decorate("foo_db", dataSources, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig).getTables(),
+                    contains("expand_ds.expanded_tbl", "bar_ds.matched_tbl"));
+        }
     }
     
     @Test
@@ -184,17 +249,19 @@ class SingleRuleConfigurationDecoratorTest {
     @Test
     void assertDecorateThrowsWhenExpandedNodeMismatch() {
         Collection<String> emptyTables = Collections.emptySet();
-        Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap("t_order", Collections.singleton(new DataNode("other_ds", "foo_schema", "t_order")));
+        Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap("t_order", Collections.singleton(new DataNode("other_ds", "dbo", "t_order")));
         when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         Collection<String> splitTables = Arrays.asList("expand_ds.*", "expand_ds.t_order");
         Collection<DataNode> configuredDataNodes = Arrays.asList(
-                new DataNode("expand_ds", "foo_schema", SingleTableConstants.ASTERISK),
-                new DataNode("expand_ds", "foo_schema", "t_order"));
+                new DataNode("expand_ds", SingleTableConstants.ASTERISK, SingleTableConstants.ASTERISK),
+                new DataNode("expand_ds", SingleTableConstants.ASTERISK, "t_order"));
         mockSplitAndConvert(splitTables, configuredDataNodes, emptyTables, emptyTables);
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Arrays.asList("expand_ds.*", "expand_ds.t_order"), null);
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", mock(DataSource.class));
-        assertThrows(InvalidSingleRuleConfigurationException.class,
-                () -> decorator.decorate("foo_db", dataSources, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig));
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(false)) {
+            assertThrows(InvalidSingleRuleConfigurationException.class,
+                    () -> decorator.decorate("foo_db", dataSources, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig));
+        }
     }
     
     @Test
@@ -242,7 +309,9 @@ class SingleRuleConfigurationDecoratorTest {
     private MockedConstruction<DatabaseTypeRegistry> mockSchemaRegistry(final boolean schemaAvailable) {
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
         when(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(schemaAvailable);
-        return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData));
+        return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
+            when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
+        });
     }
     
     private void mockSplitAndConvert(final Collection<String> splitTables, final Collection<DataNode> configuredDataNodes,
@@ -250,6 +319,7 @@ class SingleRuleConfigurationDecoratorTest {
         when(SingleTableLoadUtils.splitTableLines(anyCollection())).thenReturn(splitTables);
         when(SingleTableLoadUtils.getExcludedTables(anyCollection())).thenReturn(excludedTables);
         when(SingleTableLoadUtils.convertToDataNodes(anyString(), any(DatabaseType.class), anyCollection())).thenReturn(configuredDataNodes);
+        when(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName(anyString(), any(DatabaseType.class), anyCollection())).thenReturn(configuredDataNodes);
         when(SingleTableLoadUtils.getFeatureRequiredSingleTables(anyCollection())).thenReturn(featureRequiredTables);
     }
     

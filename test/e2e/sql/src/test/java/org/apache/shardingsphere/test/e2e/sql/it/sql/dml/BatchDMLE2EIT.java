@@ -28,14 +28,15 @@ import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @SQLE2EITSettings(value = SQLCommandType.DML, batch = true)
 class BatchDMLE2EIT extends BaseDMLE2EIT {
@@ -47,7 +48,7 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
         init(testParam);
         try {
             int[] actualUpdateCounts;
-            try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
+            try (Connection connection = getTargetDataSource(testParam).getConnection()) {
                 actualUpdateCounts = executeBatchForPreparedStatement(testParam, connection);
             }
             assertDataSet(actualUpdateCounts, testParam);
@@ -59,6 +60,11 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
     void init(final CaseTestParameter testParam) throws SQLException, IOException, JAXBException {
         super.init(testParam);
         executeInitSQLs(testParam);
+    }
+    
+    private DataSource getTargetDataSource(final CaseTestParameter testParam) {
+        SQLE2ETestCaseAssertion assertion = testParam.getTestCaseContext().getTestCase().getAssertions().iterator().next();
+        return getEnvironmentEngine().getTargetDataSource(assertion.getTargetDataSourceName());
     }
     
     void tearDown(final CaseTestParameter testParam) throws SQLException {
@@ -99,7 +105,7 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertClearBatch(final CaseTestParameter testParam) throws SQLException {
         try (
-                Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                Connection connection = getTargetDataSource(testParam).getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(testParam.getTestCaseContext().getTestCase().getSql())) {
             for (SQLE2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);

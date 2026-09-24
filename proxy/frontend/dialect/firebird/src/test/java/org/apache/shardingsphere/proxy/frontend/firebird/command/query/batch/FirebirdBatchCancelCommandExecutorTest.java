@@ -36,6 +36,7 @@ import java.util.Collection;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -67,5 +68,12 @@ class FirebirdBatchCancelCommandExecutorTest {
         assertThat(actualBatchStatement, is(batchStatement));
         assertTrue(actualBatchStatement.getParameterValues().isEmpty());
         FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
+    }
+    
+    @Test
+    void assertExecuteWhenBatchNotFound() {
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        assertDoesNotThrow(() -> new FirebirdBatchCancelCommandExecutor(packet, connectionSession).execute());
     }
 }

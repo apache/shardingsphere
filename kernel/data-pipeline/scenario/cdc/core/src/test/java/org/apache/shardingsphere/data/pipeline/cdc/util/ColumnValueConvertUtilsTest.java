@@ -27,6 +27,9 @@ import com.google.protobuf.Int64Value;
 import com.google.protobuf.Message;
 import com.google.protobuf.StringValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialClob;
@@ -46,10 +49,14 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("UseOfObsoleteDateTimeApi")
@@ -160,6 +167,32 @@ class ColumnValueConvertUtilsTest {
         Timestamp expectedTimestamp = Timestamp.valueOf(localDateTime);
         assertThat(actual.getSeconds(), is(expectedTimestamp.getTime() / 1000L));
         assertThat(actual.getNanos(), is(expectedTimestamp.getNanos()));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("preEpochInstantCases")
+    void assertConvertPreEpochSqlTimestampToTimestampMessage(final String scenario, final long millis) {
+        com.google.protobuf.Timestamp actual = (com.google.protobuf.Timestamp) ColumnValueConvertUtils.convertToProtobufMessage(new Timestamp(millis));
+        assertThat(actual.getNanos(), allOf(greaterThanOrEqualTo(0), lessThan(1_000_000_000)));
+        assertThat(actual.getSeconds() * 1000L + actual.getNanos() / 1_000_000L, is(millis));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("preEpochInstantCases")
+    void assertConvertPreEpochUtilDateToTimestampMessage(final String scenario, final long millis) {
+        com.google.protobuf.Timestamp actual = (com.google.protobuf.Timestamp) ColumnValueConvertUtils.convertToProtobufMessage(new Date(millis));
+        assertThat(actual.getNanos(), allOf(greaterThanOrEqualTo(0), lessThan(1_000_000_000)));
+        assertThat(actual.getSeconds() * 1000L + actual.getNanos() / 1_000_000L, is(millis));
+    }
+    
+    private static Stream<Arguments> preEpochInstantCases() {
+        return Stream.of(
+                Arguments.of("sub second before epoch", -1500L),
+                Arguments.of("one millisecond before epoch", -1L),
+                Arguments.of("whole second before epoch", -1000L),
+                Arguments.of("one day before epoch", -86400000L),
+                Arguments.of("sub second after epoch", 1500L),
+                Arguments.of("epoch", 0L));
     }
     
     @Test

@@ -23,8 +23,13 @@ import org.apache.shardingsphere.test.e2e.operation.transaction.engine.base.Tran
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -65,8 +70,15 @@ public final class ImplicitCommitTransactionTestCase extends BaseTransactionTest
             assertTrue(connection.getAutoCommit());
             assertThrows(SQLException.class, () -> executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'Nanjing')"));
         }
-        try (Connection connection = getDataSource().getConnection()) {
-            assertTableRowCount(connection, T_ADDRESS, 1);
+        try (
+                Connection connection = getDataSource().getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery("SELECT id, code, address FROM t_address")) {
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getInt("id"), is(1));
+            assertThat(resultSet.getString("code"), is("1"));
+            assertThat(resultSet.getString("address"), is("Nanjing"));
+            assertFalse(resultSet.next());
         }
     }
     
@@ -78,7 +90,7 @@ public final class ImplicitCommitTransactionTestCase extends BaseTransactionTest
             assertThrows(SQLException.class, () -> executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES (3, 3, 3), (2, 2, 2)"));
         }
         try (Connection connection = getDataSource().getConnection()) {
-            assertAccountRowCount(connection, 2);
+            assertAccountBalances(connection, 1, 2);
         }
     }
     

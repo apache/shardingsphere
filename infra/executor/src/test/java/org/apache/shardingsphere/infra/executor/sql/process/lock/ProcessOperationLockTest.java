@@ -22,7 +22,8 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProcessOperationLockTest {
@@ -39,7 +40,14 @@ class ProcessOperationLockTest {
         Thread awaitingThread = new Thread(() -> result.set(lock.awaitDefaultTime(() -> false)));
         awaitingThread.start();
         lock.doNotify();
-        assertTimeoutPreemptively(Duration.ofSeconds(1), () -> awaitingThread.join());
+        try {
+            assertTimeout(Duration.ofSeconds(2L), () -> {
+                awaitingThread.join(1000L);
+                assertFalse(awaitingThread.isAlive());
+            });
+        } finally {
+            awaitingThread.interrupt();
+        }
         assertTrue(result.get());
     }
 }

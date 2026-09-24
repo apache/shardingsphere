@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.export;
 
 import lombok.Setter;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowTableMetaDataStatement;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
@@ -51,10 +51,9 @@ public final class ShowTableMetaDataExecutor implements DistSQLQueryExecutor<Sho
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowTableMetaDataStatement sqlStatement, final ContextManager contextManager) {
-        String defaultSchema = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
-        ShardingSphereSchema schema = database.getSchema(defaultSchema);
-        return sqlStatement.getTableNames().stream()
-                .filter(schema::containsTable).map(each -> buildTableRows(database.getName(), schema, each)).flatMap(Collection::stream).collect(Collectors.toList());
+        return database.findDefaultSchema().map(schema -> sqlStatement.getTableNames().stream()
+                .filter(schema::containsTable).map(each -> buildTableRows(database.getName(), schema, each)).flatMap(Collection::stream).collect(Collectors.toList()))
+                .orElseGet(Collections::emptyList);
     }
     
     private Collection<LocalDataQueryResultRow> buildTableRows(final String databaseName, final ShardingSphereSchema schema, final IdentifierValue tableName) {

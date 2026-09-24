@@ -24,8 +24,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.distsql.rdl.AuditStrategyAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAutoTableRule;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -53,11 +53,9 @@ public final class AutoTableRuleAssert {
                     actual.getDataSourceNodes(), is(expected.getDataSources()));
             assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getShardingColumn(), is(expected.getTableStrategyColumn()));
-            assertNotNull(actual.getKeyGenerateStrategySegment(), assertContext.getText("key generate should exist."));
-            assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getKeyGenerateStrategySegment().getKeyGenerateColumn(), is(expected.getKeyGenerateStrategyColumn()));
             AlgorithmAssert.assertIs(assertContext, actual.getShardingAlgorithmSegment(), expected.getTableStrategy());
-            AlgorithmAssert.assertIs(assertContext, actual.getKeyGenerateStrategySegment().getKeyGenerateAlgorithmSegment(), expected.getKeyGenerateStrategy());
+            KeyGenerateStrategyAssert.assertIs(assertContext, actual.getKeyGenerateStrategySegment(), expected.getKeyGenerateStrategyColumn(), expected.getKeyGeneratorName(),
+                    expected.getKeyGenerateStrategy());
             AuditStrategyAssert.assertIs(assertContext, actual.getAuditStrategySegment(), expected.getAuditStrategy());
         }
     }

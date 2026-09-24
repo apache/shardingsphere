@@ -25,9 +25,9 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache.BlobSegment;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -60,22 +60,13 @@ public final class FirebirdGetBlobSegmentCommandExecutor implements CommandExecu
     public Collection<DatabasePacket> execute() {
         int connectionId = connectionSession.getConnectionId();
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionId, packet.getBlobHandle());
-        Optional<byte[]> remaining = FirebirdBlobReadCache.getInstance().getSegment(connectionId, blobHandle);
-        if (!remaining.isPresent() || 0 == remaining.get().length) {
+        Optional<BlobSegment> blobSegment = FirebirdBlobReadCache.getInstance().readSegment(connectionId, blobHandle, getMaxSegmentDataLength());
+        if (!blobSegment.isPresent()) {
             return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(SEGMENT_STATE_EOF));
         }
-        byte[] segment = remaining.get();
-        int segmentLength = Math.min(getMaxSegmentDataLength(), segment.length);
-        byte[] payloadSegment = Arrays.copyOf(segment, segmentLength);
-        int segmentState;
-        if (segmentLength >= segment.length) {
-            FirebirdBlobReadCache.getInstance().removeBlob(connectionId, blobHandle);
-            segmentState = SEGMENT_STATE_COMPLETE;
-        } else {
-            FirebirdBlobReadCache.getInstance().setSegment(connectionId, blobHandle, Arrays.copyOfRange(segment, segmentLength, segment.length));
-            segmentState = SEGMENT_STATE_PARTIAL;
-        }
-        FirebirdGetBlobSegmentResponsePacket responsePacket = new FirebirdGetBlobSegmentResponsePacket(payloadSegment);
+        BlobSegment segment = blobSegment.get();
+        int segmentState = segment.isComplete() ? SEGMENT_STATE_COMPLETE : SEGMENT_STATE_PARTIAL;
+        FirebirdGetBlobSegmentResponsePacket responsePacket = new FirebirdGetBlobSegmentResponsePacket(segment.getData());
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(segmentState).setData(responsePacket));
     }
     

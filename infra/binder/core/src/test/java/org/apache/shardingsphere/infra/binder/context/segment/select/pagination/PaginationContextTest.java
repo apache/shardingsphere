@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.pagination;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-
-import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -42,8 +41,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -161,10 +160,21 @@ class PaginationContextTest {
     }
     
     @Test
-    void assertGetRevisedRowCountWithMax() {
+    void assertGetRevisedRowCountWithDifferentOrderDirection() {
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
                 .groupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.LAST))))
                 .orderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST)))).build();
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectStatementContext), is(50L));
+    }
+    
+    @Test
+    void assertGetRevisedRowCountWithMax() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
+                .groupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.LAST))))
+                .orderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, NullsOrderType.LAST)))).build();
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
         SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());

@@ -17,15 +17,31 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function;
 
+import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+
+import java.util.Optional;
 
 /**
  * Drop function statement.
  */
+@Setter
 public final class DropFunctionStatement extends DDLStatement {
+    
+    private FunctionNameSegment functionName;
     
     public DropFunctionStatement(final DatabaseType databaseType) {
         super(databaseType);
+    }
+    
+    /**
+     * Get function name segment.
+     *
+     * @return function name segment
+     */
+    public Optional<FunctionNameSegment> getFunctionName() {
+        return Optional.ofNullable(functionName);
     }
 }

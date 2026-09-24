@@ -27,8 +27,8 @@ import java.util.Map;
 /**
  * Rule workflow feature-scoped state.
  */
-@Getter
 @NoArgsConstructor
+@Getter
 public final class RuleWorkflowFeatureData {
     
     private final List<Map<String, Object>> expectedRules = new LinkedList<>();

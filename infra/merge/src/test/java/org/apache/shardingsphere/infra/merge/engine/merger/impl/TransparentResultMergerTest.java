@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.merge.engine.merger.impl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;

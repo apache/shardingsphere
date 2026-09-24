@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowDatabaseStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowDatabaseStatementTestCase;
-import org.hamcrest.MatcherAssert;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -40,6 +40,6 @@ public final class DorisShowDatabaseStatementAssert {
      * @param expected expected show database statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DorisShowDatabaseStatement actual, final DorisShowDatabaseStatementTestCase expected) {
-        MatcherAssert.assertThat(assertContext.getText("Assertion error: database id does not match."), actual.getDatabaseId(), is(expected.getDatabaseId()));
+        assertThat(assertContext.getText("Assertion error: database id does not match."), actual.getDatabaseId(), is(expected.getDatabaseId()));
     }
 }

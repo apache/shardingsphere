@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 
 import java.sql.SQLException;
 import java.util.Collections;

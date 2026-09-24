@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -38,6 +39,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -50,9 +54,10 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -85,8 +90,18 @@ class MySQLShowTablesExecutorTest {
     void assertShowTablesExecutorWithFull() throws SQLException {
         MySQLShowTablesStatement sqlStatement = new MySQLShowTablesStatement(databaseType, null, mock(), true);
         MySQLShowTablesExecutor executor = new MySQLShowTablesExecutor(sqlStatement);
-        executor.execute(mockConnectionSession(), mockMetaData(mockDatabases()));
+        Collection<ShardingSphereTable> tables = new LinkedList<>();
+        tables.add(new ShardingSphereTable("t_account", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("v_account", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.VIEW));
+        executor.execute(mockConnectionSession(), mockMetaData(mockDatabases(tables)));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+        executor.getMergedResult().next();
+        assertThat(executor.getMergedResult().getValue(1, Object.class), is("t_account"));
+        assertThat(executor.getMergedResult().getValue(2, Object.class), is("BASE TABLE"));
+        executor.getMergedResult().next();
+        assertThat(executor.getMergedResult().getValue(1, Object.class), is("v_account"));
+        assertThat(executor.getMergedResult().getValue(2, Object.class), is("VIEW"));
+        assertFalse(executor.getMergedResult().next());
     }
     
     @Test
@@ -145,6 +160,28 @@ class MySQLShowTablesExecutorTest {
         assertFalse(executor.getMergedResult().next());
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("mixedCaseTableStatements")
+    void assertShowTablesWithMixedCaseTable(final String name, final MySQLShowTablesStatement sqlStatement, final int expectedColumnCount) throws SQLException {
+        MySQLShowTablesExecutor executor = new MySQLShowTablesExecutor(sqlStatement);
+        ShardingSphereTable table = new ShardingSphereTable("foo_order_FEDERATE", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        executor.execute(mockConnectionSession(), mockMetaData(mockDatabases(Collections.singleton(table))));
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(expectedColumnCount));
+        assertTrue(executor.getMergedResult().next());
+        assertThat(executor.getMergedResult().getValue(1, Object.class), is("foo_order_FEDERATE"));
+        assertFalse(executor.getMergedResult().next());
+    }
+    
+    private static Collection<Arguments> mixedCaseTableStatements() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        ShowFilterSegment filter = mock(ShowFilterSegment.class);
+        when(filter.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 0, "foo_order_federate")));
+        return Arrays.asList(
+                Arguments.of("show tables", new MySQLShowTablesStatement(databaseType, null, null, false), 1),
+                Arguments.of("show full tables", new MySQLShowTablesStatement(databaseType, null, null, true), 2),
+                Arguments.of("show full tables with lowercase like filter", new MySQLShowTablesStatement(databaseType, null, filter, true), 2));
+    }
+    
     @Test
     void assertShowTableFromUncompletedDatabase() throws SQLException {
         MySQLShowTablesStatement sqlStatement = new MySQLShowTablesStatement(databaseType, new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("uncompleted"))), null, false);
@@ -167,6 +204,10 @@ class MySQLShowTablesExecutorTest {
         tables.add(new ShardingSphereTable("t_account_bak", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_account_detail", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("T_TEST", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        return mockDatabases(tables);
+    }
+    
+    private Collection<ShardingSphereDatabase> mockDatabases(final Collection<ShardingSphereTable> tables) {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, tables, Collections.emptyList());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(String.format(DATABASE_PATTERN, 0));

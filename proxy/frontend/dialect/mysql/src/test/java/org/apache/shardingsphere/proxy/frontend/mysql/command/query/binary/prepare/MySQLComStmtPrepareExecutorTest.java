@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -34,10 +32,13 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.bi
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -55,11 +56,11 @@ import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRe
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,6 +68,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -77,17 +79,19 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -339,6 +343,46 @@ class MySQLComStmtPrepareExecutorTest {
         assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), isA(UpdateStatement.class));
         assertThat(actualPreparedStatement.getParameterColumnTypes(), is(Arrays.asList(MySQLBinaryColumnType.VAR_STRING, MySQLBinaryColumnType.SHORT, MySQLBinaryColumnType.LONGLONG)));
         MySQLStatementIdGenerator.getInstance().unregisterConnection(1);
+    }
+    
+    @Test
+    void assertPrepareUpdateStatementWithDatabaseDefaultSchema() {
+        String sql = "UPDATE user SET age = ?";
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
+        int connectionId = 6;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
+        ContextManager contextManager = mockContextManager();
+        ShardingSphereSchema defaultSchema = createDatabase().getSchema("foo_db");
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.findDefaultSchema()).thenReturn(Optional.of(defaultSchema));
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        UpdateStatement sqlStatement = (UpdateStatement) contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)
+                .getSQLParserEngine(databaseType).parse(sql, true);
+        UpdateStatementContext sqlStatementContext = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(tablesContext.getDatabaseName()).thenReturn(Optional.of("foo_db"));
+        when(tablesContext.getSchemaName()).thenReturn(Optional.empty());
+        when(tablesContext.getTableNames()).thenReturn(Collections.singleton("user"));
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
+        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
+        try (
+                MockedConstruction<SQLBindEngine> ignored = mockConstruction(SQLBindEngine.class,
+                        (mock, context) -> when(mock.bind(any(UpdateStatement.class))).thenReturn(sqlStatementContext))) {
+            Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+            assertThat(actualIterator.next(), isA(MySQLComStmtPrepareOKPacket.class));
+            assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
+            assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
+            assertFalse(actualIterator.hasNext());
+            MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+            assertThat(actualPreparedStatement.getParameterColumnTypes(), is(Collections.singletonList(MySQLBinaryColumnType.SHORT)));
+        } finally {
+            MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
+        }
     }
     
     @Test

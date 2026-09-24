@@ -30,9 +30,10 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,6 +74,6 @@ class OracleResultSetMapperTest {
     void assertGetDefaultValueWithUnhandledType() throws SQLException {
         Object expected = new Object();
         when(resultSet.getObject(1)).thenReturn(expected);
-        assertThat(dialectResultSetMapper.getDefaultValue(resultSet, 1, java.sql.Types.OTHER), is(expected));
+        assertThat(dialectResultSetMapper.getDefaultValue(resultSet, 1, Types.OTHER), is(expected));
     }
 }

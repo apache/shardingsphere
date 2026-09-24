@@ -28,8 +28,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finishe
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.TaskExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.InventoryTaskProgress;
-
 import org.jspecify.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;

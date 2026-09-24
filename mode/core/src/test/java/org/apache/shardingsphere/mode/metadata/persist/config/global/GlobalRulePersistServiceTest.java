@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config.global;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.infra.fixture.rule.global.MockedGlobalRuleConfiguration;
@@ -27,15 +30,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -88,5 +95,19 @@ class GlobalRulePersistServiceTest {
         globalRulePersistService.persist(Collections.singleton(new MockedGlobalRuleConfiguration("foo_value")));
         verify(repository).persist("/rules/global_fixture/versions/0", "name: foo_value" + System.lineSeparator());
         verify(repository).persist("/rules/global_fixture/active_version", "0");
+    }
+    
+    @Test
+    void assertPersistWithInvalidRuleConfiguration() {
+        Collection<RuleConfiguration> ruleConfigs = Arrays.asList(new MockedGlobalRuleConfiguration("foo_value"), new InvalidGlobalRuleConfiguration());
+        assertThrows(InvalidRuleConfigurationException.class, () -> globalRulePersistService.persist(ruleConfigs));
+        verifyNoInteractions(repository);
+    }
+    
+    @Getter
+    private static final class InvalidGlobalRuleConfiguration implements GlobalRuleConfiguration {
+        
+        @NotBlank
+        private final String name = "";
     }
 }

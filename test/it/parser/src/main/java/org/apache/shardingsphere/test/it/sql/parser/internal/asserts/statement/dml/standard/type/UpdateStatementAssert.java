@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Outpu
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.error.ErrorLoggingClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.limit.LimitClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.orderby.OrderByClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.output.OutputClauseAssert;
@@ -36,8 +37,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,6 +65,7 @@ public final class UpdateStatementAssert {
         assertLimitClause(assertContext, actual, expected);
         assertOptionHint(assertContext, actual, expected);
         assertOutputClause(assertContext, actual, expected);
+        ErrorLoggingClauseAssert.assertIs(assertContext, actual.getErrorLogging(), expected.getErrorLoggingClause());
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {

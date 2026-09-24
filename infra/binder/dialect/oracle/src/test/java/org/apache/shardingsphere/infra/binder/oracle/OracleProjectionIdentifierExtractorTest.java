@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.infra.binder.oracle;
 
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -55,8 +55,19 @@ class OracleProjectionIdentifierExtractorTest {
     }
     
     @Test
+    void assertGetColumnNameFromNullTextExpression() {
+        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, null)), is(""));
+    }
+    
+    @Test
     void assertGetColumnNameFromStringLiteralExpression() {
         assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 7, "EXTMSG", new LiteralExpressionSegment(0, 7, "EXTMSG"))), is("'EXTMSG'"));
+    }
+    
+    @Test
+    void assertGetColumnNameFromNullLiteralExpression() {
+        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 3, null, new LiteralExpressionSegment(0, 3, null))), is("NULL"));
+        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 3, "NULL", new LiteralExpressionSegment(0, 3, null))), is("NULL"));
     }
     
     @Test

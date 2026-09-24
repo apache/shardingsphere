@@ -32,8 +32,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-@EqualsAndHashCode
 @Getter
+@EqualsAndHashCode
 final class SQLStatementObjectName {
     
     private final String objectName;

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.database.connector.oracle.metadata.identifier;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 
 /**
  * Oracle provider of identifier case rules.

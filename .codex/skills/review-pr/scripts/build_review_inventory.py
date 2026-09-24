@@ -26,7 +26,9 @@ import sys
 from collections import defaultdict
 from typing import Iterable
 
-from review_common import ChangedFile, categorize, compare_github_files, final_paths, get_repo_root, parse_name_status, run_git
+from review_common import (
+    ChangedFile, categorize, compare_github_files, final_paths, get_repo_root, parse_name_status, resolve_candidate_changes, run_git,
+)
 
 
 MAX_ITEMS = 30
@@ -57,7 +59,9 @@ def build_inventory(args: argparse.Namespace) -> dict[str, object]:
     base_sha = run_git(["rev-parse", args.base_ref], repo_root).strip()
     head_sha = run_git(["rev-parse", args.head_ref], repo_root).strip()
     merge_base = run_git(["merge-base", args.base_ref, args.head_ref], repo_root).strip()
-    changed_files = parse_name_status(run_git(["diff", "--name-status", f"{merge_base}..{args.head_ref}"], repo_root))
+    candidate_files = getattr(args, "candidate_files", None)
+    changed_files = resolve_candidate_changes(repo_root, merge_base, candidate_files) if candidate_files else parse_name_status(
+        run_git(["diff", "--name-status", f"{merge_base}..{args.head_ref}"], repo_root))
     dirty_worktree = run_git(["status", "--short"], repo_root, allow_empty=True).splitlines()
     dirty_sample, dirty_truncated = limited(dirty_worktree)
     previous_delta: list[ChangedFile] = []
@@ -73,6 +77,7 @@ def build_inventory(args: argparse.Namespace) -> dict[str, object]:
             "head_sha": head_sha,
             "merge_base": merge_base,
             "changed_file_count": len(changed_files),
+            "candidate_files": {"provided": bool(candidate_files)},
             "github_files": compare_github_files(final_paths(changed_files), args.github_files, MAX_ITEMS),
         },
         "dirty_worktree": {
@@ -155,6 +160,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--head-ref", required=True, help="PR head ref or SHA")
     parser.add_argument("--previous-head", help="Previous reviewed PR head ref or SHA")
     parser.add_argument("--github-files", help="File containing GitHub changed paths, one per line")
+    parser.add_argument("--candidate-files", help="Exact repository-relative local candidate paths, one per line")
     parser.add_argument("--format", choices=("markdown", "json"), default="markdown", help="Output format")
     return parser.parse_args()
 

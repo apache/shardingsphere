@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
@@ -106,8 +105,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     }
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName());
-        return sqlStatementContext.getTablesContext().getSchemaName().orElse(defaultSchemaName);
+        return sqlStatementContext.getTablesContext().getSchemaName().orElseGet(database::getDefaultSchemaName);
     }
     
     private Collection<ExecutionUnit> getExecutionUnits(final ContextManager contextManager, final String schemaName, final ShardingSphereMetaData metaData, final QueryContext queryContext) {

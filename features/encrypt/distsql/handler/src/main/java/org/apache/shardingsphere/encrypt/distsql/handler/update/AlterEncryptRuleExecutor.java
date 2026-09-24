@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.AlterEncryptRuleStatement;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -56,7 +57,6 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     @Override
     public void checkBeforeUpdate(final AlterEncryptRuleStatement sqlStatement) {
         checkToBeAlteredRules(sqlStatement);
-        checkColumnNames(sqlStatement);
         checkToBeAlteredEncryptors(sqlStatement);
     }
     
@@ -67,18 +67,6 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     
     private Collection<String> getToBeAlteredEncryptTableNames(final AlterEncryptRuleStatement sqlStatement) {
         return sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).collect(Collectors.toList());
-    }
-    
-    private void checkColumnNames(final AlterEncryptRuleStatement sqlStatement) {
-        for (EncryptRuleSegment each : sqlStatement.getRules()) {
-            ShardingSpherePreconditions.checkState(isColumnNameNotConflicts(each),
-                    () -> new InvalidRuleConfigurationException("encrypt", "assisted query column or like query column conflicts with logic column"));
-        }
-    }
-    
-    private boolean isColumnNameNotConflicts(final EncryptRuleSegment rule) {
-        return rule.getColumns().stream().noneMatch(each -> null != each.getLikeQuery() && each.getName().equals(each.getLikeQuery().getName())
-                || null != each.getAssistedQuery() && each.getName().equals(each.getAssistedQuery().getName()));
     }
     
     private void checkToBeAlteredEncryptors(final AlterEncryptRuleStatement sqlStatement) {
@@ -102,7 +90,12 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     
     @Override
     public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final EncryptRuleConfiguration toBeAlteredRuleConfig) {
-        Collection<String> unusedEncryptor = UnusedAlgorithmFinder.findUnusedEncryptor(rule.getConfiguration());
+        Collection<String> toBeAlteredTableNames = toBeAlteredRuleConfig.getLogicTableNames();
+        Collection<EncryptTableRuleConfiguration> toBeCheckedTables = new LinkedList<>(rule.getConfiguration().getTables());
+        toBeCheckedTables.removeIf(each -> toBeAlteredTableNames.contains(each.getName()));
+        toBeCheckedTables.addAll(toBeAlteredRuleConfig.getTables());
+        EncryptRuleConfiguration toBeCheckedRuleConfig = new EncryptRuleConfiguration(toBeCheckedTables, rule.getConfiguration().getEncryptors());
+        Collection<String> unusedEncryptor = UnusedAlgorithmFinder.findUnusedEncryptor(toBeCheckedRuleConfig);
         Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>(unusedEncryptor.size(), 1F);
         unusedEncryptor.forEach(each -> toBeDroppedEncryptors.put(each, rule.getConfiguration().getEncryptors().get(each)));
         return new EncryptRuleConfiguration(Collections.emptyList(), toBeDroppedEncryptors);

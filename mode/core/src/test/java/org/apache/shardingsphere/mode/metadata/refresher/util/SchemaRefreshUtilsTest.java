@@ -30,9 +30,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -74,6 +71,16 @@ class SchemaRefreshUtilsTest {
         assertThat(SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue("Foo_Schema")), is("FOO_SCHEMA"));
     }
     
+    @Test
+    void assertGetActualSchemaNameWithoutSchemaUsesDatabaseDefault() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getDefaultSchemaName()).thenReturn("FOO_DEFAULT_SCHEMA");
+        when(database.getIdentifierContext()).thenReturn(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newUpperCasePolicySet(),
+                IdentifierCasePolicyFactory.newSensitivePolicySet(), IdentifierCasePolicyFactory.newInsensitivePolicySet(), false));
+        when(database.getAllSchemas()).thenReturn(Collections.emptyList());
+        assertThat(SchemaRefreshUtils.getActualSchemaName(database, createSQLStatementContextWithoutSchema()), is("FOO_DEFAULT_SCHEMA"));
+    }
+    
     private ShardingSphereDatabase createDatabase() {
         return new ShardingSphereDatabase("FOO_DB", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
                 new ConfigurationProperties(new Properties()));
@@ -83,18 +90,6 @@ class SchemaRefreshUtilsTest {
         List<ShardingSphereSchema> schemas = Arrays.stream(schemaNames).map(each -> new ShardingSphereSchema(each, databaseType)).collect(Collectors.toList());
         return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), schemas,
                 new ConfigurationProperties(new Properties()));
-    }
-    
-    private SQLStatementContext createSQLStatementContextWithSchema(final String schemaName) {
-        return createSQLStatementContextWithSchema(new IdentifierValue(schemaName));
-    }
-    
-    private SQLStatementContext createSQLStatementContextWithSchema(final IdentifierValue schemaIdentifier) {
-        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("t_order"));
-        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), schemaIdentifier));
-        TablesContext tablesContext = new TablesContext(new SimpleTableSegment(tableNameSegment));
-        SQLStatement sqlStatement = DeleteStatement.builder().databaseType(databaseType).build();
-        return new FixtureSQLStatementContext(sqlStatement, tablesContext);
     }
     
     private SQLStatementContext createSQLStatementContextWithoutSchema() {

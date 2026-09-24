@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,8 +27,8 @@ import java.util.List;
 /**
  * Firebird batch statement metadata.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class FirebirdBatchStatement {
     
     private final int statementHandle;

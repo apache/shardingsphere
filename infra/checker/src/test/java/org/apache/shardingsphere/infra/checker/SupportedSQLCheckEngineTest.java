@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.infra.checker;
 
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -31,8 +30,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -44,14 +43,12 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(OrderedSPILoader.class)
 class SupportedSQLCheckEngineTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-    
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertCheckSQL() {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         SupportedSQLChecker supportedSQLChecker = mock(SupportedSQLChecker.class);
         when(supportedSQLChecker.isCheck(sqlStatementContext)).thenReturn(true);
         SupportedSQLChecker unsupportedSQLChecker = mock(SupportedSQLChecker.class);
@@ -60,8 +57,10 @@ class SupportedSQLCheckEngineTest {
         Map<ShardingSphereRule, SupportedSQLCheckersBuilder> services = Collections.singletonMap(rule, supportedSQLCheckersBuilder);
         when(OrderedSPILoader.getServices(SupportedSQLCheckersBuilder.class, Collections.singleton(rule))).thenReturn(services);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        ShardingSphereSchema defaultSchema = mock(ShardingSphereSchema.class);
+        when(database.findDefaultSchema()).thenReturn(Optional.of(defaultSchema));
         new SupportedSQLCheckEngine().checkSQL(Collections.singleton(rule), sqlStatementContext, database);
-        verify(supportedSQLChecker).check(eq(rule), eq(database), any(), eq(sqlStatementContext));
-        verify(unsupportedSQLChecker, never()).check(eq(rule), eq(database), any(), eq(sqlStatementContext));
+        verify(supportedSQLChecker).check(rule, database, defaultSchema, sqlStatementContext);
+        verify(unsupportedSQLChecker, never()).check(eq(rule), eq(database), eq(defaultSchema), eq(sqlStatementContext));
     }
 }

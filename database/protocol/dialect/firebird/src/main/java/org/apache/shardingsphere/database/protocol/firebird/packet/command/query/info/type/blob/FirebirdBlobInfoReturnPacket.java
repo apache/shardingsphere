@@ -19,7 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
@@ -68,7 +68,7 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
                 writeIntValue(payload, type, BLOB_TYPE_SEGMENTED);
                 return;
             default:
-                throw new FirebirdProtocolException("Unknown blob information request type %d", type.getCode());
+                throw new DatabaseProtocolException("Unknown blob information request type %d", type.getCode());
         }
     }
     

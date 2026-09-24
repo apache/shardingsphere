@@ -54,4 +54,10 @@ class OracleFunctionOptionTest {
         assertFalse(functionOption.getUnparenthesizedFunctionNames().contains("ROWNUM_"));
         assertFalse(functionOption.getUnparenthesizedFunctionNames().contains("ROW_NUMBER"));
     }
+    
+    @Test
+    void assertGetUnparenthesizedQualifiedFunctionNames() {
+        assertTrue(functionOption.getUnparenthesizedQualifiedFunctionNames().contains("DBMS_RANDOM.VALUE"));
+        assertTrue(functionOption.getUnparenthesizedQualifiedFunctionNames().contains("dbms_random.value"));
+    }
 }

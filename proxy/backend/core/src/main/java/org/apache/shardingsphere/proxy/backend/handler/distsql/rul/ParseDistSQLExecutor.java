@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecut
 import org.apache.shardingsphere.distsql.statement.type.rul.sql.ParseStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -49,7 +49,7 @@ public final class ParseDistSQLExecutor implements DistSQLQueryExecutor<ParseSta
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ParseStatement sqlStatement, final ContextManager contextManager) {
         SQLStatement parsedSqlStatement = parseSQL(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
-        return Collections.singleton(new LocalDataQueryResultRow(parsedSqlStatement.getClass().getSimpleName(), JsonUtils.toJsonString(parsedSqlStatement)));
+        return Collections.singleton(new LocalDataQueryResultRow(parsedSqlStatement.getClass().getSimpleName(), JsonEngine.marshal(parsedSqlStatement)));
     }
     
     private SQLStatement parseSQL(final ShardingSphereMetaData metaData, final ParseStatement sqlStatement) {

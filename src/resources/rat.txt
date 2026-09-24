@@ -36,6 +36,10 @@
 **/*.txt
 **/docs/**
 
+# sql files
+
+**/*.sql
+
 # UI files
 
 **/.babelrc

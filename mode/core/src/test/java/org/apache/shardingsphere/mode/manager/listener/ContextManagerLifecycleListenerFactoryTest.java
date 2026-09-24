@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -50,7 +50,7 @@ class ContextManagerLifecycleListenerFactoryTest {
         Collection<ContextManagerLifecycleListener> listeners = Arrays.asList(noAnnotationListener, matchedModeListener, mismatchedModeListener);
         when(ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)).thenReturn(listeners);
         Collection<ContextManagerLifecycleListener> actual = ContextManagerLifecycleListenerFactory.getListeners(contextManager);
-        assertThat(actual, hasSize(2));
+        assertThat(actual.size(), is(2));
         assertTrue(actual.contains(noAnnotationListener));
         assertTrue(actual.contains(matchedModeListener));
         assertFalse(actual.contains(mismatchedModeListener));

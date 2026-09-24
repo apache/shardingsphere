@@ -22,49 +22,42 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterRoutineLoadContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadDataDescContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadDataPropertiesContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadPropertiesContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadPropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadSetAssignmentContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadWithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CallContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnMappingContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateRoutineLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DataSourcePropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DoStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisLoadDataStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.HandlerStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ImportStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IndexHintContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.JobPropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LeadLagInfoContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadDataIgnoreLinesContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadDataPropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadDataSetClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadPropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadXmlStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PauseRoutineLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeRoutineLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StopRoutineLoadContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DoStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.HandlerStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ImportStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IdentifierContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IndexHintContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.JobPropertyContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadDataPropertyContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadDataIgnoreLinesContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadDataSetClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LeadLagInfoContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisLoadDataStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadPropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.String_Context;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UserVariableContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadDataDescContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadPropertyContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadWithClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadPropertiesContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadDataPropertiesContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadSetAssignmentContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadXmlStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowItemContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowingClauseContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.BrokerLoadDataDescSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.ColNameOrUserVarSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.IgnoreLinesSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.LiteralValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
@@ -75,15 +68,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.BrokerLoadDataDescSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.ColNameOrUserVarSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.IgnoreLinesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.LiteralValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.IndexHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CallStatement;
@@ -92,14 +87,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisAlterRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisBrokerLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisCreateRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisPauseRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisResumeRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisStopRoutineLoadStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisBrokerLoadStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLHandlerStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLImportStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 
 import java.util.Collection;
@@ -192,7 +187,7 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
             result.setMergeType("MERGE");
         } else if (null != ctx.APPEND()) {
             result.setMergeType("APPEND");
-        } else if (ctx.DELETE().size() > (null != ctx.ON() ? 1 : 0)) {
+        } else if (ctx.DELETE().size() > (null == ctx.ON() ? 0 : 1)) {
             result.setMergeType("DELETE");
         }
         for (String_Context each : ctx.string_()) {
@@ -301,7 +296,7 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.loadDataIgnoreLines()) {
             LoadDataIgnoreLinesContext ignoreCtx = ctx.loadDataIgnoreLines();
             long number = Long.parseLong(ignoreCtx.numberLiterals().getText().replaceAll("^[+]", ""));
-            String unit = null != ignoreCtx.LINES() ? "LINES" : "ROWS";
+            String unit = null == ignoreCtx.LINES() ? "ROWS" : "LINES";
             result.setIgnoreLines(new IgnoreLinesSegment(ignoreCtx.start.getStartIndex(), ignoreCtx.stop.getStopIndex(), number, unit));
         }
         if (null != ctx.fieldOrVarSpec() && null != ctx.fieldOrVarSpec().userVariable()) {
@@ -559,44 +554,6 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
-    public ASTNode visitWindowClause(final WindowClauseContext ctx) {
-        WindowSegment result = new WindowSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        for (WindowItemContext each : ctx.windowItem()) {
-            result.getItemSegments().add((WindowItemSegment) visit(each));
-        }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitWindowItem(final WindowItemContext ctx) {
-        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
-        WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
-        result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
-        result.setOrderBySegment(windowItemSegment.getOrderBySegment());
-        result.setFrameClause(windowItemSegment.getFrameClause());
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitWindowSpecification(final WindowSpecificationContext ctx) {
-        WindowItemSegment result = new WindowItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        if (null != ctx.PARTITION()) {
-            result.setPartitionListSegments(getExpressions(ctx.expr()));
-        }
-        if (null != ctx.orderByClause()) {
-            result.setOrderBySegment((OrderBySegment) visit(ctx.orderByClause()));
-        }
-        if (null != ctx.frameClause()) {
-            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText()));
-        }
-        if (null != ctx.identifier()) {
-            result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
-        }
-        return result;
-    }
-    
-    @Override
     public ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
         if (null != ctx.NTILE()) {
@@ -636,15 +593,10 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitWindowingClause(final WindowingClauseContext ctx) {
         WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        if (null != ctx.windowName) {
-            result.setWindowName((IdentifierValue) visit(ctx.windowName));
-        }
-        if (null != ctx.windowSpecification()) {
-            WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
-            result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
-            result.setOrderBySegment(windowItemSegment.getOrderBySegment());
-            result.setFrameClause(windowItemSegment.getFrameClause());
-        }
+        WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
+        result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
+        result.setOrderBySegment(windowItemSegment.getOrderBySegment());
+        result.setFrameClause(windowItemSegment.getFrameClause());
         return result;
     }
 }

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingC
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 
 import java.util.ArrayList;
@@ -64,7 +65,15 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         if (!isSupportedOperator(operator)) {
             return Optional.empty();
         }
-        ExpressionSegment valueExpression = predicate.getLeft() instanceof ColumnSegment ? predicate.getRight() : predicate.getLeft();
+        ExpressionSegment left = predicate.getLeft();
+        ExpressionSegment right = predicate.getRight();
+        // MySQL evaluates BINARY range comparisons byte-wise, and range routing prunes partitions on converted endpoints,
+        // so unwrapping BINARY is semantics-preserving only for equality predicates; range predicates keep broadcast routing.
+        if (EQUAL.equals(operator)) {
+            left = unwrapBinaryOperator(left);
+            right = unwrapBinaryOperator(right);
+        }
+        ExpressionSegment valueExpression = left instanceof ColumnSegment ? right : left;
         ConditionValue conditionValue = new ConditionValue(valueExpression, params);
         if (conditionValue.isNull()) {
             return generate(null, column, operator, conditionValue.getParameterMarkerIndex().orElse(-1));
@@ -105,5 +114,12 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
     
     private boolean isSupportedOperator(final String operator) {
         return OPERATORS.contains(operator);
+    }
+    
+    private ExpressionSegment unwrapBinaryOperator(final ExpressionSegment segment) {
+        return segment instanceof UnaryOperationExpression
+                && "BINARY".equalsIgnoreCase(((UnaryOperationExpression) segment).getOperator())
+                        ? ((UnaryOperationExpression) segment).getExpression()
+                        : segment;
     }
 }

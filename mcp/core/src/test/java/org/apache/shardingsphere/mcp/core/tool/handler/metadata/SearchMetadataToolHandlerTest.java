@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;

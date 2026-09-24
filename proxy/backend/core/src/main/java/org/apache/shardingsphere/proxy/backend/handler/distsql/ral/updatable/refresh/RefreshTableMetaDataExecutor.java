@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.refresh;
 
 import lombok.Setter;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.RefreshTableMetaDataStatement;
@@ -64,7 +63,7 @@ public final class RefreshTableMetaDataExecutor implements DistSQLUpdateExecutor
     }
     
     private IdentifierValue getSchemaName(final RefreshTableMetaDataStatement sqlStatement) {
-        return sqlStatement.getSchemaName().orElseGet(() -> new IdentifierValue(new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName())));
+        return sqlStatement.getSchemaName().orElseGet(() -> new IdentifierValue(database.getDefaultSchemaName()));
     }
     
     private void checkBeforeUpdate(final RefreshTableMetaDataStatement sqlStatement, final IdentifierValue schemaName) {

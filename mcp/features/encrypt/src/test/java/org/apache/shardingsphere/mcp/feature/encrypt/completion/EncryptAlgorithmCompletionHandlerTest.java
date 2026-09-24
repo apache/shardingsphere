@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.completion;
 
-import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.RuleDefinitionException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InUsedRuleException;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InUsedRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.RuleDefinitionException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
@@ -43,8 +43,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;

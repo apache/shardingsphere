@@ -19,10 +19,10 @@ package org.apache.shardingsphere.infra.instance.metadata.jdbc;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.util.IpUtils;
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 
 /**
  * JDBC instance meta data.

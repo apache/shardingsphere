@@ -154,7 +154,9 @@ queryPrimary
     ;
 
 querySpecification
-    : SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause? windowClause?
+    // DORIS CHANGED BEGIN
+    : SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause?
+    // DORIS CHANGED END
     ;
 
 call
@@ -532,14 +534,6 @@ limitRowCount
 
 limitOffset
     : numberLiterals | parameterMarker
-    ;
-
-windowClause
-    : WINDOW windowItem (COMMA_ windowItem)*
-    ;
-
-windowItem
-    : identifier AS windowSpecification
     ;
 
 subquery

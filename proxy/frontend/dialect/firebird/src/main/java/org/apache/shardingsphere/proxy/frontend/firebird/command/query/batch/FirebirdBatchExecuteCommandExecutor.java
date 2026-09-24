@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdStatusVector;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdBatchCompletionStateResponse;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -45,14 +44,15 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
+        FirebirdBatchStatementManager batchStatementManager = FirebirdBatchStatementManager.getInstance();
+        FirebirdBatchStatement batchStatement = batchStatementManager.getBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
         if (null == batchStatement) {
             throw new InvalidBatchHandleException(packet.getStatementHandle());
         }
         validateTransactionHandle();
         int messageCount = batchStatement.getParameterValues().size();
         if (batchStatement.getParameterValues().isEmpty()) {
-            batchStatement.reset();
+            batchStatementManager.resetBatchStatement(batchStatement);
             return Collections.singleton(new FirebirdBatchCompletionStateResponse()
                     .setHandle(packet.getStatementHandle())
                     .setRecordsCount(messageCount)
@@ -61,7 +61,7 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(batchStatement.getStatementHandle());
         FirebirdBatchedStatementsExecutor executor = new FirebirdBatchedStatementsExecutor(connectionSession, preparedStatement, batchStatement.getParameterValues(), batchStatement.isMultiError());
         FirebirdBatchCompletion completion = executor.executeBatch();
-        batchStatement.reset();
+        batchStatementManager.resetBatchStatement(batchStatement);
         return Collections.singleton(createResponse(completion, batchStatement.isRecordCounts()));
     }
     

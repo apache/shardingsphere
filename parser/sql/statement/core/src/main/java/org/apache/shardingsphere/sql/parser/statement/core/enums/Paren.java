@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.enums;
 
-import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
 
 /**
  * Paren of SQL.

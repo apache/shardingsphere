@@ -66,6 +66,9 @@ public final class FunctionConverter {
         if ("OVER".equalsIgnoreCase(functionName.getSimple())) {
             return WindowFunctionConverter.convert(segment);
         }
+        if (isSystemDateTimeFunctionWithoutParentheses(segment)) {
+            return functionName;
+        }
         List<SqlOperator> functions = new LinkedList<>();
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.FUNCTION, functions, SqlNameMatchers.withCaseSensitive(false));
         if (!functions.isEmpty() && segment.getWindow().isPresent()) {
@@ -77,6 +80,12 @@ public final class FunctionConverter {
                 ? new SqlUnresolvedFunction(functionName, null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION)
                 : functions.iterator().next();
         return new SqlBasicCall(operator, getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO);
+    }
+    
+    private static boolean isSystemDateTimeFunctionWithoutParentheses(final FunctionSegment segment) {
+        String functionName = segment.getFunctionName();
+        return null == segment.getOwner() && segment.getParameters().isEmpty() && segment.getText().equalsIgnoreCase(functionName)
+                && ("SYSDATE".equalsIgnoreCase(functionName) || "SYSTIMESTAMP".equalsIgnoreCase(functionName));
     }
     
     private static List<String> getQualifiedFunctionNames(final FunctionSegment segment) {

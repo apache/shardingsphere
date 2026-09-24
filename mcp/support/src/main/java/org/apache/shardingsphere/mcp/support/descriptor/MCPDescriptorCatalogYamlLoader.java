@@ -26,8 +26,8 @@ import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPDescriptorCa
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Comparator;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.stream.Stream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

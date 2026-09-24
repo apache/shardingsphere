@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.quer
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,12 +44,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -70,6 +71,7 @@ class CRC32TableInventoryCheckCalculatorTest {
         parameter = new TableInventoryCalculateParameter(pipelineDataSource, new QualifiedTable(null, "foo_tbl"),
                 Arrays.asList("foo_col", "bar_col"), uniqueKeys, QueryType.RANGE_QUERY, null);
         when(pipelineDataSource.getDatabaseType()).thenReturn(databaseType);
+        when(pipelineDataSource.getIdentifierContext()).thenReturn(DatabaseIdentifierContextFactory.createDefault());
         when(pipelineDataSource.getConnection()).thenReturn(connection);
     }
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.expr.spi;
 
+import org.apache.shardingsphere.infra.expr.exception.InlineExpressionEvaluationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.List;
@@ -70,6 +71,7 @@ public interface InlineExpressionParser extends TypedSPI {
      * @param map map
      * @return closure
      * @throws UnsupportedOperationException By default, users do not need to consider passing in additional parameters.
+     * @throws InlineExpressionEvaluationException when expression evaluation fails
      */
     default String evaluateWithArgs(final Map<String, Comparable<?>> map) {
         throw new UnsupportedOperationException("This SPI implementation does not support the use of this method.");

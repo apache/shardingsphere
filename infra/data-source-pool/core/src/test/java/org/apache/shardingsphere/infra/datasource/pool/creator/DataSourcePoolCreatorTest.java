@@ -38,6 +38,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
+import org.mockito.exceptions.verification.WantedButNotInvoked;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -55,9 +56,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class DataSourcePoolCreatorTest {
@@ -175,7 +179,7 @@ class DataSourcePoolCreatorTest {
         MockedDataSource actual = (MockedDataSource) DataSourcePoolCreator.create(
                 "foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), createMockedDataSourceProperties()), false, Collections.singleton(storageNode));
         assertMockedDataSource(actual);
-        assertThrows(org.mockito.exceptions.verification.WantedButNotInvoked.class, () -> org.mockito.Mockito.verify(storageNode).close());
+        assertThrows(WantedButNotInvoked.class, () -> verify(storageNode).close());
     }
     
     @Test
@@ -188,7 +192,7 @@ class DataSourcePoolCreatorTest {
         assertThrows(NumberFormatException.class,
                 () -> DataSourcePoolCreator.create("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), props), false, Collections.singleton(storageNode)));
         Awaitility.await().atMost(1L, TimeUnit.SECONDS).pollInterval(10L, TimeUnit.MILLISECONDS)
-                .untilAsserted(() -> org.mockito.Mockito.verify(storageNode, org.mockito.Mockito.atLeastOnce()).close());
+                .untilAsserted(() -> verify(storageNode, atLeastOnce()).close());
     }
     
     @Disabled
@@ -199,7 +203,7 @@ class DataSourcePoolCreatorTest {
         props.put("connectionTimeout", "invalid");
         assertThrows(NumberFormatException.class,
                 () -> DataSourcePoolCreator.create("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), props), true, Collections.singleton(storageNode)));
-        Awaitility.await().during(200L, TimeUnit.MILLISECONDS).atMost(500L, TimeUnit.MILLISECONDS).untilAsserted(() -> org.mockito.Mockito.verify(storageNode, org.mockito.Mockito.never()).close());
+        Awaitility.await().during(200L, TimeUnit.MILLISECONDS).atMost(500L, TimeUnit.MILLISECONDS).untilAsserted(() -> verify(storageNode, never()).close());
     }
     
     private Map<String, Object> createMockedDataSourceProperties() {

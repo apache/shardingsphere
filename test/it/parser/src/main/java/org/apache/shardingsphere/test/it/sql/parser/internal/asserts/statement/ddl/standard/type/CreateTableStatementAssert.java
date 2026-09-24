@@ -40,8 +40,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -59,6 +59,9 @@ public final class CreateTableStatementAssert {
      * @param expected expected create table statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
+        if (null != expected.getTemporary()) {
+            assertThat(assertContext.getText("Temporary table assertion error: "), actual.isTemporary(), is(expected.getTemporary()));
+        }
         assertTable(assertContext, actual, expected);
         assertColumnDefinitions(assertContext, actual, expected);
         assertConstraintDefinitions(assertContext, actual, expected);

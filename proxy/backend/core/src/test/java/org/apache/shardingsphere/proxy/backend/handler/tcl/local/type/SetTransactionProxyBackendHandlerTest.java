@@ -25,13 +25,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsol
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -80,7 +80,7 @@ class SetTransactionProxyBackendHandlerTest {
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
         SetTransactionStatement sqlStatement = mock(SetTransactionStatement.class);
         when(sqlStatement.containsScope()).thenReturn(false);
-        when(sqlStatement.isDesiredAccessMode(Mockito.any())).thenReturn(false);
+        when(sqlStatement.isDesiredAccessMode(any())).thenReturn(false);
         when(sqlStatement.getIsolationLevel()).thenReturn(Optional.of(TransactionIsolationLevel.SERIALIZABLE));
         new SetTransactionProxyBackendHandler(sqlStatement, connectionSession).execute();
         verify(connectionSession).setIsolationLevel(TransactionIsolationLevel.SERIALIZABLE);

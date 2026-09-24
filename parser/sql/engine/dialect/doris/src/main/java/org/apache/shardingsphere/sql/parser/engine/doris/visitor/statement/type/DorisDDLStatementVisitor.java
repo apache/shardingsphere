@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterDa
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterInstanceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterListContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterListItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterLockOptionContext;
@@ -54,11 +56,14 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTa
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTablespaceInnodbContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTablespaceNdbContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterWorkloadGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BeginStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BinlogDescriptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BuildIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelAlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelBuildIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelMaterializedViewTaskContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelTaskContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CaseStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ChangeColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ChannelDescriptionContext;
@@ -74,12 +79,12 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateF
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateJobContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateStreamingJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLikeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLogfileGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateServerContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateStreamingJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateTableOptionContext;
@@ -87,6 +92,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateT
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DataQuotaValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DeallocateContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DistributedbyClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisDropFunctionContext;
@@ -96,6 +102,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropEnc
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropLogfileGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropRollupContext;
@@ -120,8 +127,6 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoopSta
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ModifyColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ModifyDistributionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PartitionValueListContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterJobContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PauseJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PauseSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PlaceContext;
@@ -130,6 +135,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Propert
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReferenceDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RefreshMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenamePartitionContext;
@@ -137,8 +143,6 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameR
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RepeatStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReplaceTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelMaterializedViewTaskContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelTaskContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RollupItemContext;
@@ -154,6 +158,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Truncat
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WhileStatementContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
+import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AlgorithmOption;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.LockTableOption;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
@@ -166,6 +171,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.al
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.OrderByColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.RenameColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.position.ColumnAfterPositionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.position.ColumnFirstPositionSegment;
@@ -201,7 +207,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.AddRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.DropRollupDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.OrderByColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RollupSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
@@ -216,6 +221,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Ren
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ReplaceTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.workloadgroup.WorkloadGroupNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.SimpleExpressionSegment;
@@ -270,18 +276,20 @@ import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterColocateGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterWorkloadGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCancelMaterializedViewTaskStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCancelTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateStreamingJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseSyncJobStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCancelMaterializedViewTaskStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCancelTaskStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisRefreshMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisStopSyncJobStatement;
@@ -314,6 +322,18 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         CreateViewStatement result = new CreateViewStatement(getDatabaseType());
         result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
+        // DORIS CHANGED BEGIN
+        if (null != ctx.columnNames()) {
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(ctx.columnNames());
+            for (ColumnSegment each : columns.getValue()) {
+                result.getColumns().add(new ViewColumnSegment(each.getStartIndex(), each.getStopIndex(), each, null));
+            }
+        }
+        if (null != ctx.viewColumnDefinitions()) {
+            CollectionValue<ViewColumnSegment> columns = (CollectionValue<ViewColumnSegment>) visit(ctx.viewColumnDefinitions());
+            result.getColumns().addAll(columns.getValue());
+        }
+        // DORIS CHANGED END
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((SelectStatement) visit(ctx.select()));
         return result;
@@ -362,15 +382,16 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.RENAME() && null != ctx.identifier()) {
             result.setRenameDatabaseName(new IdentifierValue(ctx.identifier().getText()).getValue());
         }
-        if (null != ctx.QUOTA() && null != ctx.NUMBER_()) {
-            if (null != ctx.DATA()) {
-                result.setQuotaType("DATA");
-            } else if (null != ctx.REPLICA()) {
+        if (null != ctx.QUOTA() && null != ctx.DATA() && null != ctx.dataQuotaValue()) {
+            result.setQuotaType("DATA");
+            result.setQuotaValue(getDataQuotaValue(ctx.dataQuotaValue()));
+        } else if (null != ctx.QUOTA() && null != ctx.NUMBER_()) {
+            if (null != ctx.REPLICA()) {
                 result.setQuotaType("REPLICA");
             } else if (null != ctx.TRANSACTION()) {
                 result.setQuotaType("TRANSACTION");
             }
-            result.setQuotaValue(Long.parseLong(ctx.NUMBER_().getText()));
+            result.setQuotaValue(parseQuotaNumber(ctx.NUMBER_()));
         }
         if (null != ctx.PROPERTIES() && null != ctx.properties()) {
             PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.properties().getStart().getStartIndex(), ctx.properties().getStop().getStopIndex());
@@ -383,6 +404,64 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             result.setProperties(propertiesSegment);
         }
         return result;
+    }
+    
+    private long getDataQuotaValue(final DataQuotaValueContext ctx) {
+        if (null != ctx.NUMBER_()) {
+            return parseQuotaNumber(ctx.NUMBER_());
+        }
+        TerminalNode token = null == ctx.FILESIZE_LITERAL() ? ctx.IDENTIFIER_() : ctx.FILESIZE_LITERAL();
+        String text = token.getText();
+        int unitIndex = 0;
+        while (unitIndex < text.length() && Character.isDigit(text.charAt(unitIndex))) {
+            unitIndex++;
+        }
+        long unitBytes = 0 == unitIndex ? 0L : getDataQuotaUnitBytes(text.substring(unitIndex));
+        if (0L == unitBytes) {
+            throw new SQLParsingException(String.format("Expected data quota value, got: %s", text), text, token.getSymbol().getLine());
+        }
+        try {
+            return Math.multiplyExact(Long.parseLong(text.substring(0, unitIndex)), unitBytes);
+        } catch (final ArithmeticException | NumberFormatException ex) {
+            throw new SQLParsingException(String.format("Data quota value out of range: %s", text), text, token.getSymbol().getLine());
+        }
+    }
+    
+    private long getDataQuotaUnitBytes(final String unit) {
+        switch (unit.toUpperCase()) {
+            case "":
+            case "B":
+                return 1L;
+            case "K":
+            case "KB":
+                return 1024L;
+            case "M":
+            case "MB":
+                return 1024L * 1024L;
+            case "G":
+            case "GB":
+                return 1024L * 1024L * 1024L;
+            case "T":
+            case "TB":
+                return 1024L * 1024L * 1024L * 1024L;
+            case "P":
+            case "PB":
+                return 1024L * 1024L * 1024L * 1024L * 1024L;
+            default:
+                return 0L;
+        }
+    }
+    
+    private long parseQuotaNumber(final TerminalNode token) {
+        String text = token.getText();
+        if (!text.chars().allMatch(Character::isDigit)) {
+            throw new SQLParsingException(String.format("Expected integer quota value, got: %s", text), text, token.getSymbol().getLine());
+        }
+        try {
+            return Long.parseLong(text);
+        } catch (final NumberFormatException ex) {
+            throw new SQLParsingException(String.format("Quota value out of range: %s", text), text, token.getSymbol().getLine());
+        }
     }
     
     @Override
@@ -403,9 +482,9 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.PROPERTIES()) {
             for (int i = 0; i < ctx.properties().property().size(); i++) {
-                String key = null != ctx.properties().property(i).SINGLE_QUOTED_TEXT()
-                        ? SQLUtils.getExactlyValue(ctx.properties().property(i).SINGLE_QUOTED_TEXT().getText())
-                        : SQLUtils.getExactlyValue(ctx.properties().property(i).identifier().getText());
+                String key = null == ctx.properties().property(i).SINGLE_QUOTED_TEXT()
+                        ? SQLUtils.getExactlyValue(ctx.properties().property(i).identifier().getText())
+                        : SQLUtils.getExactlyValue(ctx.properties().property(i).SINGLE_QUOTED_TEXT().getText());
                 String value = SQLUtils.getExactlyValue(ctx.properties().property(i).literals().getText());
                 result.getProperties().put(key, value);
             }
@@ -589,7 +668,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
                         SQLUtils.getExactlyValue(ctx.timestampValue(0).getText())));
             }
             if (null != ctx.ENDS()) {
-                int endsTimestampIndex = null != ctx.STARTS() ? 1 : 0;
+                int endsTimestampIndex = null == ctx.STARTS() ? 0 : 1;
                 result.setEndsTimestamp(new JobScheduleTimestampSegment(ctx.timestampValue(endsTimestampIndex).start.getStartIndex(), ctx.timestampValue(endsTimestampIndex).stop.getStopIndex(),
                         SQLUtils.getExactlyValue(ctx.timestampValue(endsTimestampIndex).getText())));
             }
@@ -772,11 +851,16 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitDistributedbyClause(final DistributedbyClauseContext ctx) {
         ModifyDistributionSegment result = new ModifyDistributionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        if (null != ctx.columnName()) {
-            result.getColumns().add((ColumnSegment) visit(ctx.columnName()));
+        if (null != ctx.columnNames()) {
+            for (ColumnNameContext each : ctx.columnNames().columnName()) {
+                result.getColumns().add((ColumnSegment) visit(each));
+            }
         }
         if (null != ctx.NUMBER_()) {
             result.setBuckets(Integer.parseInt(ctx.NUMBER_().getText()));
+        }
+        if (null != ctx.AUTO()) {
+            result.setAutoBuckets(true);
         }
         return result;
     }
@@ -1358,7 +1442,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         for (RollupItemContext each : ctx.rollupItem()) {
             RollupSegment rollupSegment = new RollupSegment(each.rollupName.getStart().getStartIndex(), each.rollupName.getStop().getStopIndex(), (IdentifierValue) visit(each.rollupName));
             AddRollupDefinitionSegment addRollupDefinitionSegment = new AddRollupDefinitionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), rollupSegment);
-            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(each.columnNames());
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(each.rollupColumns);
             addRollupDefinitionSegment.getColumns().addAll(columns.getValue());
             if (null != each.fromIndexName) {
                 addRollupDefinitionSegment.setFromIndex((IndexSegment) visit(each.fromIndexName));
@@ -1435,8 +1519,13 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.distributedbyClause()) {
             DistributedbyClauseContext distCtx = ctx.distributedbyClause();
-            result.setDistributedColumn((ColumnSegment) visit(distCtx.columnName()));
-            result.setBuckets(Integer.parseInt(distCtx.NUMBER_().getText()));
+            if (null != distCtx.columnNames()) {
+                CollectionValue<ColumnSegment> distributedColumns = (CollectionValue<ColumnSegment>) visit(distCtx.columnNames());
+                result.setDistributedColumn(distributedColumns.getValue().iterator().next());
+            }
+            if (null != distCtx.NUMBER_()) {
+                result.setBuckets(Integer.parseInt(distCtx.NUMBER_().getText()));
+            }
         }
         return result;
     }
@@ -1490,7 +1579,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             return new ModifyPartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), properties, true);
         }
         ModifyPartitionDefinitionSegment result = new ModifyPartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), properties, false);
-        if (null != ctx.identifier() && ctx.identifierList() == null) {
+        if (null != ctx.identifier() && null == ctx.identifierList()) {
             PartitionSegment partition = new PartitionSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
             result.getPartitions().add(partition);
         } else if (null != ctx.identifierList()) {
@@ -1520,6 +1609,14 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         PropertiesSegment propertiesSegment = extractPropertiesSegmentFromPropertiesContext(ctx.properties());
         return new DorisAlterColocateGroupStatement(getDatabaseType(), groupSegment, propertiesSegment);
+    }
+    
+    @Override
+    public ASTNode visitAlterWorkloadGroup(final AlterWorkloadGroupContext ctx) {
+        IdentifierValue identifier = (IdentifierValue) visit(ctx.identifier());
+        WorkloadGroupNameSegment workloadGroupNameSegment = new WorkloadGroupNameSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), identifier);
+        PropertiesSegment propertiesSegment = extractPropertiesSegment(ctx.propertiesClause());
+        return new DorisAlterWorkloadGroupStatement(getDatabaseType(), workloadGroupNameSegment, propertiesSegment);
     }
     
     private PropertiesSegment extractPropertiesSegment(final PropertiesClauseContext ctx) {
@@ -1940,6 +2037,19 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
         return new CreateMaterializedViewStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitRefreshMaterializedView(final RefreshMaterializedViewContext ctx) {
+        boolean auto = null != ctx.refreshMethod() && null != ctx.refreshMethod().AUTO();
+        boolean complete = null != ctx.refreshMethod() && null != ctx.refreshMethod().COMPLETE();
+        List<String> partitionNames = new LinkedList<>();
+        if (null != ctx.partitionSpec()) {
+            for (IdentifierContext each : ctx.partitionSpec().identifierList().identifier()) {
+                partitionNames.add(((IdentifierValue) visit(each)).getValue());
+            }
+        }
+        return new DorisRefreshMaterializedViewStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.name().identifier())).getValue(), auto, complete, partitionNames);
     }
     
     @Override

@@ -21,10 +21,10 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncPromptSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -145,7 +145,10 @@ class MCPPromptSpecificationFactoryTest {
     
     @Test
     void assertRejectNullRequiredPromptArgument() {
-        McpError actual = assertThrows(McpError.class, () -> renderPrompt("safe_sql_execution", Maps.of("database", null, "sql_intent", "count orders")));
+        Map<String, Object> args = new HashMap<>(2, 1F);
+        args.put("database", null);
+        args.put("sql_intent", "count orders");
+        McpError actual = assertThrows(McpError.class, () -> renderPrompt("safe_sql_execution", args));
         assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
         assertThat(actual.getJsonRpcError().message(), is("Required prompt argument `database` is missing."));
     }

@@ -388,7 +388,7 @@ tablespaceOption
     ;
 
 temporaryOption
-    : LOCAL? TEMPORARY TABLESPACE tablespaceName tablespaceGroupName
+    : LOCAL? TEMPORARY TABLESPACE (tablespaceName | tablespaceGroupName)
     ;
 
 quotaOption
@@ -422,7 +422,7 @@ alterUser
     | NO AUTHENTICATION
     | DEFAULT COLLATION collationName
     | DEFAULT TABLESPACE tablespaceName
-    | LOCAL? TEMPORARY TABLESPACE tablespaceName tablespaceGroupName
+    | LOCAL? TEMPORARY TABLESPACE (tablespaceName | tablespaceGroupName)
     | QUOTA (sizeClause | UNLIMITED) ON tablespaceName
     | PROFILE profileName
     | DEFAULT ROLE (roleName (COMMA_ roleName)* |  allClause | NONE )

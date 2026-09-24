@@ -58,6 +58,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -65,6 +66,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.never;
@@ -196,6 +198,39 @@ class StreamableHttpMCPServletTest {
         actual.service(request, response);
         verify(request).setCharacterEncoding("UTF-8");
         verify(response).setCharacterEncoding("UTF-8");
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("requestMethods")
+    void assertServiceHandleUncommittedException(final String name, final String requestMethod) throws IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn(requestMethod);
+        when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("Origin")));
+        when(request.getHeaders("Origin")).thenReturn(Collections.enumeration(List.of("https://example.com")));
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        doThrow(new IOException("foo_failure")).when(response).getWriter();
+        StreamableHttpMCPServlet actual = createServlet(mock(MCPSessionManager.class));
+        assertDoesNotThrow(() -> actual.service(request, response));
+        verify(response).reset();
+        verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("requestMethods")
+    void assertServiceRethrowCommittedException(final String name, final String requestMethod) throws IOException {
+        IOException expectedException = new IOException("foo_failure");
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn(requestMethod);
+        when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("Origin")));
+        when(request.getHeaders("Origin")).thenReturn(Collections.enumeration(List.of("https://example.com")));
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(response.isCommitted()).thenReturn(true);
+        doThrow(expectedException).when(response).getWriter();
+        StreamableHttpMCPServlet actual = createServlet(mock(MCPSessionManager.class));
+        IOException actualException = assertThrows(IOException.class, () -> actual.service(request, response));
+        assertThat(actualException, sameInstance(expectedException));
+        verify(response, never()).reset();
+        verify(response, never()).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
     
     private static Stream<Arguments> requestMethods() {
@@ -332,6 +367,22 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
+    void assertServicePostRollbackSessionWhenDelegateFails() throws ServletException, IOException {
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("POST");
+        when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        StreamableHttpMCPServlet actual = createServlet(sessionManager);
+        doAnswer(invocation -> {
+            ((HttpServletResponse) invocation.getArgument(1)).setHeader(HttpHeaders.MCP_SESSION_ID, "session-id");
+            throw new ServletException("foo_failure");
+        }).when(getDelegate()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        assertDoesNotThrow(() -> actual.service(request, response));
+        assertFalse(sessionManager.hasSession("session-id"));
+    }
+    
+    @Test
     void assertServicePostWithJsonContentType() throws ServletException, IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
@@ -459,6 +510,21 @@ class StreamableHttpMCPServletTest {
         when(response.getStatus()).thenReturn(404);
         StreamableHttpMCPServlet actual = createServlet(sessionManager);
         actual.service(request, response);
+        assertTrue(sessionManager.hasSession("session-id"));
+    }
+    
+    @Test
+    void assertServiceDeletePreserveSessionWhenDelegateFails() throws ServletException, IOException {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        sessionManager.createSession(new MCPSessionIdentity("session-id", "", "", Map.of()));
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("DELETE");
+        when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
+        when(request.getHeader(HttpHeaders.MCP_SESSION_ID)).thenReturn("session-id");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        StreamableHttpMCPServlet actual = createServlet(sessionManager);
+        doThrow(new ServletException("foo_failure")).when(getDelegate()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        assertDoesNotThrow(() -> actual.service(request, response));
         assertTrue(sessionManager.hasSession("session-id"));
     }
     

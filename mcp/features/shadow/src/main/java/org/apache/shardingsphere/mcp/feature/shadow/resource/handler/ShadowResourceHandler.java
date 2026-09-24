@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mcp.feature.shadow.resource.handler;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;

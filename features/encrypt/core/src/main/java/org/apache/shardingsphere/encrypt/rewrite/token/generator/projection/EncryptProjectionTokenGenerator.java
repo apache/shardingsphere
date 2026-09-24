@@ -273,7 +273,7 @@ public final class EncryptProjectionTokenGenerator {
                 "Projections not in simple select, table subquery, join subquery, predicate subquery and insert select subquery are not supported in encrypt feature.");
     }
     
-    private ColumnProjection generateProjection(final EncryptColumn encryptColumn, final ColumnProjection columnProjection) {
+    private Projection generateProjection(final EncryptColumn encryptColumn, final ColumnProjection columnProjection) {
         String encryptColumnName = getEncryptColumnName(columnProjection, encryptColumn);
         QuoteCharacter quoteCharacter = getQuoteCharacter(columnProjection);
         IdentifierValue cipherColumnName = new IdentifierValue(encryptColumnName, quoteCharacter);

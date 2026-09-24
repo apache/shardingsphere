@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
-
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.feature.encrypt.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
@@ -50,6 +49,7 @@ import org.mockito.AdditionalAnswers;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -65,8 +65,8 @@ import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.withSettings;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 class EncryptWorkflowPlanningServiceTest {
     
@@ -397,7 +397,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     private MCPColumnMetadata createColumnMetadata(final String tableName, final String columnName) {
-        return new MCPColumnMetadata(tableName, columnName, 1, java.sql.Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
+        return new MCPColumnMetadata(tableName, columnName, 1, Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
     }
     
     private EncryptWorkflowPlanningService createService(final EncryptRuleInspectionService ruleInspectionService,

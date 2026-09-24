@@ -26,8 +26,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.TaskExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
-
 import org.jspecify.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;

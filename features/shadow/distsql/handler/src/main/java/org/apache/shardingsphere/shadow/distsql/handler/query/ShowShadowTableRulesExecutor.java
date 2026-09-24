@@ -58,23 +58,14 @@ public final class ShowShadowTableRulesExecutor implements DistSQLQueryExecutor<
     
     private Collection<Map<String, String>> buildData(final ShadowRuleConfiguration ruleConfig, final ShowShadowTableRulesStatement sqlStatement) {
         Collection<Map<String, String>> result = new ArrayList<>();
-        if (isSpecified(sqlStatement)) {
-            ruleConfig.getTables().forEach((key, value) -> {
-                Map<String, String> map = new HashMap<>();
-                if (key.equalsIgnoreCase(sqlStatement.getTableName())) {
-                    map.put(SHADOW_TABLE, key);
-                    map.put(SHADOW_ALGORITHM_NAME, convertToString(value.getShadowAlgorithmNames()));
-                }
-                result.add(map);
-            });
-        } else {
-            ruleConfig.getTables().forEach((key, value) -> {
+        ruleConfig.getTables().forEach((key, value) -> {
+            if (!isSpecified(sqlStatement) || key.equalsIgnoreCase(sqlStatement.getTableName())) {
                 Map<String, String> map = new HashMap<>();
                 map.put(SHADOW_TABLE, key);
                 map.put(SHADOW_ALGORITHM_NAME, convertToString(value.getShadowAlgorithmNames()));
                 result.add(map);
-            });
-        }
+            }
+        });
         return result;
     }
     

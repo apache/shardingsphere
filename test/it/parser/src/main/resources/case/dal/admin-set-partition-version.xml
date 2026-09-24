@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <admin-set-partition-version sql-case-id="admin_set_partition_version">
+        <table name="tbl1" start-index="16" stop-index="19" />
+        <property key="partition_id" value="1769152" start-index="50" stop-index="75" />
+        <property key="visible_version" value="100" start-index="78" stop-index="102" />
+    </admin-set-partition-version>
+
+    <admin-set-partition-version sql-case-id="admin_set_partition_version_with_qualified_table">
+        <table name="audit_log" start-index="16" stop-index="42">
+            <owner name="__internal_schema" start-index="16" stop-index="32" />
+        </table>
+        <property key="partition_id" value="10075" start-index="73" stop-index="96" />
+        <property key="visible_version" value="100" start-index="99" stop-index="123" />
+    </admin-set-partition-version>
+</sql-parser-test-cases>

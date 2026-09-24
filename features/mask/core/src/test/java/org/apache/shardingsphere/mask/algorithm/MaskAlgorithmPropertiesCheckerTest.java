@@ -90,4 +90,34 @@ class MaskAlgorithmPropertiesCheckerTest {
         Properties props = PropertiesBuilder.build(new Property("key", "123.0"));
         assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkPositiveInteger(props, "key", mock(MaskAlgorithm.class)));
     }
+    
+    @Test
+    void assertCheckNotNegativeIntegerSuccessWithPositive() {
+        Properties props = PropertiesBuilder.build(new Property("key", "123"));
+        assertDoesNotThrow(() -> MaskAlgorithmPropertiesChecker.checkNotNegativeInteger(props, "key", mock(MaskAlgorithm.class)));
+    }
+    
+    @Test
+    void assertCheckNotNegativeIntegerSuccessWithZero() {
+        Properties props = PropertiesBuilder.build(new Property("key", "0"));
+        assertDoesNotThrow(() -> MaskAlgorithmPropertiesChecker.checkNotNegativeInteger(props, "key", mock(MaskAlgorithm.class)));
+    }
+    
+    @Test
+    void assertCheckNotNegativeIntegerFailedWithoutKey() {
+        Properties props = new Properties();
+        assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkNotNegativeInteger(props, "key", mock(MaskAlgorithm.class)));
+    }
+    
+    @Test
+    void assertCheckNotNegativeIntegerFailedWithNegative() {
+        Properties props = PropertiesBuilder.build(new Property("key", "-1"));
+        assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkNotNegativeInteger(props, "key", mock(MaskAlgorithm.class)));
+    }
+    
+    @Test
+    void assertCheckNotNegativeIntegerFailedWithNotInteger() {
+        Properties props = PropertiesBuilder.build(new Property("key", "123.0"));
+        assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkNotNegativeInteger(props, "key", mock(MaskAlgorithm.class)));
+    }
 }

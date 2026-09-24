@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.builder;
 
+import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
@@ -37,8 +38,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class AgentBuilderFactoryTest {
     
@@ -55,7 +56,7 @@ class AgentBuilderFactoryTest {
         Map<String, AdvisorConfiguration> advisorConfigs = Collections.singletonMap(advisorConfig.getTargetClassName(), advisorConfig);
         AgentBuilder agentBuilder = AgentBuilderFactory.create(Collections.emptyMap(), Collections.emptyList(), advisorConfigs, true);
         agent = agentBuilder.installOnByteBuddyAgent();
-        targetClass = new net.bytebuddy.ByteBuddy().redefine(TargetObjectFixture.class)
+        targetClass = new ByteBuddy().redefine(TargetObjectFixture.class)
                 .name(TARGET_CLASS_NAME)
                 .make()
                 .load(AgentBuilderFactoryTest.class.getClassLoader(), ClassLoadingStrategy.Default.INJECTION)

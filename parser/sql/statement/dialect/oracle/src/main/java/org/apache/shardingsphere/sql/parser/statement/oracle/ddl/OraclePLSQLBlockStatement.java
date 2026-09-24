@@ -17,15 +17,28 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
+import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ProcedureCallNamesSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+
+import java.util.List;
 
 /**
  * PLSQL block statement for Oracle.
  */
+@Getter
 public final class OraclePLSQLBlockStatement extends DDLStatement {
     
-    public OraclePLSQLBlockStatement(final DatabaseType databaseType) {
+    private final List<ProcedureCallNameSegment> procedureCallNames;
+    
+    private final SQLStatementAttributes attributes;
+    
+    public OraclePLSQLBlockStatement(final DatabaseType databaseType, final List<ProcedureCallNameSegment> procedureCallNames) {
         super(databaseType);
+        this.procedureCallNames = procedureCallNames;
+        attributes = new SQLStatementAttributes(new ProcedureCallNamesSQLStatementAttribute(procedureCallNames));
     }
 }

@@ -21,8 +21,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class GroupConcatAggregationUnitTest {
     
@@ -38,6 +39,14 @@ class GroupConcatAggregationUnitTest {
     }
     
     @Test
+    void assertGroupConcatAggregationWithAllNullValues() {
+        GroupConcatAggregationUnit groupConcatAggregationUnit = new GroupConcatAggregationUnit(" ");
+        groupConcatAggregationUnit.merge(null);
+        groupConcatAggregationUnit.merge(Collections.singletonList(null));
+        assertNull(groupConcatAggregationUnit.getResult());
+    }
+    
+    @Test
     void assertDistinctGroupConcatAggregation() {
         DistinctGroupConcatAggregationUnit distinctGroupConcatAggregationUnit = new DistinctGroupConcatAggregationUnit(" ");
         distinctGroupConcatAggregationUnit.merge(null);
@@ -47,5 +56,13 @@ class GroupConcatAggregationUnitTest {
         distinctGroupConcatAggregationUnit.merge(Collections.singletonList("001"));
         distinctGroupConcatAggregationUnit.merge(Collections.singletonList("003"));
         assertThat(distinctGroupConcatAggregationUnit.getResult(), is(" 001 003"));
+    }
+    
+    @Test
+    void assertDistinctGroupConcatAggregationWithAllNullValues() {
+        DistinctGroupConcatAggregationUnit distinctGroupConcatAggregationUnit = new DistinctGroupConcatAggregationUnit(" ");
+        distinctGroupConcatAggregationUnit.merge(null);
+        distinctGroupConcatAggregationUnit.merge(Collections.singletonList(null));
+        assertNull(distinctGroupConcatAggregationUnit.getResult());
     }
 }

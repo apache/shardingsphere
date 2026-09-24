@@ -26,6 +26,8 @@ import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.RemoveToken;
@@ -48,12 +50,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,7 +63,7 @@ class EncryptAlterTableTokenGeneratorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    private final EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class, RETURNS_DEEP_STUBS);
+    private final EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm();
     
     private EncryptAlterTableTokenGenerator generator;
     
@@ -79,11 +81,13 @@ class EncryptAlterTableTokenGeneratorTest {
     
     private EncryptTable mockEncryptTable() {
         EncryptTable result = mock(EncryptTable.class);
+        EncryptColumn encryptColumn = mockEncryptColumn();
+        EncryptColumn newEncryptColumn = mockNewEncryptColumn();
         when(result.getTable()).thenReturn("t_encrypt");
         when(result.isEncryptColumn("certificate_number")).thenReturn(true);
-        when(result.getEncryptColumn("certificate_number")).thenReturn(mockEncryptColumn());
+        when(result.getEncryptColumn("certificate_number")).thenReturn(encryptColumn);
         when(result.isEncryptColumn("certificate_number_new")).thenReturn(true);
-        when(result.getEncryptColumn("certificate_number_new")).thenReturn(mockNewEncryptColumn());
+        when(result.getEncryptColumn("certificate_number_new")).thenReturn(newEncryptColumn);
         when(result.findEncryptor("certificate_number")).thenReturn(Optional.of(encryptAlgorithm));
         when(result.findEncryptor("certificate_number_new")).thenReturn(Optional.of(encryptAlgorithm));
         return result;
@@ -101,6 +105,14 @@ class EncryptAlterTableTokenGeneratorTest {
                 "certificate_number_new", new CipherColumnItem("cipher_certificate_number_new", encryptAlgorithm));
         result.setAssistedQuery(new AssistedQueryColumnItem("assisted_certificate_number_new", encryptAlgorithm));
         result.setLikeQuery(new LikeQueryColumnItem("like_certificate_number_new", encryptAlgorithm));
+        return result;
+    }
+    
+    private EncryptAlgorithm mockEncryptAlgorithm() {
+        EncryptAlgorithm result = mock(EncryptAlgorithm.class);
+        when(result.getMetaData()).thenReturn(new EncryptAlgorithmMetaData(true, true, true, String.class));
+        when(result.getEncoder()).thenReturn(Optional.empty());
+        when(result.toConfiguration()).thenReturn(new AlgorithmConfiguration("FIXTURE", new Properties()));
         return result;
     }
     

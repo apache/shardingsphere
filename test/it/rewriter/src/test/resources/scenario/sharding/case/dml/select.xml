@@ -291,14 +291,14 @@
     
     <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_parameters_for_mysql" db-types="MySQL">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ?, ?" parameters="100, 10" />
-        <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ?, ?" parameters="0, 2147483647" />
-        <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ?, ?" parameters="0, 2147483647" />
+        <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ?, ?" parameters="0, 110" />
+        <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ?, ?" parameters="0, 110" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_literals_for_mysql" db-types="MySQL">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 100, 10" />
-        <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 0, 2147483647" />
-        <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 0, 2147483647" />
+        <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 0, 110" />
+        <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 0, 110" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_limit_with_single_route_for_parameters_for_postgresql" db-types="PostgreSQL,openGauss">
@@ -325,14 +325,14 @@
     
     <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_parameters_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ? OFFSET ?" parameters="10, 100" />
-        <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ? OFFSET ?" parameters="2147483647, 0" />
-        <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ? OFFSET ?" parameters="2147483647, 0" />
+        <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ? OFFSET ?" parameters="110, 0" />
+        <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ? OFFSET ?" parameters="110, 0" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_literals_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 10 OFFSET 100" />
-        <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 2147483647 OFFSET 0" />
-        <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 2147483647 OFFSET 0" />
+        <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 110 OFFSET 0" />
+        <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 110 OFFSET 0" />
     </rewrite-assertion>
     
     <!-- FIXME -->
@@ -529,8 +529,7 @@
         <output sql="SELECT account_id , CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END AS GROUP_BY_DERIVED_0 FROM t_account_1 GROUP BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END ORDER BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END" parameters="100" />
     </rewrite-assertion>
 
-    <!-- FIXME -->
-    <!--<rewrite-assertion id="select_with_sharding_value_and_binary_column_for_parameters" db-types="MySQL">
+    <rewrite-assertion id="select_with_sharding_value_and_binary_column_for_parameters" db-types="MySQL">
         <input sql="SELECT * FROM t_account WHERE BINARY account_id = ?" parameters="100" />
         <output sql="SELECT * FROM t_account_0 WHERE BINARY account_id = ?" parameters="100" />
     </rewrite-assertion>
@@ -548,7 +547,7 @@
     <rewrite-assertion id="select_with_sharding_value_and_binary_value_for_literals" db-types="MySQL">
         <input sql="SELECT * FROM t_account WHERE account_id = BINARY 100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id = BINARY 100" />
-    </rewrite-assertion>-->
+    </rewrite-assertion>
 
     <rewrite-assertion id="select_with_schema_name_in_shorthand_projection" db-types="MySQL">
         <input sql="SELECT sharding_db.t_account.* FROM t_account WHERE account_id = ?" parameters="100" />

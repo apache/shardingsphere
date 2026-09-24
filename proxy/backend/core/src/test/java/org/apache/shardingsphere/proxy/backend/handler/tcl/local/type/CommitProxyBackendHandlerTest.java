@@ -37,8 +37,8 @@ import org.mockito.MockedStatic;
 import java.sql.SQLException;
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -52,7 +52,7 @@ class CommitProxyBackendHandlerTest {
     
     @Test
     void assertReturnRollbackStatementWhenCommitFailed() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(true);
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(true);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(databaseType);
         ConnectionContext connectionContext = new ConnectionContext(Collections::emptyList);
@@ -73,7 +73,7 @@ class CommitProxyBackendHandlerTest {
     
     @Test
     void assertReturnOriginalStatementWhenNoException() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(false);
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(false);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(databaseType);
         ConnectionContext connectionContext = new ConnectionContext(Collections::emptyList);

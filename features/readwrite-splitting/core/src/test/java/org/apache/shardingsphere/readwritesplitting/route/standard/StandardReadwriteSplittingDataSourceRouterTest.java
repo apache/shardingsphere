@@ -20,16 +20,16 @@ package org.apache.shardingsphere.readwritesplitting.route.standard;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.round.robin.RoundRobinLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.exception.route.NoAvailableReadwriteSplittingReadDataSourceException;
-import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
+import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StandardReadwriteSplittingDataSourceRouterTest {

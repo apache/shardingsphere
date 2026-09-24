@@ -62,7 +62,9 @@ class MetaDataLoaderTest {
                 new SchemaMetaData("foo_db", Collections.singleton(new TableMetaData("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())))));
         try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
             Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(material));
-            assertThat(actual.get("foo_db").getTables().iterator().next().getName(), is("foo_tbl"));
+            TableMetaData actualTable = actual.get("foo_db").getTables().iterator().next();
+            assertThat(actualTable.getName(), is("foo_tbl"));
+            assertThat(actualTable.getStorageUnitName(), is("dialect_success"));
         }
     }
     

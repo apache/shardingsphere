@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.segment.MaskColumnSegment;
@@ -31,7 +33,6 @@ import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -39,12 +40,13 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -55,7 +57,16 @@ class CreateMaskRuleExecutorTest {
     void assertExecuteUpdateWithDuplicateMaskRule() {
         MaskRule rule = mock(MaskRule.class);
         when(rule.getConfiguration()).thenReturn(getCurrentRuleConfiguration());
-        assertThrows(DuplicateRuleException.class, () -> new DistSQLUpdateExecuteEngine(createDuplicatedSQLStatement(false, "MD5"), "foo_db", mockContextManager(rule), null).executeUpdate());
+        assertThrows(DuplicateRuleException.class,
+                () -> new DistSQLUpdateExecuteEngine(createDuplicatedSQLStatement(false, "MD5", "t_mask", "t_order"), "foo_db", mockContextManager(rule), null).executeUpdate());
+    }
+    
+    @Test
+    void assertExecuteUpdateWithDuplicateMaskRuleInDifferentCase() {
+        MaskRule rule = mock(MaskRule.class);
+        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfiguration());
+        assertThrows(DuplicateRuleException.class,
+                () -> new DistSQLUpdateExecuteEngine(createDuplicatedSQLStatement(false, "MD5", "T_MASK", "T_ORDER"), "foo_db", mockContextManager(rule), null).executeUpdate());
     }
     
     @Test
@@ -67,7 +78,7 @@ class CreateMaskRuleExecutorTest {
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
-        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfiguration)));
+        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), argThat(this::assertRuleConfiguration)));
     }
     
     @Test
@@ -79,7 +90,23 @@ class CreateMaskRuleExecutorTest {
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
-        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfiguration)));
+        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), argThat(this::assertRuleConfiguration)));
+    }
+    
+    @Test
+    void assertBuildToBeCreatedRuleConfigurationWithIfNotExistsWhenTableNameCaseDiffers() {
+        CreateMaskRuleExecutor executor = (CreateMaskRuleExecutor) TypedSPILoader.getService(DatabaseRuleDefinitionExecutor.class, CreateMaskRuleStatement.class);
+        executor.setDatabase(mock(ShardingSphereDatabase.class));
+        MaskRule rule = mock(MaskRule.class);
+        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfiguration());
+        executor.setRule(rule);
+        CreateMaskRuleStatement sqlStatement = createDuplicatedSQLStatement(true, "MD5", "T_ORDER", "t_new");
+        executor.checkBeforeUpdate(sqlStatement);
+        MaskRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
+        assertThat(actual.getTables().size(), is(1));
+        assertThat(actual.getTables().iterator().next().getName(), is("t_new"));
+        assertThat(actual.getMaskAlgorithms().size(), is(1));
+        assertTrue(actual.getMaskAlgorithms().containsKey("t_new_order_id_md5"));
     }
     
     private CreateMaskRuleStatement createSQLStatement(final boolean ifNotExists, final String algorithmType) {
@@ -93,11 +120,11 @@ class CreateMaskRuleExecutorTest {
         return new CreateMaskRuleStatement(ifNotExists, rules);
     }
     
-    private CreateMaskRuleStatement createDuplicatedSQLStatement(final boolean ifNotExists, final String algorithmType) {
+    private CreateMaskRuleStatement createDuplicatedSQLStatement(final boolean ifNotExists, final String algorithmType, final String maskTableName, final String orderTableName) {
         MaskColumnSegment tMaskColumnSegment = new MaskColumnSegment("user_id", new AlgorithmSegment(algorithmType, new Properties()));
         MaskColumnSegment tOrderColumnSegment = new MaskColumnSegment("order_id", new AlgorithmSegment(algorithmType, new Properties()));
-        MaskRuleSegment tMaskRuleSegment = new MaskRuleSegment("t_mask", Collections.singleton(tMaskColumnSegment));
-        MaskRuleSegment tOrderRuleSegment = new MaskRuleSegment("t_order", Collections.singleton(tOrderColumnSegment));
+        MaskRuleSegment tMaskRuleSegment = new MaskRuleSegment(maskTableName, Collections.singleton(tMaskColumnSegment));
+        MaskRuleSegment tOrderRuleSegment = new MaskRuleSegment(orderTableName, Collections.singleton(tOrderColumnSegment));
         Collection<MaskRuleSegment> rules = new LinkedList<>();
         rules.add(tMaskRuleSegment);
         rules.add(tOrderRuleSegment);

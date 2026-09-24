@@ -38,8 +38,8 @@ public final class ShowMigrationCheckStatusExecutor implements DistSQLQueryExecu
     
     @Override
     public Collection<String> getColumnNames(final ShowMigrationCheckStatusStatement sqlStatement) {
-        return Arrays.asList("tables", "result", "check_failed_tables", "ignored_tables", "active", "inventory_finished_percentage", "inventory_remaining_seconds", "incremental_idle_seconds",
-                "check_begin_time", "check_end_time", "duration_seconds", "algorithm_type", "algorithm_props", "error_message");
+        return Arrays.asList("tables", "result", "check_failed_tables", "ignored_tables", "status", "active", "inventory_finished_percentage", "inventory_remaining_seconds",
+                "incremental_idle_seconds", "check_begin_time", "check_end_time", "duration_seconds", "algorithm_type", "algorithm_props", "error_message");
     }
     
     @Override
@@ -50,7 +50,7 @@ public final class ShowMigrationCheckStatusExecutor implements DistSQLQueryExecu
     
     private LocalDataQueryResultRow convert(final ConsistencyCheckJobItemInfo info) {
         String incrementalIdleSeconds = null == info.getIncrementalIdleSeconds() ? "" : String.valueOf(info.getIncrementalIdleSeconds());
-        return new LocalDataQueryResultRow(info.getTableNames(), info.getCheckSuccess(), info.getCheckFailedTableNames(), info.getIgnoredTableNames(), info.isActive(),
+        return new LocalDataQueryResultRow(info.getTableNames(), info.getCheckSuccess(), info.getCheckFailedTableNames(), info.getIgnoredTableNames(), info.getStatus(), info.isActive(),
                 info.getInventoryFinishedPercentage(), info.getInventoryRemainingSeconds(), incrementalIdleSeconds,
                 info.getCheckBeginTime(), info.getCheckEndTime(), info.getDurationSeconds(), info.getAlgorithmType(), info.getAlgorithmProps(), info.getErrorMessage());
     }

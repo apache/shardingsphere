@@ -104,6 +104,20 @@ public final class CommandExecutorTask implements Runnable {
     }
     
     private boolean doExecuteCommand(final ChannelHandlerContext context, final CommandExecuteEngine commandExecuteEngine, final CommandExecutor commandExecutor) throws SQLException {
+        boolean result;
+        try {
+            result = executeCommandAndWriteResponse(context, commandExecuteEngine, commandExecutor);
+            // CHECKSTYLE:OFF
+        } catch (final SQLException | RuntimeException | Error ex) {
+            // CHECKSTYLE:ON
+            closeCommandExecutor(commandExecutor, ex);
+            throw ex;
+        }
+        commandExecutor.close();
+        return result;
+    }
+    
+    private boolean executeCommandAndWriteResponse(final ChannelHandlerContext context, final CommandExecuteEngine commandExecuteEngine, final CommandExecutor commandExecutor) throws SQLException {
         try {
             Collection<? extends DatabasePacket> responsePackets = commandExecutor.execute();
             if (responsePackets.isEmpty()) {
@@ -117,8 +131,16 @@ public final class CommandExecutorTask implements Runnable {
         } catch (final SQLException | ShardingSphereSQLException | SQLDialectException ex) {
             databaseProtocolFrontendEngine.handleException(connectionSession, ex);
             throw ex;
-        } finally {
+        }
+    }
+    
+    private void closeCommandExecutor(final CommandExecutor commandExecutor, final Throwable executionException) {
+        try {
             commandExecutor.close();
+            // CHECKSTYLE:OFF
+        } catch (final SQLException | RuntimeException | Error ex) {
+            // CHECKSTYLE:ON
+            executionException.addSuppressed(ex);
         }
     }
     

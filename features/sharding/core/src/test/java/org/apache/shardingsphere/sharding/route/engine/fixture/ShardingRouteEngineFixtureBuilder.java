@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sharding.route.engine.fixture;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
@@ -79,6 +80,21 @@ public final class ShardingRouteEngineFixtureBuilder {
         shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put(
                 "t_order_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
+        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+    }
+    
+    /**
+     * Create volume range sharding rule.
+     *
+     * @return created sharding rule
+     */
+    public static ShardingRule createVolumeRangeShardingRule() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingAutoTableRuleConfiguration autoTableRuleConfig = new ShardingAutoTableRuleConfiguration("t_order", "ds_0");
+        autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_no", "t_order_volume_range"));
+        shardingRuleConfig.getAutoTables().add(autoTableRuleConfig);
+        shardingRuleConfig.getShardingAlgorithms().put("t_order_volume_range", new AlgorithmConfiguration("VOLUME_RANGE",
+                PropertiesBuilder.build(new Property("range-lower", "10"), new Property("range-upper", "1000"), new Property("sharding-volume", "330"))));
         return new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     
@@ -181,7 +197,8 @@ public final class ShardingRouteEngineFixtureBuilder {
                 "t_order_item_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_item_${user_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put("t_user_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_user_${user_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put("core_hint_fixture", new AlgorithmConfiguration("CORE.HINT.FIXTURE", new Properties()));
-        return new ShardingRule(shardingRuleConfig, Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource(), "main", new MockedDataSource()), mock(ComputeNodeInstanceContext.class),
+        return new ShardingRule(shardingRuleConfig, ImmutableMap.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource(), "main", new MockedDataSource()),
+                mock(ComputeNodeInstanceContext.class),
                 Collections.emptyList());
     }
     
@@ -283,7 +300,7 @@ public final class ShardingRouteEngineFixtureBuilder {
     }
     
     private static Map<String, DataSource> createDataSources() {
-        return Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource());
+        return ImmutableMap.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource());
     }
     
     /**

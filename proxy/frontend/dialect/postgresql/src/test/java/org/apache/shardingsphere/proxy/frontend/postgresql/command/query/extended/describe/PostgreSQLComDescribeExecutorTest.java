@@ -96,8 +96,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -623,7 +623,6 @@ class PostgreSQLComDescribeExecutorTest {
         when(schema.getName()).thenReturn("public");
         ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
         when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(database);
-        when(database.getDefaultSchemaName()).thenReturn("public");
         when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(database.containsSchema("public")).thenReturn(true);
         when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);

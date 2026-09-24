@@ -31,8 +31,8 @@ import java.util.Properties;
 /**
  * Runtime database configuration for one logical database binding.
  */
-@Getter
 @AllArgsConstructor
+@Getter
 public final class RuntimeDatabaseConfiguration {
     
     private final String jdbcUrl;

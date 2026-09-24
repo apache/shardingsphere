@@ -47,6 +47,7 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -70,7 +71,7 @@ class EnumerableModifyTest {
         RelDataType rowType = typeFactory.builder().add("col", SqlTypeName.INTEGER).build();
         SQLFederationTable federationTable = mock(SQLFederationTable.class);
         when(federationTable.getRowType(typeFactory)).thenReturn(rowType);
-        when(federationTable.toRel(org.mockito.ArgumentMatchers.any(RelOptTable.ToRelContext.class), org.mockito.ArgumentMatchers.any(RelOptTable.class))).thenAnswer(
+        when(federationTable.toRel(any(RelOptTable.ToRelContext.class), any(RelOptTable.class))).thenAnswer(
                 invocation -> LogicalTableScan.create(invocation.getArgument(0, RelOptTable.ToRelContext.class).getCluster(), invocation.getArgument(1, RelOptTable.class), Collections.emptyList()));
         when(federationTable.getStatistic()).thenReturn(Statistics.of(1D, ImmutableList.of()));
         when(federationTable.getJdbcTableType()).thenReturn(Schema.TableType.TABLE);

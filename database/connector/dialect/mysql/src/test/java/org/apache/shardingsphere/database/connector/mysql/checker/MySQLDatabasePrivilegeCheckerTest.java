@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.connector.core.exception.CheckDatabase
 import org.apache.shardingsphere.database.connector.core.exception.MissingRequiredPrivilegeException;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.hamcrest.CoreMatchers;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,8 +40,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -197,8 +197,8 @@ class MySQLDatabasePrivilegeCheckerTest {
         SQLException expected = new SQLException("mocked close connection failure");
         doThrow(expected).when(connection).close();
         MissingRequiredPrivilegeException actual = assertThrows(MissingRequiredPrivilegeException.class, () -> checker.check(dataSource, PrivilegeCheckType.PIPELINE));
-        assertThat(actual.getSuppressed().length, CoreMatchers.is(1));
-        assertThat(actual.getSuppressed()[0], CoreMatchers.is(expected));
+        assertThat(actual.getSuppressed().length, is(1));
+        assertThat(actual.getSuppressed()[0], is(expected));
     }
     
     @Test

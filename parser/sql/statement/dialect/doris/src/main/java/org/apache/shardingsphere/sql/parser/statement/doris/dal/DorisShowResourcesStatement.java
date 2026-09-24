@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowResourcesNameConditionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowResourcesResourceTypeConditionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowResourcesNameConditionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowResourcesResourceTypeConditionSegment;
 
 import java.util.Optional;
 

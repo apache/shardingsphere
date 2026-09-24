@@ -156,11 +156,11 @@ deleteSpecification
     ;
 
 select
-    : selectSubquery forUpdateClause?
+    : selectSubquery forUpdateClause? orderByClause?
     ;
 
 selectSubquery
-    : selectSubquery combineType selectSubquery | ((queryBlock | parenthesisSelectSubquery) pivotClause? orderByClause? rowLimitingClause)
+    : selectSubquery combineType selectSubquery | ((queryBlock | withClause parenthesisSelectSubquery | parenthesisSelectSubquery) pivotClause? orderByClause? rowLimitingClause)
     ;
 
 combineType
@@ -173,7 +173,7 @@ parenthesisSelectSubquery
 
 queryBlock
     : unquotedTextQueryBlock
-    | withClause? SELECT hint? duplicateSpecification? selectList selectIntoClause? selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
+    | withClause? SELECT hint? duplicateSpecification? selectList selectIntoClause? selectFromClause whereClause? hierarchicalQueryClause? groupByClause? havingClause? modelClause?
     ;
 
 unquotedTextQueryBlock
@@ -510,6 +510,7 @@ dmlTableAlias
     | LENGTH
     | LOG
     | CHILD
+    | CON
     ;
 
 queryTableExprClause
@@ -678,7 +679,7 @@ hierarchicalQueryClause
     ;
 
 groupByClause
-    : GROUP BY groupByItem (COMMA_ groupByItem)* havingClause?
+    : GROUP BY groupByItem (COMMA_ groupByItem)*
     ;
 
 groupByItem
@@ -816,7 +817,7 @@ mergeAssignment
     ;
 
 mergeAssignmentValue
-    : expr | DEFAULT
+    : expr | LP_ selectSubquery RP_ | DEFAULT
     ;
 
 deleteWhereClause
@@ -832,7 +833,7 @@ mergeInsertColumn
     ;
 
 mergeColumnValue
-    : VALUES LP_ (expr | DEFAULT) (COMMA_ (expr | DEFAULT))* RP_
+    : VALUES LP_ mergeAssignmentValue (COMMA_ mergeAssignmentValue)* RP_
     ;
 
 errorLoggingClause

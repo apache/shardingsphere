@@ -64,8 +64,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -307,8 +307,8 @@ class CreateShardingTableRuleExecutorTest {
     }
     
     private AutoTableRuleSegment createCompleteAutoTableRule() {
-        AutoTableRuleSegment result = new AutoTableRuleSegment("t_order_item_input", Collections.singleton("logic_ds"));
-        result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
+        AutoTableRuleSegment result = new AutoTableRuleSegment("t_order_item_input", Collections.singleton("logic_ds"),
+                new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())), null);
         result.setShardingColumn("order_id");
         result.setShardingAlgorithmSegment(new AlgorithmSegment("FOO.DISTSQL.FIXTURE", PropertiesBuilder.build(new Property("", ""))));
         return result;

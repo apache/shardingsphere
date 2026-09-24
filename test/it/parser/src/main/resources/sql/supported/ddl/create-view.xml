@@ -23,6 +23,9 @@
     <sql-case id="create_view" value="CREATE VIEW comedies AS SELECT * FROM films WHERE kind = 'Comedy'" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Doris" />
     <sql-case id="create_view_with_owner_doris" value="CREATE VIEW report.v_sales AS SELECT order_id, user_id FROM t_order" db-types="Doris" />
     <sql-case id="create_view_with_columns_doris" value="CREATE VIEW example_view (c1, c2) AS SELECT k1, k2 FROM example_table" db-types="Doris" />
+    <sql-case id="create_view_with_window_doris" value="CREATE VIEW v AS SELECT MAX(order_id) OVER (PARTITION BY user_id) FROM t_order" db-types="Doris" />
+    <sql-case id="create_view_with_column_comments_doris" value="CREATE VIEW example_db.example_view (k1 COMMENT &quot;first key&quot;, k2 COMMENT &quot;second key&quot;, k3 COMMENT &quot;third key&quot;, v1 COMMENT &quot;first value&quot;) COMMENT &quot;my first view&quot; AS SELECT c1 as k1, k2, k3, SUM(v1) FROM example_table WHERE k1 = 20160112 GROUP BY k1,k2,k3" db-types="Doris" />
+    <sql-case id="create_view_with_if_not_exists_doris" value="CREATE VIEW IF NOT EXISTS example_view (c1 COMMENT 'first key', c2) AS SELECT k1, k2 FROM example_table" db-types="Doris" />
     <sql-case id="create_view_with_check_option" value="CREATE VIEW universal_comedies AS SELECT * FROM comedies WHERE classification = 'U' WITH LOCAL CHECK OPTION" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_view_with_recursive" value="CREATE RECURSIVE VIEW public.nums_1_100 (n) AS VALUES (1) UNION ALL SELECT n+1 FROM nums_1_100 WHERE n = 100" db-types="PostgreSQL" />
     <sql-case id="create_view_with_recursive_opengauss" value="CREATE RECURSIVE VIEW public.nums_1_100 (n) AS VALUES (1) UNION ALL SELECT n+1 FROM nums_1_100 WHERE n = 100" db-types="openGauss" />
@@ -116,4 +119,5 @@
     <sql-case id="create_or_replace_view_with_comma_join" value="CREATE OR REPLACE VIEW v2 AS SELECT v1.employee_id employee_id, departments.department_id department_id FROM v1, departments WHERE v1.department_id = departments.department_id" db-types="Oracle" />
     <sql-case id="create_or_replace_view_with_subquery_and_group_by" value="CREATE OR REPLACE VIEW v_emp_job_history AS SELECT e1.first_name, e1.last_name, j.job_id, sum(e2.salary) total_sal FROM employees e1, (SELECT * FROM employees e3) e2, job_history j WHERE e1.employee_id = e2.manager_id AND e1.employee_id = j.employee_id AND e1.hire_date = j.start_date AND e1.salary = ( SELECT max(e2.salary) FROM employees e2 WHERE e2.department_id = e1.department_id ) GROUP BY e1.first_name, e1.last_name, j.job_id ORDER BY total_sal" db-types="Oracle" />
     <sql-case id="create_or_replace_view_with_sum_expression" value="CREATE OR REPLACE view v_orders AS SELECT l.product_id, SUM(l.quantity*unit_price) revenue, o.order_id, o.customer_id FROM orders o, order_items l WHERE o.order_id = l.order_id GROUP BY l.product_id, o.order_id, o.customer_id" db-types="Oracle" />
+    <sql-case id="create_view_with_schema_qualified_package_function_oracle" value="CREATE OR REPLACE VIEW V_USER AS SELECT SYS.UTL_I18N.RAW_TO_CHAR(PASSWORD, 'AL32UTF8') AS PASSWORD FROM T_USER" db-types="Oracle" />
 </sql-cases>

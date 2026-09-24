@@ -40,4 +40,9 @@
             <data-type name="INT" />
         </parameter-data-types>
     </doris-drop-function>
+    <drop-function sql-case-id="drop_function_with_owner_visitor_oracle">
+        <function-name name="foo_func" start-index="14" stop-index="32">
+            <owner name="foo_schema" start-index="14" stop-index="23" />
+        </function-name>
+    </drop-function>
 </sql-parser-test-cases>

@@ -17,10 +17,24 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.packages.ExpectedPackage;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Drop package statement test case for Oracle.
  */
+@Getter
+@Setter
 public final class OracleDropPackageStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "package")
+    private ExpectedPackage packageName;
+    
+    @XmlAttribute
+    private Boolean body;
 }

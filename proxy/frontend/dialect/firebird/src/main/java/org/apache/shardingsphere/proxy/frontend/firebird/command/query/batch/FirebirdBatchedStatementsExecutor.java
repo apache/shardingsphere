@@ -149,17 +149,9 @@ public final class FirebirdBatchedStatementsExecutor {
     
     private void addExecutionUnitParams(final ExecutionContext executionContext, final int batchMessageIndex) {
         for (ExecutionUnit each : executionContext.getExecutionUnits()) {
-            List<List<Object>> params = executionUnitParams.get(each);
-            if (null == params) {
-                params = new LinkedList<>();
-                executionUnitParams.put(each, params);
-            }
+            List<List<Object>> params = executionUnitParams.computeIfAbsent(each, k -> new LinkedList<>());
             params.add(each.getSqlUnit().getParameters());
-            List<Integer> batchMessageIndexes = executionUnitBatchMessageIndexes.get(each);
-            if (null == batchMessageIndexes) {
-                batchMessageIndexes = new LinkedList<>();
-                executionUnitBatchMessageIndexes.put(each, batchMessageIndexes);
-            }
+            List<Integer> batchMessageIndexes = executionUnitBatchMessageIndexes.computeIfAbsent(each, k -> new LinkedList<>());
             batchMessageIndexes.add(batchMessageIndex);
         }
     }
@@ -223,12 +215,12 @@ public final class FirebirdBatchedStatementsExecutor {
     }
     
     private List<List<Object>> getBatchParams(final BatchExecution batchExecution) {
-        return executionUnitParams.getOrDefault(batchExecution.executionUnit.getExecutionUnit(), Collections.<List<Object>>emptyList())
+        return executionUnitParams.getOrDefault(batchExecution.executionUnit.getExecutionUnit(), Collections.emptyList())
                 .subList(batchExecution.fromOffset, batchExecution.toOffset);
     }
     
     private List<Integer> getBatchMessageIndexes(final BatchExecution batchExecution) {
-        return executionUnitBatchMessageIndexes.getOrDefault(batchExecution.executionUnit.getExecutionUnit(), Collections.<Integer>emptyList())
+        return executionUnitBatchMessageIndexes.getOrDefault(batchExecution.executionUnit.getExecutionUnit(), Collections.emptyList())
                 .subList(batchExecution.fromOffset, batchExecution.toOffset);
     }
     
@@ -364,7 +356,7 @@ public final class FirebirdBatchedStatementsExecutor {
     private List<BatchExecution> createBatchExecutionsInMessageOrder(final Collection<JDBCExecutionUnit> executionUnits) {
         Map<Integer, Collection<JDBCExecutionUnit>> unitsByBatchMessageIndex = new TreeMap<>();
         for (JDBCExecutionUnit each : executionUnits) {
-            for (int eachMessageIndex : executionUnitBatchMessageIndexes.getOrDefault(each.getExecutionUnit(), Collections.<Integer>emptyList())) {
+            for (int eachMessageIndex : executionUnitBatchMessageIndexes.getOrDefault(each.getExecutionUnit(), Collections.emptyList())) {
                 unitsByBatchMessageIndex.computeIfAbsent(eachMessageIndex, key -> new LinkedList<>()).add(each);
             }
         }

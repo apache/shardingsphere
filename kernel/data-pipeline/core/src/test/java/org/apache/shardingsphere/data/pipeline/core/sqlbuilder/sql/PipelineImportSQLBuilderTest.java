@@ -23,19 +23,40 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.RecordUtils;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(DatabaseTypedSPILoader.class)
 class PipelineImportSQLBuilderTest {
     
-    private final PipelineImportSQLBuilder sqlBuilder = new PipelineImportSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+    private final PipelineImportSQLBuilder sqlBuilder = new PipelineImportSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),
+            new DatabaseIdentifierContext(IdentifierCasePolicyResolver.resolveProtocol(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"))), false);
+    
+    private final PipelineImportSQLBuilder actualTableSQLBuilder = new PipelineImportSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),
+            new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()), true);
     
     @Test
     void assertBuildInsertSQL() {
@@ -102,4 +123,54 @@ class PipelineImportSQLBuilderTest {
         result.addColumn(new NormalColumn("foo_col", "", true, false));
         return result;
     }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getActualTableSchemas")
+    void assertBuildInsertSQLWithActualTableSchema(final String name, final String schemaName, final String expectedTableName) {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        when((Object) DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType))
+                .thenReturn(TypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType));
+        when((Object) DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType)).thenReturn(mock(DialectPipelineSQLBuilder.class));
+        PipelineImportSQLBuilder builder = new PipelineImportSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"),
+                new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()), true);
+        DataRecord dataRecord = new DataRecord(PipelineSQLOperationType.INSERT, "T_Order", new IngestPlaceholderPosition(), 1);
+        dataRecord.addColumn(new NormalColumn("Value", "foo", true, false));
+        assertThat(builder.buildInsertSQL(schemaName, dataRecord), is("INSERT INTO " + expectedTableName + "(\"value\") VALUES(?)"));
+    }
+    
+    private static Stream<Arguments> getActualTableSchemas() {
+        return Stream.of(
+                Arguments.of("unquoted schema", "Foo_SCHEMA", "\"foo_schema\".\"T_Order\""),
+                Arguments.of("quoted schema", "\"Foo_SCHEMA\"", "\"Foo_SCHEMA\".\"T_Order\""),
+                Arguments.of("empty schema", "", "\"T_Order\""),
+                Arguments.of("absent schema", null, "\"T_Order\""));
+    }
+    
+    @Test
+    void assertBuildInsertSQLWithActualTableName() {
+        String actual = actualTableSQLBuilder.buildInsertSQL("UnusedSchema", createDataRecordWithActualTableName());
+        assertThat(actual, is("INSERT INTO T_Order(id,value) VALUES(?,?)"));
+    }
+    
+    private DataRecord createDataRecordWithActualTableName() {
+        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, "T_Order", new IngestPlaceholderPosition(), 2);
+        result.addColumn(new NormalColumn("Id", 1, false, true));
+        result.addColumn(new NormalColumn("Value", "foo", true, false));
+        return result;
+    }
+    
+    @Test
+    void assertBuildUpdateSQLWithActualTableName() {
+        DataRecord dataRecord = createDataRecordWithActualTableName();
+        String actual = actualTableSQLBuilder.buildUpdateSQL(null, dataRecord, Collections.singleton(dataRecord.getColumns().get(0)));
+        assertThat(actual, is("UPDATE T_Order SET value = ? WHERE id = ?"));
+    }
+    
+    @Test
+    void assertBuildDeleteSQLWithActualTableName() {
+        DataRecord dataRecord = createDataRecordWithActualTableName();
+        String actual = actualTableSQLBuilder.buildDeleteSQL(null, dataRecord, Collections.singleton(dataRecord.getColumns().get(0)));
+        assertThat(actual, is("DELETE FROM T_Order WHERE id = ?"));
+    }
+    
 }

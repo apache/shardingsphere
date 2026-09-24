@@ -39,6 +39,8 @@ public final class PostgreSQLTextArrayBinaryProtocolValue implements PostgreSQLB
     
     private static final int ARRAY_HEADER_LENGTH = 20;
     
+    private static final int NULL_ELEMENT_LENGTH = -1;
+    
     @Override
     public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
         throw new UnsupportedSQLOperationException("PostgreSQLTextArrayBinaryProtocolValue.getColumnLength()");
@@ -72,7 +74,12 @@ public final class PostgreSQLTextArrayBinaryProtocolValue implements PostgreSQLB
         sb.append("{");
         Iterator<String> iterator = elements.iterator();
         while (iterator.hasNext()) {
-            sb.append("\"").append(iterator.next()).append("\"");
+            String element = iterator.next();
+            if (null == element) {
+                sb.append("NULL");
+            } else {
+                sb.append("\"").append(getEscapedValue(element)).append("\"");
+            }
             if (iterator.hasNext()) {
                 sb.append(",");
             }
@@ -81,11 +88,19 @@ public final class PostgreSQLTextArrayBinaryProtocolValue implements PostgreSQLB
         return sb.toString();
     }
     
+    private String getEscapedValue(final String value) {
+        return value.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+    
     private Collection<String> extractArrayElements(final byte[] data) {
         ByteBuffer buffer = ByteBuffer.wrap(data);
         Collection<String> result = new LinkedList<>();
         while (buffer.remaining() > 0) {
             int length = buffer.getInt();
+            if (NULL_ELEMENT_LENGTH == length) {
+                result.add(null);
+                continue;
+            }
             if (buffer.remaining() < length) {
                 log.warn("cannot read the complete data packet, remaining: {}, expected: {}", buffer.remaining(), length);
                 break;

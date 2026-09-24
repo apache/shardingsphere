@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.util;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,9 +49,8 @@ public final class DockerImageVersion {
      * @return major version
      */
     public int getMajorVersion() {
-        String[] split = StringUtils.substringBefore(version, "-").split("\\.");
         try {
-            return Integer.parseInt(split[0]);
+            return Integer.parseInt(version.split("[.-]", 2)[0]);
         } catch (final NumberFormatException ignored) {
             return 0;
         }

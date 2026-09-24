@@ -21,16 +21,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleField;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleField;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleField.Type;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleKeyListNameGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingBindingTableRuleNodeTupleKeyListNameGenerator;
 

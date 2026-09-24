@@ -18,11 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -31,7 +27,6 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Batch send message command executor for Firebird.
@@ -45,18 +40,7 @@ public final class FirebirdBatchMessageCommandExecutor implements CommandExecuto
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        int connectionId = connectionSession.getConnectionId();
-        FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionId, packet.getStatementHandle());
-        if (null == batchStatement) {
-            throw new InvalidBatchHandleException(packet.getStatementHandle());
-        }
-        if (batchStatement.getAccumulatedSize() + packet.getDataLength() > batchStatement.getBufferSize()) {
-            throw new BatchTooBigException(packet.getStatementHandle(), batchStatement.getAccumulatedSize(), packet.getDataLength(), batchStatement.getBufferSize());
-        }
-        for (List<Object> each : packet.readParameterValues(batchStatement.getColumnDescriptors())) {
-            batchStatement.addParameterValues(each);
-        }
-        batchStatement.addSize(packet.getDataLength());
+        FirebirdBatchStatementManager.getInstance().appendBatchMessage(connectionSession.getConnectionId(), packet);
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }

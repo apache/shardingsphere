@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -55,14 +54,13 @@ public final class ShowShardingKeyGenerateStrategiesExecutor
     public Collection<LocalDataQueryResultRow> getRows(final ShowShardingKeyGenerateStrategiesStatement sqlStatement, final ContextManager contextManager) {
         return rule.getConfiguration().getKeyGenerateStrategies().entrySet().stream()
                 .filter(entry -> !sqlStatement.getName().isPresent() || sqlStatement.getName().get().equalsIgnoreCase(entry.getKey()))
-                .map(this::createRow).collect(Collectors.toList());
+                .map(entry -> createRow(entry.getKey(), entry.getValue())).collect(Collectors.toList());
     }
     
-    private LocalDataQueryResultRow createRow(final Entry<String, KeyGenerateStrategiesConfiguration> entry) {
-        KeyGenerateStrategiesConfiguration ruleConfig = entry.getValue();
+    private LocalDataQueryResultRow createRow(final String name, final KeyGenerateStrategiesConfiguration ruleConfig) {
         return ruleConfig instanceof ColumnKeyGenerateStrategiesRuleConfiguration
-                ? createColumnRow(entry.getKey(), (ColumnKeyGenerateStrategiesRuleConfiguration) ruleConfig)
-                : createSequenceRow(entry.getKey(), (SequenceKeyGenerateStrategiesRuleConfiguration) ruleConfig);
+                ? createColumnRow(name, (ColumnKeyGenerateStrategiesRuleConfiguration) ruleConfig)
+                : createSequenceRow(name, (SequenceKeyGenerateStrategiesRuleConfiguration) ruleConfig);
     }
     
     private LocalDataQueryResultRow createColumnRow(final String name, final ColumnKeyGenerateStrategiesRuleConfiguration ruleConfig) {

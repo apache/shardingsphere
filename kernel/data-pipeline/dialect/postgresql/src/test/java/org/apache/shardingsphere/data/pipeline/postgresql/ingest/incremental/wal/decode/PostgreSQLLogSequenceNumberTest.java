@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wa
 import org.junit.jupiter.api.Test;
 import org.postgresql.replication.LogSequenceNumber;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class PostgreSQLLogSequenceNumberTest {
     

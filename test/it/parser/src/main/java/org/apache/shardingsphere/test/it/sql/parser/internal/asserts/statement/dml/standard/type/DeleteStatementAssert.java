@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.error.ErrorLoggingClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.limit.LimitClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.orderby.OrderByClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.output.OutputClauseAssert;
@@ -65,6 +66,7 @@ public final class DeleteStatementAssert {
         assertTable(assertContext, actual, expected);
         assertOutput(assertContext, actual, expected);
         assertWhereClause(assertContext, actual, expected);
+        ErrorLoggingClauseAssert.assertIs(assertContext, actual.getErrorLogging(), expected.getErrorLoggingClause());
         assertOrderByClause(assertContext, actual, expected);
         assertLimitClause(assertContext, actual, expected);
     }

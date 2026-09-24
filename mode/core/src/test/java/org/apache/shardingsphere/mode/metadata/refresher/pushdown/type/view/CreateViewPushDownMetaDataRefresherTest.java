@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.view;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -163,7 +163,7 @@ class CreateViewPushDownMetaDataRefresherTest {
         }
     }
     
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class SingleTableMutableDataNodeRuleAttribute implements MutableDataNodeRuleAttribute {
         
         private final DataNode dataNode;
@@ -226,7 +226,7 @@ class CreateViewPushDownMetaDataRefresherTest {
         }
     }
     
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class DistributedTableMapperRuleAttribute implements TableMapperRuleAttribute {
         
         private final String distributedTableName;
@@ -247,15 +247,13 @@ class CreateViewPushDownMetaDataRefresherTest {
         }
     }
     
+    @Getter(AccessLevel.PRIVATE)
     private static final class RecordingMetaDataManagerPersistService implements MetaDataManagerPersistService {
         
-        @Getter(AccessLevel.PRIVATE)
         private boolean alterSingleRuleConfigurationCalled;
         
-        @Getter(AccessLevel.PRIVATE)
         private ShardingSphereDatabase alterSingleRuleConfigurationDatabase;
         
-        @Getter(AccessLevel.PRIVATE)
         private RuleMetaData alterSingleRuleConfigurationRuleMetaData;
         
         @Override

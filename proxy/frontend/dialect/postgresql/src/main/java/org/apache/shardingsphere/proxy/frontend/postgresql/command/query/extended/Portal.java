@@ -43,13 +43,13 @@ import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnection
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -176,7 +176,12 @@ public final class Portal {
         result.add(new PostgreSQLCommandCompletePacket("SET", 0L));
         for (VariableAssignSegment each : sqlStatement.getVariableAssigns()) {
             String variableName = each.getVariable().getVariable();
-            String variableValue = isClientEncodingVariable(variableName) ? UTF8 : null == each.getAssignValue() ? null : QuoteCharacter.unwrapText(each.getAssignValue());
+            String variableValue;
+            if (isClientEncodingVariable(variableName)) {
+                variableValue = UTF8;
+            } else {
+                variableValue = null == each.getAssignValue() ? null : QuoteCharacter.unwrapText(each.getAssignValue());
+            }
             result.add(new PostgreSQLParameterStatusPacket(variableName, variableValue));
         }
         return result;

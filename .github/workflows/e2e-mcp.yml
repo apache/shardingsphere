@@ -206,7 +206,7 @@ jobs:
       - name: Build MCP Conformance Runner
         working-directory: .mcp-conformance
         run: |
-          npm ci
+          npm ci --ignore-scripts
           npm run build
       - name: Run MCP 2025-11-25 Conformance Scenarios
         shell: bash

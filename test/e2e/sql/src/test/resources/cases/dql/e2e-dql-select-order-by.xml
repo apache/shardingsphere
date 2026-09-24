@@ -109,6 +109,14 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
+    <test-case sql="SELECT * FROM t_order ORDER BY NLSSORT(remark, 'NLS_SORT = generic_m_ci') DESC, order_id, user_id" db-types="openGauss" scenario-types="db,tbl">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order ORDER BY NLSSORT(remark, 'NLS_SORT = generic_m_ci'), order_id, user_id" db-types="openGauss" scenario-types="db,tbl">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
     <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC NULLS FIRST" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>

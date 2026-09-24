@@ -23,8 +23,8 @@ import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TargetAdviceObjectBuilderInterceptorTest {

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sql.parser.statement.doris.dal;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.RepositoryNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Drop repository statement for Doris.

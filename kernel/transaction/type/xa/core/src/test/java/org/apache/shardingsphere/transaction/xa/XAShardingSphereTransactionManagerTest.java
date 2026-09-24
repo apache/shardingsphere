@@ -28,6 +28,8 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionData
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
@@ -37,11 +39,12 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class XAShardingSphereTransactionManagerTest {
     
@@ -81,9 +84,9 @@ class XAShardingSphereTransactionManagerTest {
     @Test
     void assertGetConnection() throws SQLException {
         xaTransactionManager.begin();
-        Connection actual1 = xaTransactionManager.getConnection("sharding_db", "ds_0");
-        Connection actual2 = xaTransactionManager.getConnection("sharding_db", "ds_1");
-        Connection actual3 = xaTransactionManager.getConnection("sharding_db", "ds_2");
+        Connection actual1 = xaTransactionManager.getConnection("sharding_db", "ds_0", mock());
+        Connection actual2 = xaTransactionManager.getConnection("sharding_db", "ds_1", mock());
+        Connection actual3 = xaTransactionManager.getConnection("sharding_db", "ds_2", mock());
         assertThat(actual1, isA(Connection.class));
         assertThat(actual2, isA(Connection.class));
         assertThat(actual3, isA(Connection.class));
@@ -95,7 +98,7 @@ class XAShardingSphereTransactionManagerTest {
         ThreadLocal<Map<Transaction, Connection>> transactions = getEnlistedTransactions(getCachedDataSources().get("sharding_db.ds_1"));
         xaTransactionManager.begin();
         assertTrue(transactions.get().isEmpty());
-        xaTransactionManager.getConnection("sharding_db", "ds_1");
+        xaTransactionManager.getConnection("sharding_db", "ds_1", mock());
         assertThat(transactions.get().size(), is(1));
         executeNestedTransaction(transactions);
         assertThat(transactions.get().size(), is(1));
@@ -105,7 +108,7 @@ class XAShardingSphereTransactionManagerTest {
     
     private void executeNestedTransaction(final ThreadLocal<Map<Transaction, Connection>> transactions) throws SQLException {
         xaTransactionManager.begin();
-        xaTransactionManager.getConnection("sharding_db", "ds_1");
+        xaTransactionManager.getConnection("sharding_db", "ds_1", mock());
         assertThat(transactions.get().size(), is(2));
         xaTransactionManager.commit(false);
         assertThat(transactions.get().size(), is(1));
@@ -132,6 +135,17 @@ class XAShardingSphereTransactionManagerTest {
         assertTrue(xaTransactionManager.isInTransaction());
         xaTransactionManager.rollback();
         assertFalse(xaTransactionManager.isInTransaction());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"Atomikos, true", "atomikos, true", "MISSING, false"})
+    void assertContainsProviderType(final String providerType, final boolean expected) {
+        assertThat(xaTransactionManager.containsProviderType(providerType), is(expected));
+    }
+    
+    @Test
+    void assertContainsDefaultProviderType() {
+        assertTrue(xaTransactionManager.containsProviderType(null));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

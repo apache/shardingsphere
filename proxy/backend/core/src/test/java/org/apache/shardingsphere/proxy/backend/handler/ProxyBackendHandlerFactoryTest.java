@@ -80,8 +80,8 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
@@ -203,7 +203,7 @@ class ProxyBackendHandlerFactoryTest {
         QueryContext queryContext = mock(QueryContext.class);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        DatabaseProxyBackendHandler expected = mock(DatabaseProxyBackendHandler.class);
+        final DatabaseProxyBackendHandler expected = mock(DatabaseProxyBackendHandler.class);
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         when(queryContext.getMetaData()).thenReturn(metaData);
         when(queryContext.getSql()).thenReturn("sql");
@@ -225,7 +225,7 @@ class ProxyBackendHandlerFactoryTest {
     void assertNewInstanceWithNullDatabaseName() throws SQLException {
         QueryContext queryContext = mock(QueryContext.class);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        DatabaseProxyBackendHandler expected = mock(DatabaseProxyBackendHandler.class);
+        final DatabaseProxyBackendHandler expected = mock(DatabaseProxyBackendHandler.class);
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         when(queryContext.getSql()).thenReturn("sql");
         when(queryContext.getParameters()).thenReturn(Collections.emptyList());

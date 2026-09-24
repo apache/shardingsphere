@@ -21,8 +21,8 @@ import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCand
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;

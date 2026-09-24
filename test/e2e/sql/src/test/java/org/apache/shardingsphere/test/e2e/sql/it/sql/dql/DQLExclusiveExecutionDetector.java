@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.sql.it.sql.dql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
 import java.util.Locale;
 import java.util.regex.Pattern;
 

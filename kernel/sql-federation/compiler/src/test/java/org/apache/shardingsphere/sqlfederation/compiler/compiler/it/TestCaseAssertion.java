@@ -17,19 +17,15 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.compiler.it;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * XML definition of test case assertion.
  */
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Getter
 @Setter
 public final class TestCaseAssertion {
     
-    @JacksonXmlProperty(isAttribute = true, localName = "expected-result")
     private String expectedResult;
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction;
 
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionOptionReplayCallback;
 import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -28,8 +29,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -142,20 +143,22 @@ class ConnectionTransactionTest {
         TransactionRule rule = mock(TransactionRule.class);
         when(rule.getDefaultType()).thenReturn(TransactionType.LOCAL);
         TransactionConnectionContext context = new TransactionConnectionContext();
-        assertFalse(new ConnectionTransaction(rule, context).getConnection("foo_db", "foo_ds", context).isPresent());
+        assertFalse(new ConnectionTransaction(rule, context).getConnection("foo_db", "foo_ds", context, mock(TransactionOptionReplayCallback.class)).isPresent());
     }
     
     @Test
     void assertGetConnectionWithInDistributeTransaction() throws SQLException {
         TransactionConnectionContext context = new TransactionConnectionContext();
         ShardingSphereDistributedTransactionManager distributedTransactionManager = mock(ShardingSphereDistributedTransactionManager.class);
+        TransactionOptionReplayCallback transactionOptionReplayCallback = mock(TransactionOptionReplayCallback.class);
         when(distributedTransactionManager.isInTransaction()).thenReturn(true);
-        when(distributedTransactionManager.getConnection("foo_db", "foo_ds")).thenReturn(mock(Connection.class));
+        when(distributedTransactionManager.getConnection("foo_db", "foo_ds", transactionOptionReplayCallback)).thenReturn(mock(Connection.class));
         context.beginTransaction("XA", distributedTransactionManager);
         TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
         when(rule.getResource().getTransactionManager(rule.getDefaultType()).isInTransaction()).thenReturn(true);
-        when(rule.getResource().getTransactionManager(rule.getDefaultType()).getConnection("foo_db", "foo_ds")).thenReturn(mock(Connection.class));
-        assertTrue(new ConnectionTransaction(rule, context).getConnection("foo_db", "foo_ds", context).isPresent());
+        when(rule.getResource().getTransactionManager(rule.getDefaultType()).getConnection("foo_db", "foo_ds", transactionOptionReplayCallback)).thenReturn(mock(Connection.class));
+        assertTrue(new ConnectionTransaction(rule, context).getConnection("foo_db", "foo_ds", context, transactionOptionReplayCallback).isPresent());
+        verify(distributedTransactionManager).getConnection("foo_db", "foo_ds", transactionOptionReplayCallback);
     }
     
     @Test

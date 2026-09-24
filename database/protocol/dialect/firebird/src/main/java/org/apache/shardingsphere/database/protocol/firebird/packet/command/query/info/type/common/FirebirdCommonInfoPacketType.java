@@ -20,7 +20,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
@@ -68,7 +68,7 @@ public enum FirebirdCommonInfoPacketType implements FirebirdInfoPacketType {
      *
      * @param data payload to write data to
      * @param type type of common info packet
-     * @throws FirebirdProtocolException if the common info packet type is unknown
+     * @throws DatabaseProtocolException if the common info packet type is unknown
      */
     public static void parseCommonInfo(final FirebirdPacketPayload data, final FirebirdCommonInfoPacketType type) {
         // TODO implement other request types handle
@@ -77,7 +77,7 @@ public enum FirebirdCommonInfoPacketType implements FirebirdInfoPacketType {
                 data.writeInt1(END.getCode());
                 break;
             default:
-                throw new FirebirdProtocolException("Unknown common information request type %d", type.getCode());
+                throw new DatabaseProtocolException("Unknown common information request type %d", type.getCode());
         }
     }
     

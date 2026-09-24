@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.parser.core;
 
-import com.google.common.base.Splitter;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.data.pipeline.distsql.statement.updatable.AlterTransmissionRuleStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.segment.MigrationSourceTargetSegment;
@@ -87,7 +86,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -165,18 +163,15 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     }
     
     private String getTargetDatabaseName(final TargetTableNameContext targetContext) {
-        List<String> targetDatabaseNames = Splitter.on('.').splitToList(getRequiredIdentifierValue(targetContext));
-        return targetDatabaseNames.size() > 1 ? targetDatabaseNames.get(0) : null;
+        return null == targetContext.owner() ? null : getRequiredIdentifierValue(targetContext.owner());
     }
     
     private MigrationSourceTargetSegment getMigrationSourceTargetSegment(final SourceTableNameContext sourceContext, final TargetTableNameContext targetContext) {
-        List<String> source = Splitter.on('.').splitToList(getRequiredIdentifierValue(sourceContext));
-        List<String> target = Splitter.on('.').splitToList(getRequiredIdentifierValue(targetContext));
-        String sourceDatabaseName = source.get(0);
-        String sourceSchemaName = 3 == source.size() ? source.get(1) : null;
-        String sourceTableName = source.get(source.size() - 1);
-        String targetTableName = target.get(target.size() - 1);
-        return new MigrationSourceTargetSegment(sourceDatabaseName, sourceSchemaName, sourceTableName, targetTableName);
+        IdentifierValue sourceDatabaseIdentifier = new IdentifierValue(sourceContext.owner().getText());
+        IdentifierValue sourceSchemaIdentifier = null == sourceContext.schema() ? null : new IdentifierValue(sourceContext.schema().getText());
+        IdentifierValue sourceTableIdentifier = new IdentifierValue(sourceContext.name().getText());
+        IdentifierValue targetTableIdentifier = new IdentifierValue(targetContext.name().getText());
+        return new MigrationSourceTargetSegment(sourceDatabaseIdentifier, sourceSchemaIdentifier, sourceTableIdentifier, targetTableIdentifier);
     }
     
     private String getRequiredIdentifierValue(final ParseTree context) {

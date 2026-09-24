@@ -49,7 +49,7 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
         init(testParam);
         try {
             int actualUpdateCount;
-            try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
+            try (Connection connection = getEnvironmentEngine().getTargetDataSource(context.getAssertion().getTargetDataSourceName()).getConnection()) {
                 actualUpdateCount = SQLExecuteType.LITERAL == context.getSqlExecuteType()
                         ? executeUpdateForStatement(context, connection)
                         : executeUpdateForPreparedStatement(context, connection);
@@ -93,7 +93,7 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
         init(testParam);
         try {
             int actualUpdateCount;
-            try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
+            try (Connection connection = getEnvironmentEngine().getTargetDataSource(context.getAssertion().getTargetDataSourceName()).getConnection()) {
                 actualUpdateCount = SQLExecuteType.LITERAL == context.getSqlExecuteType()
                         ? executeForStatement(context, connection)
                         : executeForPreparedStatement(context, connection);

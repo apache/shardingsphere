@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.merge.mysql.type;
 
-import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -43,8 +42,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -67,7 +66,7 @@ class MySQLShardingShowCreateTableMergedResultTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("foo_tbl", "ds.foo_tbl_${0..2}"));
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("bar_tbl", "ds.bar_tbl_${0..2}"));
-        return new ShardingRule(shardingRuleConfig, Maps.of("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+        return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     
     private ShardingSphereSchema createSchema() {

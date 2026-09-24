@@ -25,10 +25,10 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.quer
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.UniqueKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.exact.IntegerPositionHandler;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -61,9 +61,8 @@ public final class InventoryPositionEstimatedCalculator {
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
-            BigDecimal lowerBound = resultSet.getBigDecimal(1);
-            BigDecimal upperBound = resultSet.getBigDecimal(2);
-            return Range.closed(null == lowerBound ? null : lowerBound.toBigInteger(), null == upperBound ? null : upperBound.toBigInteger());
+            IntegerPositionHandler positionHandler = new IntegerPositionHandler();
+            return Range.closed(positionHandler.readColumnValue(resultSet, 1), positionHandler.readColumnValue(resultSet, 2));
         } catch (final SQLException ex) {
             throw new SplitPipelineJobByUniqueKeyException(qualifiedTable, uniqueKey, ex);
         }

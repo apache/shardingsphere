@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.infra.executor.kernel;
 
+import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
 import org.apache.shardingsphere.infra.executor.kernel.fixture.ExecutorCallbackFixture;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
-import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -36,8 +35,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 

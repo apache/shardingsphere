@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator;
 
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 
 import java.util.Collection;
 

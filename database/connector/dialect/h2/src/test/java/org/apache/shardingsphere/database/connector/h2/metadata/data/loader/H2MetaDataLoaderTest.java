@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.model.Ind
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.datatype.DataTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -33,13 +34,16 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -60,15 +64,18 @@ class H2MetaDataLoaderTest {
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL')")
+                "SELECT TABLE_NAME, INDEX_NAME, COLUMN_NAME, IS_UNIQUE FROM INFORMATION_SCHEMA.INDEX_COLUMNS"
+                        + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL') ORDER BY TABLE_NAME, INDEX_NAME, ORDINAL_POSITION")
                 .executeQuery()).thenReturn(indexResultSet);
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND INDEX_TYPE_NAME = 'PRIMARY KEY'").executeQuery()).thenReturn(primaryKeys);
+                "SELECT KCU.TABLE_NAME, KCU.COLUMN_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU"
+                        + " USING (CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA, CONSTRAINT_NAME)"
+                        + " WHERE KCU.TABLE_CATALOG=? AND KCU.TABLE_SCHEMA=? AND TC.CONSTRAINT_TYPE='PRIMARY KEY'")
+                .executeQuery()).thenReturn(primaryKeys);
         ResultSet generatedInfo = mockGeneratedInfoResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(I.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C RIGHT JOIN"
-                        + " INFORMATION_SCHEMA.INDEXES I ON C.TABLE_NAME=I.TABLE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?")
+                "SELECT TABLE_NAME, COLUMN_NAME, IS_IDENTITY FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?")
                 .executeQuery()).thenReturn(generatedInfo);
         DataTypeRegistry.load(dataSource, "H2");
         assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, databaseType, "sharding_db")));
@@ -85,19 +92,46 @@ class H2MetaDataLoaderTest {
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL')")
+                "SELECT TABLE_NAME, INDEX_NAME, COLUMN_NAME, IS_UNIQUE FROM INFORMATION_SCHEMA.INDEX_COLUMNS"
+                        + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL') ORDER BY TABLE_NAME, INDEX_NAME, ORDINAL_POSITION")
                 .executeQuery()).thenReturn(indexResultSet);
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND INDEX_TYPE_NAME = 'PRIMARY KEY' AND UPPER(TABLE_NAME) IN ('TBL')")
+                "SELECT KCU.TABLE_NAME, KCU.COLUMN_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU"
+                        + " USING (CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA, CONSTRAINT_NAME)"
+                        + " WHERE KCU.TABLE_CATALOG=? AND KCU.TABLE_SCHEMA=? AND TC.CONSTRAINT_TYPE='PRIMARY KEY' AND UPPER(KCU.TABLE_NAME) IN ('TBL')")
                 .executeQuery()).thenReturn(primaryKeys);
         ResultSet generatedInfo = mockGeneratedInfoResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(I.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C"
-                        + " RIGHT JOIN INFORMATION_SCHEMA.INDEXES I ON C.TABLE_NAME=I.TABLE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=? AND C.TABLE_NAME IN ('tbl')")
+                "SELECT TABLE_NAME, COLUMN_NAME, IS_IDENTITY FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL')")
                 .executeQuery()).thenReturn(generatedInfo);
         DataTypeRegistry.load(dataSource, "H2");
         assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, "sharding_db")));
+    }
+    
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
+    @Test
+    void assertLoadWithView() throws SQLException {
+        DataSource dataSource = mockDataSource();
+        ResultSet resultSet = mockTableAndViewMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, ORDINAL_POSITION, COALESCE(IS_VISIBLE, FALSE) IS_VISIBLE, IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS"
+                        + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL','TBL_VIEW') ORDER BY ORDINAL_POSITION")
+                .executeQuery()).thenReturn(resultSet);
+        ResultSet viewResultSet = mockViewMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND TABLE_TYPE='VIEW' AND UPPER(TABLE_NAME) IN ('TBL_VIEW','TBL')")
+                .executeQuery()).thenReturn(viewResultSet);
+        DataTypeRegistry.load(dataSource, "H2");
+        Collection<SchemaMetaData> schemaMetaDataList = getDialectTableMetaDataLoader().load(
+                new MetaDataLoaderMaterial(Arrays.asList("tbl", "tbl_view"), "foo_ds", dataSource, databaseType, "sharding_db"));
+        assertThat(schemaMetaDataList.size(), is(1));
+        Map<String, TableType> actualTableTypes = new HashMap<>();
+        for (TableMetaData each : schemaMetaDataList.iterator().next().getTables()) {
+            actualTableTypes.put(each.getName(), each.getType());
+        }
+        assertThat(actualTableTypes.get("tbl"), is(TableType.TABLE));
+        assertThat(actualTableTypes.get("tbl_view"), is(TableType.VIEW));
     }
     
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
@@ -129,11 +163,29 @@ class H2MetaDataLoaderTest {
         return result;
     }
     
+    private ResultSet mockTableAndViewMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("tbl", "tbl_view");
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "id");
+        when(result.getString("DATA_TYPE")).thenReturn("int", "int");
+        when(result.getBoolean("IS_VISIBLE")).thenReturn(true);
+        when(result.getString("IS_NULLABLE")).thenReturn("NO");
+        return result;
+    }
+    
+    private ResultSet mockViewMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("tbl_view");
+        return result;
+    }
+    
     private ResultSet mockPrimaryKeysMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("INDEX_NAME")).thenReturn("id");
+        when(result.getString("COLUMN_NAME")).thenReturn("id");
         return result;
     }
     
@@ -141,17 +193,18 @@ class H2MetaDataLoaderTest {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("COLUMN_NAME")).thenReturn("id");
-        when(result.getBoolean("IS_GENERATED")).thenReturn(false);
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "name");
+        when(result.getString("IS_IDENTITY")).thenReturn("YES", "NO");
         return result;
     }
     
     private ResultSet mockIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, false);
-        when(result.getString("INDEX_NAME")).thenReturn("id");
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getString("INDEX_NAME")).thenReturn("foo_composite_idx", "foo_composite_idx", "foo_primary_idx");
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("INDEX_TYPE_NAME")).thenReturn("UNIQUE INDEX");
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "id");
+        when(result.getBoolean("IS_UNIQUE")).thenReturn(false, true);
         return result;
     }
     
@@ -166,13 +219,18 @@ class H2MetaDataLoaderTest {
         TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().iterator().next();
         assertThat(actualTableMetaData.getColumns().size(), is(2));
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, true, false, false, true, false, false));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, true, true, false, true, false, false));
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true));
-        assertThat(actualTableMetaData.getIndexes().size(), is(1));
-        Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
-        IndexMetaData indexMetaData = new IndexMetaData("id");
-        indexMetaData.setUnique(true);
-        assertIndexMetaData(indexesIterator.next(), indexMetaData);
+        Map<String, IndexMetaData> actualIndexes = new HashMap<>(actualTableMetaData.getIndexes().size(), 1F);
+        for (IndexMetaData each : actualTableMetaData.getIndexes()) {
+            actualIndexes.put(each.getName(), each);
+        }
+        assertThat(actualIndexes.size(), is(2));
+        IndexMetaData expectedCompositeIndex = new IndexMetaData("foo_composite_idx", Arrays.asList("id", "name"));
+        assertIndexMetaData(actualIndexes.get(expectedCompositeIndex.getName()), expectedCompositeIndex);
+        IndexMetaData expectedPrimaryIndex = new IndexMetaData("foo_primary_idx", Collections.singletonList("id"));
+        expectedPrimaryIndex.setUnique(true);
+        assertIndexMetaData(actualIndexes.get(expectedPrimaryIndex.getName()), expectedPrimaryIndex);
     }
     
     private void assertColumnMetaData(final ColumnMetaData actual, final ColumnMetaData expected) {

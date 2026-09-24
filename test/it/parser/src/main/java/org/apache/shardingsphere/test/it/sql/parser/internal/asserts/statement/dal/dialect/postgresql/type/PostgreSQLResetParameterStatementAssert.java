@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLR
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.postgresql.PostgreSQLResetParameterStatementTestCase;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Reset parameter statement assert for PostgreSQL.

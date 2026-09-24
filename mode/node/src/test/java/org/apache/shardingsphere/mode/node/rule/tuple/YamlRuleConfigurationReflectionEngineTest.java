@@ -35,11 +35,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
@@ -72,7 +71,7 @@ class YamlRuleConfigurationReflectionEngineTest {
     @Test
     void assertGetFieldsOrderedByType() {
         Collection<Field> actual = YamlRuleConfigurationReflectionEngine.getFields(FixtureYamlRuleConfiguration.class);
-        assertThat(actual, hasSize(2));
+        assertThat(actual.size(), is(2));
         Iterator<Field> iterator = actual.iterator();
         assertThat(iterator.next().getName(), is("algorithmName"));
         assertThat(iterator.next().getName(), is("strategyName"));
@@ -117,13 +116,13 @@ class YamlRuleConfigurationReflectionEngineTest {
     @Test
     void assertGetFieldsWithNoAnnotatedFields() {
         Collection<Field> actual = YamlRuleConfigurationReflectionEngine.getFields(EmptyYamlRuleConfiguration.class);
-        assertThat(actual, empty());
+        assertTrue(actual.isEmpty());
     }
     
     @Test
     void assertGetFieldsWithAllTypeValues() {
         Collection<Field> actual = YamlRuleConfigurationReflectionEngine.getFields(CompleteYamlRuleConfiguration.class);
-        assertThat(actual, hasSize(7));
+        assertThat(actual.size(), is(7));
         Iterator<Field> iterator = actual.iterator();
         assertThat(iterator.next().getName(), is("algorithm"));
         assertThat(iterator.next().getName(), is("defaultAlgorithm"));

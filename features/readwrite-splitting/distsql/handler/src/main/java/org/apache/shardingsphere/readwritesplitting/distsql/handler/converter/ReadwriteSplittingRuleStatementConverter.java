@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 
 import java.util.Collection;
 import java.util.HashMap;

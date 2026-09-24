@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
@@ -36,7 +38,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -44,19 +45,10 @@ import java.util.Optional;
  *
  * <p>Subclasses own database type identity and may override dialect-specific behavior.</p>
  */
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractDelegatingDialectDatabaseMetaData implements DialectDatabaseMetaData {
     
     private final DialectDatabaseMetaData delegate;
-    
-    /**
-     * Construct a delegating dialect database meta data.
-     *
-     * @param delegate dialect database meta data delegate
-     * @throws NullPointerException if delegate is null
-     */
-    protected AbstractDelegatingDialectDatabaseMetaData(final DialectDatabaseMetaData delegate) {
-        this.delegate = Objects.requireNonNull(delegate);
-    }
     
     @Override
     public QuoteCharacter getQuoteCharacter() {

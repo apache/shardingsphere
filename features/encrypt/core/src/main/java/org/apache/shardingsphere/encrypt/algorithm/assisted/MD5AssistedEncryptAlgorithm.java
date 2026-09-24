@@ -22,11 +22,17 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.messagedigest.spi.MessageDigestAlgorithm;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -36,21 +42,43 @@ public final class MD5AssistedEncryptAlgorithm implements EncryptAlgorithm {
     
     private static final String SALT_KEY = "salt";
     
+    private static final String MD5_ENCODER = "md5-encoder";
+    
+    private static final String DEFAULT_MD5_ENCODER = "HEX";
+    
+    private static final String BASE64 = "BASE64";
+    
+    private static final Collection<String> SUPPORTED_ENCODERS = Arrays.asList(BASE64, DEFAULT_MD5_ENCODER);
+    
     @Getter
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false);
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false, byte[].class);
     
     private Properties props;
     
     private MessageDigestAlgorithm digestAlgorithm;
     
+    private String md5Encoder;
+    
     @Override
     public void init(final Properties props) {
         this.props = props;
         digestAlgorithm = TypedSPILoader.getService(MessageDigestAlgorithm.class, getType(), props);
+        md5Encoder = getEncoder(props);
+    }
+    
+    private String getEncoder(final Properties props) {
+        String result = props.getProperty(MD5_ENCODER, DEFAULT_MD5_ENCODER).trim().toUpperCase(Locale.ENGLISH);
+        ShardingSpherePreconditions.checkContains(SUPPORTED_ENCODERS, result, () -> new AlgorithmInitializationException(this, String.format("Encoder must be `%s`", SUPPORTED_ENCODERS), MD5_ENCODER));
+        return result;
     }
     
     @Override
-    public Object encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
+    public Optional<String> getEncoder() {
+        return Optional.of(md5Encoder);
+    }
+    
+    @Override
+    public byte[] encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
         return digestAlgorithm.digest(plainValue);
     }
     
@@ -61,7 +89,11 @@ public final class MD5AssistedEncryptAlgorithm implements EncryptAlgorithm {
     
     @Override
     public AlgorithmConfiguration toConfiguration() {
-        return new AlgorithmConfiguration(getType(), PropertiesBuilder.build(new Property(SALT_KEY, props.getProperty(SALT_KEY, ""))));
+        Properties result = PropertiesBuilder.build(new Property(SALT_KEY, props.getProperty(SALT_KEY, "")));
+        if (props.containsKey(MD5_ENCODER)) {
+            result.setProperty(MD5_ENCODER, md5Encoder);
+        }
+        return new AlgorithmConfiguration(getType(), result);
     }
     
     @Override

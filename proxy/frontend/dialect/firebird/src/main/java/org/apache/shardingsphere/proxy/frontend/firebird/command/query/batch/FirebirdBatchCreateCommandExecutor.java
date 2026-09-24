@@ -20,16 +20,14 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -76,7 +74,7 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         if (null == connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId)) {
             throw new InvalidStatementHandleException(statementId);
         }
-        if (null != FirebirdBatchRegistry.getInstance().getBatchStatement(connectionId, statementId)) {
+        if (null != FirebirdBatchStatementManager.getInstance().getBatchStatement(connectionId, statementId)) {
             throw new BatchAlreadyOpenedException(statementId);
         }
         ByteBuf batchBlr = packet.getBatchBlr();
@@ -91,13 +89,13 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         }
         ByteBuf batchParametersBuffer = packet.getBatchParametersBuffer();
         BatchParameters batchParameters = BatchParameters.parse(batchParametersBuffer);
-        FirebirdBatchRegistry.getInstance().registerBatchStatement(connectionId, statementId,
-                new FirebirdBatchStatement(statementId, messageFormat.getFields(), batchParameters.getBufferSize(), batchParameters.isRecordCounts(), batchParameters.isMultiError()));
+        FirebirdBatchStatementManager.getInstance().registerBatchStatement(
+                connectionId, statementId, messageFormat.getFields(), batchParameters.getBufferSize(), batchParameters.isRecordCounts(), batchParameters.isMultiError());
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
     }
     
-    @Getter
     @RequiredArgsConstructor
+    @Getter
     static final class BatchParameters {
         
         private final int version;
@@ -139,7 +137,7 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
                     // int requestedBlobPolicy = readIntegerValue(reader, tag, valueLength);
                     // blobPolicy = BLOB_STREAM == requestedBlobPolicy ? requestedBlobPolicy : BLOB_STREAM;
                     // TODO Support BLOB policy after implementing the Firebird batch BLOB subprotocol.
-                    throw new FirebirdProtocolException("BLOB policy is not supported in Firebird batch operations");
+                    throw new DatabaseProtocolException("BLOB policy is not supported in Firebird batch operations");
                 } else {
                     reader.skipBytes(valueLength);
                 }
@@ -155,19 +153,19 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         
         private static void ensureClumpletHeaderReadable(final ByteBuf reader) {
             if (reader.readableBytes() < 1 + WIDE_CLUMPLET_LENGTH_SIZE) {
-                throw new FirebirdProtocolException("Invalid batch parameters buffer");
+                throw new DatabaseProtocolException("Invalid batch parameters buffer");
             }
         }
         
         private static void ensureClumpletValueReadable(final ByteBuf reader, final int tag, final int valueLength) {
             if (valueLength < 0 || valueLength > reader.readableBytes()) {
-                throw new FirebirdProtocolException("Invalid batch parameter length for tag %d: %d", tag, valueLength);
+                throw new DatabaseProtocolException("Invalid batch parameter length for tag %d: %d", tag, valueLength);
             }
         }
         
         private static int readIntegerValue(final ByteBuf reader, final int tag, final int valueLength) {
             if (INTEGER_VALUE_LENGTH != valueLength) {
-                throw new FirebirdProtocolException("Invalid batch parameter integer length for tag %d: %d", tag, valueLength);
+                throw new DatabaseProtocolException("Invalid batch parameter integer length for tag %d: %d", tag, valueLength);
             }
             return reader.readIntLE();
         }

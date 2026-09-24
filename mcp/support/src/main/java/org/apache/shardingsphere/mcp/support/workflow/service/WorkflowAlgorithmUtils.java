@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.json.JsonException;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 
 import java.util.Collection;
@@ -45,7 +44,7 @@ public final class WorkflowAlgorithmUtils {
     
     private static final String ALGORITHM_TYPE_KEY = "type";
     
-    private static final TypeReference<Map<?, ?>> JSON_PROPERTY_MAP_TYPE = new TypeReference<>() {
+    private static final JsonTypeReference<Map<?, ?>> JSON_PROPERTY_MAP_TYPE = new JsonTypeReference<>() {
     };
     
     /**
@@ -154,7 +153,7 @@ public final class WorkflowAlgorithmUtils {
             return true;
         }
         if (hasSecretReference(properties)) {
-            return containsServiceType(serviceInterface, actualAlgorithmType);
+            return TypedSPILoader.containsService(serviceInterface, actualAlgorithmType);
         }
         try {
             TypedSPILoader.checkService(serviceInterface, actualAlgorithmType, createProperties(properties));
@@ -179,15 +178,15 @@ public final class WorkflowAlgorithmUtils {
             }
             try {
                 return parseJSONPropertyString(actualValue);
-            } catch (final JsonProcessingException ignored) {
+            } catch (final JsonException ignored) {
                 return Map.of();
             }
         }
         return parseLegacyPropertyString(actualValue);
     }
     
-    private static Map<String, String> parseJSONPropertyString(final String value) throws JsonProcessingException {
-        return createPropertyMap(JsonUtils.fromJsonString(value, JSON_PROPERTY_MAP_TYPE));
+    private static Map<String, String> parseJSONPropertyString(final String value) {
+        return createPropertyMap(JsonEngine.unmarshal(value, JSON_PROPERTY_MAP_TYPE));
     }
     
     private static boolean isJSONPropertyMap(final String value) {
@@ -268,25 +267,5 @@ public final class WorkflowAlgorithmUtils {
     
     private static String trimToEmpty(final String value) {
         return null == value ? "" : value.trim();
-    }
-    
-    private static <T extends TypedSPI> boolean containsServiceType(final Class<T> serviceInterface, final String algorithmType) {
-        for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
-            if (matchesType(algorithmType, each)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private static boolean matchesType(final String type, final TypedSPI instance) {
-        Object instanceType = instance.getType();
-        if (null == instanceType) {
-            return false;
-        }
-        if (instanceType instanceof String) {
-            return instanceType.toString().equalsIgnoreCase(type) || instance.getTypeAliases().contains(type);
-        }
-        return instanceType.equals(type) || instance.getTypeAliases().contains(type);
     }
 }

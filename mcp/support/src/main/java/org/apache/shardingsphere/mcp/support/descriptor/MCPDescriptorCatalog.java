@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import lombok.RequiredArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * MCP descriptor catalog.

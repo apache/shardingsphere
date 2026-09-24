@@ -47,8 +47,8 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -86,8 +86,8 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -154,7 +154,9 @@ class PreviewExecutorTest {
     @Test
     void assertGetRowsWithCursorAttributeAndNotCursorHeld() {
         HintValueContext hintValueContext = new HintValueContext();
-        executor.setDatabase(mockCompleteDatabase());
+        ShardingSphereDatabase database = mockCompleteDatabase();
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
+        executor.setDatabase(database);
         executor.setConnectionContext(mockConnectionContext(hintValueContext, new ConnectionContext(Collections::emptyList), mock(DatabaseConnectionManager.class)));
         SQLStatement sqlStatement = mockSQLStatement(new CursorSQLStatementAttribute(null));
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
@@ -166,7 +168,10 @@ class PreviewExecutorTest {
                         mockConstruction(SQLBindEngine.class, (mock, context) -> when(mock.bind(any(SQLStatement.class))).thenReturn(sqlStatementContext));
                 MockedConstruction<JDBCExecutor> ignoredJDBCExecutor = mockConstruction(JDBCExecutor.class);
                 MockedConstruction<SQLFederationEngine> ignoredFederationEngine =
-                        mockConstruction(SQLFederationEngine.class, (mock, context) -> when(mock.decide(any(QueryContext.class), any(RuleMetaData.class))).thenReturn(false));
+                        mockConstruction(SQLFederationEngine.class, (mock, context) -> {
+                            assertThat(context.arguments().get(1), is("foo_default_schema"));
+                            when(mock.decide(any(QueryContext.class), any(RuleMetaData.class))).thenReturn(false);
+                        });
                 MockedConstruction<KernelProcessor> ignoredKernelProcessor = mockConstruction(KernelProcessor.class,
                         (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext))) {
             assertThat(executor.getRows(new PreviewStatement("SELECT 1"), contextManager).iterator().next().getCell(1), is("foo_ds"));

@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.infra.expr.groovy;
 
+import groovy.lang.MissingMethodException;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.expr.exception.InlineExpressionEvaluationException;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,8 @@ import java.util.stream.IntStream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GroovyInlineExpressionParserTest {
@@ -121,6 +125,13 @@ class GroovyInlineExpressionParserTest {
     @Test
     void assertEvaluateWithArgsExpression() {
         assertThat(getInlineExpressionParser("${1+2}").evaluateWithArgs(Collections.emptyMap()), is("3"));
+    }
+    
+    @Test
+    void assertEvaluateWithArgsExpressionWithMissingMethod() {
+        InlineExpressionEvaluationException actual = assertThrows(InlineExpressionEvaluationException.class,
+                () -> getInlineExpressionParser("t_order_${order_id.missingMethod()}").evaluateWithArgs(Collections.singletonMap("order_id", 0)));
+        assertThat(actual.getCause(), isA(MissingMethodException.class));
     }
     
     @Test

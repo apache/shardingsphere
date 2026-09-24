@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.mask.yaml;
 
-import org.apache.shardingsphere.mode.node.rule.tuple.RuleNodeTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.RuleNodeTuple;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleNodeTupleSwapperEngineIT;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class MaskConfigurationYamlRuleNodeTupleSwapperEngineIT extends YamlRuleNodeTupleSwapperEngineIT {
     

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.sw
 
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineReadConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineReadConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
  * YAML pipeline read configuration swapper.

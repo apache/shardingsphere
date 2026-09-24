@@ -181,7 +181,7 @@ public final class BinaryOperationExpressionConverter {
             if (left instanceof SqlNumericLiteral) {
                 result.remove(0);
                 Long value = ((SqlNumericLiteral) left).getValueAs(Long.class);
-                result.add(value == null || value == 0L ? SqlLiteral.createBoolean(false, left.getParserPosition()) : SqlLiteral.createBoolean(true, left.getParserPosition()));
+                result.add(null == value || value == 0L ? SqlLiteral.createBoolean(false, left.getParserPosition()) : SqlLiteral.createBoolean(true, left.getParserPosition()));
             }
         } else if (!SqlStdOperatorTable.IS_NULL.equals(operator) && !SqlStdOperatorTable.IS_NOT_NULL.equals(operator)) {
             SqlNode right = ExpressionConverter.convert(segment.getRight()).orElseThrow(IllegalStateException::new);

@@ -17,15 +17,31 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.pkg;
 
+import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.packages.PackageSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+
+import java.util.Optional;
 
 /**
  * Alter package statement.
  */
+@Setter
 public final class AlterPackageStatement extends DDLStatement {
+    
+    private PackageSegment packageName;
     
     public AlterPackageStatement(final DatabaseType databaseType) {
         super(databaseType);
+    }
+    
+    /**
+     * Get package name segment.
+     *
+     * @return package name segment
+     */
+    public Optional<PackageSegment> getPackageName() {
+        return Optional.ofNullable(packageName);
     }
 }

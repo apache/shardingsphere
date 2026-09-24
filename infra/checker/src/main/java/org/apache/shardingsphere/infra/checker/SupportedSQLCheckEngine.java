@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.checker;
 
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -55,7 +54,7 @@ public final class SupportedSQLCheckEngine {
     }
     
     private ShardingSphereSchema getCurrentSchema(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        ShardingSphereSchema defaultSchema = database.getSchema(new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
+        ShardingSphereSchema defaultSchema = database.findDefaultSchema().orElse(null);
         return sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElse(defaultSchema);
     }
 }

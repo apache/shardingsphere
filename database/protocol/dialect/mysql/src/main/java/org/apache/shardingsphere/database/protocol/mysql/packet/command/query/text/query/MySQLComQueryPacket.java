@@ -34,10 +34,6 @@ import java.util.Optional;
  */
 public final class MySQLComQueryPacket extends MySQLCommandPacket implements SQLReceivedPacket {
     
-    private static final String BINARY_INTRODUCER = "_binary";
-    
-    private static final char MALFORMED_INPUT_REPLACEMENT = (char) 0xFFFD;
-    
     private final String sql;
     
     private final byte[] originalSQLBytes;
@@ -58,17 +54,7 @@ public final class MySQLComQueryPacket extends MySQLCommandPacket implements SQL
         String originSQL = new String(sqlBytes, payload.getCharset());
         hintValueContext = SQLHintUtils.extractHint(originSQL);
         sql = SQLHintUtils.removeHint(originSQL);
-        originalSQLBytes = requiresBinaryLiteralInspection(originSQL) ? sqlBytes : null;
-    }
-    
-    private static boolean requiresBinaryLiteralInspection(final String sql) {
-        for (int i = 0; i < sql.length(); i++) {
-            char current = sql.charAt(i);
-            if (MALFORMED_INPUT_REPLACEMENT == current || '_' == current && sql.regionMatches(true, i, BINARY_INTRODUCER, 0, BINARY_INTRODUCER.length())) {
-                return true;
-            }
-        }
-        return false;
+        originalSQLBytes = sqlBytes;
     }
     
     @Override
@@ -82,9 +68,9 @@ public final class MySQLComQueryPacket extends MySQLCommandPacket implements SQL
     }
     
     /**
-     * Find original SQL bytes retained for binary literal inspection.
+     * Find original SQL bytes received from packet payload.
      *
-     * @return original SQL bytes when binary literal inspection is required
+     * @return original SQL bytes if constructed from packet payload
      */
     public Optional<byte[]> findOriginalSQLBytes() {
         return Optional.ofNullable(originalSQLBytes);

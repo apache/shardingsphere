@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata;
 
-import org.apache.groovy.util.Maps;
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -248,7 +248,7 @@ class ShardingSphereMetaDataTest {
         when(result.getName()).thenReturn("foo_db");
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Maps.of("url", "jdbc:mock://127.0.0.1/foo_ds", "username", "test"));
+        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(ImmutableMap.of("url", "jdbc:mock://127.0.0.1/foo_ds", "username", "test"));
         StorageUnit storageUnit = new StorageUnit(mock(StorageNode.class), dataSourcePoolProps, dataSource);
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_db", storageUnit));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(rules)));

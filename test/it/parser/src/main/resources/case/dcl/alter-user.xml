@@ -57,6 +57,7 @@
     <alter-user sql-case-id="alter_external_user" />
     <alter-user sql-case-id="alter_global_user" />
     <alter-user sql-case-id="alter_user_with_tablespace_option" />
+    <alter-user sql-case-id="alter_user_with_temporary_tablespace" />
     <alter-user sql-case-id="alter_user_with_container" />
     <alter-user sql-case-id="alter_user_with_quota_option" />
     <alter-user sql-case-id="alter_user_password_with_lock_option" />

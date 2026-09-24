@@ -24,11 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.TableCheckRangePosition;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableInventoryCheckCalculatedResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResultSwapper;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.TableInventoryCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.TableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
@@ -77,7 +75,7 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
         TableInventoryCalculateParameter sourceParam = new TableInventoryCalculateParameter(param.getSourceDataSource(), param.getSourceTable(),
                 param.getColumnNames(), param.getUniqueKeys(), QueryType.RANGE_QUERY, param.getQueryCondition());
         TableCheckRangePosition checkRangePosition = param.getProgressContext().getTableCheckRangePositions().get(param.getSplittingItem());
-        sourceParam.setRange(Range.closed(null != checkRangePosition.getSourcePosition() ? checkRangePosition.getSourcePosition() : checkRangePosition.getSourceRange().getLowerBound(),
+        sourceParam.setRange(Range.closed(null == checkRangePosition.getSourcePosition() ? checkRangePosition.getSourceRange().getLowerBound() : checkRangePosition.getSourcePosition(),
                 checkRangePosition.getSourceRange().getUpperBound()));
         TableInventoryCalculateParameter targetParam = getTableInventoryCalculateParameter(param, checkRangePosition);
         TableInventoryCalculator<TableInventoryCheckCalculatedResult> sourceCalculator = buildSingleTableInventoryCalculator();
@@ -99,7 +97,7 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
     private TableDataConsistencyCheckResult checkSingleTableInventoryData(final Iterator<TableInventoryCheckCalculatedResult> sourceCalculatedResults,
                                                                           final Iterator<TableInventoryCheckCalculatedResult> targetCalculatedResults,
                                                                           final TableInventoryCheckParameter param, final ThreadPoolExecutor executor) {
-        YamlTableDataConsistencyCheckResult checkResult = new YamlTableDataConsistencyCheckResult(true);
+        boolean matched = true;
         while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
             if (null != param.getReadRateLimitAlgorithm()) {
                 param.getReadRateLimitAlgorithm().intercept(PipelineSQLOperationType.SELECT, 1);
@@ -107,7 +105,7 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
             TableInventoryCheckCalculatedResult sourceCalculatedResult = PipelineTaskUtils.waitFuture(executor.submit(sourceCalculatedResults::next));
             TableInventoryCheckCalculatedResult targetCalculatedResult = PipelineTaskUtils.waitFuture(executor.submit(targetCalculatedResults::next));
             if (!Objects.equals(sourceCalculatedResult, targetCalculatedResult)) {
-                checkResult.setMatched(false);
+                matched = false;
                 log.info("content matched false, jobId={}, sourceTable={}, targetTable={}, uniqueKeys={}", param.getJobId(), param.getSourceTable(), param.getTargetTable(), param.getUniqueKeys());
                 break;
             }
@@ -123,16 +121,16 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
         TableCheckRangePosition checkRangePosition = param.getProgressContext().getTableCheckRangePositions().get(param.getSplittingItem());
         checkRangePosition.setFinished(true);
         if (sourceCalculatedResults.hasNext() || targetCalculatedResults.hasNext()) {
-            checkResult.setMatched(false);
+            matched = false;
         }
-        checkRangePosition.setMatched(checkResult.isMatched());
-        return new YamlTableDataConsistencyCheckResultSwapper().swapToObject(checkResult);
+        checkRangePosition.setMatched(matched);
+        return new TableDataConsistencyCheckResult(matched);
     }
     
     private TableInventoryCalculateParameter getTableInventoryCalculateParameter(final TableInventoryCheckParameter param, final TableCheckRangePosition checkRangePosition) {
         TableInventoryCalculateParameter result = new TableInventoryCalculateParameter(param.getTargetDataSource(), param.getTargetTable(),
-                param.getColumnNames(), param.getUniqueKeys(), QueryType.RANGE_QUERY, param.getQueryCondition());
-        result.setRange(Range.closed(null != checkRangePosition.getTargetPosition() ? checkRangePosition.getTargetPosition() : checkRangePosition.getTargetRange().getLowerBound(),
+                param.getTargetColumnNames(), param.getTargetUniqueKeys(), QueryType.RANGE_QUERY, param.getQueryCondition());
+        result.setRange(Range.closed(null == checkRangePosition.getTargetPosition() ? checkRangePosition.getTargetRange().getLowerBound() : checkRangePosition.getTargetPosition(),
                 checkRangePosition.getTargetRange().getUpperBound()));
         return result;
     }

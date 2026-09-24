@@ -35,8 +35,8 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -70,12 +70,9 @@ class ClusterContextManagerBuilderTest {
     }
     
     private void assertBuild(final InstanceMetaData instanceMetaData) throws SQLException {
-        ContextManager actual = builder.build(new ContextManagerBuilderParameter(createModeConfiguration(),
+        ModeConfiguration modeConfig = new ModeConfiguration("CLUSTER", new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()));
+        ContextManager actual = builder.build(new ContextManagerBuilderParameter(modeConfig,
                 Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), new Properties(), instanceMetaData), mock(EventBusContext.class));
         assertThat(actual.getComputeNodeInstanceContext().getInstance().getMetaData(), is(instanceMetaData));
-    }
-    
-    private static ModeConfiguration createModeConfiguration() {
-        return new ModeConfiguration("CLUSTER", new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()));
     }
 }

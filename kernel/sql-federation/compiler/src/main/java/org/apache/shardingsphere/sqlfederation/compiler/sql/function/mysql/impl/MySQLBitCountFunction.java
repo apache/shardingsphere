@@ -29,7 +29,6 @@ import org.apache.calcite.sql.type.SqlTypeFamily;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.validate.SqlUserDefinedFunction;
 import org.apache.calcite.util.BitString;
-import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -61,7 +60,7 @@ public final class MySQLBitCountFunction extends SqlUserDefinedFunction {
             return bitCount((byte[]) value);
         }
         if (value instanceof String) {
-            return StringUtils.isNumeric((String) value) ? Long.bitCount(Long.parseLong((String) value)) : 0;
+            return isNumeric((String) value) ? Long.bitCount(Long.parseLong((String) value)) : 0;
         }
         if (value instanceof BigInteger) {
             return ((BigInteger) value).bitCount();
@@ -83,5 +82,17 @@ public final class MySQLBitCountFunction extends SqlUserDefinedFunction {
             }
         }
         return result;
+    }
+    
+    private static boolean isNumeric(final String value) {
+        if (value.isEmpty()) {
+            return false;
+        }
+        for (int each = 0; each < value.length(); each++) {
+            if (!Character.isDigit(value.charAt(each))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

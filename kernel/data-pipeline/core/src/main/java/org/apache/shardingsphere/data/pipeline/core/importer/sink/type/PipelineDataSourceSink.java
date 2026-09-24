@@ -19,7 +19,9 @@ package org.apache.shardingsphere.data.pipeline.core.importer.sink.type;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImporterJobWriteException;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
@@ -34,7 +36,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.Pipeli
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineImportSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -66,8 +68,10 @@ public final class PipelineDataSourceSink implements PipelineSink {
     
     public PipelineDataSourceSink(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
-        dataSource = dataSourceManager.getDataSource(importerConfig.getDataSourceConfig());
-        importSQLBuilder = new PipelineImportSQLBuilder(importerConfig.getDataSourceConfig().getDatabaseType());
+        PipelineDataSource pipelineDataSource = dataSourceManager.getDataSource(importerConfig.getDataSourceConfig());
+        dataSource = pipelineDataSource;
+        importSQLBuilder = new PipelineImportSQLBuilder(importerConfig.getDataSourceConfig().getDatabaseType(), pipelineDataSource.getIdentifierContext(),
+                importerConfig.getDataSourceConfig() instanceof ShardingSpherePipelineDataSourceConfiguration);
         groupEngine = new DataRecordGroupEngine();
         runningStatement = new AtomicReference<>();
     }
@@ -222,11 +226,11 @@ public final class PipelineDataSourceSink implements PipelineSink {
             int updateCount = preparedStatement.executeUpdate();
             if (1 != updateCount) {
                 log.warn("Update failed, update count: {}, sql: {}, set columns: {}, sharding columns: {}, condition columns: {}",
-                        updateCount, sql, setColumns, JsonUtils.toJsonString(shardingColumns), JsonUtils.toJsonString(conditionColumns));
+                        updateCount, sql, setColumns, JsonEngine.marshal(shardingColumns), JsonEngine.marshal(conditionColumns));
             }
         } catch (final SQLException ex) {
             log.error("execute update failed, sql: {}, set columns: {}, sharding columns: {}, condition columns: {}, error message: {}, data record: {}",
-                    sql, setColumns, JsonUtils.toJsonString(shardingColumns), JsonUtils.toJsonString(conditionColumns), ex.getMessage(), dataRecord);
+                    sql, setColumns, JsonEngine.marshal(shardingColumns), JsonEngine.marshal(conditionColumns), ex.getMessage(), dataRecord);
             throw ex;
         } finally {
             runningStatement.set(null);

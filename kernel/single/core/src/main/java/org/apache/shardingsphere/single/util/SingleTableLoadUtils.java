@@ -30,8 +30,8 @@ import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttri
 import org.apache.shardingsphere.single.constant.SingleTableConstants;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -112,6 +112,18 @@ public final class SingleTableLoadUtils {
     }
     
     /**
+     * Convert tables to data nodes with resolved default schema name.
+     *
+     * @param defaultSchemaName resolved default schema name
+     * @param databaseType database type
+     * @param dataNodes data nodes
+     * @return data nodes
+     */
+    public static Collection<DataNode> convertToDataNodesWithDefaultSchemaName(final String defaultSchemaName, final DatabaseType databaseType, final Collection<String> dataNodes) {
+        return dataNodes.stream().map(each -> DataNode.createWithDefaultSchemaName(defaultSchemaName, databaseType, each)).collect(Collectors.toCollection(LinkedList::new));
+    }
+    
+    /**
      * Get all tables node string.
      *
      * @param databaseType database type
@@ -132,7 +144,7 @@ public final class SingleTableLoadUtils {
      */
     public static String getAllTablesNodeStrFromDataSource(final DatabaseType databaseType, final String dataSourceName, final String schemaName) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()
+        return dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()
                 ? formatDataNode(dataSourceName, schemaName, SingleTableConstants.ASTERISK)
                 : formatDataNode(dataSourceName, SingleTableConstants.ASTERISK);
     }
@@ -148,7 +160,7 @@ public final class SingleTableLoadUtils {
      */
     public static String getDataNodeString(final DatabaseType databaseType, final String dataSourceName, final String schemaName, final String tableName) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? formatDataNode(dataSourceName, schemaName, tableName) : formatDataNode(dataSourceName, tableName);
+        return dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() ? formatDataNode(dataSourceName, schemaName, tableName) : formatDataNode(dataSourceName, tableName);
     }
     
     private static String formatDataNode(final String dataSourceName, final String tableName) {

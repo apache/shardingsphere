@@ -23,8 +23,8 @@ import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class YearTemporalHandlerTest {

@@ -118,7 +118,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     public long readInt6() {
         long result = 0L;
         for (int i = 0; i < 6; i++) {
-            result |= ((long) (0xff & byteBuf.readByte())) << (8 * i);
+            result |= (long) (0xff & byteBuf.readByte()) << (8 * i);
         }
         return result;
     }
@@ -301,25 +301,6 @@ public final class MySQLPacketPayload implements PacketPayload {
      */
     public void writeBytes(final byte[] value) {
         byteBuf.writeBytes(value);
-    }
-    
-    /**
-     * Read variable length string from byte buffers.
-     *
-     * @return variable length string
-     */
-    public String readStringVar() {
-        // TODO
-        return "";
-    }
-    
-    /**
-     * Write fixed length string to byte buffers.
-     *
-     * @param value variable length string
-     */
-    public void writeStringVar(final String value) {
-        // TODO
     }
     
     /**

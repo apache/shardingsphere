@@ -54,7 +54,7 @@ public final class PipelineTableMetaData {
     @Getter
     private final Collection<PipelineIndexMetaData> uniqueIndexes;
     
-    public PipelineTableMetaData(final @NonNull String name, final Map<ShardingSphereIdentifier, PipelineColumnMetaData> columnMetaDataMap, final Collection<PipelineIndexMetaData> uniqueIndexes) {
+    public PipelineTableMetaData(@NonNull final String name, final Map<ShardingSphereIdentifier, PipelineColumnMetaData> columnMetaDataMap, final Collection<PipelineIndexMetaData> uniqueIndexes) {
         this.name = name;
         this.columnMetaDataMap = columnMetaDataMap;
         List<PipelineColumnMetaData> columnMetaDataList = new ArrayList<>(columnMetaDataMap.values());

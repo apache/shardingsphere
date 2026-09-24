@@ -187,7 +187,7 @@ class ParseASTNodeTest {
         return result;
     }
     
-    private static CommonTokenStream createMergeCapableTokenStream(final java.util.List<Token> tokens, final int intervalStart, final int intervalStop, final String mergedText) {
+    private static CommonTokenStream createMergeCapableTokenStream(final List<Token> tokens, final int intervalStart, final int intervalStop, final String mergedText) {
         CommonTokenStream result = mock(CommonTokenStream.class);
         when(result.getTokens()).thenReturn(tokens);
         TokenSource tokenSource = mock(TokenSource.class);

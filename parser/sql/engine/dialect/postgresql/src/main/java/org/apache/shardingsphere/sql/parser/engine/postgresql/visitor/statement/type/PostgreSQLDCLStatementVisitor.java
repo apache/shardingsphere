@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.type;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
@@ -59,7 +60,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.collection.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLCreateGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLReassignOwnedStatement;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
 import java.util.Collections;
