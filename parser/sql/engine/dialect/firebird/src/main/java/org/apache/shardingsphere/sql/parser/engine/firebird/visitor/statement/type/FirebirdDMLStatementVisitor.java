@@ -44,8 +44,12 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Inse
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.JoinedTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.MergeContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.OffsetDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.OrderByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.QualifiedShorthandContext;
@@ -315,6 +319,9 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         if (null != ctx.firstSkipClause()) {
             selectStatementBuilder.limit((LimitSegment) visit(ctx.firstSkipClause()));
         }
+        if (null != ctx.limitClause()) {
+            selectStatementBuilder.limit((LimitSegment) visit(ctx.limitClause()));
+        }
         if (!ctx.selectSpecification().isEmpty()) {
             projections.setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
         }
@@ -350,6 +357,43 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
             offset = (PaginationValueSegment) visit(ctx.skipValue());
         }
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+    }
+    
+    @Override
+    public ASTNode visitLimitClause(final LimitClauseContext ctx) {
+        PaginationValueSegment rowCount = null;
+        PaginationValueSegment offset = null;
+        if (null != ctx.rowsClause()) {
+            // rowsClause is "ROWS expr (TO expr)?" — the optional end row is the row count,
+            // the start row the offset.
+            offset = (PaginationValueSegment) visitLimitValue(ctx.rowsClause().expr(0));
+            if (ctx.rowsClause().expr().size() > 1) {
+                rowCount = (PaginationValueSegment) visitLimitValue(ctx.rowsClause().expr(1));
+            }
+        } else if (null != ctx.offsetDefinition()) {
+            OffsetDefinitionContext offsetDefinition = ctx.offsetDefinition();
+            if (null != offsetDefinition.offsetClause()) {
+                offset = (PaginationValueSegment) visitLimitValue(offsetDefinition.offsetClause().limitOffset());
+            }
+            if (null != offsetDefinition.fetchClause()) {
+                rowCount = (PaginationValueSegment) visitLimitValue(offsetDefinition.fetchClause().limitRowCount());
+            }
+        }
+        return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+    }
+    
+    private ASTNode visitLimitValue(final ParserRuleContext ctx) {
+        if (null != ctx.getChild(0) && ctx.getChildCount() == 1 && ctx.getChild(0) instanceof NumberLiteralsContext) {
+            return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                    ((NumberLiteralValue) visit(ctx.getChild(0))).getValue().longValue());
+        }
+        if (null != ctx.getChild(0) && ctx.getChildCount() == 1 && ctx.getChild(0) instanceof ParameterMarkerContext) {
+            ParameterMarkerSegment result = new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                    ((ParameterMarkerValue) visit(ctx.getChild(0))).getValue());
+            getParameterMarkerSegments().add(result);
+            return result;
+        }
+        return null;
     }
     
     @Override

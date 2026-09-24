@@ -2084,6 +2084,35 @@
         </from>
     </select>
 
+    <select sql-case-id="select_pagination_with_offset_and_fetch_firebird">
+        <limit start-index="22" stop-index="64">
+            <offset value="100000" start-index="29" stop-index="34" />
+            <row-count value="10" start-index="53" stop-index="54" />
+        </limit>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_pagination_with_order_by_offset_and_fetch_firebird">
+        <limit start-index="40" stop-index="82">
+            <offset value="100000" start-index="47" stop-index="52" />
+            <row-count value="10" start-index="71" stop-index="72" />
+        </limit>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <order-by>
+            <column-item name="order_id" start-index="31" stop-index="38" />
+        </order-by>
+    </select>
+
     <select sql-case-id="select_pagination_with_first_skip_parameters_firebird" parameters="1, 2">
         <limit start-index="7" stop-index="20">
             <row-count value="1" parameter-index="0" start-index="13" stop-index="13" />
