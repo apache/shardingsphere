@@ -80,6 +80,10 @@ public final class ProjectionsSegmentBinder {
             Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts = createCurrentTableBinderContexts(binderContext, result.getProjections());
             result.getProjections().add(bind(binderContext, boundTableSegment, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts, each));
         }
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts = createCurrentTableBinderContexts(binderContext, result.getProjections());
+        for (ExpressionSegment each : segment.getDistinctOnItems()) {
+            result.getDistinctOnItems().add(bindDistinctOnItem(each, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts));
+        }
         return result;
     }
     
@@ -132,6 +136,17 @@ public final class ProjectionsSegmentBinder {
         }
         // TODO support more ProjectionSegment bound
         return projectionSegment;
+    }
+    
+    private static ExpressionSegment bindDistinctOnItem(final ExpressionSegment segment, final SQLStatementBinderContext binderContext,
+                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,
+                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        try {
+            return ExpressionSegmentBinder.bind(segment, SegmentType.ORDER_BY, binderContext, tableBinderContexts, outerTableBinderContexts);
+        } catch (final ColumnNotFoundException ignored) {
+            return ExpressionSegmentBinder.bind(segment, SegmentType.ORDER_BY, binderContext, currentTableBinderContexts, outerTableBinderContexts);
+        }
     }
     
     private static AggregationDistinctProjectionSegment bindAggregationDistinctProjection(final AggregationDistinctProjectionSegment aggregationDistinctSegment,
