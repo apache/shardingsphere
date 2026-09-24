@@ -484,6 +484,29 @@
         </from>
     </select>
 
+    <select sql-case-id="select_with_parenthesized_main_query_oracle">
+        <with start-index="0" stop-index="26">
+            <common-table-expression name="q" start-index="5" stop-index="26">
+                <subquery-expression start-index="11" stop-index="25">
+                    <select>
+                        <projections start-index="18" stop-index="18">
+                            <column-projection name="n" start-index="18" stop-index="18" />
+                        </projections>
+                        <from>
+                            <simple-table name="t" start-index="25" stop-index="25" />
+                        </from>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <projections start-index="36" stop-index="36">
+            <column-projection name="n" start-index="36" stop-index="36" />
+        </projections>
+        <from>
+            <simple-table name="q" start-index="43" stop-index="43" />
+        </from>
+    </select>
+
     <select sql-case-id="select_with_oracle_cte_column_aliases">
         <with start-index="0" stop-index="108">
             <common-table-expression name="user_cte" start-index="5" stop-index="108">

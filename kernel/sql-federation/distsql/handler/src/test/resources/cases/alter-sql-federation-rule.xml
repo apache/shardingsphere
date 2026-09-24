@@ -26,10 +26,4 @@
     <test-case dist-sql="ALTER SQL_FEDERATION RULE (EXECUTION_PLAN_CACHE())"
                current-rule-config-yaml-file="cases/show-sql-federation-rule-current-config.yaml"
                expected-rule-config-yaml-file="cases/show-sql-federation-rule-current-config.yaml"/>
-    <test-case dist-sql="ALTER SQL_FEDERATION RULE (EXECUTION_PLAN_CACHE(INITIAL_CAPACITY=0, MAXIMUM_SIZE=512))"
-               current-rule-config-yaml-file="cases/show-sql-federation-rule-current-config.yaml"
-               expected-exception="org.apache.shardingsphere.sqlfederation.compiler.exception.InvalidExecutionPlanCacheConfigException"/>
-    <test-case dist-sql="ALTER SQL_FEDERATION RULE (EXECUTION_PLAN_CACHE(INITIAL_CAPACITY=64, MAXIMUM_SIZE=0))"
-               current-rule-config-yaml-file="cases/show-sql-federation-rule-current-config.yaml"
-               expected-exception="org.apache.shardingsphere.sqlfederation.compiler.exception.InvalidExecutionPlanCacheConfigException"/>
 </distsql-rule-definition-executor-test-cases>

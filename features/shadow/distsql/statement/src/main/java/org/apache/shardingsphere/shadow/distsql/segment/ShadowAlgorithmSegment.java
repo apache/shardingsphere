@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
 /**
- * Shadow algorithms segment.
+ * Shadow algorithm segment.
  */
 @RequiredArgsConstructor
 @Getter

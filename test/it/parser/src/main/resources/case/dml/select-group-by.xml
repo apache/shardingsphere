@@ -1087,9 +1087,31 @@
         <group-by>
             <expression-item expression="NULL" start-index="38" stop-index="41">
                 <expr>
-                    <literal-expression value="null" start-index="38" stop-index="41" />
+                    <literal-expression value="null" null-literal="true" start-index="38" stop-index="41" />
                 </expr>
             </expression-item>
         </group-by>
+    </select>
+    <select sql-case-id="select_having_without_group_by_oracle" parameters="1">
+        <projections start-index="7" stop-index="19">
+            <aggregation-projection type="MIN" expression="MIN(order_id)" start-index="7" stop-index="19" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="26" stop-index="32" />
+        </from>
+        <having start-index="34" stop-index="57">
+            <expr>
+                <binary-operation-expression start-index="41" stop-index="57">
+                    <left>
+                        <aggregation-projection type="MIN" expression="MIN(order_id)" start-index="41" stop-index="53" />
+                    </left>
+                    <operator>&lt;</operator>
+                    <right>
+                        <literal-expression value="1" start-index="57" stop-index="57" />
+                        <parameter-marker-expression parameter-index="0" start-index="57" stop-index="57" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
     </select>
 </sql-parser-test-cases>

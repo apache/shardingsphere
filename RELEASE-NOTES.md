@@ -9,6 +9,7 @@
 ### New Features
 
 1. MCP: Add standalone ShardingSphere-MCP Server - [#38541](https://github.com/apache/shardingsphere/pull/38541)
+1. Transaction: Add optional module for Jakarta Transactions impl of Jakarta EE 9 Spec - [#26041](https://github.com/apache/shardingsphere/issues/26041)
 
 ### CVE
 
@@ -37,6 +38,8 @@
 1. SQL Parser: Fix No value specified for parameter exception when sql is 'INSERT INTO tableName ON CONFLICT  DO UPDATE set  WHERE ' - [#38668](https://github.com/apache/shardingsphere/pull/38668)
 1. SQL Binder: Add DialectFunctionOption to handle wrong skip column bind in ColumnSegmentBinder - [#38350](https://github.com/apache/shardingsphere/pull/38350)
 1. SQL Binder: Fix wrong bind info when order by refer column from with temporary table - [#38353](https://github.com/apache/shardingsphere/pull/38353)
+1. SQL Binder: Fix wrong column label case for PostgreSQL and openGauss function projections - [#39393](https://github.com/apache/shardingsphere/pull/39393)
+1. SQL Binder: Bind PostgreSQL SYSTEM_USER as a niladic function instead of a column - [#39385](https://github.com/apache/shardingsphere/pull/39385)
 1. Metadata: Fix MySQL metadata loading fallback when JDBC catalog is null for named tables - [#38855](https://github.com/apache/shardingsphere/pull/38855)
 1. Metadata: Fix Oracle metadata version comparison skipping identity and collation columns on 18c and later - [#39104](https://github.com/apache/shardingsphere/pull/39104)
 1. Metadata: Fix wrong logic table metadata when config same actual table name in different storage unit - [#39157](https://github.com/apache/shardingsphere/pull/39157)
@@ -69,6 +72,7 @@
 1. Proxy: Fix MySQL BLOB result set handling in text and binary protocols - [#39340](https://github.com/apache/shardingsphere/pull/39340)
 1. Proxy: Fix silently dropped backslashes and rejected NULL elements in PostgreSQL text array binary parameters - [#39395](https://github.com/apache/shardingsphere/pull/39395)
 1. Proxy: Fix MySQL COM_QUERY binary string literal corruption - [#39433](https://github.com/apache/shardingsphere/pull/39433)
+1. Proxy: Add error handling for unknown or closed BLOB handles and ids in Firebird - [#39773](https://github.com/apache/shardingsphere/pull/39773)
 1. JDBC & Proxy: Remove default MySQL prepared statement query properties when creating data sources - [#38593](https://github.com/apache/shardingsphere/pull/38593)
 1. Mode: Fix rule metadata not removed from memory after dropping rules in Etcd cluster mode - [#38561](https://github.com/apache/shardingsphere/pull/38561)
 1. Agent: Fix wrong target class name in StaticMethodAdviceExecutor error logs - [#39077](https://github.com/apache/shardingsphere/pull/39077)
@@ -83,10 +87,20 @@
 1. Sharding: Compute the Snowflake key generator epoch in UTC instead of the JVM default timezone - [#38932](https://github.com/apache/shardingsphere/pull/38932)
 1. Sharding: Fix order-dependent data source intersection in Cartesian routing - [#39407](https://github.com/apache/shardingsphere/pull/39407)
 1. Sharding: Fix incorrect AVG(DISTINCT) merge result across shards - [#39429](https://github.com/apache/shardingsphere/pull/39429)
+1. Sharding: Fix MySQL SHOW INDEX stripping table suffix from index names of non-sharding tables - [#39853](https://github.com/apache/shardingsphere/pull/39853)
+1. Sharding: Fix NOT BETWEEN on sharding column being routed as BETWEEN - [#39855](https://github.com/apache/shardingsphere/pull/39855)
+1. Sharding: Use configured sharding column name when checking UPDATE assignments - [#39864](https://github.com/apache/shardingsphere/pull/39864)
+1. Sharding: Fix INTERVAL sharding on one-sided range outside datetime bounds - [#39862](https://github.com/apache/shardingsphere/pull/39862)
+1. Sharding: Fix GROUP_CONCAT merge result when all values are NULL - [#39860](https://github.com/apache/shardingsphere/pull/39860)
+1. Sharding: Fix swapped start and stop offset in sharding value offset error message - [#39858](https://github.com/apache/shardingsphere/pull/39858)
+1. Sharding: Fix sharding constraint reviser removing every actual table suffix - [#39868](https://github.com/apache/shardingsphere/pull/39868)
+1. Sharding: Fix DISABLE_AUDIT_NAMES hint ignoring auditor name case - [#39871](https://github.com/apache/shardingsphere/pull/39871)
 1. Readwrite-splitting: Evaluate inline expressions in data source names of rule configuration checker - [#39374](https://github.com/apache/shardingsphere/pull/39374)
 1. SQL Federation: Fix SQL Federation pagination binding for long LIMIT parameters - [#39237](https://github.com/apache/shardingsphere/pull/39237)
 1. Broadcast: Fix case-sensitive table name lookup in broadcast data node rule attribute - [#39153](https://github.com/apache/shardingsphere/pull/39153)
 1. Encrypt: Fix stale encryptors leaking when altering an encrypt rule - [#39209](https://github.com/apache/shardingsphere/pull/39209)
+1. Shadow: Apply default shadow algorithm to shadow tables when swapping YAML rule configuration - [#39749](https://github.com/apache/shardingsphere/pull/39749)
+1. Shadow: Fix INSERT SELECT statement being routed to shadow data source - [#39751](https://github.com/apache/shardingsphere/pull/39751)
 
 ### Enhancements
 
@@ -122,6 +136,10 @@
 1. SQL Parser: Support Oracle pseudo-record collection index parsing - [#39566](https://github.com/apache/shardingsphere/pull/39566)
 1. SQL Parser: Support Oracle DML error logging parser model and binder - [#39711](https://github.com/apache/shardingsphere/pull/39711)
 1. SQL Parser: Support Oracle PL/SQL syntax parsing and binding - [#39723](https://github.com/apache/shardingsphere/pull/39723)
+1. SQL Parser: Support scalar expressions in Oracle `IN` predicates - [#39876](https://github.com/apache/shardingsphere/pull/39876)
+1. SQL Parser: Support Oracle `ORDER BY` after `FOR UPDATE` and `HAVING` without `GROUP BY` - [#39877](https://github.com/apache/shardingsphere/pull/39877)
+1. SQL Parser: Support Oracle parenthesized `WITH` queries and qualified PL/SQL collection types - [#39914](https://github.com/apache/shardingsphere/pull/39914)
+1. SQL Parser: Support Oracle `DROP UNUSED COLUMNS` syntax - [#39917](https://github.com/apache/shardingsphere/pull/39917)
 1. SQL Binder: Support select order by index bind metadata - [#38386](https://github.com/apache/shardingsphere/pull/38386)
 1. SQL Binder: Support SQL bind when with temp table name is same with physical table - [#38411](https://github.com/apache/shardingsphere/pull/38411)
 1. SQL Binder: Support PostgreSQL whole-row projection binding - [#39276](https://github.com/apache/shardingsphere/pull/39276)

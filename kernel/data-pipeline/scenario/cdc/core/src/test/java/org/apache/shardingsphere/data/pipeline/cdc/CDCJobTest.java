@@ -60,13 +60,12 @@ import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarr
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -87,6 +86,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -195,11 +195,17 @@ class CDCJobTest {
         when(PipelineAPIFactory.getPipelineGovernanceFacade(CONTEXT_KEY)).thenReturn(mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS));
         when(PipelineDistributedBarrier.getInstance(CONTEXT_KEY)).thenReturn(mock(PipelineDistributedBarrier.class));
         when(PipelineDataSourceConfigurationFactory.newInstance(anyString(), anyString())).thenReturn(mock(PipelineDataSourceConfiguration.class));
-        YamlRuleConfiguration ruleConfig = mock(YamlRuleConfiguration.class);
+        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
+        Collection<RuleConfiguration> ruleConfigs = Collections.singleton(ruleConfig);
+        when(jobConfig.getDataSourceConfig().getRuleConfigurations()).thenReturn(ruleConfigs);
         PipelineRequiredColumnsExtractor extractor = mock(PipelineRequiredColumnsExtractor.class);
         Map<ShardingSphereIdentifier, Collection<String>> requiredColumns = Collections.singletonMap(new ShardingSphereIdentifier("logic_tbl"), Collections.singleton("id"));
         when(extractor.getTableAndRequiredColumnsMap(eq(ruleConfig), anyCollection())).thenReturn(requiredColumns);
-        when(OrderedSPILoader.getServices(eq(PipelineRequiredColumnsExtractor.class), anyCollection())).thenReturn(Collections.singletonMap(ruleConfig, extractor));
+        AtomicReference<Collection<RuleConfiguration>> capturedRuleConfigs = new AtomicReference<>();
+        when(OrderedSPILoader.getServices(eq(PipelineRequiredColumnsExtractor.class), anyCollection())).thenAnswer(invocation -> {
+            capturedRuleConfigs.set(invocation.getArgument(1));
+            return Collections.singletonMap(ruleConfig, extractor);
+        });
         AtomicReference<CDCJobItemContext> capturedContext = new AtomicReference<>();
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
@@ -222,6 +228,8 @@ class CDCJobTest {
             new CDCJob(mock(PipelineSink.class)).execute(shardingContext);
         }
         assertThat(capturedContext.get().getStatus(), is(JobStatus.EXECUTE_INCREMENTAL_TASK));
+        assertThat(capturedRuleConfigs.get(), sameInstance(ruleConfigs));
+        assertThat(capturedContext.get().getTaskConfig().getImporterConfig().getShardingColumns("logic_tbl"), is(Collections.singleton("id")));
     }
     
     @SuppressWarnings("unchecked")
@@ -385,15 +393,7 @@ class CDCJobTest {
         ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = mock(ShardingSpherePipelineDataSourceConfiguration.class);
         when(dataSourceConfig.getType()).thenReturn("JDBC");
         when(dataSourceConfig.getParameter()).thenReturn("param");
-        when(dataSourceConfig.getRootConfig()).thenReturn(createYAMLRootConfiguration());
         when(result.getDataSourceConfig()).thenReturn(dataSourceConfig);
-        return result;
-    }
-    
-    private YamlRootConfiguration createYAMLRootConfiguration() {
-        YamlRootConfiguration result = new YamlRootConfiguration();
-        result.setDatabaseName("logic_db");
-        result.setDataSources(Collections.singletonMap("ds_0", Collections.emptyMap()));
         return result;
     }
     

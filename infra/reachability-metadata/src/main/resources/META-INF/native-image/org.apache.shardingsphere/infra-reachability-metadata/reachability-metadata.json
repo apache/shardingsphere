@@ -916,6 +916,12 @@
   "resources": [
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "bundle": "org.apache.bval.jsr.ValidationMessages"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.spi.RegisteredShardingSphereSPI"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.*"

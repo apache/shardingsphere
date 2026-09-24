@@ -66,7 +66,13 @@ public enum FirebirdVendorError implements VendorError {
     
     BATCH_PARAMETERS_REQUIRED(FirebirdState.BATCH_PARAMETERS_REQUIRED, ISCConstants.isc_batch_param, "Statement used in batch must have parameters"),
     
-    SQLDA_ERROR(FirebirdState.SQLDA_ERROR, ISCConstants.isc_dsql_sqlda_err, "");
+    SQLDA_ERROR(FirebirdState.SQLDA_ERROR, ISCConstants.isc_dsql_sqlda_err, ""),
+    
+    INVALID_SEGSTR_HANDLE(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_bad_segstr_handle, "invalid BLOB handle"),
+    
+    INVALID_SEGSTR_ID(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_bad_segstr_id, "invalid BLOB ID"),
+    
+    CANNOT_UPDATE_OLD_BLOB(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_cannot_update_old_blob, "cannot update old BLOB");
     
     private final SQLState sqlState;
     

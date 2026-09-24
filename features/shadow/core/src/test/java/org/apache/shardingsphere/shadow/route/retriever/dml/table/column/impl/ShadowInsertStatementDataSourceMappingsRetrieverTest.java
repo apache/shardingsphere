@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -49,6 +50,17 @@ class ShadowInsertStatementDataSourceMappingsRetrieverTest {
         Collection<ShadowColumnCondition> actual = retriever.getShadowColumnConditions("foo_col");
         Collection<ShadowColumnCondition> expected = Collections.singletonList(new ShadowColumnCondition("foo_tbl", "foo_col", Collections.singletonList("foo")));
         assertThat(actual, deepEqual(expected));
+    }
+    
+    @Test
+    void assertRetrieveWithInsertSelect() {
+        InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getInsertColumnNames()).thenReturn(Arrays.asList("foo_col", "bar_col"));
+        when(sqlStatementContext.getInsertValueContexts()).thenReturn(Collections.emptyList());
+        ShadowInsertStatementDataSourceMappingsRetriever retriever = new ShadowInsertStatementDataSourceMappingsRetriever(sqlStatementContext);
+        Collection<ShadowColumnCondition> actual = retriever.getShadowColumnConditions("foo_col");
+        Collection<ShadowColumnCondition> expected = Collections.emptyList();
+        assertThat(actual, is(expected));
     }
     
     @Test

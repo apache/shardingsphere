@@ -19,9 +19,14 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -30,23 +35,53 @@ import java.util.function.Function;
  */
 public final class PipelineSQLSegmentBuilder {
     
-    private final DatabaseTypeRegistry databaseTypeRegistry;
-    
     private final DialectDatabaseMetaData dialectDatabaseMetaData;
     
+    @Nullable
+    private final DatabaseIdentifierContext identifierContext;
+    
+    /**
+     * Create a builder for resolved actual identifiers without resolving a storage policy.
+     *
+     * @param databaseType database type
+     */
     public PipelineSQLSegmentBuilder(final DatabaseType databaseType) {
-        databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
-        dialectDatabaseMetaData = databaseTypeRegistry.getDialectDatabaseMetaData();
+        this(databaseType, null);
+    }
+    
+    /**
+     * Create a builder using the SQL endpoint's identifier context.
+     *
+     * @param databaseType database type
+     * @param identifierContext endpoint context, or null for actual identifiers only
+     */
+    public PipelineSQLSegmentBuilder(final DatabaseType databaseType, @Nullable final DatabaseIdentifierContext identifierContext) {
+        dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        this.identifierContext = identifierContext;
     }
     
     /**
      * Get escaped identifier.
      *
-     * @param identifier identifier to be processed
+     * @param identifierScope identifier scope
+     * @param identifier reference identifier, retaining its quote characters
      * @return escaped identifier
      */
-    public String getEscapedIdentifier(final String identifier) {
-        return "*".equals(identifier) ? identifier : dialectDatabaseMetaData.getQuoteCharacter().wrap(databaseTypeRegistry.formatIdentifierPattern(identifier));
+    @HighFrequencyInvocation
+    public String getEscapedIdentifier(final IdentifierScope identifierScope, final String identifier) {
+        return "*".equals(identifier) ? identifier : getEscapedActualIdentifier(normalizeStorageIdentifier(identifierScope, identifier));
+    }
+    
+    /**
+     * Normalize a reference for storage, including names persisted for later cleanup.
+     *
+     * @param identifierScope identifier scope
+     * @param identifier reference identifier
+     * @return storage identifier
+     */
+    @HighFrequencyInvocation
+    public String normalizeStorageIdentifier(final IdentifierScope identifierScope, final String identifier) {
+        return identifierContext.normalizeStorage(identifierScope, new IdentifierValue(identifier));
     }
     
     /**
@@ -55,6 +90,7 @@ public final class PipelineSQLSegmentBuilder {
      * @param identifier actual identifier to be processed
      * @return escaped actual identifier
      */
+    @HighFrequencyInvocation
     public String getEscapedActualIdentifier(final String identifier) {
         return "*".equals(identifier) ? identifier : dialectDatabaseMetaData.getQuoteCharacter().wrap(identifier);
     }
@@ -66,8 +102,12 @@ public final class PipelineSQLSegmentBuilder {
      * @param tableName table name
      * @return qualified table name
      */
+    @HighFrequencyInvocation
     public String getQualifiedTableName(final String schemaName, final String tableName) {
-        return buildQualifiedTableName(schemaName, tableName, this::getEscapedIdentifier);
+        String escapedTableName = getEscapedIdentifier(IdentifierScope.TABLE, tableName);
+        return dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)
+                ? String.join(".", getEscapedIdentifier(IdentifierScope.SCHEMA, schemaName), escapedTableName)
+                : escapedTableName;
     }
     
     /**

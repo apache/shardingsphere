@@ -31,10 +31,13 @@ import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExcept
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.CannotUpdateOldBlobException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ExcessTransactionsException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
@@ -133,6 +136,21 @@ class FirebirdDialectExceptionMapperTest {
     @Test
     void assertConvertWithInvalidParameterValue() {
         assertSQLException(mapper.convert(new InvalidParameterValueException("names", "foo_charset")), FirebirdVendorError.CHARSET_NOT_FOUND, "foo_charset");
+    }
+    
+    @Test
+    void assertConvertWithInvalidSegstrHandle() {
+        assertSQLException(mapper.convert(new InvalidSegstrHandleException(42)), FirebirdVendorError.INVALID_SEGSTR_HANDLE);
+    }
+    
+    @Test
+    void assertConvertWithInvalidSegstrId() {
+        assertSQLException(mapper.convert(new InvalidSegstrIdException(99L)), FirebirdVendorError.INVALID_SEGSTR_ID);
+    }
+    
+    @Test
+    void assertConvertWithCannotUpdateOldBlob() {
+        assertSQLException(mapper.convert(new CannotUpdateOldBlobException(42)), FirebirdVendorError.CANNOT_UPDATE_OLD_BLOB);
     }
     
     @Test

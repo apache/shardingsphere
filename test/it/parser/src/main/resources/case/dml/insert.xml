@@ -37,6 +37,55 @@
         </error-logging>
     </insert>
 
+    <insert sql-case-id="multi_table_insert_with_error_logging" parameters="1, 'insert_tag'">
+        <multi-table-insert-type value="ALL" />
+        <multi-table-insert-into start-index="11" stop-index="139">
+            <insert-statement>
+                <table name="t_order" start-index="16" stop-index="22" />
+                <columns start-index="23" stop-index="23" />
+                <values>
+                    <value>
+                        <assignment-value>
+                            <parameter-marker-expression parameter-index="0" start-index="32" stop-index="32" />
+                        </assignment-value>
+                    </value>
+                </values>
+                <error-logging reject-limit="1" start-index="35" stop-index="81">
+                    <table>
+                        <simple-table name="ERR$_T_ORDER" start-index="51" stop-index="62" />
+                    </table>
+                    <tag>
+                        <parameter-marker-expression parameter-index="1" start-index="65" stop-index="65" />
+                    </tag>
+                </error-logging>
+            </insert-statement>
+            <insert-statement>
+                <table name="t_order" start-index="88" stop-index="94" />
+                <columns start-index="95" stop-index="95" />
+                <values>
+                    <value>
+                        <assignment-value>
+                            <literal-expression value="2" start-index="104" stop-index="104" />
+                        </assignment-value>
+                    </value>
+                </values>
+                <error-logging reject-limit="UNLIMITED" start-index="107" stop-index="139" />
+            </insert-statement>
+        </multi-table-insert-into>
+        <select>
+            <from>
+                <simple-table name="dual" start-index="155" stop-index="158" />
+            </from>
+            <projections start-index="148" stop-index="148">
+                <expression-projection text="1" start-index="148" stop-index="148">
+                    <expr>
+                        <literal-expression value="1" start-index="148" stop-index="148" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </insert>
+
     <insert sql-case-id="insert_into_values1">
         <table name="test_nested" start-index="12" stop-index="22" />
         <columns start-index="23" stop-index="23" />

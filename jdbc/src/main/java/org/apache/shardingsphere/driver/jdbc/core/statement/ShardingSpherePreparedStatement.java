@@ -235,8 +235,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 return statements.iterator().next().execute();
             }
             clearPrevious();
-            QueryContext queryContext = createQueryContext();
-            this.queryContext = queryContext;
+            this.queryContext = createQueryContext();
             handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
             boolean result = driverExecutorFacade.execute(usedDatabase, metaData, queryContext, (sql, statement) -> ((PreparedStatement) statement).execute(),
                     (StatementAddCallback<PreparedStatement>) this::addStatements, createReplayCallback());
@@ -337,8 +336,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             hasBatchGeneratedValues = true;
         }
         currentResultSet = null;
-        QueryContext queryContext = createQueryContext();
-        this.queryContext = queryContext;
+        this.queryContext = createQueryContext();
         executeBatchExecutor.addBatch(queryContext, usedDatabase);
         findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
         clearParameters();

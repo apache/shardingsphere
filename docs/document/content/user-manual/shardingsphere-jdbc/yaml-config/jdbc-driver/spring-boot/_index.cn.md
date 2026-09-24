@@ -40,6 +40,9 @@ spring.datasource.url=jdbc:shardingsphere:classpath:xxx.yaml
 ShardingSphere 的 XA 分布式事务尚未在 Spring Boot 3+ 上就绪，此限制同样适用于其他基于 Jakarta EE 9+ 的 Web Framework，如
 Quarkus 3，Micronaut Framework 4 和 Helidon 3+。
 
+若需在 Spring Boot 3+ 下使用 ShardingSphere 的 XA 分布式事务，请参考
+[Jakarta EE 9 Spec 的 Jakarta Transactions](/cn/user-manual/shardingsphere-jdbc/optional-plugins/jakarta-transactions)。
+
 用户仅需要配置如下。
 
 ```xml

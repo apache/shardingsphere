@@ -15300,5 +15300,64 @@
             <simple-table name="t_order" start-index="32" stop-index="38" />
         </from>
     </select>
-
+    <select sql-case-id="select_system_user_postgresql">
+        <projections start-index="7" stop-index="17">
+            <column-projection name="SYSTEM_USER" start-index="7" stop-index="17" />
+        </projections>
+    </select>
+    <select sql-case-id="select_in_with_owner_column_rhs_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" alias="o" start-index="14" stop-index="22" />
+        </from>
+        <where start-index="24" stop-index="52">
+            <expr>
+                <in-expression start-index="30" stop-index="52">
+                    <left>
+                        <column name="user_id" start-index="30" stop-index="38">
+                            <owner name="o" start-index="30" stop-index="30" />
+                        </column>
+                    </left>
+                    <right>
+                        <column name="order_id" start-index="43" stop-index="52">
+                            <owner name="o" start-index="43" stop-index="43" />
+                        </column>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </select>
+    <select sql-case-id="select_in_with_function_rhs_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" alias="o" start-index="14" stop-index="22" />
+        </from>
+        <where start-index="24" stop-index="60">
+            <expr>
+                <in-expression start-index="30" stop-index="60">
+                    <left>
+                        <column name="user_id" start-index="30" stop-index="38">
+                            <owner name="o" start-index="30" stop-index="30" />
+                        </column>
+                    </left>
+                    <right>
+                        <function function-name="NVL" text="NVL(o.order_id, 0)" start-index="43" stop-index="60">
+                            <parameter>
+                                <column name="order_id" start-index="47" stop-index="56">
+                                    <owner name="o" start-index="47" stop-index="47" />
+                                </column>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="0" start-index="59" stop-index="59" />
+                            </parameter>
+                        </function>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

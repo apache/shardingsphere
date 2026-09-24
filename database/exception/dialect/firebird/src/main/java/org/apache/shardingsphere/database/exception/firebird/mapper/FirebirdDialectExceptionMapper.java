@@ -29,10 +29,13 @@ import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExcept
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.CannotUpdateOldBlobException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ExcessTransactionsException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
@@ -97,6 +100,15 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof InvalidParameterValueException) {
             return toSQLException(FirebirdVendorError.CHARSET_NOT_FOUND, ((InvalidParameterValueException) sqlDialectException).getParameterValue());
+        }
+        if (sqlDialectException instanceof InvalidSegstrHandleException) {
+            return toSQLException(FirebirdVendorError.INVALID_SEGSTR_HANDLE);
+        }
+        if (sqlDialectException instanceof InvalidSegstrIdException) {
+            return toSQLException(FirebirdVendorError.INVALID_SEGSTR_ID);
+        }
+        if (sqlDialectException instanceof CannotUpdateOldBlobException) {
+            return toSQLException(FirebirdVendorError.CANNOT_UPDATE_OLD_BLOB);
         }
         return new UnknownSQLException(sqlDialectException).toSQLException();
     }

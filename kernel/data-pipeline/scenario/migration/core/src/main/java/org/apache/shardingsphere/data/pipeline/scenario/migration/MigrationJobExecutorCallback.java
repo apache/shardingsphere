@@ -47,13 +47,13 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -127,9 +127,9 @@ public final class MigrationJobExecutorCallback implements DistributedPipelineJo
     @SuppressWarnings({"rawtypes", "unchecked"})
     private Map<ShardingSphereIdentifier, Collection<String>> getTableAndRequiredColumnsMap(final MigrationJobConfiguration jobConfig) {
         Map<ShardingSphereIdentifier, Collection<String>> result = new HashMap<>();
-        Collection<YamlRuleConfiguration> yamlRuleConfigs = ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules();
+        Collection<RuleConfiguration> ruleConfigs = ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRuleConfigurations();
         Collection<ShardingSphereIdentifier> targetTableNames = jobConfig.getTargetTableNames().stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet());
-        for (Entry<YamlRuleConfiguration, PipelineRequiredColumnsExtractor> entry : OrderedSPILoader.getServices(PipelineRequiredColumnsExtractor.class, yamlRuleConfigs).entrySet()) {
+        for (Entry<RuleConfiguration, PipelineRequiredColumnsExtractor> entry : OrderedSPILoader.getServices(PipelineRequiredColumnsExtractor.class, ruleConfigs).entrySet()) {
             result.putAll(entry.getValue().getTableAndRequiredColumnsMap(entry.getKey(), targetTableNames));
         }
         return result;

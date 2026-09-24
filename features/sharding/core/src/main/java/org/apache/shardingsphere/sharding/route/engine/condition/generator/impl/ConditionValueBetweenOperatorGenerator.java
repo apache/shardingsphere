@@ -40,6 +40,9 @@ public final class ConditionValueBetweenOperatorGenerator implements ConditionVa
     
     @Override
     public Optional<ShardingConditionValue> generate(final BetweenExpression predicate, final HashColumn column, final List<Object> params, final TimestampServiceRule timestampServiceRule) {
+        if (predicate.isNot()) {
+            return Optional.empty();
+        }
         ConditionValue betweenConditionValue = new ConditionValue(predicate.getBetweenExpr(), params);
         ConditionValue andConditionValue = new ConditionValue(predicate.getAndExpr(), params);
         Optional<Comparable<?>> betweenValue = betweenConditionValue.getValue();

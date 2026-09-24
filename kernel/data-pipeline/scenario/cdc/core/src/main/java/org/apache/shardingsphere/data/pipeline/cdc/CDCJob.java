@@ -64,10 +64,10 @@ import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgori
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -163,9 +163,9 @@ public final class CDCJob implements PipelineJob {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private Map<ShardingSphereIdentifier, Collection<String>> getTableAndRequiredColumnsMap(final CDCJobConfiguration jobConfig) {
         Map<ShardingSphereIdentifier, Collection<String>> result = new HashMap<>();
-        Collection<YamlRuleConfiguration> yamlRuleConfigs = jobConfig.getDataSourceConfig().getRootConfig().getRules();
+        Collection<RuleConfiguration> ruleConfigs = jobConfig.getDataSourceConfig().getRuleConfigurations();
         Collection<ShardingSphereIdentifier> targetTableNames = jobConfig.getSchemaTableNames().stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet());
-        for (Entry<YamlRuleConfiguration, PipelineRequiredColumnsExtractor> entry : OrderedSPILoader.getServices(PipelineRequiredColumnsExtractor.class, yamlRuleConfigs).entrySet()) {
+        for (Entry<RuleConfiguration, PipelineRequiredColumnsExtractor> entry : OrderedSPILoader.getServices(PipelineRequiredColumnsExtractor.class, ruleConfigs).entrySet()) {
             result.putAll(entry.getValue().getTableAndRequiredColumnsMap(entry.getKey(), targetTableNames));
         }
         return result;

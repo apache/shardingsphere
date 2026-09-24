@@ -539,6 +539,7 @@
     <sql-case id="select_limit_parameter" value="SELECT * FROM t4 LIMIT ?;" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_limit_complex_expr" value="SELECT * FROM t4 LIMIT (CASE WHEN true THEN 10 ELSE 20 END);" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_func" value="select public.int4range(400, 500, '[]');" db-types="PostgreSQL" />
+    <sql-case id="select_system_user_postgresql" value="SELECT SYSTEM_USER" db-types="PostgreSQL" />
     <sql-case id="select_ltrim_function" value="SELECT LTRIM('  barbar')" db-types="MySQL,Doris" />
     <sql-case id="select_element_at" value="SELECT element_at(k1, 1) FROM t_order" db-types="Doris" />
     <sql-case id="select_array_subscript" value="SELECT k1[1] FROM t_order" db-types="Doris" />
@@ -577,4 +578,6 @@
     <sql-case id="select_chinese_columns_with_ascii_comma_from_dual" value="SELECT 中文列一, 中文列二 AS RESULT FROM DUAL" db-types="Oracle" />
     <sql-case id="select_chinese_columns_from_table" value="SELECT 中文列一，中文列二 AS RESULT FROM t_order" db-types="Oracle" />
     <sql-case id="select_for_system_version_as_of_hive" value="SELECT * FROM table_a FOR SYSTEM_VERSION AS OF 1234567;" db-types="Hive" />
+    <sql-case id="select_in_with_owner_column_rhs_oracle" value="SELECT * FROM t_order o WHERE o.user_id IN o.order_id" db-types="Oracle" />
+    <sql-case id="select_in_with_function_rhs_oracle" value="SELECT * FROM t_order o WHERE o.user_id IN NVL(o.order_id, 0)" db-types="Oracle" />
 </sql-cases>
