@@ -30,11 +30,14 @@ import java.util.Map;
  */
 public final class OrderByToken extends SQLToken implements Attachable, RouteUnitAware {
     
-    private final Map<RouteUnit, Collection<String>> orderByItems;
+    private final Collection<String> orderByItems;
     
-    public OrderByToken(final int startIndex, final Map<RouteUnit, Collection<String>> orderByItems) {
+    private final Map<RouteUnit, Collection<String>> routeUnitOrderByItems;
+    
+    public OrderByToken(final int startIndex, final Collection<String> orderByItems, final Map<RouteUnit, Collection<String>> routeUnitOrderByItems) {
         super(startIndex);
         this.orderByItems = orderByItems;
+        this.routeUnitOrderByItems = routeUnitOrderByItems;
     }
     
     @Override
@@ -44,6 +47,15 @@ public final class OrderByToken extends SQLToken implements Attachable, RouteUni
     
     @Override
     public String toString(final RouteUnit routeUnit) {
-        return " ORDER BY " + String.join(",", orderByItems.get(routeUnit)) + " ";
+        return toString(routeUnitOrderByItems.get(routeUnit));
+    }
+    
+    @Override
+    public String toString() {
+        return toString(orderByItems);
+    }
+    
+    private String toString(final Collection<String> items) {
+        return " ORDER BY " + String.join(",", items) + " ";
     }
 }

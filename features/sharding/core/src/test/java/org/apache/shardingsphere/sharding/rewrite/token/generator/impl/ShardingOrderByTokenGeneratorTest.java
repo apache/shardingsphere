@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.rewrite.sql.SQLBuilderEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -180,6 +181,15 @@ class ShardingOrderByTokenGeneratorTest {
         SelectStatementContext selectStatementContext = mockSelectStatementContext(mock(SelectStatement.class), Collections.singleton(createColumnOrderByItem("t_single", "status")));
         OrderByToken actual = generator.generateSQLToken(selectStatementContext);
         assertThat(actual.toString(routeUnit), is(" ORDER BY t_single.status ASC "));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithoutRouteUnits() {
+        generator.setRouteContext(new RouteContext());
+        SelectStatementContext selectStatementContext = mockSelectStatementContext(mock(SelectStatement.class), Collections.singleton(createColumnOrderByItem("t_account", "status")));
+        when(selectStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(14, 22, new IdentifierValue("t_account")))));
+        OrderByToken actual = generator.generateSQLToken(selectStatementContext);
+        assertThat(new SQLBuilderEngine("SELECT * FROM t_account", Collections.singletonList(actual)).buildSQL(), is("SELECT * FROM t_account ORDER BY t_account.status ASC "));
     }
     
     private SelectStatementContext mockSelectStatementContext(final SelectStatement selectStatement, final Collection<OrderByItem> orderByItems) {

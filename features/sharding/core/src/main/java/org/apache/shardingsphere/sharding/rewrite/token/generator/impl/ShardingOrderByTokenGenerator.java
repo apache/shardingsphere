@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -69,7 +70,7 @@ public final class ShardingOrderByTokenGenerator implements OptionalSQLTokenGene
         for (RouteUnit each : routeContext.getRouteUnits()) {
             orderByItems.put(each, getOrderByItems(selectStatementContext, tableExtractor, ShardingTokenUtils.getLogicAndActualTableMap(each, selectStatementContext, rule)));
         }
-        return new OrderByToken(getGenerateOrderByStartIndex(selectStatementContext), orderByItems);
+        return new OrderByToken(getGenerateOrderByStartIndex(selectStatementContext), getOrderByItems(selectStatementContext, tableExtractor, Collections.emptyMap()), orderByItems);
     }
     
     private Collection<String> getOrderByItems(final SelectStatementContext selectStatementContext, final TableExtractor tableExtractor, final Map<String, String> logicAndActualTables) {
