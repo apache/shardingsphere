@@ -159,7 +159,7 @@ public final class MetaDataLoader {
             Map<String, String> normalizedToOriginal = normalizedToOriginalByStorageUnit.get(storageUnitName);
             for (String each : expectedNormalizedNames) {
                 if (!loadedNormalizedNames.contains(each)) {
-                    String originalName = null != normalizedToOriginal ? normalizedToOriginal.getOrDefault(each, each) : each;
+                    String originalName = null == normalizedToOriginal ? each : normalizedToOriginal.getOrDefault(each, each);
                     missingTableIdentities.add(storageUnitName + "." + originalName);
                 }
             }
