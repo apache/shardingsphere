@@ -89,7 +89,7 @@ plugins:
 
 #### OpenTelemetry
 
-OpenTelemetry 可以导出 tracing 数据到 Jaeger，Zipkin。
+OpenTelemetry 可以将 tracing 数据导出到任意 OTLP 接收端，例如 Jaeger、Zipkin。
 
 * 参数说明
 
@@ -97,8 +97,11 @@ OpenTelemetry 可以导出 tracing 数据到 Jaeger，Zipkin。
 |------------------------------------|-----------------|
 | otel.service.name                  | 服务名称            |
 | otel.traces.exporter               | traces exporter |
+| otel.exporter.otlp.protocol        | OTLP protocol  |
 | otel.exporter.otlp.traces.endpoint | traces endpoint |
 | otel.traces.sampler                | traces sampler  |
+
+Zipkin 不接收 OTLP，需要使用 `ghcr.io/openzipkin-contrib/zipkin-otel`，它在 9411 端口接收 OTLP/HTTP。
 
 参数参考 [OpenTelemetry SDK Autoconfigure](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure)
 
