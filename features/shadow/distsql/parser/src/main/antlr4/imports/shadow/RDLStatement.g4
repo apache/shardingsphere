@@ -56,19 +56,19 @@ shadowTableRule
     ;
 
 source
-    : IDENTIFIER_
+    : identifier
     ;
 
 shadow
-    : IDENTIFIER_
+    : identifier
     ;
 
 tableName
-    : IDENTIFIER_
+    : identifier
     ;
 
 algorithmName
-    : IDENTIFIER_
+    : identifier
     ;
 
 ifExists
