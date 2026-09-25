@@ -25,7 +25,7 @@ ShardingSphere 定义了，
 
 贡献者必须在设备安装，
 
-1. GraalVM CE 25.0.2，或与 GraalVM CE 25.0.2 兼容的 GraalVM 下游发行版。以 [GraalVM Native Image](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image) 为准。
+1. GraalVM CE 25.3.4.1，或与 GraalVM CE 25.3.4.1 兼容的 GraalVM 下游发行版。以 [GraalVM Native Image](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image) 为准。
 2. 编译 GraalVM Native Image 所需要的本地工具链。以 https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites 为准。
 3. 可运行 Linux Containers 的 Docker Engine，或与 testcontainers-java 兼容的 Container Runtime。以 https://java.testcontainers.org/supported_docker_environment/ 为准。
 
@@ -41,8 +41,8 @@ ShardingSphere 定义了，
 sudo apt install unzip zip -y
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 25.0.2-graalce
-sdk use java 25.0.2-graalce
+sdk install java 25.3.4.1-graalce
+sdk use java 25.3.4.1-graalce
 ```
 
 可在 bash 通过如下命令安装编译 GraalVM Native Image 所需要的本地工具链。
@@ -94,11 +94,11 @@ sudo systemctl restart docker.service
 winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
 vfox add java
-vfox install java@25.0.2-graalce
-vfox use --global java@25.0.2-graalce
+vfox install java@25.3.4.1-graalce
+vfox use --global java@25.3.4.1-graalce
 ```
 
-当 Windows 弹出窗口，要求允许类似 `C:\users\shard\.version-fox\cache\java\v-25.0.2-graalce\java-25.0.2-graalce\bin\java.exe` 路径的应用通过 Windows 防火墙时，应当批准。
+当 Windows 弹出窗口，要求允许类似 `C:\users\shard\.version-fox\cache\java\v-25.3.4.1-graalce\java-25.3.4.1-graalce\bin\java.exe` 路径的应用通过 Windows 防火墙时，应当批准。
 背景参考 https://support.microsoft.com/en-us/windows/risks-of-allowing-apps-through-windows-firewall-654559af-3f54-3dcf-349f-71ccd90bcc5c 。
 
 可在 Powershell 7 通过如下命令安装编译 GraalVM Native Image 所需要的本地工具链。**特定情况下，开发者可能需要为 Visual Studio 的使用购买许可证。**
@@ -288,14 +288,14 @@ org.graalvm.nativeimage.MissingReflectionRegistrationError: Cannot reflectively 
   }
 
 The 'reachability-metadata.json' file should be located in 'META-INF/native-image/<group-id>/<artifact-id>/' of your project. For further help, see https://www.graalvm.org/latest/reference-manual/native-image/metadata/#reflection
-  java.base@25.0.2/java.lang.Class.getConstructors(DynamicHub.java:1277)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
-  java.management@25.0.2/javax.management.StandardMBean.construct(StandardMBean.java:174)
-  java.management@25.0.2/javax.management.StandardMBean.<init>(StandardMBean.java:268)
+  java.base@25.0.4.1/java.lang.Class.getConstructors(DynamicHub.java:1277)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
+  java.management@25.0.4.1/javax.management.StandardMBean.construct(StandardMBean.java:174)
+  java.management@25.0.4.1/javax.management.StandardMBean.<init>(StandardMBean.java:268)
 org.graalvm.nativeimage.MissingReflectionRegistrationError: Cannot reflectively access the 'com.oracle.svm.core.code.CodeCachePoolMXBean$NativeMetadataPool'. To allow this operation, add the following to the 'reflection' section of 'reachability-metadata.json' and rebuild the native image:
 
   {
@@ -303,14 +303,14 @@ org.graalvm.nativeimage.MissingReflectionRegistrationError: Cannot reflectively 
   }
 
 The 'reachability-metadata.json' file should be located in 'META-INF/native-image/<group-id>/<artifact-id>/' of your project. For further help, see https://www.graalvm.org/latest/reference-manual/native-image/metadata/#reflection
-  java.base@25.0.2/java.lang.Class.getConstructors(DynamicHub.java:1277)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
-  java.management@25.0.2/javax.management.StandardMBean.construct(StandardMBean.java:174)
-  java.management@25.0.2/javax.management.StandardMBean.<init>(StandardMBean.java:268)
+  java.base@25.0.4.1/java.lang.Class.getConstructors(DynamicHub.java:1277)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
+  java.management@25.0.4.1/javax.management.StandardMBean.construct(StandardMBean.java:174)
+  java.management@25.0.4.1/javax.management.StandardMBean.<init>(StandardMBean.java:268)
 ```
 
 相关警告暂时无法避免。

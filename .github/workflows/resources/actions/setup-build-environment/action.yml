@@ -92,8 +92,8 @@ runs:
       uses: graalvm/setup-graalvm@0426e2e191540e8514dff98dc52a5f5146a2a276 # v1.6.6
       with:
         distribution: 'graalvm-community'
-        java-version: '25.0.2'
         native-image-job-reports: 'true'
+        version: '25.3.4.1'
     - name: Verify Preinstalled Docker
       if: inputs.enable-docker-setup == 'true'
       shell: bash

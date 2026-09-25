@@ -1284,7 +1284,7 @@
                                     <buildArg>-H:+AddAllCharsets</buildArg>
                                     <buildArg>-H:+IncludeAllLocales</buildArg>
                                     <buildArg>--exact-reachability-metadata</buildArg>
-                                    <buildArg>-H:+TreatAllTypeReachableConditionsAsTypeReached</buildArg>
+                                    <buildArg>-H:ServiceLoaderFeatureExcludeServiceProviders=org.apache.seata.rm.datasource.undo.parser.ForyUndoLogParser,org.apache.seata.rm.datasource.undo.parser.ProtostuffUndoLogParser,org.apache.seata.rm.datasource.undo.parser.KryoUndoLogParser,org.apache.seata.rm.datasource.undo.parser.Fastjson2UndoLogParser</buildArg>
                                 </buildArgs>
                                 <runtimeArgs>
                                     <runtimeArg>-XX:MissingRegistrationReportingMode=Warn</runtimeArg>
