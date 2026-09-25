@@ -72,6 +72,24 @@ class ShardingTableTest {
         assertThat(actual.findActualTableIndex("foo_ds", "foo_order_0"), is(0));
     }
     
+    @Test
+    void assertGetTableDataNodeWithNumericSuffix() {
+        ShardingTableRuleConfiguration config =
+                new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_0,ds_0.t_order_00");
+        ShardingTable actual = new ShardingTable(config, Collections.singleton("ds_0"), null);
+        assertThat(actual.getTableDataNode().getPrefix(), is("t_order_"));
+        assertThat(actual.getTableDataNode().getSuffixMinLength(), is(1));
+    }
+    
+    @Test
+    void assertGetTableDataNodeWithAlphanumericSuffix() {
+        ShardingTableRuleConfiguration config =
+                new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_mgm,ds_0.t_order_49m2cd");
+        ShardingTable actual = new ShardingTable(config, Collections.singleton("ds_0"), null);
+        assertThat(actual.getTableDataNode().getPrefix(), is("t_order_"));
+        assertThat(actual.getTableDataNode().getSuffixMinLength(), is(3));
+    }
+    
     private ShardingTable createShardingTable() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}");
         shardingTableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
