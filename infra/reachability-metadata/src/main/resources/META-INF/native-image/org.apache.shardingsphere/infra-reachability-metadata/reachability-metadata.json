@@ -16,6 +16,66 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
       },
+      "type": "org.apache.bval.constraints.NotEmptyValidator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.bval.constraints.NotEmptyValidatorForCharSequence",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.bval.constraints.NotEmptyValidatorForCollection",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.bval.constraints.NotEmptyValidatorForMap",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.bval.constraints.NotNullValidator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
       "type": "org.apache.bval.jsr.ApacheValidatorFactory",
       "methods": [
         {
@@ -165,6 +225,306 @@
       "methods": [
         {
           "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.infra.config.rule.validator.constraint.reference.ConfigurationReferenceExistsValidator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.shadow.config.validator.ShadowRuleConfigurationValidator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.sharding.api.config.validator.ShardingRuleConfigurationValidator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.transaction.config.validator.TransactionProviderTypeValidator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExistsValidator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.encrypt.config.validator.EncryptTableRuleConfigurationValidator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration",
+      "fields": [
+        {
+          "name": "dataSourceGroups"
+        },
+        {
+          "name": "loadBalancers"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getLoadBalancers",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDataSourceGroups",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration",
+      "fields": [
+        {
+          "name": "name"
+        },
+        {
+          "name": "readDataSourceNames"
+        },
+        {
+          "name": "transactionalReadQueryStrategy"
+        },
+        {
+          "name": "writeDataSourceName"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getLoadBalancerName",
+          "parameterTypes": []
+        },
+        {
+          "name": "getReadDataSourceNames",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration",
+      "methods": [
+        {
+          "name": "getType",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration",
+      "fields": [
+        {
+          "name": "encryptors"
+        },
+        {
+          "name": "tables"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getEncryptors",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTables",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration",
+      "fields": [
+        {
+          "name": "columns"
+        },
+        {
+          "name": "name"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getColumns",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration",
+      "fields": [
+        {
+          "name": "assistedQuery"
+        },
+        {
+          "name": "cipher"
+        },
+        {
+          "name": "likeQuery"
+        },
+        {
+          "name": "name"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getCipher",
+          "parameterTypes": []
+        },
+        {
+          "name": "getAssistedQuery",
+          "parameterTypes": []
+        },
+        {
+          "name": "getLikeQuery",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration",
+      "fields": [
+        {
+          "name": "encryptorName"
+        },
+        {
+          "name": "name"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getEncryptorName",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.mask.config.MaskRuleConfiguration",
+      "fields": [
+        {
+          "name": "maskAlgorithms"
+        },
+        {
+          "name": "tables"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getMaskAlgorithms",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTables",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration",
+      "fields": [
+        {
+          "name": "columns"
+        },
+        {
+          "name": "name"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getColumns",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration",
+      "fields": [
+        {
+          "name": "logicColumn"
+        },
+        {
+          "name": "maskAlgorithm"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getMaskAlgorithm",
           "parameterTypes": []
         }
       ]
@@ -881,6 +1241,20 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.core.database.visitor.SQLStatementVisitorFactory"
+      },
+      "type": "org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.type.PrestoDMLStatementVisitor",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.mode.node.path.engine.generator.NodePathSegment"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.global.node.storage.QualifiedDataSourceNodePath",
@@ -1088,6 +1462,12 @@
         "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
       },
       "bundle": "org.apache.bval.jsr.ValidationMessages"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "glob": "org/apache/bval/jsr/DefaultConstraints.properties"
     },
     {
       "condition": {
