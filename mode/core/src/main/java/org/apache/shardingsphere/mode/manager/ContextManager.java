@@ -40,6 +40,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorEngine;
@@ -48,7 +49,9 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResource;
+import org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table.TableMetaDataRefresherLoader;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.mode.state.StateContext;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -268,6 +271,36 @@ public final class ContextManager implements AutoCloseable {
             persistTable(database, schemaName, tableName, material);
         } catch (final SQLException ex) {
             log.error("Reload table: {} meta data of database: {} schema: {} with data source: {} failed", tableName.getValue(), database.getName(), schemaName, dataSourceName, ex);
+        }
+    }
+    
+    /**
+     * Reconcile table meta data against the committed state of the table.
+     *
+     * <p>The table is created, altered or dropped in meta data according to whether it exists in the database and in meta data, so a
+     * sequence of DDL statements can be applied by its final effect instead of by replaying each statement.</p>
+     *
+     * @param database database
+     * @param schemaName schema name
+     * @param logicDataSourceName logic data source name the table is routed to
+     * @param tableName to be reconciled table name
+     */
+    public void reconcileTable(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName, final IdentifierValue tableName) {
+        MetaDataManagerPersistService metaDataManagerPersistService = persistServiceFacade.getModeFacade().getMetaDataManagerService();
+        try {
+            ShardingSphereTable loadedTable = new TableMetaDataRefresherLoader().loadCreatedTable(
+                    database, logicDataSourceName, schemaName, tableName, metaDataContexts.getMetaData().getProps(), database.getAllSchemas());
+            if (null == loadedTable) {
+                metaDataManagerPersistService.dropTables(database, schemaName, Collections.singleton(tableName.getValue()));
+            } else if (database.containsSchema(schemaName) && database.getSchema(schemaName).containsTable(tableName)) {
+                metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(loadedTable));
+            } else {
+                metaDataManagerPersistService.createTable(database, schemaName, loadedTable);
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("Reconcile table: {} meta data of database: {} schema: {} failed", tableName.getValue(), database.getName(), schemaName, ex);
         }
     }
     

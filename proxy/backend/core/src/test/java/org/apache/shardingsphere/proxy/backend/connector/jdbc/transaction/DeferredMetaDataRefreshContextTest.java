@@ -40,43 +40,43 @@ class DeferredMetaDataRefreshContextTest {
     private final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
     
     @Test
-    void assertReloadEachDeferredTable() {
+    void assertReconcileEachDeferredTable() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         IdentifierValue originalTable = new IdentifierValue("t_order");
         IdentifierValue renamedTable = new IdentifierValue("t_order_new");
         DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();
-        deferredContext.add("foo_db", "foo_schema", Arrays.asList(originalTable, renamedTable));
-        deferredContext.reload(contextManager);
-        verify(contextManager).reloadTable(database, "foo_schema", originalTable);
-        verify(contextManager).reloadTable(database, "foo_schema", renamedTable);
+        deferredContext.add("foo_db", "foo_schema", "ds_0", Arrays.asList(originalTable, renamedTable));
+        deferredContext.reconcile(contextManager);
+        verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", originalTable);
+        verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", renamedTable);
     }
     
     @Test
-    void assertReloadKeepsQuotedIdentifier() {
+    void assertReconcileKeepsQuotedIdentifier() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         IdentifierValue quotedTable = new IdentifierValue("\"MixedCase\"");
         DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();
-        deferredContext.add("foo_db", "foo_schema", Collections.singletonList(quotedTable));
-        deferredContext.reload(contextManager);
-        verify(contextManager).reloadTable(database, "foo_schema", quotedTable);
+        deferredContext.add("foo_db", "foo_schema", "ds_0", Collections.singletonList(quotedTable));
+        deferredContext.reconcile(contextManager);
+        verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", quotedTable);
     }
     
     @Test
-    void assertReloadDeduplicatesRepeatedTable() {
+    void assertReconcileDeduplicatesRepeatedTable() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();
-        deferredContext.add("foo_db", "foo_schema", Collections.singletonList(new IdentifierValue("t_order")));
-        deferredContext.add("foo_db", "foo_schema", Collections.singletonList(new IdentifierValue("t_order")));
-        deferredContext.reload(contextManager);
-        verify(contextManager).reloadTable(database, "foo_schema", new IdentifierValue("t_order"));
+        deferredContext.add("foo_db", "foo_schema", "ds_0", Collections.singletonList(new IdentifierValue("t_order")));
+        deferredContext.add("foo_db", "foo_schema", "ds_0", Collections.singletonList(new IdentifierValue("t_order")));
+        deferredContext.reconcile(contextManager);
+        verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", new IdentifierValue("t_order"));
     }
     
     @Test
-    void assertReloadAfterClear() {
+    void assertReconcileAfterClear() {
         DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();
-        deferredContext.add("foo_db", "foo_schema", Collections.singletonList(new IdentifierValue("t_order")));
+        deferredContext.add("foo_db", "foo_schema", "ds_0", Collections.singletonList(new IdentifierValue("t_order")));
         deferredContext.clear();
-        deferredContext.reload(contextManager);
-        verify(contextManager, never()).reloadTable(any(ShardingSphereDatabase.class), anyString(), any(IdentifierValue.class));
+        deferredContext.reconcile(contextManager);
+        verify(contextManager, never()).reconcileTable(any(ShardingSphereDatabase.class), anyString(), anyString(), any(IdentifierValue.class));
     }
 }
