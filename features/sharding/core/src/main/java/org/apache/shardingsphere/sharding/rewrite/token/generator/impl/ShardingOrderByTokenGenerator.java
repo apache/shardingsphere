@@ -17,23 +17,45 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.RouteContextAware;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.OrderByToken;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingTokenUtils;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Sharding order by token generator.
  */
 @HighFrequencyInvocation
-public final class ShardingOrderByTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
+@RequiredArgsConstructor
+@Setter
+public final class ShardingOrderByTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute, RouteContextAware {
+    
+    private final ShardingRule rule;
+    
+    private RouteContext routeContext;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -42,21 +64,40 @@ public final class ShardingOrderByTokenGenerator implements OptionalSQLTokenGene
     
     @Override
     public OrderByToken generateSQLToken(final SelectStatementContext selectStatementContext) {
-        OrderByToken result = new OrderByToken(getGenerateOrderByStartIndex(selectStatementContext));
-        String columnLabel;
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromSelect(selectStatementContext.getSqlStatement());
+        Map<RouteUnit, Collection<String>> orderByItems = new HashMap<>(routeContext.getRouteUnits().size(), 1F);
+        for (RouteUnit each : routeContext.getRouteUnits()) {
+            orderByItems.put(each, getOrderByItems(selectStatementContext, tableExtractor, ShardingTokenUtils.getLogicAndActualTableMap(each, selectStatementContext, rule)));
+        }
+        return new OrderByToken(getGenerateOrderByStartIndex(selectStatementContext), getOrderByItems(selectStatementContext, tableExtractor, Collections.emptyMap()), orderByItems);
+    }
+    
+    private Collection<String> getOrderByItems(final SelectStatementContext selectStatementContext, final TableExtractor tableExtractor, final Map<String, String> logicAndActualTables) {
+        Collection<String> result = new LinkedList<>();
         for (OrderByItem each : selectStatementContext.getOrderByContext().getItems()) {
-            if (each.getSegment() instanceof ColumnOrderByItemSegment) {
-                ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) each.getSegment();
-                columnLabel = columnOrderByItemSegment.getText();
-            } else if (each.getSegment() instanceof ExpressionOrderByItemSegment) {
-                columnLabel = ((ExpressionOrderByItemSegment) each.getSegment()).getText();
-            } else {
-                columnLabel = String.valueOf(each.getIndex());
-            }
-            result.getColumnLabels().add(columnLabel);
-            result.getOrderDirections().add(each.getSegment().getOrderDirection());
+            result.add(String.join(" ", getColumnLabel(each, tableExtractor, logicAndActualTables), each.getSegment().getOrderDirection().name()));
         }
         return result;
+    }
+    
+    private String getColumnLabel(final OrderByItem orderByItem, final TableExtractor tableExtractor, final Map<String, String> logicAndActualTables) {
+        if (orderByItem.getSegment() instanceof ColumnOrderByItemSegment) {
+            return getColumnLabel((ColumnOrderByItemSegment) orderByItem.getSegment(), tableExtractor, logicAndActualTables);
+        }
+        if (orderByItem.getSegment() instanceof ExpressionOrderByItemSegment) {
+            return ((ExpressionOrderByItemSegment) orderByItem.getSegment()).getText();
+        }
+        return String.valueOf(orderByItem.getIndex());
+    }
+    
+    private String getColumnLabel(final ColumnOrderByItemSegment columnOrderByItemSegment, final TableExtractor tableExtractor, final Map<String, String> logicAndActualTables) {
+        Optional<OwnerSegment> owner = columnOrderByItemSegment.getColumn().getOwner();
+        if (!owner.isPresent() || !tableExtractor.needRewrite(owner.get()) || !logicAndActualTables.containsKey(owner.get().getIdentifier().getValue())) {
+            return columnOrderByItemSegment.getText();
+        }
+        String actualOwner = owner.get().getIdentifier().getQuoteCharacter().wrap(logicAndActualTables.get(owner.get().getIdentifier().getValue()));
+        return String.join(".", actualOwner, columnOrderByItemSegment.getColumn().getIdentifier().getValueWithQuoteCharacters());
     }
     
     private int getGenerateOrderByStartIndex(final SelectStatementContext selectStatementContext) {
