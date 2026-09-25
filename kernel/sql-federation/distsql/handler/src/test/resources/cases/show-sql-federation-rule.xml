@@ -19,7 +19,7 @@
 <distsql-rule-query-executor-test-cases>
     <test-case dist-sql="SHOW SQL_FEDERATION RULE" current-rule-config-yaml-file="cases/show-sql-federation-rule-current-config.yaml">
         <expected-query-result-rows>
-            <expected-query-result-row>false|false|initialCapacity: 2000, maximumSize: 65535</expected-query-result-row>
+            <expected-query-result-row>false|false|initialCapacity: 2000, maximumSize: 65535|CALCITE</expected-query-result-row>
         </expected-query-result-rows>
     </test-case>
 </distsql-rule-query-executor-test-cases>

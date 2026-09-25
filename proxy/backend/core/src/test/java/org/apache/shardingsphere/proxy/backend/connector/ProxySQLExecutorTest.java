@@ -80,6 +80,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.Tr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -196,7 +198,8 @@ class ProxySQLExecutorTest {
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.XA);
-        when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(mock(SQLFederationRule.class), transactionRule)));
+        SQLFederationRuleConfiguration federationConfig = new SQLFederationRuleConfiguration(false, false, new SQLFederationCacheOption(4, 64L));
+        when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(new SQLFederationRule(federationConfig, Collections.emptyList()), transactionRule)));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);

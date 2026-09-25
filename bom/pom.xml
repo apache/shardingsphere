@@ -647,6 +647,16 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-sql-federation-none-provider</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-sql-federation-calcite-provider</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-sql-federation-distsql-statement</artifactId>
                 <version>${project.version}</version>
             </dependency>
