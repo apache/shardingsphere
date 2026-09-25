@@ -31,12 +31,18 @@ class OrderByTokenTest {
     
     @Test
     void assertGetStopIndex() {
-        assertThat(new OrderByToken(10, Collections.emptyMap()).getStopIndex(), is(10));
+        assertThat(new OrderByToken(10, Collections.emptyList(), Collections.emptyMap()).getStopIndex(), is(10));
     }
     
     @Test
     void assertToString() {
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("foo_ds", "foo_ds_0"), Collections.singleton(new RouteMapper("foo_tbl", "foo_tbl_0")));
-        assertThat(new OrderByToken(0, Collections.singletonMap(routeUnit, Arrays.asList("foo_col ASC", "bar_col DESC"))).toString(routeUnit), is(" ORDER BY foo_col ASC,bar_col DESC "));
+        assertThat(new OrderByToken(0, Collections.emptyList(), Collections.singletonMap(routeUnit, Arrays.asList("foo_col ASC", "bar_col DESC"))).toString(routeUnit),
+                is(" ORDER BY foo_col ASC,bar_col DESC "));
+    }
+    
+    @Test
+    void assertToStringWithoutRouteUnit() {
+        assertThat(new OrderByToken(0, Arrays.asList("foo_tbl.foo_col ASC", "bar_col DESC"), Collections.emptyMap()).toString(), is(" ORDER BY foo_tbl.foo_col ASC,bar_col DESC "));
     }
 }
