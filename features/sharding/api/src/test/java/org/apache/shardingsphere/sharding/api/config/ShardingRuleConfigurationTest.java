@@ -30,6 +30,8 @@ import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAudi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -181,6 +183,7 @@ class ShardingRuleConfigurationTest {
                 Arguments.of("Blank auto table logic name", createRuleConfiguration(createAutoTableRuleConfiguration("", new HintShardingStrategyConfiguration("foo_hint")))),
                 Arguments.of("Null auto table strategy", createRuleConfiguration(nullAutoTableStrategy)),
                 Arguments.of("Invalid auto table strategy", createRuleConfiguration(invalidAutoTableStrategy)),
+                Arguments.of("None auto table strategy", createRuleConfiguration(createAutoTableRuleConfiguration("foo_auto_tbl", new NoneShardingStrategyConfiguration()))),
                 Arguments.of("Invalid auto table audit strategy", createRuleConfiguration(invalidAutoTableAuditStrategy)),
                 Arguments.of("Blank binding table group name", createRuleConfiguration(new ShardingTableReferenceRuleConfiguration("", "foo_tbl,foo_item"))),
                 Arguments.of("Blank binding table group reference", createRuleConfiguration(new ShardingTableReferenceRuleConfiguration("foo_group", ""))),
@@ -266,7 +269,7 @@ class ShardingRuleConfigurationTest {
         return createAutoTableRuleConfiguration("foo_auto_tbl", new HintShardingStrategyConfiguration("foo_hint"));
     }
     
-    private static ShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration(final String logicTable, final HintShardingStrategyConfiguration strategyConfig) {
+    private static ShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration(final String logicTable, final ShardingStrategyConfiguration strategyConfig) {
         ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration(logicTable, null);
         result.setShardingStrategy(strategyConfig);
         return result;
