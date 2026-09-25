@@ -31,8 +31,9 @@ import java.util.LinkedHashSet;
  * <p>Meta data refresh loads the altered schema through a new physical connection, which cannot see DDL that the current transaction
  * has not committed yet. Tables touched by DDL are therefore collected here and reloaded once the transaction ends. Reloading reads the
  * committed state of each table, so it reports the tables a renamed or dropped object left behind, and it stays correct whether the
- * backend kept the DDL transactional or committed it implicitly. Table names keep their parsed identifier so that a quoted
- * identifier is not reloaded as an unquoted one.</p>
+ * backend keeps DDL transactional. Each table is created, altered or dropped in meta data according to its committed state, so a
+ * sequence such as create and then rename is applied by its final effect. Table names keep their parsed identifier so that a quoted
+ * identifier is not reconciled as an unquoted one.</p>
  */
 public final class DeferredMetaDataRefreshContext {
     
@@ -43,22 +44,23 @@ public final class DeferredMetaDataRefreshContext {
      *
      * @param databaseName database name
      * @param schemaName schema name
+     * @param logicDataSourceName logic data source name the tables are routed to
      * @param tableNames table names
      */
-    public void add(final String databaseName, final String schemaName, final Collection<IdentifierValue> tableNames) {
+    public void add(final String databaseName, final String schemaName, final String logicDataSourceName, final Collection<IdentifierValue> tableNames) {
         for (IdentifierValue each : tableNames) {
-            deferredTables.add(new DeferredTable(databaseName, schemaName, each));
+            deferredTables.add(new DeferredTable(databaseName, schemaName, logicDataSourceName, each));
         }
     }
     
     /**
-     * Reload meta data of deferred tables.
+     * Reconcile meta data of deferred tables against their committed state.
      *
      * @param contextManager context manager
      */
-    public void reload(final ContextManager contextManager) {
+    public void reconcile(final ContextManager contextManager) {
         for (DeferredTable each : deferredTables) {
-            contextManager.reloadTable(contextManager.getMetaDataContexts().getMetaData().getDatabase(each.databaseName), each.schemaName, each.tableName);
+            contextManager.reconcileTable(contextManager.getMetaDataContexts().getMetaData().getDatabase(each.databaseName), each.schemaName, each.logicDataSourceName, each.tableName);
         }
     }
     
@@ -76,6 +78,8 @@ public final class DeferredMetaDataRefreshContext {
         private final String databaseName;
         
         private final String schemaName;
+        
+        private final String logicDataSourceName;
         
         private final IdentifierValue tableName;
     }

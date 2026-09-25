@@ -76,10 +76,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DD
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.RenameTableStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
@@ -139,38 +135,42 @@ public final class ProxySQLExecutor {
      * Check execute prerequisites.
      *
      * @param sqlStatementContext execution context
+     * @param isDeferrableTableDDL whether the statement is table DDL whose refresh can be deferred to the end of the transaction
      */
-    public void checkExecutePrerequisites(final SQLStatementContext sqlStatementContext) {
-        ShardingSpherePreconditions.checkState(
-                isValidExecutePrerequisites(sqlStatementContext.getSqlStatement()), () -> new TableModifyInTransactionException(getTableName(sqlStatementContext.getTablesContext())));
+    public void checkExecutePrerequisites(final SQLStatementContext sqlStatementContext, final boolean isDeferrableTableDDL) {
+        ShardingSpherePreconditions.checkState(isValidExecutePrerequisites(sqlStatementContext.getSqlStatement(), isDeferrableTableDDL),
+                () -> new TableModifyInTransactionException(getTableName(sqlStatementContext.getTablesContext())));
     }
     
-    private boolean isValidExecutePrerequisites(final SQLStatement sqlStatement) {
-        return !(sqlStatement instanceof DDLStatement) || isSupportDDLInTransaction(sqlStatement.getDatabaseType(), (DDLStatement) sqlStatement);
+    private boolean isValidExecutePrerequisites(final SQLStatement sqlStatement, final boolean isDeferrableTableDDL) {
+        return !(sqlStatement instanceof DDLStatement) || isSupportDDLInTransaction(sqlStatement.getDatabaseType(), (DDLStatement) sqlStatement, isDeferrableTableDDL);
     }
     
-    private boolean isSupportDDLInTransaction(final DatabaseType databaseType, final DDLStatement sqlStatement) {
+    private boolean isSupportDDLInTransaction(final DatabaseType databaseType, final DDLStatement sqlStatement, final boolean isDeferrableTableDDL) {
         DialectTransactionOption transactionOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption();
         boolean isDDLWithoutMetaDataChanged = isDDLWithoutMetaDataChanged(sqlStatement);
-        boolean isRefreshableInTransaction = transactionOption.isSupportMetaDataRefreshInTransaction() || isDeferrableTableDDL(transactionOption, sqlStatement);
         if (isInXATransaction()) {
-            return transactionOption.isSupportDDLInXATransaction() && (isDDLWithoutMetaDataChanged || isRefreshableInTransaction);
+            return transactionOption.isSupportDDLInXATransaction()
+                    && (isDDLWithoutMetaDataChanged || transactionOption.isSupportMetaDataRefreshInTransaction() || isDeferrableTableDDL);
+        }
+        if (isInBaseTransaction()) {
+            return transactionOption.isSupportMetaDataRefreshInTransaction() || isDDLWithoutMetaDataChanged;
         }
         if (isInLocalTransaction()) {
-            return isRefreshableInTransaction || isDDLWithoutMetaDataChanged;
+            return transactionOption.isSupportMetaDataRefreshInTransaction() || isDDLWithoutMetaDataChanged || isDeferrableTableDDL;
         }
         return true;
-    }
-    
-    private boolean isDeferrableTableDDL(final DialectTransactionOption transactionOption, final DDLStatement sqlStatement) {
-        return transactionOption.isSupportTransactionalDDL() && (sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement
-                || sqlStatement instanceof DropTableStatement || sqlStatement instanceof RenameTableStatement);
     }
     
     private boolean isInXATransaction() {
         TransactionType transactionType = TransactionUtils.getTransactionType(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext());
         TransactionStatus transactionStatus = databaseConnectionManager.getConnectionSession().getTransactionStatus();
         return TransactionType.XA == transactionType && transactionStatus.isInTransaction();
+    }
+    
+    private boolean isInBaseTransaction() {
+        TransactionType transactionType = TransactionUtils.getTransactionType(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext());
+        return TransactionType.BASE == transactionType && databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction();
     }
     
     private boolean isInLocalTransaction() {

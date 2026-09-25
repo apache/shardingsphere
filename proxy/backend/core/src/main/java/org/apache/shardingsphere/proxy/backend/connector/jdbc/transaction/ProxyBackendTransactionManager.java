@@ -130,7 +130,7 @@ public final class ProxyBackendTransactionManager {
             } else {
                 distributedTransactionManager.commit(transactionContext.isExceptionOccur());
             }
-            connection.getDeferredMetaDataRefreshContext().reload(ProxyContext.getInstance().getContextManager());
+            connection.getDeferredMetaDataRefreshContext().reconcile(ProxyContext.getInstance().getContextManager());
         } finally {
             clear();
         }
@@ -174,7 +174,6 @@ public final class ProxyBackendTransactionManager {
                 } else {
                     distributedTransactionManager.rollback();
                 }
-                connection.getDeferredMetaDataRefreshContext().reload(ProxyContext.getInstance().getContextManager());
             } finally {
                 for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
                     entry.getValue().afterRollback(entry.getKey(), databaseType, connection.getCachedConnections().values(), transactionContext);

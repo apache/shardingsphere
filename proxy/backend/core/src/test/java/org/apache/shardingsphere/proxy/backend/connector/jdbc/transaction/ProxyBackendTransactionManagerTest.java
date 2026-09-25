@@ -310,7 +310,7 @@ class ProxyBackendTransactionManagerTest {
         transactionManager.commit();
         InOrder inOrder = inOrder(localTransactionManager, deferredMetaDataRefreshContext);
         inOrder.verify(localTransactionManager).commit();
-        inOrder.verify(deferredMetaDataRefreshContext).reload(ProxyContext.getInstance().getContextManager());
+        inOrder.verify(deferredMetaDataRefreshContext).reconcile(ProxyContext.getInstance().getContextManager());
         inOrder.verify(deferredMetaDataRefreshContext).clear();
     }
     
@@ -323,22 +323,20 @@ class ProxyBackendTransactionManagerTest {
         setLocalTransactionManager(transactionManager);
         doThrow(new SQLException("commit failed")).when(localTransactionManager).commit();
         assertThrows(SQLException.class, transactionManager::commit);
-        verify(deferredMetaDataRefreshContext, never()).reload(any());
+        verify(deferredMetaDataRefreshContext, never()).reconcile(any());
         verify(deferredMetaDataRefreshContext).clear();
     }
     
     @Test
-    void assertRollbackReloadsDeferredMetaDataAfterUnderlyingRollback() throws SQLException {
+    void assertRollbackDiscardsDeferredMetaDataWithoutReconciling() throws SQLException {
         when(transactionStatus.isInTransaction()).thenReturn(true);
         when(ConnectionSavepointManager.getInstance()).thenReturn(mock(ConnectionSavepointManager.class));
         mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
         ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
         setLocalTransactionManager(transactionManager);
         transactionManager.rollback();
-        InOrder inOrder = inOrder(localTransactionManager, deferredMetaDataRefreshContext);
-        inOrder.verify(localTransactionManager).rollback();
-        inOrder.verify(deferredMetaDataRefreshContext).reload(ProxyContext.getInstance().getContextManager());
-        inOrder.verify(deferredMetaDataRefreshContext).clear();
+        verify(deferredMetaDataRefreshContext, never()).reconcile(any());
+        verify(deferredMetaDataRefreshContext).clear();
     }
     
     @Test

@@ -55,6 +55,9 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
@@ -329,6 +332,7 @@ class StandardDatabaseProxyConnectorTest {
         ExecutionContext executionContext = mock(ExecutionContext.class, RETURNS_DEEP_STUBS);
         when(executionContext.getExecutionUnits()).thenReturn(Collections.singletonList(mock(ExecutionUnit.class)));
         when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(executionContext.getRouteContext().getRouteUnits()).thenReturn(Collections.singletonList(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.emptyList())));
         AdvancedProxySQLExecutor advancedProxySQLExecutor = mock(AdvancedProxySQLExecutor.class);
         when(advancedProxySQLExecutor.execute(any(ExecutionContext.class), any(ContextManager.class), any(ShardingSphereDatabase.class), any(DatabaseProxyConnector.class)))
                 .thenReturn(Collections.singletonList(new UpdateResult(1, 0L)));
@@ -343,7 +347,7 @@ class StandardDatabaseProxyConnectorTest {
                 MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.singleton(advancedProxySQLExecutor));
             engine.execute();
-            verify(databaseConnectionManager.getDeferredMetaDataRefreshContext()).add("foo_db", "foo_schema", Collections.singletonList(tableName));
+            verify(databaseConnectionManager.getDeferredMetaDataRefreshContext()).add("foo_db", "foo_schema", "ds_0", Collections.singletonList(tableName));
         }
     }
     
@@ -700,6 +704,7 @@ class StandardDatabaseProxyConnectorTest {
         ExecutionContext executionContext = mock(ExecutionContext.class);
         when(executionContext.getExecutionUnits()).thenReturn(Collections.singletonList(mock(ExecutionUnit.class)));
         when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(executionContext.getRouteContext()).thenReturn(new RouteContext());
         when(proxySQLExecutor.execute(executionContext)).thenReturn(Collections.singletonList(new UpdateResult(1, 0L)));
         try (
                 MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,

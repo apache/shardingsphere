@@ -39,12 +39,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  * assertion below waits for that propagation. Each phase uses its own column name so that one phase never depends on the
  * propagation of another phase's DDL.</p>
  */
-@TransactionTestCase(dbTypes = TransactionTestConstants.POSTGRESQL, adapters = TransactionTestConstants.PROXY, transactionTypes = TransactionType.LOCAL)
+@TransactionTestCase(dbTypes = TransactionTestConstants.POSTGRESQL, adapters = TransactionTestConstants.PROXY, transactionTypes = {TransactionType.LOCAL, TransactionType.XA})
 public final class PostgreSQLDDLMetaDataRefreshTestCase extends BaseTransactionTestCase {
     
     private static final String COMMITTED_COLUMN_NAME = "deferred_refresh_committed_column";
     
     private static final String ROLLED_BACK_COLUMN_NAME = "deferred_refresh_rolled_back_column";
+    
+    private static final String CREATED_TABLE_NAME = "t_deferred_created";
     
     private static final long REFRESH_TIMEOUT_SECONDS = 30L;
     
@@ -58,6 +60,33 @@ public final class PostgreSQLDDLMetaDataRefreshTestCase extends BaseTransactionT
     public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertMetaDataRefreshedAfterCommit();
         assertMetaDataNotRefreshedAfterRollback();
+        assertCreatedTableReconciledAfterCommit();
+    }
+    
+    private void assertCreatedTableReconciledAfterCommit() throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            executeWithLog(connection, String.format("CREATE TABLE %s (id INT NOT NULL, PRIMARY KEY (id));", CREATED_TABLE_NAME));
+            connection.commit();
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            awaitQueryable(connection, CREATED_TABLE_NAME, true, "Table created inside the transaction is not present in meta data after commit.");
+            executeWithLog(connection, String.format("DROP TABLE %s;", CREATED_TABLE_NAME));
+            awaitQueryable(connection, CREATED_TABLE_NAME, false, "Dropped table is still present in meta data.");
+        }
+    }
+    
+    private void awaitQueryable(final Connection connection, final String tableName, final boolean expected, final String message) {
+        Awaitility.await(message).atMost(REFRESH_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> expected == isQueryable(connection, tableName));
+    }
+    
+    private boolean isQueryable(final Connection connection, final String tableName) {
+        try (ResultSet ignored = executeQueryWithLog(connection, String.format("SELECT * FROM %s;", tableName))) {
+            return true;
+        } catch (final SQLException ignored) {
+            return false;
+        }
     }
     
     private void assertMetaDataRefreshedAfterCommit() throws SQLException {

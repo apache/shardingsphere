@@ -229,38 +229,41 @@ class ProxySQLExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("checkExecutePrerequisitesScenarios")
-    void assertCheckExecutePrerequisites(final String name, final SQLStatement sqlStatement,
-                                         final TransactionType transactionType, final boolean inTransaction, final boolean hasTable, final boolean expectedThrowException) {
+    void assertCheckExecutePrerequisites(final String name, final SQLStatement sqlStatement, final TransactionType transactionType, final boolean inTransaction,
+                                         final boolean hasTable, final boolean isTransactionalDDLStorage, final boolean expectedThrowException) {
         when(transactionRule.getDefaultType()).thenReturn(transactionType);
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(inTransaction);
         ProxySQLExecutor proxySQLExecutor = createProxySQLExecutor("foo_schema", true);
         SQLStatementContext sqlStatementContext = createCheckStatementContext(sqlStatement, hasTable);
         if (expectedThrowException) {
-            assertThrows(TableModifyInTransactionException.class, () -> proxySQLExecutor.checkExecutePrerequisites(sqlStatementContext));
+            assertThrows(TableModifyInTransactionException.class, () -> proxySQLExecutor.checkExecutePrerequisites(sqlStatementContext, isTransactionalDDLStorage));
         } else {
-            assertDoesNotThrow(() -> proxySQLExecutor.checkExecutePrerequisites(sqlStatementContext));
+            assertDoesNotThrow(() -> proxySQLExecutor.checkExecutePrerequisites(sqlStatementContext, isTransactionalDDLStorage));
         }
     }
     
     private Stream<Arguments> checkExecutePrerequisitesScenarios() {
         return Stream.of(
-                Arguments.of("ddl-create-mysql-xa-throws", createCreateTableStatement(mysqlDatabaseType), TransactionType.XA, true, true, true),
-                Arguments.of("ddl-truncate-mysql-xa-throws", createTruncateStatement(mysqlDatabaseType), TransactionType.XA, true, true, true),
-                Arguments.of("ddl-create-postgresql-local-pass", createCreateTableStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, true, false),
-                Arguments.of("ddl-create-postgresql-xa-pass", createCreateTableStatement(postgresqlDatabaseType), TransactionType.XA, true, true, false),
-                Arguments.of("ddl-create-mysql-xa-empty-table-throws", createCreateTableStatement(mysqlDatabaseType), TransactionType.XA, true, false, true),
-                Arguments.of("ddl-create-mysql-local-pass", createCreateTableStatement(mysqlDatabaseType), TransactionType.LOCAL, true, true, false),
-                Arguments.of("ddl-truncate-mysql-local-pass", createTruncateStatement(mysqlDatabaseType), TransactionType.LOCAL, true, true, false),
-                Arguments.of("ddl-create-base-transaction-pass", createCreateTableStatement(mysqlDatabaseType), TransactionType.BASE, true, true, false),
-                Arguments.of("ddl-create-mysql-not-in-transaction-pass", createCreateTableStatement(mysqlDatabaseType), TransactionType.XA, false, true, false),
-                Arguments.of("ddl-create-postgresql-not-in-transaction-pass", createCreateTableStatement(postgresqlDatabaseType), TransactionType.LOCAL, false, true, false),
-                Arguments.of("ddl-truncate-postgresql-local-pass", createTruncateStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, true, false),
-                Arguments.of("ddl-cursor-postgresql-local-pass", new CursorStatement(postgresqlDatabaseType, null, null), TransactionType.LOCAL, true, true, false),
-                Arguments.of("ddl-close-postgresql-local-pass", new CloseStatement(postgresqlDatabaseType, null, false), TransactionType.LOCAL, true, true, false),
-                Arguments.of("ddl-move-postgresql-local-pass", new MoveStatement(postgresqlDatabaseType, null, null), TransactionType.LOCAL, true, true, false),
-                Arguments.of("ddl-fetch-postgresql-local-pass", new FetchStatement(postgresqlDatabaseType, null, null), TransactionType.LOCAL, true, true, false),
-                Arguments.of("ddl-truncate-postgresql-xa-pass", createTruncateStatement(postgresqlDatabaseType), TransactionType.XA, true, true, false),
-                Arguments.of("dml-insert-mysql-xa-pass", createInsertStatement(mysqlDatabaseType), TransactionType.XA, true, true, false));
+                Arguments.of("ddl-create-mysql-xa-throws", createCreateTableStatement(mysqlDatabaseType), TransactionType.XA, true, true, false, true),
+                Arguments.of("ddl-truncate-mysql-xa-throws", createTruncateStatement(mysqlDatabaseType), TransactionType.XA, true, true, false, true),
+                Arguments.of("ddl-create-postgresql-local-pass", createCreateTableStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, true, true, false),
+                Arguments.of("ddl-create-postgresql-xa-pass", createCreateTableStatement(postgresqlDatabaseType), TransactionType.XA, true, true, true, false),
+                Arguments.of("ddl-create-postgresql-local-non-transactional-storage-throws", createCreateTableStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, true, false, true),
+                Arguments.of("ddl-create-postgresql-xa-non-transactional-storage-throws", createCreateTableStatement(postgresqlDatabaseType), TransactionType.XA, true, true, false, true),
+                Arguments.of("ddl-create-postgresql-base-throws", createCreateTableStatement(postgresqlDatabaseType), TransactionType.BASE, true, true, true, true),
+                Arguments.of("ddl-create-mysql-xa-empty-table-throws", createCreateTableStatement(mysqlDatabaseType), TransactionType.XA, true, false, false, true),
+                Arguments.of("ddl-create-mysql-local-pass", createCreateTableStatement(mysqlDatabaseType), TransactionType.LOCAL, true, true, false, false),
+                Arguments.of("ddl-truncate-mysql-local-pass", createTruncateStatement(mysqlDatabaseType), TransactionType.LOCAL, true, true, false, false),
+                Arguments.of("ddl-create-base-transaction-pass", createCreateTableStatement(mysqlDatabaseType), TransactionType.BASE, true, true, false, false),
+                Arguments.of("ddl-create-mysql-not-in-transaction-pass", createCreateTableStatement(mysqlDatabaseType), TransactionType.XA, false, true, false, false),
+                Arguments.of("ddl-create-postgresql-not-in-transaction-pass", createCreateTableStatement(postgresqlDatabaseType), TransactionType.LOCAL, false, true, true, false),
+                Arguments.of("ddl-truncate-postgresql-local-pass", createTruncateStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, true, false, false),
+                Arguments.of("ddl-cursor-postgresql-local-pass", new CursorStatement(postgresqlDatabaseType, null, null), TransactionType.LOCAL, true, true, false, false),
+                Arguments.of("ddl-close-postgresql-local-pass", new CloseStatement(postgresqlDatabaseType, null, false), TransactionType.LOCAL, true, true, false, false),
+                Arguments.of("ddl-move-postgresql-local-pass", new MoveStatement(postgresqlDatabaseType, null, null), TransactionType.LOCAL, true, true, false, false),
+                Arguments.of("ddl-fetch-postgresql-local-pass", new FetchStatement(postgresqlDatabaseType, null, null), TransactionType.LOCAL, true, true, false, false),
+                Arguments.of("ddl-truncate-postgresql-xa-pass", createTruncateStatement(postgresqlDatabaseType), TransactionType.XA, true, true, false, false),
+                Arguments.of("dml-insert-mysql-xa-pass", createInsertStatement(mysqlDatabaseType), TransactionType.XA, true, true, false, false));
     }
     
     @SuppressWarnings("rawtypes")
@@ -426,7 +429,7 @@ class ProxySQLExecutorTest {
         try (MockedStatic<DatabaseTypedSPILoader> mockedDatabaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
             mockedDatabaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
             ProxySQLExecutor proxySQLExecutor = createProxySQLExecutor("foo_schema", true);
-            assertDoesNotThrow(() -> proxySQLExecutor.checkExecutePrerequisites(createCheckStatementContext(createCreateTableStatement(databaseType), true)));
+            assertDoesNotThrow(() -> proxySQLExecutor.checkExecutePrerequisites(createCheckStatementContext(createCreateTableStatement(databaseType), true), false));
         }
     }
     
