@@ -100,7 +100,7 @@
         <accessors-smart.version>2.6.0</accessors-smart.version>
         <asm.version>9.7.1</asm.version>
         <groovy.version>4.0.22</groovy.version>
-        <freemarker.version>2.3.31</freemarker.version>
+        <freemarker.version>2.3.35</freemarker.version>
         <bytebuddy.version>1.18.8</bytebuddy.version>
         
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
