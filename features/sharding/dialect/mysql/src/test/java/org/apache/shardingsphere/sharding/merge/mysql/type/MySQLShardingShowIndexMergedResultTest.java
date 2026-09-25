@@ -64,22 +64,22 @@ class MySQLShardingShowIndexMergedResultTest {
     
     @Test
     void assertNextForEmptyQueryResult() throws SQLException {
-        assertFalse(new MySQLShardingShowIndexMergedResult(rule, mockSQLStatementContext(), schema, Collections.emptyList()).next());
+        assertFalse(new MySQLShardingShowIndexMergedResult(rule, mockSQLStatementContext("t_order"), schema, Collections.emptyList()).next());
     }
     
     @Test
     void assertNextForTableRuleIsPresent() throws SQLException {
-        assertTrue(new MySQLShardingShowIndexMergedResult(rule, mockSQLStatementContext(), schema, Collections.singletonList(mockQueryResult())).next());
+        assertTrue(new MySQLShardingShowIndexMergedResult(rule, mockSQLStatementContext("t_order"), schema, Collections.singletonList(mockQueryResult())).next());
     }
     
     @Test
     void assertGetValueWithLegacyIndexName() throws SQLException {
         ShardingTable shardingTable = mock(ShardingTable.class);
-        when(rule.findShardingTableByActualTable("t_order_0")).thenReturn(Optional.of(shardingTable));
+        when(rule.findShardingTable("t_order")).thenReturn(Optional.of(shardingTable));
         when(shardingTable.getLogicTable()).thenReturn("t_order");
         when(schema.getTable("t_order")).thenReturn(new ShardingSphereTable("t_order", Collections.emptyList(),
                 Collections.singleton(new ShardingSphereIndex("t_order_index", Collections.emptyList(), false)), Collections.emptyList()));
-        MySQLShardingShowIndexMergedResult actual = new MySQLShardingShowIndexMergedResult(rule, mockSQLStatementContext(), schema,
+        MySQLShardingShowIndexMergedResult actual = new MySQLShardingShowIndexMergedResult(rule, mockSQLStatementContext("t_order"), schema,
                 Collections.singletonList(mockQueryResult(IndexMetaDataUtils.getActualIndexName("t_order_index", "t_order_0"))));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class), is("t_order"));
@@ -88,7 +88,7 @@ class MySQLShardingShowIndexMergedResultTest {
     
     @Test
     void assertGetValueWithNonShardingTable() throws SQLException {
-        MySQLShardingShowIndexMergedResult actual = new MySQLShardingShowIndexMergedResult(rule, mockSQLStatementContext(), schema,
+        MySQLShardingShowIndexMergedResult actual = new MySQLShardingShowIndexMergedResult(rule, mockSQLStatementContext("t_config"), schema,
                 Collections.singletonList(mockQueryResult("t_config", "uk_t_config")));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class), is("t_config"));
@@ -98,11 +98,11 @@ class MySQLShardingShowIndexMergedResultTest {
     @Test
     void assertGetValueWithLogicalIndexNameEndingWithHashLikeSuffix() throws SQLException {
         ShardingTable shardingTable = mock(ShardingTable.class);
-        when(rule.findShardingTableByActualTable("t_order_0")).thenReturn(Optional.of(shardingTable));
+        when(rule.findShardingTable("t_order")).thenReturn(Optional.of(shardingTable));
         when(shardingTable.getLogicTable()).thenReturn("t_order");
         when(schema.getTable("t_order")).thenReturn(new ShardingSphereTable("t_order", Collections.emptyList(),
                 Collections.singleton(new ShardingSphereIndex("foo_h12345678", Collections.emptyList(), false)), Collections.emptyList()));
-        MySQLShardingShowIndexMergedResult actual = new MySQLShardingShowIndexMergedResult(rule, mockSQLStatementContext(), schema,
+        MySQLShardingShowIndexMergedResult actual = new MySQLShardingShowIndexMergedResult(rule, mockSQLStatementContext("t_order"), schema,
                 Collections.singletonList(mockQueryResult("foo_h12345678")));
         assertTrue(actual.next());
         assertThat(actual.getValue(3, String.class), is("foo_h12345678"));
@@ -111,11 +111,11 @@ class MySQLShardingShowIndexMergedResultTest {
     @Test
     void assertGetValueWithLogicalIndexNameEndingWithTruncationLikeSuffix() throws SQLException {
         ShardingTable shardingTable = mock(ShardingTable.class);
-        when(rule.findShardingTableByActualTable("t_order_0")).thenReturn(Optional.of(shardingTable));
+        when(rule.findShardingTable("t_order")).thenReturn(Optional.of(shardingTable));
         when(shardingTable.getLogicTable()).thenReturn("t_order");
         when(schema.getTable("t_order")).thenReturn(new ShardingSphereTable("t_order", Collections.emptyList(),
                 Collections.singleton(new ShardingSphereIndex("foo_t12345678", Collections.emptyList(), false)), Collections.emptyList()));
-        MySQLShardingShowIndexMergedResult actual = new MySQLShardingShowIndexMergedResult(rule, mockSQLStatementContext(), schema,
+        MySQLShardingShowIndexMergedResult actual = new MySQLShardingShowIndexMergedResult(rule, mockSQLStatementContext("t_order"), schema,
                 Collections.singletonList(mockQueryResult("foo_t12345678")));
         assertTrue(actual.next());
         assertThat(actual.getValue(3, String.class), is("foo_t12345678"));
