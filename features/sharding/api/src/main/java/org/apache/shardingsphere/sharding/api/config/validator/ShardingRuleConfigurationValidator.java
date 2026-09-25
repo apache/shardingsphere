@@ -53,7 +53,12 @@ public final class ShardingRuleConfigurationValidator implements ConstraintValid
     
     private boolean areAutoTablesValid(final ShardingRuleConfiguration ruleConfig, final ConstraintValidatorContext context) {
         return ruleConfig.getAutoTables().stream().noneMatch(each -> !isAuditStrategyValid(each.getAuditStrategy(), "autoTables", ruleConfig, context)
+                || !isAutoTableShardingStrategyValid(each.getShardingStrategy(), context)
                 || !isShardingStrategyValid(each.getShardingStrategy(), "autoTables", ruleConfig, context));
+    }
+    
+    private boolean isAutoTableShardingStrategyValid(final ShardingStrategyConfiguration strategyConfig, final ConstraintValidatorContext context) {
+        return !(strategyConfig instanceof NoneShardingStrategyConfiguration) || addViolation("autoTables", "requires a sharding strategy other than `none`", context);
     }
     
     private boolean isKeyGenerateStrategyValid(final KeyGenerateStrategyConfiguration strategyConfig, final String propertyName,
