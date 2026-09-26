@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class LinkedServerRuleTest {
+final class LinkedServerRuleTest {
     
     private LinkedServerRule rule;
     
@@ -173,6 +173,16 @@ class LinkedServerRuleTest {
         LinkedServerRule caseRule = new LinkedServerRule(new LinkedServerRuleConfiguration(Arrays.asList(server)));
         assertThat(caseRule.findLogicalTable("Server", "HumanResources.dbo.Department").get(), is("t_hr_department"));
         assertThat(caseRule.findLogicalTable("Server", "HumanResources.dbo.department").get(), is("t_hr_dept_lower"));
+    }
+    
+    @Test
+    void assertDelimitedIdentifierWithDotAccepted() {
+        Map<String, String> tables = new LinkedHashMap<>();
+        tables.put("[HR.v2].dbo.Department", "t_department");
+        LinkedServerConfiguration server = new LinkedServerConfiguration("Server", "FIXTURE", tables);
+        LinkedServerRule delimitedRule = new LinkedServerRule(new LinkedServerRuleConfiguration(Arrays.asList(server)));
+        assertTrue(delimitedRule.findLogicalTable("Server", "[HR.v2].dbo.Department").isPresent());
+        assertThat(delimitedRule.findLogicalTable("Server", "[HR.v2].dbo.Department").get(), is("t_department"));
     }
     
     @Test

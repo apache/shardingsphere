@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.linkedserver.config.rule.LinkedServerConfiguration;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -41,7 +42,7 @@ public final class LinkedServerTable {
     public LinkedServerTable(final LinkedServerConfiguration config) {
         name = config.getName();
         databaseType = TypedSPILoader.getService(DatabaseType.class, config.getDatabaseType());
-        tables = new LinkedHashMap<>(config.getTables());
+        tables = Collections.unmodifiableMap(new LinkedHashMap<>(config.getTables()));
     }
     
     /**

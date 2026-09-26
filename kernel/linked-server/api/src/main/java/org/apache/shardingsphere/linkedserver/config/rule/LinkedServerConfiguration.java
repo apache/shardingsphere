@@ -20,8 +20,10 @@ package org.apache.shardingsphere.linkedserver.config.rule;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,13 +48,36 @@ public final class LinkedServerConfiguration {
         Preconditions.checkArgument(null != databaseType && !databaseType.isEmpty(), "Database type for linked server '%s' must not be null or empty.", name);
         this.name = name;
         this.databaseType = databaseType;
-        for (String key : tables.keySet()) {
-            String[] segments = key.split("\\.", -1);
+        for (String each : tables.keySet()) {
+            String[] segments = parseIdentityComponents(each);
             Preconditions.checkArgument(3 == segments.length && segments[0].length() > 0 && segments[1].length() > 0 && segments[2].length() > 0,
-                    "Remote table identity '%s' in linked server '%s' must be exactly three non-empty components (catalog.schema.table).", key, name);
-            String value = tables.get(key);
-            Preconditions.checkArgument(null != value && !value.isEmpty(), "Logical table name for remote identity '%s' in linked server '%s' must not be null or empty.", key, name);
+                    "Remote table identity '%s' in linked server '%s' must be exactly three non-empty components (catalog.schema.table).", each, name);
+            String value = tables.get(each);
+            Preconditions.checkArgument(null != value && !value.isEmpty(), "Logical table name for remote identity '%s' in linked server '%s' must not be null or empty.", each, name);
         }
         this.tables = Collections.unmodifiableMap(new LinkedHashMap<>(tables));
+    }
+    
+    private static String[] parseIdentityComponents(final String identity) {
+        List<String> result = new ArrayList<>(3);
+        StringBuilder current = new StringBuilder();
+        boolean inBracket = false;
+        for (int i = 0; i < identity.length(); i++) {
+            char ch = identity.charAt(i);
+            if ('[' == ch) {
+                inBracket = true;
+                current.append(ch);
+            } else if (']' == ch) {
+                inBracket = false;
+                current.append(ch);
+            } else if ('.' == ch && !inBracket) {
+                result.add(current.toString());
+                current.setLength(0);
+            } else {
+                current.append(ch);
+            }
+        }
+        result.add(current.toString());
+        return result.toArray(new String[0]);
     }
 }

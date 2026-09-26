@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class YamlLinkedServerRuleConfigurationSwapperTest {
+final class YamlLinkedServerRuleConfigurationSwapperTest {
     
     private final YamlLinkedServerRuleConfigurationSwapper swapper = new YamlLinkedServerRuleConfigurationSwapper();
     
@@ -65,6 +65,31 @@ class YamlLinkedServerRuleConfigurationSwapperTest {
         assertThat(server.getName(), is("MyServer"));
         assertThat(server.getDatabaseType(), is("SQLServer"));
         assertThat(server.getTables().get("HumanResources.dbo.Department"), is("t_department"));
+    }
+    
+    @Test
+    void assertSwapToYamlConfigurationWithDelimitedIdentifier() {
+        Map<String, String> tables = new LinkedHashMap<>();
+        tables.put("[HR.v2].dbo.Department", "t_department");
+        LinkedServerConfiguration server = new LinkedServerConfiguration("MyServer", "SQLServer", tables);
+        LinkedServerRuleConfiguration config = new LinkedServerRuleConfiguration(Arrays.asList(server));
+        YamlLinkedServerRuleConfiguration actualYamlConfig = swapper.swapToYamlConfiguration(config);
+        YamlLinkedServerConfiguration yamlServer = actualYamlConfig.getServers().get("MyServer");
+        assertThat(yamlServer.getTables().get("[HR.v2].dbo.Department"), is("t_department"));
+    }
+    
+    @Test
+    void assertSwapToObjectWithDelimitedIdentifier() {
+        YamlLinkedServerConfiguration yamlServer = new YamlLinkedServerConfiguration();
+        yamlServer.setDatabaseType("SQLServer");
+        Map<String, String> tables = new LinkedHashMap<>();
+        tables.put("[HR.v2].dbo.Department", "t_department");
+        yamlServer.setTables(tables);
+        YamlLinkedServerRuleConfiguration yamlConfig = new YamlLinkedServerRuleConfiguration();
+        yamlConfig.getServers().put("MyServer", yamlServer);
+        LinkedServerRuleConfiguration actualConfig = swapper.swapToObject(yamlConfig);
+        LinkedServerConfiguration server = actualConfig.getServers().iterator().next();
+        assertThat(server.getTables().get("[HR.v2].dbo.Department"), is("t_department"));
     }
     
     @Test

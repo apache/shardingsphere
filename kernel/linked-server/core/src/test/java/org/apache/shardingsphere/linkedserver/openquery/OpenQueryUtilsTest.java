@@ -31,12 +31,17 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class OpenQueryUtilsTest {
+final class OpenQueryUtilsTest {
     
     @Test
     void assertIsOpenQuery() {
         FunctionTableSegment funcTableSegment = createOpenQueryFunctionTableSegment();
         assertTrue(OpenQueryUtils.isOpenQuery(funcTableSegment));
+    }
+    
+    private FunctionTableSegment createOpenQueryFunctionTableSegment() {
+        FunctionSegment funcSeg = createOpenQueryFunctionSegment();
+        return new FunctionTableSegment(0, 60, funcSeg);
     }
     
     @Test
@@ -159,11 +164,6 @@ class OpenQueryUtilsTest {
         String decoded = OpenQueryUtils.decodeTSqlEscaping(original);
         String actualReEncoded = OpenQueryUtils.encodeTSqlEscaping(decoded);
         assertThat(actualReEncoded, is(original));
-    }
-    
-    private FunctionTableSegment createOpenQueryFunctionTableSegment() {
-        FunctionSegment funcSeg = createOpenQueryFunctionSegment();
-        return new FunctionTableSegment(0, 60, funcSeg);
     }
     
     private FunctionSegment createOpenQueryFunctionSegment() {
