@@ -35,7 +35,6 @@ import org.junit.jupiter.api.Test;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -59,8 +58,12 @@ class ShardingSphereResultSetUtilsTest {
                 new IdentifierValue("AGGREGATION_DISTINCT_DERIVED_1"), "user_id", databaseType);
         SelectStatementContext context = mock(SelectStatementContext.class);
         when(context.containsDerivedProjections()).thenReturn(true);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false,
-                Arrays.asList(new ColumnProjection(null, "user_id", null, databaseType), count, sum));
+        List<Projection> projections = new ArrayList<>(3);
+        projections.add(new ColumnProjection(null, "user_id", null, databaseType));
+        projections.add(count);
+        projections.add(sum);
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
+        projectionsContext.getProjections().add(new DerivedProjection("status", new IdentifierValue("GROUP_BY_DERIVED_0"), mock(SQLSegment.class)));
         when(context.getProjectionsContext()).thenReturn(projectionsContext);
         ResultSetMetaData returnedMetadata = mock(ResultSetMetaData.class);
         when(returnedMetadata.getColumnCount()).thenReturn(5);
@@ -414,7 +417,7 @@ class ShardingSphereResultSetUtilsTest {
     }
     
     @Test
-    void assertCreateColumnLabelAndIndexMapHidesColumnWhoseNameCollidesWithDerivedAliasUnderSchemaDrift() throws SQLException {
+    void assertCreateColumnLabelAndIndexMapKeepsColumnWhoseNameCollidesWithDerivedAliasUnderSchemaDrift() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
         List<Projection> projections = new ArrayList<>(2);
@@ -429,9 +432,56 @@ class ShardingSphereResultSetUtilsTest {
         when(resultSetMetaData.getColumnLabel(2)).thenReturn("add_test");
         when(resultSetMetaData.getColumnLabel(3)).thenReturn("order_by_derived_0");
         when(resultSetMetaData.getColumnLabel(4)).thenReturn("ORDER_BY_DERIVED_0");
-        Map<String, Integer> expected = new HashMap<>(2, 1F);
+        Map<String, Integer> expected = new HashMap<>(3, 1F);
         expected.put("col1", 1);
         expected.put("add_test", 2);
+        expected.put("order_by_derived_0", 3);
+        Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, resultSetMetaData);
+        assertThat(actual, is(expected));
+    }
+    
+    @Test
+    void assertCreateColumnLabelAndIndexMapKeepsRealDerivedNamedColumnWhenDerivedColumnAppended() throws SQLException {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
+        when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
+        List<Projection> projections = new ArrayList<>(2);
+        projections.add(new ColumnProjection(null, "order_id", null, mock(DatabaseType.class)));
+        projections.add(new ColumnProjection(null, "ORDER_BY_DERIVED_9", null, mock(DatabaseType.class)));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
+        projectionsContext.getProjections().add(new DerivedProjection("sort_key", new IdentifierValue("ORDER_BY_DERIVED_0"), mock(SQLSegment.class)));
+        when(selectStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnCount()).thenReturn(3);
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("order_id");
+        when(resultSetMetaData.getColumnLabel(2)).thenReturn("ORDER_BY_DERIVED_9");
+        when(resultSetMetaData.getColumnLabel(3)).thenReturn("ORDER_BY_DERIVED_0");
+        Map<String, Integer> expected = new HashMap<>(2, 1F);
+        expected.put("order_id", 1);
+        expected.put("ORDER_BY_DERIVED_9", 2);
+        Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, resultSetMetaData);
+        assertThat(actual, is(expected));
+    }
+    
+    @Test
+    void assertCreateColumnLabelAndIndexMapKeepsRealDerivedNamedColumnWhenDerivedColumnAppendedWithSchemaDrift() throws SQLException {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
+        when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
+        List<Projection> projections = new ArrayList<>(2);
+        projections.add(new ColumnProjection(null, "order_id", null, mock(DatabaseType.class)));
+        projections.add(new ColumnProjection(null, "ORDER_BY_DERIVED_9", null, mock(DatabaseType.class)));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
+        projectionsContext.getProjections().add(new DerivedProjection("sort_key", new IdentifierValue("ORDER_BY_DERIVED_0"), mock(SQLSegment.class)));
+        when(selectStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnCount()).thenReturn(4);
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("order_id");
+        when(resultSetMetaData.getColumnLabel(2)).thenReturn("add_test");
+        when(resultSetMetaData.getColumnLabel(3)).thenReturn("ORDER_BY_DERIVED_9");
+        when(resultSetMetaData.getColumnLabel(4)).thenReturn("ORDER_BY_DERIVED_0");
+        Map<String, Integer> expected = new HashMap<>(3, 1F);
+        expected.put("order_id", 1);
+        expected.put("add_test", 2);
+        expected.put("ORDER_BY_DERIVED_9", 3);
         Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, resultSetMetaData);
         assertThat(actual, is(expected));
     }

@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * ShardingSphere result set meta data.
@@ -226,10 +227,11 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
                 return new ClientVisibleColumnLayout(false, true, new int[0], Collections.emptyMap());
             }
             int columnCount = resultSetMetaData.getColumnCount();
+            Set<Integer> appendedDerivedColumnIndexes = ShardingSphereResultSetUtils.getAppendedDerivedColumnIndexes(sqlStatementContext, resultSetMetaData);
             int[] result = new int[columnCount];
             int visibleColumnCount = 0;
             for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                if (!ShardingSphereResultSetUtils.isAppendedDerivedColumnLabel(resultSetMetaData.getColumnLabel(columnIndex))) {
+                if (!appendedDerivedColumnIndexes.contains(columnIndex)) {
                     result[visibleColumnCount++] = columnIndex;
                 }
             }

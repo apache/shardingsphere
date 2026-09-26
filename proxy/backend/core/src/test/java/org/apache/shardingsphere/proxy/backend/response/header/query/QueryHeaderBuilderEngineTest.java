@@ -20,14 +20,17 @@ package org.apache.shardingsphere.proxy.backend.response.header.query;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -36,7 +39,9 @@ import org.mockito.MockedStatic;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -74,6 +79,34 @@ class QueryHeaderBuilderEngineTest {
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, mysql)).thenReturn(queryHeaderBuilder);
             new QueryHeaderBuilderEngine(mysql).build(context, metadata, database, 3);
             verify(queryHeaderBuilder).build(metadata, database, "COUNT(DISTINCT user_id)", "COUNT(DISTINCT user_id)", 3);
+        }
+    }
+    
+    @Test
+    void assertBuildKeepsRealDerivedNamedColumnWhenDerivedColumnAppendedWithSchemaDrift() throws SQLException {
+        DatabaseType mysql = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        SelectStatementContext context = mock(SelectStatementContext.class);
+        when(context.containsDerivedProjections()).thenReturn(true);
+        List<Projection> projections = new ArrayList<>(2);
+        projections.add(new ColumnProjection(null, "order_id", null, mysql));
+        projections.add(new ColumnProjection(null, "ORDER_BY_DERIVED_9", null, mysql));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
+        projectionsContext.getProjections().add(new DerivedProjection("sort_key", new IdentifierValue("ORDER_BY_DERIVED_0"), mock(SQLSegment.class)));
+        when(context.getProjectionsContext()).thenReturn(projectionsContext);
+        ResultSetMetaData returnedMetadata = mock(ResultSetMetaData.class);
+        when(returnedMetadata.getColumnCount()).thenReturn(4);
+        when(returnedMetadata.getColumnLabel(1)).thenReturn("order_id");
+        when(returnedMetadata.getColumnLabel(2)).thenReturn("add_test");
+        when(returnedMetadata.getColumnLabel(3)).thenReturn("ORDER_BY_DERIVED_9");
+        when(returnedMetadata.getColumnLabel(4)).thenReturn("ORDER_BY_DERIVED_0");
+        when(returnedMetadata.getColumnName(3)).thenReturn("ORDER_BY_DERIVED_9");
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        ShardingSphereResultSetMetaData metadata = new ShardingSphereResultSetMetaData(returnedMetadata, database, context);
+        try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
+            spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, mysql)).thenReturn(queryHeaderBuilder);
+            new QueryHeaderBuilderEngine(mysql).build(context, metadata, database, 3);
+            verify(queryHeaderBuilder).build(metadata, database, "ORDER_BY_DERIVED_9", "ORDER_BY_DERIVED_9", 3);
         }
     }
     
