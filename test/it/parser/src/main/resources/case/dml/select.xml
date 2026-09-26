@@ -17,6 +17,15 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_keyword">
+        <projections start-index="7" stop-index="15">
+            <expression-projection text="1" alias="desc" start-index="7" stop-index="15">
+                <expr>
+                    <literal-expression start-index="7" stop-index="7" value="1" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
     <select sql-case-id="select_like">
         <from>
             <simple-table name="pg_constraint" start-index="74" stop-index="86" />

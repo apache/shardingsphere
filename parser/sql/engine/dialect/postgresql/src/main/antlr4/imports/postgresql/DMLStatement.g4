@@ -288,7 +288,7 @@ targetList
 
 targetEl
     : colId DOT_ASTERISK_
-    | aExpr AS identifier
+    | aExpr AS colLabel
     | aExpr identifier
     | aExpr
     | ASTERISK_
