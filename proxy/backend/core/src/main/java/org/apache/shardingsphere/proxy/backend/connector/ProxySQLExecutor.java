@@ -135,24 +135,29 @@ public final class ProxySQLExecutor {
      * Check execute prerequisites.
      *
      * @param sqlStatementContext execution context
+     * @param isDeferrableTableDDL whether the statement is table DDL whose refresh can be deferred to the end of the transaction
      */
-    public void checkExecutePrerequisites(final SQLStatementContext sqlStatementContext) {
-        ShardingSpherePreconditions.checkState(
-                isValidExecutePrerequisites(sqlStatementContext.getSqlStatement()), () -> new TableModifyInTransactionException(getTableName(sqlStatementContext.getTablesContext())));
+    public void checkExecutePrerequisites(final SQLStatementContext sqlStatementContext, final boolean isDeferrableTableDDL) {
+        ShardingSpherePreconditions.checkState(isValidExecutePrerequisites(sqlStatementContext.getSqlStatement(), isDeferrableTableDDL),
+                () -> new TableModifyInTransactionException(getTableName(sqlStatementContext.getTablesContext())));
     }
     
-    private boolean isValidExecutePrerequisites(final SQLStatement sqlStatement) {
-        return !(sqlStatement instanceof DDLStatement) || isSupportDDLInTransaction(sqlStatement.getDatabaseType(), (DDLStatement) sqlStatement);
+    private boolean isValidExecutePrerequisites(final SQLStatement sqlStatement, final boolean isDeferrableTableDDL) {
+        return !(sqlStatement instanceof DDLStatement) || isSupportDDLInTransaction(sqlStatement.getDatabaseType(), (DDLStatement) sqlStatement, isDeferrableTableDDL);
     }
     
-    private boolean isSupportDDLInTransaction(final DatabaseType databaseType, final DDLStatement sqlStatement) {
+    private boolean isSupportDDLInTransaction(final DatabaseType databaseType, final DDLStatement sqlStatement, final boolean isDeferrableTableDDL) {
         DialectTransactionOption transactionOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption();
         boolean isDDLWithoutMetaDataChanged = isDDLWithoutMetaDataChanged(sqlStatement);
         if (isInXATransaction()) {
-            return transactionOption.isSupportDDLInXATransaction() && (isDDLWithoutMetaDataChanged || transactionOption.isSupportMetaDataRefreshInTransaction());
+            return transactionOption.isSupportDDLInXATransaction()
+                    && (isDDLWithoutMetaDataChanged || transactionOption.isSupportMetaDataRefreshInTransaction() || isDeferrableTableDDL);
+        }
+        if (isInBaseTransaction()) {
+            return transactionOption.isSupportMetaDataRefreshInTransaction() || isDDLWithoutMetaDataChanged;
         }
         if (isInLocalTransaction()) {
-            return transactionOption.isSupportMetaDataRefreshInTransaction() || isDDLWithoutMetaDataChanged;
+            return transactionOption.isSupportMetaDataRefreshInTransaction() || isDDLWithoutMetaDataChanged || isDeferrableTableDDL;
         }
         return true;
     }
@@ -161,6 +166,11 @@ public final class ProxySQLExecutor {
         TransactionType transactionType = TransactionUtils.getTransactionType(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext());
         TransactionStatus transactionStatus = databaseConnectionManager.getConnectionSession().getTransactionStatus();
         return TransactionType.XA == transactionType && transactionStatus.isInTransaction();
+    }
+    
+    private boolean isInBaseTransaction() {
+        TransactionType transactionType = TransactionUtils.getTransactionType(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext());
+        return TransactionType.BASE == transactionType && databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction();
     }
     
     private boolean isInLocalTransaction() {

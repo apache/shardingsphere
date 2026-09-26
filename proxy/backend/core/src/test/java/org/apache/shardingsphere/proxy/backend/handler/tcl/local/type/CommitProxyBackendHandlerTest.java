@@ -94,7 +94,7 @@ class CommitProxyBackendHandlerTest {
     private DialectDatabaseMetaData mockDialectDatabaseMetaData(final boolean returnRollbackWhenFailed) {
         DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
         when(result.getTransactionOption()).thenReturn(
-                new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, false, true, returnRollbackWhenFailed, false, Collections.emptyList()));
+                new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, false, true, returnRollbackWhenFailed, false, false, Collections.emptyList()));
         return result;
     }
 }

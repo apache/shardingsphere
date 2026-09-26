@@ -45,6 +45,8 @@ public final class DialectTransactionOption {
     
     private final boolean isAllowCommitAndRollbackOnlyWhenTransactionFailed;
     
+    private final boolean isSupportTransactionalDDL;
+    
     private final Collection<String> xaDriverClassNames;
     
     /**
