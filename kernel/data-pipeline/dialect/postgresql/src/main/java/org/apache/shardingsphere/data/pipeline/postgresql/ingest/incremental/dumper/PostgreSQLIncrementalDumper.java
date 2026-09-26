@@ -57,7 +57,6 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * PostgreSQL incremental dumper.
  */
-@HighFrequencyInvocation
 @Slf4j
 public final class PostgreSQLIncrementalDumper extends AbstractPipelineLifecycleRunnable implements IncrementalDumper {
     
@@ -114,30 +113,31 @@ public final class PostgreSQLIncrementalDumper extends AbstractPipelineLifecycle
                         connection, PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, dumperContext.getJobId()), walPosition.get().getLogSequenceNumber())) {
             PostgreSQLTimestampUtils utils = new PostgreSQLTimestampUtils(connection.unwrap(PgConnection.class).getTimestampUtils());
             DecodingPlugin decodingPlugin = new TestDecodingPlugin(utils);
-            while (isRunning()) {
-                ByteBuffer message = stream.readPending();
-                if (null == message) {
-                    Thread.sleep(10L);
-                    continue;
-                }
-                AbstractWALEvent event = decodingPlugin.decode(message, new PostgreSQLLogSequenceNumber(stream.getLastReceiveLSN()));
-                if (decodeWithTX) {
-                    processEventWithTX(event);
-                } else {
-                    processEventIgnoreTX(event);
-                }
-                walPosition.set(new WALPosition(event.getLogSequenceNumber()));
+            consumeWALEvents(stream, decodingPlugin);
+        }
+    }
+    
+    @HighFrequencyInvocation
+    private void consumeWALEvents(final PGReplicationStream stream, final DecodingPlugin decodingPlugin) throws SQLException, InterruptedException {
+        while (isRunning()) {
+            ByteBuffer message = stream.readPending();
+            if (null == message) {
+                Thread.sleep(10L);
+                continue;
             }
+            AbstractWALEvent event = decodingPlugin.decode(message, new PostgreSQLLogSequenceNumber(stream.getLastReceiveLSN()));
+            if (decodeWithTX) {
+                processEventWithTX(event);
+            } else {
+                processEventIgnoreTX(event);
+            }
+            walPosition.set(new WALPosition(event.getLogSequenceNumber()));
         }
     }
     
     private void processEventWithTX(final AbstractWALEvent event) {
         if (event instanceof BeginTXEvent) {
             rowEvents = new ArrayList<>();
-            return;
-        }
-        if (event instanceof AbstractRowEvent) {
-            rowEvents.add((AbstractRowEvent) event);
             return;
         }
         if (event instanceof CommitTXEvent) {
@@ -147,6 +147,10 @@ public final class PostgreSQLIncrementalDumper extends AbstractPipelineLifecycle
             }
             records.add(walEventConverter.convert(event));
             channel.push(records);
+            return;
+        }
+        if (event instanceof AbstractRowEvent) {
+            rowEvents.add((AbstractRowEvent) event);
         }
     }
     
