@@ -7242,6 +7242,10 @@
           "parameterTypes": []
         },
         {
+          "name": "getProviderType",
+          "parameterTypes": []
+        },
+        {
           "name": "isAllQueryUseSQLFederation",
           "parameterTypes": []
         },
