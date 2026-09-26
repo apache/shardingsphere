@@ -61,7 +61,6 @@ import java.util.regex.Pattern;
 /**
  * Incremental dumper of openGauss.
  */
-@HighFrequencyInvocation
 @Slf4j
 public final class OpenGaussIncrementalDumper extends AbstractPipelineLifecycleRunnable implements IncrementalDumper {
     
@@ -95,6 +94,7 @@ public final class OpenGaussIncrementalDumper extends AbstractPipelineLifecycleR
         decodeWithTX = dumperContext.isDecodeWithTX();
     }
     
+    @HighFrequencyInvocation
     @SneakyThrows(InterruptedException.class)
     @Override
     protected void runBlocking() {
