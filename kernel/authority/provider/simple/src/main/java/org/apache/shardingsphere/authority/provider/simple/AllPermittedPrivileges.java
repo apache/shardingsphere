@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.authority.provider.simple;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 /**
  * All permitted privileges.
  */
+@HighFrequencyInvocation
 public final class AllPermittedPrivileges implements ShardingSpherePrivileges {
     
     @Override
