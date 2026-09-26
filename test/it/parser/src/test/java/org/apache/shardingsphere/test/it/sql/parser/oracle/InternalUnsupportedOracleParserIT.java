@@ -19,9 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.oracle;
 
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalUnsupportedSQLParserIT;
-import org.junit.jupiter.api.Disabled;
 
-@Disabled
 @InternalSQLParserITSettings("Oracle")
 class InternalUnsupportedOracleParserIT extends InternalUnsupportedSQLParserIT {
 }
