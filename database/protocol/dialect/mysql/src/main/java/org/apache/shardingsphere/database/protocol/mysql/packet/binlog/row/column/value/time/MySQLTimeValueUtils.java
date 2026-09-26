@@ -44,7 +44,7 @@ public final class MySQLTimeValueUtils {
      * @param day day
      * @return whether the date is complete
      */
-    public static boolean isCompleteDate(final int month, final int day) {
+    static boolean isCompleteDate(final int month, final int day) {
         return month > 0 && day > 0;
     }
     
@@ -56,7 +56,7 @@ public final class MySQLTimeValueUtils {
      * @param day day
      * @return date in MySQL text form
      */
-    public static String formatIncompleteDate(final int year, final int month, final int day) {
+    static String formatIncompleteDate(final int year, final int month, final int day) {
         return String.format(Locale.ROOT, "%04d-%02d-%02d", year, month, day);
     }
     
@@ -72,7 +72,7 @@ public final class MySQLTimeValueUtils {
      * @param nanos nanoseconds, always a whole number of microseconds
      * @return datetime in MySQL text form
      */
-    public static String formatIncompleteDatetime(final int year, final int month, final int day, final int hour, final int minute, final int second, final int nanos) {
+    static String formatIncompleteDatetime(final int year, final int month, final int day, final int hour, final int minute, final int second, final int nanos) {
         String result = String.format(Locale.ROOT, "%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
         return 0 == nanos ? result : result + String.format(Locale.ROOT, ".%06d", nanos / 1000);
     }

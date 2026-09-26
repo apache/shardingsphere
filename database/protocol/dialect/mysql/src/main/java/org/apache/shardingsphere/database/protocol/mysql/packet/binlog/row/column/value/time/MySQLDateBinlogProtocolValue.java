@@ -42,8 +42,6 @@ public final class MySQLDateBinlogProtocolValue implements MySQLBinlogProtocolVa
         if (0 == date) {
             return MySQLTimeValueUtils.ZERO_OF_DATE;
         }
-        return MySQLTimeValueUtils.isCompleteDate(month, day)
-                ? Date.valueOf(LocalDate.of(year, month, day))
-                : MySQLTimeValueUtils.formatIncompleteDate(year, month, day);
+        return MySQLTimeValueUtils.isCompleteDate(month, day) ? Date.valueOf(LocalDate.of(year, month, day)) : MySQLTimeValueUtils.formatIncompleteDate(year, month, day);
     }
 }
