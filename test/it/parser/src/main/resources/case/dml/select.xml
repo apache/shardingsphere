@@ -17,6 +17,36 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_like">
+        <from>
+            <simple-table name="pg_constraint" start-index="74" stop-index="86" />
+        </from>
+        <projections start-index="7" stop-index="67">
+            <column-projection name="conname" start-index="7" stop-index="13" />
+            <expression-projection text="obj_description(oid, 'pg_constraint')" alias="description" start-index="16" stop-index="67" />
+        </projections>
+        <where start-index="88" stop-index="123">
+            <expr>
+                <binary-operation-expression start-index="94" stop-index="123">
+                    <left>
+                        <column name="conname" start-index="94" stop-index="100" />
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="107" stop-index="123">
+                            <items>
+                                <literal-expression value="at_partitioned%" start-index="107" stop-index="123" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="conname" start-index="134" stop-index="140" />
+        </order-by>
+    </select>
+
     <select sql-case-id="select_not_scalar_subquery_postgresql" where-expression-type="NotExpression">
         <projections start-index="7" stop-index="7">
             <expression-projection text="1" start-index="7" stop-index="7">
