@@ -54,7 +54,6 @@ import java.util.Optional;
  * @param <S> the type of result
  * @param <C> the type of record
  */
-@HighFrequencyInvocation
 @RequiredArgsConstructor
 public abstract class AbstractRecordTableInventoryCalculator<S, C> extends AbstractStreamingTableInventoryCalculator<S> {
     
@@ -72,6 +71,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
         this(chunkSize, DEFAULT_STREAMING_CHUNK_COUNT, streamingRangeType);
     }
     
+    @HighFrequencyInvocation
     @Override
     public Optional<S> calculateChunk(final TableInventoryCalculateParameter param) {
         List<C> records = calculateChunk0(param);

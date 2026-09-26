@@ -66,7 +66,6 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Inventory dumper.
  */
-@HighFrequencyInvocation
 @Slf4j
 public final class InventoryDumper extends AbstractPipelineLifecycleRunnable implements Dumper {
     
@@ -131,13 +130,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
             JobRateLimitAlgorithm rateLimitAlgorithm = dumperContext.getRateLimitAlgorithm();
             String firstUniqueKey = calculateParam.getFirstUniqueKey().getName();
             for (List<DataRecord> each : dumpCalculator.calculate(calculateParam)) {
-                if (null != rateLimitAlgorithm) {
-                    rateLimitAlgorithm.intercept(PipelineSQLOperationType.SELECT, 1);
-                }
-                channel.push(Collections.unmodifiableList(each));
-                IngestPosition position = UniqueKeyIngestPosition.newInstance(Range.closed(dumpCalculator.getFirstUniqueKeyValue(each.get(each.size() - 1), firstUniqueKey), range.getUpperBound()));
-                dumperContext.getCommonContext().setPosition(position);
-                rowCount += each.size();
+                rowCount += dumpBatch(each, rateLimitAlgorithm, dumpCalculator, firstUniqueKey, range);
             }
         } finally {
             QuietlyCloser.close(calculateParam.getCalculationContext());
@@ -146,6 +139,18 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         channel.push(Collections.singletonList(new FinishedRecord(position)));
         dumperContext.getCommonContext().setPosition(position);
         log.info("Dump by calculator done, rowCount={}, dataSource={}, table={}, initialPosition={}", rowCount, dumperContext.getCommonContext().getDataSourceName(), table, initialPosition);
+    }
+    
+    @HighFrequencyInvocation
+    private int dumpBatch(final List<DataRecord> dataRecords, final JobRateLimitAlgorithm rateLimitAlgorithm,
+                          final RecordTableInventoryDumpCalculator dumpCalculator, final String firstUniqueKey, final Range<?> range) {
+        if (null != rateLimitAlgorithm) {
+            rateLimitAlgorithm.intercept(PipelineSQLOperationType.SELECT, 1);
+        }
+        channel.push(Collections.unmodifiableList(dataRecords));
+        dumperContext.getCommonContext().setPosition(
+                UniqueKeyIngestPosition.newInstance(Range.closed(dumpCalculator.getFirstUniqueKeyValue(dataRecords.get(dataRecords.size() - 1), firstUniqueKey), range.getUpperBound())));
+        return dataRecords.size();
     }
     
     private void dumpWithStreamingQuery() throws SQLException {
@@ -174,6 +179,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         return sqlBuilder.buildFetchAllSQL(schemaName, dumperContext.getActualTableName(), columnNames);
     }
     
+    @HighFrequencyInvocation
     private void consumeResultSetToChannel(final ResultSet resultSet, final int batchSize) throws SQLException {
         long rowCount = 0;
         JobRateLimitAlgorithm rateLimitAlgorithm = dumperContext.getRateLimitAlgorithm();
@@ -196,8 +202,8 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         }
         dataRecords.add(new FinishedRecord(new IngestFinishedPosition()));
         channel.push(dataRecords);
-        log.info("Inventory dump with streaming query done, rowCount={}, dataSource={}, actualTable={}", rowCount, dumperContext.getCommonContext().getDataSourceName(),
-                dumperContext.getActualTableName());
+        log.info("Inventory dump with streaming query done, rowCount={}, dataSource={}, actualTable={}",
+                rowCount, dumperContext.getCommonContext().getDataSourceName(), dumperContext.getActualTableName());
     }
     
     private DataRecord loadDataRecord(final ResultSet resultSet, final ResultSetMetaData resultSetMetaData) throws SQLException {
