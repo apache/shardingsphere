@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
+import org.apache.shardingsphere.distsql.handler.executor.export.ExportedClusterInfo;
+import org.apache.shardingsphere.distsql.handler.executor.export.ExportedMetaData;
+import org.apache.shardingsphere.distsql.handler.executor.util.ClusterExportMetaDataGenerator;
 import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
@@ -30,8 +33,6 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
-import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.Test;
 

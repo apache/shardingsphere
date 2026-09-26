@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.config.yaml;
 
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlProxyDataSourceConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.junit.jupiter.api.Test;
 

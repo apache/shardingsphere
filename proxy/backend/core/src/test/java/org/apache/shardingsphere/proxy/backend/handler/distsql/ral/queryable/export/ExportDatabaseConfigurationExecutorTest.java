@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ex
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.ral.queryable.export.ExportDatabaseConfigurationExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.export.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
