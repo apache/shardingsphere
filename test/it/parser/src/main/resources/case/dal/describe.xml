@@ -46,13 +46,13 @@
     </describe>
     
     <describe sql-case-id="describe_table_with_placeholder">
-        <simple-table name="tableName" start-index="5" stop-index="13" />
-        <column-wild name="___" start-index="15" stop-index="17" />
+        <simple-table name="tableName" start-index="9" stop-index="17" />
+        <column-wild name="___" start-index="19" stop-index="21" />
     </describe>
     
     <describe sql-case-id="describe_table_with_wild">
-        <simple-table name="tableName" start-index="5" stop-index="13" />
-        <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
+        <simple-table name="tableName" start-index="9" stop-index="17" />
+        <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="19" stop-index="22" />
     </describe>
 
     <describe sql-case-id="describe_database_basic" />

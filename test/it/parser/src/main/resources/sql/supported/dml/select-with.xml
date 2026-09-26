@@ -17,6 +17,8 @@
   -->
 
 <sql-cases>
+    <sql-case id="with_select" value="WITH cte AS (SELECT 0 /*! ) */ SELECT * FROM cte a, cte b;" db-types="MySQL" />
+    <sql-case id="with_select_comment" value="WITH cte AS /*! ( */ SELECT 0) SELECT * FROM cte a, cte b;" db-types="MySQL" />
     <sql-case id="select_with_subquery_factoring" value="WITH dept_costs AS (SELECT department_name, SUM(salary) dept_total FROM departments d GROUP BY department_name) SELECT * FROM dept_costs WHERE dept_total > 304500 ORDER BY department_name" db-types="Oracle, SQLServer" />
     <sql-case id="select_with_subquery_factoring_with_binding_tables_without_join" value="WITH dept_costs AS (SELECT department_name, SUM(salary) dept_total FROM employees e, departments d WHERE e.department_id = d.department_id GROUP BY department_name), avg_cost AS (SELECT SUM(dept_total)/COUNT(*) avg FROM dept_costs) SELECT * FROM dept_costs WHERE dept_total > (SELECT avg FROM avg_cost) ORDER BY department_name" db-types="Oracle, SQLServer" />
     <sql-case id="select_with_subquery_factoring_with_search_depth_first" value="WITH org_chart (eid, emp_last, mgr_id, reportLevel, salary, job_id) AS (SELECT employee_id, last_name, manager_id, reportLevel, salary, job_id FROM employees WHERE manager_id IS NULL) SEARCH DEPTH FIRST BY emp_last SET order1 SELECT emp_name, eid, mgr_id, salary, job_id FROM org_chart ORDER BY order1" db-types="Oracle" />
