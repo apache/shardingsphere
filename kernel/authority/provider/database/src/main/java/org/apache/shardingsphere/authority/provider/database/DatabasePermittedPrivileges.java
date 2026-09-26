@@ -20,12 +20,14 @@ package org.apache.shardingsphere.authority.provider.database;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.constant.AuthorityConstants;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.Collection;
 
 /**
  * Database permitted privileges.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class DatabasePermittedPrivileges implements ShardingSpherePrivileges {
     
