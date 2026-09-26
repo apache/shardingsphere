@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
+import org.apache.shardingsphere.distsql.handler.executor.util.DatabaseExportMetaDataGenerator;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.synonym.ConnectionPropertySynonyms;

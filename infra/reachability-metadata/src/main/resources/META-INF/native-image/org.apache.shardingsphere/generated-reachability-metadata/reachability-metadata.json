@@ -4119,7 +4119,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.computenode.SetComputeNodeStateExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.computenode.SetComputeNodeStateExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4131,7 +4131,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.imports.ImportDatabaseConfigurationExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.imports.ImportDatabaseConfigurationExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4143,7 +4143,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.imports.ImportMetaDataExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.imports.ImportMetaDataExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4155,7 +4155,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lock.LockClusterExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.lock.LockClusterExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4167,7 +4167,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lock.UnlockClusterExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.lock.UnlockClusterExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4179,7 +4179,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.refresh.RefreshDatabaseMetaDataExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.refresh.RefreshDatabaseMetaDataExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4191,7 +4191,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.refresh.RefreshTableMetaDataExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.refresh.RefreshTableMetaDataExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4203,7 +4203,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.variable.SetDistVariableExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.variable.SetDistVariableExecutor",
       "methods": [
         {
           "name": "<init>",

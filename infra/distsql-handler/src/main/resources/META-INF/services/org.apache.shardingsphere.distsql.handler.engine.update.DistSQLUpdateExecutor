@@ -18,3 +18,11 @@
 org.apache.shardingsphere.distsql.handler.executor.rdl.resource.RegisterStorageUnitExecutor
 org.apache.shardingsphere.distsql.handler.executor.rdl.resource.AlterStorageUnitExecutor
 org.apache.shardingsphere.distsql.handler.executor.rdl.resource.UnregisterStorageUnitExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.updatable.computenode.SetComputeNodeStateExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.updatable.imports.ImportDatabaseConfigurationExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.updatable.imports.ImportMetaDataExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.updatable.variable.SetDistVariableExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.updatable.refresh.RefreshDatabaseMetaDataExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.updatable.lock.LockClusterExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.updatable.lock.UnlockClusterExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.updatable.refresh.RefreshTableMetaDataExecutor

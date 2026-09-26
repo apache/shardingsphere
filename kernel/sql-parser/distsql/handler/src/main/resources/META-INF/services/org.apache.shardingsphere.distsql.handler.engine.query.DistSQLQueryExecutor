@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.parser.distsql.handler.query.ShowSQLParserRuleExecutor
+org.apache.shardingsphere.parser.distsql.handler.query.ParseDistSQLExecutor
