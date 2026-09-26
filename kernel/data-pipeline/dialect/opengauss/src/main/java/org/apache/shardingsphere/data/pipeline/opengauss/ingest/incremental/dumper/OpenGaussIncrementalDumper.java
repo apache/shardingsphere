@@ -94,7 +94,6 @@ public final class OpenGaussIncrementalDumper extends AbstractPipelineLifecycleR
         decodeWithTX = dumperContext.isDecodeWithTX();
     }
     
-    @HighFrequencyInvocation
     @SneakyThrows(InterruptedException.class)
     @Override
     protected void runBlocking() {
@@ -124,20 +123,7 @@ public final class OpenGaussIncrementalDumper extends AbstractPipelineLifecycleR
             stream = logicalReplication.createReplicationStream(
                     connection, walPosition.get().getLogSequenceNumber(), PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, dumperContext.getJobId()), majorVersion);
             DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()), decodeWithTX, majorVersion >= 3);
-            while (isRunning()) {
-                ByteBuffer message = stream.readPending();
-                if (null == message) {
-                    Thread.sleep(10L);
-                    continue;
-                }
-                AbstractWALEvent event = decodingPlugin.decode(message, new OpenGaussLogSequenceNumber(stream.getLastReceiveLSN()));
-                if (decodeWithTX) {
-                    processEventWithTX(event, majorVersion);
-                } else {
-                    processEventIgnoreTX(event);
-                }
-                walPosition.set(new WALPosition(event.getLogSequenceNumber()));
-            }
+            consumeWALEvents(stream, decodingPlugin, majorVersion);
         } finally {
             if (null != stream) {
                 try {
@@ -164,17 +150,32 @@ public final class OpenGaussIncrementalDumper extends AbstractPipelineLifecycleR
         Matcher matcher = VERSION_PATTERN.matcher(versionText);
         boolean isFind = matcher.find();
         log.info("openGauss major version={}, `select version()`={}", isFind ? matcher.group(1) : DEFAULT_VERSION, versionText);
-        if (isFind) {
-            return Integer.parseInt(matcher.group(1));
-        }
-        return DEFAULT_VERSION;
+        return isFind ? Integer.parseInt(matcher.group(1)) : DEFAULT_VERSION;
     }
     
     private PgConnection getReplicationConnectionUnwrap() throws SQLException {
         return logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig()).unwrap(PgConnection.class);
     }
     
-    private void processEventWithTX(final AbstractWALEvent event, final int majorVersion) {
+    @HighFrequencyInvocation
+    private void consumeWALEvents(final PGReplicationStream stream, final DecodingPlugin decodingPlugin, final int majorVersion) throws SQLException, InterruptedException {
+        while (isRunning()) {
+            ByteBuffer message = stream.readPending();
+            if (null == message) {
+                Thread.sleep(10L);
+                continue;
+            }
+            AbstractWALEvent event = decodingPlugin.decode(message, new OpenGaussLogSequenceNumber(stream.getLastReceiveLSN()));
+            if (decodeWithTX) {
+                processEventWithTransaction(event, majorVersion);
+            } else {
+                processEventIgnoreTransaction(event);
+            }
+            walPosition.set(new WALPosition(event.getLogSequenceNumber()));
+        }
+    }
+    
+    private void processEventWithTransaction(final AbstractWALEvent event, final int majorVersion) {
         if (event instanceof BeginTXEvent) {
             if (majorVersion < 3) {
                 return;
@@ -183,12 +184,6 @@ public final class OpenGaussIncrementalDumper extends AbstractPipelineLifecycleR
                 log.warn("Commit event parse have problem, there still has uncommitted row events size={}, ", rowEvents.size());
             }
             currentCsn.set(((BeginTXEvent) event).getCsn());
-            return;
-        }
-        if (event instanceof AbstractRowEvent) {
-            AbstractRowEvent rowEvent = (AbstractRowEvent) event;
-            rowEvent.setCsn(currentCsn.get());
-            rowEvents.add(rowEvent);
             return;
         }
         if (event instanceof CommitTXEvent) {
@@ -203,14 +198,19 @@ public final class OpenGaussIncrementalDumper extends AbstractPipelineLifecycleR
             channel.push(records);
             rowEvents = new LinkedList<>();
             currentCsn.set(null);
+            return;
+        }
+        if (event instanceof AbstractRowEvent) {
+            AbstractRowEvent rowEvent = (AbstractRowEvent) event;
+            rowEvent.setCsn(currentCsn.get());
+            rowEvents.add(rowEvent);
         }
     }
     
-    private void processEventIgnoreTX(final AbstractWALEvent event) {
-        if (event instanceof BeginTXEvent) {
-            return;
+    private void processEventIgnoreTransaction(final AbstractWALEvent event) {
+        if (!(event instanceof BeginTXEvent)) {
+            channel.push(Collections.singletonList(walEventConverter.convert(event)));
         }
-        channel.push(Collections.singletonList(walEventConverter.convert(event)));
     }
     
     @Override
