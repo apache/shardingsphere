@@ -42,7 +42,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractConfigBackedRuntimeE2ETest {
+public abstract class AbstractConfigBackedRuntimeE2EIT {
     
     private static final String LOOPBACK_BIND_HOST = "127.0.0.1";
     

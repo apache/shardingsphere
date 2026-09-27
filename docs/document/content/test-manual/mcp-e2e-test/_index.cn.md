@@ -76,7 +76,7 @@ MCP E2E 运行配置集中在 `test/e2e/mcp/src/test/resources/env/e2e-env.prope
 本地运行时可以直接修改该文件，也可以使用同名 `-D` 系统参数覆盖。
 
 ```bash
-./mvnw -pl test/e2e/mcp test -Pe2e.mcp.functionality
+./mvnw -pl test/e2e/mcp verify -Pe2e.mcp.functionality -De2e.run.type=DOCKER
 ```
 
 ## 运行 MCP HTTP IT
@@ -90,10 +90,10 @@ MCP E2E 运行配置集中在 `test/e2e/mcp/src/test/resources/env/e2e-env.prope
 ## 运行 MCP LLM E2E
 
 ```bash
-./mvnw -pl test/e2e/mcp test -Pe2e.mcp.llm
+./mvnw -pl test/e2e/mcp verify -Pe2e.mcp.llm -De2e.run.type=DOCKER
 ```
 
-`LLMHttpE2ETest` 覆盖四个自主 HTTP 场景：只读查询、元数据发现、带副作用操作的 preview 和无效资源恢复。每个场景都使用实时 `tools/list` response，并保留模型 response、MCP structured response、interaction trace 和断言报告。选中 `llm-e2e` lane 后，如果 Docker、模型、数据库或 MCP 基础设施缺失，测试直接失败，不把失败转换成 skip。
+`LLMHttpE2EIT` 覆盖五个自主 HTTP 场景：只读查询、元数据发现、Mask 规则规划、带副作用操作的 preview 和无效资源恢复。每个场景都使用实时 `tools/list` response，并保留模型 response、MCP structured response、interaction trace 和断言报告。选中 `llm-e2e` lane 后，如果 Docker、模型、数据库或 MCP 基础设施缺失，测试直接失败，不把失败转换成 skip。
 
 ## MCP Conformance E2E
 
@@ -106,7 +106,7 @@ CI conformance lane 将 `modelcontextprotocol/conformance` 固定在 commit `21a
 仅本地调试时，可以连接已经运行的 OpenAI-compatible endpoint：
 
 ```bash
-./mvnw -pl test/e2e/mcp test -Pe2e.mcp.llm -Dtest=LLMHttpE2ETest -Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:8080/v1
+./mvnw -pl test/e2e/mcp verify -Pe2e.mcp.llm -De2e.run.type=DOCKER -Dit.test=LLMHttpE2EIT -Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:8080/v1
 ```
 
 External debug endpoint 不能作为 score-closing evidence。

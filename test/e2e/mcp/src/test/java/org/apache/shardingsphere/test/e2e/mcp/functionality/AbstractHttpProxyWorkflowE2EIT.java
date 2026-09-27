@@ -38,7 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-abstract class AbstractHttpProxyWorkflowE2ETest extends AbstractTransportParameterizedE2ETest {
+abstract class AbstractHttpProxyWorkflowE2EIT extends AbstractTransportParameterizedE2EIT {
     
     private ProxyWorkflowRuntimeFixture runtimeFixture;
     

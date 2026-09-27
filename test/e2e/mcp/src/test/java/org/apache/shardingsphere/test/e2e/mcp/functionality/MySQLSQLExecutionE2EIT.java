@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
-class MySQLSQLExecutionE2ETest extends AbstractMySQLRuntimeE2ETest {
+class MySQLSQLExecutionE2EIT extends AbstractMySQLRuntimeE2EIT {
     
     @Test
     void assertExecuteUpdate() throws SQLException, IOException, InterruptedException {

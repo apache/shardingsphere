@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2EIT;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.junit.jupiter.api.AfterEach;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-abstract class AbstractTransportParameterizedE2ETest extends AbstractConfigBackedRuntimeE2ETest {
+abstract class AbstractTransportParameterizedE2EIT extends AbstractConfigBackedRuntimeE2EIT {
     
     private RuntimeTransport transport = RuntimeTransport.HTTP;
     

@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
-class HttpProxyFeatureWorkflowContractE2ETest extends AbstractHttpProxyWorkflowE2ETest {
+class HttpProxyFeatureWorkflowContractE2EIT extends AbstractHttpProxyWorkflowE2EIT {
     
     private static final String APPLY_TOOL_NAME = WorkflowToolDescriptors.APPLY_TOOL_NAME;
     

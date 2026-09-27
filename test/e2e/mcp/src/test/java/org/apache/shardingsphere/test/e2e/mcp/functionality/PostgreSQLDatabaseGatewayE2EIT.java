@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class PostgreSQLDatabaseGatewayE2ETest extends AbstractTransportParameterizedE2ETest {
+class PostgreSQLDatabaseGatewayE2EIT extends AbstractTransportParameterizedE2EIT {
     
     private static final String LOGICAL_DATABASE_NAME = "postgres_db";
     

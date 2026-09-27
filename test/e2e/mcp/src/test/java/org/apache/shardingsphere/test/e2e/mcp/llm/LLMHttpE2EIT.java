@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAs
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatModelClient;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2EIT;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.DockerRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport.LLMMySQLRuntimeFixture;
@@ -63,13 +63,15 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("llm-e2e")
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
+class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
     
     private static final int MAX_TURNS = 6;
     
@@ -207,7 +209,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private void runScenario(final Scenario scenario) throws IOException {
         prepareRuntimeFixture();
         LLMRuntimeSupport.ModelRuntime modelRuntime = getRequiredLLMRuntime();
-        assertTrue(Boolean.TRUE.equals(modelRuntime.getEvidence().get("scoreClosing")), "LLM E2E requires Docker-owned runtime evidence.");
+        assertThat("LLM E2E requires Docker-owned runtime evidence.", modelRuntime.getEvidence().get("scoreClosing"), is(Boolean.TRUE));
         Result actualResult = new LLMConversationRunner(
                 MAX_TURNS,
                 new LLMChatModelClient(modelRuntime.getConfiguration(), HttpClient.newHttpClient()),
@@ -217,8 +219,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         Collection<String> sensitiveValues = getArtifactSensitiveValues();
         artifactWriter.write(artifactDirectory, actualResult, modelRuntime.getEvidence(), sensitiveValues);
         assertArtifacts(artifactDirectory, sensitiveValues);
-        assertTrue(actualResult.assertionReport().isSuccess(), () -> createFailureMessage(
-                scenario.id(), actualResult.assertionReport(), artifactDirectory));
+        assertTrue(actualResult.assertionReport().isSuccess(), () -> createFailureMessage(scenario.id(), actualResult.assertionReport(), artifactDirectory));
         assertFalse(actualResult.evidence().interactionTrace().isEmpty(), scenario.id() + " must capture MCP evidence.");
         assertTrace(scenario.id(), actualResult.evidence().interactionTrace());
     }
@@ -392,8 +393,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private boolean hasRecoveryCategory(final Map<String, Object> structuredContent, final String expectedCategory) {
         Map<String, Object> recovery = getObjectMap(structuredContent.get("recovery"));
-        return expectedCategory.equals(structuredContent.get("recovery_category"))
-                || expectedCategory.equals(recovery.get("category")) || expectedCategory.equals(recovery.get("recovery_category"));
+        return expectedCategory.equals(structuredContent.get("recovery_category")) || expectedCategory.equals(recovery.get("category")) || expectedCategory.equals(recovery.get("recovery_category"));
     }
     
     private Optional<Integer> findQueryCount(final List<MCPInteractionTraceRecord> trace, final int previousModelTurn) {
@@ -496,7 +496,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
             assertTrue(0 < each.getSequence(), () -> "Trace sequence must be positive in " + scenarioId);
             assertTrue(0 < each.getModelTurn(), () -> "Trace model turn must be positive in " + scenarioId);
             assertFalse(each.getActionKind().isBlank(), () -> "Trace action kind is blank in " + scenarioId);
-            assertTrue(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN.equals(each.getActionOrigin()), () -> "Non-model trace action origin in " + scenarioId);
+            assertThat(each.getActionOrigin(), is(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN));
             assertFalse(each.getTargetName().isBlank(), () -> "Trace target name is blank in " + scenarioId);
             MCPModelContractAssertions.assertCanonicalNextActionLists(each.getStructuredContent());
         }
