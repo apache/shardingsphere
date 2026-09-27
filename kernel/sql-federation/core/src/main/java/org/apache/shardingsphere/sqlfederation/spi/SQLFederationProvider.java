@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sqlfederation.spi;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 
 import java.util.Collection;
@@ -45,6 +47,15 @@ public interface SQLFederationProvider extends TypedSPI {
      * @param databases databases
      */
     void refresh(Collection<ShardingSphereDatabase> databases);
+    
+    /**
+     * Check whether the SQL statement type is eligible for SQL federation.
+     *
+     * @param sqlStatement SQL statement to check
+     * @return whether the SQL statement type is eligible for SQL federation
+     */
+    @HighFrequencyInvocation
+    boolean isSupportedSQLStatement(SQLStatement sqlStatement);
     
     /**
      * Create SQL federation executor.

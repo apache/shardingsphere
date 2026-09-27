@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.sqlfederation.provider.calcite;
 
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
@@ -34,13 +38,34 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class CalciteSQLFederationProviderTest {
     
     @Test
     void assertLoadCalciteProvider() {
         assertThat(TypedSPILoader.getService(SQLFederationProvider.class, "CALCITE"), isA(CalciteSQLFederationProvider.class));
+    }
+    
+    @Test
+    void assertIsSupportedSQLStatementWithSelect() {
+        SQLFederationProvider provider = TypedSPILoader.getService(SQLFederationProvider.class, "CALCITE");
+        assertTrue(provider.isSupportedSQLStatement(mock(SelectStatement.class)));
+    }
+    
+    @Test
+    void assertIsSupportedSQLStatementWithNonSelect() {
+        SQLFederationProvider provider = TypedSPILoader.getService(SQLFederationProvider.class, "CALCITE");
+        assertFalse(provider.isSupportedSQLStatement(mock(CreateTableStatement.class)));
+    }
+    
+    @Test
+    void assertCreatePreviewExecutor() {
+        SQLFederationProvider provider = TypedSPILoader.getService(SQLFederationProvider.class, "CALCITE");
+        assertThat(provider.createPreviewExecutor("foo_db", "foo_schema", mock(ShardingSphereStatistics.class), mock(ProcessEngine.class)), isA(CalciteSQLFederationExecutor.class));
     }
     
     @Test

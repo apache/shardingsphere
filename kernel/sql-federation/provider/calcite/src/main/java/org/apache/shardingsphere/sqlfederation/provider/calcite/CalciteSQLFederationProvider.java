@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContextFactory;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
@@ -50,6 +52,12 @@ public final class CalciteSQLFederationProvider implements SQLFederationProvider
     @Override
     public void refresh(final Collection<ShardingSphereDatabase> databases) {
         compilerContext.set(CompilerContextFactory.create(databases));
+    }
+    
+    @HighFrequencyInvocation
+    @Override
+    public boolean isSupportedSQLStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof SelectStatement;
     }
     
     CompilerContext getCompilerContext() {

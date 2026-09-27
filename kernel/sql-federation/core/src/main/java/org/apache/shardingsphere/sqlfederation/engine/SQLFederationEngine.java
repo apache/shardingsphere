@@ -164,7 +164,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     }
     
     private boolean isSupportedSQLStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement;
+        return sqlFederationRule.getProvider().isSupportedSQLStatement(sqlStatement);
     }
     
     /**
