@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.provider.none;
 
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -43,7 +44,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,6 +53,12 @@ class NoneSQLFederationProviderTest {
     @Test
     void assertLoadNoneProvider() {
         assertThat(TypedSPILoader.getService(SQLFederationProvider.class, "NONE"), isA(NoneSQLFederationProvider.class));
+    }
+    
+    @Test
+    void assertIsSupportedSQLStatement() {
+        SQLFederationProvider provider = TypedSPILoader.getService(SQLFederationProvider.class, "NONE");
+        assertFalse(provider.isSupportedSQLStatement(mock(SelectStatement.class)));
     }
     
     @Test
@@ -82,7 +88,7 @@ class NoneSQLFederationProviderTest {
     }
     
     @Test
-    void assertFederationExecutionFailsClearly() throws SQLException {
+    void assertAllQueryDoesNotUseFederation() throws SQLException {
         SQLFederationRule rule = createRule(true);
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(rule));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
@@ -92,11 +98,17 @@ class NoneSQLFederationProviderTest {
         QueryContext queryContext = mock(QueryContext.class);
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         try (SQLFederationEngine engine = new SQLFederationEngine("foo_db", "foo_schema", metaData, mock(ShardingSphereStatistics.class), null)) {
-            assertTrue(engine.decide(queryContext, globalRuleMetaData));
-            SQLFederationProviderUnsupportedException actual = assertThrows(SQLFederationProviderUnsupportedException.class,
-                    () -> engine.executeQuery(null, null, mock(SQLFederationContext.class)));
-            assertThat(actual.getMessage(), is("SQL_FEDERATION-00003: SQL Federation provider 'NONE' does not support federation execution."));
+            assertFalse(engine.decide(queryContext, globalRuleMetaData));
         }
+    }
+    
+    @Test
+    void assertFederationExecutionFailsClearly() {
+        SQLFederationProvider provider = TypedSPILoader.getService(SQLFederationProvider.class, "NONE");
+        SQLFederationProviderUnsupportedException actual = assertThrows(SQLFederationProviderUnsupportedException.class,
+                () -> provider.createExecutor("foo_db", "foo_schema", mock(ShardingSphereStatistics.class), mock(JDBCExecutor.class), mock(ProcessEngine.class))
+                        .executeQuery(mock(), mock(), mock(SQLFederationContext.class)));
+        assertThat(actual.getMessage(), is("SQL_FEDERATION-00003: SQL Federation provider 'NONE' does not support federation execution."));
     }
     
     @Test

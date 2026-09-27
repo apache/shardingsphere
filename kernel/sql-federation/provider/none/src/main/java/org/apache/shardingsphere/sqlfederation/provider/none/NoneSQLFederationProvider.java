@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
@@ -29,7 +30,7 @@ import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 import java.util.Collection;
 
 /**
- * Provider that explicitly rejects SQL federation execution.
+ * Provider that opts out of SQL federation and rejects direct federation execution.
  */
 public final class NoneSQLFederationProvider implements SQLFederationProvider {
     
@@ -39,6 +40,12 @@ public final class NoneSQLFederationProvider implements SQLFederationProvider {
     
     @Override
     public void refresh(final Collection<ShardingSphereDatabase> databases) {
+    }
+    
+    @HighFrequencyInvocation
+    @Override
+    public boolean isSupportedSQLStatement(final SQLStatement sqlStatement) {
+        return false;
     }
     
     @HighFrequencyInvocation
