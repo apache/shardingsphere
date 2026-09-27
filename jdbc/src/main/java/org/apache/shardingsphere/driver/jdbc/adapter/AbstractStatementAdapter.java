@@ -63,6 +63,12 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     private boolean closed;
     
+    private int localUpdateCount = -1;
+    
+    protected final void setLocalUpdateCount(final int localUpdateCount) {
+        this.localUpdateCount = localUpdateCount;
+    }
+    
     protected final void handleAutoCommitBeforeExecution(final SQLStatement sqlStatement, final ShardingSphereConnection connection) throws SQLException {
         checkAllowedSQLStatementWhenTransactionFailed(sqlStatement, connection);
         if (AutoCommitUtils.isNeedStartTransaction(sqlStatement)) {
@@ -175,6 +181,9 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     @Override
     public final int getUpdateCount() throws SQLException {
+        if (0 <= localUpdateCount) {
+            return localUpdateCount;
+        }
         if (isAccumulate()) {
             return accumulate();
         }
@@ -203,6 +212,10 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     @Override
     public final boolean getMoreResults() throws SQLException {
+        if (0 <= localUpdateCount) {
+            localUpdateCount = -1;
+            return false;
+        }
         boolean result = false;
         for (Statement each : getRoutedStatements()) {
             result = each.getMoreResults();
@@ -212,6 +225,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     @Override
     public final boolean getMoreResults(final int current) {
+        localUpdateCount = -1;
         return false;
     }
     
