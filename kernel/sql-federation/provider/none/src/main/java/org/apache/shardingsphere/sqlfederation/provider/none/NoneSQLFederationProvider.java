@@ -48,6 +48,13 @@ public final class NoneSQLFederationProvider implements SQLFederationProvider {
         return new NoneSQLFederationExecutor();
     }
     
+    @HighFrequencyInvocation
+    @Override
+    public SQLFederationExecutor createPreviewExecutor(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereStatistics statistics,
+                                                       final ProcessEngine processEngine) {
+        return new NoneSQLFederationExecutor();
+    }
+    
     @Override
     public String getType() {
         return "NONE";

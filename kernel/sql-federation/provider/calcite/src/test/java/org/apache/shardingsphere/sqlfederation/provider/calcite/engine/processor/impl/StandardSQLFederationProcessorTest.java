@@ -126,6 +126,7 @@ class StandardSQLFederationProcessorTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertPrepareAndReleaseSkipNonFederationTable() {
+        processor = new StandardSQLFederationProcessor(mock());
         SQLFederationContext federationContext = createFederationContext(true, null);
         Table table = mock(Table.class);
         SchemaPlus rootSchema = mockFlatSchemaWithTable(table);

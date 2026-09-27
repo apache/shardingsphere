@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.sqlfederation.provider.calcite;
 
 import com.google.common.base.Joiner;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptUtil;
@@ -73,6 +75,7 @@ import java.util.Optional;
 /**
  * Calcite SQL federation executor.
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Slf4j
 public final class CalciteSQLFederationExecutor implements SQLFederationExecutor {
@@ -81,11 +84,11 @@ public final class CalciteSQLFederationExecutor implements SQLFederationExecutor
     
     private static final int MAX_ERROR_MESSAGE_LENGTH = 5000;
     
-    private final ProcessEngine processEngine;
-    
     private final String currentDatabaseName;
     
     private final String currentSchemaName;
+    
+    private final ProcessEngine processEngine;
     
     private final CalciteSQLFederationProvider provider;
     
@@ -99,11 +102,12 @@ public final class CalciteSQLFederationExecutor implements SQLFederationExecutor
     
     public CalciteSQLFederationExecutor(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereStatistics statistics,
                                         final JDBCExecutor jdbcExecutor, final ProcessEngine processEngine, final CalciteSQLFederationProvider provider) {
-        this.currentDatabaseName = currentDatabaseName;
-        this.currentSchemaName = currentSchemaName;
-        this.processEngine = processEngine;
-        this.provider = provider;
-        processor = SQLFederationProcessorFactory.getInstance().newInstance(statistics, jdbcExecutor);
+        this(currentDatabaseName, currentSchemaName, processEngine, provider, SQLFederationProcessorFactory.getInstance().newInstance(statistics, jdbcExecutor));
+    }
+    
+    public CalciteSQLFederationExecutor(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereStatistics statistics,
+                                        final ProcessEngine processEngine, final CalciteSQLFederationProvider provider) {
+        this(currentDatabaseName, currentSchemaName, processEngine, provider, SQLFederationProcessorFactory.getInstance().newPreviewInstance(statistics));
     }
     
     /**

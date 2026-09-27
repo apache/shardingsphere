@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
@@ -56,8 +55,7 @@ public final class SQLFederationPreviewExecutionUnitGenerator implements Preview
                                                         final DistSQLConnectionContext connectionContext) {
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(database::getDefaultSchemaName);
-        JDBCExecutor jdbcExecutor = new JDBCExecutor(connectionContext.getExecutorEngineSupplier().get(), connectionContext.getQueryContext().getConnectionContext());
-        SQLFederationEngine federationEngine = new SQLFederationEngine(database.getName(), schemaName, metaData, contextManager.getMetaDataContexts().getStatistics(), jdbcExecutor);
+        SQLFederationEngine federationEngine = new SQLFederationEngine(database.getName(), schemaName, metaData, contextManager.getMetaDataContexts().getStatistics());
         if (!federationEngine.decide(queryContext, metaData.getGlobalRuleMetaData())) {
             return Optional.empty();
         }

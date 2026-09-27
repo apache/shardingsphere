@@ -67,6 +67,7 @@ import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
+import org.apache.shardingsphere.sqlfederation.provider.calcite.CalciteSQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.provider.calcite.engine.fixture.rule.SQLFederationDeciderRuleMatchFixture;
 import org.apache.shardingsphere.sqlfederation.provider.calcite.engine.fixture.rule.SQLFederationDeciderRuleNotMatchFixture;
 import org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor.SQLFederationProcessor;
@@ -92,6 +93,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -114,6 +116,14 @@ class SQLFederationEngineTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     private final SQLFederationCacheOption cacheOption = new SQLFederationCacheOption(1, 1L);
+    
+    @Test
+    void assertCreatePreviewEngineWithoutJDBCExecutor() throws SQLException {
+        ShardingSphereMetaData metaData = createMetaData(new Properties());
+        try (SQLFederationEngine engine = new SQLFederationEngine("foo_db", "foo_schema", metaData, mock(ShardingSphereStatistics.class))) {
+            assertThat(engine.getExecution(), isA(CalciteSQLFederationExecutor.class));
+        }
+    }
     
     @Test
     void assertDecideWhenSQLFederationDisabled() throws SQLException {

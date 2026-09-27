@@ -37,7 +37,6 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
@@ -58,8 +57,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -67,7 +64,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -109,13 +105,6 @@ class PreviewExecutorTest {
     @BeforeEach
     void setUp() {
         contextManager = mockContextManager();
-        ProxyContext.init(contextManager);
-        BackendExecutorContext.getInstance().init();
-    }
-    
-    @AfterEach
-    void tearDown() {
-        BackendExecutorContext.getInstance().shutdown();
     }
     
     private ContextManager mockContextManager() {
@@ -166,7 +155,6 @@ class PreviewExecutorTest {
         try (
                 MockedConstruction<SQLBindEngine> ignoredBindEngine =
                         mockConstruction(SQLBindEngine.class, (mock, context) -> when(mock.bind(any(SQLStatement.class))).thenReturn(sqlStatementContext));
-                MockedConstruction<JDBCExecutor> ignoredJDBCExecutor = mockConstruction(JDBCExecutor.class);
                 MockedConstruction<SQLFederationEngine> ignoredFederationEngine =
                         mockConstruction(SQLFederationEngine.class, (mock, context) -> {
                             assertThat(context.arguments().get(1), is("foo_default_schema"));
@@ -190,7 +178,6 @@ class PreviewExecutorTest {
         try (
                 MockedConstruction<SQLBindEngine> ignoredBindEngine =
                         mockConstruction(SQLBindEngine.class, (mock, context) -> when(mock.bind(any(SQLStatement.class))).thenReturn(cursorHeldSQLStatementContext));
-                MockedConstruction<JDBCExecutor> ignoredJDBCExecutor = mockConstruction(JDBCExecutor.class);
                 MockedConstruction<SQLFederationEngine> ignoredFederationEngine =
                         mockConstruction(SQLFederationEngine.class, (mock, context) -> when(mock.decide(any(QueryContext.class), any(RuleMetaData.class))).thenReturn(false));
                 MockedConstruction<KernelProcessor> ignoredKernelProcessor = mockConstruction(KernelProcessor.class,
@@ -217,7 +204,6 @@ class PreviewExecutorTest {
         try (
                 MockedConstruction<SQLBindEngine> ignoredBindEngine =
                         mockConstruction(SQLBindEngine.class, (mock, context) -> when(mock.bind(any(SQLStatement.class))).thenReturn(cursorHeldSQLStatementContext));
-                MockedConstruction<JDBCExecutor> ignoredJDBCExecutor = mockConstruction(JDBCExecutor.class);
                 MockedConstruction<DriverExecutionPrepareEngine> ignoredPrepareEngine = mockConstruction(DriverExecutionPrepareEngine.class);
                 MockedConstruction<SQLFederationEngine> ignored4 = mockConstruction(SQLFederationEngine.class, (mock, context) -> configureSQLFederationEngine(mock, context, actualSchemaName))) {
             assertThat(executor.getRows(new PreviewStatement("SELECT 1"), contextManager).iterator().next().getCell(1), is("bar_ds"));
@@ -257,7 +243,6 @@ class PreviewExecutorTest {
         when(queryContext.getHintValueContext()).thenReturn(hintValueContext);
         when(queryContext.getConnectionContext()).thenReturn(connectionContext);
         DistSQLConnectionContext result = new DistSQLConnectionContext(queryContext, 1, databaseType, databaseConnectionManager, mock(ExecutorStatementManager.class));
-        result.setExecutorEngineSupplier(BackendExecutorContext.getInstance()::getExecutorEngine);
         result.setProcessId("process_id");
         return result;
     }

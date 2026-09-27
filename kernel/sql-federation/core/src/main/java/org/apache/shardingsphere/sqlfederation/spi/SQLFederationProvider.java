@@ -58,6 +58,17 @@ public interface SQLFederationProvider extends TypedSPI {
      */
     SQLFederationExecutor createExecutor(String currentDatabaseName, String currentSchemaName, ShardingSphereStatistics statistics, JDBCExecutor jdbcExecutor, ProcessEngine processEngine);
     
+    /**
+     * Create SQL federation executor for PREVIEW without a JDBC executor.
+     *
+     * @param currentDatabaseName current database name
+     * @param currentSchemaName current schema name
+     * @param statistics statistics
+     * @param processEngine process engine
+     * @return SQL federation executor for PREVIEW
+     */
+    SQLFederationExecutor createPreviewExecutor(String currentDatabaseName, String currentSchemaName, ShardingSphereStatistics statistics, ProcessEngine processEngine);
+    
     @Override
     String getType();
 }
