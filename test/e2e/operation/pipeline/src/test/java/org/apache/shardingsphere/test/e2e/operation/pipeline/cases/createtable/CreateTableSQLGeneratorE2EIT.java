@@ -54,7 +54,7 @@ import static org.hamcrest.Matchers.is;
         @PipelineE2EDatabaseSettings(type = "MySQL"),
         @PipelineE2EDatabaseSettings(type = "PostgreSQL"),
         @PipelineE2EDatabaseSettings(type = "openGauss")})
-class CreateTableSQLGeneratorIT {
+class CreateTableSQLGeneratorE2EIT {
     
     private static final String DEFAULT_SCHEMA = "public";
     
