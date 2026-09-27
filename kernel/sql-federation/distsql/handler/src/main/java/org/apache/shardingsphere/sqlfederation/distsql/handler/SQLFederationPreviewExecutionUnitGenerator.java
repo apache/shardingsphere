@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.executor.rul.PreviewExecutionUnitGenerator;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
@@ -64,9 +65,11 @@ public final class SQLFederationPreviewExecutionUnitGenerator implements Preview
     
     private Collection<ExecutionUnit> getFederationExecutionUnits(final ShardingSphereDatabase database, final QueryContext queryContext, final ShardingSphereMetaData metaData,
                                                                   final SQLFederationEngine federationEngine, final DistSQLConnectionContext connectionContext) {
+        String processId = connectionContext.getProcessId();
+        ShardingSpherePreconditions.checkNotEmpty(processId, () -> new IllegalStateException("Process ID is required for federation PREVIEW."));
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(database, metaData, connectionContext);
-        SQLFederationContext context = new SQLFederationContext(true, queryContext, metaData, connectionContext.getProcessId());
+        SQLFederationContext context = new SQLFederationContext(true, queryContext, metaData, processId);
         federationEngine.executeQuery(prepareEngine, createPreviewCallback(database, sqlStatement), context);
         return context.getPreviewExecutionUnits();
     }

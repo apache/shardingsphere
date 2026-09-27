@@ -43,6 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -69,6 +70,39 @@ class SQLFederationPreviewExecutionUnitGeneratorTest {
                         mockConstruction(SQLFederationEngine.class, (mock, context) -> when(mock.decide(any(), any())).thenReturn(false))) {
             Optional<Collection<ExecutionUnit>> actual = generator.generate(database, queryContext, contextManager, connectionContext);
             assertFalse(actual.isPresent());
+        }
+    }
+    
+    @Test
+    void assertGenerateWhenFederationSelectedWithoutProcessId() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getDefaultSchemaName()).thenReturn("foo_schema");
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext().getTablesContext().getSchemaName()).thenReturn(Optional.empty());
+        DistSQLConnectionContext connectionContext = mock(DistSQLConnectionContext.class);
+        try (
+                MockedConstruction<SQLFederationEngine> ignoredFederationEngine =
+                        mockConstruction(SQLFederationEngine.class, (mock, context) -> when(mock.decide(any(), any())).thenReturn(true))) {
+            IllegalStateException actual = assertThrows(IllegalStateException.class, () -> generator.generate(database, queryContext, mockContextManager(), connectionContext));
+            assertThat(actual.getMessage(), is("Process ID is required for federation PREVIEW."));
+        }
+    }
+    
+    @Test
+    void assertGenerateWhenFederationSelectedWithEmptyProcessId() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getDefaultSchemaName()).thenReturn("foo_schema");
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext().getTablesContext().getSchemaName()).thenReturn(Optional.empty());
+        DistSQLConnectionContext connectionContext = mock(DistSQLConnectionContext.class);
+        when(connectionContext.getProcessId()).thenReturn("");
+        try (
+                MockedConstruction<SQLFederationEngine> ignoredFederationEngine =
+                        mockConstruction(SQLFederationEngine.class, (mock, context) -> when(mock.decide(any(), any())).thenReturn(true))) {
+            IllegalStateException actual = assertThrows(IllegalStateException.class, () -> generator.generate(database, queryContext, mockContextManager(), connectionContext));
+            assertThat(actual.getMessage(), is("Process ID is required for federation PREVIEW."));
         }
     }
     
