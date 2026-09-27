@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.provider.calcite.resultset;
+package org.apache.shardingsphere.sqlfederation.resultset;
 
 import org.junit.jupiter.api.Test;
 

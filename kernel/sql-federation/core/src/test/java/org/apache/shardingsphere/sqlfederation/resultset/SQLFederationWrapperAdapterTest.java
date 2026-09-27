@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.provider.calcite.resultset;
+package org.apache.shardingsphere.sqlfederation.resultset;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +41,7 @@ class SQLFederationWrapperAdapterTest {
     void assertUnwrapFailure() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class, () -> fixture.unwrap(Comparable.class));
         assertThat(ex.getMessage(),
-                is("`org.apache.shardingsphere.sqlfederation.provider.calcite.resultset.SQLFederationWrapperAdapterTest$WrapperFixture` cannot be unwrapped as `java.lang.Comparable`"));
+                is("`org.apache.shardingsphere.sqlfederation.resultset.SQLFederationWrapperAdapterTest$WrapperFixture` cannot be unwrapped as `java.lang.Comparable`"));
     }
     
     @Test
