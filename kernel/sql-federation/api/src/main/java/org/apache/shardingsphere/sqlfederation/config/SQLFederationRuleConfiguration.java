@@ -38,4 +38,10 @@ public final class SQLFederationRuleConfiguration implements GlobalRuleConfigura
     @NotNull
     @Valid
     private final SQLFederationCacheOption executionPlanCache;
+    
+    private final String providerType;
+    
+    public SQLFederationRuleConfiguration(final boolean sqlFederationEnabled, final boolean allQueryUseSQLFederation, final SQLFederationCacheOption executionPlanCache) {
+        this(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache, null);
+    }
 }

@@ -37,6 +37,8 @@ public final class YamlSQLFederationRuleConfiguration implements YamlGlobalRuleC
     
     private YamlSQLFederationExecutionPlanCacheRuleConfiguration executionPlanCache;
     
+    private String providerType;
+    
     @Override
     public Class<SQLFederationRuleConfiguration> getRuleConfigurationType() {
         return SQLFederationRuleConfiguration.class;

@@ -106,9 +106,6 @@ jobs:
             feature: tracing
             plugin: jaeger
           - adapter: proxy
-            feature: tracing
-            plugin: zipkin
-          - adapter: proxy
             feature: metrics
             plugin: prometheus
           - adapter: proxy
@@ -123,9 +120,6 @@ jobs:
           - adapter: jdbc
             feature: tracing
             plugin: jaeger
-          - adapter: jdbc
-            feature: tracing
-            plugin: zipkin
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment

@@ -13,5 +13,5 @@ Metrics、Tracing 和 Logging 等功能均通过插件的方式集成在 Agent �
 ![Overview](https://shardingsphere.apache.org/document/current/img/apm/overview_v3.png)
 
 - Metrics 插件用于收集和展示整个集群的统计指标。Apache ShardingSphere 默认提供了对 Prometheus 的支持。
-- Tracing 插件用于获取 SQL 解析与 SQL 执行的链路跟踪信息。Apache ShardingSphere 默认提供了导出 tracing 数据到 Jaeger、和 Zipkin 的支持，也支持用户通过插件化的方式开发自定义的 Tracing 组件。
+- Tracing 插件用于获取 SQL 解析与 SQL 执行的链路跟踪信息。Apache ShardingSphere 默认提供了通过 OTLP 导出 tracing 数据的支持，也支持用户通过插件化的方式开发自定义的 Tracing 组件。
 - 默认的 Logging 插件展示了如何在 ShardingSphere 中记录额外的日志，实际应用中需要用户根据自己的需求进行探索。

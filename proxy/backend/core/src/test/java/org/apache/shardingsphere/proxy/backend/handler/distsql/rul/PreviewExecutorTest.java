@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.rul.PreviewExecutor;
 import org.apache.shardingsphere.distsql.statement.type.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -57,7 +58,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
@@ -208,11 +208,9 @@ class PreviewExecutorTest {
         when(tablesContext.getSchemaName()).thenReturn(Optional.of("foo_schema"));
         when(cursorStatementContext.getTablesContext()).thenReturn(tablesContext);
         connectionContext.getCursorContext().getCursorStatementContexts().put("foo_cursor", cursorStatementContext);
-        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class, RETURNS_DEEP_STUBS);
-        when(databaseConnectionManager.getConnectionSession().getProcessId()).thenReturn("process_id");
         HintValueContext hintValueContext = new HintValueContext();
         executor.setDatabase(mockCompleteDatabase());
-        executor.setConnectionContext(mockConnectionContext(hintValueContext, connectionContext, databaseConnectionManager));
+        executor.setConnectionContext(mockConnectionContext(hintValueContext, connectionContext, mock(DatabaseConnectionManager.class)));
         SQLStatement sqlStatement = mockSQLStatement(new CursorSQLStatementAttribute(new CursorNameSegment(0, 0, new IdentifierValue("FOO_CURSOR"))));
         CursorHeldSQLStatementContext cursorHeldSQLStatementContext = new CursorHeldSQLStatementContext(sqlStatement);
         AtomicReference<String> actualSchemaName = new AtomicReference<>();
@@ -258,7 +256,10 @@ class PreviewExecutorTest {
         QueryContext queryContext = mock(QueryContext.class);
         when(queryContext.getHintValueContext()).thenReturn(hintValueContext);
         when(queryContext.getConnectionContext()).thenReturn(connectionContext);
-        return new DistSQLConnectionContext(queryContext, 1, databaseType, databaseConnectionManager, mock(ExecutorStatementManager.class));
+        DistSQLConnectionContext result = new DistSQLConnectionContext(queryContext, 1, databaseType, databaseConnectionManager, mock(ExecutorStatementManager.class));
+        result.setExecutorEngineSupplier(BackendExecutorContext.getInstance()::getExecutorEngine);
+        result.setProcessId("process_id");
+        return result;
     }
     
     private SQLStatement mockSQLStatement(final CursorSQLStatementAttribute cursorSQLStatementAttribute) {
@@ -290,6 +291,7 @@ class PreviewExecutorTest {
     
     private Object executePreviewCallback(final InvocationOnMock invocation) throws SQLException {
         SQLFederationContext sqlFederationContext = invocation.getArgument(2);
+        assertThat(sqlFederationContext.getProcessId(), is("process_id"));
         JDBCExecutorCallback<? extends ExecuteResult> callback = invocation.getArgument(1);
         callback.execute(Collections.singletonList(createJDBCExecutionUnit("foo_ds", "SELECT 2", false)), true, "process_id");
         try {

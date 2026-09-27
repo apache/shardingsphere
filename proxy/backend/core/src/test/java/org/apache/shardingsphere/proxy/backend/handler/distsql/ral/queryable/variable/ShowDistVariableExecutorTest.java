@@ -20,6 +20,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.va
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.ral.common.DistSQLVariable;
+import org.apache.shardingsphere.distsql.handler.executor.ral.queryable.variable.ShowDistVariableExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
@@ -32,7 +34,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 

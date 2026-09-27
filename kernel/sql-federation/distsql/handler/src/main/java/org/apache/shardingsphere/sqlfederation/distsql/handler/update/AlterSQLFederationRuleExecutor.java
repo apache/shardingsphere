@@ -40,7 +40,8 @@ public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitio
         SQLFederationCacheOption executionPlanCache = null == sqlStatement.getExecutionPlanCache()
                 ? rule.getConfiguration().getExecutionPlanCache()
                 : createCacheOption(rule.getConfiguration().getExecutionPlanCache(), sqlStatement.getExecutionPlanCache());
-        return new SQLFederationRuleConfiguration(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache);
+        String providerType = null == sqlStatement.getProviderType() ? rule.getConfiguration().getProviderType() : sqlStatement.getProviderType();
+        return new SQLFederationRuleConfiguration(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache, providerType);
     }
     
     private SQLFederationCacheOption createCacheOption(final SQLFederationCacheOption cacheOption, final CacheOptionSegment segment) {

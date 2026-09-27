@@ -40,7 +40,7 @@ public final class ShowSQLFederationRuleExecutor implements DistSQLQueryExecutor
     
     @Override
     public Collection<String> getColumnNames(final ShowSQLFederationRuleStatement sqlStatement) {
-        return Arrays.asList("sql_federation_enabled", "all_query_use_sql_federation", "execution_plan_cache");
+        return Arrays.asList("sql_federation_enabled", "all_query_use_sql_federation", "execution_plan_cache", "provider_type");
     }
     
     @Override
@@ -49,7 +49,8 @@ public final class ShowSQLFederationRuleExecutor implements DistSQLQueryExecutor
         boolean sqlFederationEnabled = ruleConfig.isSqlFederationEnabled();
         boolean allQueryUseSQLFederation = ruleConfig.isAllQueryUseSQLFederation();
         String executionPlanCache = String.valueOf(ruleConfig.getExecutionPlanCache());
-        return Collections.singleton(new LocalDataQueryResultRow(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache));
+        String providerType = null == ruleConfig.getProviderType() ? "CALCITE" : ruleConfig.getProviderType();
+        return Collections.singleton(new LocalDataQueryResultRow(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache, providerType));
     }
     
     @Override

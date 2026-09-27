@@ -20,3 +20,14 @@ org.apache.shardingsphere.distsql.handler.executor.rql.resource.ShowRulesUsedSto
 org.apache.shardingsphere.distsql.handler.executor.rql.resource.ShowLogicalTablesExecutor
 org.apache.shardingsphere.distsql.handler.executor.rql.rule.RuleCountExecutor
 org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.queryable.computenode.ShowComputeNodesExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.queryable.computenode.ShowComputeNodeInfoExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.queryable.computenode.ShowComputeNodeModeExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.queryable.export.ExportDatabaseConfigurationExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.queryable.export.ExportMetaDataExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.queryable.export.ExportStorageNodesExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.queryable.yaml.ConvertYamlConfigurationExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.queryable.variable.ShowDistVariableExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.queryable.variable.ShowDistVariablesExecutor
+org.apache.shardingsphere.distsql.handler.executor.ral.queryable.export.ShowTableMetaDataExecutor
+org.apache.shardingsphere.distsql.handler.executor.rul.PreviewExecutor

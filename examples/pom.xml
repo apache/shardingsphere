@@ -46,7 +46,7 @@
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-        <freemarker.version>2.3.31</freemarker.version>
+        <freemarker.version>2.3.35</freemarker.version>
         <snakeyaml.version>2.2</snakeyaml.version>
         <flatten-maven-plugin.version>1.2.5</flatten-maven-plugin.version>
         

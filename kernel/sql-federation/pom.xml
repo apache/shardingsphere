@@ -34,5 +34,6 @@
         <module>compiler</module>
         <module>executor</module>
         <module>dialect</module>
+        <module>provider</module>
     </modules>
 </project>

@@ -18,14 +18,18 @@
 package org.apache.shardingsphere.proxy.backend.util;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlExportedServerConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlProxyDatabaseConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.export.ExportedMetaData;
+import org.apache.shardingsphere.distsql.handler.executor.util.MetaDataImportExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.util.YamlDatabaseConfigurationImportExecutor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
+import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -65,7 +69,7 @@ class MetaDataImportExecutorTest {
         YamlProxyDatabaseConfiguration databaseConfig = new YamlProxyDatabaseConfiguration();
         databaseConfig.setDatabaseName("logic_db");
         try (MockedStatic<YamlEngine> mockedStatic = mockStatic(YamlEngine.class)) {
-            mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlProxyServerConfiguration.class))).thenReturn(null);
+            mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlExportedServerConfiguration.class))).thenReturn(null);
             mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlProxyDatabaseConfiguration.class))).thenReturn(databaseConfig);
             executor.importClusterConfigurations(exportedMetaData);
         }
@@ -84,12 +88,12 @@ class MetaDataImportExecutorTest {
         when(swapperEngine.swapToRuleConfigurations(anyCollection())).thenReturn(Collections.singleton(ruleConfig));
         setField(executor, "ruleConfigSwapperEngine", swapperEngine);
         Properties props = new Properties();
-        YamlProxyServerConfiguration serverConfig = new YamlProxyServerConfiguration();
+        YamlExportedServerConfiguration serverConfig = new YamlExportedServerConfiguration();
         serverConfig.setProps(props);
         YamlProxyDatabaseConfiguration databaseConfig = new YamlProxyDatabaseConfiguration();
         databaseConfig.setDatabaseName("logic_db");
         try (MockedStatic<YamlEngine> mockedStatic = mockStatic(YamlEngine.class)) {
-            mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlProxyServerConfiguration.class))).thenReturn(serverConfig);
+            mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlExportedServerConfiguration.class))).thenReturn(serverConfig);
             mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlProxyDatabaseConfiguration.class))).thenReturn(databaseConfig);
             executor.importClusterConfigurations(exportedMetaData);
         }
@@ -98,6 +102,19 @@ class MetaDataImportExecutorTest {
         ArgumentCaptor<YamlProxyDatabaseConfiguration> captor = ArgumentCaptor.forClass(YamlProxyDatabaseConfiguration.class);
         verify(databaseConfigImportExecutor).importDatabaseConfiguration(captor.capture());
         assertThat(captor.getValue().getDatabaseName(), is("logic_db"));
+    }
+    
+    @Test
+    void assertExportedServerConfigurationYamlCompatibility() {
+        Properties props = new Properties();
+        props.setProperty("sql-show", "true");
+        String yaml = "rules:" + System.lineSeparator() + YamlEngine.marshal(Collections.singletonList(new YamlSQLParserRuleConfiguration()))
+                + System.lineSeparator() + YamlEngine.marshal(Collections.singletonMap("props", props));
+        YamlExportedServerConfiguration actual = YamlEngine.unmarshal(yaml, YamlExportedServerConfiguration.class);
+        YamlProxyServerConfiguration previous = YamlEngine.unmarshal(yaml, YamlProxyServerConfiguration.class);
+        assertThat(actual.getProps(), is(previous.getProps()));
+        assertThat(actual.getRules().size(), is(1));
+        assertThat(actual.getRules().iterator().next().getClass(), is(previous.getRules().iterator().next().getClass()));
     }
     
     private ExportedMetaData createExportedMetaData() {

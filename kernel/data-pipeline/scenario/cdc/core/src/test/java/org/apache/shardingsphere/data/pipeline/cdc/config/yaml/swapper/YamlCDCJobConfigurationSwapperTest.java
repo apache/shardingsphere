@@ -111,6 +111,7 @@ class YamlCDCJobConfigurationSwapperTest {
         dataSource.put("url", "jdbc:h2:mem:foo_db;MODE=MySQL");
         dataSource.put("username", "root");
         dataSource.put("password", "root");
+        dataSource.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
         Map<String, Map<String, Object>> dataSources = new LinkedHashMap<>(1, 1F);
         dataSources.put("foo_ds", dataSource);
         rootConfig.setDataSources(dataSources);

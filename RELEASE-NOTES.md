@@ -49,6 +49,7 @@
 1. DistSQL: Fix empty rows returned by SHOW SHADOW TABLE RULE for specified table - [#39739](https://github.com/apache/shardingsphere/pull/39739)
 1. DistSQL: Fix `CREATE READWRITE_SPLITTING RULE IF NOT EXISTS` failing for an existing rule name - [#39371](https://github.com/apache/shardingsphere/pull/39371)
 1. DistSQL: Match mask table names case-insensitively in create and alter executors - [#39361](https://github.com/apache/shardingsphere/pull/39361)
+1. DistSQL: Fix shadow DistSQL rejecting unquoted `SQL_HINT` algorithm type - [#39873](https://github.com/apache/shardingsphere/pull/39873)
 1. JDBC: Fix stale generated values leaking into prepared statement executeBatch calls without pending batches - [#38160](https://github.com/apache/shardingsphere/pull/38160)
 1. JDBC: Fix MySQL-compatible typed string conversion for `ResultSet#getObject(index, Class<T>)` - [#38444](https://github.com/apache/shardingsphere/pull/38444)
 1. JDBC: Fix statement close invalidating live result sets of other statements on the same connection - [#39503](https://github.com/apache/shardingsphere/pull/39503)
@@ -95,12 +96,14 @@
 1. Sharding: Fix swapped start and stop offset in sharding value offset error message - [#39858](https://github.com/apache/shardingsphere/pull/39858)
 1. Sharding: Fix sharding constraint reviser removing every actual table suffix - [#39868](https://github.com/apache/shardingsphere/pull/39868)
 1. Sharding: Fix DISABLE_AUDIT_NAMES hint ignoring auditor name case - [#39871](https://github.com/apache/shardingsphere/pull/39871)
+1. Sharding: Include auto tables in ShardingRuleConfiguration logic table names - [#39854](https://github.com/apache/shardingsphere/pull/39854)
 1. Readwrite-splitting: Evaluate inline expressions in data source names of rule configuration checker - [#39374](https://github.com/apache/shardingsphere/pull/39374)
 1. SQL Federation: Fix SQL Federation pagination binding for long LIMIT parameters - [#39237](https://github.com/apache/shardingsphere/pull/39237)
 1. Broadcast: Fix case-sensitive table name lookup in broadcast data node rule attribute - [#39153](https://github.com/apache/shardingsphere/pull/39153)
 1. Encrypt: Fix stale encryptors leaking when altering an encrypt rule - [#39209](https://github.com/apache/shardingsphere/pull/39209)
 1. Shadow: Apply default shadow algorithm to shadow tables when swapping YAML rule configuration - [#39749](https://github.com/apache/shardingsphere/pull/39749)
 1. Shadow: Fix INSERT SELECT statement being routed to shadow data source - [#39751](https://github.com/apache/shardingsphere/pull/39751)
+1. Sharding: Fix logic table lookup for MySQL SHOW CREATE TABLE and SHOW INDEX - [#39856](https://github.com/apache/shardingsphere/pull/39856)
 
 ### Enhancements
 

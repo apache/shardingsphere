@@ -723,6 +723,16 @@
         </rule>
     </create-shadow-rule>
     
+    <create-shadow-rule sql-case-id="create-shadow-rule-named-sql-hint">
+        <rule name="SQL_HINT" source="demo_ds" shadow="demo_ds_shadow">
+            <table-rule table-name="t_order">
+                <shadow-algorithm algorithm-id="sql_hint_t_order_sql_hint_0">
+                    <algorithm algorithm-name="SQL_HINT" />
+                </shadow-algorithm>
+            </table-rule>
+        </rule>
+    </create-shadow-rule>
+    
     <create-mask-rule sql-case-id="create-mask-rule">
         <rule name="t_mask">
             <column name="phone_number">
