@@ -67,6 +67,13 @@ public final class CalciteSQLFederationProvider implements SQLFederationProvider
         return new CalciteSQLFederationExecutor(currentDatabaseName, currentSchemaName, statistics, jdbcExecutor, processEngine, this);
     }
     
+    @HighFrequencyInvocation
+    @Override
+    public SQLFederationExecutor createPreviewExecutor(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereStatistics statistics,
+                                                       final ProcessEngine processEngine) {
+        return new CalciteSQLFederationExecutor(currentDatabaseName, currentSchemaName, statistics, processEngine, this);
+    }
+    
     @Override
     public String getType() {
         return "CALCITE";

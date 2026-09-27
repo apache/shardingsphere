@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.provider.none;
 
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -96,6 +97,14 @@ class NoneSQLFederationProviderTest {
                     () -> engine.executeQuery(null, null, mock(SQLFederationContext.class)));
             assertThat(actual.getMessage(), is("SQL_FEDERATION-00003: SQL Federation provider 'NONE' does not support federation execution."));
         }
+    }
+    
+    @Test
+    void assertFederationPreviewFailsClearly() {
+        SQLFederationProvider provider = TypedSPILoader.getService(SQLFederationProvider.class, "NONE");
+        assertThrows(SQLFederationProviderUnsupportedException.class,
+                () -> provider.createPreviewExecutor("foo_db", "foo_schema", mock(ShardingSphereStatistics.class), mock(ProcessEngine.class))
+                        .executeQuery(null, null, mock(SQLFederationContext.class)));
     }
     
     private SQLFederationRule createRule(final boolean allQueryUseSQLFederation) {

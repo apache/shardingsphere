@@ -80,6 +80,10 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
     
     private ExecutorContext executorContext;
     
+    public StandardSQLFederationProcessor(final ShardingSphereStatistics statistics) {
+        this(statistics, null);
+    }
+    
     @Override
     public void prepare(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> queryCallback,
                         final String currentDatabaseName, final String currentSchemaName, final SQLFederationContext federationContext, final CompilerContext compilerContext,
@@ -87,8 +91,9 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         if (null == schemaPlus) {
             return;
         }
-        executorContext = new ExecutorContext(prepareEngine, jdbcExecutor, queryCallback, statistics, currentDatabaseName, currentSchemaName,
-                federationContext.isPreview(), federationContext.getProcessId());
+        executorContext = federationContext.isPreview()
+                ? new ExecutorContext(prepareEngine, queryCallback, statistics, currentDatabaseName, currentSchemaName, federationContext.getProcessId())
+                : new ExecutorContext(prepareEngine, jdbcExecutor, queryCallback, statistics, currentDatabaseName, currentSchemaName, federationContext.getProcessId());
         EnumerableScanImplementor scanImplementor = new EnumerableScanImplementor(federationContext.getQueryContext(), compilerContext, executorContext);
         SQLStatementContext sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         Collection<SimpleTableSegment> simpleTables = sqlStatementContext.getTablesContext().getSimpleTables();

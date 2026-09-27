@@ -50,4 +50,14 @@ public final class SQLFederationProcessorFactory {
     public SQLFederationProcessor newInstance(final ShardingSphereStatistics statistics, final JDBCExecutor jdbcExecutor) {
         return new StandardSQLFederationProcessor(statistics, jdbcExecutor);
     }
+    
+    /**
+     * Create processor for PREVIEW without a JDBC executor.
+     *
+     * @param statistics ShardingSphere statistics
+     * @return created processor
+     */
+    public SQLFederationProcessor newPreviewInstance(final ShardingSphereStatistics statistics) {
+        return new StandardSQLFederationProcessor(statistics);
+    }
 }

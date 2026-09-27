@@ -20,10 +20,8 @@ package org.apache.shardingsphere.sqlfederation.distsql.handler;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.executor.rul.PreviewExecutionUnitGenerator;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -65,9 +63,8 @@ class SQLFederationPreviewExecutionUnitGeneratorTest {
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext().getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         ContextManager contextManager = mockContextManager();
-        DistSQLConnectionContext connectionContext = mockConnectionContext();
+        DistSQLConnectionContext connectionContext = mock(DistSQLConnectionContext.class, RETURNS_DEEP_STUBS);
         try (
-                MockedConstruction<JDBCExecutor> ignoredJDBCExecutor = mockConstruction(JDBCExecutor.class);
                 MockedConstruction<SQLFederationEngine> ignoredFederationEngine =
                         mockConstruction(SQLFederationEngine.class, (mock, context) -> when(mock.decide(any(), any())).thenReturn(false))) {
             Optional<Collection<ExecutionUnit>> actual = generator.generate(database, queryContext, contextManager, connectionContext);
@@ -84,14 +81,14 @@ class SQLFederationPreviewExecutionUnitGeneratorTest {
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext().getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         ContextManager contextManager = mockContextManager();
-        DistSQLConnectionContext connectionContext = mockConnectionContext();
+        DistSQLConnectionContext connectionContext = mock(DistSQLConnectionContext.class, RETURNS_DEEP_STUBS);
         when(connectionContext.getProcessId()).thenReturn("foo_process");
         ExecutionUnit expected = new ExecutionUnit("foo_ds", new SQLUnit("SELECT 1", Collections.emptyList()));
         AtomicReference<String> actualSchemaName = new AtomicReference<>();
         try (
-                MockedConstruction<JDBCExecutor> ignoredJDBCExecutor = mockConstruction(JDBCExecutor.class);
                 MockedConstruction<DriverExecutionPrepareEngine> ignoredPrepareEngine = mockConstruction(DriverExecutionPrepareEngine.class);
                 MockedConstruction<SQLFederationEngine> ignoredFederationEngine = mockConstruction(SQLFederationEngine.class, (mock, context) -> {
+                    assertThat(context.arguments().size(), is(4));
                     actualSchemaName.set((String) context.arguments().get(1));
                     when(mock.decide(any(), any())).thenReturn(true);
                     doAnswer(invocation -> {
@@ -114,12 +111,6 @@ class SQLFederationPreviewExecutionUnitGeneratorTest {
         when(metaData.getGlobalRuleMetaData()).thenReturn(mock(RuleMetaData.class));
         when(metaData.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(result.getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        return result;
-    }
-    
-    private DistSQLConnectionContext mockConnectionContext() {
-        DistSQLConnectionContext result = mock(DistSQLConnectionContext.class, RETURNS_DEEP_STUBS);
-        when(result.getExecutorEngineSupplier()).thenReturn(() -> mock(ExecutorEngine.class));
         return result;
     }
 }

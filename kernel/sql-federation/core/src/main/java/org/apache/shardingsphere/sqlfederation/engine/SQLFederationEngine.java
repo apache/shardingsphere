@@ -87,6 +87,24 @@ public final class SQLFederationEngine implements AutoCloseable {
     }
     
     /**
+     * Create a SQL federation engine for PREVIEW without a JDBC executor.
+     *
+     * @param currentDatabaseName current database name
+     * @param currentSchemaName current schema name
+     * @param metaData metadata
+     * @param statistics statistics
+     */
+    @HighFrequencyInvocation
+    public SQLFederationEngine(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereMetaData metaData,
+                               final ShardingSphereStatistics statistics) {
+        this.metaData = metaData;
+        this.currentDatabaseName = currentDatabaseName;
+        this.currentSchemaName = currentSchemaName;
+        sqlFederationRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
+        execution = isSQLFederationEnabled() ? sqlFederationRule.getProvider().createPreviewExecutor(currentDatabaseName, currentSchemaName, statistics, processEngine) : null;
+    }
+    
+    /**
      * Judge whether SQL federation enabled.
      *
      * @return SQL federation enabled or disabled
