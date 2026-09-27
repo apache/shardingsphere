@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
-class HttpProxySecretReferenceWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
+class HttpProxySecretReferenceWorkflowE2EIT extends AbstractHttpProxyWorkflowE2EIT {
     
     private static final String PLAN_TOOL_NAME = "database_gateway_plan_encrypt_rule";
     

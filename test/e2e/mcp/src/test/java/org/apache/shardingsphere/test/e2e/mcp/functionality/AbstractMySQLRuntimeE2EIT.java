@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
-abstract class AbstractMySQLRuntimeE2ETest extends AbstractTransportParameterizedE2ETest {
+abstract class AbstractMySQLRuntimeE2EIT extends AbstractTransportParameterizedE2EIT {
     
     protected static final String LOGICAL_DATABASE_NAME = "logic_db";
     

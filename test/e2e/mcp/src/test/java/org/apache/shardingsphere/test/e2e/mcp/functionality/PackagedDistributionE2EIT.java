@@ -65,7 +65,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EnabledOnOs({OS.LINUX, OS.MAC, OS.WINDOWS})
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class PackagedDistributionE2ETest {
+class PackagedDistributionE2EIT {
     
     private static final String LOGICAL_DATABASE_NAME = "logic_db";
     

@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
-class HttpProxyFeatureWorkflowContractE2ETest extends AbstractHttpProxyWorkflowE2ETest {
+class HttpProxyFeatureWorkflowContractE2EIT extends AbstractHttpProxyWorkflowE2EIT {
     
     private static final String APPLY_TOOL_NAME = WorkflowToolDescriptors.APPLY_TOOL_NAME;
     
@@ -246,9 +246,6 @@ class HttpProxyFeatureWorkflowContractE2ETest extends AbstractHttpProxyWorkflowE
     @Test
     void assertShardingWorkflowCanBeAppliedAndValidated() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            applyAndValidateWorkflow(interactionClient, SHARDING_KEY_GENERATOR_PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "key_generator", "snowflake_generator",
-                            "key_generator_type", "SNOWFLAKE", "key_generator_properties", Map.of("worker-id", "1")));
             Map<String, Object> orderRuleArguments = new LinkedHashMap<>(createShardingTableRuleArguments("orders"));
             orderRuleArguments.put("key_generate_column", "order_id");
             orderRuleArguments.put("key_generator_type", "SNOWFLAKE");
@@ -262,10 +259,10 @@ class HttpProxyFeatureWorkflowContractE2ETest extends AbstractHttpProxyWorkflowE
                     Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "default_strategy_type", "DATABASE", "strategy_type", "none"));
             applyAndValidateWorkflow(interactionClient, SHARDING_KEY_GENERATE_STRATEGY_PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "key_generate_strategy", "order_key_strategy",
-                            "table", "orders", "column", "order_id", "key_generator", "snowflake_generator"));
+                            "table", "orders", "column", "order_id", "key_generator_type", "SNOWFLAKE", "key_generator_properties", Map.of("worker-id", "1")));
             applyAndValidateWorkflow(interactionClient, SHARDING_KEY_GENERATE_STRATEGY_PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "key_generate_strategy", "order_sequence_strategy",
-                            "sequence", "order_seq", "key_generator", "snowflake_generator"));
+                            "sequence", "order_seq", "key_generator_type", "SNOWFLAKE", "key_generator_properties", Map.of("worker-id", "1")));
             applyAndValidateWorkflow(interactionClient, SHARDING_KEY_GENERATOR_PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "key_generator", "unused_generator",
                             "key_generator_type", "SNOWFLAKE", "key_generator_properties", Map.of("worker-id", "2")));
@@ -283,7 +280,7 @@ class HttpProxyFeatureWorkflowContractE2ETest extends AbstractHttpProxyWorkflowE
                     "shardingsphere://features/sharding/databases/%s/default-strategy", getLogicalDatabaseName()))), "name", "DATABASE");
             assertThat(String.valueOf(actualDefaultStrategy.get("type")).toUpperCase(Locale.ENGLISH), is("NONE"));
             Map<String, Object> actualKeyGenerator = findItemByField(getPayloadItems(interactionClient.readResource(String.format(
-                    "shardingsphere://features/sharding/databases/%s/key-generators", getLogicalDatabaseName()))), "name", "snowflake_generator");
+                    "shardingsphere://features/sharding/databases/%s/key-generators", getLogicalDatabaseName()))), "name", "unused_generator");
             assertThat(String.valueOf(actualKeyGenerator.get("type")).toUpperCase(Locale.ENGLISH), is("SNOWFLAKE"));
             List<Map<String, Object>> actualKeyGenerateStrategies = getPayloadItems(interactionClient.readResource(String.format(
                     "shardingsphere://features/sharding/databases/%s/key-generate-strategies", getLogicalDatabaseName())));

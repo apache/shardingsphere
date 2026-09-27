@@ -76,7 +76,7 @@ MCP E2E runtime configuration is centralized in `test/e2e/mcp/src/test/resources
 For local runs, edit that file or override the same keys with `-D` system properties.
 
 ```bash
-./mvnw -pl test/e2e/mcp test -Pe2e.mcp.functionality
+./mvnw -pl test/e2e/mcp verify -Pe2e.mcp.functionality -De2e.run.type=DOCKER
 ```
 
 ## Run MCP HTTP IT
@@ -90,10 +90,10 @@ This test starts the real HTTP server without connecting to Docker, a database, 
 ## Run MCP LLM E2E
 
 ```bash
-./mvnw -pl test/e2e/mcp test -Pe2e.mcp.llm
+./mvnw -pl test/e2e/mcp verify -Pe2e.mcp.llm -De2e.run.type=DOCKER
 ```
 
-`LLMHttpE2ETest` covers four autonomous HTTP scenarios: read-only query, metadata discovery, side-effect preview, and invalid-resource recovery. Each scenario uses the live `tools/list` response and preserves the model response, structured MCP response, interaction trace, and assertion report. Missing Docker, model, database, or MCP infrastructure fails the selected `llm-e2e` lane instead of converting the failure into a skipped case.
+`LLMHttpE2EIT` covers five autonomous HTTP scenarios: read-only query, metadata discovery, Mask rule planning, side-effect preview, and invalid-resource recovery. Each scenario uses the live `tools/list` response and preserves the model response, structured MCP response, interaction trace, and assertion report. Missing Docker, model, database, or MCP infrastructure fails the selected `llm-e2e` lane instead of converting the failure into a skipped case.
 
 ## MCP Conformance E2E
 
@@ -106,7 +106,7 @@ The packaged server runs with its loopback HTTP configuration so the DNS rebindi
 For local debugging only, connect to an already running OpenAI-compatible endpoint:
 
 ```bash
-./mvnw -pl test/e2e/mcp test -Pe2e.mcp.llm -Dtest=LLMHttpE2ETest -Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:8080/v1
+./mvnw -pl test/e2e/mcp verify -Pe2e.mcp.llm -De2e.run.type=DOCKER -Dit.test=LLMHttpE2EIT -Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:8080/v1
 ```
 
 External debug endpoints cannot be used as score-closing evidence.
