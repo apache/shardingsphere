@@ -10,7 +10,7 @@
 
 1. MCP: Add standalone ShardingSphere-MCP Server - [#38541](https://github.com/apache/shardingsphere/pull/38541)
 1. Transaction: Add optional module for Jakarta Transactions impl of Jakarta EE 9 Spec - [#26041](https://github.com/apache/shardingsphere/issues/26041)
-1. Proxy: Support `op_seek_blob` operation for stream BLOBs in Firebird - [#39051](https://github.com/apache/shardingsphere/issues/39051)
+1. Proxy: Support `op_seek_blob` operation for stream BLOBs in Firebird - [#39984](https://github.com/apache/shardingsphere/pull/39984)
 
 ### CVE
 
