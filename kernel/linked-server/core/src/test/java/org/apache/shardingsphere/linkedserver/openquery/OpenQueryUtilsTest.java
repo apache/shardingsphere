@@ -84,7 +84,7 @@ final class OpenQueryUtilsTest {
         assertTrue(actualServerName.isPresent());
         assertThat(actualServerName.get(), is("MyLinkedServer"));
     }
-
+    
     @Test
     void assertExtractDoubleQuotedLinkedServerNameViaColumnSegment() {
         FunctionSegment funcSeg = new FunctionSegment(0, 70, "OPENQUERY", "OPENQUERY(\"MyLinkedServer\", 'SELECT 1')");
@@ -135,7 +135,7 @@ final class OpenQueryUtilsTest {
         funcSeg.getParameters().add(new ColumnSegment(10, 15, new IdentifierValue("Server")));
         assertFalse(OpenQueryUtils.extractInnerSQLSegment(funcSeg).isPresent());
     }
-
+    
     @Test
     void assertExtractInnerSQLSegmentWithNonLiteralSecondParam() {
         FunctionSegment funcSeg = new FunctionSegment(0, 50, "OPENQUERY", "OPENQUERY(Server, @sql_variable)");
@@ -153,7 +153,7 @@ final class OpenQueryUtilsTest {
     void assertDecodeTSqlEscapingNoEscapes() {
         assertThat(OpenQueryUtils.decodeTSqlEscaping("SELECT 1"), is("SELECT 1"));
     }
-
+    
     @Test
     void assertDecodeTSqlEscapingConsecutiveQuotes() {
         assertThat(OpenQueryUtils.decodeTSqlEscaping("SELECT Name FROM T WHERE Name = ''it''''s a test''"), is("SELECT Name FROM T WHERE Name = 'it''s a test'"));
@@ -168,12 +168,12 @@ final class OpenQueryUtilsTest {
     void assertEncodeTSqlEscapingNoQuotes() {
         assertThat(OpenQueryUtils.encodeTSqlEscaping("SELECT 1"), is("SELECT 1"));
     }
-
+    
     @Test
     void assertEncodeTSqlEscapingEmptyString() {
         assertThat(OpenQueryUtils.encodeTSqlEscaping(""), is(""));
     }
-
+    
     @Test
     void assertDecodeTSqlEscapingEmptyString() {
         assertThat(OpenQueryUtils.decodeTSqlEscaping(""), is(""));
@@ -186,7 +186,7 @@ final class OpenQueryUtilsTest {
         String actualReEncoded = OpenQueryUtils.encodeTSqlEscaping(decoded);
         assertThat(actualReEncoded, is(original));
     }
-
+    
     @Test
     void assertReverseRoundTripEscaping() {
         String original = "SELECT Name FROM T WHERE Name = 'it''s a test'";
