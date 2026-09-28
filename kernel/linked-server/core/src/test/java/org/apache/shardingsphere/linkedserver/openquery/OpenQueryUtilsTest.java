@@ -170,13 +170,13 @@ final class OpenQueryUtilsTest {
     }
     
     @Test
-    void assertEncodeTSqlEscapingEmptyString() {
-        assertThat(OpenQueryUtils.encodeTSqlEscaping(""), is(""));
+    void assertDecodeTSqlEscapingEmptyString() {
+        assertThat(OpenQueryUtils.decodeTSqlEscaping(""), is(""));
     }
     
     @Test
-    void assertDecodeTSqlEscapingEmptyString() {
-        assertThat(OpenQueryUtils.decodeTSqlEscaping(""), is(""));
+    void assertEncodeTSqlEscapingEmptyString() {
+        assertThat(OpenQueryUtils.encodeTSqlEscaping(""), is(""));
     }
     
     @Test
