@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.AlterSQLFederationRuleStatement;
+import org.apache.shardingsphere.sqlfederation.rule.SQLFederationProviderFactory;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 
 /**
@@ -41,7 +42,11 @@ public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitio
                 ? rule.getConfiguration().getExecutionPlanCache()
                 : createCacheOption(rule.getConfiguration().getExecutionPlanCache(), sqlStatement.getExecutionPlanCache());
         String providerType = null == sqlStatement.getProviderType() ? rule.getConfiguration().getProviderType() : sqlStatement.getProviderType();
-        return new SQLFederationRuleConfiguration(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache, providerType);
+        SQLFederationRuleConfiguration result = new SQLFederationRuleConfiguration(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache, providerType);
+        if (result.isSqlFederationEnabled()) {
+            SQLFederationProviderFactory.getProvider(result.getProviderType());
+        }
+        return result;
     }
     
     private SQLFederationCacheOption createCacheOption(final SQLFederationCacheOption cacheOption, final CacheOptionSegment segment) {

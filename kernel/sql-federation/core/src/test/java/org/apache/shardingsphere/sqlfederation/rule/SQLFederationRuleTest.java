@@ -38,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class SQLFederationRuleTest {
@@ -56,6 +57,19 @@ class SQLFederationRuleTest {
         SQLFederationRule rule = new SQLFederationRule(new SQLFederationRuleConfiguration(false, false, new SQLFederationCacheOption(4, 64L)), Collections.emptyList());
         rule.refresh(Collections.emptyList(), GlobalRuleChangedType.DATABASE_CHANGED);
         assertNull(rule.getProvider());
+    }
+    
+    @Test
+    void assertConstructEnabledInitializesProvider() {
+        SQLFederationProvider expected = mock(SQLFederationProvider.class);
+        when(expected.getType()).thenReturn("CALCITE");
+        try (MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
+            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Collections.singleton(expected));
+            SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L));
+            SQLFederationRule actual = new SQLFederationRule(ruleConfig, Collections.emptyList());
+            assertThat(actual.getProvider(), sameInstance(expected));
+            verify(expected).initialize(ruleConfig, Collections.emptyList());
+        }
     }
     
     @Test
