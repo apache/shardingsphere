@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.sqlfederation.yaml.swapper;
 
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class YamlSQLFederationRuleConfigurationSwapperTest {
     
@@ -33,5 +35,19 @@ class YamlSQLFederationRuleConfigurationSwapperTest {
         SQLFederationRuleConfiguration actual = new YamlSQLFederationRuleConfigurationSwapper().swapToObject(yamlConfig);
         assertThat(actual.getExecutionPlanCache().getInitialCapacity(), is(2000));
         assertThat(actual.getExecutionPlanCache().getMaximumSize(), is(65535L));
+        assertNull(actual.getProviderType());
+    }
+    
+    @Test
+    void assertSwapToObjectWithProviderType() {
+        YamlSQLFederationRuleConfiguration yamlConfig = new YamlSQLFederationRuleConfiguration();
+        yamlConfig.setProviderType("NONE");
+        assertThat(new YamlSQLFederationRuleConfigurationSwapper().swapToObject(yamlConfig).getProviderType(), is("NONE"));
+    }
+    
+    @Test
+    void assertSwapToYamlConfigurationWithProviderType() {
+        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L), "NONE");
+        assertThat(new YamlSQLFederationRuleConfigurationSwapper().swapToYamlConfiguration(ruleConfig).getProviderType(), is("NONE"));
     }
 }

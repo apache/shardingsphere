@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sqlfederation.config;
 
 import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -26,9 +27,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SQLFederationRuleConfigurationTest {
+    
+    @Test
+    void assertCompatibleConstructor() {
+        assertNull(new SQLFederationRuleConfiguration(false, false, new SQLFederationCacheOption(1, 1L)).getProviderType());
+    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("validRuleConfigurationArguments")

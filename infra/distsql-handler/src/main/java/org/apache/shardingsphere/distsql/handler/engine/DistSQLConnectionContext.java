@@ -19,6 +19,7 @@ package org.apache.shardingsphere.distsql.handler.engine;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class DistSQLConnectionContext {
     
     private final QueryContext queryContext;
@@ -42,4 +44,6 @@ public final class DistSQLConnectionContext {
     
     @SuppressWarnings("rawtypes")
     private final ExecutorStatementManager executorStatementManager;
+    
+    private String processId;
 }

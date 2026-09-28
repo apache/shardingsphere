@@ -17,6 +17,70 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="with_select">
+        <with start-index="0" stop-index="26">
+            <common-table-expression name="cte" start-index="5" stop-index="26">
+                <subquery-expression start-index="5" stop-index="26">
+                    <select>
+                        <projections start-index="20" stop-index="20">
+                            <expression-projection text="0" start-index="20" stop-index="20">
+                                <expr>
+                                    <literal-expression value="0" start-index="20" stop-index="20" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <from>
+            <join-table join-type="COMMA">
+                <left>
+                    <simple-table name="cte" alias="a" start-index="45" stop-index="49" />
+                </left>
+                <right>
+                    <simple-table name="cte" alias="b" start-index="52" stop-index="56" />
+                </right>
+            </join-table>
+        </from>
+        <projections start-index="38" stop-index="38">
+            <shorthand-projection start-index="38" stop-index="38" />
+        </projections>
+        <comment start-index="22" stop-index="29" text="/*! ) */" />
+    </select>
+
+    <select sql-case-id="with_select_comment">
+        <with start-index="0" stop-index="29">
+            <common-table-expression name="cte" start-index="5" stop-index="29">
+                <subquery-expression start-index="5" stop-index="29">
+                    <select>
+                        <projections start-index="28" stop-index="28">
+                            <expression-projection text="0" start-index="28" stop-index="28">
+                                <expr>
+                                    <literal-expression value="0" start-index="28" stop-index="28" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <from>
+            <join-table join-type="COMMA">
+                <left>
+                    <simple-table name="cte" alias="a" start-index="45" stop-index="49" />
+                </left>
+                <right>
+                    <simple-table name="cte" alias="b" start-index="52" stop-index="56" />
+                </right>
+            </join-table>
+        </from>
+        <projections start-index="38" stop-index="38">
+            <shorthand-projection start-index="38" stop-index="38" />
+        </projections>
+        <comment start-index="12" stop-index="19" text="/*! ( */" />
+    </select>
+
     <select sql-case-id="select_with_subquery_factoring">
         <with start-index="0" stop-index="110">
             <common-table-expression name="dept_costs" start-index="5" stop-index="110">

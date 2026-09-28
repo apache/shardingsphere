@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.lock.impl;
 
+import org.apache.shardingsphere.distsql.handler.executor.lock.spi.ClusterLockStrategy;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.mode.state.StatePersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;

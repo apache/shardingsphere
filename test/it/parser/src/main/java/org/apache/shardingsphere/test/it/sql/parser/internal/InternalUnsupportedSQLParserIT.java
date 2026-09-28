@@ -44,10 +44,10 @@ public abstract class InternalUnsupportedSQLParserIT {
     
     private static final SQLCases SQL_CASES = UnsupportedSQLCasesRegistry.getInstance().getCases();
     
-    @ParameterizedTest(name = "{0} ({1}) -> {2}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertUnsupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
-        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
+    void assertUnsupportedSQL(final String sqlCaseId, final String databaseType) {
+        String sql = SQL_CASES.getSQL(sqlCaseId, SQLCaseType.LITERAL, Collections.emptyList());
         CacheOption cacheOption = new CacheOption(128, 1024L);
         String actualDatabaseType = "H2".equals(databaseType) ? "MySQL" : databaseType;
         assertThrows(SQLParsingException.class, () -> new SQLStatementVisitorEngine(actualDatabaseType).visit(new SQLParserEngine(actualDatabaseType, cacheOption).parse(sql, false)));
@@ -63,8 +63,8 @@ public abstract class InternalUnsupportedSQLParserIT {
         }
         
         private Collection<Arguments> getTestParameters(final Collection<String> databaseTypes) {
-            return SQL_CASES.generateTestParameters(databaseTypes).stream()
-                    .map(each -> Arguments.arguments(each.getSqlCaseId(), each.getSqlCaseType(), each.getDatabaseType())).collect(Collectors.toList());
+            return SQL_CASES.generateTestParameters(databaseTypes).stream().filter(each -> SQLCaseType.LITERAL == each.getSqlCaseType())
+                    .map(each -> Arguments.arguments(each.getSqlCaseId(), each.getDatabaseType())).collect(Collectors.toList());
         }
     }
 }

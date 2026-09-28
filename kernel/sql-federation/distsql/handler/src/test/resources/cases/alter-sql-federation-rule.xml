@@ -26,4 +26,7 @@
     <test-case dist-sql="ALTER SQL_FEDERATION RULE (EXECUTION_PLAN_CACHE())"
                current-rule-config-yaml-file="cases/show-sql-federation-rule-current-config.yaml"
                expected-rule-config-yaml-file="cases/show-sql-federation-rule-current-config.yaml"/>
+    <test-case dist-sql="ALTER SQL_FEDERATION RULE (PROVIDER_TYPE=NONE)"
+               current-rule-config-yaml-file="cases/show-sql-federation-rule-current-config.yaml"
+               expected-rule-config-yaml-file="cases/alter-sql-federation-rule-none-expected-config.yaml"/>
 </distsql-rule-definition-executor-test-cases>

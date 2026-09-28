@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.export;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.distsql.handler.executor.ral.queryable.export.ShowTableMetaDataExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;

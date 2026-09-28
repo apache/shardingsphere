@@ -91,16 +91,19 @@ Used for exposure monitoring metrics.
 
 #### OpenTelemetry
 
-OpenTelemetry can export tracing data to Jaeger, Zipkin.
+OpenTelemetry can export tracing data to any OTLP receiver, such as Jaeger or Zipkin.
 
 * Parameter description
 
-| Name                               | Description     |
-|------------------------------------|-----------------|
-| otel.service.name                  | service name    |
-| otel.traces.exporter               | traces exporter |
-| otel.exporter.otlp.traces.endpoint | traces endpoint |
-| otel.traces.sampler                | traces sampler  |
+| Name                               | Description            |
+|------------------------------------|------------------------|
+| otel.service.name                  | service name           |
+| otel.traces.exporter               | traces exporter        |
+| otel.exporter.otlp.protocol        | OTLP wire protocol     |
+| otel.exporter.otlp.traces.endpoint | traces endpoint        |
+| otel.traces.sampler                | traces sampler         |
+
+Zipkin does not receive OTLP, so use `ghcr.io/openzipkin-contrib/zipkin-otel`, which accepts OTLP/HTTP on port 9411.
 
 Parameter reference [OpenTelemetry SDK Autoconfigure](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure)
 

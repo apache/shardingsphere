@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.variable;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.ral.updatable.variable.SetDistVariableExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;

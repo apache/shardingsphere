@@ -1272,8 +1272,9 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitTargetEl(final TargetElContext ctx) {
         ProjectionSegment result = createProjectionSegment(ctx, ctx.aExpr());
-        if (null != ctx.identifier()) {
-            ((AliasAvailable) result).setAlias(new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())));
+        ParserRuleContext alias = null == ctx.colLabel() ? ctx.identifier() : ctx.colLabel();
+        if (null != alias) {
+            ((AliasAvailable) result).setAlias(new AliasSegment(alias.start.getStartIndex(), alias.stop.getStopIndex(), new IdentifierValue(alias.getText())));
         }
         return result;
     }

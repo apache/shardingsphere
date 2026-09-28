@@ -42,6 +42,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +53,6 @@ import java.util.stream.Collectors;
 /**
  * Pipeline data source sink.
  */
-@HighFrequencyInvocation
 @Slf4j
 public final class PipelineDataSourceSink implements PipelineSink {
     
@@ -76,9 +76,15 @@ public final class PipelineDataSourceSink implements PipelineSink {
         runningStatement = new AtomicReference<>();
     }
     
+    @HighFrequencyInvocation
     @Override
     public PipelineJobUpdateProgress write(final String ackId, final Collection<Record> records) {
-        List<DataRecord> dataRecords = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).collect(Collectors.toList());
+        List<DataRecord> dataRecords = new ArrayList<>();
+        for (Record record : records) {
+            if (record instanceof DataRecord) {
+                dataRecords.add((DataRecord) record);
+            }
+        }
         if (dataRecords.isEmpty()) {
             return new PipelineJobUpdateProgress(0);
         }

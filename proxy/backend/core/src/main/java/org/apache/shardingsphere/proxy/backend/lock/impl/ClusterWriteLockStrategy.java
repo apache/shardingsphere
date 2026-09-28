@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.lock.impl;
 
+import org.apache.shardingsphere.distsql.handler.executor.lock.spi.ClusterLockStrategy;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 
 /**
  * Cluster write lock strategy.
