@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
+import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.FirebirdParameterBuffer;
+import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.type.FirebirdBlobParameterBufferType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
@@ -29,7 +30,9 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 @Getter
 public final class FirebirdCreateBlobCommandPacket extends FirebirdCommandPacket {
     
-    private final byte[] blobParameterBuffer;
+    private static final int BLOB_TYPE_STREAM = 1;
+    
+    private final FirebirdParameterBuffer bpb = FirebirdBlobParameterBufferType.createBuffer();
     
     private final int transactionId;
     
@@ -38,14 +41,22 @@ public final class FirebirdCreateBlobCommandPacket extends FirebirdCommandPacket
     public FirebirdCreateBlobCommandPacket(final FirebirdCommandPacketType commandType, final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         if (FirebirdCommandPacketType.CREATE_BLOB2 == commandType) {
-            ByteBuf buffer = payload.readBuffer();
-            blobParameterBuffer = new byte[buffer.readableBytes()];
-            buffer.readBytes(blobParameterBuffer);
-        } else {
-            blobParameterBuffer = new byte[0];
+            bpb.parseBuffer(payload.readBuffer());
         }
         transactionId = payload.readInt4();
         requestedBlobId = payload.readInt8();
+    }
+    
+    /**
+     * Is stream blob.
+     *
+     * <p>A BLOB without a blob parameter buffer, or with one that omits the type item, is a segmented BLOB.</p>
+     *
+     * @return stream blob or not
+     */
+    public boolean isStreamBlob() {
+        Integer blobType = bpb.getValue(FirebirdBlobParameterBufferType.TYPE);
+        return null != blobType && BLOB_TYPE_STREAM == blobType;
     }
     
     @Override

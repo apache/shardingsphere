@@ -27,6 +27,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -47,7 +49,7 @@ class FirebirdCreateBlobCommandPacketTest {
         verify(payload, never()).readBuffer();
         assertThat(packet.getTransactionId(), is(42));
         assertThat(packet.getRequestedBlobId(), is(0x0102030405060708L));
-        assertThat(packet.getBlobParameterBuffer().length, is(0));
+        assertFalse(packet.isStreamBlob());
         packet.write(payload);
         verify(payload).readInt4();
         verify(payload).readInt8();
@@ -56,7 +58,7 @@ class FirebirdCreateBlobCommandPacketTest {
     
     @Test
     void assertCreateBlobPacketWithBpb() {
-        when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{1, 2, 3, 4}));
+        when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{1, 3, 4, 1, 0, 0, 0}));
         when(payload.readInt4()).thenReturn(7);
         when(payload.readInt8()).thenReturn(11L);
         FirebirdCreateBlobCommandPacket packet = new FirebirdCreateBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB2, payload);
@@ -64,7 +66,7 @@ class FirebirdCreateBlobCommandPacketTest {
         verify(payload).readBuffer();
         assertThat(packet.getTransactionId(), is(7));
         assertThat(packet.getRequestedBlobId(), is(11L));
-        assertThat(packet.getBlobParameterBuffer(), is(new byte[]{1, 2, 3, 4}));
+        assertTrue(packet.isStreamBlob());
     }
     
     @Test
