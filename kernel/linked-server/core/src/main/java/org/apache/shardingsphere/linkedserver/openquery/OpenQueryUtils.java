@@ -64,7 +64,7 @@ public final class OpenQueryUtils {
             return Optional.of(((ColumnSegment) firstParam).getIdentifier().getValue());
         }
         String text = firstParam.getText();
-        return null == text ? Optional.empty() : Optional.of(QuoteCharacter.unwrapText(text));
+        return null == text ? Optional.empty() : Optional.of(text);
     }
     
     /**
