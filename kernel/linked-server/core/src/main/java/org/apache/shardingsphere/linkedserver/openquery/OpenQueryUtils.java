@@ -26,8 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Optional;
 
 /**
@@ -56,11 +55,11 @@ public final class OpenQueryUtils {
      * @return linked server name, or empty if parameters are absent
      */
     public static Optional<String> extractLinkedServerName(final FunctionSegment functionSegment) {
-        List<ExpressionSegment> params = new ArrayList<>(functionSegment.getParameters());
-        if (params.isEmpty()) {
+        Iterator<ExpressionSegment> iterator = functionSegment.getParameters().iterator();
+        if (!iterator.hasNext()) {
             return Optional.empty();
         }
-        ExpressionSegment firstParam = params.get(0);
+        ExpressionSegment firstParam = iterator.next();
         if (firstParam instanceof ColumnSegment) {
             return Optional.of(((ColumnSegment) firstParam).getIdentifier().getValue());
         }
@@ -74,11 +73,15 @@ public final class OpenQueryUtils {
      * @return inner SQL literal expression segment
      */
     public static Optional<LiteralExpressionSegment> extractInnerSQLSegment(final FunctionSegment functionSegment) {
-        List<ExpressionSegment> params = new ArrayList<>(functionSegment.getParameters());
-        if (params.size() < 2) {
+        Iterator<ExpressionSegment> iterator = functionSegment.getParameters().iterator();
+        if (!iterator.hasNext()) {
             return Optional.empty();
         }
-        ExpressionSegment secondParam = params.get(1);
+        iterator.next();
+        if (!iterator.hasNext()) {
+            return Optional.empty();
+        }
+        ExpressionSegment secondParam = iterator.next();
         return secondParam instanceof LiteralExpressionSegment ? Optional.of((LiteralExpressionSegment) secondParam) : Optional.empty();
     }
     
