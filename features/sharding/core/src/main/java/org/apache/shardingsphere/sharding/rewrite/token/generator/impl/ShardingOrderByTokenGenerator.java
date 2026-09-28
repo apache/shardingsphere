@@ -96,8 +96,13 @@ public final class ShardingOrderByTokenGenerator implements OptionalSQLTokenGene
         if (!owner.isPresent() || !tableExtractor.needRewrite(owner.get()) || !logicAndActualTables.containsKey(owner.get().getIdentifier().getValue())) {
             return columnOrderByItemSegment.getText();
         }
-        String actualOwner = owner.get().getIdentifier().getQuoteCharacter().wrap(logicAndActualTables.get(owner.get().getIdentifier().getValue()));
-        return String.join(".", actualOwner, columnOrderByItemSegment.getColumn().getIdentifier().getValueWithQuoteCharacters());
+        Collection<String> result = new LinkedList<>();
+        result.add(owner.get().getIdentifier().getQuoteCharacter().wrap(logicAndActualTables.get(owner.get().getIdentifier().getValue())));
+        result.add(columnOrderByItemSegment.getColumn().getIdentifier().getValueWithQuoteCharacters());
+        if (null != columnOrderByItemSegment.getColumn().getNestedObjectAttributes()) {
+            columnOrderByItemSegment.getColumn().getNestedObjectAttributes().forEach(each -> result.add(each.getValueWithQuoteCharacters()));
+        }
+        return String.join(".", result);
     }
     
     private int getGenerateOrderByStartIndex(final SelectStatementContext selectStatementContext) {

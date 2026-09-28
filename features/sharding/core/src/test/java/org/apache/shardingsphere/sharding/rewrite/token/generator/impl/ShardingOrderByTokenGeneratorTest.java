@@ -150,6 +150,15 @@ class ShardingOrderByTokenGeneratorTest {
     }
     
     @Test
+    void assertGenerateSQLTokenWithNestedAttribute() {
+        OrderByItem orderByItem = createColumnOrderByItem("t_account", "address");
+        ((ColumnOrderByItemSegment) orderByItem.getSegment()).getColumn().setNestedObjectAttributes(Collections.singletonList(new IdentifierValue("city")));
+        OrderByToken actual = generator.generateSQLToken(mockSelectStatementContext(mock(SelectStatement.class), Collections.singleton(orderByItem)));
+        assertThat(actual.toString(routeUnit), is(" ORDER BY t_account_0.address.city ASC "));
+        assertThat(actual.toString(), is(" ORDER BY t_account.address.city ASC "));
+    }
+    
+    @Test
     void assertGenerateSQLTokenWithQuotedTableOwner() {
         SelectStatementContext selectStatementContext = mockSelectStatementContext(mock(SelectStatement.class), Collections.singleton(createColumnOrderByItem("`t_account`", "`status`")));
         OrderByToken actual = generator.generateSQLToken(selectStatementContext);
