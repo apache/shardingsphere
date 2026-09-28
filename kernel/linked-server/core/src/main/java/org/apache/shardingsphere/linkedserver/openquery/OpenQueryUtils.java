@@ -63,14 +63,15 @@ public final class OpenQueryUtils {
         if (firstParam instanceof ColumnSegment) {
             return Optional.of(((ColumnSegment) firstParam).getIdentifier().getValue());
         }
-        return Optional.of(QuoteCharacter.unwrapText(firstParam.getText()));
+        String text = firstParam.getText();
+        return null == text ? Optional.empty() : Optional.of(QuoteCharacter.unwrapText(text));
     }
     
     /**
      * Extract inner SQL literal expression segment from OPENQUERY function segment.
      *
      * @param functionSegment OPENQUERY function segment
-     * @return inner SQL literal expression segment
+     * @return inner SQL literal expression segment, or empty if the second parameter is absent or not a literal
      */
     public static Optional<LiteralExpressionSegment> extractInnerSQLSegment(final FunctionSegment functionSegment) {
         Iterator<ExpressionSegment> iterator = functionSegment.getParameters().iterator();

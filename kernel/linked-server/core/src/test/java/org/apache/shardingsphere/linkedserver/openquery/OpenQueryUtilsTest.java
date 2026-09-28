@@ -70,8 +70,9 @@ final class OpenQueryUtilsTest {
     @Test
     void assertExtractLinkedServerName() {
         FunctionSegment funcSeg = createOpenQueryFunctionSegment();
-        assertTrue(OpenQueryUtils.extractLinkedServerName(funcSeg).isPresent());
-        assertThat(OpenQueryUtils.extractLinkedServerName(funcSeg).get(), is("MyLinkedServer"));
+        Optional<String> actual = OpenQueryUtils.extractLinkedServerName(funcSeg);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("MyLinkedServer"));
     }
     
     @Test
