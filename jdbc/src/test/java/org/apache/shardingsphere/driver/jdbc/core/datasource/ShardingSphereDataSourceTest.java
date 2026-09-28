@@ -38,15 +38,20 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 class ShardingSphereDataSourceTest {
@@ -139,6 +144,50 @@ class ShardingSphereDataSourceTest {
             actual.close();
             Map<StorageNode, DataSource> dataSourceMap = getContextManager(actual).getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources();
             assertTrue(((HikariDataSource) dataSourceMap.get(new StorageNode("ds"))).isClosed());
+        }
+    }
+    
+    @Test
+    void assertCloseRemainingDataSourcesWhenCloseFails() throws SQLException {
+        HikariDataSource failedDataSource = spy(createHikariDataSource());
+        HikariDataSource remainingDataSource = createHikariDataSource();
+        doThrow(new RuntimeException("close failed")).doCallRealMethod().when(failedDataSource).close();
+        Map<String, DataSource> dataSources = new LinkedHashMap<>(2, 1F);
+        dataSources.put("ds_0", failedDataSource);
+        dataSources.put("ds_1", remainingDataSource);
+        ShardingSphereDataSource actual = new ShardingSphereDataSource(
+                "foo_db", null, dataSources, Collections.singleton(mock(RuleConfiguration.class)), new Properties());
+        try {
+            SQLException actualException = assertThrows(SQLException.class, actual::close);
+            assertThat(actualException.getCause().getMessage(), is("close failed"));
+            assertTrue(remainingDataSource.isClosed());
+        } finally {
+            reset(failedDataSource);
+            failedDataSource.close();
+            remainingDataSource.close();
+        }
+    }
+    
+    @Test
+    void assertKeepLaterCloseFailuresAsSuppressed() throws SQLException {
+        HikariDataSource firstDataSource = spy(createHikariDataSource());
+        HikariDataSource secondDataSource = spy(createHikariDataSource());
+        doThrow(new RuntimeException("first close failed")).doCallRealMethod().when(firstDataSource).close();
+        doThrow(new RuntimeException("second close failed")).doCallRealMethod().when(secondDataSource).close();
+        Map<String, DataSource> dataSources = new LinkedHashMap<>(2, 1F);
+        dataSources.put("ds_0", firstDataSource);
+        dataSources.put("ds_1", secondDataSource);
+        ShardingSphereDataSource actual = new ShardingSphereDataSource(
+                "foo_db", null, dataSources, Collections.singleton(mock(RuleConfiguration.class)), new Properties());
+        try {
+            SQLException actualException = assertThrows(SQLException.class, actual::close);
+            assertThat(actualException.getCause().getMessage(), is("first close failed"));
+            assertThat(actualException.getSuppressed().length, is(1));
+            assertThat(actualException.getSuppressed()[0].getCause().getMessage(), is("second close failed"));
+        } finally {
+            reset(firstDataSource, secondDataSource);
+            firstDataSource.close();
+            secondDataSource.close();
         }
     }
     
