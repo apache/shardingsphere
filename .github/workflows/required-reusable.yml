@@ -39,16 +39,11 @@ jobs:
         id: global-environment
         env:
           GLOBAL_REPOSITORY: ${{ vars.GLOBAL_REPOSITORY || (github.repository == 'apache/shardingsphere' && github.event_name == 'pull_request' && github.repository) || '' }}
-          DISABLE_CI: ${{ vars.DISABLE_CI }}
         run: |
           echo "GLOBAL_CACHE_PREFIX=${GLOBAL_REPOSITORY//\//-}" >> "$GITHUB_OUTPUT"
           if [ "$GITHUB_REPOSITORY" = "$GLOBAL_REPOSITORY" ]; then
             echo "GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE=true" >> "$GITHUB_OUTPUT"
-            if [ -z "$DISABLE_CI" ] || [ "$DISABLE_CI" = "false" ]; then
-              echo "GLOBAL_JOB_ENABLED=true" >> "$GITHUB_OUTPUT"
-            else
-              echo "GLOBAL_JOB_ENABLED=false" >> "$GITHUB_OUTPUT"
-            fi
+            echo "GLOBAL_JOB_ENABLED=true" >> "$GITHUB_OUTPUT"
           fi
     outputs:
       GLOBAL_RUNS_ON: ${{ github.repository == 'apache/shardingsphere' && github.event_name == 'pull_request' && 'ubuntu-latest' || vars.GLOBAL_RUNS_ON }}
