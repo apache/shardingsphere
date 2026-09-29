@@ -49,7 +49,7 @@ jobs:
     name: Release - MCP
     if: github.repository == 'apache/shardingsphere'
     needs: global-environment
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     permissions:
       contents: read
       id-token: write

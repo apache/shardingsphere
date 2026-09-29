@@ -41,7 +41,7 @@ jobs:
     if: github.repository == 'apache/shardingsphere'
     name: Schedule - Jacoco report
     needs: global-environment
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6.0.1
@@ -71,7 +71,7 @@ jobs:
     needs:
       - global-environment
       - check-and-report-jacoco
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6.0.1
