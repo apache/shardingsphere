@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
@@ -43,9 +44,14 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
     
     private static final String OPENQUERY_FUNCTION_NAME = "OPENQUERY";
     
+    private static final String SQLSERVER_DATABASE_TYPE = "SQLServer";
+    
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        if (!SQLSERVER_DATABASE_TYPE.equals(sqlStatement.getDatabaseType().getType())) {
+            return false;
+        }
         if (sqlStatement instanceof SelectStatement) {
             return ((SelectStatement) sqlStatement).getFrom().map(this::containsOpenQuery).orElse(false);
         }
@@ -54,6 +60,9 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
         }
         if (sqlStatement instanceof DeleteStatement) {
             return containsOpenQuery(((DeleteStatement) sqlStatement).getTable());
+        }
+        if (sqlStatement instanceof InsertStatement) {
+            return ((InsertStatement) sqlStatement).getRowSetFunction().map(this::isOpenQueryFunction).orElse(false);
         }
         return false;
     }
@@ -75,6 +84,10 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
     
     private boolean isOpenQuery(final FunctionTableSegment functionTableSegment) {
         ExpressionSegment tableFunction = functionTableSegment.getTableFunction();
-        return tableFunction instanceof FunctionSegment && OPENQUERY_FUNCTION_NAME.equalsIgnoreCase(((FunctionSegment) tableFunction).getFunctionName());
+        return tableFunction instanceof FunctionSegment && isOpenQueryFunction((FunctionSegment) tableFunction);
+    }
+    
+    private boolean isOpenQueryFunction(final FunctionSegment functionSegment) {
+        return OPENQUERY_FUNCTION_NAME.equalsIgnoreCase(functionSegment.getFunctionName());
     }
 }

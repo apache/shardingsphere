@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.checker.sql.openquery;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -24,6 +25,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -42,51 +46,64 @@ final class EncryptOpenQuerySupportedCheckerTest {
     
     @Test
     void assertIsCheckWithSelectOpenQuery() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        SelectStatement selectStatement = mockSqlServerStatement(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.of(createOpenQueryFunctionTableSegment()));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(sqlStatementContext));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
     }
     
     @Test
     void assertIsCheckWithUpdateOpenQuery() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        UpdateStatement updateStatement = mock(UpdateStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(updateStatement);
+        UpdateStatement updateStatement = mockSqlServerStatement(UpdateStatement.class);
         when(updateStatement.getTable()).thenReturn(createOpenQueryFunctionTableSegment());
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(sqlStatementContext));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(updateStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithDeleteOpenQuery() {
+        DeleteStatement deleteStatement = mockSqlServerStatement(DeleteStatement.class);
+        when(deleteStatement.getTable()).thenReturn(createOpenQueryFunctionTableSegment());
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(deleteStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithInsertOpenQuery() {
+        InsertStatement insertStatement = mockSqlServerStatement(InsertStatement.class);
+        FunctionSegment funcSeg = new FunctionSegment(0, 60, "OPENQUERY", "OPENQUERY(MyLinkedServer, 'SELECT GroupName FROM Department')");
+        when(insertStatement.getRowSetFunction()).thenReturn(Optional.of(funcSeg));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(insertStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithNonSqlServerDatabase() {
+        SelectStatement selectStatement = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
+        DatabaseType databaseType = mock(DatabaseType.class);
+        when(databaseType.getType()).thenReturn("MySQL");
+        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
+        when(selectStatement.getFrom()).thenReturn(Optional.of(createOpenQueryFunctionTableSegment()));
+        assertFalse(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
     }
     
     @Test
     void assertIsCheckWithNonOpenQueryFunction() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        SelectStatement selectStatement = mockSqlServerStatement(SelectStatement.class);
         FunctionSegment funcSeg = new FunctionSegment(0, 20, "SOME_FUNC", "SOME_FUNC()");
-        FunctionTableSegment funcTableSegment = new FunctionTableSegment(0, 20, funcSeg);
-        when(selectStatement.getFrom()).thenReturn(Optional.of(funcTableSegment));
-        assertFalse(new EncryptOpenQuerySupportedChecker().isCheck(sqlStatementContext));
+        when(selectStatement.getFrom()).thenReturn(Optional.of(new FunctionTableSegment(0, 20, funcSeg)));
+        assertFalse(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
     }
     
     @Test
     void assertIsCheckWithSimpleTable() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        SelectStatement selectStatement = mockSqlServerStatement(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_order")))));
-        assertFalse(new EncryptOpenQuerySupportedChecker().isCheck(sqlStatementContext));
+        assertFalse(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
     }
     
     @Test
     void assertIsCheckWithOpenQueryCaseInsensitive() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        SelectStatement selectStatement = mockSqlServerStatement(SelectStatement.class);
         FunctionSegment funcSeg = new FunctionSegment(0, 50, "openquery", "openquery(Server, 'SELECT 1')");
-        FunctionTableSegment funcTableSegment = new FunctionTableSegment(0, 50, funcSeg);
-        when(selectStatement.getFrom()).thenReturn(Optional.of(funcTableSegment));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(sqlStatementContext));
+        when(selectStatement.getFrom()).thenReturn(Optional.of(new FunctionTableSegment(0, 50, funcSeg)));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
     }
     
     @Test
@@ -94,6 +111,20 @@ final class EncryptOpenQuerySupportedCheckerTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         assertThrows(UnsupportedEncryptSQLException.class,
                 () -> new EncryptOpenQuerySupportedChecker().check(EncryptGeneratorFixtureBuilder.createEncryptRule(), null, null, sqlStatementContext));
+    }
+    
+    private <T extends SQLStatement> T mockSqlServerStatement(final Class<T> statementClass) {
+        T statement = mock(statementClass, RETURNS_DEEP_STUBS);
+        DatabaseType databaseType = mock(DatabaseType.class);
+        when(databaseType.getType()).thenReturn("SQLServer");
+        when(statement.getDatabaseType()).thenReturn(databaseType);
+        return statement;
+    }
+    
+    private SQLStatementContext createSqlStatementContext(final SQLStatement sqlStatement) {
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        return sqlStatementContext;
     }
     
     private FunctionTableSegment createOpenQueryFunctionTableSegment() {
