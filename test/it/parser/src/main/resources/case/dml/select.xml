@@ -3572,6 +3572,21 @@
         </order-by>
     </select>
 
+    <select sql-case-id="select_distinct_function_nulls_last_oracle">
+        <from>
+            <simple-table name="t_order_item" start-index="30" stop-index="41" />
+        </from>
+        <projections distinct-row="true" start-index="15" stop-index="23">
+            <column-projection start-index="16" stop-index="22" name="item_id">
+                <left-parentheses parentheses="(" start-index="15" stop-index="15" />
+                <right-parentheses parentheses=")" start-index="23" stop-index="23" />
+            </column-projection>
+        </projections>
+        <order-by>
+            <column-item name="item_id" start-index="52" stop-index="58" />
+        </order-by>
+    </select>
+
     <select sql-case-id="select_distinct_with_count_calculation" >
         <from>
             <simple-table name="t_order" start-index="49" stop-index="55" />
@@ -15398,5 +15413,17 @@
                 </in-expression>
             </expr>
         </where>
+    </select>
+    <select sql-case-id="select_oracle_parenthesized_column_alias">
+        <from>
+            <simple-table name="t_account" alias="c" start-index="34" stop-index="44" />
+        </from>
+        <projections start-index="7" stop-index="27">
+            <column-projection name="password" alias="PASSWORD" start-index="8" stop-index="27">
+                <owner name="c" start-index="8" stop-index="8" />
+                <left-parentheses parentheses="(" start-index="7" stop-index="7" />
+                <right-parentheses parentheses=")" start-index="18" stop-index="18" />
+            </column-projection>
+        </projections>
     </select>
 </sql-parser-test-cases>
