@@ -40,9 +40,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
  */
 @HighFrequencyInvocation
 public final class EncryptOpenQuerySupportedChecker implements SupportedSQLChecker<SQLStatementContext, EncryptRule> {
-
+    
     private static final String OPENQUERY_FUNCTION_NAME = "OPENQUERY";
-
+    
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
@@ -57,12 +57,12 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
         }
         return false;
     }
-
+    
     @Override
     public void check(final EncryptRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
         ShardingSpherePreconditions.checkState(false, () -> new UnsupportedEncryptSQLException("OPENQUERY"));
     }
-
+    
     private boolean containsOpenQuery(final TableSegment tableSegment) {
         if (tableSegment instanceof FunctionTableSegment) {
             return isOpenQuery((FunctionTableSegment) tableSegment);
@@ -72,7 +72,7 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
         }
         return false;
     }
-
+    
     private boolean isOpenQuery(final FunctionTableSegment functionTableSegment) {
         ExpressionSegment tableFunction = functionTableSegment.getTableFunction();
         return tableFunction instanceof FunctionSegment && OPENQUERY_FUNCTION_NAME.equalsIgnoreCase(((FunctionSegment) tableFunction).getFunctionName());

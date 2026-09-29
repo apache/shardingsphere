@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 final class EncryptOpenQuerySupportedCheckerTest {
-
+    
     @Test
     void assertIsCheckWithSelectOpenQuery() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
@@ -48,7 +48,7 @@ final class EncryptOpenQuerySupportedCheckerTest {
         when(selectStatement.getFrom()).thenReturn(Optional.of(createOpenQueryFunctionTableSegment()));
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(sqlStatementContext));
     }
-
+    
     @Test
     void assertIsCheckWithUpdateOpenQuery() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
@@ -57,7 +57,7 @@ final class EncryptOpenQuerySupportedCheckerTest {
         when(updateStatement.getTable()).thenReturn(createOpenQueryFunctionTableSegment());
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(sqlStatementContext));
     }
-
+    
     @Test
     void assertIsCheckWithNonOpenQueryFunction() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
@@ -68,7 +68,7 @@ final class EncryptOpenQuerySupportedCheckerTest {
         when(selectStatement.getFrom()).thenReturn(Optional.of(funcTableSegment));
         assertFalse(new EncryptOpenQuerySupportedChecker().isCheck(sqlStatementContext));
     }
-
+    
     @Test
     void assertIsCheckWithSimpleTable() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
@@ -77,7 +77,7 @@ final class EncryptOpenQuerySupportedCheckerTest {
         when(selectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_order")))));
         assertFalse(new EncryptOpenQuerySupportedChecker().isCheck(sqlStatementContext));
     }
-
+    
     @Test
     void assertIsCheckWithOpenQueryCaseInsensitive() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
@@ -88,14 +88,14 @@ final class EncryptOpenQuerySupportedCheckerTest {
         when(selectStatement.getFrom()).thenReturn(Optional.of(funcTableSegment));
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(sqlStatementContext));
     }
-
+    
     @Test
     void assertCheckThrowsException() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         assertThrows(UnsupportedEncryptSQLException.class,
                 () -> new EncryptOpenQuerySupportedChecker().check(EncryptGeneratorFixtureBuilder.createEncryptRule(), null, null, sqlStatementContext));
     }
-
+    
     private FunctionTableSegment createOpenQueryFunctionTableSegment() {
         FunctionSegment funcSeg = new FunctionSegment(0, 60, "OPENQUERY", "OPENQUERY(MyLinkedServer, 'SELECT GroupName FROM Department')");
         return new FunctionTableSegment(0, 60, funcSeg);
