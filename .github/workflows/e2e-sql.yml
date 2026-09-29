@@ -52,7 +52,8 @@ jobs:
 
   detect-and-generate-matrix:
     name: Detect Changes and Generate Matrix
-    runs-on: ubuntu-latest
+    needs: global-environment
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 5
     outputs:
       smoke-matrix: ${{ steps.generate-matrix.outputs.smoke-matrix }}
@@ -130,7 +131,7 @@ jobs:
     name: Prepare E2E Artifacts
     if: github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true'
     needs: [ global-environment, detect-and-generate-matrix ]
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6.0.1
@@ -153,7 +154,7 @@ jobs:
     name: E2E - SQL (Smoke)
     needs: [ detect-and-generate-matrix, prepare-e2e-artifacts, global-environment ]
     if: always() && github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true' && needs.detect-and-generate-matrix.result == 'success' && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     strategy:
       max-parallel: 15
@@ -187,12 +188,12 @@ jobs:
 
   detect-remaining-matrix:
     name: Detect Remaining Matrix
-    needs: [ detect-and-generate-matrix, e2e-sql-smoke ]
+    needs: [ detect-and-generate-matrix, e2e-sql-smoke, global-environment ]
     if: >-
       always()
       && needs.detect-and-generate-matrix.outputs.has-jobs == 'true'
       && needs.e2e-sql-smoke.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 5
     outputs:
       matrix: ${{ steps.generate.outputs.matrix }}
@@ -231,7 +232,7 @@ jobs:
       && github.repository == 'apache/shardingsphere'
       && needs.detect-remaining-matrix.outputs.has-remaining-jobs == 'true'
       && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     strategy:
       max-parallel: 15

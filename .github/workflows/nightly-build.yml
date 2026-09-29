@@ -50,7 +50,7 @@ jobs:
     if: github.repository == 'apache/shardingsphere'
     name: Upload to Nightly Builds
     needs: global-environment
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6.0.1
@@ -139,7 +139,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     steps:
       - uses: actions/checkout@v6.0.1
         with:
@@ -174,7 +174,7 @@ jobs:
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
     if: github.repository == 'apache/shardingsphere'
     needs: [ build-cache, global-environment ]
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 90
     strategy:
       max-parallel: 15
