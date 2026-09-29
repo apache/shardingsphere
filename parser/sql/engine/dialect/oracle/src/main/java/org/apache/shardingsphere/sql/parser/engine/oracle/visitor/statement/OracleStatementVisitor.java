@@ -26,7 +26,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
@@ -616,7 +615,6 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         return result;
     }
     
-    @HighFrequencyInvocation
     @Override
     public final ASTNode visitExpr(final ExprContext ctx) {
         if (null != ctx.booleanPrimary()) {
@@ -836,7 +834,6 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         return astNode;
     }
     
-    @HighFrequencyInvocation
     @Override
     public final ASTNode visitSimpleExpr(final SimpleExprContext ctx) {
         int startIndex = ctx.getStart().getStartIndex();
