@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sqlfederation.rule;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.sqlfederation.exception.SQLFederationProviderDuplicatedException;
-import org.apache.shardingsphere.sqlfederation.exception.SQLFederationProviderNotFoundException;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -42,10 +42,13 @@ class SQLFederationProviderFactoryTest {
     
     @Test
     void assertExplicitProviderMissing() {
+        SQLFederationProvider defaultProvider = mock(SQLFederationProvider.class);
+        when(defaultProvider.getType()).thenReturn("CALCITE");
+        when(defaultProvider.isDefault()).thenReturn(true);
         try (MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
-            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Collections.emptyList());
-            SQLFederationProviderNotFoundException actual = assertThrows(SQLFederationProviderNotFoundException.class, () -> SQLFederationProviderFactory.getProvider("UNKNOWN"));
-            assertThat(actual.getMessage(), is("SQL_FEDERATION-00001: SQL Federation provider 'UNKNOWN' is not installed."));
+            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Collections.singleton(defaultProvider));
+            ServiceProviderNotFoundException actual = assertThrows(ServiceProviderNotFoundException.class, () -> SQLFederationProviderFactory.getProvider("UNKNOWN"));
+            assertThat(actual.getMessage(), is("SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider' with type 'UNKNOWN'."));
         }
     }
     
@@ -53,8 +56,8 @@ class SQLFederationProviderFactoryTest {
     void assertDefaultProviderMissing() {
         try (MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Collections.emptyList());
-            SQLFederationProviderNotFoundException actual = assertThrows(SQLFederationProviderNotFoundException.class, () -> SQLFederationProviderFactory.getProvider(null));
-            assertThat(actual.getMessage(), is("SQL_FEDERATION-00001: SQL Federation provider 'CALCITE' is not installed."));
+            ServiceProviderNotFoundException actual = assertThrows(ServiceProviderNotFoundException.class, () -> SQLFederationProviderFactory.getProvider(null));
+            assertThat(actual.getMessage(), is("SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider' with type 'CALCITE'."));
         }
     }
     

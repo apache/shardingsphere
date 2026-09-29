@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sqlfederation.rule;
 
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
 import org.apache.shardingsphere.sqlfederation.exception.SQLFederationProviderDuplicatedException;
-import org.apache.shardingsphere.sqlfederation.exception.SQLFederationProviderNotFoundException;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -75,15 +75,15 @@ class SQLFederationRuleTest {
     @Test
     void assertDefaultProviderMissing() {
         SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L));
-        SQLFederationProviderNotFoundException actual = assertThrows(SQLFederationProviderNotFoundException.class, () -> new SQLFederationRule(ruleConfig, Collections.emptyList()));
-        assertThat(actual.getMessage(), is("SQL_FEDERATION-00001: SQL Federation provider 'CALCITE' is not installed."));
+        ServiceProviderNotFoundException actual = assertThrows(ServiceProviderNotFoundException.class, () -> new SQLFederationRule(ruleConfig, Collections.emptyList()));
+        assertThat(actual.getMessage(), is("SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider' with type 'CALCITE'."));
     }
     
     @Test
     void assertUnknownProviderMissing() {
         SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L), "UNKNOWN");
-        SQLFederationProviderNotFoundException actual = assertThrows(SQLFederationProviderNotFoundException.class, () -> new SQLFederationRule(ruleConfig, Collections.emptyList()));
-        assertThat(actual.getMessage(), is("SQL_FEDERATION-00001: SQL Federation provider 'UNKNOWN' is not installed."));
+        ServiceProviderNotFoundException actual = assertThrows(ServiceProviderNotFoundException.class, () -> new SQLFederationRule(ruleConfig, Collections.emptyList()));
+        assertThat(actual.getMessage(), is("SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider' with type 'UNKNOWN'."));
     }
     
     @Test
