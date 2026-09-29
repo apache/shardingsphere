@@ -91,7 +91,15 @@ public abstract class SQLBinderIT {
         return bindSQLStatement(databaseType, sql, IDENTIFIER_INSENSITIVE_PROPS);
     }
     
-    // Use explicit props instead of IDENTIFIER_INSENSITIVE_PROPS when a regression needs the real, dialect-driven identifier case sensitivity or system schema assembly behavior.
+    /**
+     * Bind SQL statement.
+     *
+     * @param databaseType database type
+     * @param sql SQL
+     * @param props configuration properties; use explicit props instead of {@code IDENTIFIER_INSENSITIVE_PROPS} when a regression needs the real, dialect-driven identifier case
+     *              sensitivity or system schema assembly behavior
+     * @return bound SQL statement
+     */
     protected final SQLStatement bindSQLStatement(final String databaseType, final String sql, final ConfigurationProperties props) {
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
         SQLStatement sqlStatement = new SQLStatementVisitorEngine(databaseType).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));

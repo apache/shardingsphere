@@ -25,6 +25,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
@@ -47,6 +49,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSc
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
@@ -405,7 +408,7 @@ public final class SimpleTableSegmentBinder {
         if ("DUAL".equalsIgnoreCase(tableNameValue)) {
             return;
         }
-        if (null != schema && QuoteCharacter.NONE == tableName.getQuoteCharacter()
+        if (null != schema && isQuoteCompatibleWithUnquotedLookup(binderContext.getSqlStatement().getDatabaseType(), tableName)
                 && SystemSchemaManager.isSystemTable(binderContext.getSqlStatement().getDatabaseType().getType(), schema.getName(), tableNameValue)) {
             return;
         }
@@ -422,6 +425,15 @@ public final class SimpleTableSegmentBinder {
             return;
         }
         ShardingSpherePreconditions.checkState(null != schema && schema.containsTable(tableName), () -> new TableNotFoundException(tableNameValue));
+    }
+    
+    private static boolean isQuoteCompatibleWithUnquotedLookup(final DatabaseType databaseType, final IdentifierValue tableName) {
+        if (QuoteCharacter.NONE == tableName.getQuoteCharacter()) {
+            return true;
+        }
+        IdentifierCasePolicy policy = IdentifierCasePolicyResolver.resolveProtocol(databaseType).getPolicy(IdentifierScope.TABLE);
+        String tableNameValue = tableName.getValue();
+        return tableNameValue.equals(policy.normalizeForDefinition(tableNameValue, QuoteCharacter.NONE));
     }
     
     private static boolean isCreateTable(final SimpleTableSegment simpleTableSegment, final String tableName) {

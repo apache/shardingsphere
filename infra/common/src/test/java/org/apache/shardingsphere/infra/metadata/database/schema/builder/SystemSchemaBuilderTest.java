@@ -72,7 +72,7 @@ class SystemSchemaBuilderTest {
         assertTrue(actual.get("sys").containsTable("all_tables"));
         assertTrue(actual.get("sys").containsTable("all_views"));
         assertTrue(actual.get("sys").containsTable("user_tables"));
-        assertThat(actual.get("system_lobs").getAllTables().size(), is(0));
+        assertTrue(actual.get("system_lobs").getAllTables().isEmpty());
     }
     
     @Test

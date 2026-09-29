@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.test.it.sql.binder.dialect.postgresql;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
@@ -31,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SQLBinderITSettings("PostgreSQL")
@@ -91,5 +96,13 @@ class PostgreSQLBinderIT extends SQLBinderIT {
         String sql = "ALTER TABLE t_order RENAME TO pg_extension";
         AlterTableStatement actual = (AlterTableStatement) bindSQLStatement("PostgreSQL", sql);
         assertThat(actual.getRenameTable().get().getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("public"));
+    }
+    
+    @Test
+    void assertBindQuotedSystemCatalogTableNameStillMatchesDictionaryWhenAssemblyDisabled() {
+        ConfigurationProperties props = new ConfigurationProperties(
+                PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), Boolean.FALSE.toString())));
+        String sql = "SELECT * FROM pg_catalog.\"pg_indexes\"";
+        assertDoesNotThrow(() -> bindSQLStatement("PostgreSQL", sql, props));
     }
 }
