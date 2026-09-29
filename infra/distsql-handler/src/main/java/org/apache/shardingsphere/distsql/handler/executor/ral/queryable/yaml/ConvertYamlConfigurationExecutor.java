@@ -22,9 +22,9 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.DistSQLScriptConstants;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlProxyDataSourceConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDatabaseConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.convert.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
@@ -57,7 +57,7 @@ import java.util.TreeMap;
  */
 public final class ConvertYamlConfigurationExecutor implements DistSQLQueryExecutor<ConvertYamlConfigurationStatement> {
     
-    private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
+    private final YamlDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
     
     @Override
     public Collection<String> getColumnNames(final ConvertYamlConfigurationStatement statement) {
@@ -67,9 +67,9 @@ public final class ConvertYamlConfigurationExecutor implements DistSQLQueryExecu
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ConvertYamlConfigurationStatement sqlStatement, final ContextManager contextManager) {
         File file = new File(sqlStatement.getFilePath());
-        YamlProxyDatabaseConfiguration yamlConfig;
+        YamlDatabaseConfiguration yamlConfig;
         try {
-            yamlConfig = YamlEngine.unmarshal(file, YamlProxyDatabaseConfiguration.class);
+            yamlConfig = YamlEngine.unmarshal(file, YamlDatabaseConfiguration.class);
         } catch (final IOException ignore) {
             throw new FileIOException(file);
         }
@@ -80,7 +80,7 @@ public final class ConvertYamlConfigurationExecutor implements DistSQLQueryExecu
     }
     
     @SuppressWarnings("unchecked")
-    private String convertYamlConfigurationToDistSQL(final YamlProxyDatabaseConfiguration yamlConfig) {
+    private String convertYamlConfigurationToDistSQL(final YamlDatabaseConfiguration yamlConfig) {
         StringBuilder result = new StringBuilder();
         result.append(convertDatabase(yamlConfig.getDatabaseName()));
         result.append(System.lineSeparator()).append(System.lineSeparator());
@@ -103,11 +103,11 @@ public final class ConvertYamlConfigurationExecutor implements DistSQLQueryExecu
         return String.format(DistSQLScriptConstants.CREATE_DATABASE, databaseName) + System.lineSeparator() + String.format(DistSQLScriptConstants.USE_DATABASE, databaseName);
     }
     
-    private String convertDataSources(final Map<String, YamlProxyDataSourceConfiguration> dataSources) {
+    private String convertDataSources(final Map<String, YamlDataSourceConfiguration> dataSources) {
         StringBuilder result = new StringBuilder(DistSQLScriptConstants.REGISTER_STORAGE_UNIT);
-        Iterator<Entry<String, YamlProxyDataSourceConfiguration>> iterator = dataSources.entrySet().iterator();
+        Iterator<Entry<String, YamlDataSourceConfiguration>> iterator = dataSources.entrySet().iterator();
         while (iterator.hasNext()) {
-            Entry<String, YamlProxyDataSourceConfiguration> entry = iterator.next();
+            Entry<String, YamlDataSourceConfiguration> entry = iterator.next();
             DataSourceConfiguration dataSourceConfig = dataSourceConfigSwapper.swap(entry.getValue());
             DataSourcePoolProperties props = DataSourcePoolPropertiesCreator.create(dataSourceConfig);
             result.append(convertDataSource(entry.getKey(), props));
@@ -158,7 +158,7 @@ public final class ConvertYamlConfigurationExecutor implements DistSQLQueryExecu
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private Map<Integer, RuleConfiguration> swapToRuleConfigs(final YamlProxyDatabaseConfiguration yamlConfig) {
+    private Map<Integer, RuleConfiguration> swapToRuleConfigs(final YamlDatabaseConfiguration yamlConfig) {
         Map<Integer, RuleConfiguration> result = new TreeMap<>(Comparator.reverseOrder());
         for (YamlRuleConfiguration each : yamlConfig.getRules()) {
             YamlRuleConfigurationSwapper swapper = OrderedSPILoader.getServicesByClass(YamlRuleConfigurationSwapper.class, Collections.singleton(each.getRuleConfigurationType()))

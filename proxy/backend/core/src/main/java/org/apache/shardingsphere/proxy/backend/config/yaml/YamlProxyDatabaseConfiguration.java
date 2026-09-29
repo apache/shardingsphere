@@ -15,42 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.config.yaml;
+package org.apache.shardingsphere.proxy.backend.config.yaml;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
-import java.util.Properties;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
- * YAML data source configuration for ShardingSphere-Proxy.
+ * YAML database configuration for ShardingSphere-Proxy.
  */
 @Getter
 @Setter
-public final class YamlProxyDataSourceConfiguration implements YamlConfiguration {
+public final class YamlProxyDatabaseConfiguration implements YamlConfiguration {
     
-    private String dataSourceClassName;
+    private String databaseName;
     
-    private String driverClassName;
+    private Map<String, YamlProxyDataSourceConfiguration> dataSources = new HashMap<>();
     
-    private String url;
+    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     
-    private String username;
-    
-    private String password;
-    
-    private Long connectionTimeoutMilliseconds;
-    
-    private Long idleTimeoutMilliseconds;
-    
-    private Long maxLifetimeMilliseconds;
-    
-    private Integer maxPoolSize;
-    
-    private Integer minPoolSize;
-    
-    private Boolean readOnly;
-    
-    private Properties customPoolProps;
+    /**
+     * Check whether the YAML database configuration is empty.
+     *
+     * @return whether the YAML database configuration is empty
+     */
+    public boolean isEmpty() {
+        return Strings.isNullOrEmpty(databaseName) && dataSources.isEmpty() && rules.isEmpty();
+    }
 }

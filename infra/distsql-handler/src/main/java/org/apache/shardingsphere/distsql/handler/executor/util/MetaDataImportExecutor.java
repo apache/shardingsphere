@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.util;
 
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDatabaseConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlExportedServerConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.export.ExportedMetaData;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -53,7 +53,7 @@ public final class MetaDataImportExecutor {
      * @param exportedMetaData exported metadata
      */
     public void importClusterConfigurations(final ExportedMetaData exportedMetaData) {
-        Map<String, YamlProxyDatabaseConfiguration> yamlDatabaseConfigs = getYamlProxyDatabaseConfigurations(exportedMetaData);
+        Map<String, YamlDatabaseConfiguration> yamlDatabaseConfigs = getYamlDatabaseConfigurations(exportedMetaData);
         YamlExportedServerConfiguration yamlServerConfig = getYamlServerConfiguration(exportedMetaData);
         importServerConfiguration(yamlServerConfig);
         importDatabaseConfigurations(yamlDatabaseConfigs.values());
@@ -78,9 +78,9 @@ public final class MetaDataImportExecutor {
         contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().alterProperties(yamlServerConfig.getProps());
     }
     
-    private Map<String, YamlProxyDatabaseConfiguration> getYamlProxyDatabaseConfigurations(final ExportedMetaData exportedMetaData) {
+    private Map<String, YamlDatabaseConfiguration> getYamlDatabaseConfigurations(final ExportedMetaData exportedMetaData) {
         return exportedMetaData.getDatabases().entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> YamlEngine.unmarshal(entry.getValue(), YamlProxyDatabaseConfiguration.class), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                Collectors.toMap(Entry::getKey, entry -> YamlEngine.unmarshal(entry.getValue(), YamlDatabaseConfiguration.class), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private YamlExportedServerConfiguration getYamlServerConfiguration(final ExportedMetaData exportedMetaData) {
@@ -90,10 +90,10 @@ public final class MetaDataImportExecutor {
     /**
      * Import database configurations.
      *
-     * @param databaseConfigs YAML proxy database configuration
+     * @param databaseConfigs YAML database configurations
      */
-    public void importDatabaseConfigurations(final Collection<YamlProxyDatabaseConfiguration> databaseConfigs) {
-        for (YamlProxyDatabaseConfiguration each : databaseConfigs) {
+    public void importDatabaseConfigurations(final Collection<YamlDatabaseConfiguration> databaseConfigs) {
+        for (YamlDatabaseConfiguration each : databaseConfigs) {
             databaseConfigImportExecutor.importDatabaseConfiguration(each);
         }
     }

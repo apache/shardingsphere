@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.config.yaml.swapper;
+package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 
 /**
  * YAML proxy data source configuration swapper.

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.config.yaml;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
@@ -29,24 +28,15 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * YAML database configuration for ShardingSphere-Proxy.
+ * YAML database configuration for DistSQL.
  */
 @Getter
 @Setter
-public final class YamlProxyDatabaseConfiguration implements YamlConfiguration {
+public final class YamlDatabaseConfiguration implements YamlConfiguration {
     
     private String databaseName;
     
-    private Map<String, YamlProxyDataSourceConfiguration> dataSources = new HashMap<>();
+    private Map<String, YamlDataSourceConfiguration> dataSources = new HashMap<>();
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
-    
-    /**
-     * Check whether the YAML database configuration is empty.
-     *
-     * @return whether the YAML database configuration is empty
-     */
-    public boolean isEmpty() {
-        return Strings.isNullOrEmpty(databaseName) && dataSources.isEmpty() && rules.isEmpty();
-    }
 }

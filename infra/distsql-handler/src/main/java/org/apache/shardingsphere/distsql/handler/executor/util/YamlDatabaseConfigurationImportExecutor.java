@@ -20,9 +20,9 @@ package org.apache.shardingsphere.distsql.handler.executor.util;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlProxyDataSourceConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDatabaseConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -66,18 +66,18 @@ import java.util.TreeMap;
 @RequiredArgsConstructor
 public final class YamlDatabaseConfigurationImportExecutor {
     
-    private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
+    private final YamlDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
     
     private final DistSQLDataSourcePoolPropertiesValidator validateHandler = new DistSQLDataSourcePoolPropertiesValidator();
     
     private final ContextManager contextManager;
     
     /**
-     * Import proxy database from yaml configuration.
+     * Import database from YAML configuration.
      *
-     * @param yamlConfig yaml proxy database configuration
+     * @param yamlConfig YAML database configuration
      */
-    public void importDatabaseConfiguration(final YamlProxyDatabaseConfiguration yamlConfig) {
+    public void importDatabaseConfiguration(final YamlDatabaseConfiguration yamlConfig) {
         String databaseName = yamlConfig.getDatabaseName();
         checkDatabase(databaseName);
         DatabaseNameValidator.validate(databaseName);
@@ -92,7 +92,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         }
     }
     
-    private void checkDataSources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> dataSources) {
+    private void checkDataSources(final String databaseName, final Map<String, YamlDataSourceConfiguration> dataSources) {
         ShardingSpherePreconditions.checkNotEmpty(dataSources, () -> new EmptyStorageUnitException(databaseName));
     }
     
@@ -107,9 +107,9 @@ public final class YamlDatabaseConfigurationImportExecutor {
         contextManager.getMetaDataContexts().getMetaData().addDatabase(databaseName, protocolType, contextManager.getMetaDataContexts().getMetaData().getProps());
     }
     
-    private void importDataSources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {
+    private void importDataSources(final String databaseName, final Map<String, YamlDataSourceConfiguration> yamlDataSourceMap) {
         Map<String, DataSourcePoolProperties> propsMap = new LinkedHashMap<>(yamlDataSourceMap.size(), 1F);
-        for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlDataSourceMap.entrySet()) {
+        for (Entry<String, YamlDataSourceConfiguration> entry : yamlDataSourceMap.entrySet()) {
             DataSourceConfiguration dataSourceConfig = dataSourceConfigSwapper.swap(entry.getValue());
             propsMap.put(entry.getKey(), DataSourcePoolPropertiesCreator.create(dataSourceConfig));
         }
