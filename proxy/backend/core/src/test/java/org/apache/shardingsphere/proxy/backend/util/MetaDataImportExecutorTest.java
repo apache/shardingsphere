@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.util;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDatabaseConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlExportedServerConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.export.ExportedMetaData;
 import org.apache.shardingsphere.distsql.handler.executor.util.MetaDataImportExecutor;
 import org.apache.shardingsphere.distsql.handler.executor.util.YamlDatabaseConfigurationImportExecutor;
@@ -66,11 +66,11 @@ class MetaDataImportExecutorTest {
         ExportedMetaData exportedMetaData = createExportedMetaData();
         MetaDataImportExecutor executor = new MetaDataImportExecutor(contextManager);
         setField(executor, "databaseConfigImportExecutor", databaseConfigImportExecutor);
-        YamlProxyDatabaseConfiguration databaseConfig = new YamlProxyDatabaseConfiguration();
+        YamlDatabaseConfiguration databaseConfig = new YamlDatabaseConfiguration();
         databaseConfig.setDatabaseName("logic_db");
         try (MockedStatic<YamlEngine> mockedStatic = mockStatic(YamlEngine.class)) {
             mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlExportedServerConfiguration.class))).thenReturn(null);
-            mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlProxyDatabaseConfiguration.class))).thenReturn(databaseConfig);
+            mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlDatabaseConfiguration.class))).thenReturn(databaseConfig);
             executor.importClusterConfigurations(exportedMetaData);
         }
         verify(databaseConfigImportExecutor).importDatabaseConfiguration(databaseConfig);
@@ -90,16 +90,16 @@ class MetaDataImportExecutorTest {
         Properties props = new Properties();
         YamlExportedServerConfiguration serverConfig = new YamlExportedServerConfiguration();
         serverConfig.setProps(props);
-        YamlProxyDatabaseConfiguration databaseConfig = new YamlProxyDatabaseConfiguration();
+        YamlDatabaseConfiguration databaseConfig = new YamlDatabaseConfiguration();
         databaseConfig.setDatabaseName("logic_db");
         try (MockedStatic<YamlEngine> mockedStatic = mockStatic(YamlEngine.class)) {
             mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlExportedServerConfiguration.class))).thenReturn(serverConfig);
-            mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlProxyDatabaseConfiguration.class))).thenReturn(databaseConfig);
+            mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlDatabaseConfiguration.class))).thenReturn(databaseConfig);
             executor.importClusterConfigurations(exportedMetaData);
         }
         verify(metaDataManagerService).alterGlobalRuleConfiguration(ruleConfig);
         verify(metaDataManagerService).alterProperties(props);
-        ArgumentCaptor<YamlProxyDatabaseConfiguration> captor = ArgumentCaptor.forClass(YamlProxyDatabaseConfiguration.class);
+        ArgumentCaptor<YamlDatabaseConfiguration> captor = ArgumentCaptor.forClass(YamlDatabaseConfiguration.class);
         verify(databaseConfigImportExecutor).importDatabaseConfiguration(captor.capture());
         assertThat(captor.getValue().getDatabaseName(), is("logic_db"));
     }

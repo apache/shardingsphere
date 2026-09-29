@@ -22,8 +22,8 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlProxyDataSourceConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlProxyDatabaseConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDatabaseConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.export.ExportedClusterInfo;
 import org.apache.shardingsphere.distsql.handler.executor.export.ExportedMetaData;
 import org.apache.shardingsphere.distsql.handler.executor.ral.queryable.export.ExportMetaDataExecutor;
@@ -301,25 +301,25 @@ class ExportMetaDataExecutorTest {
     private void assertDatabaseConfig(final Map<String, String> actual, final Map<String, String> expected) {
         assertThat(actual.size(), is(expected.size()));
         for (Entry<String, String> entry : expected.entrySet()) {
-            assertDatabaseConfig(convertToYamlProxyDatabaseConfig(actual.get(entry.getKey())), convertToYamlProxyDatabaseConfig(entry.getValue()));
+            assertDatabaseConfig(convertToYamlDatabaseConfig(actual.get(entry.getKey())), convertToYamlDatabaseConfig(entry.getValue()));
         }
     }
     
-    private void assertDatabaseConfig(final YamlProxyDatabaseConfiguration actual, final YamlProxyDatabaseConfiguration expected) {
+    private void assertDatabaseConfig(final YamlDatabaseConfiguration actual, final YamlDatabaseConfiguration expected) {
         assertThat(actual.getDatabaseName(), is(expected.getDatabaseName()));
         assertDataSources(actual.getDataSources(), expected.getDataSources());
         assertRules(actual.getRules(), expected.getRules());
     }
     
-    private void assertDataSources(final Map<String, YamlProxyDataSourceConfiguration> actual, final Map<String, YamlProxyDataSourceConfiguration> expected) {
+    private void assertDataSources(final Map<String, YamlDataSourceConfiguration> actual, final Map<String, YamlDataSourceConfiguration> expected) {
         if (null == expected) {
             assertNull(actual);
             return;
         }
         assertThat(actual.size(), is(expected.size()));
-        for (Entry<String, YamlProxyDataSourceConfiguration> entry : expected.entrySet()) {
-            YamlProxyDataSourceConfiguration actualDataSourceConfig = actual.get(entry.getKey());
-            YamlProxyDataSourceConfiguration exceptedDataSourceConfig = entry.getValue();
+        for (Entry<String, YamlDataSourceConfiguration> entry : expected.entrySet()) {
+            YamlDataSourceConfiguration actualDataSourceConfig = actual.get(entry.getKey());
+            YamlDataSourceConfiguration exceptedDataSourceConfig = entry.getValue();
             assertThat(actualDataSourceConfig.getDataSourceClassName(), is(exceptedDataSourceConfig.getDataSourceClassName()));
             assertThat(actualDataSourceConfig.getUrl(), is(exceptedDataSourceConfig.getUrl()));
             assertThat(actualDataSourceConfig.getUsername(), is(exceptedDataSourceConfig.getUsername()));
@@ -342,7 +342,7 @@ class ExportMetaDataExecutorTest {
         return YamlEngine.unmarshal(serverConfig, YamlProxyServerConfiguration.class);
     }
     
-    private YamlProxyDatabaseConfiguration convertToYamlProxyDatabaseConfig(final String databaseConfig) {
-        return YamlEngine.unmarshal(databaseConfig, YamlProxyDatabaseConfiguration.class);
+    private YamlDatabaseConfiguration convertToYamlDatabaseConfig(final String databaseConfig) {
+        return YamlEngine.unmarshal(databaseConfig, YamlDatabaseConfiguration.class);
     }
 }

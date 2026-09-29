@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.driver;
 
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -178,6 +184,33 @@ class ShardingSphereDistSQLTest {
             ResultSet resultSet = statement.executeQuery(PARSE_SQL);
             statement.close();
             assertTrue(resultSet.isClosed());
+        }
+    }
+    
+    @Test
+    void assertYamlConfigurationCommands(@TempDir final Path tempDir) throws SQLException, IOException {
+        Path yamlFile = tempDir.resolve("database-foo_jdbc_import_db.yaml");
+        String yaml = "databaseName: foo_jdbc_import_db\n"
+                + "dataSources:\n"
+                + "  ds_0:\n"
+                + "    dataSourceClassName: org.h2.jdbcx.JdbcDataSource\n"
+                + "    url: jdbc:h2:mem:foo_jdbc_import_db;DB_CLOSE_DELAY=-1;MODE=MySQL\n"
+                + "    username: sa\n"
+                + "    password:\n";
+        Files.write(yamlFile, yaml.getBytes(StandardCharsets.UTF_8));
+        String filePath = "'" + yamlFile.toAbsolutePath() + "'";
+        try (Connection connection = DriverManager.getConnection(URL); Statement statement = connection.createStatement()) {
+            try (ResultSet actual = statement.executeQuery("CONVERT YAML CONFIGURATION FROM FILE " + filePath)) {
+                assertTrue(actual.next());
+                String actualDistSQL = actual.getString("dist_sql");
+                assertTrue(actualDistSQL.contains("CREATE DATABASE foo_jdbc_import_db;"));
+                assertTrue(actualDistSQL.contains("REGISTER STORAGE UNIT ds_0"));
+                assertTrue(actualDistSQL.contains("URL='jdbc:h2:mem:foo_jdbc_import_db;DB_CLOSE_DELAY=-1;MODE=MySQL'"));
+                assertFalse(actual.next());
+            }
+            assertThat(statement.executeUpdate("IMPORT DATABASE CONFIGURATION FROM FILE " + filePath), is(0));
+            ShardingSphereConnection actualConnection = (ShardingSphereConnection) connection;
+            assertTrue(actualConnection.getContextManager().getMetaDataContexts().getMetaData().containsDatabase("foo_jdbc_import_db"));
         }
     }
     

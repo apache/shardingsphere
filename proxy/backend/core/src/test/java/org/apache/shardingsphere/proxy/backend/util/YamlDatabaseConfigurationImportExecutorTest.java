@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.util;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlProxyDataSourceConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDatabaseConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.config.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.distsql.handler.executor.util.YamlDatabaseConfigurationImportExecutor;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -106,7 +106,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
     private ContextManager contextManager;
     
     @Mock
-    private YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper;
+    private YamlDataSourceConfigurationSwapper dataSourceConfigSwapper;
     
     @Mock
     private DistSQLDataSourcePoolPropertiesValidator validateHandler;
@@ -127,13 +127,13 @@ class YamlDatabaseConfigurationImportExecutorTest {
         MetaDataManagerPersistService metaDataManagerService = mock(MetaDataManagerPersistService.class);
         when(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()).thenReturn(metaDataManagerService);
         DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
-        when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
+        when(dataSourceConfigSwapper.swap(any(YamlDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
         mockImportedDataSource(dataSourceConfig);
         when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
         try (MockedConstruction<StorageUnit> mockedConstruction = mockConstruction(StorageUnit.class, (mock, context) -> {
         })) {
-            YamlProxyDatabaseConfiguration yamlConfig = createYamlConfiguration();
+            YamlDatabaseConfiguration yamlConfig = createYamlConfiguration();
             yamlConfig.setRules(null);
             executor.importDatabaseConfiguration(yamlConfig);
             assertThat(storageUnits.get("foo_ds"), is(mockedConstruction.constructed().get(0)));
@@ -150,7 +150,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
         DatabaseRulePersistService databaseRulePersistService = mock(DatabaseRulePersistService.class);
         when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseRuleService()).thenReturn(databaseRulePersistService);
         DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
-        when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
+        when(dataSourceConfigSwapper.swap(any(YamlDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
         mockImportedDataSource(dataSourceConfig);
         when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
@@ -172,7 +172,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
         DatabaseRulePersistService databaseRulePersistService = mock(DatabaseRulePersistService.class);
         when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseRuleService()).thenReturn(databaseRulePersistService);
         DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
-        when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
+        when(dataSourceConfigSwapper.swap(any(YamlDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
         mockImportedDataSource(dataSourceConfig);
         when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
@@ -188,7 +188,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
         DatabaseRule expectedRule = mock(DatabaseRule.class);
         when(builder.build(eq(ruleConfig), anyString(), any(DatabaseType.class), any(ResourceMetaData.class), anyCollection(), any())).thenReturn(expectedRule);
         when(OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, builder));
-        YamlProxyDatabaseConfiguration yamlConfig = createYamlConfiguration();
+        YamlDatabaseConfiguration yamlConfig = createYamlConfiguration();
         yamlConfig.setRules(Collections.singletonList(yamlRuleConfig));
         try (MockedConstruction<StorageUnit> mockedConstruction = mockConstruction(StorageUnit.class, (mock, context) -> {
         })) {
@@ -215,7 +215,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
         DatabaseRulePersistService databaseRulePersistService = mock(DatabaseRulePersistService.class);
         when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseRuleService()).thenReturn(databaseRulePersistService);
         DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
-        when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
+        when(dataSourceConfigSwapper.swap(any(YamlDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
         mockImportedDataSource(dataSourceConfig);
         when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
@@ -232,7 +232,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
         SingleRule importedRule = mock(SingleRule.class);
         when(builder.build(eq(ruleConfig), anyString(), any(DatabaseType.class), any(ResourceMetaData.class), anyCollection(), any())).thenReturn(importedRule);
         when(OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, builder));
-        YamlProxyDatabaseConfiguration yamlConfig = createYamlConfiguration();
+        YamlDatabaseConfiguration yamlConfig = createYamlConfiguration();
         yamlConfig.setRules(Collections.singletonList(yamlRuleConfig));
         try (MockedConstruction<StorageUnit> ignored = mockConstruction(StorageUnit.class)) {
             executor.importDatabaseConfiguration(yamlConfig);
@@ -260,7 +260,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
         DatabaseRulePersistService databaseRulePersistService = mock(DatabaseRulePersistService.class);
         when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseRuleService()).thenReturn(databaseRulePersistService);
         DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
-        when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
+        when(dataSourceConfigSwapper.swap(any(YamlDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
         mockImportedDataSource(dataSourceConfig);
         when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
@@ -277,7 +277,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
         SingleRule importedRule = mock(SingleRule.class);
         when(builder.build(eq(ruleConfig), anyString(), any(DatabaseType.class), any(ResourceMetaData.class), anyCollection(), any())).thenReturn(importedRule);
         when(OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, builder));
-        YamlProxyDatabaseConfiguration yamlConfig = createYamlConfiguration();
+        YamlDatabaseConfiguration yamlConfig = createYamlConfiguration();
         yamlConfig.setRules(Collections.singletonList(yamlRuleConfig));
         try (MockedConstruction<StorageUnit> ignored = mockConstruction(StorageUnit.class)) {
             executor.importDatabaseConfiguration(yamlConfig);
@@ -295,7 +295,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
         MetaDataManagerPersistService metaDataManagerService = mock(MetaDataManagerPersistService.class);
         when(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()).thenReturn(metaDataManagerService);
         DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
-        when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
+        when(dataSourceConfigSwapper.swap(any(YamlDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
         when(DataSourcePoolPropertiesCreator.create(dataSourceConfig)).thenReturn(mock(DataSourcePoolProperties.class));
         ShardingSphereSQLException sqlException = mock(ShardingSphereSQLException.class);
         doThrow(sqlException).when(validateHandler).validate(anyMap());
@@ -305,10 +305,10 @@ class YamlDatabaseConfigurationImportExecutorTest {
         verify(metaDataManagerService).dropDatabase(database);
     }
     
-    private YamlProxyDatabaseConfiguration createYamlConfiguration() {
-        YamlProxyDatabaseConfiguration result = new YamlProxyDatabaseConfiguration();
+    private YamlDatabaseConfiguration createYamlConfiguration() {
+        YamlDatabaseConfiguration result = new YamlDatabaseConfiguration();
         result.setDatabaseName("foo_db");
-        YamlProxyDataSourceConfiguration dataSourceConfig = new YamlProxyDataSourceConfiguration();
+        YamlDataSourceConfiguration dataSourceConfig = new YamlDataSourceConfiguration();
         dataSourceConfig.setUrl("jdbc:mock://localhost/" + "foo_db");
         result.setDataSources(Collections.singletonMap("foo_ds", dataSourceConfig));
         return result;

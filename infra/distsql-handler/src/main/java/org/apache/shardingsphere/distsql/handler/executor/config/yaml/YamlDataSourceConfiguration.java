@@ -15,23 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.config;
+package org.apache.shardingsphere.distsql.handler.executor.config.yaml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
- * YAML configuration for ShardingSphere-Proxy.
+ * YAML data source configuration for DistSQL.
  */
-@RequiredArgsConstructor
 @Getter
-public final class YamlProxyConfiguration {
+@Setter
+public final class YamlDataSourceConfiguration implements YamlConfiguration {
     
-    private final YamlProxyServerConfiguration serverConfiguration;
+    private String dataSourceClassName;
     
-    private final Map<String, YamlProxyDatabaseConfiguration> databaseConfigurations;
+    private String driverClassName;
+    
+    private String url;
+    
+    private String username;
+    
+    private String password;
+    
+    private Long connectionTimeoutMilliseconds;
+    
+    private Long idleTimeoutMilliseconds;
+    
+    private Long maxLifetimeMilliseconds;
+    
+    private Integer maxPoolSize;
+    
+    private Integer minPoolSize;
+    
+    private Boolean readOnly;
+    
+    private Properties customPoolProps;
 }
