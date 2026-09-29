@@ -22,12 +22,15 @@ import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLE
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -74,13 +77,54 @@ final class EncryptOpenQuerySupportedCheckerTest {
     }
     
     @Test
-    void assertIsCheckWithNonSqlServerDatabase() {
-        SelectStatement selectStatement = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
-        DatabaseType databaseType = mock(DatabaseType.class);
-        when(databaseType.getType()).thenReturn("MySQL");
-        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
+    void assertIsCheckWithInsertSelectOpenQuery() {
+        InsertStatement insertStatement = mockSqlServerStatement(InsertStatement.class);
+        when(insertStatement.getRowSetFunction()).thenReturn(Optional.empty());
+        SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.of(createOpenQueryFunctionTableSegment()));
-        assertFalse(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+        SubquerySegment subquerySegment = mock(SubquerySegment.class);
+        when(subquerySegment.getSelect()).thenReturn(selectStatement);
+        when(insertStatement.getInsertSelect()).thenReturn(Optional.of(subquerySegment));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(insertStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithMergeUsingOpenQuery() {
+        MergeStatement mergeStatement = mockSqlServerStatement(MergeStatement.class);
+        when(mergeStatement.getSource()).thenReturn(createOpenQueryFunctionTableSegment());
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(mergeStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithSubqueryContainingOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerStatement(SelectStatement.class);
+        SelectStatement innerSelect = mock(SelectStatement.class);
+        when(innerSelect.getFrom()).thenReturn(Optional.of(createOpenQueryFunctionTableSegment()));
+        SubquerySegment subquerySegment = mock(SubquerySegment.class);
+        when(subquerySegment.getSelect()).thenReturn(innerSelect);
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 80, subquerySegment);
+        when(selectStatement.getFrom()).thenReturn(Optional.of(subqueryTableSegment));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithMySQL() {
+        assertFalse(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(mockNonSqlServerSelectWithOpenQuery("MySQL"))));
+    }
+    
+    @Test
+    void assertIsCheckWithPostgreSQL() {
+        assertFalse(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(mockNonSqlServerSelectWithOpenQuery("PostgreSQL"))));
+    }
+    
+    @Test
+    void assertIsCheckWithOpenGauss() {
+        assertFalse(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(mockNonSqlServerSelectWithOpenQuery("openGauss"))));
+    }
+    
+    @Test
+    void assertIsCheckWithOracle() {
+        assertFalse(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(mockNonSqlServerSelectWithOpenQuery("Oracle"))));
     }
     
     @Test
@@ -111,6 +155,15 @@ final class EncryptOpenQuerySupportedCheckerTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         assertThrows(UnsupportedEncryptSQLException.class,
                 () -> new EncryptOpenQuerySupportedChecker().check(EncryptGeneratorFixtureBuilder.createEncryptRule(), null, null, sqlStatementContext));
+    }
+    
+    private SelectStatement mockNonSqlServerSelectWithOpenQuery(final String databaseTypeName) {
+        SelectStatement selectStatement = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
+        DatabaseType databaseType = mock(DatabaseType.class);
+        when(databaseType.getType()).thenReturn(databaseTypeName);
+        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
+        when(selectStatement.getFrom()).thenReturn(Optional.of(createOpenQueryFunctionTableSegment()));
+        return selectStatement;
     }
     
     private <T extends SQLStatement> T mockSqlServerStatement(final Class<T> statementClass) {

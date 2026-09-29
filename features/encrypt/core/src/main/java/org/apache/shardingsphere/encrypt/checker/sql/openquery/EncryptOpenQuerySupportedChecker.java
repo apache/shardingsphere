@@ -29,10 +29,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
@@ -62,7 +64,10 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
             return containsOpenQuery(((DeleteStatement) sqlStatement).getTable());
         }
         if (sqlStatement instanceof InsertStatement) {
-            return ((InsertStatement) sqlStatement).getRowSetFunction().map(this::isOpenQueryFunction).orElse(false);
+            return containsOpenQueryInInsert((InsertStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof MergeStatement) {
+            return containsOpenQuery(((MergeStatement) sqlStatement).getTarget()) || containsOpenQuery(((MergeStatement) sqlStatement).getSource());
         }
         return false;
     }
@@ -72,12 +77,22 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
         ShardingSpherePreconditions.checkState(false, () -> new UnsupportedEncryptSQLException("OPENQUERY"));
     }
     
+    private boolean containsOpenQueryInInsert(final InsertStatement insertStatement) {
+        if (insertStatement.getRowSetFunction().map(this::isOpenQueryFunction).orElse(false)) {
+            return true;
+        }
+        return insertStatement.getInsertSelect().map(each -> each.getSelect().getFrom().map(this::containsOpenQuery).orElse(false)).orElse(false);
+    }
+    
     private boolean containsOpenQuery(final TableSegment tableSegment) {
         if (tableSegment instanceof FunctionTableSegment) {
             return isOpenQuery((FunctionTableSegment) tableSegment);
         }
         if (tableSegment instanceof JoinTableSegment) {
             return containsOpenQuery(((JoinTableSegment) tableSegment).getLeft()) || containsOpenQuery(((JoinTableSegment) tableSegment).getRight());
+        }
+        if (tableSegment instanceof SubqueryTableSegment) {
+            return ((SubqueryTableSegment) tableSegment).getSubquery().getSelect().getFrom().map(this::containsOpenQuery).orElse(false);
         }
         return false;
     }
