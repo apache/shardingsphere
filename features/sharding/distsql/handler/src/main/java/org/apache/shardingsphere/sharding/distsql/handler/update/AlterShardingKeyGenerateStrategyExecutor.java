@@ -65,9 +65,9 @@ public final class AlterShardingKeyGenerateStrategyExecutor
     private void checkDuplicateGeneratedKeyGenerator(final AlterShardingKeyGenerateStrategyStatement sqlStatement) {
         String keyGeneratorName = ShardingKeyGenerateStrategyStatementConverter.getKeyGeneratorName(sqlStatement.getName(), sqlStatement.getKeyGenerateStrategySegment());
         String currentKeyGeneratorName = rule.getConfiguration().getKeyGenerateStrategies().get(sqlStatement.getName()).getKeyGeneratorName();
-        boolean containsSameNameKeyGenerator = rule.getConfiguration().getKeyGenerators().containsKey(sqlStatement.getName());
+        boolean containsSameNameKeyGenerator = rule.getConfiguration().getKeyGenerators().containsKey(keyGeneratorName);
         ShardingSpherePreconditions.checkState(!containsSameNameKeyGenerator || keyGeneratorName.equals(currentKeyGeneratorName),
-                () -> new DuplicateRuleException("key generator", database.getName(), Collections.singleton(sqlStatement.getName())));
+                () -> new DuplicateRuleException("key generator", database.getName(), Collections.singleton(keyGeneratorName)));
     }
     
     private void checkReferencedKeyGenerator(final String keyGeneratorName) {
