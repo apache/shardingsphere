@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.exception.SQLFederationProviderDuplicatedException;
-import org.apache.shardingsphere.sqlfederation.exception.SQLFederationProviderNotFoundException;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 
 import java.util.HashSet;
@@ -48,7 +47,6 @@ public final class SQLFederationProviderFactory {
         for (SQLFederationProvider each : ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)) {
             ShardingSpherePreconditions.checkState(types.add(each.getType().toUpperCase(Locale.ROOT)), () -> new SQLFederationProviderDuplicatedException(each.getType()));
         }
-        return TypedSPILoader.findService(SQLFederationProvider.class, actualProviderType)
-                .orElseThrow(() -> new SQLFederationProviderNotFoundException(actualProviderType));
+        return TypedSPILoader.getService(SQLFederationProvider.class, actualProviderType);
     }
 }

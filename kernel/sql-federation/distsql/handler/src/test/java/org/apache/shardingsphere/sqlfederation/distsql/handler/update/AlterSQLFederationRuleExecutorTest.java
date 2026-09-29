@@ -22,13 +22,13 @@ import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.AlterSQLFederationRuleStatement;
 import org.apache.shardingsphere.sqlfederation.exception.SQLFederationProviderDuplicatedException;
-import org.apache.shardingsphere.sqlfederation.exception.SQLFederationProviderNotFoundException;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.update.DistSQLGlobalRuleDefinitionExecutorAssert;
@@ -76,14 +76,14 @@ class AlterSQLFederationRuleExecutorTest {
     
     @Test
     void assertExplicitProviderMissingBeforePersistence() {
-        assertRejectedBeforePersistence(new AlterSQLFederationRuleStatement(true, null, null, "UNKNOWN"), Collections.emptyList(), SQLFederationProviderNotFoundException.class,
-                "SQL_FEDERATION-00001: SQL Federation provider 'UNKNOWN' is not installed.");
+        assertRejectedBeforePersistence(new AlterSQLFederationRuleStatement(true, null, null, "UNKNOWN"), Collections.emptyList(), ServiceProviderNotFoundException.class,
+                "SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider' with type 'UNKNOWN'.");
     }
     
     @Test
     void assertDefaultProviderMissingBeforePersistence() {
-        assertRejectedBeforePersistence(new AlterSQLFederationRuleStatement(true, null, null), Collections.emptyList(), SQLFederationProviderNotFoundException.class,
-                "SQL_FEDERATION-00001: SQL Federation provider 'CALCITE' is not installed.");
+        assertRejectedBeforePersistence(new AlterSQLFederationRuleStatement(true, null, null), Collections.emptyList(), ServiceProviderNotFoundException.class,
+                "SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider' with type 'CALCITE'.");
     }
     
     @Test
