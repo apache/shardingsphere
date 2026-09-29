@@ -396,6 +396,26 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_oracle_long_mixed_concat_projection">
+        <from>
+            <simple-table name="foo_table" start-index="1177" stop-index="1196">
+                <owner name="foo_schema" start-index="1177" stop-index="1186" />
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="1170">
+            <expression-projection text="COL_00||CHR(124)||COL_01||CHR(124)||COL_02||CHR(124)||COL_03||CHR(124)||COL_04||CHR(124)||COL_05||CHR(124)||COL_06||CHR(124)||COL_07||CHR(124)||COL_08||CHR(124)||COL_09||CHR(124)||COL_10||CHR(124)||COL_11||CHR(124)||TO_CHAR(COL_12, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||COL_13||CHR(124)||COL_14||CHR(124)||COL_15||CHR(124)||COL_16||CHR(124)||TO_CHAR(COL_17, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||COL_18||CHR(124)||COL_19||CHR(124)||COL_20||CHR(124)||COL_21||CHR(124)||TO_CHAR(COL_22, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||COL_23||CHR(124)||COL_24||CHR(124)||COL_25||CHR(124)||COL_26||CHR(124)||COL_27||CHR(124)||COL_28||CHR(124)||COL_29||CHR(124)||COL_30||CHR(124)||COL_31||CHR(124)||COL_32||CHR(124)||COL_33||CHR(124)||COL_34||CHR(124)||COL_35||CHR(124)||COL_36||CHR(124)||COL_37||CHR(124)||TO_CHAR(COL_38, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||TO_CHAR(COL_39, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||TO_CHAR(COL_40, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||COL_41||CHR(124)||COL_42||CHR(124)||COL_43||CHR(124)||COL_44||CHR(124)||COL_45||CHR(124)||COL_46||CHR(124)||COL_47||CHR(124)||COL_48||CHR(124)||COL_49||CHR(124)||COL_50||CHR(124)||COL_51||CHR(124)||COL_52||CHR(124)||COL_53" start-index="7" stop-index="1170" />
+        </projections>
+        <where start-index="1198" stop-index="1213">
+            <expr>
+                <binary-operation-expression start-index="1204" stop-index="1213">
+                    <left><column name="rownum" start-index="1204" stop-index="1209" /></left>
+                    <operator>&lt;</operator>
+                    <right><literal-expression value="2" start-index="1213" stop-index="1213" /></right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_oracle_full_width_arithmetic_and_concat">
         <from>
             <simple-table name="dual" start-index="44" stop-index="47" />

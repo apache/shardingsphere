@@ -36,6 +36,7 @@
 1. SQL Parser: Preserve Firebird `ALTER TABLE ALTER COLUMN` nullability metadata - [#39436](https://github.com/apache/shardingsphere/pull/39436)
 1. SQL Parser: Preserve SQL92 `CREATE TABLE` column nullability metadata - [#39439](https://github.com/apache/shardingsphere/pull/39439)
 1. SQL Parser: Fix Oracle DML scalar subqueries and system datetime functions - [#39710](https://github.com/apache/shardingsphere/pull/39710)
+1. SQL Parser: Avoid excessive prediction work when parsing long Oracle concatenation expressions - [#39990](https://github.com/apache/shardingsphere/pull/39990)
 1. SQL Parser: Fix No value specified for parameter exception when sql is 'INSERT INTO tableName ON CONFLICT  DO UPDATE set  WHERE ' - [#38668](https://github.com/apache/shardingsphere/pull/38668)
 1. SQL Binder: Add DialectFunctionOption to handle wrong skip column bind in ColumnSegmentBinder - [#38350](https://github.com/apache/shardingsphere/pull/38350)
 1. SQL Binder: Fix wrong bind info when order by refer column from with temporary table - [#38353](https://github.com/apache/shardingsphere/pull/38353)
