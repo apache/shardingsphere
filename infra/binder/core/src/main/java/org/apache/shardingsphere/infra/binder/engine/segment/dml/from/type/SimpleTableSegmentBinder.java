@@ -199,6 +199,16 @@ public final class SimpleTableSegmentBinder {
         return Optional.ofNullable(database.getDefaultSchemaName()).map(IdentifierValue::new);
     }
     
+    /**
+     * Find current schema containing table.
+     *
+     * <p>Uses {@link ShardingSphereDatabase#getDefaultSchemaName()} rather than {@link SQLStatementBinderContext#getCurrentSchema()}: the latter is populated only for nested contexts
+     * (subqueries, {@code CREATE TABLE AS SELECT}) and defaults to empty for a top-level statement, so relying on it here would make this check never match.</p>
+     *
+     * @param binderContext SQL statement binder context
+     * @param tableName table name
+     * @return schema identifier if the current schema contains the table
+     */
     private static Optional<IdentifierValue> findCurrentSchemaContainingTable(final SQLStatementBinderContext binderContext, final IdentifierValue tableName) {
         ShardingSphereDatabase database = binderContext.getMetaData().getDatabase(binderContext.getCurrentDatabaseName());
         String defaultSchemaName = database.getDefaultSchemaName();
