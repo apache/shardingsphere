@@ -33,45 +33,25 @@ permissions:
 jobs:
   init-environment:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6.0.1
-        with:
-          sparse-checkout: |
-            .github/workflows/resources/variables/
-      - name: Setup Environment
-        id: import-variables
-        run: |
-          cat .github/workflows/resources/variables/env-variables.properties | while read line
-          do
-            echo ${line} >> $GITHUB_OUTPUT
-          done
-          echo "GLOBAL_REPOSITORY=${{ env.GLOBAL_REPOSITORY }}"
-          echo "DISABLE_CI=${{ env.DISABLE_CI }}"
-          GLOBAL_CACHE_PREFIX=$(echo '${{ env.GLOBAL_REPOSITORY }}' | sed 's/\//_/g')
-          echo "GLOBAL_CACHE_PREFIX=${GLOBAL_CACHE_PREFIX}" >> $GITHUB_OUTPUT
-      - name: Check If Job is Executable
-        id: check-job-executable
+      - name: Set Global Environment
+        id: global-environment
         env:
-          JSON_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
-        shell: sh
+          GLOBAL_REPOSITORY: ${{ vars.GLOBAL_REPOSITORY || (github.repository == 'apache/shardingsphere' && github.event_name == 'pull_request' && github.repository) || '' }}
+          DISABLE_CI: ${{ vars.DISABLE_CI }}
         run: |
-          GLOBAL_CACHE_PREFIX=$(echo '${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }}' | sed 's/\//-/g')
-          echo "GLOBAL_CACHE_PREFIX=${GLOBAL_CACHE_PREFIX}" >> $GITHUB_OUTPUT
-          if [ "${{ github.repository }}" = "${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }}" ]; then
-            echo "GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE=true" >> $GITHUB_OUTPUT
-            echo "GLOBAL_JOB_ENABLED=false" >> $GITHUB_OUTPUT
-            if [ -z "${{ steps.import-variables.outputs.DISABLE_CI }}" ] || [ "${{ steps.import-variables.outputs.DISABLE_CI }}" = "false" ]; then
-              echo "GLOBAL_JOB_ENABLED=true" >> $GITHUB_OUTPUT
+          echo "GLOBAL_CACHE_PREFIX=${GLOBAL_REPOSITORY//\//-}" >> "$GITHUB_OUTPUT"
+          if [ "$GITHUB_REPOSITORY" = "$GLOBAL_REPOSITORY" ]; then
+            echo "GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE=true" >> "$GITHUB_OUTPUT"
+            if [ -z "$DISABLE_CI" ] || [ "$DISABLE_CI" = "false" ]; then
+              echo "GLOBAL_JOB_ENABLED=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "GLOBAL_JOB_ENABLED=false" >> "$GITHUB_OUTPUT"
             fi
           fi
-      - name: Print outputs
-        run: |
-          echo "GLOBAL_RUNS_ON(from import)=${{ steps.import-variables.outputs.GLOBAL_RUNS_ON }}"
-          echo "GLOBAL_JOB_ENABLED=${{ steps.check-job-executable.outputs.GLOBAL_JOB_ENABLED }}"
-          echo "GLOBAL_CACHE_PREFIX=${{ steps.check-job-executable.outputs.GLOBAL_CACHE_PREFIX }}"
-          echo "GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE=${{ steps.check-job-executable.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE }}"
     outputs:
-      GLOBAL_RUNS_ON: ${{ github.repository == 'apache/shardingsphere' && github.event_name == 'pull_request' && 'ubuntu-latest' || steps.import-variables.outputs.GLOBAL_RUNS_ON }}
-      GLOBAL_JOB_ENABLED: ${{ steps.check-job-executable.outputs.GLOBAL_JOB_ENABLED }}
-      GLOBAL_CACHE_PREFIX: ${{ steps.check-job-executable.outputs.GLOBAL_CACHE_PREFIX }}
-      GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE: ${{ steps.check-job-executable.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE }}
+      GLOBAL_RUNS_ON: ${{ github.repository == 'apache/shardingsphere' && github.event_name == 'pull_request' && 'ubuntu-latest' || vars.GLOBAL_RUNS_ON }}
+      GLOBAL_JOB_ENABLED: ${{ steps.global-environment.outputs.GLOBAL_JOB_ENABLED }}
+      GLOBAL_CACHE_PREFIX: ${{ steps.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+      GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE: ${{ steps.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE }}
