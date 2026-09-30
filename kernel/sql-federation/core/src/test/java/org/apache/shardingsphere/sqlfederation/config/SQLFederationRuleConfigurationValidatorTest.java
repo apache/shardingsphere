@@ -15,37 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.rule.builder;
+package org.apache.shardingsphere.sqlfederation.config;
 
-import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
-import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.util.Collections;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-class SQLFederationRuleBuilderTest {
+class SQLFederationRuleConfigurationValidatorTest {
     
     @Test
-    void assertBuild() {
-        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L));
-        SQLFederationRuleBuilder builder = (SQLFederationRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+    void assertExplicitProviderExists() {
         SQLFederationProvider provider = mock(SQLFederationProvider.class);
+        when(provider.getType()).thenReturn("CALCITE");
+        try (MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
+            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Collections.singleton(provider));
+            assertDoesNotThrow(() -> RuleConfigurationValidator.validate(new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), "CALCITE")));
+        }
+    }
+    
+    @Test
+    void assertUnknownProviderFailsWithDefaultInstalled() {
+        SQLFederationProvider provider = mock(SQLFederationProvider.class);
+        when(provider.getType()).thenReturn("NONE");
         when(provider.isDefault()).thenReturn(true);
         try (MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Collections.singleton(provider));
-            assertThat(builder.build(ruleConfig, Collections.emptyList(), null), isA(SQLFederationRule.class));
+            assertThrows(InvalidRuleConfigurationException.class,
+                    () -> RuleConfigurationValidator.validate(new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), "UNKNOWN")));
         }
     }
 }

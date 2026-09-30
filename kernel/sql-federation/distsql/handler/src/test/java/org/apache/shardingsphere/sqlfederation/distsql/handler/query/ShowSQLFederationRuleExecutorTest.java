@@ -46,18 +46,25 @@ class ShowSQLFederationRuleExecutorTest {
     @ArgumentsSource(DistSQLRuleQueryExecutorTestCaseArgumentsProvider.class)
     void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
                             final GlobalRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
-        new DistSQLGlobalRuleQueryExecutorAssert(mock(SQLFederationRule.class)).assertQueryResultRows(sqlStatement, currentRuleConfig, expected);
+        SQLFederationRule rule = mock(SQLFederationRule.class);
+        SQLFederationProvider provider = mock(SQLFederationProvider.class);
+        when(provider.getType()).thenReturn("NONE");
+        when(rule.getProvider()).thenReturn(provider);
+        new DistSQLGlobalRuleQueryExecutorAssert(rule).assertQueryResultRows(sqlStatement, currentRuleConfig, expected);
     }
     
     @Test
-    void assertShowDefaultProviderTypeWhenEnabled() {
+    void assertShowEnabledProvider() {
         SQLFederationRule rule = mock(SQLFederationRule.class);
         SQLFederationProvider provider = mock(SQLFederationProvider.class);
-        when(rule.getConfiguration()).thenReturn(new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L)));
+        when(rule.getConfiguration()).thenReturn(new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), "CALCITE"));
         when(rule.getProvider()).thenReturn(provider);
-        when(provider.getType()).thenReturn("NONE");
+        when(rule.isSqlFederationEnabled()).thenReturn(true);
+        when(provider.getType()).thenReturn("CALCITE");
         ShowSQLFederationRuleExecutor executor = new ShowSQLFederationRuleExecutor();
         executor.setRule(rule);
-        assertThat(executor.getRows(null, null).iterator().next().getCell(4), is("NONE"));
+        LocalDataQueryResultRow actual = executor.getRows(null, null).iterator().next();
+        assertThat(actual.getCell(1), is("true"));
+        assertThat(actual.getCell(4), is("CALCITE"));
     }
 }

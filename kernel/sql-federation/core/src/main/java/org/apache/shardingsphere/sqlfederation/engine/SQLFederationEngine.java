@@ -110,7 +110,7 @@ public final class SQLFederationEngine implements AutoCloseable {
      * @return SQL federation enabled or disabled
      */
     public boolean isSQLFederationEnabled() {
-        return sqlFederationRule.getConfiguration().isSqlFederationEnabled();
+        return sqlFederationRule.isSqlFederationEnabled();
     }
     
     @SuppressWarnings("rawtypes")

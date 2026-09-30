@@ -55,6 +55,11 @@ class NoneSQLFederationProviderTest {
     }
     
     @Test
+    void assertDisabled() {
+        assertFalse(TypedSPILoader.getService(SQLFederationProvider.class, "NONE").isSQLFederationEnabled());
+    }
+    
+    @Test
     void assertIsSupportedSQLStatement() {
         SQLFederationProvider provider = TypedSPILoader.getService(SQLFederationProvider.class, "NONE");
         assertFalse(provider.isSupportedSQLStatement(mock(SelectStatement.class)));
@@ -62,8 +67,10 @@ class NoneSQLFederationProviderTest {
     
     @Test
     void assertDefaultNoneProviderWhenOnlyNoneInstalled() {
-        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L));
-        assertThat(new SQLFederationRule(config, Collections.emptyList()).getProvider(), isA(NoneSQLFederationProvider.class));
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L));
+        SQLFederationRule actual = new SQLFederationRule(config, Collections.emptyList());
+        assertThat(actual.getProvider(), isA(NoneSQLFederationProvider.class));
+        assertFalse(actual.isSqlFederationEnabled());
     }
     
     @Test
@@ -119,7 +126,7 @@ class NoneSQLFederationProviderTest {
     }
     
     private SQLFederationRule createRule(final boolean allQueryUseSQLFederation) {
-        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, allQueryUseSQLFederation, new SQLFederationCacheOption(4, 64L), "NONE");
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(allQueryUseSQLFederation, new SQLFederationCacheOption(4, 64L), "NONE");
         return new SQLFederationRule(config, Collections.emptyList());
     }
 }

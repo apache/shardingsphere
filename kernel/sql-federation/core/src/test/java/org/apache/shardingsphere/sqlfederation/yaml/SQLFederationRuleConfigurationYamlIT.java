@@ -24,6 +24,6 @@ import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 class SQLFederationRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
     SQLFederationRuleConfigurationYamlIT() {
-        super("yaml/sql-federation-rule.yaml", new SQLFederationRuleConfiguration(true, true, new SQLFederationCacheOption(128, 1024)));
+        super("yaml/sql-federation-rule.yaml", new SQLFederationRuleConfiguration(true, new SQLFederationCacheOption(128, 1024)));
     }
 }

@@ -59,7 +59,6 @@ class SQLFederationResultSetColumnClassNameTest extends AbstractDriverTest {
             "    - \"*.*\"",
             "",
             "sqlFederation:",
-            "  sqlFederationEnabled: true",
             "  providerType: CALCITE",
             "  allQueryUseSQLFederation: true",
             "  executionPlanCache:",

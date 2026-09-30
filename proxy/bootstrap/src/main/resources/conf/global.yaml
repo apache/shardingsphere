@@ -56,7 +56,7 @@
 #    maximumSize: 1024
 #
 #sqlFederation:
-#  sqlFederationEnabled: false
+#  providerType: NONE
 #  executionPlanCache:
 #    initialCapacity: 2000
 #    maximumSize: 65535
