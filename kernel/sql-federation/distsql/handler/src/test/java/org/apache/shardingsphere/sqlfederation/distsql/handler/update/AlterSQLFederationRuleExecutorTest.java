@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.AlterSQLFederationRuleStatement;
-import org.apache.shardingsphere.sqlfederation.exception.SQLFederationProviderDuplicatedException;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.update.DistSQLGlobalRuleDefinitionExecutorAssert;
@@ -40,7 +39,6 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -85,16 +83,6 @@ class AlterSQLFederationRuleExecutorTest {
     void assertDefaultProviderMissingBeforePersistence() {
         assertRejectedBeforePersistence(new AlterSQLFederationRuleStatement(true, null, null), Collections.emptyList(), ServiceProviderNotFoundException.class,
                 "SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider' with type 'null'.");
-    }
-    
-    @Test
-    void assertDuplicateProviderBeforePersistence() {
-        SQLFederationProvider first = mock(SQLFederationProvider.class);
-        SQLFederationProvider second = mock(SQLFederationProvider.class);
-        when(first.getType()).thenReturn("CALCITE");
-        when(second.getType()).thenReturn("calcite");
-        assertRejectedBeforePersistence(new AlterSQLFederationRuleStatement(true, null, null), Arrays.asList(first, second), SQLFederationProviderDuplicatedException.class,
-                "SQL_FEDERATION-00002: Multiple SQL Federation providers have type 'calcite'.");
     }
     
     @Test

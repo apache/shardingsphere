@@ -19,12 +19,13 @@ package org.apache.shardingsphere.sqlfederation.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.AlterSQLFederationRuleStatement;
-import org.apache.shardingsphere.sqlfederation.rule.SQLFederationProviderFactory;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 
 /**
  * Alter SQL federation rule executor.
@@ -44,7 +45,7 @@ public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitio
         String providerType = null == sqlStatement.getProviderType() ? rule.getConfiguration().getProviderType() : sqlStatement.getProviderType();
         SQLFederationRuleConfiguration result = new SQLFederationRuleConfiguration(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache, providerType);
         if (result.isSqlFederationEnabled()) {
-            SQLFederationProviderFactory.getProvider(result.getProviderType());
+            TypedSPILoader.getService(SQLFederationProvider.class, result.getProviderType());
         }
         return result;
     }
