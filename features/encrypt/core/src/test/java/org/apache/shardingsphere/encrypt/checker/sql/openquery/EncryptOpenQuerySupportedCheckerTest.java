@@ -42,7 +42,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -93,6 +95,18 @@ final class EncryptOpenQuerySupportedCheckerTest {
     void assertIsCheckWithDeleteOpenQuery() {
         DeleteStatement deleteStatement = mockSqlServerStatement(DeleteStatement.class);
         when(deleteStatement.getTable()).thenReturn(createOpenQueryFunctionTableSegment());
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(deleteStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithDeleteMultiTableOpenQuery() {
+        DeleteStatement deleteStatement = mockSqlServerStatement(DeleteStatement.class);
+        DeleteMultiTableSegment multiTableSegment = new DeleteMultiTableSegment();
+        JoinTableSegment joinTable = new JoinTableSegment();
+        joinTable.setLeft(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("t"))));
+        joinTable.setRight(createOpenQueryFunctionTableSegment());
+        multiTableSegment.setRelationTable(joinTable);
+        when(deleteStatement.getTable()).thenReturn(multiTableSegment);
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(deleteStatement)));
     }
     

@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.Mer
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -212,6 +213,9 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
         }
         if (tableSegment instanceof SubqueryTableSegment) {
             return containsOpenQueryInSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
+        }
+        if (tableSegment instanceof DeleteMultiTableSegment) {
+            return containsOpenQuery(((DeleteMultiTableSegment) tableSegment).getRelationTable());
         }
         return false;
     }
