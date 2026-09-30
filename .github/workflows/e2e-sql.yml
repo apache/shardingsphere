@@ -69,7 +69,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - id: filter
-        uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d
         with:
           filters: .github/workflows/resources/filter/e2e-sql-filters.yml
       - id: generate-matrix
