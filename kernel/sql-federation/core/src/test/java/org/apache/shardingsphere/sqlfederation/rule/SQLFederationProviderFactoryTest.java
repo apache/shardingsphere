@@ -41,14 +41,13 @@ import static org.mockito.Mockito.when;
 class SQLFederationProviderFactoryTest {
     
     @Test
-    void assertExplicitProviderMissing() {
-        SQLFederationProvider defaultProvider = mock(SQLFederationProvider.class);
-        when(defaultProvider.getType()).thenReturn("CALCITE");
-        when(defaultProvider.isDefault()).thenReturn(true);
+    void assertMissingProviderFallsBackToDefault() {
+        SQLFederationProvider expected = mock(SQLFederationProvider.class);
+        when(expected.getType()).thenReturn("CALCITE");
+        when(expected.isDefault()).thenReturn(true);
         try (MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
-            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Collections.singleton(defaultProvider));
-            ServiceProviderNotFoundException actual = assertThrows(ServiceProviderNotFoundException.class, () -> SQLFederationProviderFactory.getProvider("UNKNOWN"));
-            assertThat(actual.getMessage(), is("SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider' with type 'UNKNOWN'."));
+            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Collections.singleton(expected));
+            assertThat(SQLFederationProviderFactory.getProvider("UNKNOWN"), sameInstance(expected));
         }
     }
     
