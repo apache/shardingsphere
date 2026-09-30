@@ -197,7 +197,7 @@ class CalciteSQLFederationExecutorTest {
         JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
         ResultSet resultSet = mock(ResultSet.class);
         SQLFederationProcessor processor = mock(SQLFederationProcessor.class);
-        when(processor.executePlan(eq(prepareEngine), eq(callback), any(SQLFederationExecutionPlan.class), any(SQLFederationRelConverter.class), eq(federationContext), any())).thenReturn(resultSet);
+        when(processor.executePlan(any(SQLFederationExecutionPlan.class), any(SQLFederationRelConverter.class), eq(federationContext), any())).thenReturn(resultSet);
         CalciteSQLFederationExecutor executor = createCalciteSQLFederationExecutor(processor, actualMetaData);
         try (
                 MockedConstruction<SQLFederationRelConverter> converterMocked = mockConstruction(SQLFederationRelConverter.class,
@@ -308,7 +308,7 @@ class CalciteSQLFederationExecutorTest {
         when(resultSet.isClosed()).thenReturn(true);
         SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
         SQLFederationProcessor processor = mock(SQLFederationProcessor.class);
-        when(processor.executePlan(eq(prepareEngine), eq(callback), eq(executionPlan), any(SQLFederationRelConverter.class), eq(federationContext), any())).thenReturn(resultSet);
+        when(processor.executePlan(eq(executionPlan), any(SQLFederationRelConverter.class), eq(federationContext), any())).thenReturn(resultSet);
         try (
                 CalciteSQLFederationExecutor executor = createCalciteSQLFederationExecutor(processor, actualMetaData);
                 MockedConstruction<SQLFederationRelConverter> ignored = mockConstruction(SQLFederationRelConverter.class,
@@ -349,7 +349,7 @@ class CalciteSQLFederationExecutorTest {
             relOptUtil.when(() -> RelOptUtil.toString(any(RelNode.class), eq(SqlExplainLevel.ALL_ATTRIBUTES))).thenReturn("plan");
             doAnswer(invocation -> {
                 throw new SQLIntegrityConstraintViolationException();
-            }).when(processor).executePlan(eq(prepareEngine), eq(callback), eq(executionPlan), any(SQLFederationRelConverter.class), eq(federationContext), any());
+            }).when(processor).executePlan(eq(executionPlan), any(SQLFederationRelConverter.class), eq(federationContext), any());
             assertThrows(SQLIntegrityConstraintViolationException.class, () -> executor.executeQuery(prepareEngine, callback, federationContext));
         }
     }

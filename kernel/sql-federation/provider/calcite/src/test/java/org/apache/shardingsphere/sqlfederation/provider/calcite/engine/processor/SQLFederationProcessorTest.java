@@ -252,12 +252,11 @@ class SQLFederationProcessorTest {
             mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(physicalPlan, Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
             mockedSpiLoader.when(() -> DatabaseTypedSPILoader
                     .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
-            ResultSet result = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, rootSchema);
+            ResultSet result = processor.executePlan(executionPlan, converter, federationContext, rootSchema);
             ((SQLFederationResultSet) result).close();
         }
     }
     
-    @SuppressWarnings("unchecked")
     @ParameterizedTest(name = "{0}")
     @MethodSource("getPaginationParameterArguments")
     void assertExecutePlanBindsPaginationParameters(final String name, final int offsetParameterIndex, final int rowCountParameterIndex, final List<Object> params,
@@ -273,7 +272,7 @@ class SQLFederationProcessorTest {
             mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
             mockedSpiLoader.when(() -> DatabaseTypedSPILoader
                     .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
-            ResultSet result = processor.executePlan(mock(), mock(), executionPlan, converter, federationContext, mock(SchemaPlus.class));
+            ResultSet result = processor.executePlan(executionPlan, converter, federationContext, mock(SchemaPlus.class));
             ((SQLFederationResultSet) result).close();
         }
         verify(bindable).bind(dataContextCaptor.capture());
@@ -288,7 +287,6 @@ class SQLFederationProcessorTest {
                 Arguments.of("preserve_non_number_pagination_parameter", -1, 0, Collections.singletonList((Object) "20"), Collections.singletonMap("?0", (Object) "20")));
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     void assertExecutePlanBindsNestedPaginationParameter() {
         SelectStatement nestedSelectStatement = createSelectStatement(-1, 1);
@@ -304,14 +302,13 @@ class SQLFederationProcessorTest {
             mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
             mockedSpiLoader.when(() -> DatabaseTypedSPILoader
                     .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
-            ResultSet result = processor.executePlan(mock(), mock(), executionPlan, converter, federationContext, mock(SchemaPlus.class));
+            ResultSet result = processor.executePlan(executionPlan, converter, federationContext, mock(SchemaPlus.class));
             ((SQLFederationResultSet) result).close();
         }
         verify(bindable).bind(dataContextCaptor.capture());
         assertThat(((ExecutorBindContext) dataContextCaptor.getValue()).getParameters(), is(createExpectedParams("?0", 11L, "?1", 20)));
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     void assertExecutePlanRejectsOutOfRangePaginationParameter() {
         SQLFederationContext federationContext = createFederationContext(false, -1, 0, Collections.singletonList((Object) (Integer.MAX_VALUE + 1L)));
@@ -320,12 +317,11 @@ class SQLFederationProcessorTest {
         try (MockedStatic<SQLFederationExecutionPlan> mockedExecutionPlan = mockStatic(SQLFederationExecutionPlan.class)) {
             mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> processor.executePlan(mock(), mock(), executionPlan, mock(SQLFederationRelConverter.class), federationContext, mock(SchemaPlus.class)));
+                    () -> processor.executePlan(executionPlan, mock(SQLFederationRelConverter.class), federationContext, mock(SchemaPlus.class)));
             assertThat(ex.getMessage(), is("SQL federation pagination parameter value `2147483648` is out of integer range."));
         }
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     void assertExecutePlanRejectsFractionalPaginationParameter() {
         SQLFederationContext federationContext = createFederationContext(false, -1, 0, Collections.singletonList((Object) 20.5D));
@@ -334,7 +330,7 @@ class SQLFederationProcessorTest {
         try (MockedStatic<SQLFederationExecutionPlan> mockedExecutionPlan = mockStatic(SQLFederationExecutionPlan.class)) {
             mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> processor.executePlan(mock(), mock(), executionPlan, mock(SQLFederationRelConverter.class), federationContext, mock(SchemaPlus.class)));
+                    () -> processor.executePlan(executionPlan, mock(SQLFederationRelConverter.class), federationContext, mock(SchemaPlus.class)));
             assertThat(ex.getMessage(), is("SQL federation pagination parameter value `20.5` must be an integer."));
         }
     }
@@ -375,9 +371,9 @@ class SQLFederationProcessorTest {
             mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(physicalPlan, Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
             mockedSpiLoader.when(() -> DatabaseTypedSPILoader
                     .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
-            ResultSet previewResult = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, rootSchema);
+            ResultSet previewResult = processor.executePlan(executionPlan, converter, federationContext, rootSchema);
             ((SQLFederationResultSet) previewResult).close();
-            ResultSet normalResult = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, rootSchema);
+            ResultSet normalResult = processor.executePlan(executionPlan, converter, federationContext, rootSchema);
             ((SQLFederationResultSet) normalResult).close();
         }
     }
