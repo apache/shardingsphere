@@ -583,4 +583,5 @@
     <sql-case id="select_in_with_owner_column_rhs_oracle" value="SELECT * FROM t_order o WHERE o.user_id IN o.order_id" db-types="Oracle" />
     <sql-case id="select_in_with_function_rhs_oracle" value="SELECT * FROM t_order o WHERE o.user_id IN NVL(o.order_id, 0)" db-types="Oracle" />
     <sql-case id="select_oracle_parenthesized_column_alias" value="SELECT (c.password) PASSWORD FROM t_account c" db-types="Oracle" />
+    <sql-case id="select_parenthesized_column_alias" value="SELECT (c.password) p FROM t_account c" db-types="PostgreSQL,openGauss,SQLServer,Hive" />
 </sql-cases>
