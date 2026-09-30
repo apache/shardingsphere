@@ -49,7 +49,7 @@ public final class ShowSQLFederationRuleExecutor implements DistSQLQueryExecutor
         boolean sqlFederationEnabled = ruleConfig.isSqlFederationEnabled();
         boolean allQueryUseSQLFederation = ruleConfig.isAllQueryUseSQLFederation();
         String executionPlanCache = String.valueOf(ruleConfig.getExecutionPlanCache());
-        String providerType = null == ruleConfig.getProviderType() ? "CALCITE" : ruleConfig.getProviderType();
+        String providerType = null == rule.getProvider() ? null : rule.getProvider().getType();
         return Collections.singleton(new LocalDataQueryResultRow(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache, providerType));
     }
     

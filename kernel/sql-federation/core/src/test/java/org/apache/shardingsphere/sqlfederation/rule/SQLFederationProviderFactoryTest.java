@@ -57,7 +57,18 @@ class SQLFederationProviderFactoryTest {
         try (MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Collections.emptyList());
             ServiceProviderNotFoundException actual = assertThrows(ServiceProviderNotFoundException.class, () -> SQLFederationProviderFactory.getProvider(null));
-            assertThat(actual.getMessage(), is("SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider' with type 'CALCITE'."));
+            assertThat(actual.getMessage(), is("SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider' with type 'null'."));
+        }
+    }
+    
+    @Test
+    void assertDefaultNoneProvider() {
+        SQLFederationProvider expected = mock(SQLFederationProvider.class);
+        when(expected.getType()).thenReturn("NONE");
+        when(expected.isDefault()).thenReturn(true);
+        try (MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
+            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Collections.singleton(expected));
+            assertThat(SQLFederationProviderFactory.getProvider(null), sameInstance(expected));
         }
     }
     

@@ -141,6 +141,7 @@ transaction:
 
 sqlFederation:
   sqlFederationEnabled: true
+  providerType: CALCITE
   executionPlanCache:
     initialCapacity: 2000
     maximumSize: 65535

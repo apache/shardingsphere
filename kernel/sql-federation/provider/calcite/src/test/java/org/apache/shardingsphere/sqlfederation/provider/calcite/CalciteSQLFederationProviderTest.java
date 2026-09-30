@@ -71,7 +71,7 @@ class CalciteSQLFederationProviderTest {
     
     @Test
     void assertDefaultProviderAndSharedContextRefresh() {
-        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L));
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L), "CALCITE");
         SQLFederationRule rule = new SQLFederationRule(config, Collections.emptyList());
         SQLFederationProvider provider = rule.getProvider();
         assertThat(provider, isA(CalciteSQLFederationProvider.class));
@@ -84,6 +84,12 @@ class CalciteSQLFederationProviderTest {
     @Test
     void assertSelectNoneWhenBothProvidersInstalled() {
         SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L), "NONE");
+        assertThat(new SQLFederationRule(config, Collections.emptyList()).getProvider(), isA(NoneSQLFederationProvider.class));
+    }
+    
+    @Test
+    void assertDefaultNoneWhenBothProvidersInstalled() {
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L));
         assertThat(new SQLFederationRule(config, Collections.emptyList()).getProvider(), isA(NoneSQLFederationProvider.class));
     }
     

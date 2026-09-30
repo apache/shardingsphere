@@ -19,6 +19,7 @@ Attributes:
 | sqlFederationEnabled     | boolean                                              | SQL federation enabled configuration       | -               |
 | allQueryUseSQLFederation | boolean                                              | all query use SQL federation configuration | -               |
 | executionPlanCache       | org.apache.shardingsphere.sql.parser.engine.api.CacheOption | execution plan cache configuration         | -               |
+| providerType             | String                                               | SQL federation provider type               | NONE            |
 
 ## Cache option Configuration
 
@@ -36,7 +37,7 @@ Attributes:
 ```java
 private SQLFederationRuleConfiguration createSQLFederationRuleConfiguration() {
     CacheOption executionPlanCache = new CacheOption(2000, 65535L);
-    return new SQLFederationRuleConfiguration(true, false, executionPlanCache);
+    return new SQLFederationRuleConfiguration(true, false, executionPlanCache, "CALCITE");
 }
 ```
 
