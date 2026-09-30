@@ -26,15 +26,19 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.MergeWhenAndThenSegment;
@@ -252,6 +256,41 @@ final class EncryptOpenQuerySupportedCheckerTest {
         QuantifySubqueryExpression quantifyExpr = new QuantifySubqueryExpression(0, 80, subquerySegment, "ALL");
         BinaryOperationExpression binaryExpr = new BinaryOperationExpression(0, 80, new LiteralExpressionSegment(0, 5, "col"), quantifyExpr, ">", "col > ALL (SELECT ...)");
         when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, binaryExpr)));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithNotExistsOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        ExistsSubqueryExpression existsExpr = new ExistsSubqueryExpression(0, 80, subquerySegment);
+        NotExpression notExpr = new NotExpression(0, 80, existsExpr, false);
+        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, notExpr)));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithBetweenSubqueryOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        SubqueryExpressionSegment subqueryExprSeg = new SubqueryExpressionSegment(subquerySegment);
+        BetweenExpression betweenExpr = new BetweenExpression(0, 80, new LiteralExpressionSegment(0, 2, "id"), subqueryExprSeg, new LiteralExpressionSegment(0, 3, 100), false);
+        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, betweenExpr)));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithCaseWhenSubqueryOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        stubSelectNegativePaths(selectStatement);
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        ExistsSubqueryExpression existsExpr = new ExistsSubqueryExpression(0, 80, subquerySegment);
+        CaseWhenExpression caseWhenExpr = new CaseWhenExpression(0, 80, null,
+                Collections.singletonList(existsExpr), Collections.singletonList(new LiteralExpressionSegment(0, 1, 1)), new LiteralExpressionSegment(0, 1, 0), "CASE WHEN ...");
+        ExpressionProjectionSegment projSeg = new ExpressionProjectionSegment(0, 80, "CASE WHEN ...", caseWhenExpr);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 80);
+        projectionsSegment.getProjections().add(projSeg);
+        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
     }
     
