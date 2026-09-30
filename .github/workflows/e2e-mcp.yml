@@ -48,7 +48,7 @@ env:
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
+    uses: ./.github/workflows/global-environment.yml
 
   e2e-mcp-build-images:
     name: E2E - MCP Build Images

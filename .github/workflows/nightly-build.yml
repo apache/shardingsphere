@@ -44,7 +44,7 @@ env:
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
+    uses: ./.github/workflows/global-environment.yml
 
   upload-to-nightlies:
     if: github.repository == 'apache/shardingsphere'
