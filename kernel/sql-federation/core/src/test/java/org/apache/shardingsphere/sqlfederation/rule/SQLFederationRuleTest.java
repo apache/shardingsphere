@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundExce
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
-import org.apache.shardingsphere.sqlfederation.exception.SQLFederationProviderDuplicatedException;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -88,15 +87,17 @@ class SQLFederationRuleTest {
     }
     
     @Test
-    void assertDuplicateProviderTypeFails() {
+    void assertConstructWithDuplicateProviderTypes() {
         SQLFederationProvider first = mock(SQLFederationProvider.class);
         SQLFederationProvider second = mock(SQLFederationProvider.class);
         when(first.getType()).thenReturn("CALCITE");
         when(second.getType()).thenReturn("calcite");
         try (MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Arrays.asList(first, second));
-            SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L));
-            assertThrows(SQLFederationProviderDuplicatedException.class, () -> new SQLFederationRule(config, Collections.emptyList()));
+            SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L), "CALCITE");
+            SQLFederationRule actual = new SQLFederationRule(config, Collections.emptyList());
+            assertThat(actual.getProvider(), sameInstance(first));
+            verify(first).initialize(config, Collections.emptyList());
         }
     }
 }

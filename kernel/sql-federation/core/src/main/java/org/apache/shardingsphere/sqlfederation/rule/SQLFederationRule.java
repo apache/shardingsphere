@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqlfederation.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
@@ -42,7 +43,7 @@ public final class SQLFederationRule implements GlobalRule {
     }
     
     private SQLFederationProvider createProvider(final Collection<ShardingSphereDatabase> databases) {
-        SQLFederationProvider result = SQLFederationProviderFactory.getProvider(configuration.getProviderType());
+        SQLFederationProvider result = TypedSPILoader.getService(SQLFederationProvider.class, configuration.getProviderType());
         result.initialize(configuration, databases);
         return result;
     }
