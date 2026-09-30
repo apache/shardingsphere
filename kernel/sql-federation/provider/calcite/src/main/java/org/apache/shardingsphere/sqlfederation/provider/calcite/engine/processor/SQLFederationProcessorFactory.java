@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor.impl.StandardSQLFederationProcessor;
 
 /**
  * SQL federation processor factory.
@@ -48,7 +47,7 @@ public final class SQLFederationProcessorFactory {
      * @return created instance
      */
     public SQLFederationProcessor newInstance(final ShardingSphereStatistics statistics, final JDBCExecutor jdbcExecutor) {
-        return new StandardSQLFederationProcessor(statistics, jdbcExecutor);
+        return new SQLFederationProcessor(statistics, jdbcExecutor);
     }
     
     /**
@@ -58,6 +57,6 @@ public final class SQLFederationProcessorFactory {
      * @return created processor
      */
     public SQLFederationProcessor newPreviewInstance(final ShardingSphereStatistics statistics) {
-        return new StandardSQLFederationProcessor(statistics);
+        return new SQLFederationProcessor(statistics);
     }
 }
