@@ -25,13 +25,21 @@ import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.MergeWhenAndThenSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
@@ -88,13 +96,24 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
     
     private boolean containsOpenQueryInSelect(final SelectStatement selectStatement) {
         return selectStatement.getFrom().map(this::containsOpenQuery).orElse(false)
-                || containsOpenQueryInWhere(selectStatement.getWhere()) || containsOpenQueryInWith(selectStatement.getWith());
+                || containsOpenQueryInWhere(selectStatement.getWhere()) || containsOpenQueryInWith(selectStatement.getWith())
+                || containsOpenQueryInSelectClauses(selectStatement);
+    }
+    
+    private boolean containsOpenQueryInSelectClauses(final SelectStatement selectStatement) {
+        return containsOpenQueryInCombine(selectStatement.getCombine())
+                || containsOpenQueryInProjections(selectStatement.getProjections()) || containsOpenQueryInHaving(selectStatement.getHaving());
     }
     
     private boolean containsOpenQueryInUpdate(final UpdateStatement updateStatement) {
         return containsOpenQuery(updateStatement.getTable())
                 || updateStatement.getFrom().map(this::containsOpenQuery).orElse(false)
-                || containsOpenQueryInWhere(updateStatement.getWhere()) || containsOpenQueryInWith(updateStatement.getWith());
+                || containsOpenQueryInUpdateClauses(updateStatement);
+    }
+    
+    private boolean containsOpenQueryInUpdateClauses(final UpdateStatement updateStatement) {
+        return containsOpenQueryInWhere(updateStatement.getWhere()) || containsOpenQueryInWith(updateStatement.getWith())
+                || containsOpenQueryInAssignments(updateStatement);
     }
     
     private boolean containsOpenQueryInDelete(final DeleteStatement deleteStatement) {
@@ -106,12 +125,25 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
         if (insertStatement.getRowSetFunction().map(this::isOpenQueryFunction).orElse(false)) {
             return true;
         }
-        return insertStatement.getInsertSelect().map(each -> containsOpenQueryInSelect(each.getSelect())).orElse(false);
+        return insertStatement.getInsertSelect().map(each -> containsOpenQueryInSelect(each.getSelect())).orElse(false)
+                || containsOpenQueryInWith(insertStatement.getWith());
     }
     
     private boolean containsOpenQueryInMerge(final MergeStatement mergeStatement) {
         return containsOpenQuery(mergeStatement.getTarget()) || containsOpenQuery(mergeStatement.getSource())
-                || containsOpenQueryInWith(mergeStatement.getWith());
+                || containsOpenQueryInWith(mergeStatement.getWith()) || containsOpenQueryInWhenAndThens(mergeStatement);
+    }
+    
+    private boolean containsOpenQueryInWhenAndThens(final MergeStatement mergeStatement) {
+        for (MergeWhenAndThenSegment whenAndThen : mergeStatement.getWhenAndThens()) {
+            if (null != whenAndThen.getAndExpr() && containsOpenQueryInExpression(whenAndThen.getAndExpr())) {
+                return true;
+            }
+            if (null != whenAndThen.getUpdate() && containsOpenQueryInUpdate(whenAndThen.getUpdate())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private boolean containsOpenQueryInWhere(final Optional<WhereSegment> whereSegment) {
@@ -126,12 +158,39 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
         return containsOpenQueryInSelect(cte.getSubquery().getSelect());
     }
     
+    private boolean containsOpenQueryInCombine(final Optional<CombineSegment> combineSegment) {
+        return combineSegment.map(each -> containsOpenQueryInSelect(each.getLeft().getSelect()) || containsOpenQueryInSelect(each.getRight().getSelect())).orElse(false);
+    }
+    
+    private boolean containsOpenQueryInProjections(final ProjectionsSegment projectionsSegment) {
+        for (ProjectionSegment projection : projectionsSegment.getProjections()) {
+            if (projection instanceof SubqueryProjectionSegment && containsOpenQueryInSelect(((SubqueryProjectionSegment) projection).getSubquery().getSelect())) {
+                return true;
+            }
+            if (projection instanceof ExpressionProjectionSegment && containsOpenQueryInExpression(((ExpressionProjectionSegment) projection).getExpr())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsOpenQueryInAssignments(final UpdateStatement updateStatement) {
+        return updateStatement.getAssignment().map(each -> each.getAssignments().stream().anyMatch(assign -> containsOpenQueryInExpression(assign.getValue()))).orElse(false);
+    }
+    
+    private boolean containsOpenQueryInHaving(final Optional<HavingSegment> havingSegment) {
+        return havingSegment.map(each -> containsOpenQueryInExpression(each.getExpr())).orElse(false);
+    }
+    
     private boolean containsOpenQueryInExpression(final ExpressionSegment expression) {
         if (expression instanceof ExistsSubqueryExpression) {
             return containsOpenQueryInSelect(((ExistsSubqueryExpression) expression).getSubquery().getSelect());
         }
         if (expression instanceof SubqueryExpressionSegment) {
             return containsOpenQueryInSelect(((SubqueryExpressionSegment) expression).getSubquery().getSelect());
+        }
+        if (expression instanceof QuantifySubqueryExpression) {
+            return containsOpenQueryInSelect(((QuantifySubqueryExpression) expression).getSubquery().getSelect());
         }
         if (expression instanceof BinaryOperationExpression) {
             return containsOpenQueryInExpression(((BinaryOperationExpression) expression).getLeft())
