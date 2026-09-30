@@ -180,7 +180,9 @@ public enum FirebirdCommandPacketType implements CommandPacketType {
     INFO_BATCH(111),
     
     FETCH_SCROLL(112),
-    INFO_CURSOR(113);
+    INFO_CURSOR(113),
+    
+    INLINE_BLOB(114);
     
     private static final Map<Integer, FirebirdCommandPacketType> FIREBIRD_COMMAND_PACKET_TYPE_CACHE = new HashMap<>();
     
