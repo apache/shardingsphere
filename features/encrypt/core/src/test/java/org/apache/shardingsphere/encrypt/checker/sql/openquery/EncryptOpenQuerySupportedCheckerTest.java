@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.Encrypt
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Betw
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
@@ -61,6 +63,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -74,14 +77,156 @@ import static org.mockito.Mockito.when;
 final class EncryptOpenQuerySupportedCheckerTest {
     
     @Test
-    void assertIsCheckWithSelectOpenQuery() {
+    void assertIsCheckWithSelectFromOpenQuery() {
         SelectStatement selectStatement = mockSqlServerStatement(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.of(createOpenQueryFunctionTableSegment()));
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
     }
     
     @Test
-    void assertIsCheckWithUpdateOpenQuery() {
+    void assertIsCheckWithSelectWhereExistsOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, new ExistsSubqueryExpression(0, 80, subquerySegment))));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithSelectCTEOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        stubSelectNegativePaths(selectStatement);
+        WithSegment withSegment = createWithSegmentContainingOpenQuery();
+        when(selectStatement.getWith()).thenReturn(Optional.of(withSegment));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithSelectCombineOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        stubSelectNegativePaths(selectStatement);
+        SubquerySegment rightSubquery = mockSubqueryWithOpenQueryFrom();
+        SubquerySegment leftSubquery = mockSubqueryWithEmptySelect();
+        when(selectStatement.getCombine()).thenReturn(Optional.of(new CombineSegment(0, 80, leftSubquery, CombineType.UNION_ALL, rightSubquery)));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithSelectProjectionSubqueryOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        stubSelectNegativePaths(selectStatement);
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        ProjectionsSegment projections = new ProjectionsSegment(0, 80);
+        projections.getProjections().add(new SubqueryProjectionSegment(subquerySegment, "(SELECT ...)"));
+        when(selectStatement.getProjections()).thenReturn(projections);
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithSelectHavingOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        stubSelectNegativePaths(selectStatement);
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        SubqueryExpressionSegment subqueryExpr = new SubqueryExpressionSegment(subquerySegment);
+        when(selectStatement.getHaving()).thenReturn(Optional.of(new HavingSegment(0, 80,
+                new BinaryOperationExpression(0, 80, new LiteralExpressionSegment(0, 1, 1), subqueryExpr, ">", "1 > (SELECT ...)"))));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithSelectSubqueryTableOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerStatement(SelectStatement.class);
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        when(selectStatement.getFrom()).thenReturn(Optional.of(new SubqueryTableSegment(0, 80, subquerySegment)));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithInSubqueryOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        InExpression inExpr = new InExpression(0, 80, new LiteralExpressionSegment(0, 2, "id"), new SubqueryExpressionSegment(subquerySegment), false);
+        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, inExpr)));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithBinarySubqueryOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        BinaryOperationExpression binaryExpr = new BinaryOperationExpression(0, 80, new LiteralExpressionSegment(0, 2, "col"),
+                new SubqueryExpressionSegment(subquerySegment), "=", "col = (SELECT ...)");
+        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, binaryExpr)));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithNotExistsOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        NotExpression notExpr = new NotExpression(0, 80, new ExistsSubqueryExpression(0, 80, subquerySegment), false);
+        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, notExpr)));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithQuantifySubqueryOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        QuantifySubqueryExpression quantifyExpr = new QuantifySubqueryExpression(0, 80, subquerySegment, "ALL");
+        BinaryOperationExpression binaryExpr = new BinaryOperationExpression(0, 80, new LiteralExpressionSegment(0, 2, "col"), quantifyExpr, ">", "col > ALL (SELECT ...)");
+        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, binaryExpr)));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithBetweenSubqueryOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        BetweenExpression betweenExpr = new BetweenExpression(0, 80, new LiteralExpressionSegment(0, 2, "id"),
+                new SubqueryExpressionSegment(subquerySegment), new LiteralExpressionSegment(0, 3, 100), false);
+        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, betweenExpr)));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithCaseWhenSubqueryOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        stubSelectNegativePaths(selectStatement);
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        CaseWhenExpression caseWhenExpr = new CaseWhenExpression(0, 80, null,
+                Collections.singletonList(new ExistsSubqueryExpression(0, 80, subquerySegment)),
+                Collections.singletonList(new LiteralExpressionSegment(0, 1, 1)), new LiteralExpressionSegment(0, 1, 0), "CASE WHEN ...");
+        ProjectionsSegment projections = new ProjectionsSegment(0, 80);
+        projections.getProjections().add(new ExpressionProjectionSegment(0, 80, "CASE WHEN ...", caseWhenExpr));
+        when(selectStatement.getProjections()).thenReturn(projections);
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithFunctionParamSubqueryOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        FunctionSegment funcSeg = new FunctionSegment(0, 80, "ISNULL", "ISNULL((SELECT ...), 0)");
+        funcSeg.getParameters().add(new SubqueryExpressionSegment(subquerySegment));
+        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80,
+                new BinaryOperationExpression(0, 80, funcSeg, new LiteralExpressionSegment(0, 1, 0), ">", "ISNULL(...) > 0"))));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithJoinConditionSubqueryOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerStatement(SelectStatement.class);
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        JoinTableSegment joinTable = new JoinTableSegment();
+        joinTable.setLeft(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("t1"))));
+        joinTable.setRight(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("t2"))));
+        joinTable.setCondition(new ExistsSubqueryExpression(0, 80, subquerySegment));
+        when(selectStatement.getFrom()).thenReturn(Optional.of(joinTable));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithUpdateTableOpenQuery() {
         UpdateStatement updateStatement = mockSqlServerStatement(UpdateStatement.class);
         when(updateStatement.getTable()).thenReturn(createOpenQueryFunctionTableSegment());
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(updateStatement)));
@@ -96,7 +241,31 @@ final class EncryptOpenQuerySupportedCheckerTest {
     }
     
     @Test
-    void assertIsCheckWithDeleteOpenQuery() {
+    void assertIsCheckWithUpdateSetSubqueryOpenQuery() {
+        UpdateStatement updateStatement = mockSqlServerStatement(UpdateStatement.class);
+        when(updateStatement.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("t"))));
+        when(updateStatement.getFrom()).thenReturn(Optional.empty());
+        when(updateStatement.getWhere()).thenReturn(Optional.empty());
+        when(updateStatement.getWith()).thenReturn(Optional.empty());
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        ColumnSegment column = new ColumnSegment(0, 3, new IdentifierValue("col"));
+        ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 80, Collections.singletonList(column), new SubqueryExpressionSegment(subquerySegment));
+        when(updateStatement.getAssignment()).thenReturn(Optional.of(new SetAssignmentSegment(0, 80, Collections.singletonList(assignment))));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(updateStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithUpdateWhereSubqueryOpenQuery() {
+        UpdateStatement updateStatement = mockSqlServerStatement(UpdateStatement.class);
+        when(updateStatement.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("t"))));
+        when(updateStatement.getFrom()).thenReturn(Optional.empty());
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        when(updateStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, new ExistsSubqueryExpression(0, 80, subquerySegment))));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(updateStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithDeleteTableOpenQuery() {
         DeleteStatement deleteStatement = mockSqlServerStatement(DeleteStatement.class);
         when(deleteStatement.getTable()).thenReturn(createOpenQueryFunctionTableSegment());
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(deleteStatement)));
@@ -132,166 +301,44 @@ final class EncryptOpenQuerySupportedCheckerTest {
     }
     
     @Test
-    void assertIsCheckWithMergeUsingOpenQuery() {
+    void assertIsCheckWithInsertCTEOpenQuery() {
+        InsertStatement insertStatement = mockSqlServerStatement(InsertStatement.class);
+        when(insertStatement.getRowSetFunction()).thenReturn(Optional.empty());
+        when(insertStatement.getInsertSelect()).thenReturn(Optional.empty());
+        WithSegment withSegment = createWithSegmentContainingOpenQuery();
+        when(insertStatement.getWith()).thenReturn(Optional.of(withSegment));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(insertStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithInsertValuesSubqueryOpenQuery() {
+        InsertStatement insertStatement = mockSqlServerStatement(InsertStatement.class);
+        when(insertStatement.getRowSetFunction()).thenReturn(Optional.empty());
+        when(insertStatement.getInsertSelect()).thenReturn(Optional.empty());
+        when(insertStatement.getWith()).thenReturn(Optional.empty());
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        InsertValuesSegment valuesSegment = new InsertValuesSegment(0, 80, Arrays.asList(new SubqueryExpressionSegment(subquerySegment)));
+        when(insertStatement.getValues()).thenReturn(Collections.singletonList(valuesSegment));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(insertStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithMergeSourceOpenQuery() {
         MergeStatement mergeStatement = mockSqlServerStatement(MergeStatement.class);
         when(mergeStatement.getSource()).thenReturn(createOpenQueryFunctionTableSegment());
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(mergeStatement)));
     }
     
     @Test
-    void assertIsCheckWithSubqueryContainingOpenQuery() {
-        SelectStatement selectStatement = mockSqlServerStatement(SelectStatement.class);
+    void assertIsCheckWithMergeOnConditionOpenQuery() {
+        MergeStatement mergeStatement = mockSqlServerStatement(MergeStatement.class);
+        when(mergeStatement.getTarget()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("t"))));
+        when(mergeStatement.getSource()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("src"))));
+        when(mergeStatement.getWith()).thenReturn(Optional.empty());
         SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 80, subquerySegment);
-        when(selectStatement.getFrom()).thenReturn(Optional.of(subqueryTableSegment));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
-    }
-    
-    @Test
-    void assertIsCheckWithExistsSubqueryOpenQuery() {
-        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
-        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        ExistsSubqueryExpression existsExpr = new ExistsSubqueryExpression(0, 80, subquerySegment);
-        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, existsExpr)));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
-    }
-    
-    @Test
-    void assertIsCheckWithInSubqueryOpenQuery() {
-        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
-        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        SubqueryExpressionSegment subqueryExprSeg = new SubqueryExpressionSegment(subquerySegment);
-        InExpression inExpr = new InExpression(0, 80, new LiteralExpressionSegment(0, 5, "col"), subqueryExprSeg, false);
-        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, inExpr)));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
-    }
-    
-    @Test
-    void assertIsCheckWithBinaryExpressionSubqueryOpenQuery() {
-        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
-        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        SubqueryExpressionSegment subqueryExprSeg = new SubqueryExpressionSegment(subquerySegment);
-        BinaryOperationExpression binaryExpr = new BinaryOperationExpression(0, 80, new LiteralExpressionSegment(0, 5, "col"), subqueryExprSeg, "=", "col = (SELECT ...)");
-        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, binaryExpr)));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
-    }
-    
-    @Test
-    void assertIsCheckWithCTEOpenQuery() {
-        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
-        when(selectStatement.getWhere()).thenReturn(Optional.empty());
-        SubquerySegment cteSubquery = mockSubqueryWithOpenQueryFrom();
-        CommonTableExpressionSegment cteSeg = new CommonTableExpressionSegment(0, 80, new AliasSegment(0, 3, new IdentifierValue("cte")), cteSubquery);
-        WithSegment withSegment = new WithSegment(0, 80, Collections.singletonList(cteSeg));
-        when(selectStatement.getWith()).thenReturn(Optional.of(withSegment));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
-    }
-    
-    @Test
-    void assertIsCheckWithCombineOpenQuery() {
-        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
-        stubSelectNegativePaths(selectStatement);
-        SubquerySegment leftSubquery = mockSubqueryWithEmptySelect();
-        SubquerySegment rightSubquery = mockSubqueryWithOpenQueryFrom();
-        CombineSegment combineSegment = new CombineSegment(0, 80, leftSubquery, CombineType.UNION_ALL, rightSubquery);
-        when(selectStatement.getCombine()).thenReturn(Optional.of(combineSegment));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
-    }
-    
-    @Test
-    void assertIsCheckWithProjectionSubqueryOpenQuery() {
-        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
-        stubSelectNegativePaths(selectStatement);
-        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        SubqueryProjectionSegment projSeg = new SubqueryProjectionSegment(subquerySegment, "(SELECT col FROM OPENQUERY(...))");
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 80);
-        projectionsSegment.getProjections().add(projSeg);
-        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
-    }
-    
-    @Test
-    void assertIsCheckWithUpdateSetSubqueryOpenQuery() {
-        UpdateStatement updateStatement = mockSqlServerStatement(UpdateStatement.class);
-        when(updateStatement.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("t"))));
-        when(updateStatement.getFrom()).thenReturn(Optional.empty());
-        when(updateStatement.getWhere()).thenReturn(Optional.empty());
-        when(updateStatement.getWith()).thenReturn(Optional.empty());
-        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        SubqueryExpressionSegment subqueryExprSeg = new SubqueryExpressionSegment(subquerySegment);
-        ColumnSegment column = new ColumnSegment(0, 3, new IdentifierValue("col"));
-        ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 80, Collections.singletonList(column), subqueryExprSeg);
-        SetAssignmentSegment setAssignment = new SetAssignmentSegment(0, 80, Collections.singletonList(assignment));
-        when(updateStatement.getAssignment()).thenReturn(Optional.of(setAssignment));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(updateStatement)));
-    }
-    
-    @Test
-    void assertIsCheckWithHavingSubqueryOpenQuery() {
-        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
-        stubSelectNegativePaths(selectStatement);
-        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        SubqueryExpressionSegment subqueryExprSeg = new SubqueryExpressionSegment(subquerySegment);
-        BinaryOperationExpression binaryExpr = new BinaryOperationExpression(0, 80, new LiteralExpressionSegment(0, 5, 1), subqueryExprSeg, ">", "1 > (SELECT ...)");
-        when(selectStatement.getHaving()).thenReturn(Optional.of(new HavingSegment(0, 80, binaryExpr)));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
-    }
-    
-    @Test
-    void assertIsCheckWithInsertCTEOpenQuery() {
-        InsertStatement insertStatement = mockSqlServerStatement(InsertStatement.class);
-        when(insertStatement.getRowSetFunction()).thenReturn(Optional.empty());
-        when(insertStatement.getInsertSelect()).thenReturn(Optional.empty());
-        SubquerySegment cteSubquery = mockSubqueryWithOpenQueryFrom();
-        CommonTableExpressionSegment cteSeg = new CommonTableExpressionSegment(0, 80, new AliasSegment(0, 3, new IdentifierValue("cte")), cteSubquery);
-        WithSegment withSegment = new WithSegment(0, 80, Collections.singletonList(cteSeg));
-        when(insertStatement.getWith()).thenReturn(Optional.of(withSegment));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(insertStatement)));
-    }
-    
-    @Test
-    void assertIsCheckWithQuantifySubqueryOpenQuery() {
-        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
-        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        QuantifySubqueryExpression quantifyExpr = new QuantifySubqueryExpression(0, 80, subquerySegment, "ALL");
-        BinaryOperationExpression binaryExpr = new BinaryOperationExpression(0, 80, new LiteralExpressionSegment(0, 5, "col"), quantifyExpr, ">", "col > ALL (SELECT ...)");
-        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, binaryExpr)));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
-    }
-    
-    @Test
-    void assertIsCheckWithNotExistsOpenQuery() {
-        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
-        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        ExistsSubqueryExpression existsExpr = new ExistsSubqueryExpression(0, 80, subquerySegment);
-        NotExpression notExpr = new NotExpression(0, 80, existsExpr, false);
-        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, notExpr)));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
-    }
-    
-    @Test
-    void assertIsCheckWithBetweenSubqueryOpenQuery() {
-        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
-        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        SubqueryExpressionSegment subqueryExprSeg = new SubqueryExpressionSegment(subquerySegment);
-        BetweenExpression betweenExpr = new BetweenExpression(0, 80, new LiteralExpressionSegment(0, 2, "id"), subqueryExprSeg, new LiteralExpressionSegment(0, 3, 100), false);
-        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, betweenExpr)));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
-    }
-    
-    @Test
-    void assertIsCheckWithCaseWhenSubqueryOpenQuery() {
-        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
-        stubSelectNegativePaths(selectStatement);
-        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        ExistsSubqueryExpression existsExpr = new ExistsSubqueryExpression(0, 80, subquerySegment);
-        CaseWhenExpression caseWhenExpr = new CaseWhenExpression(0, 80, null,
-                Collections.singletonList(existsExpr), Collections.singletonList(new LiteralExpressionSegment(0, 1, 1)), new LiteralExpressionSegment(0, 1, 0), "CASE WHEN ...");
-        ExpressionProjectionSegment projSeg = new ExpressionProjectionSegment(0, 80, "CASE WHEN ...", caseWhenExpr);
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 80);
-        projectionsSegment.getProjections().add(projSeg);
-        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+        ExpressionWithParamsSegment onClause = new ExpressionWithParamsSegment(0, 80, new ExistsSubqueryExpression(0, 80, subquerySegment));
+        when(mergeStatement.getExpression()).thenReturn(onClause);
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(mergeStatement)));
     }
     
     @Test
@@ -300,10 +347,10 @@ final class EncryptOpenQuerySupportedCheckerTest {
         when(mergeStatement.getTarget()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("t"))));
         when(mergeStatement.getSource()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("src"))));
         when(mergeStatement.getWith()).thenReturn(Optional.empty());
+        when(mergeStatement.getExpression()).thenReturn(null);
         SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        ExistsSubqueryExpression existsExpr = new ExistsSubqueryExpression(0, 80, subquerySegment);
         MergeWhenAndThenSegment whenAndThen = new MergeWhenAndThenSegment(0, 80, "WHEN MATCHED AND EXISTS (...) THEN DELETE");
-        whenAndThen.setAndExpr(existsExpr);
+        whenAndThen.setAndExpr(new ExistsSubqueryExpression(0, 80, subquerySegment));
         when(mergeStatement.getWhenAndThens()).thenReturn(Collections.singletonList(whenAndThen));
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(mergeStatement)));
     }
@@ -314,32 +361,20 @@ final class EncryptOpenQuerySupportedCheckerTest {
         when(mergeStatement.getTarget()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("t"))));
         when(mergeStatement.getSource()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("src"))));
         when(mergeStatement.getWith()).thenReturn(Optional.empty());
+        when(mergeStatement.getExpression()).thenReturn(null);
         UpdateStatement innerUpdate = mock(UpdateStatement.class, RETURNS_DEEP_STUBS);
         when(innerUpdate.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("t"))));
         when(innerUpdate.getFrom()).thenReturn(Optional.empty());
         when(innerUpdate.getWhere()).thenReturn(Optional.empty());
         when(innerUpdate.getWith()).thenReturn(Optional.empty());
         SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        SubqueryExpressionSegment subqueryExprSeg = new SubqueryExpressionSegment(subquerySegment);
         ColumnSegment column = new ColumnSegment(0, 3, new IdentifierValue("col"));
-        ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 80, Collections.singletonList(column), subqueryExprSeg);
-        SetAssignmentSegment setAssignment = new SetAssignmentSegment(0, 80, Collections.singletonList(assignment));
-        when(innerUpdate.getAssignment()).thenReturn(Optional.of(setAssignment));
+        ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 80, Collections.singletonList(column), new SubqueryExpressionSegment(subquerySegment));
+        when(innerUpdate.getAssignment()).thenReturn(Optional.of(new SetAssignmentSegment(0, 80, Collections.singletonList(assignment))));
         MergeWhenAndThenSegment whenAndThen = new MergeWhenAndThenSegment(0, 80, "WHEN MATCHED THEN UPDATE SET ...");
         whenAndThen.setUpdate(innerUpdate);
         when(mergeStatement.getWhenAndThens()).thenReturn(Collections.singletonList(whenAndThen));
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(mergeStatement)));
-    }
-    
-    @Test
-    void assertIsCheckWithUpdateWhereSubqueryOpenQuery() {
-        UpdateStatement updateStatement = mockSqlServerStatement(UpdateStatement.class);
-        when(updateStatement.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("t"))));
-        when(updateStatement.getFrom()).thenReturn(Optional.empty());
-        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        ExistsSubqueryExpression existsExpr = new ExistsSubqueryExpression(0, 80, subquerySegment);
-        when(updateStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, existsExpr)));
-        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(updateStatement)));
     }
     
     @Test
@@ -446,6 +481,12 @@ final class EncryptOpenQuerySupportedCheckerTest {
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
         when(subquerySegment.getSelect()).thenReturn(innerSelect);
         return subquerySegment;
+    }
+    
+    private WithSegment createWithSegmentContainingOpenQuery() {
+        SubquerySegment cteSubquery = mockSubqueryWithOpenQueryFrom();
+        CommonTableExpressionSegment cteSeg = new CommonTableExpressionSegment(0, 80, new AliasSegment(0, 3, new IdentifierValue("cte")), cteSubquery);
+        return new WithSegment(0, 80, Collections.singletonList(cteSeg));
     }
     
     private FunctionTableSegment createOpenQueryFunctionTableSegment() {
