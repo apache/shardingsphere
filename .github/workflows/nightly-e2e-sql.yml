@@ -36,7 +36,7 @@ env:
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
+    uses: ./.github/workflows/global-environment.yml
 
   prepare-e2e-artifacts:
     name: Prepare E2E Artifacts

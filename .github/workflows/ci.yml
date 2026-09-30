@@ -47,7 +47,7 @@ env:
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
+    uses: ./.github/workflows/global-environment.yml
 
   ci:
     name: CI
