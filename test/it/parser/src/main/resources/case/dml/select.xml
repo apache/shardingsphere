@@ -15417,24 +15417,12 @@
             </expr>
         </where>
     </select>
-    <select sql-case-id="select_oracle_parenthesized_column_alias">
+    <select sql-case-id="select_parenthesized_column_alias">
         <from>
             <simple-table name="t_account" alias="c" start-index="34" stop-index="44" />
         </from>
         <projections start-index="7" stop-index="27">
             <column-projection name="password" alias="PASSWORD" start-index="8" stop-index="27">
-                <owner name="c" start-index="8" stop-index="8" />
-                <left-parentheses parentheses="(" start-index="7" stop-index="7" />
-                <right-parentheses parentheses=")" start-index="18" stop-index="18" />
-            </column-projection>
-        </projections>
-    </select>
-    <select sql-case-id="select_parenthesized_column_alias">
-        <from>
-            <simple-table name="t_account" alias="c" start-index="27" stop-index="37" />
-        </from>
-        <projections start-index="7" stop-index="20">
-            <column-projection name="password" alias="p" start-index="8" stop-index="20">
                 <owner name="c" start-index="8" stop-index="8" />
                 <left-parentheses parentheses="(" start-index="7" stop-index="7" />
                 <right-parentheses parentheses=")" start-index="18" stop-index="18" />
