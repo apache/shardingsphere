@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor.impl;
+package org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor;
 
 import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
@@ -65,7 +65,6 @@ import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFeder
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.ExecutorBindContext;
-import org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor.SQLFederationProcessor;
 import org.apache.shardingsphere.sqlfederation.provider.calcite.resultset.SQLFederationResultSet;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
 import org.junit.jupiter.api.BeforeEach;
@@ -102,7 +101,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-class StandardSQLFederationProcessorTest {
+class SQLFederationProcessorTest {
     
     private final String databaseName = "foo_db";
     
@@ -114,7 +113,7 @@ class StandardSQLFederationProcessorTest {
     
     @BeforeEach
     void setUp() {
-        processor = new StandardSQLFederationProcessor(mock(), mock());
+        processor = new SQLFederationProcessor(mock(), mock());
     }
     
     @SuppressWarnings("unchecked")
@@ -126,7 +125,7 @@ class StandardSQLFederationProcessorTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertPrepareAndReleaseSkipNonFederationTable() {
-        processor = new StandardSQLFederationProcessor(mock());
+        processor = new SQLFederationProcessor(mock());
         SQLFederationContext federationContext = createFederationContext(true, null);
         Table table = mock(Table.class);
         SchemaPlus rootSchema = mockFlatSchemaWithTable(table);

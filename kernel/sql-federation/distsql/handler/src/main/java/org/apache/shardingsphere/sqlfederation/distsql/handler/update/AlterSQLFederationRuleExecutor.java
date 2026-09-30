@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sqlfederation.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
@@ -44,9 +45,7 @@ public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitio
                 : createCacheOption(rule.getConfiguration().getExecutionPlanCache(), sqlStatement.getExecutionPlanCache());
         String providerType = null == sqlStatement.getProviderType() ? rule.getConfiguration().getProviderType() : sqlStatement.getProviderType();
         SQLFederationRuleConfiguration result = new SQLFederationRuleConfiguration(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache, providerType);
-        if (result.isSqlFederationEnabled()) {
-            TypedSPILoader.getService(SQLFederationProvider.class, result.getProviderType());
-        }
+        validate(result);
         return result;
     }
     
@@ -54,6 +53,13 @@ public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitio
         int initialCapacity = null == segment.getInitialCapacity() ? cacheOption.getInitialCapacity() : segment.getInitialCapacity();
         long maximumSize = null == segment.getMaximumSize() ? cacheOption.getMaximumSize() : segment.getMaximumSize();
         return new SQLFederationCacheOption(initialCapacity, maximumSize);
+    }
+    
+    private void validate(final SQLFederationRuleConfiguration ruleConfig) {
+        RuleConfigurationValidator.validate(ruleConfig);
+        if (ruleConfig.isSqlFederationEnabled()) {
+            TypedSPILoader.getService(SQLFederationProvider.class, ruleConfig.getProviderType());
+        }
     }
     
     @Override
