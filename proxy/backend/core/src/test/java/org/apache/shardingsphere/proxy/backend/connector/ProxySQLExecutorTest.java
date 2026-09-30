@@ -198,7 +198,7 @@ class ProxySQLExecutorTest {
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.XA);
-        SQLFederationRuleConfiguration federationConfig = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L));
+        SQLFederationRuleConfiguration federationConfig = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), null);
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(new SQLFederationRule(federationConfig, Collections.emptyList()), transactionRule)));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);

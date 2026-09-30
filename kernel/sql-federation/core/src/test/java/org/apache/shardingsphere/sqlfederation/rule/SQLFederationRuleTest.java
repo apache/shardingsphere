@@ -48,7 +48,7 @@ class SQLFederationRuleTest {
         when(provider.isDefault()).thenReturn(true);
         try (MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Collections.singleton(provider));
-            SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L));
+            SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), null);
             SQLFederationRule actual = new SQLFederationRule(ruleConfig, Collections.emptyList());
             assertThat(actual.getConfiguration(), sameInstance(ruleConfig));
             assertThat(actual.getProvider(), sameInstance(provider));
@@ -74,7 +74,7 @@ class SQLFederationRuleTest {
     
     @Test
     void assertDefaultProviderMissing() {
-        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L));
+        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), null);
         ServiceProviderNotFoundException actual = assertThrows(ServiceProviderNotFoundException.class, () -> new SQLFederationRule(ruleConfig, Collections.emptyList()));
         assertThat(actual.getMessage(), is("SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider' with type 'null'."));
     }
