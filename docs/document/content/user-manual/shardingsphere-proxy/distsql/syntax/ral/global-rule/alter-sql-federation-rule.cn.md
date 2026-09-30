@@ -6,6 +6,7 @@ weight = 9
 ### 描述
 
 `ALTER SQL_FEDERATION RULE` 语法用于修改联邦查询配置。
+设置 `PROVIDER_TYPE=NONE` 可关闭联邦查询，选择其他已安装的 Provider 可开启联邦查询。
 
 ### 语法
 
@@ -16,10 +17,7 @@ AlterSQLFederationRule ::=
   'ALTER' 'SQL_FEDERATION' 'RULE' sqlFederationRuleDefinition
 
 sqlFederationRuleDefinition ::=
-  '(' sqlFederationEnabled? (','? allQueryUseSQLFederation)? (','? executionPlanCache)? (','? providerType)? ')'
-
-sqlFederationEnabled ::=
-  'SQL_FEDERATION_ENABLED' '=' boolean_
+  '(' allQueryUseSQLFederation? (','? executionPlanCache)? (','? providerType)? ')'
 
 allQueryUseSQLFederation ::=
   'ALL_QUERY_USE_SQL_FEDERATION' '=' boolean_
@@ -54,7 +52,6 @@ boolean_ ::=
 
 ```sql
 ALTER SQL_FEDERATION RULE (
-  SQL_FEDERATION_ENABLED=TRUE,
   ALL_QUERY_USE_SQL_FEDERATION=TRUE,
   EXECUTION_PLAN_CACHE(INITIAL_CAPACITY=1024, MAXIMUM_SIZE=65535),
   PROVIDER_TYPE=CALCITE
@@ -63,7 +60,7 @@ ALTER SQL_FEDERATION RULE (
 
 ### 保留字
 
-`ALTER`、`SQL_FEDERATION`、`RULE`、`SQL_FEDERATION_ENABLED`、`ALL_QUERY_USE_SQL_FEDERATION`、`EXECUTION_PLAN_CACHE`、`PROVIDER_TYPE`、`INITIAL_CAPACITY`、`MAXIMUM_SIZE`
+`ALTER`、`SQL_FEDERATION`、`RULE`、`ALL_QUERY_USE_SQL_FEDERATION`、`EXECUTION_PLAN_CACHE`、`PROVIDER_TYPE`、`INITIAL_CAPACITY`、`MAXIMUM_SIZE`
 
 ### 相关链接
 

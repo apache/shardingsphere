@@ -12,19 +12,19 @@ When multiple tables in a join query are distributed across different database i
 
 ```yaml
 sqlFederation:
-  sqlFederationEnabled: # SQL federation enabled configuration
-  providerType: # SQL federation provider type; defaults to NONE
+  providerType: # SQL federation provider type; NONE disables federation and is the default
   allQueryUseSQLFederation: # all query use SQL federation configuration
   executionPlanCache: # execution plan cache configuration
     initialCapacity: 2000 # execution plan local cache initial capacity
     maximumSize: 65535 # execution plan local cache maximum size
 ```
 
+When migrating an existing configuration, remove `sqlFederationEnabled`. Set `providerType` to `NONE` to disable federation, including configurations that previously used `sqlFederationEnabled: false` with another provider.
+
 ## Sample
 
 ```yaml
 sqlFederation:
-  sqlFederationEnabled: true
   providerType: CALCITE
   allQueryUseSQLFederation: false
   executionPlanCache:

@@ -24,7 +24,6 @@ authority:
     type: ALL_PERMITTED
 
 sqlFederation:
-  sqlFederationEnabled: true
   providerType: CALCITE
   executionPlanCache:
     initialCapacity: 2000

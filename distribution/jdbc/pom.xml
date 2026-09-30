@@ -107,17 +107,6 @@
         </profile>
         
         <profile>
-            <id>sql-federation-none</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-sql-federation-none-provider</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
             <id>sql-federation-calcite</id>
             <dependencies>
                 <dependency>

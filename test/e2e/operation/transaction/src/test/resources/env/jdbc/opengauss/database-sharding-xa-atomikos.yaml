@@ -141,7 +141,6 @@ transaction:
   providerType: Atomikos
 
 sqlFederation:
-  sqlFederationEnabled: true
   providerType: CALCITE
   executionPlanCache:
     initialCapacity: 2000

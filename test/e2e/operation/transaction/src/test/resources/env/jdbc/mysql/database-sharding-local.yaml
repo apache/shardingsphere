@@ -143,7 +143,6 @@ transaction:
   defaultType: LOCAL
 
 sqlFederation:
-  sqlFederationEnabled: true
   providerType: CALCITE
   executionPlanCache:
     initialCapacity: 2000
