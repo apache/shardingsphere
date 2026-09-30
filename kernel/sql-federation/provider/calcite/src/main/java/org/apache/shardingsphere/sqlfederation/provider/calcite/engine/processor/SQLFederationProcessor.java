@@ -157,16 +157,14 @@ public final class SQLFederationProcessor {
     /**
      * Execute plan.
      *
-     * @param prepareEngine prepare engine
-     * @param queryCallback query callback
      * @param executionPlan execution plan
      * @param converter converter
      * @param federationContext federation context
      * @param schemaPlus SQL federation schema
      * @return resultset
      */
-    public ResultSet executePlan(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> queryCallback,
-                                 final SQLFederationExecutionPlan executionPlan, final SQLFederationRelConverter converter, final SQLFederationContext federationContext, final SchemaPlus schemaPlus) {
+    public ResultSet executePlan(final SQLFederationExecutionPlan executionPlan,
+                                 final SQLFederationRelConverter converter, final SQLFederationContext federationContext, final SchemaPlus schemaPlus) {
         Bindable<Object> executablePlan = SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY);
         SelectStatementContext selectStatementContext = (SelectStatementContext) federationContext.getQueryContext().getSqlStatementContext();
         Map<String, Object> params = createParameters(selectStatementContext, federationContext.getQueryContext().getParameters());

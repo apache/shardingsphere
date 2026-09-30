@@ -141,7 +141,7 @@ public final class CalciteSQLFederationExecutor implements SQLFederationExecutor
             SQLFederationExecutionPlan executionPlan = compileQuery(converter, currentDatabaseName,
                     currentSchemaName, federationContext, sqlStatementContext, queryContext.getSql(), processor.getConvention());
             logExecutionPlan(executionPlan, federationContext.getMetaData().getProps());
-            resultSet = processor.executePlan(prepareEngine, queryCallback, executionPlan, converter, federationContext, schemaPlus);
+            resultSet = processor.executePlan(executionPlan, converter, federationContext, schemaPlus);
             return resultSet;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
