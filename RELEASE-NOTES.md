@@ -99,6 +99,7 @@
 1. Sharding: Fix sharding constraint reviser removing every actual table suffix - [#39868](https://github.com/apache/shardingsphere/pull/39868)
 1. Sharding: Fix DISABLE_AUDIT_NAMES hint ignoring auditor name case - [#39871](https://github.com/apache/shardingsphere/pull/39871)
 1. Sharding: Include auto tables in ShardingRuleConfiguration logic table names - [#39854](https://github.com/apache/shardingsphere/pull/39854)
+1. Sharding: Fix NULL ordering when merging ORDER BY results for ClickHouse and Presto - [#40014](https://github.com/apache/shardingsphere/issues/40014)
 1. Readwrite-splitting: Evaluate inline expressions in data source names of rule configuration checker - [#39374](https://github.com/apache/shardingsphere/pull/39374)
 1. SQL Federation: Fix SQL Federation pagination binding for long LIMIT parameters - [#39237](https://github.com/apache/shardingsphere/pull/39237)
 1. Broadcast: Fix case-sensitive table name lookup in broadcast data node rule attribute - [#39153](https://github.com/apache/shardingsphere/pull/39153)
