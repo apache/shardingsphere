@@ -13,6 +13,7 @@ When multiple tables in a join query are distributed across different database i
 ```yaml
 sqlFederation:
   sqlFederationEnabled: # SQL federation enabled configuration
+  providerType: # SQL federation provider type; defaults to NONE
   allQueryUseSQLFederation: # all query use SQL federation configuration
   executionPlanCache: # execution plan cache configuration
     initialCapacity: 2000 # execution plan local cache initial capacity
@@ -24,6 +25,7 @@ sqlFederation:
 ```yaml
 sqlFederation:
   sqlFederationEnabled: true
+  providerType: CALCITE
   allQueryUseSQLFederation: false
   executionPlanCache:
     initialCapacity: 2000

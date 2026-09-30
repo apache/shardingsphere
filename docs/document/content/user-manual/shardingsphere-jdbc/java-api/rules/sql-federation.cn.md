@@ -19,6 +19,7 @@ weight = 13
 | sqlFederationEnabled     | boolean                                              | 是否开启联邦查询          | -     |
 | allQueryUseSQLFederation | boolean                                              | 是否全部查询 SQL 使用联邦查询 | -     |
 | executionPlanCache       | org.apache.shardingsphere.sql.parser.engine.api.CacheOption | 执行计划缓存            | -     |
+| providerType             | String                                               | 联邦查询 provider 类型    | NONE  |
 
 ## 本地缓存配置
 
@@ -36,7 +37,7 @@ weight = 13
 ```java
 private SQLFederationRuleConfiguration createSQLFederationRuleConfiguration() {
     CacheOption executionPlanCache = new CacheOption(2000, 65535L);
-    return new SQLFederationRuleConfiguration(true, false, executionPlanCache);
+    return new SQLFederationRuleConfiguration(true, false, executionPlanCache, "CALCITE");
 }
 ```
 

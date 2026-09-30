@@ -13,6 +13,7 @@ weight = 13
 ```yaml
 sqlFederation:
   sqlFederationEnabled: # 是否开启联邦查询
+  providerType: # 联邦查询 provider 类型，默认 NONE
   allQueryUseSQLFederation: # 是否全部查询 SQL 使用联邦查询
   executionPlanCache: # 执行计划缓存
     initialCapacity: 2000 # 执行计划缓存初始容量
@@ -24,6 +25,7 @@ sqlFederation:
 ```yaml
 sqlFederation:
   sqlFederationEnabled: true
+  providerType: CALCITE
   allQueryUseSQLFederation: false
   executionPlanCache:
     initialCapacity: 2000

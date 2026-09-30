@@ -67,7 +67,8 @@ class AlterSQLFederationRuleExecutorTest {
     void assertExecuteUpdate(final String name, final GlobalRuleConfiguration ruleConfig,
                              final DistSQLStatement sqlStatement, final RuleConfiguration matchedRuleConfig, final Class<? extends Exception> expectedException) throws SQLException {
         SQLFederationProvider provider = mock(SQLFederationProvider.class);
-        when(provider.getType()).thenReturn("CALCITE");
+        when(provider.getType()).thenReturn("NONE");
+        when(provider.isDefault()).thenReturn(true);
         try (MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class, CALLS_REAL_METHODS)) {
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Collections.singleton(provider));
             executorAssert.assertExecuteUpdate(ruleConfig, sqlStatement, matchedRuleConfig, expectedException);
@@ -83,7 +84,7 @@ class AlterSQLFederationRuleExecutorTest {
     @Test
     void assertDefaultProviderMissingBeforePersistence() {
         assertRejectedBeforePersistence(new AlterSQLFederationRuleStatement(true, null, null), Collections.emptyList(), ServiceProviderNotFoundException.class,
-                "SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider' with type 'CALCITE'.");
+                "SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider' with type 'null'.");
     }
     
     @Test

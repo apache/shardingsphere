@@ -66,4 +66,9 @@ public final class NoneSQLFederationProvider implements SQLFederationProvider {
     public String getType() {
         return "NONE";
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

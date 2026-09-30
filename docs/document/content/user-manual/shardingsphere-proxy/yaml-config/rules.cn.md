@@ -41,6 +41,7 @@ sqlTranslator:
 ```yaml
 sqlFederation:
   sqlFederationEnabled: true
+  providerType: CALCITE
   allQueryUseSQLFederation: false
   executionPlanCache:
     initialCapacity: 2000

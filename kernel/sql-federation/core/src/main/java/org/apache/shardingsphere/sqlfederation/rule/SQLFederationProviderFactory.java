@@ -38,15 +38,14 @@ public final class SQLFederationProviderFactory {
     /**
      * Get SQL federation provider without calling SQLFederationProvider.initialize.
      *
-     * @param providerType provider type, or null to select CALCITE
+     * @param providerType provider type, or null to select the default provider
      * @return selected provider
      */
     public static SQLFederationProvider getProvider(final String providerType) {
-        String actualProviderType = null == providerType ? "CALCITE" : providerType;
         Set<String> types = new HashSet<>();
         for (SQLFederationProvider each : ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)) {
             ShardingSpherePreconditions.checkState(types.add(each.getType().toUpperCase(Locale.ROOT)), () -> new SQLFederationProviderDuplicatedException(each.getType()));
         }
-        return TypedSPILoader.getService(SQLFederationProvider.class, actualProviderType);
+        return TypedSPILoader.getService(SQLFederationProvider.class, providerType);
     }
 }

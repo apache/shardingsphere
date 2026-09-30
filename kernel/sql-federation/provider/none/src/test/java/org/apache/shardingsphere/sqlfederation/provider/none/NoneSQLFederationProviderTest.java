@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
@@ -62,10 +61,9 @@ class NoneSQLFederationProviderTest {
     }
     
     @Test
-    void assertDefaultCalciteProviderMissingWhenOnlyNoneInstalled() {
+    void assertDefaultNoneProviderWhenOnlyNoneInstalled() {
         SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L));
-        ServiceProviderNotFoundException actual = assertThrows(ServiceProviderNotFoundException.class, () -> new SQLFederationRule(config, Collections.emptyList()));
-        assertThat(actual.getMessage(), is("SPI-00001: No implementation class load from SPI 'org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider' with type 'CALCITE'."));
+        assertThat(new SQLFederationRule(config, Collections.emptyList()).getProvider(), isA(NoneSQLFederationProvider.class));
     }
     
     @Test
