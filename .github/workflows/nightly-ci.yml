@@ -35,7 +35,7 @@ env:
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/global-environment.yml
+    uses: ./.github/workflows/reusable-global-environment.yml
 
   ci:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
