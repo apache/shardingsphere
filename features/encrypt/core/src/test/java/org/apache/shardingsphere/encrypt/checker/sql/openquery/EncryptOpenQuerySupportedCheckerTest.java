@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLE
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -44,6 +45,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.MergeWhenAndThenSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
@@ -185,6 +188,26 @@ final class EncryptOpenQuerySupportedCheckerTest {
         BetweenExpression betweenExpr = new BetweenExpression(0, 80, new LiteralExpressionSegment(0, 2, "id"),
                 new SubqueryExpressionSegment(subquerySegment), new LiteralExpressionSegment(0, 3, 100), false);
         when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, betweenExpr)));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithBetweenLeftSubqueryOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
+        BetweenExpression betweenExpr = new BetweenExpression(0, 80, new SubqueryExpressionSegment(subquerySegment),
+                new LiteralExpressionSegment(0, 1, 0), new LiteralExpressionSegment(0, 1, 2), false);
+        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, betweenExpr)));
+        assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
+    }
+    
+    @Test
+    void assertIsCheckWithOrderBySubqueryOpenQuery() {
+        SelectStatement selectStatement = mockSqlServerSelectWithSimpleFrom();
+        stubSelectNegativePaths(selectStatement);
+        SubqueryExpressionSegment subqueryExpr = new SubqueryExpressionSegment(mockSubqueryWithOpenQueryFrom());
+        ExpressionOrderByItemSegment orderByItem = new ExpressionOrderByItemSegment(0, 80, "(SELECT ...)", OrderDirection.ASC, null, subqueryExpr);
+        when(selectStatement.getOrderBy()).thenReturn(Optional.of(new OrderBySegment(0, 80, Collections.singletonList(orderByItem))));
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSqlStatementContext(selectStatement)));
     }
     
@@ -456,6 +479,7 @@ final class EncryptOpenQuerySupportedCheckerTest {
         when(selectStatement.getWith()).thenReturn(Optional.empty());
         when(selectStatement.getCombine()).thenReturn(Optional.empty());
         when(selectStatement.getHaving()).thenReturn(Optional.empty());
+        when(selectStatement.getOrderBy()).thenReturn(Optional.empty());
         when(selectStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
     }
     

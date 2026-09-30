@@ -46,6 +46,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.MergeWhenAndThenSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.CollectionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
@@ -110,7 +113,17 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
     private boolean containsOpenQueryInSelectClauses(final SelectStatement selectStatement) {
         return selectStatement.getCombine().map(optional -> containsOpenQueryInSelect(optional.getLeft().getSelect()) || containsOpenQueryInSelect(optional.getRight().getSelect())).orElse(false)
                 || containsOpenQueryInProjections(selectStatement.getProjections())
-                || selectStatement.getHaving().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false);
+                || selectStatement.getHaving().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false)
+                || selectStatement.getOrderBy().map(this::containsOpenQueryInOrderBy).orElse(false);
+    }
+    
+    private boolean containsOpenQueryInOrderBy(final OrderBySegment orderBySegment) {
+        for (OrderByItemSegment each : orderBySegment.getOrderByItems()) {
+            if (each instanceof ExpressionOrderByItemSegment && containsOpenQueryInExpression(((ExpressionOrderByItemSegment) each).getExpr())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private boolean containsOpenQueryInUpdate(final UpdateStatement updateStatement) {
@@ -242,7 +255,8 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
             return containsOpenQueryInExpression(((NotExpression) expression).getExpression());
         }
         if (expression instanceof BetweenExpression) {
-            return containsOpenQueryInExpression(((BetweenExpression) expression).getBetweenExpr())
+            return containsOpenQueryInExpression(((BetweenExpression) expression).getLeft())
+                    || containsOpenQueryInExpression(((BetweenExpression) expression).getBetweenExpr())
                     || containsOpenQueryInExpression(((BetweenExpression) expression).getAndExpr());
         }
         return containsOpenQueryInRemainingExpression(expression);
