@@ -49,7 +49,7 @@ env:
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/global-environment.yml
+    uses: ./.github/workflows/reusable-global-environment.yml
 
   build-e2e-image:
     if: github.repository == 'apache/shardingsphere'
