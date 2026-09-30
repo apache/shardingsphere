@@ -94,7 +94,7 @@ class CalciteSQLFederationProviderTest {
     
     @Test
     void assertDefaultNoneWhenBothProvidersInstalled() {
-        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L));
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), null);
         assertThat(new SQLFederationRule(config, Collections.emptyList()).getProvider(), isA(NoneSQLFederationProvider.class));
     }
     

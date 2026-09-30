@@ -67,7 +67,7 @@ class NoneSQLFederationProviderTest {
     
     @Test
     void assertDefaultNoneProviderWhenOnlyNoneInstalled() {
-        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L));
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), null);
         SQLFederationRule actual = new SQLFederationRule(config, Collections.emptyList());
         assertThat(actual.getProvider(), isA(NoneSQLFederationProvider.class));
         assertFalse(actual.isSqlFederationEnabled());

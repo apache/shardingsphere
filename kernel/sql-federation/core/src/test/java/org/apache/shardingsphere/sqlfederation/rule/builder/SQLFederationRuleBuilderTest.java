@@ -39,7 +39,7 @@ class SQLFederationRuleBuilderTest {
     
     @Test
     void assertBuild() {
-        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L));
+        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), null);
         SQLFederationRuleBuilder builder = (SQLFederationRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         SQLFederationProvider provider = mock(SQLFederationProvider.class);
         when(provider.isDefault()).thenReturn(true);
