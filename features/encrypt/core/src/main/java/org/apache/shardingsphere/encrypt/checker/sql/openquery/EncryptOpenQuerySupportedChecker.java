@@ -25,8 +25,15 @@ import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -37,6 +44,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.In
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+
+import java.util.Optional;
 
 /**
  * OPENQUERY supported checker for encrypt.
@@ -55,19 +64,19 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
             return false;
         }
         if (sqlStatement instanceof SelectStatement) {
-            return ((SelectStatement) sqlStatement).getFrom().map(this::containsOpenQuery).orElse(false);
+            return containsOpenQueryInSelect((SelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return containsOpenQuery(((UpdateStatement) sqlStatement).getTable());
+            return containsOpenQueryInUpdate((UpdateStatement) sqlStatement);
         }
         if (sqlStatement instanceof DeleteStatement) {
-            return containsOpenQuery(((DeleteStatement) sqlStatement).getTable());
+            return containsOpenQueryInDelete((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
             return containsOpenQueryInInsert((InsertStatement) sqlStatement);
         }
         if (sqlStatement instanceof MergeStatement) {
-            return containsOpenQuery(((MergeStatement) sqlStatement).getTarget()) || containsOpenQuery(((MergeStatement) sqlStatement).getSource());
+            return containsOpenQueryInMerge((MergeStatement) sqlStatement);
         }
         return false;
     }
@@ -77,11 +86,62 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
         ShardingSpherePreconditions.checkState(false, () -> new UnsupportedEncryptSQLException("OPENQUERY"));
     }
     
+    private boolean containsOpenQueryInSelect(final SelectStatement selectStatement) {
+        return selectStatement.getFrom().map(this::containsOpenQuery).orElse(false)
+                || containsOpenQueryInWhere(selectStatement.getWhere()) || containsOpenQueryInWith(selectStatement.getWith());
+    }
+    
+    private boolean containsOpenQueryInUpdate(final UpdateStatement updateStatement) {
+        return containsOpenQuery(updateStatement.getTable())
+                || updateStatement.getFrom().map(this::containsOpenQuery).orElse(false)
+                || containsOpenQueryInWhere(updateStatement.getWhere()) || containsOpenQueryInWith(updateStatement.getWith());
+    }
+    
+    private boolean containsOpenQueryInDelete(final DeleteStatement deleteStatement) {
+        return containsOpenQuery(deleteStatement.getTable())
+                || containsOpenQueryInWhere(deleteStatement.getWhere()) || containsOpenQueryInWith(deleteStatement.getWith());
+    }
+    
     private boolean containsOpenQueryInInsert(final InsertStatement insertStatement) {
         if (insertStatement.getRowSetFunction().map(this::isOpenQueryFunction).orElse(false)) {
             return true;
         }
-        return insertStatement.getInsertSelect().map(each -> each.getSelect().getFrom().map(this::containsOpenQuery).orElse(false)).orElse(false);
+        return insertStatement.getInsertSelect().map(each -> containsOpenQueryInSelect(each.getSelect())).orElse(false);
+    }
+    
+    private boolean containsOpenQueryInMerge(final MergeStatement mergeStatement) {
+        return containsOpenQuery(mergeStatement.getTarget()) || containsOpenQuery(mergeStatement.getSource())
+                || containsOpenQueryInWith(mergeStatement.getWith());
+    }
+    
+    private boolean containsOpenQueryInWhere(final Optional<WhereSegment> whereSegment) {
+        return whereSegment.map(each -> containsOpenQueryInExpression(each.getExpr())).orElse(false);
+    }
+    
+    private boolean containsOpenQueryInWith(final Optional<WithSegment> withSegment) {
+        return withSegment.map(each -> each.getCommonTableExpressions().stream().anyMatch(this::containsOpenQueryInCTE)).orElse(false);
+    }
+    
+    private boolean containsOpenQueryInCTE(final CommonTableExpressionSegment cte) {
+        return containsOpenQueryInSelect(cte.getSubquery().getSelect());
+    }
+    
+    private boolean containsOpenQueryInExpression(final ExpressionSegment expression) {
+        if (expression instanceof ExistsSubqueryExpression) {
+            return containsOpenQueryInSelect(((ExistsSubqueryExpression) expression).getSubquery().getSelect());
+        }
+        if (expression instanceof SubqueryExpressionSegment) {
+            return containsOpenQueryInSelect(((SubqueryExpressionSegment) expression).getSubquery().getSelect());
+        }
+        if (expression instanceof BinaryOperationExpression) {
+            return containsOpenQueryInExpression(((BinaryOperationExpression) expression).getLeft())
+                    || containsOpenQueryInExpression(((BinaryOperationExpression) expression).getRight());
+        }
+        if (expression instanceof InExpression) {
+            return containsOpenQueryInExpression(((InExpression) expression).getLeft())
+                    || containsOpenQueryInExpression(((InExpression) expression).getRight());
+        }
+        return false;
     }
     
     private boolean containsOpenQuery(final TableSegment tableSegment) {
@@ -92,7 +152,7 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
             return containsOpenQuery(((JoinTableSegment) tableSegment).getLeft()) || containsOpenQuery(((JoinTableSegment) tableSegment).getRight());
         }
         if (tableSegment instanceof SubqueryTableSegment) {
-            return ((SubqueryTableSegment) tableSegment).getSubquery().getSelect().getFrom().map(this::containsOpenQuery).orElse(false);
+            return containsOpenQueryInSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
         }
         return false;
     }
