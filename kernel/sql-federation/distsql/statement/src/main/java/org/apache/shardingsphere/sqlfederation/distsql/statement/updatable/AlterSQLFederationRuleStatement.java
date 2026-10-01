@@ -29,15 +29,9 @@ import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegmen
 @Getter
 public final class AlterSQLFederationRuleStatement extends GlobalRuleDefinitionStatement {
     
-    private final Boolean sqlFederationEnabled;
-    
     private final Boolean allQueryUseSQLFederation;
     
     private final CacheOptionSegment executionPlanCache;
     
     private final String providerType;
-    
-    public AlterSQLFederationRuleStatement(final Boolean sqlFederationEnabled, final Boolean allQueryUseSQLFederation, final CacheOptionSegment executionPlanCache) {
-        this(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache, null);
-    }
 }

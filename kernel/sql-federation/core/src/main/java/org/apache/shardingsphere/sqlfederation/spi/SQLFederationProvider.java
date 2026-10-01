@@ -49,6 +49,15 @@ public interface SQLFederationProvider extends TypedSPI {
     void refresh(Collection<ShardingSphereDatabase> databases);
     
     /**
+     * Judge whether this provider enables SQL federation.
+     *
+     * @return whether SQL federation is enabled
+     */
+    default boolean isSQLFederationEnabled() {
+        return true;
+    }
+    
+    /**
      * Check whether the SQL statement type is eligible for SQL federation.
      *
      * @param sqlStatement SQL statement to check

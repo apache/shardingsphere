@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor.impl;
+package org.apache.shardingsphere.sqlfederation.provider.calcite.processor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
@@ -50,7 +50,6 @@ import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.ExecutorBindContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.ExecutorContext;
 import org.apache.shardingsphere.sqlfederation.executor.enumerable.implementor.EnumerableScanImplementor;
-import org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor.SQLFederationProcessor;
 import org.apache.shardingsphere.sqlfederation.provider.calcite.resultset.SQLFederationResultSet;
 
 import java.math.BigDecimal;
@@ -65,10 +64,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Standard SQL federation processor.
+ * SQL federation processor.
  */
 @RequiredArgsConstructor
-public final class StandardSQLFederationProcessor implements SQLFederationProcessor {
+public final class SQLFederationProcessor {
     
     private static final BigInteger MIN_PAGINATION_PARAMETER = BigInteger.valueOf(Integer.MIN_VALUE);
     
@@ -80,11 +79,21 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
     
     private ExecutorContext executorContext;
     
-    public StandardSQLFederationProcessor(final ShardingSphereStatistics statistics) {
+    public SQLFederationProcessor(final ShardingSphereStatistics statistics) {
         this(statistics, null);
     }
     
-    @Override
+    /**
+     * Prepare.
+     *
+     * @param prepareEngine prepare engine
+     * @param queryCallback query callback
+     * @param currentDatabaseName current database name
+     * @param currentSchemaName current schema name
+     * @param federationContext federation context
+     * @param compilerContext compiler context
+     * @param schemaPlus SQL federation schema
+     */
     public void prepare(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> queryCallback,
                         final String currentDatabaseName, final String currentSchemaName, final SQLFederationContext federationContext, final CompilerContext compilerContext,
                         final SchemaPlus schemaPlus) {
@@ -126,7 +135,14 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         return result;
     }
     
-    @Override
+    /**
+     * Release.
+     *
+     * @param currentDatabaseName current database name
+     * @param currentSchemaName current schema name
+     * @param queryContext query context
+     * @param schemaPlus SQL federation schema
+     */
     public void release(final String currentDatabaseName, final String currentSchemaName, final QueryContext queryContext, final SchemaPlus schemaPlus) {
         Collection<SimpleTableSegment> simpleTables = queryContext.getSqlStatementContext().getTablesContext().getSimpleTables();
         for (SimpleTableSegment each : simpleTables) {
@@ -138,9 +154,17 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         }
     }
     
-    @Override
-    public ResultSet executePlan(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> queryCallback,
-                                 final SQLFederationExecutionPlan executionPlan, final SQLFederationRelConverter converter, final SQLFederationContext federationContext, final SchemaPlus schemaPlus) {
+    /**
+     * Execute plan.
+     *
+     * @param executionPlan execution plan
+     * @param converter converter
+     * @param federationContext federation context
+     * @param schemaPlus SQL federation schema
+     * @return resultset
+     */
+    public ResultSet executePlan(final SQLFederationExecutionPlan executionPlan,
+                                 final SQLFederationRelConverter converter, final SQLFederationContext federationContext, final SchemaPlus schemaPlus) {
         Bindable<Object> executablePlan = SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY);
         SelectStatementContext selectStatementContext = (SelectStatementContext) federationContext.getQueryContext().getSqlStatementContext();
         Map<String, Object> params = createParameters(selectStatementContext, federationContext.getQueryContext().getParameters());
@@ -197,7 +221,11 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         }
     }
     
-    @Override
+    /**
+     * Get convention.
+     *
+     * @return convention
+     */
     public Convention getConvention() {
         return EnumerableConvention.INSTANCE;
     }

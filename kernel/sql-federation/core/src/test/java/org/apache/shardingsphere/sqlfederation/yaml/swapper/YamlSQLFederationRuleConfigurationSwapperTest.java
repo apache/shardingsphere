@@ -31,7 +31,6 @@ class YamlSQLFederationRuleConfigurationSwapperTest {
     @Test
     void assertSwapToObjectWithoutExecutionPlanCache() {
         YamlSQLFederationRuleConfiguration yamlConfig = new YamlSQLFederationRuleConfiguration();
-        yamlConfig.setSqlFederationEnabled(true);
         SQLFederationRuleConfiguration actual = new YamlSQLFederationRuleConfigurationSwapper().swapToObject(yamlConfig);
         assertThat(actual.getExecutionPlanCache().getInitialCapacity(), is(2000));
         assertThat(actual.getExecutionPlanCache().getMaximumSize(), is(65535L));
@@ -47,7 +46,7 @@ class YamlSQLFederationRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfigurationWithProviderType() {
-        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L), "NONE");
+        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), "NONE");
         assertThat(new YamlSQLFederationRuleConfigurationSwapper().swapToYamlConfiguration(ruleConfig).getProviderType(), is("NONE"));
     }
 }

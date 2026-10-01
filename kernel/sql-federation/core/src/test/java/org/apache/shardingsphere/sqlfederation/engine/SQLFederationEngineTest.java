@@ -70,17 +70,18 @@ class SQLFederationEngineTest {
         SQLFederationExecutor executor = mock(SQLFederationExecutor.class);
         ShardingSphereStatistics statistics = mock(ShardingSphereStatistics.class);
         when(provider.createPreviewExecutor(eq("foo_db"), eq("foo_schema"), eq(statistics), any())).thenReturn(executor);
-        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(true, false, cacheOption), Collections.emptyList());
+        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(false, cacheOption, null), Collections.emptyList(), true);
         try (SQLFederationEngine engine = new SQLFederationEngine("foo_db", "foo_schema", metaData, statistics)) {
             assertThat(engine.getExecution(), sameInstance(executor));
         }
     }
     
     private ShardingSphereMetaData createMetaData(final SQLFederationProvider provider, final SQLFederationRuleConfiguration config,
-                                                  final Collection<ShardingSphereRule> databaseRules) {
+                                                  final Collection<ShardingSphereRule> databaseRules, final boolean enabled) {
         SQLFederationRule rule = mock(SQLFederationRule.class);
         when(rule.getConfiguration()).thenReturn(config);
         when(rule.getProvider()).thenReturn(provider);
+        when(rule.isSqlFederationEnabled()).thenReturn(enabled);
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
         when(globalRuleMetaData.getSingleRule(SQLFederationRule.class)).thenReturn(rule);
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
@@ -92,7 +93,7 @@ class SQLFederationEngineTest {
     @Test
     void assertDecideWhenSQLFederationDisabled() throws SQLException {
         SQLFederationProvider provider = mock(SQLFederationProvider.class);
-        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(false, false, cacheOption), Collections.emptyList());
+        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(false, cacheOption, null), Collections.emptyList(), false);
         try (SQLFederationEngine engine = new SQLFederationEngine("foo_db", "foo_schema", metaData, mock(), mock())) {
             assertFalse(engine.decide(mock(QueryContext.class), mock(RuleMetaData.class)));
         }
@@ -104,7 +105,7 @@ class SQLFederationEngineTest {
         SelectStatement statement = mock(SelectStatement.class);
         when(provider.isSupportedSQLStatement(statement)).thenReturn(true);
         QueryContext queryContext = createQueryContext(statement);
-        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(true, true, cacheOption), Collections.emptyList());
+        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(true, cacheOption, null), Collections.emptyList(), true);
         try (SQLFederationEngine engine = new SQLFederationEngine("foo_db", "foo_schema", metaData, mock(), mock())) {
             assertTrue(engine.decide(queryContext, mock(RuleMetaData.class)));
         }
@@ -120,7 +121,7 @@ class SQLFederationEngineTest {
     void assertDecideWhenProviderRejectsStatement() throws SQLException {
         SQLFederationProvider provider = mock(SQLFederationProvider.class);
         QueryContext queryContext = createQueryContext(mock(CreateTableStatement.class));
-        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(true, true, cacheOption), Collections.emptyList());
+        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(true, cacheOption, null), Collections.emptyList(), true);
         try (SQLFederationEngine engine = new SQLFederationEngine("foo_db", "foo_schema", metaData, mock(), mock())) {
             assertFalse(engine.decide(queryContext, mock(RuleMetaData.class)));
         }
@@ -132,7 +133,7 @@ class SQLFederationEngineTest {
         CreateTableStatement statement = mock(CreateTableStatement.class);
         when(provider.isSupportedSQLStatement(statement)).thenReturn(true);
         QueryContext queryContext = createQueryContext(statement);
-        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(true, true, cacheOption), Collections.emptyList());
+        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(true, cacheOption, null), Collections.emptyList(), true);
         try (SQLFederationEngine engine = new SQLFederationEngine("foo_db", "foo_schema", metaData, mock(), mock())) {
             assertTrue(engine.decide(queryContext, mock(RuleMetaData.class)));
         }
@@ -150,7 +151,7 @@ class SQLFederationEngineTest {
         Collection<ShardingSphereRule> databaseRules = Collections.singleton(rule);
         SQLFederationDecider decider = mock(SQLFederationDecider.class);
         Map<ShardingSphereRule, SQLFederationDecider> deciders = Collections.singletonMap(rule, decider);
-        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(true, false, cacheOption), databaseRules);
+        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(false, cacheOption, null), databaseRules, true);
         try (
                 MockedStatic<OrderedSPILoader> loader = mockStatic(OrderedSPILoader.class);
                 SQLFederationEngine engine = new SQLFederationEngine("foo_db", "foo_schema", metaData, mock(), mock())) {
@@ -177,7 +178,7 @@ class SQLFederationEngineTest {
         Map<ShardingSphereRule, SQLFederationDecider> deciders = new LinkedHashMap<>(2);
         deciders.put(firstRule, firstDecider);
         deciders.put(secondRule, secondDecider);
-        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(true, false, cacheOption), databaseRules);
+        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(false, cacheOption, null), databaseRules, true);
         try (
                 MockedStatic<OrderedSPILoader> loader = mockStatic(OrderedSPILoader.class);
                 SQLFederationEngine engine = new SQLFederationEngine("foo_db", "foo_schema", metaData, mock(), mock())) {
@@ -195,7 +196,7 @@ class SQLFederationEngineTest {
         when(provider.isSupportedSQLStatement(statement)).thenReturn(true);
         QueryContext queryContext = createQueryContext(statement);
         when(queryContext.getSqlStatementContext().getTablesContext().getDatabaseNames()).thenReturn(Arrays.asList("foo_db", "bar_db"));
-        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(true, false, cacheOption), Collections.emptyList());
+        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(false, cacheOption, null), Collections.emptyList(), true);
         try (SQLFederationEngine engine = new SQLFederationEngine("foo_db", "foo_schema", metaData, mock(), mock())) {
             assertTrue(engine.decide(queryContext, mock(RuleMetaData.class)));
         }
@@ -212,7 +213,7 @@ class SQLFederationEngineTest {
         when(statementContext.getSqlStatement()).thenReturn(explainStatement);
         QueryContext queryContext = mock(QueryContext.class);
         when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
-        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(true, true, cacheOption), Collections.emptyList());
+        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(true, cacheOption, null), Collections.emptyList(), true);
         try (SQLFederationEngine engine = new SQLFederationEngine("foo_db", "foo_schema", metaData, mock(), mock())) {
             assertTrue(engine.decide(queryContext, mock(RuleMetaData.class)));
             verify(provider).isSupportedSQLStatement(selectStatement);
@@ -229,7 +230,7 @@ class SQLFederationEngineTest {
         QueryContext queryContext = createQueryContext(mock(SelectStatement.class));
         when(federationContext.getQueryContext()).thenReturn(queryContext);
         when(executor.executeQuery(any(), any(), eq(federationContext))).thenReturn(expectedResultSet);
-        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(true, false, cacheOption), Collections.emptyList());
+        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(false, cacheOption, null), Collections.emptyList(), true);
         try (SQLFederationEngine engine = new SQLFederationEngine("foo_db", "foo_schema", metaData, mock(), mock())) {
             engine.executeQuery(mock(), mock(), federationContext);
             assertThat(engine.getResultSet(), sameInstance(expectedResultSet));
@@ -245,7 +246,7 @@ class SQLFederationEngineTest {
         QueryContext queryContext = createQueryContext(mock(CreateTableStatement.class));
         when(federationContext.getQueryContext()).thenReturn(queryContext);
         when(executor.executeQuery(any(), any(), eq(federationContext))).thenReturn(mock(ResultSet.class));
-        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(true, false, cacheOption), Collections.emptyList());
+        ShardingSphereMetaData metaData = createMetaData(provider, new SQLFederationRuleConfiguration(false, cacheOption, null), Collections.emptyList(), true);
         try (SQLFederationEngine engine = new SQLFederationEngine("foo_db", "foo_schema", metaData, mock(), mock())) {
             engine.executeQuery(mock(), mock(), federationContext);
             assertNull(engine.getResultSet());

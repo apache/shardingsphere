@@ -34,7 +34,6 @@ public final class YamlSQLFederationRuleConfigurationSwapper implements YamlRule
     @Override
     public YamlSQLFederationRuleConfiguration swapToYamlConfiguration(final SQLFederationRuleConfiguration data) {
         YamlSQLFederationRuleConfiguration result = new YamlSQLFederationRuleConfiguration();
-        result.setSqlFederationEnabled(data.isSqlFederationEnabled());
         result.setAllQueryUseSQLFederation(data.isAllQueryUseSQLFederation());
         result.setExecutionPlanCache(executionPlanCacheConfigSwapper.swapToYamlConfiguration(data.getExecutionPlanCache()));
         result.setProviderType(data.getProviderType());
@@ -46,7 +45,7 @@ public final class YamlSQLFederationRuleConfigurationSwapper implements YamlRule
         SQLFederationCacheOption executionPlanCacheConfig = null == yamlConfig.getExecutionPlanCache()
                 ? DefaultSQLFederationRuleConfigurationBuilder.DEFAULT_EXECUTION_PLAN_CACHE_OPTION
                 : executionPlanCacheConfigSwapper.swapToObject(yamlConfig.getExecutionPlanCache());
-        return new SQLFederationRuleConfiguration(yamlConfig.isSqlFederationEnabled(), yamlConfig.isAllQueryUseSQLFederation(), executionPlanCacheConfig, yamlConfig.getProviderType());
+        return new SQLFederationRuleConfiguration(yamlConfig.isAllQueryUseSQLFederation(), executionPlanCacheConfig, yamlConfig.getProviderType());
     }
     
     @Override

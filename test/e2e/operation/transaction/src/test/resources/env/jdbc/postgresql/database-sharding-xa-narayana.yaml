@@ -141,7 +141,6 @@ transaction:
   providerType: Narayana
 
 sqlFederation:
-  sqlFederationEnabled: true
   providerType: CALCITE
   executionPlanCache:
     initialCapacity: 2000

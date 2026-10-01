@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.provider.calcite;
 
+import lombok.SneakyThrows;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.schema.SchemaPlus;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dal.Explain
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
@@ -66,8 +66,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederat
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
-import org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor.SQLFederationProcessor;
-import org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor.SQLFederationProcessorFactory;
+import org.apache.shardingsphere.sqlfederation.provider.calcite.processor.SQLFederationProcessor;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -155,21 +154,17 @@ class CalciteSQLFederationExecutorTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
                 new ConfigurationProperties(new Properties()));
-        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, false, cacheOption, "CALCITE");
+        SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(false, cacheOption, "CALCITE");
         Collection<ShardingSphereRule> globalRules = Collections.singleton(new SQLFederationRule(ruleConfig, Collections.singleton(database)));
         return new ShardingSphereMetaData(Collections.singleton(database), new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(globalRules), new ConfigurationProperties(props));
     }
     
+    @SneakyThrows(ReflectiveOperationException.class)
     private CalciteSQLFederationExecutor createCalciteSQLFederationExecutor(final SQLFederationProcessor processor, final ShardingSphereMetaData metaData) {
-        ShardingSphereStatistics statistics = mock(ShardingSphereStatistics.class);
-        JDBCExecutor jdbcExecutor = mock(JDBCExecutor.class);
-        try (MockedStatic<SQLFederationProcessorFactory> factoryMock = mockStatic(SQLFederationProcessorFactory.class)) {
-            SQLFederationProcessorFactory factory = mock(SQLFederationProcessorFactory.class);
-            when(factory.newInstance(statistics, jdbcExecutor)).thenReturn(processor);
-            factoryMock.when(SQLFederationProcessorFactory::getInstance).thenReturn(factory);
-            CalciteSQLFederationProvider provider = (CalciteSQLFederationProvider) metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).getProvider();
-            return new CalciteSQLFederationExecutor("foo_db", "foo_schema", statistics, jdbcExecutor, new ProcessEngine(), provider);
-        }
+        CalciteSQLFederationProvider provider = (CalciteSQLFederationProvider) metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).getProvider();
+        CalciteSQLFederationExecutor result = new CalciteSQLFederationExecutor("foo_db", "foo_schema", mock(ShardingSphereStatistics.class), mock(), new ProcessEngine(), provider);
+        Plugins.getMemberAccessor().set(CalciteSQLFederationExecutor.class.getDeclaredField("processor"), result, processor);
+        return result;
     }
     
     @SuppressWarnings("unchecked")
@@ -197,7 +192,7 @@ class CalciteSQLFederationExecutorTest {
         JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
         ResultSet resultSet = mock(ResultSet.class);
         SQLFederationProcessor processor = mock(SQLFederationProcessor.class);
-        when(processor.executePlan(eq(prepareEngine), eq(callback), any(SQLFederationExecutionPlan.class), any(SQLFederationRelConverter.class), eq(federationContext), any())).thenReturn(resultSet);
+        when(processor.executePlan(any(SQLFederationExecutionPlan.class), any(SQLFederationRelConverter.class), eq(federationContext), any())).thenReturn(resultSet);
         CalciteSQLFederationExecutor executor = createCalciteSQLFederationExecutor(processor, actualMetaData);
         try (
                 MockedConstruction<SQLFederationRelConverter> converterMocked = mockConstruction(SQLFederationRelConverter.class,
@@ -308,7 +303,7 @@ class CalciteSQLFederationExecutorTest {
         when(resultSet.isClosed()).thenReturn(true);
         SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
         SQLFederationProcessor processor = mock(SQLFederationProcessor.class);
-        when(processor.executePlan(eq(prepareEngine), eq(callback), eq(executionPlan), any(SQLFederationRelConverter.class), eq(federationContext), any())).thenReturn(resultSet);
+        when(processor.executePlan(eq(executionPlan), any(SQLFederationRelConverter.class), eq(federationContext), any())).thenReturn(resultSet);
         try (
                 CalciteSQLFederationExecutor executor = createCalciteSQLFederationExecutor(processor, actualMetaData);
                 MockedConstruction<SQLFederationRelConverter> ignored = mockConstruction(SQLFederationRelConverter.class,
@@ -349,7 +344,7 @@ class CalciteSQLFederationExecutorTest {
             relOptUtil.when(() -> RelOptUtil.toString(any(RelNode.class), eq(SqlExplainLevel.ALL_ATTRIBUTES))).thenReturn("plan");
             doAnswer(invocation -> {
                 throw new SQLIntegrityConstraintViolationException();
-            }).when(processor).executePlan(eq(prepareEngine), eq(callback), eq(executionPlan), any(SQLFederationRelConverter.class), eq(federationContext), any());
+            }).when(processor).executePlan(eq(executionPlan), any(SQLFederationRelConverter.class), eq(federationContext), any());
             assertThrows(SQLIntegrityConstraintViolationException.class, () -> executor.executeQuery(prepareEngine, callback, federationContext));
         }
     }

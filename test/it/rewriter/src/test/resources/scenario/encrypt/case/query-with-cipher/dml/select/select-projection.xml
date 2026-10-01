@@ -100,4 +100,12 @@
         <input sql="SELECT (c.password) PASSWORD FROM t_account c" />
         <output sql="SELECT (c.&quot;cipher_password&quot;) AS PASSWORD FROM t_account c" />
     </rewrite-assertion>
+    <rewrite-assertion id="select_parenthesized_encrypt_projection_postgresql" db-types="PostgreSQL,openGauss">
+        <input sql="SELECT (c.password) p FROM t_account c" />
+        <output sql="SELECT (c.&quot;cipher_password&quot;) AS p FROM t_account c" />
+    </rewrite-assertion>
+    <rewrite-assertion id="select_parenthesized_encrypt_projection_sqlserver" db-types="SQLServer">
+        <input sql="SELECT (c.password) p FROM t_account c" />
+        <output sql="SELECT (c.[cipher_password]) AS p FROM t_account c" />
+    </rewrite-assertion>
 </rewrite-assertions>

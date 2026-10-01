@@ -107,7 +107,7 @@ class ProxyConfigurationLoaderTest {
                 + "sqlTranslator:\n"
                 + "  type: TRANSLATOR\n"
                 + "sqlFederation:\n"
-                + "  sqlFederationEnabled: true\n"
+                + "  providerType: CALCITE\n"
                 + "  allQueryUseSQLFederation: true\n");
         writeConfigurationFile(tempDir, "config-compatible.yaml", "databaseName: compatible_db\n"
                 + "dataSources:\n"

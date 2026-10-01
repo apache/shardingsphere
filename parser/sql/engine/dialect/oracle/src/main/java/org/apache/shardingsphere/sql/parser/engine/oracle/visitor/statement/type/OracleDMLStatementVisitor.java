@@ -794,9 +794,19 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             combineType = CombineType.MINUS;
         }
         SelectStatement right = (SelectStatement) visit(ctx.selectSubquery(1));
+        OrderBySegment orderBy = null;
+        if (null != ctx.selectSubquery(1).orderByClause()) {
+            orderBy = right.getOrderBy().orElse(null);
+            SelectStatement previous = right;
+            right = createSelectStatementBuilder(previous).orderBy(null).build();
+            right.addParameterMarkers(previous.getParameterMarkers());
+            right.getVariableNames().addAll(previous.getVariableNames());
+            right.getComments().addAll(previous.getComments());
+        }
         SelectStatement result = SelectStatement.builder().databaseType(getDatabaseType()).projections(left.getProjections()).from(left.getFrom().orElse(null)).with(left.getWith().orElse(null))
                 .combine(new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), createSubquerySegment(ctx.selectSubquery(0), left), combineType,
                         createSubquerySegment(ctx.selectSubquery(1), right)))
+                .orderBy(orderBy)
                 .build();
         result.addParameterMarkers(left.getParameterMarkers());
         result.addParameterMarkers(right.getParameterMarkers());

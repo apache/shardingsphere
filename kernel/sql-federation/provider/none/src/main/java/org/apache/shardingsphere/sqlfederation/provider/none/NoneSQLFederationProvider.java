@@ -42,6 +42,11 @@ public final class NoneSQLFederationProvider implements SQLFederationProvider {
     public void refresh(final Collection<ShardingSphereDatabase> databases) {
     }
     
+    @Override
+    public boolean isSQLFederationEnabled() {
+        return false;
+    }
+    
     @HighFrequencyInvocation
     @Override
     public boolean isSupportedSQLStatement(final SQLStatement sqlStatement) {

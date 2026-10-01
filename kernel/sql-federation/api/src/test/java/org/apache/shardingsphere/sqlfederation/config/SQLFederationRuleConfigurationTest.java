@@ -33,8 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class SQLFederationRuleConfigurationTest {
     
     @Test
-    void assertCompatibleConstructor() {
-        assertNull(new SQLFederationRuleConfiguration(false, false, new SQLFederationCacheOption(1, 1L)).getProviderType());
+    void assertDefaultProviderType() {
+        assertNull(new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(1, 1L), null).getProviderType());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -45,9 +45,9 @@ class SQLFederationRuleConfigurationTest {
     
     private static Stream<Arguments> validRuleConfigurationArguments() {
         return Stream.of(
-                Arguments.of("Minimum cache values", new SQLFederationRuleConfiguration(false, false, new SQLFederationCacheOption(1, 1L))),
-                Arguments.of("Enabled SQL federation", new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(2, 2L))),
-                Arguments.of("All queries use SQL federation", new SQLFederationRuleConfiguration(true, true, new SQLFederationCacheOption(16, 1024L))));
+                Arguments.of("Minimum cache values", new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(1, 1L), null)),
+                Arguments.of("Default provider", new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(2, 2L), null)),
+                Arguments.of("All queries use SQL federation", new SQLFederationRuleConfiguration(true, new SQLFederationCacheOption(16, 1024L), null)));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -58,10 +58,10 @@ class SQLFederationRuleConfigurationTest {
     
     private static Stream<Arguments> invalidRuleConfigurationArguments() {
         return Stream.of(
-                Arguments.of("Null execution plan cache", new SQLFederationRuleConfiguration(false, false, null)),
-                Arguments.of("Zero initial capacity", new SQLFederationRuleConfiguration(false, false, new SQLFederationCacheOption(0, 1L))),
-                Arguments.of("Negative initial capacity", new SQLFederationRuleConfiguration(false, false, new SQLFederationCacheOption(-1, 1L))),
-                Arguments.of("Zero maximum size", new SQLFederationRuleConfiguration(false, false, new SQLFederationCacheOption(1, 0L))),
-                Arguments.of("Negative maximum size", new SQLFederationRuleConfiguration(false, false, new SQLFederationCacheOption(1, -1L))));
+                Arguments.of("Null execution plan cache", new SQLFederationRuleConfiguration(false, null, null)),
+                Arguments.of("Zero initial capacity", new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(0, 1L), null)),
+                Arguments.of("Negative initial capacity", new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(-1, 1L), null)),
+                Arguments.of("Zero maximum size", new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(1, 0L), null)),
+                Arguments.of("Negative maximum size", new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(1, -1L), null)));
     }
 }

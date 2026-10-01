@@ -35,7 +35,7 @@ permissions:
   contents: read
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
   MCP_IMAGE: ghcr.io/apache/shardingsphere-mcp
   MCP_PUBLISHER_VERSION: v1.7.9
   MCP_SERVER_NAME: io.github.apache/shardingsphere-mcp
