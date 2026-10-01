@@ -74,8 +74,7 @@ class ShardingTableTest {
     
     @Test
     void assertGetTableDataNodeWithNumericSuffix() {
-        ShardingTableRuleConfiguration config =
-                new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_0,ds_0.t_order_00");
+        ShardingTableRuleConfiguration config = new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_0,ds_0.t_order_00");
         ShardingTable actual = new ShardingTable(config, Collections.singleton("ds_0"), null);
         assertThat(actual.getTableDataNode().getPrefix(), is("t_order_"));
         assertThat(actual.getTableDataNode().getSuffixMinLength(), is(1));
@@ -83,8 +82,7 @@ class ShardingTableTest {
     
     @Test
     void assertGetTableDataNodeWithAlphanumericSuffix() {
-        ShardingTableRuleConfiguration config =
-                new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_mgm,ds_0.t_order_49m2cd");
+        ShardingTableRuleConfiguration config = new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_mgm,ds_0.t_order_49m2cd");
         ShardingTable actual = new ShardingTable(config, Collections.singleton("ds_0"), null);
         assertThat(actual.getTableDataNode().getPrefix(), is("t_order_"));
         assertThat(actual.getTableDataNode().getSuffixMinLength(), is(3));
