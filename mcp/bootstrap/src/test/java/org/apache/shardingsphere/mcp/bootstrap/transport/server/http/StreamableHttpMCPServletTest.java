@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import io.modelcontextprotocol.server.transport.HttpServletStreamableServerTransportProvider;
 import io.modelcontextprotocol.spec.HttpHeaders;
 import io.modelcontextprotocol.spec.McpSchema;
@@ -32,9 +33,13 @@ import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceCo
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -73,6 +78,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(LogCaptureExtension.class)
+@LogCaptureSettings(suppressOutput = true)
 class StreamableHttpMCPServletTest {
     
     private static final String ACCEPT = "application/json, text/event-stream";
@@ -202,17 +209,19 @@ class StreamableHttpMCPServletTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("requestMethods")
-    void assertServiceHandleUncommittedException(final String name, final String requestMethod) throws IOException {
+    void assertServiceHandleUncommittedException(final String name, final String requestMethod, final LogCaptureAssertion logCaptureAssertion) throws IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn(requestMethod);
         when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("Origin")));
         when(request.getHeaders("Origin")).thenReturn(Collections.enumeration(List.of("https://example.com")));
         HttpServletResponse response = mock(HttpServletResponse.class);
-        doThrow(new IOException("foo_failure")).when(response).getWriter();
+        IOException expectedException = new IOException("foo_failure");
+        doThrow(expectedException).when(response).getWriter();
         StreamableHttpMCPServlet actual = createServlet(mock(MCPSessionManager.class));
         assertDoesNotThrow(() -> actual.service(request, response));
         verify(response).reset();
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -367,19 +376,21 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServicePostRollbackSessionWhenDelegateFails() throws ServletException, IOException {
+    void assertServicePostRollbackSessionWhenDelegateFails(final LogCaptureAssertion logCaptureAssertion) throws ServletException, IOException {
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
         when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
         HttpServletResponse response = mock(HttpServletResponse.class);
         StreamableHttpMCPServlet actual = createServlet(sessionManager);
+        ServletException expectedException = new ServletException("foo_failure");
         doAnswer(invocation -> {
             ((HttpServletResponse) invocation.getArgument(1)).setHeader(HttpHeaders.MCP_SESSION_ID, "session-id");
-            throw new ServletException("foo_failure");
+            throw expectedException;
         }).when(getDelegate()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
         assertDoesNotThrow(() -> actual.service(request, response));
         assertFalse(sessionManager.hasSession("session-id"));
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @Test
@@ -514,7 +525,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServiceDeletePreserveSessionWhenDelegateFails() throws ServletException, IOException {
+    void assertServiceDeletePreserveSessionWhenDelegateFails(final LogCaptureAssertion logCaptureAssertion) throws ServletException, IOException {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession(new MCPSessionIdentity("session-id", "", "", Map.of()));
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -523,9 +534,11 @@ class StreamableHttpMCPServletTest {
         when(request.getHeader(HttpHeaders.MCP_SESSION_ID)).thenReturn("session-id");
         HttpServletResponse response = mock(HttpServletResponse.class);
         StreamableHttpMCPServlet actual = createServlet(sessionManager);
-        doThrow(new ServletException("foo_failure")).when(getDelegate()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        ServletException expectedException = new ServletException("foo_failure");
+        doThrow(expectedException).when(getDelegate()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
         assertDoesNotThrow(() -> actual.service(request, response));
         assertTrue(sessionManager.hasSession("session-id"));
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @Test
