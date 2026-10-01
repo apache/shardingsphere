@@ -25,9 +25,10 @@ ShowSQLFederationRule ::=
 
 | Column                       | Description                                |
 |------------------------------|--------------------------------------------|
-| sql_federation_enabled       | SQL federation enabled configuration       |
+| sql_federation_enabled       | Whether the selected provider enables SQL federation |
 | all_query_use_sql_federation | all query use SQL federation configuration |
 | execution_plan_cache         | execution plan cache configuration         |
+| provider_type                | Selected SQL federation provider type      |
 
 ### Example
 
@@ -39,11 +40,11 @@ SHOW SQL_FEDERATION RULE;
 
 ```sql
 mysql> show sql_federation rule;
-+------------------------+------------------------------+-------------------------------------------+
-| sql_federation_enabled | all_query_use_sql_federation | execution_plan_cache                      |
-+------------------------+------------------------------+-------------------------------------------+
-| true                   | false                        | initialCapacity: 2000, maximumSize: 65535 |
-+------------------------+------------------------------+-------------------------------------------+
++------------------------+------------------------------+-------------------------------------------+---------------+
+| sql_federation_enabled | all_query_use_sql_federation | execution_plan_cache                      | provider_type |
++------------------------+------------------------------+-------------------------------------------+---------------+
+| true                   | false                        | initialCapacity: 2000, maximumSize: 65535 | CALCITE       |
++------------------------+------------------------------+-------------------------------------------+---------------+
 1 row in set (0.31 sec)
 ```
 

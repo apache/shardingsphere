@@ -35,7 +35,7 @@ permissions:
   contents: read
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
   MCP_IMAGE: ghcr.io/apache/shardingsphere-mcp
   MCP_PUBLISHER_VERSION: v1.7.9
   MCP_SERVER_NAME: io.github.apache/shardingsphere-mcp
@@ -43,13 +43,13 @@ env:
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
+    uses: ./.github/workflows/reusable-global-environment.yml
 
   release-mcp:
     name: Release - MCP
     if: github.repository == 'apache/shardingsphere'
     needs: global-environment
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     permissions:
       contents: read
       id-token: write

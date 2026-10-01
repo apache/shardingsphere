@@ -39,7 +39,7 @@ permissions:
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
+    uses: ./.github/workflows/reusable-global-environment.yml
   nativetest:
     if: github.repository == 'apache/shardingsphere'
     needs: global-environment

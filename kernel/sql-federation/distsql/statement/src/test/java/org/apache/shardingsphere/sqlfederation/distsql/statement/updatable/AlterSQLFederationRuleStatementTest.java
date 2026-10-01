@@ -21,20 +21,18 @@ import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegmen
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AlterSQLFederationRuleStatementTest {
     
     @Test
-    void assertLegacyConstructor() {
+    void assertProviderType() {
         CacheOptionSegment cacheOption = new CacheOptionSegment(4, 64L);
-        AlterSQLFederationRuleStatement actual = new AlterSQLFederationRuleStatement(true, false, cacheOption);
-        assertTrue(actual.getSqlFederationEnabled());
+        AlterSQLFederationRuleStatement actual = new AlterSQLFederationRuleStatement(false, cacheOption, "CALCITE");
         assertFalse(actual.getAllQueryUseSQLFederation());
         assertThat(actual.getExecutionPlanCache(), sameInstance(cacheOption));
-        assertNull(actual.getProviderType());
+        assertThat(actual.getProviderType(), is("CALCITE"));
     }
 }

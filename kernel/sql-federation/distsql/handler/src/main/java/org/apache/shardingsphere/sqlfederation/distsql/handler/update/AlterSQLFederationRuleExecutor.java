@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.AlterSQLFederationRuleStatement;
-import org.apache.shardingsphere.sqlfederation.rule.SQLFederationProviderFactory;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 
 /**
@@ -36,17 +35,12 @@ public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitio
     
     @Override
     public SQLFederationRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterSQLFederationRuleStatement sqlStatement) {
-        boolean sqlFederationEnabled = null == sqlStatement.getSqlFederationEnabled() ? rule.getConfiguration().isSqlFederationEnabled() : sqlStatement.getSqlFederationEnabled();
         boolean allQueryUseSQLFederation = null == sqlStatement.getAllQueryUseSQLFederation() ? rule.getConfiguration().isAllQueryUseSQLFederation() : sqlStatement.getAllQueryUseSQLFederation();
         SQLFederationCacheOption executionPlanCache = null == sqlStatement.getExecutionPlanCache()
                 ? rule.getConfiguration().getExecutionPlanCache()
                 : createCacheOption(rule.getConfiguration().getExecutionPlanCache(), sqlStatement.getExecutionPlanCache());
         String providerType = null == sqlStatement.getProviderType() ? rule.getConfiguration().getProviderType() : sqlStatement.getProviderType();
-        SQLFederationRuleConfiguration result = new SQLFederationRuleConfiguration(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache, providerType);
-        if (result.isSqlFederationEnabled()) {
-            SQLFederationProviderFactory.getProvider(result.getProviderType());
-        }
-        return result;
+        return new SQLFederationRuleConfiguration(allQueryUseSQLFederation, executionPlanCache, providerType);
     }
     
     private SQLFederationCacheOption createCacheOption(final SQLFederationCacheOption cacheOption, final CacheOptionSegment segment) {

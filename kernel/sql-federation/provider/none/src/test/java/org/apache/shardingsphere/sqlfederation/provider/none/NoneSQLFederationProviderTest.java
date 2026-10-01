@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
-import org.apache.shardingsphere.sqlfederation.exception.SQLFederationProviderNotFoundException;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 import org.junit.jupiter.api.Test;
@@ -56,15 +55,22 @@ class NoneSQLFederationProviderTest {
     }
     
     @Test
+    void assertDisabled() {
+        assertFalse(TypedSPILoader.getService(SQLFederationProvider.class, "NONE").isSQLFederationEnabled());
+    }
+    
+    @Test
     void assertIsSupportedSQLStatement() {
         SQLFederationProvider provider = TypedSPILoader.getService(SQLFederationProvider.class, "NONE");
         assertFalse(provider.isSupportedSQLStatement(mock(SelectStatement.class)));
     }
     
     @Test
-    void assertDefaultCalciteProviderMissingWhenOnlyNoneInstalled() {
-        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L));
-        assertThrows(SQLFederationProviderNotFoundException.class, () -> new SQLFederationRule(config, Collections.emptyList()));
+    void assertDefaultNoneProviderWhenOnlyNoneInstalled() {
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), null);
+        SQLFederationRule actual = new SQLFederationRule(config, Collections.emptyList());
+        assertThat(actual.getProvider(), isA(NoneSQLFederationProvider.class));
+        assertFalse(actual.isSqlFederationEnabled());
     }
     
     @Test
@@ -120,7 +126,7 @@ class NoneSQLFederationProviderTest {
     }
     
     private SQLFederationRule createRule(final boolean allQueryUseSQLFederation) {
-        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, allQueryUseSQLFederation, new SQLFederationCacheOption(4, 64L), "NONE");
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(allQueryUseSQLFederation, new SQLFederationCacheOption(4, 64L), "NONE");
         return new SQLFederationRule(config, Collections.emptyList());
     }
 }

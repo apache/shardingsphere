@@ -64,7 +64,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         addSQLTokenGenerator(result, new ShardingTableTokenGenerator(rule));
         addSQLTokenGenerator(result, new ShardingDistinctProjectionPrefixTokenGenerator());
         addSQLTokenGenerator(result, new ShardingProjectionsTokenGenerator());
-        addSQLTokenGenerator(result, new ShardingOrderByTokenGenerator());
+        addSQLTokenGenerator(result, new ShardingOrderByTokenGenerator(rule));
         addSQLTokenGenerator(result, new ShardingAggregationDistinctTokenGenerator());
         addSQLTokenGenerator(result, new ShardingIndexTokenGenerator(rule));
         addSQLTokenGenerator(result, new ShardingConstraintTokenGenerator(rule));

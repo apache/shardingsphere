@@ -20,13 +20,13 @@ package org.apache.shardingsphere.sqlfederation.provider.calcite;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.exception.SQLFederationProviderNotFoundException;
 import org.apache.shardingsphere.sqlfederation.provider.none.NoneSQLFederationProvider;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
@@ -51,6 +51,11 @@ class CalciteSQLFederationProviderTest {
     }
     
     @Test
+    void assertEnabled() {
+        assertTrue(TypedSPILoader.getService(SQLFederationProvider.class, "CALCITE").isSQLFederationEnabled());
+    }
+    
+    @Test
     void assertIsSupportedSQLStatementWithSelect() {
         SQLFederationProvider provider = TypedSPILoader.getService(SQLFederationProvider.class, "CALCITE");
         assertTrue(provider.isSupportedSQLStatement(mock(SelectStatement.class)));
@@ -70,10 +75,11 @@ class CalciteSQLFederationProviderTest {
     
     @Test
     void assertDefaultProviderAndSharedContextRefresh() {
-        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L));
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), "CALCITE");
         SQLFederationRule rule = new SQLFederationRule(config, Collections.emptyList());
         SQLFederationProvider provider = rule.getProvider();
         assertThat(provider, isA(CalciteSQLFederationProvider.class));
+        assertTrue(rule.isSqlFederationEnabled());
         CompilerContext beforeRefresh = ((CalciteSQLFederationProvider) provider).getCompilerContext();
         rule.refresh(Collections.emptyList(), GlobalRuleChangedType.DATABASE_CHANGED);
         assertThat(rule.getProvider(), sameInstance(provider));
@@ -82,13 +88,19 @@ class CalciteSQLFederationProviderTest {
     
     @Test
     void assertSelectNoneWhenBothProvidersInstalled() {
-        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L), "NONE");
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), "NONE");
         assertThat(new SQLFederationRule(config, Collections.emptyList()).getProvider(), isA(NoneSQLFederationProvider.class));
     }
     
     @Test
-    void assertUnknownProviderDoesNotFallBackWhenBothProvidersInstalled() {
-        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(true, false, new SQLFederationCacheOption(4, 64L), "UNKNOWN");
-        assertThrows(SQLFederationProviderNotFoundException.class, () -> new SQLFederationRule(config, Collections.emptyList()));
+    void assertDefaultNoneWhenBothProvidersInstalled() {
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), null);
+        assertThat(new SQLFederationRule(config, Collections.emptyList()).getProvider(), isA(NoneSQLFederationProvider.class));
+    }
+    
+    @Test
+    void assertUnknownProviderFailsWhenDefaultIsInstalled() {
+        SQLFederationRuleConfiguration config = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), "UNKNOWN");
+        assertThrows(ServiceProviderNotFoundException.class, () -> new SQLFederationRule(config, Collections.emptyList()));
     }
 }
