@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.projection
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
@@ -41,9 +42,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Projection engine.
@@ -53,9 +58,50 @@ public final class ProjectionEngine {
     
     private final DatabaseType databaseType;
     
+    private final Set<String> reservedColumnLabels = new HashSet<>();
+    
     private int aggregationAverageDerivedColumnCount;
     
     private int aggregationDistinctDerivedColumnCount;
+    
+    /**
+     * Create projections.
+     *
+     * @param projectionSegments projection segments
+     * @return projections
+     */
+    @HighFrequencyInvocation
+    public Collection<Projection> createProjections(final Collection<ProjectionSegment> projectionSegments) {
+        if (containsAggregationDerivedAliases(projectionSegments)) {
+            for (ProjectionSegment each : projectionSegments) {
+                reserveColumnLabels(each);
+            }
+        }
+        Collection<Projection> result = new ArrayList<>(projectionSegments.size());
+        for (ProjectionSegment each : projectionSegments) {
+            createProjection(each).ifPresent(result::add);
+        }
+        return result;
+    }
+    
+    private boolean containsAggregationDerivedAliases(final Collection<ProjectionSegment> projectionSegments) {
+        for (ProjectionSegment each : projectionSegments) {
+            if (each instanceof AggregationDistinctProjectionSegment || each instanceof AggregationProjectionSegment && AggregationType.AVG == ((AggregationProjectionSegment) each).getType()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private void reserveColumnLabels(final ProjectionSegment projectionSegment) {
+        if (projectionSegment instanceof ShorthandProjectionSegment) {
+            for (ProjectionSegment each : ((ShorthandProjectionSegment) projectionSegment).getActualProjectionSegments()) {
+                reserveColumnLabels(each);
+            }
+            return;
+        }
+        reservedColumnLabels.add(projectionSegment.getColumnLabel().toUpperCase(Locale.ROOT));
+    }
     
     /**
      * Create projection.
@@ -77,7 +123,7 @@ public final class ProjectionEngine {
             return Optional.of(createProjection((AggregationDistinctProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof AggregationProjectionSegment) {
-            return Optional.of(createProjection((AggregationProjectionSegment) projectionSegment));
+            return Optional.of(createAggregationProjection((AggregationProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof SubqueryProjectionSegment) {
             return Optional.of(createProjection((SubqueryProjectionSegment) projectionSegment));
@@ -121,7 +167,7 @@ public final class ProjectionEngine {
             return createExpressionProjection(projectionSegment);
         }
         IdentifierValue alias =
-                projectionSegment.getAlias().orElseGet(() -> new IdentifierValue(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++)));
+                projectionSegment.getAlias().orElseGet(() -> new IdentifierValue(getAggregationDistinctDerivedAlias()));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
                 projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), projectionSegment, alias,
                 projectionSegment.getDistinctInnerExpression(), databaseType, projectionSegment.getSeparator().orElse(null));
@@ -131,7 +177,15 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private Projection createProjection(final AggregationProjectionSegment projectionSegment) {
+    private String getAggregationDistinctDerivedAlias() {
+        String result;
+        do {
+            result = DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++);
+        } while (reservedColumnLabels.contains(result));
+        return result;
+    }
+    
+    private Projection createAggregationProjection(final AggregationProjectionSegment projectionSegment) {
         if (projectionSegment.getWindow().isPresent()) {
             return createExpressionProjection(projectionSegment);
         }
@@ -152,6 +206,7 @@ public final class ProjectionEngine {
     }
     
     private void appendAverageDistinctDerivedProjection(final AggregationDistinctProjection averageDistinctProjection) {
+        skipReservedAverageDerivedAliases();
         String distinctInnerExpression = averageDistinctProjection.getDistinctInnerExpression();
         String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
         String innerExpression = averageDistinctProjection.getExpression().substring(averageDistinctProjection.getExpression().indexOf(Paren.PARENTHESES.getLeftParen()));
@@ -167,7 +222,15 @@ public final class ProjectionEngine {
         aggregationAverageDerivedColumnCount++;
     }
     
+    private void skipReservedAverageDerivedAliases() {
+        while (reservedColumnLabels.contains(DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount))
+                || reservedColumnLabels.contains(DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount))) {
+            aggregationAverageDerivedColumnCount++;
+        }
+    }
+    
     private void appendAverageDerivedProjection(final AggregationProjection averageProjection) {
+        skipReservedAverageDerivedAliases();
         String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
         String innerExpression = averageProjection.getExpression().substring(averageProjection.getExpression().indexOf(Paren.PARENTHESES.getLeftParen()));
         AggregationProjectionSegment countExpression = new AggregationProjectionSegment(0, 0, AggregationType.COUNT, AggregationType.COUNT.name() + innerExpression);

@@ -499,6 +499,7 @@ class StandardDatabaseProxyConnectorTest {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(queryResultMetaData.getColumnCount()).thenReturn(1);
         when(queryResultMetaData.getResultSetMetaData()).thenReturn(resultSetMetaData);
+        when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSetMetaData.getColumnName(1)).thenReturn("order_id");
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("order_id");
         when(queryResult.getMetaData()).thenReturn(queryResultMetaData);
@@ -560,7 +561,9 @@ class StandardDatabaseProxyConnectorTest {
         when(executionContext.getExecutionUnits()).thenReturn(Collections.singletonList(mock(ExecutionUnit.class)));
         when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         QueryResult queryResult = mock(QueryResult.class);
-        when(queryResult.getMetaData()).thenReturn(mock(QueryResultMetaData.class));
+        QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class, RETURNS_DEEP_STUBS);
+        when(queryResultMetaData.getResultSetMetaData().getColumnCount()).thenReturn(1);
+        when(queryResult.getMetaData()).thenReturn(queryResultMetaData);
         when(proxySQLExecutor.execute(executionContext)).thenReturn(Collections.singletonList(queryResult));
         MergedResult mergedResult = mock(MergedResult.class);
         try (

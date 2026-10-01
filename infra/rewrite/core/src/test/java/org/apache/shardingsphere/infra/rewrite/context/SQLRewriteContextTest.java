@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.rewrite.context;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -89,6 +90,21 @@ class SQLRewriteContextTest {
         when(collectionSQLTokenGenerator.generateSQLTokens(sqlStatementContext)).thenReturn(Collections.singleton(sqlToken));
         when(database.getName()).thenReturn("foo_db");
         when(database.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("test", mock(DatabaseType.class))));
+    }
+    
+    @Test
+    void assertNewContextResetsAppendedDerivedColumns() {
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
+        projectionsContext.setDerivedColumnsAppended(true);
+        projectionsContext.setAggregationDistinctColumnsRewritten(true);
+        SelectStatementContext statementContext = mock(SelectStatementContext.class);
+        when(statementContext.getProjectionsContext()).thenReturn(projectionsContext);
+        QueryContext queryContext = mock(QueryContext.class);
+        when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
+        when(queryContext.getParameters()).thenReturn(Collections.emptyList());
+        new SQLRewriteContext(database, queryContext);
+        assertFalse(projectionsContext.isDerivedColumnsAppended());
+        assertFalse(projectionsContext.isAggregationDistinctColumnsRewritten());
     }
     
     @Test

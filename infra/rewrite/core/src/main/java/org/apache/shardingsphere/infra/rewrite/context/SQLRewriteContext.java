@@ -19,8 +19,10 @@ package org.apache.shardingsphere.infra.rewrite.context;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
@@ -61,6 +63,11 @@ public final class SQLRewriteContext {
     public SQLRewriteContext(final ShardingSphereDatabase database, final QueryContext queryContext) {
         this.database = database;
         sqlStatementContext = queryContext.getSqlStatementContext();
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            ProjectionsContext projectionsContext = ((SelectStatementContext) sqlStatementContext).getProjectionsContext();
+            projectionsContext.setDerivedColumnsAppended(false);
+            projectionsContext.setAggregationDistinctColumnsRewritten(false);
+        }
         sql = queryContext.getSql();
         parameters = queryContext.getParameters();
         connectionContext = queryContext.getConnectionContext();
