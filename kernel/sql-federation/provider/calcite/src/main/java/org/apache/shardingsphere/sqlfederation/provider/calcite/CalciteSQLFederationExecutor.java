@@ -57,8 +57,8 @@ import org.apache.shardingsphere.sqlfederation.compiler.exception.SQLFederationU
 import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheKey;
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
-import org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor.SQLFederationProcessor;
-import org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor.SQLFederationProcessorFactory;
+import org.apache.shardingsphere.sqlfederation.provider.calcite.processor.SQLFederationProcessor;
+import org.apache.shardingsphere.sqlfederation.provider.calcite.processor.SQLFederationProcessorFactory;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 
 import java.sql.Connection;

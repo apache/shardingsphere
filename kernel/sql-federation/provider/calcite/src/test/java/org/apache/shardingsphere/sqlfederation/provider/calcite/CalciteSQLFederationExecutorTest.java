@@ -66,8 +66,8 @@ import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederat
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
-import org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor.SQLFederationProcessor;
-import org.apache.shardingsphere.sqlfederation.provider.calcite.engine.processor.SQLFederationProcessorFactory;
+import org.apache.shardingsphere.sqlfederation.provider.calcite.processor.SQLFederationProcessor;
+import org.apache.shardingsphere.sqlfederation.provider.calcite.processor.SQLFederationProcessorFactory;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
