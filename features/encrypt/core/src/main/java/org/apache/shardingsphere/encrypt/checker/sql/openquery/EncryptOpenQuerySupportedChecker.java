@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Exis
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.KeyValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
@@ -110,123 +111,31 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
                 || selectStatement.getWith().map(this::containsOpenQueryInWith).orElse(false) || containsOpenQueryInSelectClauses(selectStatement);
     }
     
-    private boolean containsOpenQueryInSelectClauses(final SelectStatement selectStatement) {
-        return selectStatement.getCombine().map(optional -> containsOpenQueryInSelect(optional.getLeft().getSelect()) || containsOpenQueryInSelect(optional.getRight().getSelect())).orElse(false)
-                || containsOpenQueryInProjections(selectStatement.getProjections())
-                || selectStatement.getHaving().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false)
-                || selectStatement.getOrderBy().map(this::containsOpenQueryInOrderBy).orElse(false);
-    }
-    
-    private boolean containsOpenQueryInOrderBy(final OrderBySegment orderBySegment) {
-        for (OrderByItemSegment each : orderBySegment.getOrderByItems()) {
-            if (each instanceof ExpressionOrderByItemSegment && containsOpenQueryInExpression(((ExpressionOrderByItemSegment) each).getExpr())) {
-                return true;
-            }
+    private boolean containsOpenQuery(final TableSegment tableSegment) {
+        if (tableSegment instanceof FunctionTableSegment) {
+            return isOpenQuery((FunctionTableSegment) tableSegment) || containsOpenQueryInExpression(((FunctionTableSegment) tableSegment).getTableFunction());
+        }
+        if (tableSegment instanceof JoinTableSegment) {
+            return containsOpenQueryInJoin((JoinTableSegment) tableSegment);
+        }
+        if (tableSegment instanceof SubqueryTableSegment) {
+            return containsOpenQueryInSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
+        }
+        if (tableSegment instanceof DeleteMultiTableSegment) {
+            return containsOpenQuery(((DeleteMultiTableSegment) tableSegment).getRelationTable());
+        }
+        if (tableSegment instanceof CollectionTableSegment) {
+            return containsOpenQueryInExpression(((CollectionTableSegment) tableSegment).getExpressionSegment());
         }
         return false;
     }
     
-    private boolean containsOpenQueryInUpdate(final UpdateStatement updateStatement) {
-        return containsOpenQuery(updateStatement.getTable())
-                || updateStatement.getFrom().map(this::containsOpenQuery).orElse(false)
-                || containsOpenQueryInUpdateClauses(updateStatement);
+    private boolean isOpenQuery(final FunctionTableSegment functionTableSegment) {
+        return functionTableSegment.getTableFunction() instanceof FunctionSegment && isOpenQueryFunction((FunctionSegment) functionTableSegment.getTableFunction());
     }
     
-    private boolean containsOpenQueryInUpdateClauses(final UpdateStatement updateStatement) {
-        return updateStatement.getWhere().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false)
-                || updateStatement.getWith().map(this::containsOpenQueryInWith).orElse(false) || containsOpenQueryInAssignments(updateStatement);
-    }
-    
-    private boolean containsOpenQueryInDelete(final DeleteStatement deleteStatement) {
-        return containsOpenQuery(deleteStatement.getTable())
-                || deleteStatement.getWhere().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false)
-                || deleteStatement.getWith().map(this::containsOpenQueryInWith).orElse(false);
-    }
-    
-    private boolean containsOpenQueryInInsert(final InsertStatement insertStatement) {
-        if (insertStatement.getRowSetFunction().map(this::isOpenQueryFunction).orElse(false)) {
-            return true;
-        }
-        if (insertStatement.getInsertSelect().map(optional -> containsOpenQueryInSelect(optional.getSelect())).orElse(false)) {
-            return true;
-        }
-        if (insertStatement.getWith().map(this::containsOpenQueryInWith).orElse(false)) {
-            return true;
-        }
-        return containsOpenQueryInInsertValues(insertStatement.getValues());
-    }
-    
-    private boolean containsOpenQueryInMerge(final MergeStatement mergeStatement) {
-        return containsOpenQuery(mergeStatement.getTarget()) || containsOpenQuery(mergeStatement.getSource())
-                || containsOpenQueryInMergeClauses(mergeStatement);
-    }
-    
-    private boolean containsOpenQueryInMergeClauses(final MergeStatement mergeStatement) {
-        if (mergeStatement.getWith().map(this::containsOpenQueryInWith).orElse(false)) {
-            return true;
-        }
-        if (null != mergeStatement.getExpression() && containsOpenQueryInExpression(mergeStatement.getExpression().getExpr())) {
-            return true;
-        }
-        return containsOpenQueryInWhenAndThens(mergeStatement);
-    }
-    
-    private boolean containsOpenQueryInWith(final WithSegment withSegment) {
-        for (CommonTableExpressionSegment each : withSegment.getCommonTableExpressions()) {
-            if (containsOpenQueryInSelect(each.getSubquery().getSelect())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsOpenQueryInWhenAndThens(final MergeStatement mergeStatement) {
-        for (MergeWhenAndThenSegment each : mergeStatement.getWhenAndThens()) {
-            if (null != each.getAndExpr() && containsOpenQueryInExpression(each.getAndExpr())) {
-                return true;
-            }
-            if (null != each.getUpdate() && containsOpenQueryInUpdate(each.getUpdate())) {
-                return true;
-            }
-            if (null != each.getInsert() && containsOpenQueryInInsert(each.getInsert())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsOpenQueryInProjections(final ProjectionsSegment projectionsSegment) {
-        for (ProjectionSegment each : projectionsSegment.getProjections()) {
-            if (each instanceof SubqueryProjectionSegment && containsOpenQueryInSelect(((SubqueryProjectionSegment) each).getSubquery().getSelect())) {
-                return true;
-            }
-            if (each instanceof ExpressionProjectionSegment && containsOpenQueryInExpression(((ExpressionProjectionSegment) each).getExpr())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsOpenQueryInAssignments(final UpdateStatement updateStatement) {
-        return updateStatement.getAssignment().map(optional -> containsOpenQueryInColumnAssignments(optional.getAssignments())).orElse(false);
-    }
-    
-    private boolean containsOpenQueryInColumnAssignments(final Collection<ColumnAssignmentSegment> assignments) {
-        for (ColumnAssignmentSegment each : assignments) {
-            if (containsOpenQueryInExpression(each.getValue())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsOpenQueryInInsertValues(final Collection<InsertValuesSegment> valuesSegments) {
-        for (InsertValuesSegment each : valuesSegments) {
-            if (containsOpenQueryInExpressionList(each.getValues())) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isOpenQueryFunction(final FunctionSegment functionSegment) {
+        return OPENQUERY_FUNCTION_NAME.equalsIgnoreCase(functionSegment.getFunctionName());
     }
     
     private boolean containsOpenQueryInExpression(final ExpressionSegment expression) {
@@ -244,12 +153,10 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
     
     private boolean containsOpenQueryInCompoundExpression(final ExpressionSegment expression) {
         if (expression instanceof BinaryOperationExpression) {
-            return containsOpenQueryInExpression(((BinaryOperationExpression) expression).getLeft())
-                    || containsOpenQueryInExpression(((BinaryOperationExpression) expression).getRight());
+            return containsOpenQueryInExpression(((BinaryOperationExpression) expression).getLeft()) || containsOpenQueryInExpression(((BinaryOperationExpression) expression).getRight());
         }
         if (expression instanceof InExpression) {
-            return containsOpenQueryInExpression(((InExpression) expression).getLeft())
-                    || containsOpenQueryInExpression(((InExpression) expression).getRight());
+            return containsOpenQueryInExpression(((InExpression) expression).getLeft()) || containsOpenQueryInExpression(((InExpression) expression).getRight());
         }
         if (expression instanceof NotExpression) {
             return containsOpenQueryInExpression(((NotExpression) expression).getExpression());
@@ -278,6 +185,9 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
         if (expression instanceof CollateExpression) {
             return ((CollateExpression) expression).getExpr().map(optional -> containsOpenQueryInExpression(optional)).orElse(false);
         }
+        if (expression instanceof KeyValueSegment) {
+            return containsOpenQueryInKeyValue((KeyValueSegment) expression);
+        }
         return false;
     }
     
@@ -300,23 +210,11 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
         return null != caseWhen.getElseExpr() && containsOpenQueryInExpression(caseWhen.getElseExpr());
     }
     
-    private boolean containsOpenQuery(final TableSegment tableSegment) {
-        if (tableSegment instanceof FunctionTableSegment) {
-            return isOpenQuery((FunctionTableSegment) tableSegment);
+    private boolean containsOpenQueryInKeyValue(final KeyValueSegment keyValue) {
+        if (null != keyValue.getKey() && containsOpenQueryInExpression(keyValue.getKey())) {
+            return true;
         }
-        if (tableSegment instanceof JoinTableSegment) {
-            return containsOpenQueryInJoin((JoinTableSegment) tableSegment);
-        }
-        if (tableSegment instanceof SubqueryTableSegment) {
-            return containsOpenQueryInSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
-        }
-        if (tableSegment instanceof DeleteMultiTableSegment) {
-            return containsOpenQuery(((DeleteMultiTableSegment) tableSegment).getRelationTable());
-        }
-        if (tableSegment instanceof CollectionTableSegment) {
-            return containsOpenQueryInExpression(((CollectionTableSegment) tableSegment).getExpressionSegment());
-        }
-        return false;
+        return null != keyValue.getValue() && containsOpenQueryInExpression(keyValue.getValue());
     }
     
     private boolean containsOpenQueryInJoin(final JoinTableSegment joinTableSegment) {
@@ -326,12 +224,119 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
         return null != joinTableSegment.getCondition() && containsOpenQueryInExpression(joinTableSegment.getCondition());
     }
     
-    private boolean isOpenQuery(final FunctionTableSegment functionTableSegment) {
-        ExpressionSegment tableFunction = functionTableSegment.getTableFunction();
-        return tableFunction instanceof FunctionSegment && isOpenQueryFunction((FunctionSegment) tableFunction);
+    private boolean containsOpenQueryInWith(final WithSegment withSegment) {
+        for (CommonTableExpressionSegment each : withSegment.getCommonTableExpressions()) {
+            if (containsOpenQueryInSelect(each.getSubquery().getSelect())) {
+                return true;
+            }
+        }
+        return false;
     }
     
-    private boolean isOpenQueryFunction(final FunctionSegment functionSegment) {
-        return OPENQUERY_FUNCTION_NAME.equalsIgnoreCase(functionSegment.getFunctionName());
+    private boolean containsOpenQueryInSelectClauses(final SelectStatement selectStatement) {
+        return selectStatement.getCombine().map(optional -> containsOpenQueryInSelect(optional.getLeft().getSelect()) || containsOpenQueryInSelect(optional.getRight().getSelect())).orElse(false)
+                || containsOpenQueryInProjections(selectStatement.getProjections())
+                || selectStatement.getHaving().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false)
+                || selectStatement.getOrderBy().map(this::containsOpenQueryInOrderBy).orElse(false);
+    }
+    
+    private boolean containsOpenQueryInProjections(final ProjectionsSegment projectionsSegment) {
+        for (ProjectionSegment each : projectionsSegment.getProjections()) {
+            if (each instanceof SubqueryProjectionSegment && containsOpenQueryInSelect(((SubqueryProjectionSegment) each).getSubquery().getSelect())) {
+                return true;
+            }
+            if (each instanceof ExpressionProjectionSegment && containsOpenQueryInExpression(((ExpressionProjectionSegment) each).getExpr())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsOpenQueryInOrderBy(final OrderBySegment orderBySegment) {
+        for (OrderByItemSegment each : orderBySegment.getOrderByItems()) {
+            if (each instanceof ExpressionOrderByItemSegment && containsOpenQueryInExpression(((ExpressionOrderByItemSegment) each).getExpr())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsOpenQueryInUpdate(final UpdateStatement updateStatement) {
+        return containsOpenQuery(updateStatement.getTable()) || updateStatement.getFrom().map(this::containsOpenQuery).orElse(false) || containsOpenQueryInUpdateClauses(updateStatement);
+    }
+    
+    private boolean containsOpenQueryInUpdateClauses(final UpdateStatement updateStatement) {
+        return updateStatement.getWhere().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false)
+                || updateStatement.getWith().map(this::containsOpenQueryInWith).orElse(false) || containsOpenQueryInAssignments(updateStatement);
+    }
+    
+    private boolean containsOpenQueryInAssignments(final UpdateStatement updateStatement) {
+        return updateStatement.getAssignment().map(optional -> containsOpenQueryInColumnAssignments(optional.getAssignments())).orElse(false);
+    }
+    
+    private boolean containsOpenQueryInColumnAssignments(final Collection<ColumnAssignmentSegment> assignments) {
+        for (ColumnAssignmentSegment each : assignments) {
+            if (containsOpenQueryInExpression(each.getValue())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsOpenQueryInDelete(final DeleteStatement deleteStatement) {
+        return containsOpenQuery(deleteStatement.getTable())
+                || deleteStatement.getWhere().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false)
+                || deleteStatement.getWith().map(this::containsOpenQueryInWith).orElse(false);
+    }
+    
+    private boolean containsOpenQueryInInsert(final InsertStatement insertStatement) {
+        if (insertStatement.getRowSetFunction().map(this::isOpenQueryFunction).orElse(false)) {
+            return true;
+        }
+        if (insertStatement.getInsertSelect().map(optional -> containsOpenQueryInSelect(optional.getSelect())).orElse(false)) {
+            return true;
+        }
+        if (insertStatement.getWith().map(this::containsOpenQueryInWith).orElse(false)) {
+            return true;
+        }
+        return containsOpenQueryInInsertValues(insertStatement.getValues());
+    }
+    
+    private boolean containsOpenQueryInInsertValues(final Collection<InsertValuesSegment> valuesSegments) {
+        for (InsertValuesSegment each : valuesSegments) {
+            if (containsOpenQueryInExpressionList(each.getValues())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsOpenQueryInMerge(final MergeStatement mergeStatement) {
+        return containsOpenQuery(mergeStatement.getTarget()) || containsOpenQuery(mergeStatement.getSource()) || containsOpenQueryInMergeClauses(mergeStatement);
+    }
+    
+    private boolean containsOpenQueryInMergeClauses(final MergeStatement mergeStatement) {
+        if (mergeStatement.getWith().map(this::containsOpenQueryInWith).orElse(false)) {
+            return true;
+        }
+        if (null != mergeStatement.getExpression() && containsOpenQueryInExpression(mergeStatement.getExpression().getExpr())) {
+            return true;
+        }
+        return containsOpenQueryInWhenAndThens(mergeStatement);
+    }
+    
+    private boolean containsOpenQueryInWhenAndThens(final MergeStatement mergeStatement) {
+        for (MergeWhenAndThenSegment each : mergeStatement.getWhenAndThens()) {
+            if (null != each.getAndExpr() && containsOpenQueryInExpression(each.getAndExpr())) {
+                return true;
+            }
+            if (null != each.getUpdate() && containsOpenQueryInUpdate(each.getUpdate())) {
+                return true;
+            }
+            if (null != each.getInsert() && containsOpenQueryInInsert(each.getInsert())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
