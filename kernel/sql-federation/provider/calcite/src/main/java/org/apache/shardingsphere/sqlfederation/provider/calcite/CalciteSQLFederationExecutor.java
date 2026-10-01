@@ -58,7 +58,6 @@ import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionP
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.provider.calcite.processor.SQLFederationProcessor;
-import org.apache.shardingsphere.sqlfederation.provider.calcite.processor.SQLFederationProcessorFactory;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 
 import java.sql.Connection;
@@ -102,12 +101,12 @@ public final class CalciteSQLFederationExecutor implements SQLFederationExecutor
     
     public CalciteSQLFederationExecutor(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereStatistics statistics,
                                         final JDBCExecutor jdbcExecutor, final ProcessEngine processEngine, final CalciteSQLFederationProvider provider) {
-        this(currentDatabaseName, currentSchemaName, processEngine, provider, SQLFederationProcessorFactory.getInstance().newInstance(statistics, jdbcExecutor));
+        this(currentDatabaseName, currentSchemaName, processEngine, provider, new SQLFederationProcessor(statistics, jdbcExecutor));
     }
     
     public CalciteSQLFederationExecutor(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereStatistics statistics,
                                         final ProcessEngine processEngine, final CalciteSQLFederationProvider provider) {
-        this(currentDatabaseName, currentSchemaName, processEngine, provider, SQLFederationProcessorFactory.getInstance().newPreviewInstance(statistics));
+        this(currentDatabaseName, currentSchemaName, processEngine, provider, new SQLFederationProcessor(statistics));
     }
     
     /**
