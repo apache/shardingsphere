@@ -19,9 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.generic;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -36,36 +34,17 @@ class FirebirdSliceResponsePacketTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertWriteArguments")
-    void assertWrite(final String name, final int sliceLength, final byte[] sliceData, final int expectedPadding) {
+    void assertWrite(final String name, final int sliceLength, final byte[] sliceData, final byte[] expectedBytes) {
         ByteBuf byteBuf = Unpooled.buffer();
         new FirebirdSliceResponsePacket(sliceLength, sliceData).write(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
-        assertThat(byteBuf.readInt(), is(FirebirdCommandPacketType.SLICE.getValue()));
-        assertThat(byteBuf.readInt(), is(sliceLength));
-        assertThat(byteBuf.readInt(), is(sliceData.length));
-        assertThat(byteBuf.readInt(), is(sliceData.length));
         byte[] actual = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(actual);
-        assertThat(actual, is(expectedPadding == 0 ? sliceData : pad(sliceData, expectedPadding)));
-    }
-    
-    @Test
-    void assertGetters() {
-        byte[] sliceData = new byte[]{1, 2, 3};
-        FirebirdSliceResponsePacket packet = new FirebirdSliceResponsePacket(3, sliceData);
-        assertThat(packet.getSliceLength(), is(3));
-        assertThat(packet.getSliceData(), is(sliceData));
-    }
-    
-    private static byte[] pad(final byte[] value, final int padding) {
-        byte[] result = new byte[value.length + padding];
-        System.arraycopy(value, 0, result, 0, value.length);
-        return result;
+        assertThat(actual, is(expectedBytes));
     }
     
     private static Stream<Arguments> assertWriteArguments() {
-        return Stream.of(
-                Arguments.of("empty_slice", 0, new byte[0], 0),
-                Arguments.of("aligned_slice", 4, new byte[]{1, 2, 3, 4}, 0),
-                Arguments.of("unaligned_slice", 3, new byte[]{1, 2, 3}, 1));
+        return Stream.of(Arguments.of("empty_slice", 0, new byte[0], new byte[]{0, 0, 0, 60, 0, 0, 0, 0, 0, 0, 0, 0}),
+                Arguments.of("aligned_slice", 4, new byte[]{1, 2, 3, 4}, new byte[]{0, 0, 0, 60, 0, 0, 0, 4, 0, 0, 0, 4, 1, 2, 3, 4}),
+                Arguments.of("unaligned_slice", 3, new byte[]{1, 2, 3}, new byte[]{0, 0, 0, 60, 0, 0, 0, 3, 0, 0, 0, 3, 1, 2, 3, 0}));
     }
 }

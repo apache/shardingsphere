@@ -28,8 +28,11 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
  *
  * <p>Success response to a get slice request, carrying the requested slice of a blob.</p>
  *
- * <p>The wire protocol specification documents the second length field as "possibly a buffer?, needs verification",
- * so the slice length is written both as a bare 4-byte integer and as the length prefix of the slice data buffer.</p>
+ * <p>The slice length is written twice, once as the standalone slice length and once as the length prefix of the slice data
+ * buffer, which is padded to a 4-byte boundary.</p>
+ *
+ * <p>The wire protocol documentation marks this section as possibly not reflecting the actual encoding. The layout here follows
+ * the Firebird 5.0.3 implementation, where op_slice encodes the slice length and then a slice of that length and data.</p>
  *
  * @see <a href="https://firebirdsql.org/file/documentation/html/en/firebirddocs/wireprotocol/firebird-wire-protocol.html#wireprotocol-responses-slice">Firebird wire protocol - slice response</a>
  */
@@ -45,7 +48,6 @@ public final class FirebirdSliceResponsePacket extends FirebirdPacket {
     protected void write(final FirebirdPacketPayload payload) {
         payload.writeInt4(FirebirdCommandPacketType.SLICE.getValue());
         payload.writeInt4(sliceLength);
-        payload.writeInt4(sliceData.length);
         payload.writeBuffer(sliceData);
     }
 }
