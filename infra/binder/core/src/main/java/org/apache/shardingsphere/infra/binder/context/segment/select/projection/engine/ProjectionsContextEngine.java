@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
@@ -60,18 +59,10 @@ public final class ProjectionsContextEngine {
      * @return projections context
      */
     public ProjectionsContext createProjectionsContext(final ProjectionsSegment projectionsSegment, final GroupByContext groupByContext, final OrderByContext orderByContext) {
-        Collection<Projection> projections = getProjections(projectionsSegment);
+        Collection<Projection> projections = projectionEngine.createProjections(projectionsSegment.getProjections());
         ProjectionsContext result = new ProjectionsContext(projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections);
         result.getProjections().addAll(getDerivedGroupByColumns(groupByContext, projections));
         result.getProjections().addAll(getDerivedOrderByColumns(orderByContext, projections));
-        return result;
-    }
-    
-    private Collection<Projection> getProjections(final ProjectionsSegment projectionsSegment) {
-        Collection<Projection> result = new LinkedList<>();
-        for (ProjectionSegment each : projectionsSegment.getProjections()) {
-            projectionEngine.createProjection(each).ifPresent(result::add);
-        }
         return result;
     }
     

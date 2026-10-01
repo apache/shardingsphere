@@ -75,6 +75,7 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
     @Override
     public ProjectionsToken generateSQLToken(final SelectStatementContext selectStatementContext) {
         Map<RouteUnit, Collection<String>> derivedProjectionTexts = getDerivedProjectionTexts(selectStatementContext);
+        selectStatementContext.getProjectionsContext().setDerivedColumnsAppended(true);
         return new ProjectionsToken(selectStatementContext.getProjectionsContext().getStopIndex() + 1 + " ".length(), derivedProjectionTexts);
     }
     

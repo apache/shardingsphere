@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.projection
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
@@ -59,6 +60,12 @@ public final class ProjectionsContext {
     private final boolean containsLastInsertIdProjection;
     
     private final Map<String, Integer> columnLabelAndIndexMap;
+    
+    @Setter
+    private boolean derivedColumnsAppended;
+    
+    @Setter
+    private boolean aggregationDistinctColumnsRewritten;
     
     public ProjectionsContext(final int startIndex, final int stopIndex, final boolean distinctRow, final Collection<Projection> projections) {
         this.startIndex = startIndex;
@@ -179,7 +186,7 @@ public final class ProjectionsContext {
         Map<String, Integer> result = new CaseInsensitiveMap<>(expandProjections.size(), 1F);
         for (int columnIndex = expandProjections.size(); columnIndex > 0; columnIndex--) {
             Projection projection = expandProjections.get(columnIndex - 1);
-            result.put(DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : projection.getColumnLabel(), columnIndex);
+            result.put(projection.getColumnLabel(), columnIndex);
         }
         return result;
     }

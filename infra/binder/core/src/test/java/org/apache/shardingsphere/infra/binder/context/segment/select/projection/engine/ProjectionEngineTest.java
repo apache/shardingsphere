@@ -33,13 +33,19 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Aggr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,6 +57,55 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ProjectionEngineTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"explicit alias first,AGGREGATION_DISTINCT_DERIVED_0,true", "explicit alias last,AGGREGATION_DISTINCT_DERIVED_0,false",
+            "folded explicit alias first,aggregation_distinct_derived_0,true", "folded explicit alias last,aggregation_distinct_derived_0,false"})
+    void assertCreateProjectionsWithAggregationAliasCollision(final String name, final String alias, final boolean explicitFirst) {
+        AggregationDistinctProjectionSegment explicit = new AggregationDistinctProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(DISTINCT user_id)", "user_id");
+        explicit.setAlias(new AliasSegment(0, 0, new IdentifierValue(alias)));
+        AggregationDistinctProjectionSegment generated = new AggregationDistinctProjectionSegment(0, 0, AggregationType.SUM, "SUM(DISTINCT order_id)", "order_id");
+        Collection<ProjectionSegment> segments = explicitFirst ? Arrays.asList(explicit, generated) : Arrays.asList(generated, explicit);
+        Iterator<Projection> actual = new ProjectionEngine(databaseType).createProjections(segments).iterator();
+        assertThat(actual.next().getAlias().get().getValue(), is(explicitFirst ? alias : "AGGREGATION_DISTINCT_DERIVED_1"));
+        assertThat(actual.next().getAlias().get().getValue(), is(explicitFirst ? "AGGREGATION_DISTINCT_DERIVED_1" : alias));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"explicit selected column,false", "wildcard selected column,true"})
+    void assertCreateProjectionsWithColumnLabelCollision(final String name, final boolean shorthand) {
+        ColumnProjectionSegment column = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("AGGREGATION_DISTINCT_DERIVED_0")));
+        ShorthandProjectionSegment wildcard = new ShorthandProjectionSegment(0, 0);
+        wildcard.getActualProjectionSegments().add(column);
+        AggregationDistinctProjectionSegment count = new AggregationDistinctProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(DISTINCT user_id)", "user_id");
+        Collection<ProjectionSegment> segments = Arrays.asList(count, shorthand ? wildcard : column);
+        Collection<Projection> actual = new ProjectionEngine(databaseType).createProjections(segments);
+        assertThat(actual.iterator().next().getAlias().get().getValue(), is("AGGREGATION_DISTINCT_DERIVED_1"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"distinct average count collision,AVG_DERIVED_COUNT_0,true", "distinct average sum collision,avg_derived_sum_0,true",
+            "average count collision,AVG_DERIVED_COUNT_0,false", "average sum collision,avg_derived_sum_0,false"})
+    void assertCreateProjectionsWithAverageAliasCollision(final String name, final String alias, final boolean distinct) {
+        ColumnProjectionSegment column = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id")));
+        column.setAlias(new AliasSegment(0, 0, new IdentifierValue(alias)));
+        AggregationProjectionSegment average = distinct
+                ? new AggregationDistinctProjectionSegment(0, 0, AggregationType.AVG, "AVG(DISTINCT user_id)", "user_id")
+                : new AggregationProjectionSegment(0, 0, AggregationType.AVG, "AVG(user_id)");
+        Collection<Projection> projections = new ProjectionEngine(databaseType).createProjections(Arrays.asList(average, column));
+        AggregationProjection actual = (AggregationProjection) projections.iterator().next();
+        assertThat(actual.getDerivedAggregationProjections().get(0).getAlias().get().getValue(), is("AVG_DERIVED_COUNT_1"));
+        assertThat(actual.getDerivedAggregationProjections().get(1).getAlias().get().getValue(), is("AVG_DERIVED_SUM_1"));
+    }
+    
+    @Test
+    void assertCreateProjectionsWithRepeatedAggregations() {
+        AggregationDistinctProjectionSegment first = new AggregationDistinctProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(DISTINCT user_id)", "user_id");
+        AggregationDistinctProjectionSegment second = new AggregationDistinctProjectionSegment(1, 1, AggregationType.COUNT, "COUNT(DISTINCT user_id)", "user_id");
+        Iterator<Projection> actual = new ProjectionEngine(databaseType).createProjections(Arrays.asList(first, second)).iterator();
+        assertThat(actual.next().getAlias().get().getValue(), is("AGGREGATION_DISTINCT_DERIVED_0"));
+        assertThat(actual.next().getAlias().get().getValue(), is("AGGREGATION_DISTINCT_DERIVED_1"));
+    }
     
     @Test
     void assertCreateProjectionWhenProjectionSegmentNotMatched() {

@@ -75,8 +75,9 @@ public final class MySQLProjectionMetadataResolver {
             ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
             ShardingSphereResultSetMetaData resultSetMetaData = new ShardingSphereResultSetMetaData(actualResultSetMetaData, database, selectStatementContext);
             QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
-            Collection<MySQLPacket> result = new ArrayList<>(selectStatementContext.getProjectionsContext().getExpandProjections().size());
-            for (int columnIndex = 1; columnIndex <= selectStatementContext.getProjectionsContext().getExpandProjections().size(); columnIndex++) {
+            int columnCount = resultSetMetaData.getColumnCount();
+            Collection<MySQLPacket> result = new ArrayList<>(columnCount);
+            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
                 QueryHeader queryHeader = queryHeaderBuilderEngine.build(selectStatementContext, resultSetMetaData, database, columnIndex);
                 result.add(createMySQLColumnDefinition41Packet(queryHeader, characterSet));
             }
