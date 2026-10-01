@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.resource;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
@@ -37,7 +38,11 @@ import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
@@ -50,6 +55,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -61,6 +67,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(LogCaptureExtension.class)
+@LogCaptureSettings(value = "org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory", suppressOutput = true)
 class MCPResourceSpecificationFactoryTest {
     
     @Test
@@ -155,12 +163,13 @@ class MCPResourceSpecificationFactoryTest {
     }
     
     @Test
-    void assertReadResourceSanitizesRuntimeFailure() {
+    void assertReadResourceSanitizesRuntimeFailure(final LogCaptureAssertion logCaptureAssertion) {
         MCPResourceDescriptor descriptor = new MCPResourceDescriptor("shardingsphere://runtime-error", "runtime-error", "Runtime Error", "Read runtime error.", "application/json",
                 MCPResourceAnnotations.EMPTY, Map.of());
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
             mocked.when(ResourceDefinitionRegistry::getSupportedResourceDescriptors).thenReturn(List.of(descriptor));
-            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("shardingsphere://runtime-error"))).thenThrow(new RuntimeException("runtime failure"));
+            RuntimeException expectedException = new RuntimeException("runtime failure");
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("shardingsphere://runtime-error"))).thenThrow(expectedException);
             SyncResourceSpecification actualSpecification = findResourceSpecification(
                     new MCPResourceSpecificationFactory(createRuntimeContext()).createResourceSpecifications(), "shardingsphere://runtime-error");
             McpError actual = assertThrows(McpError.class,
@@ -168,6 +177,7 @@ class MCPResourceSpecificationFactoryTest {
             assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INTERNAL_ERROR));
             assertThat(actual.getJsonRpcError().message(), is("Service is temporarily unavailable."));
             assertFalse(String.valueOf(actual.getJsonRpcError().data()).contains("runtime failure"));
+            logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
         }
     }
     

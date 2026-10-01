@@ -146,8 +146,7 @@ public final class SQLFederationProcessor {
     public void release(final String currentDatabaseName, final String currentSchemaName, final QueryContext queryContext, final SchemaPlus schemaPlus) {
         Collection<SimpleTableSegment> simpleTables = queryContext.getSqlStatementContext().getTablesContext().getSimpleTables();
         for (SimpleTableSegment each : simpleTables) {
-            Table table = getTable(currentDatabaseName, currentSchemaName, schemaPlus,
-                    each, queryContext.getSqlStatementContext().getSqlStatement().getDatabaseType(), queryContext.getSql());
+            Table table = getTable(currentDatabaseName, currentSchemaName, schemaPlus, each, queryContext.getSqlStatementContext().getSqlStatement().getDatabaseType(), queryContext.getSql());
             if (table instanceof SQLFederationTable) {
                 ((SQLFederationTable) table).clearScanImplementor();
             }
