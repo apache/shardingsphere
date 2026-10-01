@@ -515,18 +515,18 @@ final class EncryptOpenQuerySupportedCheckerTest {
         when(result.getDatabaseType()).thenReturn(databaseType);
         return result;
     }
-
+    
     private FunctionTableSegment createOpenQueryFunctionTableSegment() {
         FunctionSegment funcSeg = new FunctionSegment(0, 60, "OPENQUERY", "OPENQUERY(MyLinkedServer, 'SELECT GroupName FROM Department')");
         return new FunctionTableSegment(0, 60, funcSeg);
     }
-
+    
     private SQLStatementContext createSQLStatementContext(final SQLStatement sqlStatement) {
         SQLStatementContext result = mock(SQLStatementContext.class);
         when(result.getSqlStatement()).thenReturn(sqlStatement);
         return result;
     }
-
+    
     private SubquerySegment mockSubqueryWithOpenQueryFrom() {
         SelectStatement innerSelect = mock(SelectStatement.class);
         when(innerSelect.getFrom()).thenReturn(Optional.of(createOpenQueryFunctionTableSegment()));
@@ -535,13 +535,13 @@ final class EncryptOpenQuerySupportedCheckerTest {
         when(result.getSelect()).thenReturn(innerSelect);
         return result;
     }
-
+    
     private SelectStatement mockSQLServerSelectWithSimpleFrom() {
         SelectStatement result = mockSQLServerStatement(SelectStatement.class);
         when(result.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("foo_table")))));
         return result;
     }
-
+    
     private void stubSelectNegativePaths(final SelectStatement selectStatement) {
         when(selectStatement.getWhere()).thenReturn(Optional.empty());
         when(selectStatement.getWith()).thenReturn(Optional.empty());
@@ -550,13 +550,13 @@ final class EncryptOpenQuerySupportedCheckerTest {
         when(selectStatement.getOrderBy()).thenReturn(Optional.empty());
         when(selectStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
     }
-
+    
     private WithSegment createWithSegmentContainingOpenQuery() {
         SubquerySegment cteSubquery = mockSubqueryWithOpenQueryFrom();
         CommonTableExpressionSegment cteSeg = new CommonTableExpressionSegment(0, 80, new AliasSegment(0, 3, new IdentifierValue("foo_cte")), cteSubquery);
         return new WithSegment(0, 80, Collections.singletonList(cteSeg));
     }
-
+    
     private SubquerySegment mockSubqueryWithEmptySelect() {
         SelectStatement innerSelect = mock(SelectStatement.class);
         when(innerSelect.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("foo_table")))));
@@ -565,7 +565,7 @@ final class EncryptOpenQuerySupportedCheckerTest {
         when(result.getSelect()).thenReturn(innerSelect);
         return result;
     }
-
+    
     private SelectStatement mockNonSQLServerSelectWithOpenQuery(final String databaseTypeName) {
         SelectStatement result = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
         DatabaseType databaseType = mock(DatabaseType.class);
