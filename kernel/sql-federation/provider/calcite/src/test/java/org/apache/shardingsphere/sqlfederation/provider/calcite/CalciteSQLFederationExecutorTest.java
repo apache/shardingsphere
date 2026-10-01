@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.provider.calcite;
 
+import lombok.SneakyThrows;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.schema.SchemaPlus;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dal.Explain
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
@@ -67,7 +67,6 @@ import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.provider.calcite.processor.SQLFederationProcessor;
-import org.apache.shardingsphere.sqlfederation.provider.calcite.processor.SQLFederationProcessorFactory;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -160,16 +159,12 @@ class CalciteSQLFederationExecutorTest {
         return new ShardingSphereMetaData(Collections.singleton(database), new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(globalRules), new ConfigurationProperties(props));
     }
     
+    @SneakyThrows(ReflectiveOperationException.class)
     private CalciteSQLFederationExecutor createCalciteSQLFederationExecutor(final SQLFederationProcessor processor, final ShardingSphereMetaData metaData) {
-        ShardingSphereStatistics statistics = mock(ShardingSphereStatistics.class);
-        JDBCExecutor jdbcExecutor = mock(JDBCExecutor.class);
-        try (MockedStatic<SQLFederationProcessorFactory> factoryMock = mockStatic(SQLFederationProcessorFactory.class)) {
-            SQLFederationProcessorFactory factory = mock(SQLFederationProcessorFactory.class);
-            when(factory.newInstance(statistics, jdbcExecutor)).thenReturn(processor);
-            factoryMock.when(SQLFederationProcessorFactory::getInstance).thenReturn(factory);
-            CalciteSQLFederationProvider provider = (CalciteSQLFederationProvider) metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).getProvider();
-            return new CalciteSQLFederationExecutor("foo_db", "foo_schema", statistics, jdbcExecutor, new ProcessEngine(), provider);
-        }
+        CalciteSQLFederationProvider provider = (CalciteSQLFederationProvider) metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).getProvider();
+        CalciteSQLFederationExecutor result = new CalciteSQLFederationExecutor("foo_db", "foo_schema", mock(ShardingSphereStatistics.class), mock(), new ProcessEngine(), provider);
+        Plugins.getMemberAccessor().set(CalciteSQLFederationExecutor.class.getDeclaredField("processor"), result, processor);
+        return result;
     }
     
     @SuppressWarnings("unchecked")
