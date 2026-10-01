@@ -47,8 +47,6 @@ class FirebirdSeekBlobCommandExecutorTest {
     
     private static final int BLOB_HANDLE = 7;
     
-    private static final int SEEK_MODE_FROM_HEAD = 0;
-    
     private static final int SEEK_MODE_FROM_TAIL = 2;
     
     @Mock
@@ -74,7 +72,6 @@ class FirebirdSeekBlobCommandExecutorTest {
     void assertExecuteWithStreamBlob() {
         FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3, 4}, true);
         when(packet.getBlobHandle()).thenReturn(BLOB_HANDLE);
-        when(packet.getSeekMode()).thenReturn(SEEK_MODE_FROM_HEAD);
         when(packet.getOffset()).thenReturn(3);
         Collection<DatabasePacket> actualPackets = new FirebirdSeekBlobCommandExecutor(packet, connectionSession).execute();
         assertThat(((FirebirdGenericResponsePacket) actualPackets.iterator().next()).getId(), is(3L));
@@ -85,7 +82,6 @@ class FirebirdSeekBlobCommandExecutorTest {
     void assertExecuteWithOffsetBeyondBlobContent() {
         FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2}, true);
         when(packet.getBlobHandle()).thenReturn(BLOB_HANDLE);
-        when(packet.getSeekMode()).thenReturn(SEEK_MODE_FROM_HEAD);
         when(packet.getOffset()).thenReturn(9);
         Collection<DatabasePacket> actualPackets = new FirebirdSeekBlobCommandExecutor(packet, connectionSession).execute();
         assertThat(((FirebirdGenericResponsePacket) actualPackets.iterator().next()).getId(), is(2L));
@@ -107,8 +103,6 @@ class FirebirdSeekBlobCommandExecutorTest {
         FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2}, true);
         FirebirdBlobReadCache.getInstance().readSegment(CONNECTION_ID, BLOB_HANDLE, 2);
         when(packet.getBlobHandle()).thenReturn(BLOB_HANDLE);
-        when(packet.getSeekMode()).thenReturn(SEEK_MODE_FROM_HEAD);
-        when(packet.getOffset()).thenReturn(0);
         Collection<DatabasePacket> actualPackets = new FirebirdSeekBlobCommandExecutor(packet, connectionSession).execute();
         assertThat(((FirebirdGenericResponsePacket) actualPackets.iterator().next()).getId(), is(0L));
         assertThat(FirebirdBlobReadCache.getInstance().readSegment(CONNECTION_ID, BLOB_HANDLE, 2).get().getData(), is(new byte[]{1, 2}));

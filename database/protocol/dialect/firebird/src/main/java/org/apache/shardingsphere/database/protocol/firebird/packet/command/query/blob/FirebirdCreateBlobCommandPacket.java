@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
+import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.FirebirdParameterBuffer;
 import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.type.FirebirdBlobParameterBufferType;
@@ -41,7 +42,10 @@ public final class FirebirdCreateBlobCommandPacket extends FirebirdCommandPacket
     public FirebirdCreateBlobCommandPacket(final FirebirdCommandPacketType commandType, final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         if (FirebirdCommandPacketType.CREATE_BLOB2 == commandType) {
-            bpb.parseBuffer(payload.readBuffer());
+            ByteBuf buffer = payload.readBuffer();
+            if (buffer.isReadable()) {
+                bpb.parseBuffer(buffer);
+            }
         }
         transactionId = payload.readInt4();
         requestedBlobId = payload.readInt8();
@@ -50,7 +54,7 @@ public final class FirebirdCreateBlobCommandPacket extends FirebirdCommandPacket
     /**
      * Is stream blob.
      *
-     * <p>A BLOB without a blob parameter buffer, or with one that omits the type item, is a segmented BLOB.</p>
+     * <p>A BLOB without a blob parameter buffer, with an empty one, or with one that omits the type item, is a segmented BLOB.</p>
      *
      * @return stream blob or not
      */

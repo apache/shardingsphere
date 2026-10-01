@@ -42,7 +42,7 @@ public enum FirebirdBlobParameterBufferType implements FirebirdParameterBufferTy
     FILTER_PARAMETER(6),
     STORAGE(7);
     
-    private static final Map<Integer, FirebirdBlobParameterBufferType> FIREBIRD_BPB_TYPE_CACHE = new HashMap<>();
+    private static final Map<Integer, FirebirdBlobParameterBufferType> FIREBIRD_BPB_TYPE_CACHE = new HashMap<>(values().length, 1F);
     
     private final int code;
     
@@ -55,7 +55,7 @@ public enum FirebirdBlobParameterBufferType implements FirebirdParameterBufferTy
     }
     
     FirebirdBlobParameterBufferType(final int code) {
-        this(code, FirebirdValueFormat.INT);
+        this(code, FirebirdValueFormat.SIZED_INT);
     }
     
     /**
@@ -77,7 +77,7 @@ public enum FirebirdBlobParameterBufferType implements FirebirdParameterBufferTy
      * @return is traditional type
      */
     public static boolean isTraditionalType(final int version) {
-        return version == 1;
+        return 1 == version;
     }
     
     /**
