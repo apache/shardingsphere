@@ -22,7 +22,6 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -98,11 +97,6 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
             return containsOpenQueryInMerge((MergeStatement) sqlStatement);
         }
         return false;
-    }
-    
-    @Override
-    public void check(final EncryptRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
-        ShardingSpherePreconditions.checkState(false, () -> new UnsupportedEncryptSQLException("OPENQUERY"));
     }
     
     private boolean containsOpenQueryInSelect(final SelectStatement selectStatement) {
@@ -334,5 +328,10 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
             }
         }
         return false;
+    }
+    
+    @Override
+    public void check(final EncryptRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
+        throw new UnsupportedEncryptSQLException("OPENQUERY");
     }
 }
