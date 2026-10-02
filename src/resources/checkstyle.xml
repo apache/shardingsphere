@@ -89,6 +89,10 @@
         
         <!-- Class Design -->
         <module name="FinalClass" />
+        <module name="MatchXpath">
+            <property name="query" value="//CLASS_DEF[./IDENT[ends-with(@text, 'Test')]]/MODIFIERS/FINAL" />
+            <message key="matchxpath.match" value="Unit-test classes must not be declared final." />
+        </module>
         <!-- cannot recognize for lombok @NoArgsConstructor(access = AccessLevel.PRIVATE), just ignore -->
         <!--<module name="HideUtilityClassConstructor" />-->
         <module name="InnerTypeLast" />
