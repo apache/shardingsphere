@@ -390,7 +390,7 @@ subquery
     ;
 
 orderByClause
-    : ORDER BY orderByItem (COMMA_ orderByItem)* limitClause?
+    : ORDER BY orderByItem (COMMA_ orderByItem)*
     ;
 
 orderByItem
