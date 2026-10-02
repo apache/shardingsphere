@@ -106,8 +106,7 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
     }
     
     private boolean containsOpenQueryInSelect(final SelectStatement selectStatement) {
-        return selectStatement.getFrom().map(this::containsOpenQuery).orElse(false)
-                || selectStatement.getWhere().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false)
+        return selectStatement.getFrom().map(this::containsOpenQuery).orElse(false) || selectStatement.getWhere().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false)
                 || selectStatement.getWith().map(this::containsOpenQueryInWith).orElse(false) || containsOpenQueryInSelectClauses(selectStatement);
     }
     
@@ -162,8 +161,7 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
             return containsOpenQueryInExpression(((NotExpression) expression).getExpression());
         }
         if (expression instanceof BetweenExpression) {
-            return containsOpenQueryInExpression(((BetweenExpression) expression).getLeft())
-                    || containsOpenQueryInExpression(((BetweenExpression) expression).getBetweenExpr())
+            return containsOpenQueryInExpression(((BetweenExpression) expression).getLeft()) || containsOpenQueryInExpression(((BetweenExpression) expression).getBetweenExpr())
                     || containsOpenQueryInExpression(((BetweenExpression) expression).getAndExpr());
         }
         return containsOpenQueryInRemainingExpression(expression);
@@ -183,7 +181,7 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
             return containsOpenQueryInExpression(((TypeCastExpression) expression).getExpression());
         }
         if (expression instanceof CollateExpression) {
-            return ((CollateExpression) expression).getExpr().map(optional -> containsOpenQueryInExpression(optional)).orElse(false);
+            return ((CollateExpression) expression).getExpr().map(this::containsOpenQueryInExpression).orElse(false);
         }
         if (expression instanceof KeyValueSegment) {
             return containsOpenQueryInKeyValue((KeyValueSegment) expression);
@@ -235,8 +233,7 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
     
     private boolean containsOpenQueryInSelectClauses(final SelectStatement selectStatement) {
         return selectStatement.getCombine().map(optional -> containsOpenQueryInSelect(optional.getLeft().getSelect()) || containsOpenQueryInSelect(optional.getRight().getSelect())).orElse(false)
-                || containsOpenQueryInProjections(selectStatement.getProjections())
-                || selectStatement.getHaving().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false)
+                || containsOpenQueryInProjections(selectStatement.getProjections()) || selectStatement.getHaving().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false)
                 || selectStatement.getOrderBy().map(this::containsOpenQueryInOrderBy).orElse(false);
     }
     
@@ -266,8 +263,8 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
     }
     
     private boolean containsOpenQueryInUpdateClauses(final UpdateStatement updateStatement) {
-        return updateStatement.getWhere().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false)
-                || updateStatement.getWith().map(this::containsOpenQueryInWith).orElse(false) || containsOpenQueryInAssignments(updateStatement);
+        return updateStatement.getWhere().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false) || updateStatement.getWith().map(this::containsOpenQueryInWith).orElse(false)
+                || containsOpenQueryInAssignments(updateStatement);
     }
     
     private boolean containsOpenQueryInAssignments(final UpdateStatement updateStatement) {
@@ -284,8 +281,7 @@ public final class EncryptOpenQuerySupportedChecker implements SupportedSQLCheck
     }
     
     private boolean containsOpenQueryInDelete(final DeleteStatement deleteStatement) {
-        return containsOpenQuery(deleteStatement.getTable())
-                || deleteStatement.getWhere().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false)
+        return containsOpenQuery(deleteStatement.getTable()) || deleteStatement.getWhere().map(optional -> containsOpenQueryInExpression(optional.getExpr())).orElse(false)
                 || deleteStatement.getWith().map(this::containsOpenQueryInWith).orElse(false);
     }
     
