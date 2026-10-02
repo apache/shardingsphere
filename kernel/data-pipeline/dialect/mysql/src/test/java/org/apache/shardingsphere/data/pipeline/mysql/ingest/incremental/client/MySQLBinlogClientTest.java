@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -44,6 +45,9 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.te
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,6 +76,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -90,7 +95,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
 @SuppressWarnings("ProhibitedExceptionDeclared")
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, LogCaptureExtension.class})
+@LogCaptureSettings(suppressOutput = true)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class MySQLBinlogClientTest {
     
@@ -348,7 +354,7 @@ class MySQLBinlogClientTest {
     }
     
     @Test
-    void assertMySQLCommandResponseHandlerBranches() throws Exception {
+    void assertMySQLCommandResponseHandlerBranches(final LogCaptureAssertion logCaptureAssertion) throws Exception {
         final AtomicReference<ChannelInitializer<SocketChannel>> initializer = new AtomicReference<>();
         SocketChannel socketChannel = mock(SocketChannel.class, RETURNS_DEEP_STUBS);
         when(socketChannel.pipeline()).thenReturn(pipeline);
@@ -382,12 +388,14 @@ class MySQLBinlogClientTest {
         assertTrue(callback.isSuccess());
         callback = new DefaultPromise<>(eventLoopGroup.next());
         setResponseCallback(callback);
-        handler.exceptionCaught(mock(ChannelHandlerContext.class), new RuntimeException("ex"));
+        RuntimeException expectedException = new RuntimeException("ex");
+        handler.exceptionCaught(mock(ChannelHandlerContext.class), expectedException);
         assertTrue(callback.isDone());
         setResponseCallback(null);
         handler.channelRead(mock(ChannelHandlerContext.class), new Object());
         handler.exceptionCaught(mock(ChannelHandlerContext.class), new RuntimeException("ex"));
         client.closeChannel(true);
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     private InternalResultSet createResultSet(final String checksum) {

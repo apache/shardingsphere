@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import io.prometheus.client.CollectorRegistry;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -37,6 +38,9 @@ import org.apache.shardingsphere.mode.manager.standalone.workerid.StandaloneWork
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.AfterEach;
@@ -44,17 +48,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
+@ExtendWith({AutoMockExtension.class, LogCaptureExtension.class})
+@LogCaptureSettings(suppressOutput = true)
 @StaticMockSettings(ProxyContext.class)
 class PrometheusPluginLifecycleServiceTest {
     
@@ -89,10 +97,11 @@ class PrometheusPluginLifecycleServiceTest {
     }
     
     @Test
-    void assertStartWhenPortIsOccupied() throws IOException {
+    void assertStartWhenPortIsOccupied(final LogCaptureAssertion logCaptureAssertion) throws IOException {
         try (ServerSocket serverSocket = new ServerSocket(0)) {
             assertDoesNotThrow(() -> pluginLifecycleService.start(new PluginConfiguration(null, serverSocket.getLocalPort(), "", PropertiesBuilder.build()), false));
         }
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), isA(BindException.class)));
     }
     
     private ContextManager mockContextManager() {
