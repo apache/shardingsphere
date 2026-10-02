@@ -5256,6 +5256,34 @@
         </where>
     </select>
 
+    <select sql-case-id="select_oracle_model_nested_addition">
+        <from>
+            <simple-table name="foo_table" start-index="14" stop-index="22" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <column-projection name="s" start-index="7" stop-index="7" />
+        </projections>
+        <model start-index="24" stop-index="91">
+            <dimension-column name="d" start-index="44" stop-index="44" />
+            <measure-column name="s" start-index="57" stop-index="57" />
+            <cell-assignment-column name="s" start-index="67" stop-index="67" />
+        </model>
+    </select>
+
+    <select sql-case-id="select_oracle_model_division">
+        <from>
+            <simple-table name="foo_table" start-index="14" stop-index="22" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <column-projection name="s" start-index="7" stop-index="7" />
+        </projections>
+        <model start-index="24" stop-index="82">
+            <dimension-column name="d" start-index="44" stop-index="44" />
+            <measure-column name="s" start-index="57" stop-index="57" />
+            <cell-assignment-column name="s" start-index="67" stop-index="67" />
+        </model>
+    </select>
+
     <select sql-case-id="select_with_model_partition_dimension">
         <from>
             <simple-table name="sales_view_ref" start-index="35" stop-index="48" />
