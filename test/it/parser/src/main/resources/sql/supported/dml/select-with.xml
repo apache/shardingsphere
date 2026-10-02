@@ -29,6 +29,8 @@
     <sql-case id="select_with_single_subquery" value="WITH t AS (SELECT a+2 c,b FROM t1) SELECT c,b FROM t" db-types="MySQL,PostgreSQL,openGauss,Doris,Firebird" />
     <sql-case id="select_with_oracle_single_subquery" value="WITH t AS (SELECT a+2 c,b FROM t1) SELECT c,b FROM t" db-types="Oracle" />
     <sql-case id="select_with_parenthesized_main_query_oracle" value="WITH q AS (SELECT n FROM t) (SELECT n FROM q)" db-types="Oracle" />
+    <sql-case id="select_with_parenthesized_main_query_with_literal_oracle" value="WITH q AS (SELECT 1 AS n FROM DUAL) (SELECT n FROM q)" db-types="Oracle" />
+    <sql-case id="select_with_parenthesized_main_query_with_order_by_oracle" value="WITH q AS (SELECT 1 AS n FROM DUAL) (SELECT ? FROM q) ORDER BY 1" case-types="PLACEHOLDER" db-types="Oracle" />
     <sql-case id="select_with_oracle_cte_column_aliases" value="WITH user_cte (user_id_alias, user_name_alias, email_alias) AS (SELECT user_id, user_name, email FROM t_user) SELECT user_id_alias, user_name_alias, email_alias FROM user_cte ORDER BY user_id_alias" db-types="Oracle" />
     <sql-case id="select_with_multiple_subquery" value="WITH cte1(col1, col2, col3) as (SELECT emp_no,first_name,last_name FROM employees WHERE emp_no=10012), cte2(col1, col2, col3) as (SELECT emp_no,first_name,last_name from employees WHERE emp_no=10012) SELECT col1, col2, col3 FROM cte1" db-types="MySQL" />
     <sql-case id="select_with_recursive_union_all1" value="WITH RECURSIVE DirectoryCTE as (SELECT * FROM table1 WHERE id = 1 AND project_id = 2 UNION ALL SELECT * FROM project_file_catalog t INNER JOIN DirectoryCTE cte ON t.project_id = cte.project_id AND t.parent_id = cte.id) SELECT * FROM DirectoryCTE ORDER BY level" db-types="MySQL" />
