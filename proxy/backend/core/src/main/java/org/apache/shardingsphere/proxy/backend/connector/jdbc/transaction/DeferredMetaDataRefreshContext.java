@@ -40,17 +40,15 @@ public final class DeferredMetaDataRefreshContext {
     private final Collection<DeferredTable> deferredTables = new LinkedHashSet<>();
     
     /**
-     * Add tables to be reloaded when current transaction ends.
+     * Add a table to be reloaded when current transaction ends.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param logicDataSourceName logic data source name the tables are routed to
-     * @param tableNames table names
+     * @param logicDataSourceName logic data source name the table is routed to
+     * @param tableName table name
      */
-    public void add(final String databaseName, final String schemaName, final String logicDataSourceName, final Collection<IdentifierValue> tableNames) {
-        for (IdentifierValue each : tableNames) {
-            deferredTables.add(new DeferredTable(databaseName, schemaName, logicDataSourceName, each));
-        }
+    public void add(final String databaseName, final String schemaName, final String logicDataSourceName, final IdentifierValue tableName) {
+        deferredTables.add(new DeferredTable(databaseName, schemaName, logicDataSourceName, tableName));
     }
     
     /**

@@ -63,32 +63,6 @@ public final class PostgreSQLDDLMetaDataRefreshTestCase extends BaseTransactionT
         assertCreatedTableReconciledAfterCommit();
     }
     
-    private void assertCreatedTableReconciledAfterCommit() throws SQLException {
-        try (Connection connection = getDataSource().getConnection()) {
-            connection.setAutoCommit(false);
-            executeWithLog(connection, String.format("CREATE TABLE %s (id INT NOT NULL, PRIMARY KEY (id));", CREATED_TABLE_NAME));
-            connection.commit();
-        }
-        try (Connection connection = getDataSource().getConnection()) {
-            awaitQueryable(connection, CREATED_TABLE_NAME, true, "Table created inside the transaction is not present in meta data after commit.");
-            executeWithLog(connection, String.format("DROP TABLE %s;", CREATED_TABLE_NAME));
-            awaitQueryable(connection, CREATED_TABLE_NAME, false, "Dropped table is still present in meta data.");
-        }
-    }
-    
-    private void awaitQueryable(final Connection connection, final String tableName, final boolean expected, final String message) {
-        Awaitility.await(message).atMost(REFRESH_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> expected == isQueryable(connection, tableName));
-    }
-    
-    private boolean isQueryable(final Connection connection, final String tableName) {
-        try (ResultSet ignored = executeQueryWithLog(connection, String.format("SELECT * FROM %s;", tableName))) {
-            return true;
-        } catch (final SQLException ignored) {
-            return false;
-        }
-    }
-    
     private void assertMetaDataRefreshedAfterCommit() throws SQLException {
         addColumnInTransaction(COMMITTED_COLUMN_NAME, true);
         try (Connection connection = getDataSource().getConnection()) {
@@ -103,6 +77,19 @@ public final class PostgreSQLDDLMetaDataRefreshTestCase extends BaseTransactionT
         Awaitility.await().pollDelay(REFRESH_SETTLE_SECONDS, TimeUnit.SECONDS).until(() -> true);
         try (Connection connection = getDataSource().getConnection()) {
             assertFalse(containsColumn(connection, ROLLED_BACK_COLUMN_NAME), "Rolled back column is refreshed into meta data after transaction rollback.");
+        }
+    }
+    
+    private void assertCreatedTableReconciledAfterCommit() throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            executeWithLog(connection, String.format("CREATE TABLE %s (id INT NOT NULL, PRIMARY KEY (id));", CREATED_TABLE_NAME));
+            connection.commit();
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            awaitQueryable(connection, CREATED_TABLE_NAME, true, "Table created inside the transaction is not present in meta data after commit.");
+            executeWithLog(connection, String.format("DROP TABLE %s;", CREATED_TABLE_NAME));
+            awaitQueryable(connection, CREATED_TABLE_NAME, false, "Dropped table is still present in meta data.");
         }
     }
     
@@ -131,6 +118,19 @@ public final class PostgreSQLDDLMetaDataRefreshTestCase extends BaseTransactionT
                     return true;
                 }
             }
+            return false;
+        }
+    }
+    
+    private void awaitQueryable(final Connection connection, final String tableName, final boolean expected, final String message) {
+        Awaitility.await(message).atMost(REFRESH_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> expected == isQueryable(connection, tableName));
+    }
+    
+    private boolean isQueryable(final Connection connection, final String tableName) {
+        try (ResultSet ignored = executeQueryWithLog(connection, String.format("SELECT * FROM %s;", tableName))) {
+            return true;
+        } catch (final SQLException ignored) {
             return false;
         }
     }

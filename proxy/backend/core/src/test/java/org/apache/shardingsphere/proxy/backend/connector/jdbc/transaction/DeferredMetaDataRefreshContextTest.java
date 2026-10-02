@@ -23,9 +23,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -45,7 +42,8 @@ class DeferredMetaDataRefreshContextTest {
         IdentifierValue originalTable = new IdentifierValue("t_order");
         IdentifierValue renamedTable = new IdentifierValue("t_order_new");
         DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();
-        deferredContext.add("foo_db", "foo_schema", "ds_0", Arrays.asList(originalTable, renamedTable));
+        deferredContext.add("foo_db", "foo_schema", "ds_0", originalTable);
+        deferredContext.add("foo_db", "foo_schema", "ds_0", renamedTable);
         deferredContext.reconcile(contextManager);
         verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", originalTable);
         verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", renamedTable);
@@ -56,7 +54,7 @@ class DeferredMetaDataRefreshContextTest {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         IdentifierValue quotedTable = new IdentifierValue("\"MixedCase\"");
         DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();
-        deferredContext.add("foo_db", "foo_schema", "ds_0", Collections.singletonList(quotedTable));
+        deferredContext.add("foo_db", "foo_schema", "ds_0", quotedTable);
         deferredContext.reconcile(contextManager);
         verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", quotedTable);
     }
@@ -65,8 +63,8 @@ class DeferredMetaDataRefreshContextTest {
     void assertReconcileDeduplicatesRepeatedTable() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();
-        deferredContext.add("foo_db", "foo_schema", "ds_0", Collections.singletonList(new IdentifierValue("t_order")));
-        deferredContext.add("foo_db", "foo_schema", "ds_0", Collections.singletonList(new IdentifierValue("t_order")));
+        deferredContext.add("foo_db", "foo_schema", "ds_0", new IdentifierValue("t_order"));
+        deferredContext.add("foo_db", "foo_schema", "ds_0", new IdentifierValue("t_order"));
         deferredContext.reconcile(contextManager);
         verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", new IdentifierValue("t_order"));
     }
@@ -74,7 +72,7 @@ class DeferredMetaDataRefreshContextTest {
     @Test
     void assertReconcileAfterClear() {
         DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();
-        deferredContext.add("foo_db", "foo_schema", "ds_0", Collections.singletonList(new IdentifierValue("t_order")));
+        deferredContext.add("foo_db", "foo_schema", "ds_0", new IdentifierValue("t_order"));
         deferredContext.clear();
         deferredContext.reconcile(contextManager);
         verify(contextManager, never()).reconcileTable(any(ShardingSphereDatabase.class), anyString(), anyString(), any(IdentifierValue.class));

@@ -260,12 +260,6 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
                 : processExecuteUpdate(executeResults.stream().map(UpdateResult.class::cast).collect(Collectors.toList()));
     }
     
-    private boolean isCurrentTransactionCommitRequired(final SQLStatement sqlStatement) {
-        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
-        return !databaseConnectionManager.getConnectionSession().isAutoCommit() && sqlStatement instanceof DDLStatement
-                && DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION == transactionOption.getDDLCommitPolicy();
-    }
-    
     private boolean isDeferrableTableDDL(final ExecutionContext executionContext) {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         boolean isTableDDL = sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement
@@ -287,14 +281,23 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         return true;
     }
     
+    private boolean isCurrentTransactionCommitRequired(final SQLStatement sqlStatement) {
+        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
+        return !databaseConnectionManager.getConnectionSession().isAutoCommit() && sqlStatement instanceof DDLStatement
+                && DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION == transactionOption.getDDLCommitPolicy();
+    }
+    
     private void refreshMetaData(final ExecutionContext executionContext, final boolean isDeferrableTableDDL) throws SQLException {
         PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(queryContext.getSqlStatementContext());
         if (!pushDownMetaDataRefreshEngine.isNeedRefresh()) {
             return;
         }
         if (isDeferrableTableDDL && databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()) {
-            databaseConnectionManager.getDeferredMetaDataRefreshContext().add(database.getName(), SchemaRefreshUtils.getActualSchemaName(database, queryContext.getSqlStatementContext()),
-                    executionContext.getRouteContext().getRouteUnits().iterator().next().getDataSourceMapper().getLogicName(), getDeferredTableNames());
+            String schemaName = SchemaRefreshUtils.getActualSchemaName(database, queryContext.getSqlStatementContext());
+            Collection<RouteUnit> routeUnits = executionContext.getRouteContext().getRouteUnits();
+            for (IdentifierValue each : getDeferredTableNames()) {
+                databaseConnectionManager.getDeferredMetaDataRefreshContext().add(database.getName(), schemaName, findLogicDataSourceName(routeUnits, each), each);
+            }
             return;
         }
         pushDownMetaDataRefreshEngine.refresh(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(),
@@ -307,6 +310,15 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             result.add(each.getTableName().getIdentifier());
         }
         return result;
+    }
+    
+    private String findLogicDataSourceName(final Collection<RouteUnit> routeUnits, final IdentifierValue tableName) {
+        for (RouteUnit each : routeUnits) {
+            if (each.getLogicTableNames().stream().anyMatch(tableName.getValue()::equalsIgnoreCase)) {
+                return each.getDataSourceMapper().getLogicName();
+            }
+        }
+        return routeUnits.iterator().next().getDataSourceMapper().getLogicName();
     }
     
     private ResponseHeader doExecuteFederation() throws SQLException {
