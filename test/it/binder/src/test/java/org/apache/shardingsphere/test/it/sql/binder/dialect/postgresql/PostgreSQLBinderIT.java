@@ -105,7 +105,7 @@ class PostgreSQLBinderIT extends SQLBinderIT {
         String sql = "SELECT * FROM pg_catalog.\"pg_indexes\"";
         assertDoesNotThrow(() -> bindSQLStatement("PostgreSQL", sql, props));
     }
-
+    
     @Test
     void assertBindUnqualifiedQuotedSystemCatalogTableNameMatchesDictionaryWhenAssemblyDisabled() {
         ConfigurationProperties props = new ConfigurationProperties(
@@ -113,7 +113,7 @@ class PostgreSQLBinderIT extends SQLBinderIT {
         String sql = "SELECT * FROM \"pg_indexes\"";
         assertDoesNotThrow(() -> bindSQLStatement("PostgreSQL", sql, props));
     }
-
+    
     @Test
     void assertBindUnqualifiedQuotedIdentifierDoesNotMatchDictionaryViewWhenAssemblyDisabled() {
         ConfigurationProperties props = new ConfigurationProperties(
