@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-final class YamlProxyConfigurationCheckerTest {
+class YamlProxyConfigurationCheckerTest {
     
     @Test
     void assertCheckDataSourcesWithoutDuplicates() {

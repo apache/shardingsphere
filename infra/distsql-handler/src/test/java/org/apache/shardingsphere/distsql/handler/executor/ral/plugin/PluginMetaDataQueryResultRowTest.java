@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ShardingSphereServiceLoader.class)
-public final class PluginMetaDataQueryResultRowTest {
+class PluginMetaDataQueryResultRowTest {
     
     @Test
     void assertToLocalDataQueryResultRowWithTypedSPI() {
