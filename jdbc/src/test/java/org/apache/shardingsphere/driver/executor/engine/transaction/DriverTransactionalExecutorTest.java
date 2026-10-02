@@ -61,7 +61,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-final class DriverTransactionalExecutorTest {
+class DriverTransactionalExecutorTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereConnection connection;

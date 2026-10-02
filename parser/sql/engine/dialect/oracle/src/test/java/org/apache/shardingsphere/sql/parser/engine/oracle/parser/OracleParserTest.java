@@ -42,13 +42,13 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Isolated("Measures cold and warm shared Oracle parser DFA caches")
-final class OracleParserTest {
+class OracleParserTest {
     
     private static final int MAX_ADAPTIVE_LOOKAHEAD = 16;
     
@@ -168,7 +168,7 @@ final class OracleParserTest {
         } catch (final ParseCancellationException ignored) {
             return;
         }
-        assertFalse(Token.EOF == parser.getCurrentToken().getType());
+        assertThat(parser.getCurrentToken().getType(), not(Token.EOF));
     }
     
     private static Stream<Arguments> invalidDynamicSql() {
