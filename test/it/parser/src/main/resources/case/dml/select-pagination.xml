@@ -2126,6 +2126,62 @@
         </from>
     </select>
 
+    <select sql-case-id="select_pagination_with_where_parameter_offset_and_fetch_firebird" parameters="1, 2, 3">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="38">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="38">
+                    <left>
+                        <column name="user_id" start-index="28" stop-index="34" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="38" stop-index="38" />
+                        <parameter-marker-expression parameter-index="0" start-index="38" stop-index="38" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="order_id" start-index="49" stop-index="56" />
+        </order-by>
+        <limit start-index="58" stop-index="94" literal-start-index="58" literal-stop-index="94">
+            <offset value="2" parameter-index="1" start-index="65" stop-index="65" literal-start-index="65" literal-stop-index="65" />
+            <row-count value="3" parameter-index="2" start-index="84" stop-index="84" literal-start-index="84" literal-stop-index="84" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_pagination_with_where_parameter_fetch_firebird" parameters="1, 2">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="38">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="38">
+                    <left>
+                        <column name="user_id" start-index="28" stop-index="34" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="38" stop-index="38" />
+                        <parameter-marker-expression parameter-index="0" start-index="38" stop-index="38" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <limit start-index="40" stop-index="62" literal-start-index="40" literal-stop-index="62">
+            <row-count value="2" parameter-index="1" start-index="52" stop-index="52" literal-start-index="52" literal-stop-index="52" />
+        </limit>
+    </select>
+
     <select sql-case-id="select_limit_offset_doris">
         <from>
             <simple-table name="t_order" start-index="14" stop-index="20" />
