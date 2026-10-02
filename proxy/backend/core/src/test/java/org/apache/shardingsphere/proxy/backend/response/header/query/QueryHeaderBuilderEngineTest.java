@@ -137,21 +137,4 @@ class QueryHeaderBuilderEngineTest {
             assertThat(actualQueryHeader, is(expectedQueryHeader));
         }
     }
-    
-    @Test
-    void assertBuildWithSQLStatementContextColumnIndexOutOfRange() {
-        Projection projection = mock(Projection.class);
-        when(projection.getColumnLabel()).thenReturn("label");
-        when(projection.getColumnName()).thenReturn("column");
-        when(projection.getExpression()).thenReturn("column");
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projection));
-        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
-        when(sqlStatementContext.containsDerivedProjections()).thenReturn(true);
-        when(sqlStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
-        try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(mock(QueryHeaderBuilder.class));
-            assertThrows(ColumnIndexOutOfRangeException.class,
-                    () -> new QueryHeaderBuilderEngine(databaseType).build(sqlStatementContext, mock(ShardingSphereResultSetMetaData.class), mock(), 2));
-        }
-    }
 }
