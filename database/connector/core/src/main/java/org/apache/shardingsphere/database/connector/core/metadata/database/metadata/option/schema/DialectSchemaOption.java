@@ -55,6 +55,15 @@ public interface DialectSchemaOption {
     Optional<String> getDefaultSystemSchema();
     
     /**
+     * Judge whether the default system schema takes precedence over the current schema when resolving an unqualified table name.
+     *
+     * @return system schema takes precedence over current schema or not
+     */
+    default boolean isSystemSchemaPreferredOverCurrentSchema() {
+        return true;
+    }
+    
+    /**
      * Get schema semantics.
      *
      * @return schema semantics

@@ -130,7 +130,8 @@ class SystemSchemaManagerTest {
                 Arguments.of("postgresql catalog table", "pg_catalog", "pg_database", true),
                 Arguments.of("common shardingsphere table", "shardingsphere", "cluster_information", true),
                 Arguments.of("non system table", "sharding_db", "t_order", false),
-                Arguments.of("unknown table in common schema", "shardingsphere", "foo_tbl", false));
+                Arguments.of("unknown table in common schema", "shardingsphere", "foo_tbl", false),
+                Arguments.of("cross dialect schema name collision, untyped lookup ignores database type", "sys", "all_sequences", true));
     }
     
     private static Stream<Arguments> isSystemTableWithDatabaseTypeArguments() {
@@ -143,7 +144,8 @@ class SystemSchemaManagerTest {
                 Arguments.of("mysql falls back to common schema", "MySQL", "shardingsphere", "cluster_information", true, true),
                 Arguments.of("unknown database falls back to common schema", "NO_DB", "shardingsphere", "cluster_information", true, true),
                 Arguments.of("unknown database without common schema manager", "NO_DB", "shardingsphere", "cluster_information", false, false),
-                Arguments.of("unknown database unknown table", "NO_DB", "foo_schema", "foo_tbl", true, false));
+                Arguments.of("unknown database unknown table", "NO_DB", "foo_schema", "foo_tbl", true, false),
+                Arguments.of("mysql sys schema does not leak oracle sys schema tables", "MySQL", "sys", "all_sequences", true, false));
     }
     
     private static Stream<Arguments> isSystemTableWithTableNamesArguments() {
