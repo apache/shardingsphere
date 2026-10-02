@@ -112,6 +112,7 @@
 1. Shadow: Apply default shadow algorithm to shadow tables when swapping YAML rule configuration - [#39749](https://github.com/apache/shardingsphere/pull/39749)
 1. Shadow: Fix INSERT SELECT statement being routed to shadow data source - [#39751](https://github.com/apache/shardingsphere/pull/39751)
 1. Sharding: Fix logic table lookup for MySQL SHOW CREATE TABLE and SHOW INDEX - [#39856](https://github.com/apache/shardingsphere/pull/39856)
+1. Sharding: Fix duplicate rows in cross-shard SELECT DISTINCT when NULLs sort first by default - [#40001](https://github.com/apache/shardingsphere/issues/40001)
 
 ### Enhancements
 
