@@ -32,7 +32,7 @@ class UnsupportedOperationParameterMetaTest {
     
     @Test
     void assertIsNullable() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereParameterMetaData.getParameterClassName(1));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereParameterMetaData.isNullable(1));
     }
     
     @Test
