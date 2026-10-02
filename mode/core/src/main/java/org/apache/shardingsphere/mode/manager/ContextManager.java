@@ -50,6 +50,7 @@ import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table.TableMetaDataRefresherLoader;
+import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -274,6 +275,16 @@ public final class ContextManager implements AutoCloseable {
         }
     }
     
+    private void persistTable(final ShardingSphereDatabase database, final String schemaName, final IdentifierValue tableName, final GenericSchemaBuilderMaterial material) throws SQLException {
+        ShardingSphereSchema schema = GenericSchemaBuilder.build(Collections.singleton(tableName.getValue()), database.getProtocolType(), material)
+                .getOrDefault(schemaName, new ShardingSphereSchema(schemaName, database.getProtocolType()));
+        if (schema.containsTable(tableName)) {
+            persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, Collections.singleton(schema.getTable(tableName)));
+        } else {
+            persistServiceFacade.getModeFacade().getMetaDataManagerService().dropTables(database, schemaName, Collections.singleton(tableName.getValue()));
+        }
+    }
+    
     /**
      * Reconcile table meta data against the committed state of the table.
      *
@@ -291,7 +302,7 @@ public final class ContextManager implements AutoCloseable {
             ShardingSphereTable loadedTable = new TableMetaDataRefresherLoader().loadCreatedTable(
                     database, logicDataSourceName, schemaName, tableName, metaDataContexts.getMetaData().getProps(), database.getAllSchemas());
             if (null == loadedTable) {
-                metaDataManagerPersistService.dropTables(database, schemaName, Collections.singleton(tableName.getValue()));
+                metaDataManagerPersistService.dropTables(database, schemaName, Collections.singleton(TableRefreshUtils.getTableLoadCandidateName(database, tableName)));
             } else if (database.containsSchema(schemaName) && database.getSchema(schemaName).containsTable(tableName)) {
                 metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(loadedTable));
             } else {
@@ -301,16 +312,6 @@ public final class ContextManager implements AutoCloseable {
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             log.error("Reconcile table: {} meta data of database: {} schema: {} failed", tableName.getValue(), database.getName(), schemaName, ex);
-        }
-    }
-    
-    private void persistTable(final ShardingSphereDatabase database, final String schemaName, final IdentifierValue tableName, final GenericSchemaBuilderMaterial material) throws SQLException {
-        ShardingSphereSchema schema = GenericSchemaBuilder.build(Collections.singleton(tableName.getValue()), database.getProtocolType(), material)
-                .getOrDefault(schemaName, new ShardingSphereSchema(schemaName, database.getProtocolType()));
-        if (schema.containsTable(tableName)) {
-            persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, Collections.singleton(schema.getTable(tableName)));
-        } else {
-            persistServiceFacade.getModeFacade().getMetaDataManagerService().dropTables(database, schemaName, Collections.singleton(tableName.getValue()));
         }
     }
     

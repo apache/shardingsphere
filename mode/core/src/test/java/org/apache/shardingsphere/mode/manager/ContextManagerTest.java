@@ -380,6 +380,50 @@ class ContextManagerTest {
     }
     
     @Test
+    void assertReconcileTableAltersExistingTable() {
+        PersistServiceFacade persistServiceFacade = mockPersistServiceFacade();
+        setPersistServiceFacade(persistServiceFacade);
+        when(database.getIdentifierContext()).thenReturn(DatabaseIdentifierContextFactory.createDefault());
+        when(database.getSchema("foo_schema").containsTable(any(IdentifierValue.class))).thenReturn(true);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(table.getName()).thenReturn("foo_tbl");
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.emptyList());
+        try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
+            schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anyCollection(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class)))
+                    .thenReturn(Collections.singletonMap("foo_schema", schema));
+            contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("foo_tbl"));
+        }
+        verify(persistServiceFacade.getModeFacade().getMetaDataManagerService()).alterTables(database, "foo_schema", Collections.singleton(table));
+    }
+    
+    @Test
+    void assertReconcileTableDropsUsingCanonicalStorageName() {
+        PersistServiceFacade persistServiceFacade = mockPersistServiceFacade();
+        setPersistServiceFacade(persistServiceFacade);
+        when(database.getIdentifierContext()).thenReturn(DatabaseIdentifierContextFactory.createDefault());
+        try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
+            schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anyCollection(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class)))
+                    .thenReturn(Collections.emptyMap());
+            contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("FOO_TBL"));
+        }
+        verify(persistServiceFacade.getModeFacade().getMetaDataManagerService()).dropTables(database, "foo_schema", Collections.singleton("foo_tbl"));
+    }
+    
+    @Test
+    void assertReconcileTableWithException() {
+        PersistServiceFacade persistServiceFacade = mockPersistServiceFacade();
+        setPersistServiceFacade(persistServiceFacade);
+        when(database.getIdentifierContext()).thenReturn(DatabaseIdentifierContextFactory.createDefault());
+        try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
+            schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anyCollection(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class))).thenThrow(SQLException.class);
+            contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("foo_tbl"));
+        }
+        verify(persistServiceFacade.getModeFacade().getMetaDataManagerService(), never()).dropTables(any(), any(), any());
+        verify(persistServiceFacade.getModeFacade().getMetaDataManagerService(), never()).alterTables(any(), any(), any());
+        verify(persistServiceFacade.getModeFacade().getMetaDataManagerService(), never()).createTable(any(), any(), any());
+    }
+    
+    @Test
     void assertGetPreSelectedDatabaseNameWithJDBC() {
         when(computeNodeInstanceContext.getInstance()).thenReturn(new ComputeNodeInstance(new JDBCInstanceMetaData("foo_id", "foo_db")));
         ShardingSphereDatabase database =
