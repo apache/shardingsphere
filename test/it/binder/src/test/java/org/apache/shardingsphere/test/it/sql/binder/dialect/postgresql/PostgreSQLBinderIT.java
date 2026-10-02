@@ -105,4 +105,20 @@ class PostgreSQLBinderIT extends SQLBinderIT {
         String sql = "SELECT * FROM pg_catalog.\"pg_indexes\"";
         assertDoesNotThrow(() -> bindSQLStatement("PostgreSQL", sql, props));
     }
+
+    @Test
+    void assertBindUnqualifiedQuotedSystemCatalogTableNameMatchesDictionaryWhenAssemblyDisabled() {
+        ConfigurationProperties props = new ConfigurationProperties(
+                PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), Boolean.FALSE.toString())));
+        String sql = "SELECT * FROM \"pg_indexes\"";
+        assertDoesNotThrow(() -> bindSQLStatement("PostgreSQL", sql, props));
+    }
+
+    @Test
+    void assertBindUnqualifiedQuotedIdentifierDoesNotMatchDictionaryViewWhenAssemblyDisabled() {
+        ConfigurationProperties props = new ConfigurationProperties(
+                PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), Boolean.FALSE.toString())));
+        String sql = "SELECT * FROM \"PG_INDEXES\"";
+        assertThrows(TableNotFoundException.class, () -> bindSQLStatement("PostgreSQL", sql, props));
+    }
 }

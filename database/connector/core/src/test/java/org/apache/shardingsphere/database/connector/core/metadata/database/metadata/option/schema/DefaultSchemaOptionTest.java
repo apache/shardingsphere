@@ -65,7 +65,7 @@ class DefaultSchemaOptionTest {
     }
     
     @Test
-    void assertIsSystemSchemaPreferredOverCurrentSchemaByDefault() {
+    void assertIsSystemSchemaPreferredOverCurrentSchema() {
         assertTrue(new DefaultSchemaOption(true, "foo_schema", DialectSchemaSemantics.NATIVE_SCHEMA).isSystemSchemaPreferredOverCurrentSchema());
     }
     

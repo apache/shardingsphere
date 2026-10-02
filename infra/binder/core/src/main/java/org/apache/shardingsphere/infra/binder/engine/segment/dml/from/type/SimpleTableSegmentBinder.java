@@ -240,8 +240,11 @@ public final class SimpleTableSegmentBinder {
     }
     
     private static boolean isSystemDictionaryTable(final DatabaseType databaseType, final String systemSchemaName, final ShardingSphereDatabase database, final IdentifierValue tableName) {
+        if (isQuoteCompatibleWithUnquotedLookup(databaseType, tableName) && SystemSchemaManager.isSystemTable(databaseType.getType(), systemSchemaName, tableName.getValue())) {
+            return true;
+        }
         if (QuoteCharacter.NONE == tableName.getQuoteCharacter()) {
-            return SystemSchemaManager.isSystemTable(databaseType.getType(), systemSchemaName, tableName.getValue());
+            return false;
         }
         ShardingSphereSchema systemSchema = database.getSchema(systemSchemaName);
         return null != systemSchema && systemSchema.containsTable(tableName);
