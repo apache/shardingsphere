@@ -21,7 +21,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.spi.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDatabaseConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.export.ExportedClusterInfo;

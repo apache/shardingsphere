@@ -21,7 +21,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDatabaseConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.config.yaml.swapper.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.distsql.handler.executor.util.YamlDatabaseConfigurationImportExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.ral.updatable.imports.YamlDatabaseConfigurationImportExecutor;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;

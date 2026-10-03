@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.executor.rql.rule.CountResultRowBuilder;
+import org.apache.shardingsphere.distsql.handler.executor.rql.rule.spi.CountResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;

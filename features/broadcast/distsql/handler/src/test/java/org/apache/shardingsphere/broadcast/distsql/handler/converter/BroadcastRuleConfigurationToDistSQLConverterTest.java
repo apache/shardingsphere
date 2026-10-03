@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.broadcast.distsql.handler.converter;
 
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
+import org.apache.shardingsphere.distsql.handler.executor.ral.queryable.yaml.convert.spi.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 

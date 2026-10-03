@@ -19,10 +19,9 @@ package org.apache.shardingsphere.distsql.handler.executor.ral.updatable.imports
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.update.spi.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.executor.export.ExportedClusterInfo;
 import org.apache.shardingsphere.distsql.handler.executor.export.ExportedMetaData;
-import org.apache.shardingsphere.distsql.handler.executor.util.MetaDataImportExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 import org.apache.shardingsphere.infra.util.json.JsonEngine;
