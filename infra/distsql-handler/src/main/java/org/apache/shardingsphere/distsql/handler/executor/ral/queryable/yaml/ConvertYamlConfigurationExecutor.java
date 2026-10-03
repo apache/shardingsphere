@@ -19,12 +19,12 @@ package org.apache.shardingsphere.distsql.handler.executor.ral.queryable.yaml;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.DistSQLScriptConstants;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
+import org.apache.shardingsphere.distsql.handler.engine.query.spi.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDatabaseConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.config.yaml.swapper.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.distsql.handler.executor.ral.queryable.yaml.convert.DistSQLScriptConstants;
+import org.apache.shardingsphere.distsql.handler.executor.ral.queryable.yaml.convert.spi.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.convert.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;

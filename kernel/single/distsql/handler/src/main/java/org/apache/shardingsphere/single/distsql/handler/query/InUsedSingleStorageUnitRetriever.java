@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.executor.rql.resource.InUsedStorageUnitRetriever;
+import org.apache.shardingsphere.distsql.handler.executor.rql.resource.spi.InUsedStorageUnitRetriever;
 import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.single.rule.SingleRule;

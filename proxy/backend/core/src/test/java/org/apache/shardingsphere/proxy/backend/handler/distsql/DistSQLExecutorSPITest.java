@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.spi.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.update.spi.DistSQLUpdateExecutor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;

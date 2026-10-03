@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.ral.updatable.imports;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.update.spi.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDatabaseConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.util.MetaDataImportExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;

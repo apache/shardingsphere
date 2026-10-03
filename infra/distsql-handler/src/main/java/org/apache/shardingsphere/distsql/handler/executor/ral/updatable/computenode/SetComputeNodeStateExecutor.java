@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.ral.updatable.computenode;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.update.spi.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.SetComputeNodeStateStatement;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;

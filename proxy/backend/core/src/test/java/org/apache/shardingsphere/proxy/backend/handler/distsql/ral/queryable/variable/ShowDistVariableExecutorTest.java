@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.va
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.spi.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.handler.executor.ral.common.DistSQLVariable;
 import org.apache.shardingsphere.distsql.handler.executor.ral.queryable.variable.ShowDistVariableExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowDistVariableStatement;

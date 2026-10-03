@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.ral.updatable.lock;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.update.spi.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.executor.lock.spi.ClusterLockStrategy;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LockClusterStatement;

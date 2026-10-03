@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.engine.query.rql.fixture;
 
-import org.apache.shardingsphere.distsql.handler.executor.rql.resource.InUsedStorageUnitRetriever;
+import org.apache.shardingsphere.distsql.handler.executor.rql.resource.spi.InUsedStorageUnitRetriever;
 import org.apache.shardingsphere.distsql.handler.fixture.DistSQLHandlerFixtureRule;
 import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 

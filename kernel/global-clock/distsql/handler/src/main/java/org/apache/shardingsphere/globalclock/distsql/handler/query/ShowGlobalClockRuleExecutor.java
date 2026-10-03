@@ -19,7 +19,7 @@ package org.apache.shardingsphere.globalclock.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.spi.DistSQLQueryExecutor;
 import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.distsql.statement.queryable.ShowGlobalClockRuleStatement;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;

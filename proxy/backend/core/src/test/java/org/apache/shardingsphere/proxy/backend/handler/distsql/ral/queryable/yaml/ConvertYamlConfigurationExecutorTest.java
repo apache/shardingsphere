@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ya
 import com.google.common.base.Splitter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.spi.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDatabaseConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.ral.queryable.yaml.ConvertYamlConfigurationExecutor;

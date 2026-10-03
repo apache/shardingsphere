@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.distsql.handler.executor.ral.queryable.export;
 
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.spi.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.export.ExportUtils;
 import org.apache.shardingsphere.distsql.handler.executor.export.ExportedStorageNode;
 import org.apache.shardingsphere.distsql.handler.executor.export.ExportedStorageNodes;
-import org.apache.shardingsphere.distsql.handler.executor.util.ExportUtils;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.export.ExportStorageNodesStatement;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
