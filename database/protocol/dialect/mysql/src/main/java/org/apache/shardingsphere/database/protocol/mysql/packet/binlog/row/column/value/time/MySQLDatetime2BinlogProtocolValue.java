@@ -68,7 +68,9 @@ public final class MySQLDatetime2BinlogProtocolValue implements MySQLBinlogProto
         int minute = (int) ((time >> 6) % (1L << 6L));
         int second = (int) (time % (1L << 6L));
         MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-        return Timestamp.valueOf(LocalDateTime.of(year, month, day, hour, minute, second, fractionalSeconds.getNanos()));
+        return MySQLTimeValueUtils.isCompleteDate(month, day)
+                ? Timestamp.valueOf(LocalDateTime.of(year, month, day, hour, minute, second, fractionalSeconds.getNanos()))
+                : MySQLTimeValueUtils.formatIncompleteDatetime(year, month, day, hour, minute, second, fractionalSeconds.getNanos());
     }
     
     private void skipFractionalSeconds(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
