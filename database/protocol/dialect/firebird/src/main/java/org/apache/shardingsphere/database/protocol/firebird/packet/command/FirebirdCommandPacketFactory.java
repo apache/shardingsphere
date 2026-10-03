@@ -39,6 +39,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.batch.FirebirdBatchInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
@@ -74,6 +75,8 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdDatabaseInfoPacketType.createPacket(payload);
             case INFO_BLOB:
                 return FirebirdBlobInfoPacketType.createPacket(payload);
+            case INFO_BATCH:
+                return FirebirdBatchInfoPacketType.createPacket(payload);
             case TRANSACTION:
                 return new FirebirdStartTransactionPacket(payload);
             case CREATE_BLOB:
@@ -153,6 +156,7 @@ public final class FirebirdCommandPacketFactory {
             case INFO_DATABASE:
             case INFO_SQL:
             case INFO_BLOB:
+            case INFO_BATCH:
                 return FirebirdInfoPacket.getLength(payload);
             case TRANSACTION:
                 return FirebirdStartTransactionPacket.getLength(payload);
