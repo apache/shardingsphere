@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
@@ -48,15 +49,26 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
     
     private final String owner;
     
+    @Getter
     private final Integer columnLength;
     
     private final boolean blobColumn;
     
+    @Getter
     private final Integer blobSubType;
+    
+    /**
+     * Get column type.
+     *
+     * @return column type
+     */
+    public FirebirdBinaryColumnType getColumnType() {
+        return blobColumn ? FirebirdBinaryColumnType.BLOB : FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType());
+    }
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        FirebirdBinaryColumnType columnType = blobColumn ? FirebirdBinaryColumnType.BLOB : FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType());
+        FirebirdBinaryColumnType columnType = getColumnType();
         for (FirebirdSQLInfoPacketType requestedItem : requestedItems) {
             switch (requestedItem) {
                 case SQLDA_SEQ:
