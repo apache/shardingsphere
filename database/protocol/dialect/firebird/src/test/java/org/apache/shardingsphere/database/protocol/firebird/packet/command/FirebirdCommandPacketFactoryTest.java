@@ -19,11 +19,14 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command;
 
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchBlobStreamCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegisterBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSetBpbCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSyncCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
@@ -107,6 +110,9 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("batch_create", FirebirdCommandPacketType.BATCH_CREATE, FirebirdBatchCreateCommandPacket.class),
                 Arguments.of("batch_msg", FirebirdCommandPacketType.BATCH_MSG, FirebirdBatchMessageCommandPacket.class),
                 Arguments.of("batch_exec", FirebirdCommandPacketType.BATCH_EXEC, FirebirdBatchExecuteCommandPacket.class),
+                Arguments.of("batch_register_blob", FirebirdCommandPacketType.BATCH_REGBLOB, FirebirdBatchRegisterBlobCommandPacket.class),
+                Arguments.of("batch_blob_stream", FirebirdCommandPacketType.BATCH_BLOB_STREAM, FirebirdBatchBlobStreamCommandPacket.class),
+                Arguments.of("batch_set_bpb", FirebirdCommandPacketType.BATCH_SET_BPB, FirebirdBatchSetBpbCommandPacket.class),
                 Arguments.of("batch_release", FirebirdCommandPacketType.BATCH_RLS, FirebirdBatchReleaseCommandPacket.class),
                 Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, FirebirdBatchCancelCommandPacket.class),
                 Arguments.of("batch_sync", FirebirdCommandPacketType.BATCH_SYNC, FirebirdBatchSyncCommandPacket.class),
@@ -139,6 +145,8 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("free_statement", FirebirdCommandPacketType.FREE_STATEMENT, 12),
                 Arguments.of("batch_create", FirebirdCommandPacketType.BATCH_CREATE, 12),
                 Arguments.of("batch_exec", FirebirdCommandPacketType.BATCH_EXEC, 12),
+                Arguments.of("batch_register_blob", FirebirdCommandPacketType.BATCH_REGBLOB, 24),
+                Arguments.of("batch_set_bpb", FirebirdCommandPacketType.BATCH_SET_BPB, 8),
                 Arguments.of("batch_release", FirebirdCommandPacketType.BATCH_RLS, 8),
                 Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, 8),
                 Arguments.of("batch_sync", FirebirdCommandPacketType.BATCH_SYNC, 4),

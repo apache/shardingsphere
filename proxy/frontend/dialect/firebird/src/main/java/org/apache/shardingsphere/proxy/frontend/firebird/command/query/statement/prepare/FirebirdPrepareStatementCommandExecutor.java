@@ -123,7 +123,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         FirebirdServerPreparedStatement serverPreparedStatement = new FirebirdServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
-        return createResponse(sqlStatementContext, metaDataContexts);
+        return createResponse(sqlStatementContext, metaDataContexts, serverPreparedStatement);
     }
     
     private SQLStatement resolveCurrentDatabase(final SQLStatement sqlStatement) {
@@ -139,7 +139,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return packet.isValidStatementHandle() ? packet.getStatementId() : FirebirdStatementIdGenerator.getInstance().getStatementId(connectionSession.getConnectionId());
     }
     
-    private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts) {
+    private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts,
+                                                      final FirebirdServerPreparedStatement serverPreparedStatement) {
         FirebirdSQLInfoReturnValue statementType = getFirebirdStatementType(sqlStatementContext.getSqlStatement());
         FirebirdPrepareStatementReturnPacket returnPacket = new FirebirdPrepareStatementReturnPacket();
         while (packet.nextItem()) {
@@ -157,6 +158,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 case BIND:
                     if (statementType.isBindDescribable()) {
                         processDescribe(sqlStatementContext, metaDataContexts, returnPacket.getDescribeBind(), false);
+                        serverPreparedStatement.getParameterColumns().addAll(returnPacket.getDescribeBind());
                     } else {
                         skipDescribe();
                     }

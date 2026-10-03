@@ -15,36 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSetBpbCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Create blob command executor for Firebird.
+ * Batch set default BLOB parameter buffer command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdCreateBlobCommandExecutor implements CommandExecutor {
+public final class FirebirdBatchSetBpbCommandExecutor implements CommandExecutor {
     
-    private final FirebirdCreateBlobCommandPacket packet;
+    private final FirebirdBatchSetBpbCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket> execute() {
-        int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(connectionSession.getConnectionId());
-        long blobId = FirebirdBlobIdGenerator.getInstance().nextBlobId(connectionSession.getConnectionId());
-        FirebirdBlobWriteCache.getInstance().registerBlob(connectionSession.getConnectionId(), blobHandle, blobId, packet.getTransactionId());
-        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(blobHandle).setId(blobId));
+        FirebirdBatchStatementManager.getInstance().setDefaultBpb(connectionSession.getConnectionId(), packet);
+        return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }
