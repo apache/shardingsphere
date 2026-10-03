@@ -40,11 +40,14 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
     
     private final ProxyBackendHandler proxyBackendHandler;
     
+    private final FirebirdFetchStatementPacket packet;
+    
     private int fetchCount;
     
     public FirebirdFetchStatementCommandExecutor(final FirebirdFetchStatementPacket packet, final ConnectionSession connectionSession) {
         this.connectionSession = connectionSession;
         proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), packet.getStatementId());
+        this.packet = packet;
         fetchCount = packet.getFetchSize();
     }
     
@@ -72,7 +75,7 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
         fetchCount--;
         if (0 <= fetchCount) {
             if (proxyBackendHandler.next()) {
-                BinaryRow row = FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData());
+                BinaryRow row = FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData(), packet.getParameterTypes());
                 return FirebirdFetchResponsePacket.getFetchRowPacket(row);
             } else {
                 connectionSession.getDatabaseConnectionManager().unmarkResourceInUse(proxyBackendHandler);
