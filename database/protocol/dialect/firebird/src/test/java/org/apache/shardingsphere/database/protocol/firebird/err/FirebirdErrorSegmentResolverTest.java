@@ -47,6 +47,7 @@ class FirebirdErrorSegmentResolverTest {
     }
     
     @Test
+    @SuppressWarnings("unchecked")
     void assertResolveRendersDuplicateKeyTableNameWithoutNull() {
         String message = "violation of PRIMARY or UNIQUE KEY constraint \"INTEG_2\" on table \"MY_TABLE\";"
                 + " Problematic key value is (\"COL1\" = 1)";
@@ -54,7 +55,7 @@ class FirebirdErrorSegmentResolverTest {
         StringBuilder rendered = new StringBuilder();
         for (Segment each : segments) {
             GDSExceptionHelper.GDSMessage segmentMessage = GDSExceptionHelper.getMessage(each.getGdsCode());
-            segmentMessage.setParameters(each.getArguments());
+            segmentMessage.setParameters((List<String>) each.getArguments());
             if (rendered.length() > 0) {
                 rendered.append("; ");
             }
