@@ -73,7 +73,7 @@ class FirebirdBatchBlobSegmentsCommandExecutorTest {
     void assertExecute() {
         int blobHandle = 4;
         long blobId = 12L;
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, 1);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
         when(packet.getSegments()).thenReturn(Arrays.asList(new byte[]{1, 2}, new byte[]{3, 4, 5}));
         FirebirdBatchBlobSegmentsCommandExecutor executor = new FirebirdBatchBlobSegmentsCommandExecutor(packet, connectionSession);
@@ -89,7 +89,7 @@ class FirebirdBatchBlobSegmentsCommandExecutorTest {
     void assertExecuteWithDeferredPlaceholderHandle() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
         long blobId = 21L;
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, 1);
         when(packet.getBlobHandle()).thenReturn(0xFFFF);
         when(packet.getSegments()).thenReturn(Arrays.asList(new byte[]{1}, new byte[]{2, 3}));
         FirebirdBatchBlobSegmentsCommandExecutor executor = new FirebirdBatchBlobSegmentsCommandExecutor(packet, connectionSession);
@@ -109,7 +109,7 @@ class FirebirdBatchBlobSegmentsCommandExecutorTest {
     void assertExecuteAfterClose() {
         int blobHandle = 4;
         long blobId = 12L;
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, 1);
         FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, blobHandle);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
         FirebirdBatchBlobSegmentsCommandExecutor executor = new FirebirdBatchBlobSegmentsCommandExecutor(packet, connectionSession);

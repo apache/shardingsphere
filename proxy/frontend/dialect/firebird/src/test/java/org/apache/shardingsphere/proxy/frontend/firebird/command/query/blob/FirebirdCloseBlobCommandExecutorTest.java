@@ -74,7 +74,7 @@ class FirebirdCloseBlobCommandExecutorTest {
     void assertExecute() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
         long blobId = 5L;
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, 1);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
         FirebirdCloseBlobCommandExecutor executor = new FirebirdCloseBlobCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
