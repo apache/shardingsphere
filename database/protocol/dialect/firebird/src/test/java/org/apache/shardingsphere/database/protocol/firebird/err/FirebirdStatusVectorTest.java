@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.err;
 
+import org.apache.shardingsphere.database.exception.firebird.exception.FirebirdException;
+import org.apache.shardingsphere.database.exception.firebird.exception.FirebirdException.StatusVectorEntry;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.Test;
@@ -26,6 +28,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -73,6 +77,26 @@ class FirebirdStatusVectorTest {
         inOrder.verify(payload).writeInt4(ISCConstants.isc_random);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_string);
         inOrder.verify(payload).writeString("Problematic key value is (\"COL1\" = 1)");
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
+        verifyNoMoreInteractions(payload);
+    }
+    
+    @Test
+    void assertWriteFirebirdExceptionStatusVector() {
+        FirebirdException ex = new FirebirdException("Size of BPB (8)", "22000", ISCConstants.isc_batch_blob_buf,
+                Arrays.asList(new StatusVectorEntry(ISCConstants.isc_dsql_error, Collections.emptyList()), new StatusVectorEntry(ISCConstants.isc_batch_big_bpb, Arrays.asList(8, "0:63"))));
+        FirebirdStatusVector vector = new FirebirdStatusVector(ex);
+        assertThat(vector.getGdsCode(), is(ISCConstants.isc_dsql_error));
+        vector.write(payload);
+        InOrder inOrder = inOrder(payload);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_dsql_error);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_batch_big_bpb);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_number);
+        inOrder.verify(payload).writeInt4(8);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_string);
+        inOrder.verify(payload).writeString("0:63");
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
         verifyNoMoreInteractions(payload);
     }
