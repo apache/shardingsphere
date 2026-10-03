@@ -155,8 +155,7 @@ class ShardingSphereDataSourceTest {
         Map<String, DataSource> dataSources = new LinkedHashMap<>(2, 1F);
         dataSources.put("ds_0", failedDataSource);
         dataSources.put("ds_1", remainingDataSource);
-        ShardingSphereDataSource actual = new ShardingSphereDataSource(
-                "foo_db", null, dataSources, Collections.singleton(mock(RuleConfiguration.class)), new Properties());
+        ShardingSphereDataSource actual = new ShardingSphereDataSource("foo_db", null, dataSources, Collections.singleton(mock(RuleConfiguration.class)), new Properties());
         try {
             SQLException actualException = assertThrows(SQLException.class, actual::close);
             assertThat(actualException.getCause().getMessage(), is("close failed"));
@@ -177,8 +176,7 @@ class ShardingSphereDataSourceTest {
         Map<String, DataSource> dataSources = new LinkedHashMap<>(2, 1F);
         dataSources.put("ds_0", firstDataSource);
         dataSources.put("ds_1", secondDataSource);
-        ShardingSphereDataSource actual = new ShardingSphereDataSource(
-                "foo_db", null, dataSources, Collections.singleton(mock(RuleConfiguration.class)), new Properties());
+        ShardingSphereDataSource actual = new ShardingSphereDataSource("foo_db", null, dataSources, Collections.singleton(mock(RuleConfiguration.class)), new Properties());
         try {
             SQLException actualException = assertThrows(SQLException.class, actual::close);
             assertThat(actualException.getCause().getMessage(), is("first close failed"));
