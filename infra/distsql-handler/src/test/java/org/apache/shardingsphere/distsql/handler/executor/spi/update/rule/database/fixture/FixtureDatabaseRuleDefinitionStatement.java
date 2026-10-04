@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.concurrent.fixture;
+package org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.database.fixture;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * Fixture DistSQL query statement.
+ * Fixture database rule definition statement.
  */
-@AllArgsConstructor
 @Getter
-public final class FixtureDistSQLQueryStatement extends DistSQLStatement {
+public final class FixtureDatabaseRuleDefinitionStatement extends SQLStatement {
     
     private final ShardingSphereRule expectedRule;
     
+    public FixtureDatabaseRuleDefinitionStatement(final ShardingSphereRule expectedRule) {
+        super(null);
+        this.expectedRule = expectedRule;
+    }
 }
