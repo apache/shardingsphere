@@ -61,7 +61,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -200,9 +199,7 @@ class MCPResourceSpecificationFactoryTest {
     private MCPRuntimeContext createRuntimeContext() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
-        MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
-        when(databaseCapabilityProvider.provide(anyString())).thenReturn(Optional.empty());
-        return new MCPRuntimeContext(sessionManager, databaseCapabilityProvider, MCPTransportType.HTTP);
+        return new MCPRuntimeContext(sessionManager, mock(MCPDatabaseCapabilityProvider.class), MCPTransportType.HTTP);
     }
     
     private McpSyncServerExchange createExchange() {
