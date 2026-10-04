@@ -30,7 +30,7 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-final class PipelineInventoryCalculateSQLBuilderIT {
+class PipelineInventoryCalculateSQLBuilderTest {
     
     private final PipelineInventoryCalculateSQLBuilder sqlBuilder =
             new PipelineInventoryCalculateSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));

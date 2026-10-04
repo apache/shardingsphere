@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ShardingSphereDistSQLTest {
+final class ShardingSphereDistSQLIT {
     
     private static final String URL = "jdbc:shardingsphere:classpath:config/driver/driver-fixture-h2-mysql.yaml";
     
