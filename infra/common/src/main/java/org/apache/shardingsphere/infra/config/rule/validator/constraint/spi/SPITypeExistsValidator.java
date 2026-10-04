@@ -25,7 +25,10 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.ValidationException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * SPI type exists validator.
@@ -45,9 +48,62 @@ public final class SPITypeExistsValidator implements ConstraintValidator<SPIType
             return true;
         }
         if (value instanceof Map) {
-            return ((Map<?, ?>) value).values().stream().allMatch(this::isSPITypeExists);
+            Map<?, ?> values = (Map<?, ?>) value;
+            int size = values.size();
+            if (0 == size) {
+                return true;
+            }
+            return size > 1 ? isMapSPITypeExists(values) : values.values().stream().allMatch(this::isSPITypeExists);
         }
         return isSPITypeExists(value);
+    }
+    
+    private boolean isMapSPITypeExists(final Map<?, ?> values) {
+        Map<Class<?>, Method> typeGetters = new HashMap<>();
+        Set<String> validatedTypes = new HashSet<>();
+        Class<? extends TypedSPI> spiClass = null;
+        for (Object each : values.values()) {
+            if (null == each) {
+                continue;
+            }
+            Object type = getMapValueType(each, typeGetters);
+            try {
+                if (null == spiClass) {
+                    spiClass = loadSPIClass(spiClassName);
+                }
+                if ((null == type || type instanceof String) && !validatedTypes.add((String) type)) {
+                    continue;
+                }
+                if (!TypedSPILoader.containsService(spiClass, type)) {
+                    return false;
+                }
+            } catch (final ClassNotFoundException ex) {
+                throw new ValidationException(String.format("Can not load SPI class `%s`.", spiClassName), ex);
+            }
+        }
+        return true;
+    }
+    
+    private Object getMapValueType(final Object value, final Map<Class<?>, Method> typeGetters) {
+        if (value instanceof String) {
+            return value;
+        }
+        try {
+            Method getter = typeGetters.get(value.getClass());
+            if (null == getter) {
+                getter = value.getClass().getMethod("getType");
+                typeGetters.put(value.getClass(), getter);
+            }
+            return getter.invoke(value);
+        } catch (final ReflectiveOperationException ex) {
+            throw new ValidationException(String.format("Can not read property `type` from `%s`.", value.getClass().getName()), ex);
+        }
+    }
+    
+    private Class<? extends TypedSPI> loadSPIClass(final String spiClassName) throws ClassNotFoundException {
+        Class<?> result = Class.forName(spiClassName, false, Thread.currentThread().getContextClassLoader());
+        ShardingSpherePreconditions.checkState(TypedSPI.class.isAssignableFrom(result), () -> new ValidationException(String.format("Class `%s` does not implement TypedSPI.", spiClassName)));
+        return result.asSubclass(TypedSPI.class);
     }
     
     private boolean isSPITypeExists(final Object value) {
