@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -110,7 +109,7 @@ class EncryptWorkflowPlanningServiceTest {
     void assertPlanRejectsMissingLogicalColumn() {
         MCPMetadataQueryFacade metadataQueryFacade = createMetadataQueryFacade();
         when(metadataQueryFacade.querySchemas(any())).thenReturn(List.of(
-                new ShardingSphereSchema("public", mock(DatabaseType.class), List.of(new ShardingSphereTable("orders", List.of(), List.of(), List.of(), TableType.TABLE)), List.of())));
+                new ShardingSphereSchema("public", mock(DatabaseType.class), List.of(new ShardingSphereTable("orders", List.of(), List.of(), List.of())), List.of())));
         when(metadataQueryFacade.queryTableColumns(any(), any(), any())).thenReturn(List.of());
         EncryptWorkflowPlanningService service = createService(mock(EncryptRuleInspectionService.class), mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(EncryptRuleDistSQLPlanningService.class));
@@ -393,7 +392,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     private ShardingSphereTable createTableMetadata(final String tableName) {
-        return new ShardingSphereTable(tableName, List.of(), List.of(), List.of(), TableType.TABLE);
+        return new ShardingSphereTable(tableName, List.of(), List.of(), List.of());
     }
     
     private MCPColumnMetadata createColumnMetadata(final String tableName, final String columnName) {
