@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.concurrent.fixture;
+package org.apache.shardingsphere.distsql.handler.executor.spi.update.fixture;
 
-import org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.database.DatabaseRuleDefinitionExecutor;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.distsql.handler.executor.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+
+import java.sql.SQLException;
 
 /**
- * Fixture database rule definition executor.
+ * Fixture DistSQL update executor.
  */
-public final class FixtureDatabaseRuleDefinitionExecutor implements DatabaseRuleDefinitionExecutor<FixtureDatabaseRuleDefinitionStatement, ShardingSphereRule> {
+public final class FixtureDistSQLUpdateExecutor implements DistSQLUpdateExecutor<FixtureDistSQLUpdateStatement>, DistSQLExecutorRuleAware<ShardingSphereRule> {
     
     private ShardingSphereRule rule;
-    
-    @Override
-    public void setDatabase(final ShardingSphereDatabase database) {
-    }
     
     @Override
     public void setRule(final ShardingSphereRule rule) {
@@ -43,14 +42,14 @@ public final class FixtureDatabaseRuleDefinitionExecutor implements DatabaseRule
     }
     
     @Override
-    public void checkBeforeUpdate(final FixtureDatabaseRuleDefinitionStatement sqlStatement) {
+    public void executeUpdate(final FixtureDistSQLUpdateStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         if (rule != sqlStatement.getExpectedRule()) {
             throw new IllegalStateException(String.format("Current rule `%s` does not match expected rule `%s`", rule, sqlStatement.getExpectedRule()));
         }
     }
     
     @Override
-    public Class<FixtureDatabaseRuleDefinitionStatement> getType() {
-        return FixtureDatabaseRuleDefinitionStatement.class;
+    public Class<FixtureDistSQLUpdateStatement> getType() {
+        return FixtureDistSQLUpdateStatement.class;
     }
 }

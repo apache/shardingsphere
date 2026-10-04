@@ -28,6 +28,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -65,6 +66,8 @@ class EncryptRuleConfigurationTest {
                 Arguments.of("Empty configuration", new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())),
                 Arguments.of("Table without columns", new EncryptRuleConfiguration(
                         Collections.singleton(new EncryptTableRuleConfiguration("foo_tbl", Collections.emptyList())), Collections.emptyMap())),
+                Arguments.of("Table names remain case sensitive", new EncryptRuleConfiguration(Arrays.asList(
+                        new EncryptTableRuleConfiguration("foo_tbl", Collections.emptyList()), new EncryptTableRuleConfiguration("FOO_TBL", Collections.emptyList())), Collections.emptyMap())),
                 Arguments.of("Complete configuration", createValidRuleConfiguration()),
                 Arguments.of("Multiple columns without derived column conflicts", createValidMultipleColumnRuleConfiguration()));
     }
@@ -99,6 +102,18 @@ class EncryptRuleConfigurationTest {
                 "foo_col", new EncryptColumnItemRuleConfiguration("foo_cipher", "bar_encryptor")));
         InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
         assertThat(actual.getMessage(), is("Invalid 'EncryptRuleConfiguration' rule, error message is: Property `tables` references unconfigured encryptors `bar_encryptor`."));
+    }
+    
+    @Test
+    void assertDuplicateTableNamesViolation() {
+        EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Arrays.asList(new EncryptTableRuleConfiguration("foo_tbl", Collections.emptyList()),
+                new EncryptTableRuleConfiguration("bar_tbl", Collections.emptyList()), new EncryptTableRuleConfiguration("foo_tbl", Collections.emptyList())), Collections.emptyMap());
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'EncryptRuleConfiguration' rule, error message is: Property `tables` must not contain duplicate table names `foo_tbl`."));
+        SQLException actualSQLException = actual.toSQLException();
+        assertThat(actualSQLException.getMessage(), is(actual.getMessage()));
+        assertThat(actualSQLException.getSQLState(), is("44000"));
+        assertThat(actualSQLException.getErrorCode(), is(10200));
     }
     
     private static Stream<Arguments> invalidRuleConfigurationArguments() {

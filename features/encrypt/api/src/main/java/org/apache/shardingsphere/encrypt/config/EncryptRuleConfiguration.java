@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfigur
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.validator.constraint.reference.ConfigurationReferenceExists;
 import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
+import org.apache.shardingsphere.infra.config.rule.validator.constraint.unique.UniqueTableNames;
 import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 
 import javax.validation.Valid;
@@ -46,6 +47,7 @@ public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration
     
     @NotNull
     @Valid
+    @UniqueTableNames(groups = RuleConfigurationTypeValidationGroup.class)
     private final Collection<@NotNull EncryptTableRuleConfiguration> tables;
     
     @NotNull

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.concurrent.fixture;
+package org.apache.shardingsphere.distsql.handler.executor.spi.update.fixture;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

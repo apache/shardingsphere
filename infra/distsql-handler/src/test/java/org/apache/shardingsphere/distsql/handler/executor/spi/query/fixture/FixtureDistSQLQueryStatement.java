@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.exception.metadata;
+package org.apache.shardingsphere.distsql.handler.executor.spi.query.fixture;
 
-import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
-import org.apache.shardingsphere.infra.exception.external.sql.identifier.SQLExceptionIdentifier;
-import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * Missing required encrypt column Exception.
+ * Fixture DistSQL query statement.
  */
-public final class MissingRequiredEncryptColumnException extends EncryptSQLException {
+@AllArgsConstructor
+@Getter
+public final class FixtureDistSQLQueryStatement extends DistSQLStatement {
     
-    private static final long serialVersionUID = -6765795304282762539L;
+    private final ShardingSphereRule expectedRule;
     
-    public MissingRequiredEncryptColumnException(final String columnType, final SQLExceptionIdentifier sqlExceptionIdentifier) {
-        super(XOpenSQLState.NOT_FOUND, 0, "%s column is required in %s.", columnType, sqlExceptionIdentifier);
-    }
 }

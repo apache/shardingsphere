@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.concurrent.fixture;
+package org.apache.shardingsphere.distsql.handler.executor.spi.query.fixture;
 
 import org.apache.shardingsphere.distsql.handler.executor.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Fixture DistSQL update executor.
+ * Fixture DistSQL query executor.
  */
-public final class FixtureDistSQLUpdateExecutor implements DistSQLUpdateExecutor<FixtureDistSQLUpdateStatement>, DistSQLExecutorRuleAware<ShardingSphereRule> {
+public final class FixtureDistSQLQueryExecutor implements DistSQLQueryExecutor<FixtureDistSQLQueryStatement>, DistSQLExecutorRuleAware<ShardingSphereRule> {
     
     private ShardingSphereRule rule;
     
@@ -42,14 +45,25 @@ public final class FixtureDistSQLUpdateExecutor implements DistSQLUpdateExecutor
     }
     
     @Override
-    public void executeUpdate(final FixtureDistSQLUpdateStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+    public Collection<String> getColumnNames(final FixtureDistSQLQueryStatement sqlStatement) {
+        checkRule(sqlStatement);
+        return Collections.singleton("rule");
+    }
+    
+    private void checkRule(final FixtureDistSQLQueryStatement sqlStatement) {
         if (rule != sqlStatement.getExpectedRule()) {
             throw new IllegalStateException(String.format("Current rule `%s` does not match expected rule `%s`", rule, sqlStatement.getExpectedRule()));
         }
     }
     
     @Override
-    public Class<FixtureDistSQLUpdateStatement> getType() {
-        return FixtureDistSQLUpdateStatement.class;
+    public Collection<LocalDataQueryResultRow> getRows(final FixtureDistSQLQueryStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+        checkRule(sqlStatement);
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public Class<FixtureDistSQLQueryStatement> getType() {
+        return FixtureDistSQLQueryStatement.class;
     }
 }

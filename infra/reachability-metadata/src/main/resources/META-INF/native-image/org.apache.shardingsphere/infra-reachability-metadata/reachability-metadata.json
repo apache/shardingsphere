@@ -341,6 +341,38 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
       },
+      "type": "org.apache.shardingsphere.infra.config.rule.validator.constraint.unique.UniqueTableNamesValidator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.infra.config.rule.validator.constraint.unique.UniqueTableNames",
+      "methods": [
+        {
+          "name": "groups",
+          "parameterTypes": []
+        },
+        {
+          "name": "message",
+          "parameterTypes": []
+        },
+        {
+          "name": "payload",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
       "type": "org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration",
       "fields": [
         {
@@ -443,6 +475,10 @@
       "methods": [
         {
           "name": "getColumns",
+          "parameterTypes": []
+        },
+        {
+          "name": "getName",
           "parameterTypes": []
         }
       ]

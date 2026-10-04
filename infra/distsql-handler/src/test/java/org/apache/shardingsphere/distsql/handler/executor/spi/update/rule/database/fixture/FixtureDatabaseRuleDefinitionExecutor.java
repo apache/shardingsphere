@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.concurrent.fixture;
+package org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.database.fixture;
 
-import org.apache.shardingsphere.distsql.handler.executor.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.executor.spi.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.database.DatabaseRuleDefinitionExecutor;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
- * Fixture DistSQL query executor.
+ * Fixture database rule definition executor.
  */
-public final class FixtureDistSQLQueryExecutor implements DistSQLQueryExecutor<FixtureDistSQLQueryStatement>, DistSQLExecutorRuleAware<ShardingSphereRule> {
+public final class FixtureDatabaseRuleDefinitionExecutor implements DatabaseRuleDefinitionExecutor<FixtureDatabaseRuleDefinitionStatement, ShardingSphereRule> {
     
     private ShardingSphereRule rule;
+    
+    @Override
+    public void setDatabase(final ShardingSphereDatabase database) {
+    }
     
     @Override
     public void setRule(final ShardingSphereRule rule) {
@@ -45,25 +43,14 @@ public final class FixtureDistSQLQueryExecutor implements DistSQLQueryExecutor<F
     }
     
     @Override
-    public Collection<String> getColumnNames(final FixtureDistSQLQueryStatement sqlStatement) {
-        checkRule(sqlStatement);
-        return Collections.singleton("rule");
-    }
-    
-    private void checkRule(final FixtureDistSQLQueryStatement sqlStatement) {
+    public void checkBeforeUpdate(final FixtureDatabaseRuleDefinitionStatement sqlStatement) {
         if (rule != sqlStatement.getExpectedRule()) {
             throw new IllegalStateException(String.format("Current rule `%s` does not match expected rule `%s`", rule, sqlStatement.getExpectedRule()));
         }
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final FixtureDistSQLQueryStatement sqlStatement, final ContextManager contextManager) throws SQLException {
-        checkRule(sqlStatement);
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public Class<FixtureDistSQLQueryStatement> getType() {
-        return FixtureDistSQLQueryStatement.class;
+    public Class<FixtureDatabaseRuleDefinitionStatement> getType() {
+        return FixtureDatabaseRuleDefinitionStatement.class;
     }
 }
