@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lock;
+package org.apache.shardingsphere.distsql.handler.executor.ral.updatable.lock;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.spi.DistSQLUpdateExecutor;
-import org.apache.shardingsphere.distsql.handler.executor.ral.updatable.lock.LockClusterExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
@@ -30,10 +29,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.lock.exception.LockedClusterException;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.mode.state.StatePersistService;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -54,8 +49,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
 class LockClusterExecutorTest {
     
     private final LockClusterExecutor executor = (LockClusterExecutor) TypedSPILoader.getService(DistSQLUpdateExecutor.class, LockClusterStatement.class);
@@ -74,16 +67,12 @@ class LockClusterExecutorTest {
     @MethodSource("provideOperationScenarios")
     void assertExecuteUpdateWithOperationScenarios(final String name, final LockClusterStatement sqlStatement,
                                                    final long expectedTimeoutMillis, final ShardingSphereState callbackState,
-                                                   final Class<? extends Throwable> expectedException, final boolean expectStateUpdated) throws SQLException {
+                                                   final Class<? extends Throwable> expectedException, final ShardingSphereState expectedState) throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ExclusiveOperatorEngine exclusiveOperatorEngine = mock(ExclusiveOperatorEngine.class);
         when(contextManager.getExclusiveOperatorEngine()).thenReturn(exclusiveOperatorEngine);
         when(contextManager.getStateContext().getState()).thenReturn(ShardingSphereState.OK, callbackState);
-        StatePersistService stateService = null;
-        if (expectStateUpdated) {
-            stateService = mock(StatePersistService.class);
-            mockStateService(stateService);
-        }
+        StatePersistService stateService = contextManager.getPersistServiceFacade().getStateService();
         doAnswer(invocation -> {
             ExclusiveOperationVoidCallback callback = invocation.getArgument(2);
             callback.execute();
@@ -95,23 +84,19 @@ class LockClusterExecutorTest {
             assertThrows(expectedException, () -> executor.executeUpdate(sqlStatement, contextManager));
         }
         verify(exclusiveOperatorEngine).operate(any(), eq(expectedTimeoutMillis), any(ExclusiveOperationVoidCallback.class));
-        if (expectStateUpdated) {
-            verify(stateService).update(ShardingSphereState.READ_ONLY);
+        if (null == expectedState) {
+            verify(stateService, never()).update(any());
+        } else {
+            verify(stateService).update(expectedState);
         }
-    }
-    
-    private void mockStateService(final StatePersistService stateService) {
-        ProxyContext proxyContext = mock(ProxyContext.class);
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(proxyContext.getContextManager()).thenReturn(contextManager);
-        when(contextManager.getPersistServiceFacade().getStateService()).thenReturn(stateService);
-        when(ProxyContext.getInstance()).thenReturn(proxyContext);
     }
     
     private static Stream<Arguments> provideFailureScenarios() {
         return Stream.of(
                 Arguments.of("cluster state is unavailable", new LockClusterStatement(new AlgorithmSegment("WRITE", new Properties()), 2000L),
                         ShardingSphereState.UNAVAILABLE, LockedClusterException.class),
+                Arguments.of("cluster state is read only", new LockClusterStatement(new AlgorithmSegment("WRITE", new Properties()), 2000L),
+                        ShardingSphereState.READ_ONLY, LockedClusterException.class),
                 Arguments.of("lock strategy is required", new LockClusterStatement(null, 2000L), ShardingSphereState.OK, MissingRequiredAlgorithmException.class),
                 Arguments.of("lock strategy is unsupported", new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()), 2000L),
                         ShardingSphereState.OK, ServiceProviderNotFoundException.class));
@@ -120,10 +105,14 @@ class LockClusterExecutorTest {
     private static Stream<Arguments> provideOperationScenarios() {
         return Stream.of(
                 Arguments.of("use explicit timeout", new LockClusterStatement(new AlgorithmSegment("WRITE", new Properties()), 2000L),
-                        2000L, ShardingSphereState.OK, null, true),
+                        2000L, ShardingSphereState.OK, null, ShardingSphereState.READ_ONLY),
                 Arguments.of("use default timeout when absent", new LockClusterStatement(new AlgorithmSegment("WRITE", new Properties())),
-                        3000L, ShardingSphereState.OK, null, true),
+                        3000L, ShardingSphereState.OK, null, ShardingSphereState.READ_ONLY),
+                Arguments.of("lock reads and writes", new LockClusterStatement(new AlgorithmSegment("READ_WRITE", new Properties()), 2000L),
+                        2000L, ShardingSphereState.OK, null, ShardingSphereState.UNAVAILABLE),
                 Arguments.of("throw exception when callback state changes", new LockClusterStatement(new AlgorithmSegment("WRITE", new Properties()), 2000L),
-                        2000L, ShardingSphereState.UNAVAILABLE, LockedClusterException.class, false));
+                        2000L, ShardingSphereState.UNAVAILABLE, LockedClusterException.class, null),
+                Arguments.of("throw exception when callback state becomes read only", new LockClusterStatement(new AlgorithmSegment("WRITE", new Properties()), 2000L),
+                        2000L, ShardingSphereState.READ_ONLY, LockedClusterException.class, null));
     }
 }

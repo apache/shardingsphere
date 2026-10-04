@@ -15,36 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.lock.impl;
+package org.apache.shardingsphere.distsql.handler.executor.lock.impl;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.lock.spi.ClusterLockStrategy;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
-import org.apache.shardingsphere.mode.state.StatePersistService;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
-class ClusterWriteLockStrategyTest {
+class ClusterReadWriteLockStrategyTest {
     
-    private final ClusterLockStrategy clusterLockStrategy = TypedSPILoader.getService(ClusterLockStrategy.class, "WRITE");
+    private final ClusterLockStrategy clusterLockStrategy = TypedSPILoader.getService(ClusterLockStrategy.class, "READ_WRITE");
     
     @Test
     void assertLock() {
-        StatePersistService stateService = mock(StatePersistService.class);
-        ProxyContext proxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
-        when(proxyContext.getContextManager().getPersistServiceFacade().getStateService()).thenReturn(stateService);
-        when(ProxyContext.getInstance()).thenReturn(proxyContext);
-        clusterLockStrategy.lock();
-        verify(stateService).update(ShardingSphereState.READ_ONLY);
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        clusterLockStrategy.lock(contextManager);
+        verify(contextManager.getPersistServiceFacade().getStateService()).update(ShardingSphereState.UNAVAILABLE);
+    }
+    
+    @Test
+    void assertLockWithDifferentContextManagers() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ContextManager anotherContextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        clusterLockStrategy.lock(contextManager);
+        clusterLockStrategy.lock(anotherContextManager);
+        verify(contextManager.getPersistServiceFacade().getStateService()).update(ShardingSphereState.UNAVAILABLE);
+        verify(anotherContextManager.getPersistServiceFacade().getStateService()).update(ShardingSphereState.UNAVAILABLE);
     }
 }

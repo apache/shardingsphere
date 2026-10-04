@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.lock.impl;
+package org.apache.shardingsphere.distsql.handler.executor.lock.impl;
 
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.lock.spi.ClusterLockStrategy;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 /**
  * Cluster read-write lock strategy.
@@ -27,8 +27,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 public class ClusterReadWriteLockStrategy implements ClusterLockStrategy {
     
     @Override
-    public void lock() {
-        ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getStateService().update(ShardingSphereState.UNAVAILABLE);
+    public void lock(final ContextManager contextManager) {
+        contextManager.getPersistServiceFacade().getStateService().update(ShardingSphereState.UNAVAILABLE);
     }
     
     @Override

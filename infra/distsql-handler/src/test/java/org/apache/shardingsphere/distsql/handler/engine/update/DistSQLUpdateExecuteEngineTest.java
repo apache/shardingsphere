@@ -27,7 +27,9 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.engine.update.spi.AdvancedDistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.engine.update.spi.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.DatabaseRuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.rule.global.GlobalRuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -35,6 +37,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.exception.NotClusterModeException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
@@ -43,8 +46,12 @@ import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -56,6 +63,14 @@ import static org.mockito.Mockito.withSettings;
 
 @SuppressWarnings("unchecked")
 class DistSQLUpdateExecuteEngineTest {
+    
+    @Test
+    void assertExecuteUpdateWithLockClusterInStandaloneMode() throws SQLException {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        LockClusterStatement sqlStatement = new LockClusterStatement(new AlgorithmSegment("WRITE", new Properties()));
+        assertThrows(NotClusterModeException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager, null).executeUpdate());
+        verify(contextManager.getExclusiveOperatorEngine(), never()).operate(any(), anyLong(), any());
+    }
     
     @Test
     void assertExecuteUpdateWithGlobalRuleDefinitionStatement() throws SQLException {

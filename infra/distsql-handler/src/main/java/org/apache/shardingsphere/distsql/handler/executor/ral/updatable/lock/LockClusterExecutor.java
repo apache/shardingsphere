@@ -43,7 +43,7 @@ public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClus
         checkAlgorithm(sqlStatement);
         contextManager.getExclusiveOperatorEngine().operate(new LockClusterOperation(), sqlStatement.getTimeoutMillis(), () -> {
             checkState(contextManager);
-            TypedSPILoader.getService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName()).lock();
+            TypedSPILoader.getService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName()).lock(contextManager);
         });
     }
     

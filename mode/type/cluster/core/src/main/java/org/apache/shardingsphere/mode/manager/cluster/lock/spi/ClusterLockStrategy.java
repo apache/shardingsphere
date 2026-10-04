@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.lock.spi;
 
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Cluster lock strategy.
@@ -27,7 +28,10 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 public interface ClusterLockStrategy extends TypedSPI {
     
     /**
-     * Lock cluster.
+     * Lock the cluster associated with the caller's context manager.
+     * Implementations must not retain the context manager because strategies are shared singletons.
+     *
+     * @param contextManager caller's context manager
      */
-    void lock();
+    void lock(ContextManager contextManager);
 }
