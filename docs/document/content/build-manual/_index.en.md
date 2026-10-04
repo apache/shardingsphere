@@ -1,8 +1,8 @@
 +++
 title = "Build Manual"
-weight = 10
+weight = 6
 chapter = true
-pre = "<b>10. </b>"
+pre = "<b>6. </b>"
 +++
 
 This chapter describes how to build and package Apache ShardingSphere artifacts from source.
