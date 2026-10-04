@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.handler.executor.ral.updatable.lock;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.spi.DistSQLUpdateExecutor;
-import org.apache.shardingsphere.distsql.handler.executor.lock.spi.ClusterLockStrategy;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.infra.exception.external.sql.identifier.SQLExce
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.lock.exception.LockedClusterException;
+import org.apache.shardingsphere.mode.manager.cluster.lock.spi.ClusterLockStrategy;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
 
 import java.sql.SQLException;

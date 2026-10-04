@@ -22,7 +22,9 @@ import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfig
 import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.config.keygen.impl.SequenceKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.RuleConfigurationValidationException;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -36,6 +38,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import javax.validation.ValidationException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,11 +47,78 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingRuleConfigurationTest {
+    
+    @Test
+    void assertValidateBlankLogicTableBeforeDataNodes() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration(new ShardingTableRuleConfiguration("", "malformed"));
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'ShardingRuleConfiguration' rule, error message is: Property `tables[0].logicTable` must not be blank."));
+    }
+    
+    @Test
+    void assertValidateRuleItemWithBlankLogicTableBeforeDataNodes() {
+        ShardingTableRuleConfiguration tableConfig = new ShardingTableRuleConfiguration("", "malformed");
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class,
+                () -> RuleConfigurationValidator.validateRuleItem(new ShardingRuleConfiguration(), tableConfig));
+        assertThat(actual.getMessage(), is("Invalid 'ShardingRuleConfiguration' rule, error message is: Property `logicTable` must not be blank."));
+    }
+    
+    @Test
+    void assertValidateMultipleSchemasForSameDataSource() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration(new ShardingTableRuleConfiguration("foo_tbl", "ds_0.foo_schema_${0..1}.foo_tbl_${0..1}"));
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'ShardingRuleConfiguration' rule, error message is: "
+                + "Property `tables[0].actualDataNodes` contains multiple schemas for storage unit `ds_0` in sharding table `foo_tbl`."));
+    }
+    
+    @Test
+    void assertValidateRuleItemWithMultipleSchemasForSameDataSource() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration tableConfig = new ShardingTableRuleConfiguration("foo_tbl", "ds_0.foo_schema_${0..1}.foo_tbl_${0..1}");
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validateRuleItem(ruleConfig, tableConfig));
+        assertThat(actual.getMessage(), is("Invalid 'ShardingRuleConfiguration' rule, error message is: "
+                + "Property `actualDataNodes` contains multiple schemas for storage unit `ds_0` in sharding table `foo_tbl`."));
+        assertTrue(ruleConfig.getTables().isEmpty());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("validSchemaDataNodesArguments")
+    void assertValidateValidSchemaDataNodes(final String name, final ShardingTableRuleConfiguration tableConfig) {
+        assertDoesNotThrow(() -> RuleConfigurationValidator.validate(createRuleConfiguration(tableConfig)));
+        assertDoesNotThrow(() -> RuleConfigurationValidator.validateRuleItem(new ShardingRuleConfiguration(), tableConfig));
+    }
+    
+    private static Stream<Arguments> validSchemaDataNodesArguments() {
+        return Stream.of(
+                Arguments.of("null data nodes", new ShardingTableRuleConfiguration("foo_tbl", null)),
+                Arguments.of("empty data nodes", new ShardingTableRuleConfiguration("foo_tbl", "")),
+                Arguments.of("inline data nodes with consistent schemas", new ShardingTableRuleConfiguration("foo_tbl", "ds_${0..1}.foo_schema.foo_tbl_${0..1}")));
+    }
+    
+    @Test
+    void assertValidateDifferentSchemasForDifferentLogicTables() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getTables().add(new ShardingTableRuleConfiguration("foo_tbl", "ds_0.foo_schema.foo_tbl_0"));
+        ruleConfig.getTables().add(new ShardingTableRuleConfiguration("bar_tbl", "ds_0.bar_schema.bar_tbl_0"));
+        assertDoesNotThrow(() -> RuleConfigurationValidator.validate(ruleConfig));
+    }
+    
+    @Test
+    void assertValidateMalformedDataNodes() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration(new ShardingTableRuleConfiguration("foo_tbl", "malformed"));
+        RuleConfigurationValidationException actual = assertThrows(RuleConfigurationValidationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Can not validate 'ShardingRuleConfiguration' rule configuration.\n"
+                + "More details: javax.validation.ValidationException: org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException: "
+                + "Invalid format for actual data node 'malformed'."));
+        assertThat(actual.getCause(), isA(ValidationException.class));
+        assertThat(actual.getCause().getCause(), isA(InvalidDataNodeFormatException.class));
+    }
     
     @Test
     void assertGetLogicTableNames() {
