@@ -27,6 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,6 +67,8 @@ class MaskRuleConfigurationTest {
                 Arguments.of("Empty configuration", new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())),
                 Arguments.of("Table without columns", new MaskRuleConfiguration(
                         Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList())), Collections.emptyMap())),
+                Arguments.of("Table names remain case sensitive", new MaskRuleConfiguration(Arrays.asList(
+                        new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList()), new MaskTableRuleConfiguration("FOO_TBL", Collections.emptyList())), Collections.emptyMap())),
                 Arguments.of("Complete configuration", new MaskRuleConfiguration(Collections.singleton(tableConfig),
                         Collections.singletonMap("foo_mask", new AlgorithmConfiguration("FIXTURE", new Properties())))));
     }
@@ -81,6 +84,29 @@ class MaskRuleConfigurationTest {
         MaskRuleConfiguration ruleConfig = createRuleConfiguration(new MaskColumnRuleConfiguration("foo_col", "bar_mask"));
         InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
         assertThat(actual.getMessage(), containsString("Property `tables` references unconfigured maskAlgorithms `bar_mask`."));
+    }
+    
+    @Test
+    void assertDuplicateTableNamesViolation() {
+        MaskRuleConfiguration ruleConfig = new MaskRuleConfiguration(Arrays.asList(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList()),
+                new MaskTableRuleConfiguration("bar_tbl", Collections.emptyList()), new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList()),
+                new MaskTableRuleConfiguration("bar_tbl", Collections.emptyList()), new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList())), Collections.emptyMap());
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'MaskRuleConfiguration' rule, error message is: Property `tables` must not contain duplicate table names `foo_tbl, bar_tbl`."));
+        SQLException actualSQLException = actual.toSQLException();
+        assertThat(actualSQLException.getMessage(), is(actual.getMessage()));
+        assertThat(actualSQLException.getSQLState(), is("44000"));
+        assertThat(actualSQLException.getErrorCode(), is(10200));
+    }
+    
+    @Test
+    void assertDuplicateTableNamesAndUnconfiguredMaskAlgorithmViolations() {
+        MaskRuleConfiguration ruleConfig = new MaskRuleConfiguration(Arrays.asList(
+                new MaskTableRuleConfiguration("foo_tbl", Collections.singleton(new MaskColumnRuleConfiguration("foo_col", "bar_mask"))),
+                new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList())), Collections.emptyMap());
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'MaskRuleConfiguration' rule, error message is: Property `tables` must not contain duplicate table names `foo_tbl`.; "
+                + "Property `tables` references unconfigured maskAlgorithms `bar_mask`."));
     }
     
     private static Stream<Arguments> invalidRuleConfigurationArguments() {
