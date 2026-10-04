@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.util;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlDatabaseConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.config.yaml.YamlExportedServerConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.export.ExportedMetaData;
-import org.apache.shardingsphere.distsql.handler.executor.ral.updatable.imports.MetaDataImportExecutor;
-import org.apache.shardingsphere.distsql.handler.executor.ral.updatable.imports.YamlDatabaseConfigurationImportExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.export.model.ExportedMetaData;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.imports.MetaDataImportExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.imports.YamlDatabaseConfigurationImportExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDatabaseConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlExportedServerConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;

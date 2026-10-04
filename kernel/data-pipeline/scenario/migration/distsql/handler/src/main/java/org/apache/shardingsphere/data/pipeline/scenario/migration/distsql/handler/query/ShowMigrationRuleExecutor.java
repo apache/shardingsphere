@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handl
 
 import org.apache.shardingsphere.data.pipeline.distsql.handler.transmission.query.ShowTransmissionRuleQueryResult;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.queryable.ShowMigrationRuleStatement;
-import org.apache.shardingsphere.distsql.handler.engine.query.spi.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 

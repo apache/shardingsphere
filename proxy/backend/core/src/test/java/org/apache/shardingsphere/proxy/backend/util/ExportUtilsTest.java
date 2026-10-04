@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
-import org.apache.shardingsphere.distsql.handler.executor.export.ExportUtils;
+import org.apache.shardingsphere.distsql.handler.util.ExportUtils;
 import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;

@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.distsql.handler.engine.concurrent;
 
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.concurrent.fixture.FixtureDatabaseRuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.handler.engine.concurrent.fixture.FixtureDistSQLQueryStatement;
 import org.apache.shardingsphere.distsql.handler.engine.concurrent.fixture.FixtureDistSQLUpdateStatement;
 import org.apache.shardingsphere.distsql.handler.engine.concurrent.fixture.FixtureRule;
-import org.apache.shardingsphere.distsql.handler.engine.query.spi.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
-import org.apache.shardingsphere.distsql.handler.engine.update.spi.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.executor.spi.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;

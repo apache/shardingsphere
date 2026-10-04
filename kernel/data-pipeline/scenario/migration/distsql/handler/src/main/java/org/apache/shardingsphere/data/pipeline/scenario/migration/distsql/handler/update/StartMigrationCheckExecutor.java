@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handl
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable.StartMigrationCheckStatement;
-import org.apache.shardingsphere.distsql.handler.engine.update.spi.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.computenode;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.spi.DistSQLUpdateExecutor;
-import org.apache.shardingsphere.distsql.handler.executor.ral.updatable.computenode.SetComputeNodeStateExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.computenode.SetComputeNodeStateExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.SetComputeNodeStateStatement;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;

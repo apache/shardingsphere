@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.globalclock.distsql.handler;
 
-import org.apache.shardingsphere.distsql.handler.executor.export.ExportedSnapshotInfo;
-import org.apache.shardingsphere.distsql.handler.executor.export.spi.ExportedSnapshotInfoGenerator;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.export.model.ExportedSnapshotInfo;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.export.spi.ExportedSnapshotInfoGenerator;
 import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;

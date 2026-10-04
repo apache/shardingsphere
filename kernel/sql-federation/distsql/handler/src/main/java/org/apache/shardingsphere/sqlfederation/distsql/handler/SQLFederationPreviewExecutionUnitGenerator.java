@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sqlfederation.distsql.handler;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.executor.rul.spi.PreviewExecutionUnitGenerator;
+import org.apache.shardingsphere.distsql.handler.context.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.executor.preview.spi.PreviewExecutionUnitGenerator;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
