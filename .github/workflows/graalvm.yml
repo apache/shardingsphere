@@ -25,6 +25,7 @@ on:
       - '.github/workflows/resources/actions/setup-build-environment/action.yml'
       - '.github/workflows/graalvm.yml'
       - 'infra/reachability-metadata/src/**'
+      - 'test/native/pom.xml'
       - 'test/native/native-image-filter/**'
       - 'test/native/src/**'
   workflow_dispatch:

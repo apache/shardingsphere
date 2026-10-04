@@ -62,9 +62,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({AutoMockExtension.class, LogCaptureExtension.class})
-@LogCaptureSettings(suppressOutput = true)
+@LogCaptureSettings(value = "org.apache.shardingsphere.agent.plugin.metrics.prometheus.PrometheusPluginLifecycleService", suppressOutput = true)
 @StaticMockSettings(ProxyContext.class)
-class PrometheusPluginLifecycleServiceTest {
+final class PrometheusPluginLifecycleServiceIT {
     
     private final PrometheusPluginLifecycleService pluginLifecycleService = new PrometheusPluginLifecycleService();
     
