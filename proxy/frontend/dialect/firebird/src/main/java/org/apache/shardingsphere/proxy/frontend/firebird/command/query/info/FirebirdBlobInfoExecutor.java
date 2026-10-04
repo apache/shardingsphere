@@ -44,16 +44,21 @@ public final class FirebirdBlobInfoExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdBlobInfoReturnPacket(packet.getInfoItems(), getBlobLength())));
-    }
-    
-    private int getBlobLength() {
         int connectionId = connectionSession.getConnectionId();
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionId, packet.getHandle());
-        OptionalInt remainingSize = FirebirdBlobReadCache.getInstance().getRemainingSize(connectionId, blobHandle);
-        if (remainingSize.isPresent()) {
-            return remainingSize.getAsInt();
+        FirebirdBlobInfoReturnPacket returnPacket = new FirebirdBlobInfoReturnPacket(packet.getInfoItems(), getBlobLength(connectionId, blobHandle), isStreamBlob(connectionId, blobHandle));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(returnPacket));
+    }
+    
+    private int getBlobLength(final int connectionId, final int blobHandle) {
+        OptionalInt totalSize = FirebirdBlobReadCache.getInstance().getTotalSize(connectionId, blobHandle);
+        if (totalSize.isPresent()) {
+            return totalSize.getAsInt();
         }
         return FirebirdBlobWriteCache.getInstance().getBlobSizeByHandle(connectionId, blobHandle).orElse(0);
+    }
+    
+    private boolean isStreamBlob(final int connectionId, final int blobHandle) {
+        return FirebirdBlobReadCache.getInstance().isStreamBlob(connectionId, blobHandle).orElse(false);
     }
 }

@@ -97,6 +97,33 @@ class FirebirdParameterBufferTest {
     }
     
     @Test
+    void assertParseTraditionalBufferWithSizedIntValues() {
+        when(intType.getFormat()).thenReturn(FirebirdValueFormat.SIZED_INT);
+        when(booleanType.getFormat()).thenReturn(FirebirdValueFormat.SIZED_INT);
+        ByteBuf buffer = Unpooled.buffer();
+        buffer.writeByte(1);
+        buffer.writeBytes(new byte[]{1, 1, 7});
+        buffer.writeBytes(new byte[]{2, 2, (byte) 0xD2, 0x04});
+        FirebirdParameterBuffer parameterBuffer = new FirebirdParameterBuffer(createValueOf(), version -> version == 1);
+        parameterBuffer.parseBuffer(buffer);
+        assertThat(parameterBuffer.<Integer>getValue(intType), is(7));
+        assertThat(parameterBuffer.<Integer>getValue(booleanType), is(1234));
+    }
+    
+    @Test
+    void assertParseExtendedBufferWithSizedIntValue() {
+        when(intType.getFormat()).thenReturn(FirebirdValueFormat.SIZED_INT);
+        ByteBuf buffer = Unpooled.buffer();
+        buffer.writeByte(2);
+        buffer.writeByte(1);
+        buffer.writeIntLE(2);
+        buffer.writeBytes(new byte[]{(byte) 0xD2, 0x04});
+        FirebirdParameterBuffer parameterBuffer = new FirebirdParameterBuffer(createValueOf(), version -> version == 1);
+        parameterBuffer.parseBuffer(buffer);
+        assertThat(parameterBuffer.<Integer>getValue(intType), is(1234));
+    }
+    
+    @Test
     void assertParseUnsupportedFormat() {
         when(unsupportedType.getFormat()).thenReturn(FirebirdValueFormat.BINARY);
         ByteBuf buffer = Unpooled.buffer();

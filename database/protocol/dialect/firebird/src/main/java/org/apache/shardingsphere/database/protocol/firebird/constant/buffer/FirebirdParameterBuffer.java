@@ -65,6 +65,8 @@ public final class FirebirdParameterBuffer {
                     parameterBuffer.skipBytes(4);
                 }
                 return parameterBuffer.readIntLE();
+            case SIZED_INT:
+                return readSizedIntValue(parameterBuffer, traditionalStyle ? parameterBuffer.readUnsignedByte() : parameterBuffer.readIntLE());
             case BOOLEAN:
                 return true;
             case STRING:
@@ -73,6 +75,14 @@ public final class FirebirdParameterBuffer {
             default:
                 throw new DatabaseProtocolException("Unsupported format type %s", type.getFormat().name());
         }
+    }
+    
+    private int readSizedIntValue(final ByteBuf parameterBuffer, final int length) {
+        int result = 0;
+        for (int i = 0; i < length; i++) {
+            result |= parameterBuffer.readUnsignedByte() << (i * Byte.SIZE);
+        }
+        return result;
     }
     
     /**
