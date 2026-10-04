@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
-import org.apache.shardingsphere.distsql.handler.executor.export.ClusterExportMetaDataGenerator;
-import org.apache.shardingsphere.distsql.handler.executor.export.ExportedClusterInfo;
-import org.apache.shardingsphere.distsql.handler.executor.export.ExportedMetaData;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.export.ClusterExportMetaDataGenerator;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.export.model.ExportedClusterInfo;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.export.model.ExportedMetaData;
 import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;

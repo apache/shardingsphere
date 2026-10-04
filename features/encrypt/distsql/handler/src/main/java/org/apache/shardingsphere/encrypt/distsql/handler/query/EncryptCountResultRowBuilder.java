@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.executor.rql.rule.spi.CountResultRowBuilder;
+import org.apache.shardingsphere.distsql.handler.executor.rule.spi.CountResultRowBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;

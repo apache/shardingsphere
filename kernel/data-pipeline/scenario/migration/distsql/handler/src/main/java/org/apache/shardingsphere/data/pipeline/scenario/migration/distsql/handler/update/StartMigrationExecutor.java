@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handl
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable.StartMigrationStatement;
-import org.apache.shardingsphere.distsql.handler.engine.update.spi.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**

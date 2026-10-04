@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.distsql.handler.engine.query;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorAwareSetter;
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.engine.query.spi.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
+import org.apache.shardingsphere.distsql.handler.context.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.prepare.DatabaseNameUtils;
+import org.apache.shardingsphere.distsql.handler.engine.prepare.DistSQLExecutorAwareSetter;
+import org.apache.shardingsphere.distsql.handler.executor.spi.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
