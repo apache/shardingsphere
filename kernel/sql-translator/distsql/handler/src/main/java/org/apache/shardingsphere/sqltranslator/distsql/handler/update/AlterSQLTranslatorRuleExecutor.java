@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sqltranslator.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.updateable.AlterSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;

@@ -33,7 +33,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-federation-core</artifactId>
+            <artifactId>shardingsphere-sql-federation-compiler</artifactId>
             <version>${project.version}</version>
         </dependency>
         

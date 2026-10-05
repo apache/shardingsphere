@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoadResult;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
-import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.junit.jupiter.api.Test;
@@ -45,8 +45,8 @@ class YamlProxyConfigurationSwapperTest {
     
     @Test
     void assertSwap() throws IOException {
-        YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/swap");
-        ProxyConfiguration actual = new YamlProxyConfigurationSwapper().swap(yamlProxyConfig);
+        ProxyConfigurationLoadResult loadResult = ProxyConfigurationLoader.load("/conf/swap");
+        ProxyConfiguration actual = new YamlProxyConfigurationSwapper().swap(loadResult);
         assertDataSources(actual);
         assertDatabaseRules(actual);
         assertAuthorityRuleConfiguration(actual);

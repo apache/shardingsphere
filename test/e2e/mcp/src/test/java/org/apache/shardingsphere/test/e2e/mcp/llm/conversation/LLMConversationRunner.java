@@ -35,6 +35,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -125,8 +126,9 @@ public final class LLMConversationRunner {
                 .collect(Collectors.toSet());
         for (int turnIndex = 0; turnIndex < maxTurns; turnIndex++) {
             LLMChatCompletion completion;
+            Map<String, Object> responseFormat = scenario.finalResponseFormat().apply(artifacts.getTrace());
             try {
-                completion = llmChatClient.complete(messages, toolDefinitions, "auto", false);
+                completion = llmChatClient.complete(messages, responseFormat.isEmpty() ? toolDefinitions : List.of(), responseFormat.isEmpty() ? "auto" : "none", responseFormat);
             } catch (final IOException | IllegalStateException ex) {
                 return artifacts.createResult(scenario, modelName,
                         LLME2EAssertionReport.failure("model_service_unavailable", ex.getMessage()));
@@ -242,9 +244,11 @@ public final class LLMConversationRunner {
      * @param id scenario ID
      * @param question question
      * @param allowedToolNames tools exposed only to this scenario
+     * @param finalResponseFormat final response format derived from sufficient MCP evidence, or an empty map while tools are needed
      * @param evaluator scenario evidence evaluator
      */
     public record Scenario(String id, String question, Set<String> allowedToolNames,
+                           Function<List<MCPInteractionTraceRecord>, Map<String, Object>> finalResponseFormat,
                            BiFunction<String, List<MCPInteractionTraceRecord>, LLME2EAssertionReport> evaluator) {
     }
     

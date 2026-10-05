@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.checker.sql;
 
 import org.apache.shardingsphere.encrypt.checker.sql.combine.EncryptCombineClauseSupportedChecker;
 import org.apache.shardingsphere.encrypt.checker.sql.insert.EncryptInsertSelectSupportedChecker;
+import org.apache.shardingsphere.encrypt.checker.sql.openquery.EncryptOpenQuerySupportedChecker;
 import org.apache.shardingsphere.encrypt.checker.sql.orderby.EncryptOrderByItemSupportedChecker;
 import org.apache.shardingsphere.encrypt.checker.sql.predicate.EncryptPredicateColumnSupportedChecker;
 import org.apache.shardingsphere.encrypt.checker.sql.projection.EncryptInsertSelectProjectionSupportedChecker;
@@ -45,7 +46,8 @@ public final class EncryptSupportedSQLCheckersBuilder implements SupportedSQLChe
             new EncryptOrderByItemSupportedChecker(),
             new EncryptWithClauseSupportedChecker(),
             new EncryptCombineClauseSupportedChecker(),
-            new EncryptInsertSelectSupportedChecker());
+            new EncryptInsertSelectSupportedChecker(),
+            new EncryptOpenQuerySupportedChecker());
     
     @HighFrequencyInvocation
     @Override

@@ -92,6 +92,7 @@ class MCPRuntimeLauncherTest {
             assertThat(mockedStdioServer.constructed().size(), is(0));
             verify(actual).start();
             assertThat(appender.list.size(), is(1));
+            assertThat(appender.list.getFirst().getLevel(), is(Level.INFO));
             assertThat(appender.list.getFirst().getFormattedMessage(), is("ShardingSphere MCP Server started, transport=http, config=conf/mcp-http.yaml, databases=1, "
                     + "endpoint=http://127.0.0.1:19090/mcp, session_attribution=disabled, logs=logs/mcp.log."));
         }
@@ -112,6 +113,7 @@ class MCPRuntimeLauncherTest {
             assertThat(mockedStdioServer.constructed().size(), is(1));
             verify(actual).start();
             assertThat(appender.list.size(), is(1));
+            assertThat(appender.list.getFirst().getLevel(), is(Level.INFO));
             assertThat(appender.list.getFirst().getFormattedMessage(), is("ShardingSphere MCP Server started, transport=stdio, config=conf/mcp-http.yaml, databases=1, "
                     + "logs=logs/mcp.log. Stdout is reserved for MCP protocol frames."));
         }

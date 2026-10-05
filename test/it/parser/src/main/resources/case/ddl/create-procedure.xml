@@ -51,6 +51,7 @@
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_plsql_block" />
+    <create-procedure sql-case-id="create_plsql_block_with_three_part_collection_type" />
     <create-procedure sql-case-id="create_procedure_with_insert_into_values">
         <procedure-name name="T522_PROC" />
         <sql-statements>

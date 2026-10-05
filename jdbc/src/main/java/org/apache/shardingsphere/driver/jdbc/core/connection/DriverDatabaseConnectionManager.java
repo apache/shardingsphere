@@ -112,6 +112,15 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     }
     
     /**
+     * Get cached physical connection size.
+     *
+     * @return cached physical connection size
+     */
+    public int getConnectionSize() {
+        return cachedConnections.size();
+    }
+    
+    /**
      * Clear cached connections.
      *
      * @throws SQLException SQL exception

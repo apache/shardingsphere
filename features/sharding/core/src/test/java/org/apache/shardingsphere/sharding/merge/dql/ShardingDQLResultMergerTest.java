@@ -424,15 +424,18 @@ class ShardingDQLResultMergerTest {
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
         SelectStatement selectStatement = buildSelectStatement(oracleDatabaseType);
         selectStatement = withGroupBy(selectStatement, new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
-        selectStatement = withOrderBy(selectStatement, new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
+        selectStatement = withOrderBy(selectStatement, new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement = withProjections(selectStatement, new ProjectionsSegment(0, 0));
         selectStatement = withFrom(selectStatement, subqueryTableSegment);
         selectStatement = withWhere(selectStatement, whereSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
+        List<QueryResult> queryResults = createQueryResults();
+        when(queryResults.get(0).getMetaData().getColumnCount()).thenReturn(2);
+        when(queryResults.get(0).getMetaData().getColumnLabel(2)).thenReturn("foo_column");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(oracleDatabaseType);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
-        assertThat(actual, isA(GroupByStreamMergedResult.class));
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabase(), mock(ConnectionContext.class));
+        assertThat(actual, isA(GroupByMemoryMergedResult.class));
     }
     
     @Test

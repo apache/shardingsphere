@@ -2112,17 +2112,24 @@ def summarize_semantic_stability(
         baseline_evaluator = baseline.get("evaluator")
         if baseline_evaluator != evaluator:
             blockers.append("semantic-stability-baseline-evaluator-mismatch")
-        baseline_case_ids = {each["id"] for each in baseline.get("case_contracts", [])}
-        if baseline_case_ids != set(expected_case_ids):
+        baseline_case_id_list = [each["id"] for each in baseline.get("case_contracts", [])]
+        baseline_case_ids = set(baseline_case_id_list)
+        added_case_ids = {
+            each.split(":", maxsplit=1)[0] for each in contract_changes if each.endswith(":case-added")
+        }
+        if set(expected_case_ids) != baseline_case_ids | added_case_ids:
             blockers.append("semantic-stability-case-set-changed")
         baseline_passed, baseline_failed_case_ids, baseline_blockers = baseline_single_pass_metrics(
-            baseline, expected_case_ids
+            baseline, baseline_case_id_list
         )
-        baseline_case_count = len(expected_case_ids) if baseline_passed is not None else None
+        baseline_case_count = len(baseline_case_id_list) if baseline_passed is not None else None
         blockers.extend(baseline_blockers)
     candidate_results = {each["case_id"]: each for each in results if each["case_id"] != "<unexpected>"}
     candidate_passed = sum(candidate_results.get(case_id, {}).get("passed", False) for case_id in expected_case_ids)
-    aggregate_non_regression = baseline_passed is not None and candidate_passed >= baseline_passed
+    aggregate_non_regression = (
+        candidate_passed >= baseline_passed if baseline_passed is not None
+        and baseline_case_count == len(expected_case_ids) else None
+    )
     changed_contract_ids = {each.split(":", maxsplit=1)[0] for each in contract_changes}
     safety_failures = semantic_safety_failures(cases, actual)
     initial_safety_regressions = semantic_safety_regressions(

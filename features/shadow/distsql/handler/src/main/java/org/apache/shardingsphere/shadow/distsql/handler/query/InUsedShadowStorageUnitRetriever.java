@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.executor.rql.resource.InUsedStorageUnitRetriever;
+import org.apache.shardingsphere.distsql.handler.executor.resource.spi.InUsedStorageUnitRetriever;
 import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;

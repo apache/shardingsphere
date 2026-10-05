@@ -45,6 +45,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.UnsupportedTemporalTypeException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -53,6 +54,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class IntervalShardingAlgorithmTest {
     
@@ -168,6 +170,27 @@ class IntervalShardingAlgorithmTest {
         Collection<String> actual = shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.atMost("2021-07-31 01:00:00")));
         assertThat(actual.size(), is(31));
+    }
+    
+    @Test
+    void assertUpperHalfRangeDoShardingBeforeDateTimeLower() {
+        Collection<String> actual = shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources,
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.atMost("2021-05-01 00:00:00")));
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    void assertLowerHalfRangeDoShardingAfterDateTimeUpper() {
+        Collection<String> actual = shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources,
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.atLeast("2021-08-02 00:00:00")));
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    void assertLowerHalfRangeDoShardingFromDateTimeUpper() {
+        Collection<String> actual = shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources,
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.greaterThan("2021-07-31 00:00:00")));
+        assertThat(actual, is(Collections.singleton("t_order_20210731")));
     }
     
     @Test

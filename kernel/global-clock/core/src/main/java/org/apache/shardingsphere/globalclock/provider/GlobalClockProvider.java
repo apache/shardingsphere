@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.globalclock.provider;
 
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
  * Global clock provider.
  */
-@SingletonSPI
 public interface GlobalClockProvider extends TypedSPI {
     
     /**

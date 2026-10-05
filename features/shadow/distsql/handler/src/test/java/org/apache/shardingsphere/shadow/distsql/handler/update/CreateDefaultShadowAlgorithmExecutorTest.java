@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.exception.InUsedAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;

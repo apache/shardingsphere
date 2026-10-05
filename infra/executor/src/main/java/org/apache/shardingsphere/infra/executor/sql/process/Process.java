@@ -39,7 +39,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Process.
  */
-@HighFrequencyInvocation
 @RequiredArgsConstructor
 @Getter
 public final class Process {
@@ -66,10 +65,12 @@ public final class Process {
     
     private final AtomicBoolean interrupted;
     
+    @HighFrequencyInvocation
     public Process(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         this("", executionGroupContext, true);
     }
     
+    @HighFrequencyInvocation
     public Process(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         this(sql, executionGroupContext, false);
     }
@@ -113,6 +114,7 @@ public final class Process {
     /**
      * Complete execution unit.
      */
+    @HighFrequencyInvocation
     public void completeExecutionUnit() {
         completedUnitCount.incrementAndGet();
     }
@@ -122,6 +124,7 @@ public final class Process {
      *
      * @return interrupted
      */
+    @HighFrequencyInvocation
     public boolean isInterrupted() {
         return interrupted.get();
     }
@@ -140,6 +143,7 @@ public final class Process {
      *
      * @return idle
      */
+    @HighFrequencyInvocation
     public boolean isIdle() {
         return idle.get();
     }
@@ -149,6 +153,7 @@ public final class Process {
      *
      * @param executionUnit execution unit
      */
+    @HighFrequencyInvocation
     public void removeProcessStatement(final ExecutionUnit executionUnit) {
         processStatements.remove(System.identityHashCode(executionUnit));
     }

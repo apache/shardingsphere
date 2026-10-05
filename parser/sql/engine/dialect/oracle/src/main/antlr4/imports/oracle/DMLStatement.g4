@@ -160,7 +160,7 @@ select
     ;
 
 selectSubquery
-    : selectSubquery combineType selectSubquery | ((queryBlock | parenthesisSelectSubquery) pivotClause? orderByClause? rowLimitingClause)
+    : selectSubquery combineType selectSubquery | ((queryBlock | withClause parenthesisSelectSubquery | parenthesisSelectSubquery) pivotClause? orderByClause? rowLimitingClause)
     ;
 
 combineType
@@ -768,7 +768,7 @@ subquery
 modelExpr
     : (numberLiterals ASTERISK_)? ((measureColumn LBT_ (condition | expr) (COMMA_ (condition | expr))* RBT_)
     | (aggregationFunction LBT_ (((condition | expr) (COMMA_ (condition | expr))*) | (singleColumnForLoop (COMMA_ singleColumnForLoop)*) | multiColumnForLoop) RBT_)
-    | analyticFunction) ((PLUS_ | SLASH_) LP_? modelExpr* RP_? | ASTERISK_ (numberLiterals | parameterMarker) (ASTERISK_ modelExpr)?)?
+    | analyticFunction) ((PLUS_ | SLASH_) (LP_ modelExpr RP_ | modelExpr) | ASTERISK_ (numberLiterals | parameterMarker) (ASTERISK_ modelExpr)?)?
     | expr
     ;
 

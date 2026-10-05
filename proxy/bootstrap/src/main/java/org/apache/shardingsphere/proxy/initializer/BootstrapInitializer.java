@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoadResult;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -43,13 +43,13 @@ public final class BootstrapInitializer {
     /**
      * Initialize.
      *
-     * @param yamlConfig YAML proxy configuration
+     * @param loadResult proxy configuration load result
      * @param port proxy port
      * @throws SQLException SQL exception
      */
-    public void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
-        ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
-        ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
+    public void init(final ProxyConfigurationLoadResult loadResult, final int port) throws SQLException {
+        ModeConfiguration modeConfig = null == loadResult.getServerConfiguration().getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(loadResult.getServerConfiguration().getMode());
+        ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(loadResult);
         ContextManager contextManager = createContextManager(proxyConfig, modeConfig, port);
         ProxyContext.init(contextManager);
         BackendExecutorContext.getInstance().init();

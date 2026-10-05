@@ -72,6 +72,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -273,6 +274,9 @@ class CDCJobAPITest {
             StreamDataParameter param = new StreamDataParameter("foo_db", new LinkedList<>(Collections.singletonList("foo_schema.foo_tbl")), true,
                     Collections.singletonMap("foo_schema.foo_tbl", Collections.singletonList(new DataNode("foo_ds" + ".foo_tbl"))), false);
             assertThat(jobAPI.create(param, CDCSinkType.SOCKET, new Properties()), is("foo_job"));
+            ArgumentCaptor<YamlCDCJobConfiguration> yamlJobConfig = ArgumentCaptor.forClass(YamlCDCJobConfiguration.class);
+            verify(ignored.constructed().get(0)).swapToObject(yamlJobConfig.capture());
+            assertThat(yamlJobConfig.getValue().getSourceDatabaseType(), is("H2"));
             assertTrue(positionManagerConstruction.constructed().isEmpty());
         }
     }

@@ -17,17 +17,28 @@
 
 package org.apache.shardingsphere.data.pipeline.core.task;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(LogCaptureExtension.class)
+@LogCaptureSettings(suppressOutput = true)
 class TaskExecuteCallbackTest {
     
     @Test
-    void assertOnFailure() {
+    void assertOnFailure(final LogCaptureAssertion logCaptureAssertion) {
         PipelineTask task = mock(PipelineTask.class);
-        new TaskExecuteCallback(task).onFailure(new RuntimeException(""));
+        RuntimeException expectedException = new RuntimeException("");
+        new TaskExecuteCallback(task).onFailure(expectedException);
         verify(task).stop();
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
 }

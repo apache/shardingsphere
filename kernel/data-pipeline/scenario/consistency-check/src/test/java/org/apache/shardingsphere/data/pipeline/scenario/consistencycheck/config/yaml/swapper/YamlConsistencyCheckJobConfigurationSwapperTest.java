@@ -31,7 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-final class YamlConsistencyCheckJobConfigurationSwapperTest {
+class YamlConsistencyCheckJobConfigurationSwapperTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
     

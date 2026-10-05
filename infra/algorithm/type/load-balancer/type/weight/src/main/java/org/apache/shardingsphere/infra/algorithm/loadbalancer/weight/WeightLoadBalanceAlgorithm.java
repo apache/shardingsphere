@@ -18,11 +18,14 @@
 package org.apache.shardingsphere.infra.algorithm.loadbalancer.weight;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,7 +42,7 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
-    private final Map<String, double[]> weightMap = new ConcurrentHashMap<>();
+    private final Map<String, WeightCache> weightCaches = new ConcurrentHashMap<>();
     
     private final Map<String, Double> weightConfigMap = new HashMap<>();
     
@@ -69,9 +72,12 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
     @HighFrequencyInvocation
     @Override
     public String getTargetName(final String groupName, final List<String> availableTargetNames) {
-        double[] weight = weightMap.containsKey(groupName) && weightMap.get(groupName).length == availableTargetNames.size() ? weightMap.get(groupName) : initWeight(availableTargetNames);
-        weightMap.put(groupName, weight);
-        return getAvailableTargetName(availableTargetNames, weight);
+        WeightCache weightCache = weightCaches.get(groupName);
+        if (null == weightCache || !weightCache.getTargetNames().equals(availableTargetNames)) {
+            weightCache = new WeightCache(new ArrayList<>(availableTargetNames), initWeight(availableTargetNames));
+            weightCaches.put(groupName, weightCache);
+        }
+        return getAvailableTargetName(availableTargetNames, weightCache.getWeights());
     }
     
     @HighFrequencyInvocation
@@ -138,5 +144,14 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
     @Override
     public String getType() {
         return "WEIGHT";
+    }
+    
+    @RequiredArgsConstructor
+    @Getter
+    private static final class WeightCache {
+        
+        private final List<String> targetNames;
+        
+        private final double[] weights;
     }
 }

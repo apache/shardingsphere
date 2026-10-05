@@ -44,18 +44,36 @@ COPY --from=ghcr.io/apache/shardingsphere-agent:latest /usr/agent/ /shardingsphe
 
 Introduce a typical scenario,
 
-1. Assume that the Jaeger All in One Docker Container is deployed through the following Bash command,
+1. Assume that the tracing backend Docker Container is deployed through the following Bash command.
+   Create the network first,
 
 ```shell
 docker network create example-net
+```
+
+   Use Jaeger to receive OTLP over gRPC,
+
+```shell
 docker run --rm -d \
   --name jaeger \
-  -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \
   --network example-net \
   jaegertracing/all-in-one:1.62.0
 ```
 
-2. Assume `./custom-agent.yaml` contains the configuration of ShardingSphere Agent, and the content may be as follows,
+   Or use Zipkin. The upstream `openzipkin/zipkin` image does not receive OTLP, so use `ghcr.io/openzipkin-contrib/zipkin-otel`, which adds an OTLP/HTTP receiver on the Zipkin server port 9411,
+
+```shell
+docker run --rm -d \
+  --name zipkin \
+  -p 9411:9411 \
+  --network example-net \
+  ghcr.io/openzipkin-contrib/zipkin-otel:0.3.0
+```
+
+   `GET http://localhost:9411/health` reports `zipkin.details.OpenTelemetryHttpCollector{}` as `UP` when Zipkin is ready.
+
+2. Assume `./custom-agent.yaml` contains the configuration of ShardingSphere Agent, and the content may be as follows.
+   For the Jaeger backend,
 
 ```yaml
 plugins:
@@ -63,8 +81,22 @@ plugins:
     OpenTelemetry:
       props:
         otel.service.name: "example"
-        otel.exporter.otlp.traces.endpoint: "http://jaeger:4318"
+        otel.exporter.otlp.traces.endpoint: "http://jaeger:4317"
 ```
+
+   For the Zipkin backend. Zipkin serves OTLP over HTTP only, so the protocol must be set explicitly,
+
+```yaml
+plugins:
+  tracing:
+    OpenTelemetry:
+      props:
+        otel.service.name: "example"
+        otel.exporter.otlp.protocol: "http/protobuf"
+        otel.exporter.otlp.traces.endpoint: "http://zipkin:9411/v1/traces"
+```
+
+   `otel.exporter.otlp.traces.endpoint` is used exactly as written. Setting it to `http://zipkin:9411` makes the exporter post to `/` and Zipkin drops the spans. `otel.exporter.otlp.endpoint` is a base URL, to which the SDK appends `/v1/traces`.
 
 3. Assuming `./target/example.jar` is an Uber JAR of Spring Boot that will use ShardingSphere Agent,
    you can use the ShardingSphere Agent in the nightly built Docker Image for a JAR like `example.jar` through a `Dockerfile` like the following.

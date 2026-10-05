@@ -25,6 +25,9 @@
     <sql-case id="alter_table_modify_lob_shrink_space" value="ALTER TABLE employees MODIFY LOB (perf_review) (SHRINK SPACE)" db-types="Oracle" />
     <sql-case id="alter_table_set_unused1" value="ALTER TABLE hr.admin_emp SET UNUSED (hiredate, mgr)" db-types="Oracle" />
     <sql-case id="alter_table_set_unused2" value="ALTER TABLE table_name SET UNUSED (M_ROW$$)" db-types="Oracle" />
+    <sql-case id="alter_table_drop_unused_columns" value="ALTER TABLE t_order DROP UNUSED COLUMNS" db-types="Oracle" />
+    <sql-case id="alter_table_drop_unused_columns_checkpoint" value="ALTER TABLE t_order DROP UNUSED COLUMNS CHECKPOINT" db-types="Oracle" />
+    <sql-case id="alter_table_drop_unused_columns_checkpoint_number" value="ALTER TABLE t_order DROP UNUSED COLUMNS CHECKPOINT 100" db-types="Oracle" />
     <sql-case id="alter_table_modify_lob_cache" value="ALTER TABLE employees MODIFY LOB (resume) (CACHE)" db-types="Oracle" />
     <sql-case id="alter_table_move_storage_tablespace" value="ALTER TABLE hr.admin_emp MOVE STORAGE (INITIAL 20K NEXT 40K MINEXTENTS 2 MAXEXTENTS 20 PCTINCREASE 0) TABLESPACE hr_tbs" db-types="Oracle" />
     <sql-case id="alter_table_modify1" value="ALTER TABLE employee MODIFY (first_name DECRYPT)" db-types="Oracle" />

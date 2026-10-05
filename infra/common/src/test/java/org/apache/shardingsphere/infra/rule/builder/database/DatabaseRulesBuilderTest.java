@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.rule.builder.database;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.fixture.FixtureRule;
@@ -56,6 +57,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class DatabaseRulesBuilderTest {
@@ -121,6 +123,34 @@ class DatabaseRulesBuilderTest {
         ruleConfig.setName("");
         assertThrows(InvalidRuleConfigurationException.class, () -> DatabaseRulesBuilder.build("foo_db", null,
                 new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(ruleConfig)), null, EMPTY_RESOURCE_META_DATA));
+    }
+    
+    @Test
+    void assertBuildWithRuleConfigurationValidatedOnce() {
+        ToggleFixtureDatabaseRuleConfiguration ruleConfig = new ToggleFixtureDatabaseRuleConfiguration(false);
+        try (MockedStatic<RuleConfigurationValidator> mockedValidator = mockStatic(RuleConfigurationValidator.class, CALLS_REAL_METHODS)) {
+            Collection<ShardingSphereRule> actual = DatabaseRulesBuilder.build("foo_db", null,
+                    new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(ruleConfig)), null, EMPTY_RESOURCE_META_DATA);
+            assertTrue(actual.stream().anyMatch(ToggleFixtureRule.class::isInstance));
+            mockedValidator.verify(() -> RuleConfigurationValidator.validate(ruleConfig));
+        }
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertBuildWithInvalidDefaultRuleConfiguration() {
+        FixtureDatabaseRuleConfiguration ruleConfig = new FixtureDatabaseRuleConfiguration();
+        ruleConfig.setName("");
+        DatabaseRuleBuilder<FixtureDatabaseRuleConfiguration> ruleBuilder = mock(DatabaseRuleBuilder.class);
+        DefaultDatabaseRuleConfigurationBuilder<FixtureDatabaseRuleConfiguration, ?> defaultBuilder = mock(DefaultDatabaseRuleConfigurationBuilder.class);
+        when(defaultBuilder.build()).thenReturn(ruleConfig);
+        try (MockedStatic<OrderedSPILoader> mockedLoader = mockStatic(OrderedSPILoader.class, CALLS_REAL_METHODS)) {
+            mockedLoader.when(() -> OrderedSPILoader.getServices(eq(DefaultDatabaseRuleConfigurationBuilder.class), anyCollection()))
+                    .thenReturn(Collections.singletonMap(ruleBuilder, defaultBuilder));
+            assertThrows(InvalidRuleConfigurationException.class, () -> DatabaseRulesBuilder.build("foo_db", null,
+                    new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList()), null, EMPTY_RESOURCE_META_DATA));
+            verifyNoInteractions(ruleBuilder);
+        }
     }
     
     @Test

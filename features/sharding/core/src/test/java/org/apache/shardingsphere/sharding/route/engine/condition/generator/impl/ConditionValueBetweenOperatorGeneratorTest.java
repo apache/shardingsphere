@@ -165,4 +165,14 @@ class ConditionValueBetweenOperatorGeneratorTest {
         Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>(), timestampServiceRule);
         assertFalse(actual.isPresent());
     }
+    
+    @Test
+    void assertGenerateConditionValueWithNotBetween() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, 1);
+        ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, 2);
+        BetweenExpression predicate = new BetweenExpression(0, 0, left, betweenSegment, andSegment, true);
+        Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>(), timestampServiceRule);
+        assertFalse(actual.isPresent());
+    }
 }

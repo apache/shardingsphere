@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -201,7 +200,7 @@ class WorkflowPlanningContextValidatorTest {
     }
     
     private ShardingSphereTable createTableMetadata() {
-        return new ShardingSphereTable("orders", List.of(), List.of(), List.of(), TableType.TABLE);
+        return new ShardingSphereTable("orders", List.of(), List.of(), List.of());
     }
     
     private MCPColumnMetadata createColumnMetadata() {

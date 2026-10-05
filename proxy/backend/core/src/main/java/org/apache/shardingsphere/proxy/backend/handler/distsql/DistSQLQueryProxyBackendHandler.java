@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.context.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -53,6 +53,7 @@ public final class DistSQLQueryProxyBackendHandler implements DistSQLProxyBacken
         DistSQLConnectionContext distsqlConnectionContext = new DistSQLConnectionContext(queryContext,
                 connectionSession.getDatabaseConnectionManager().getConnectionSize(), connectionSession.getProtocolType(),
                 connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
+        distsqlConnectionContext.setProcessId(connectionSession.getProcessId());
         engine = new DistSQLQueryExecuteEngine(sqlStatement, connectionSession.getUsedDatabaseName(), contextManager, distsqlConnectionContext);
     }
     

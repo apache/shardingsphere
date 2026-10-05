@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoadResult;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
-import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -36,8 +36,8 @@ class YamlProxyDataSourceConfigurationSwapperTest {
     
     @Test
     void assertSwap() throws IOException {
-        YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/swap");
-        YamlProxyDataSourceConfiguration yamlProxyDataSourceConfig = yamlProxyConfig.getDatabaseConfigurations().get("swapper_test").getDataSources().get("foo_db");
+        ProxyConfigurationLoadResult loadResult = ProxyConfigurationLoader.load("/conf/swap");
+        YamlProxyDataSourceConfiguration yamlProxyDataSourceConfig = loadResult.getDatabaseConfigurations().get("swapper_test").getDataSources().get("foo_db");
         DataSourceConfiguration actualDataSourceConfig = new YamlProxyDataSourceConfigurationSwapper().swap(yamlProxyDataSourceConfig);
         assertConnectionConfig(actualDataSourceConfig);
         assertPoolConfig(actualDataSourceConfig);

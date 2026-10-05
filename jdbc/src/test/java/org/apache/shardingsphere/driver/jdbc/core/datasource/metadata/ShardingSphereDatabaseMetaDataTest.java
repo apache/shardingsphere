@@ -264,12 +264,14 @@ class ShardingSphereDatabaseMetaDataTest {
     
     @Test
     void assertGetNumericFunctions() throws SQLException {
-        assertThat(shardingSphereDatabaseMetaData.getNumericFunctions(), is(databaseMetaData.getNumericFunctions()));
+        when(databaseMetaData.getNumericFunctions()).thenReturn("foo_numeric");
+        assertThat(shardingSphereDatabaseMetaData.getNumericFunctions(), is("foo_numeric"));
     }
     
     @Test
     void assertGetStringFunctions() throws SQLException {
-        assertThat(shardingSphereDatabaseMetaData.getNumericFunctions(), is(databaseMetaData.getNumericFunctions()));
+        when(databaseMetaData.getStringFunctions()).thenReturn("foo_string");
+        assertThat(shardingSphereDatabaseMetaData.getStringFunctions(), is("foo_string"));
     }
     
     @Test

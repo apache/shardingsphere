@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableInventoryCheckCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
@@ -27,6 +28,9 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,6 +50,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -53,7 +58,8 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, LogCaptureExtension.class})
+@LogCaptureSettings(suppressOutput = true)
 class CRC32TableInventoryCheckCalculatorTest {
     
     private TableInventoryCalculateParameter parameter;
@@ -96,8 +102,10 @@ class CRC32TableInventoryCheckCalculatorTest {
     }
     
     @Test
-    void assertCalculateFailed() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenThrow(new SQLException(""));
+    void assertCalculateFailed(final LogCaptureAssertion logCaptureAssertion) throws SQLException {
+        SQLException expectedException = new SQLException("");
+        when(connection.prepareStatement(anyString())).thenThrow(expectedException);
         assertThrows(PipelineTableDataConsistencyCheckLoadingFailedException.class, () -> new CRC32TableInventoryCheckCalculator().calculate(parameter));
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
 }

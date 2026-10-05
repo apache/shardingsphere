@@ -32,21 +32,22 @@ permissions:
   contents: read
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
 
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
+    uses: ./.github/workflows/reusable-global-environment.yml
 
   detect-changed-files:
     name: Detect Changed Files
     if: github.repository == 'apache/shardingsphere'
-    runs-on: ubuntu-latest
+    needs: global-environment
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d
         id: filter
         with:
           token: ${{ github.token }}
@@ -58,7 +59,7 @@ jobs:
     name: Prepare E2E Artifacts
     if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]'
     needs: [ global-environment, detect-changed-files ]
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6.0.1
@@ -87,7 +88,7 @@ jobs:
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]'
     needs: [ detect-changed-files, global-environment, prepare-e2e-artifacts ]
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     strategy:
       max-parallel: 15

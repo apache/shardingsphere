@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.spi;
 
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -32,7 +33,7 @@ public interface PipelineDataSourceCreator extends TypedSPI {
     /**
      * Create pipeline data source.
      *
-     * @param dataSourceConfig data source configuration
+     * @param dataSourceConfig runtime configuration returned by {@link PipelineDataSourceConfiguration#getDataSourceConfiguration()}
      * @return pipeline data source
      * @throws SQLException if create data source failed
      */

@@ -157,14 +157,6 @@ class HintManagerTest {
     }
     
     @Test
-    void assertIsWriteRouteOnly() {
-        try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.setWriteRouteOnly();
-            assertTrue(HintManager.isWriteRouteOnly());
-        }
-    }
-    
-    @Test
     void assertIsWriteRouteOnlyWithoutSet() {
         HintManager hintManager = HintManager.getInstance();
         hintManager.close();

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.converter;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.constant.DistSQLConstants;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.convert.AlgorithmDistSQLConverter;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.convert.spi.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;

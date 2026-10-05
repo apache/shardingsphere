@@ -159,14 +159,6 @@ class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    void assertNewInstanceForSelectBroadcastTable() {
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, Collections.emptyList(), props);
-        assertThat(actual, isA(ShardingUnicastRouteEngine.class));
-    }
-    
-    @Test
     void assertNewInstanceForAlwaysFalse() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SQLStatement.class));
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));

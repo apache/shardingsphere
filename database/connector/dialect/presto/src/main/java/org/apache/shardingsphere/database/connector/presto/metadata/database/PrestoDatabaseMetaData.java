@@ -44,7 +44,7 @@ public final class PrestoDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.LOW;
+        return NullsOrderType.LAST;
     }
     
     @Override

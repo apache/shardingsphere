@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-final class ShowMigrationCheckStatusExecutorTest {
+class ShowMigrationCheckStatusExecutorTest {
     
     private final ShowMigrationCheckStatusExecutor executor = new ShowMigrationCheckStatusExecutor();
     

@@ -30,19 +30,19 @@ permissions:
   contents: read
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
   RUNS_ON: ubuntu-latest
 
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
+    uses: ./.github/workflows/reusable-global-environment.yml
 
   database-parse:
     if: github.repository == 'apache/shardingsphere'
     name: CI - SQL Parser
     needs: global-environment
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 90
     strategy:
       max-parallel: 15

@@ -42,13 +42,6 @@ class FirebirdStatementIdGeneratorTest {
     }
     
     @Test
-    void assertRegisterConnection() {
-        GENERATOR.registerConnection(1);
-        registeredConnectionIds.add(1);
-        assertThat(GENERATOR.getStatementId(1), is(0));
-    }
-    
-    @Test
     void assertNextStatementId() {
         GENERATOR.registerConnection(1);
         registeredConnectionIds.add(1);

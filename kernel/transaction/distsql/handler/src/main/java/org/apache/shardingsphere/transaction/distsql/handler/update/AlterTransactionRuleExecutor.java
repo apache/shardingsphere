@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;

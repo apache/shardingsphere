@@ -17,8 +17,8 @@
 
 rules:
   - !SQL_FEDERATION
-    sqlFederationEnabled: true
     allQueryUseSQLFederation: true
     executionPlanCache:
       initialCapacity: 64
       maximumSize: 512
+    providerType: CALCITE

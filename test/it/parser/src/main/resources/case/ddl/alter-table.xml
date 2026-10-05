@@ -70,6 +70,18 @@
         <drop-column name="M_ROW$$" start-index="35" stop-index="41" />
     </alter-table>
     
+    <alter-table sql-case-id="alter_table_drop_unused_columns">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_drop_unused_columns_checkpoint">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_drop_unused_columns_checkpoint_number">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_modify_lob_cache">
         <table name="employees" start-index="12" stop-index="20" />
     </alter-table>

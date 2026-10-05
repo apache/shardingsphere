@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.it.distsql.handler.engine.query;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.context.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;

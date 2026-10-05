@@ -18,4 +18,15 @@
 
 <sql-cases>
     <sql-case id="plsql_block_with_procedure_and_function_calls_visitor_oracle" value="BEGIN simple_insert_data(1, 123); ignored := function_insert_data(1, 123); END;" db-types="Oracle" />
+    <sql-case id="plsql_block_execute_immediate_using_in_out_oracle" value="BEGIN EXECUTE IMMEDIATE 'BEGIN NULL; END;' USING IN a, OUT b; END;" db-types="Oracle" />
+    <sql-case id="plsql_block_open_cursor_arguments_oracle" value="BEGIN OPEN foo_cursor(1,2); END;" db-types="Oracle" />
+    <sql-case id="plsql_block_for_cursor_arguments_oracle" value="BEGIN FOR r IN foo_cursor(1,2) LOOP NULL; END LOOP; END;" db-types="Oracle" />
+    <sql-case id="plsql_block_record_constructor_positional_named_oracle" value="DECLARE v foo_record := foo_record(1,b=&gt;2); BEGIN NULL; END;" db-types="Oracle" />
+    <sql-case id="plsql_block_record_constructor_named_oracle" value="DECLARE v foo_record := foo_record(a=&gt;1,b=&gt;2); BEGIN NULL; END;" db-types="Oracle" />
+    <sql-case id="plsql_block_record_constructor_empty_oracle" value="DECLARE v foo_record := foo_record(); BEGIN NULL; END;" db-types="Oracle" />
+    <sql-case id="plsql_block_forall_insert_oracle" value="BEGIN FORALL i IN 1..2 INSERT INTO foo_table VALUES (v(i)); END;" db-types="Oracle" />
+    <sql-case id="plsql_block_forall_update_oracle" value="BEGIN FORALL i IN 1..2 UPDATE foo_table SET id = v(i); END;" db-types="Oracle" />
+    <sql-case id="plsql_block_forall_delete_oracle" value="BEGIN FORALL i IN 1..2 DELETE FROM foo_table WHERE id = v(i); END;" db-types="Oracle" />
+    <sql-case id="plsql_block_forall_merge_oracle" value="BEGIN FORALL i IN 1..2 MERGE INTO foo_table t USING bar_table s ON (t.id=s.id) WHEN MATCHED THEN UPDATE SET t.val=v(i); END;" db-types="Oracle" />
+    <sql-case id="plsql_block_forall_execute_immediate_save_exceptions_oracle" value="BEGIN FORALL i IN 1..v.COUNT SAVE EXCEPTIONS EXECUTE IMMEDIATE 'DELETE FROM foo_table WHERE id=:1' USING v(i); END;" db-types="Oracle" />
 </sql-cases>

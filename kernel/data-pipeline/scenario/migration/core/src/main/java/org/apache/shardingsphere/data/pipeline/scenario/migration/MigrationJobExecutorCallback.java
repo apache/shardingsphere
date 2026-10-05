@@ -54,7 +54,6 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -128,8 +127,7 @@ public final class MigrationJobExecutorCallback implements DistributedPipelineJo
     @SuppressWarnings({"rawtypes", "unchecked"})
     private Map<ShardingSphereIdentifier, Collection<String>> getTableAndRequiredColumnsMap(final MigrationJobConfiguration jobConfig) {
         Map<ShardingSphereIdentifier, Collection<String>> result = new HashMap<>();
-        Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules());
+        Collection<RuleConfiguration> ruleConfigs = ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRuleConfigurations();
         Collection<ShardingSphereIdentifier> targetTableNames = jobConfig.getTargetTableNames().stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet());
         for (Entry<RuleConfiguration, PipelineRequiredColumnsExtractor> entry : OrderedSPILoader.getServices(PipelineRequiredColumnsExtractor.class, ruleConfigs).entrySet()) {
             result.putAll(entry.getValue().getTableAndRequiredColumnsMap(entry.getKey(), targetTableNames));

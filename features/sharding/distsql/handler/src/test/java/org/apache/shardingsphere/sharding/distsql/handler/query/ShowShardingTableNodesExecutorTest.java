@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.context.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;

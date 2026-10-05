@@ -448,14 +448,12 @@ comparisonOperator
     ;
 
 predicate
-    : bitExpr NOT? IN subquery
-    | PRIOR predicate
-    | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
-    | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_ AND predicate
-    | bitExpr NOT? IN bitExpr
-    | bitExpr NOT? BETWEEN bitExpr AND predicate
-    | bitExpr NOT? (LIKE | LIKEC | LIKE2 | LIKE4) simpleExpr (ESCAPE simpleExpr)?
-    | bitExpr
+    : PRIOR predicate
+    | bitExpr (NOT? (
+        IN (subquery | LP_ expr (COMMA_ expr)* RP_ | bitExpr)
+        | BETWEEN bitExpr AND predicate
+        | (LIKE | LIKEC | LIKE2 | LIKE4) simpleExpr (ESCAPE simpleExpr)?
+    ))?
     ;
 
 bitExpr
@@ -1163,7 +1161,7 @@ scnValue
     ;
 
 timestampValue
-    : LP_? expr+ RP_?
+    : expr
     ;
 
 scnTimestampExpr

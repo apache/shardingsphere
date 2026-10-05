@@ -19,8 +19,10 @@ package org.apache.shardingsphere.test.e2e.sql.it.sql.ddl;
 
 import com.google.common.base.Splitter;
 import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
@@ -40,6 +42,7 @@ import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -48,9 +51,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -80,6 +85,8 @@ class DDLE2EIT implements SQLE2EIT {
     private static final Pattern DROP_INDEX_WITH_TABLE_PATTERN = Pattern.compile("(?is)^\\s*DROP\\s+INDEX\\s+([^\\s(]+)\\s+ON\\s+([^\\s(]+).*");
     
     private static final Pattern DROP_INDEX_PATTERN = Pattern.compile("(?is)^\\s*DROP\\s+INDEX\\s+([^\\s(]+).*");
+    
+    private final Map<DataSource, IdentifierCasePolicy> tableIdentifierPolicies = new HashMap<>();
     
     private SQLE2EEnvironmentEngine environmentEngine;
     
@@ -223,14 +230,20 @@ class DDLE2EIT implements SQLE2EIT {
         }
         boolean tableExists = false;
         for (DataNode each : dataNodes) {
-            try (Connection connection = environmentEngine.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
-                if (containsTable(connection, each.getTableName(), databaseType)) {
+            DataSource dataSource = environmentEngine.getActualDataSourceMap().get(each.getDataSourceName());
+            IdentifierCasePolicy tableIdentifierPolicy = getTableIdentifierPolicy(databaseType, dataSource);
+            try (Connection connection = dataSource.getConnection()) {
+                if (containsTable(connection, each.getTableName(), tableIdentifierPolicy)) {
                     tableExists = true;
                     break;
                 }
             }
         }
         assertTrue(tableExists, "Expected table does not exist");
+    }
+    
+    private IdentifierCasePolicy getTableIdentifierPolicy(final DatabaseType databaseType, final DataSource dataSource) {
+        return tableIdentifierPolicies.computeIfAbsent(dataSource, unused -> IdentifierNormalizeEngine.resolvePolicy(databaseType, dataSource, IdentifierScope.TABLE));
     }
     
     private boolean waitIndexExists(final SQLE2EITContext context, final String tableName, final String indexName, final boolean exists) {
@@ -303,18 +316,20 @@ class DDLE2EIT implements SQLE2EIT {
     
     private void assertNotContainsTable(final SQLE2EEnvironmentEngine environmentEngine, final Collection<DataNode> dataNodes, final DatabaseType databaseType) throws SQLException {
         for (DataNode each : dataNodes) {
-            try (Connection connection = environmentEngine.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
-                assertNotContainsTable(connection, each.getTableName(), databaseType);
+            DataSource dataSource = environmentEngine.getActualDataSourceMap().get(each.getDataSourceName());
+            IdentifierCasePolicy tableIdentifierPolicy = getTableIdentifierPolicy(databaseType, dataSource);
+            try (Connection connection = dataSource.getConnection()) {
+                assertNotContainsTable(connection, each.getTableName(), tableIdentifierPolicy);
             }
         }
     }
     
-    private void assertNotContainsTable(final Connection connection, final String tableName, final DatabaseType databaseType) throws SQLException {
-        assertFalse(containsTable(connection, tableName, databaseType), String.format("Table `%s` should not existed", tableName));
+    private void assertNotContainsTable(final Connection connection, final String tableName, final IdentifierCasePolicy tableIdentifierPolicy) throws SQLException {
+        assertFalse(containsTable(connection, tableName, tableIdentifierPolicy), String.format("Table `%s` should not existed", tableName));
     }
     
-    private boolean containsTable(final Connection connection, final String tableName, final DatabaseType databaseType) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, new DatabaseTypeRegistry(databaseType).formatIdentifierPattern(tableName), new String[]{"TABLE", "VIEW"})) {
+    private boolean containsTable(final Connection connection, final String tableName, final IdentifierCasePolicy tableIdentifierPolicy) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, IdentifierNormalizeEngine.normalize(tableIdentifierPolicy, tableName), new String[]{"TABLE", "VIEW"})) {
             return resultSet.next();
         }
     }
@@ -323,8 +338,10 @@ class DDLE2EIT implements SQLE2EIT {
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes, final DatabaseType databaseType) throws SQLException {
         Collection<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            try (Connection connection = environmentEngine.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
-                result.addAll(getActualColumns(connection, new DatabaseTypeRegistry(databaseType).formatIdentifierPattern(each.getTableName())));
+            DataSource dataSource = environmentEngine.getActualDataSourceMap().get(each.getDataSourceName());
+            IdentifierCasePolicy tableIdentifierPolicy = getTableIdentifierPolicy(databaseType, dataSource);
+            try (Connection connection = dataSource.getConnection()) {
+                result.addAll(getActualColumns(connection, IdentifierNormalizeEngine.normalize(tableIdentifierPolicy, each.getTableName())));
             }
         }
         return new LinkedList<>(result);

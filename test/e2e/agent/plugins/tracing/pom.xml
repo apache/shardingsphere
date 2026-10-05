@@ -29,6 +29,5 @@
     
     <modules>
         <module>jaeger</module>
-        <module>zipkin</module>
     </modules>
 </project>

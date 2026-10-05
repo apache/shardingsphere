@@ -28,11 +28,7 @@ alterSQLFederationRule
     ;
 
 sqlFederationRuleDefinition
-    : LP_ sqlFederationEnabled? (COMMA_? allQueryUseSQLFederation)? (COMMA_? executionPlanCache)? RP_
-    ;
-
-sqlFederationEnabled
-    : SQL_FEDERATION_ENABLED EQ_ boolean_
+    : LP_ allQueryUseSQLFederation? (COMMA_? executionPlanCache)? (COMMA_? providerType)? RP_
     ;
 
 allQueryUseSQLFederation
@@ -41,6 +37,14 @@ allQueryUseSQLFederation
 
 executionPlanCache
     : EXECUTION_PLAN_CACHE LP_ cacheOption RP_
+    ;
+
+providerType
+    : PROVIDER_TYPE EQ_ providerName
+    ;
+
+providerName
+    : IDENTIFIER_ | STRING_
     ;
 
 boolean_

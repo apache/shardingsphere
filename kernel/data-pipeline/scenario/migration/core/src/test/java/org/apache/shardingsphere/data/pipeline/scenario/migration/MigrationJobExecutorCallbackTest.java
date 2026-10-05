@@ -55,8 +55,6 @@ import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentif
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -122,22 +120,13 @@ class MigrationJobExecutorCallbackTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    void assertBuildJobItemContextWithConvertedRuleConfigurations() {
-        YamlRuleConfiguration yamlRuleConfig = mock(YamlRuleConfiguration.class);
-        Collection<YamlRuleConfiguration> yamlRuleConfigs = Collections.singleton(yamlRuleConfig);
+    void assertBuildJobItemContextWithRuleConfigurations() {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
-        Collection<RuleConfiguration> ruleConfigs = Collections.singleton(ruleConfig);
         PipelineRequiredColumnsExtractor extractor = mock(PipelineRequiredColumnsExtractor.class);
         Map<ShardingSphereIdentifier, Collection<String>> requiredColumns = Collections.singletonMap(new ShardingSphereIdentifier("t_order"), Collections.singleton("id"));
         when(extractor.getTableAndRequiredColumnsMap(eq(ruleConfig), anyCollection())).thenReturn(requiredColumns);
-        AtomicReference<Collection<YamlRuleConfiguration>> capturedYamlRuleConfigs = new AtomicReference<>();
         AtomicReference<Collection<RuleConfiguration>> capturedRuleConfigs = new AtomicReference<>();
         try (
-                MockedConstruction<YamlRuleConfigurationSwapperEngine> ignoredRuleConfigSwapper = mockConstruction(
-                        YamlRuleConfigurationSwapperEngine.class, (mock, context) -> when(mock.swapToRuleConfigurations(anyCollection())).thenAnswer(invocation -> {
-                            capturedYamlRuleConfigs.set(invocation.getArgument(0));
-                            return ruleConfigs;
-                        }));
                 MockedStatic<OrderedSPILoader> orderedSPILoader = mockStatic(OrderedSPILoader.class);
                 MockedStatic<DatabaseTypeFactory> databaseTypeFactory = mockStatic(DatabaseTypeFactory.class);
                 MockedStatic<PipelineAPIFactory> pipelineAPIFactory = mockStatic(PipelineAPIFactory.class);
@@ -148,12 +137,12 @@ class MigrationJobExecutorCallbackTest {
             });
             mockDatabaseTypeFactory(databaseTypeFactory);
             MigrationJobConfiguration jobConfig = createJobConfiguration();
-            ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().setRules(yamlRuleConfigs);
+            Collection<RuleConfiguration> ruleConfigs = ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRuleConfigurations();
+            ruleConfigs.add(ruleConfig);
             mockGovernanceFacade(pipelineAPIFactory, createSourceDataSourceYaml(10, 20));
             mockProxyContext(pipelineContextManager);
             MigrationJobItemContext actual = new MigrationJobExecutorCallback().buildJobItemContext(
                     jobConfig, 0, null, mockProcessContext(), mock(PipelineDataSourceManager.class));
-            assertThat(capturedYamlRuleConfigs.get(), sameInstance(yamlRuleConfigs));
             assertThat(capturedRuleConfigs.get(), sameInstance(ruleConfigs));
             assertThat(actual.getTaskConfig().getImporterConfig().getShardingColumns("t_order"), is(Collections.singleton("id")));
         }
@@ -315,7 +304,8 @@ class MigrationJobExecutorCallbackTest {
     }
     
     private Map<String, Object> createDataSourceProperties(final String jdbcUrl, final int maxPoolSize, final int maximumPoolSize) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        result.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
         result.put("url", jdbcUrl);
         result.put("username", "root");
         result.put("password", "root");
@@ -337,7 +327,7 @@ class MigrationJobExecutorCallbackTest {
     }
     
     private String getRootDataSourceMaxPoolSize(final ShardingSpherePipelineDataSourceConfiguration dataSourceConfig) {
-        Collection<Map<String, Object>> dataSources = dataSourceConfig.getRootConfig().getDataSources().values();
-        return String.valueOf(dataSources.iterator().next().get("maxPoolSize"));
+        Collection<DataSourcePoolProperties> dataSources = dataSourceConfig.getDataSourcePoolPropertiesMap().values();
+        return String.valueOf(dataSources.iterator().next().getPoolPropertySynonyms().getStandardProperties().get("maxPoolSize"));
     }
 }

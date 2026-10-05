@@ -32,7 +32,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Process registry.
  */
-@HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProcessRegistry {
     
@@ -45,6 +44,7 @@ public final class ProcessRegistry {
      *
      * @return got instance
      */
+    @HighFrequencyInvocation
     public static ProcessRegistry getInstance() {
         return INSTANCE;
     }
@@ -54,6 +54,7 @@ public final class ProcessRegistry {
      *
      * @param process process
      */
+    @HighFrequencyInvocation
     public void add(final Process process) {
         if (isSameExecutionProcess(process)) {
             merge(processes.get(process.getId()), process);
@@ -81,6 +82,7 @@ public final class ProcessRegistry {
      * @param id process ID
      * @return process
      */
+    @HighFrequencyInvocation
     public Process get(final String id) {
         return processes.get(id);
     }
@@ -90,6 +92,7 @@ public final class ProcessRegistry {
      *
      * @param id process ID
      */
+    @HighFrequencyInvocation
     public void remove(final String id) {
         processes.remove(id);
     }

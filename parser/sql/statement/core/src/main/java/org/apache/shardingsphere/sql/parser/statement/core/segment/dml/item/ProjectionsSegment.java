@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +38,8 @@ public final class ProjectionsSegment implements SQLSegment {
     private final int stopIndex;
     
     private final List<ProjectionSegment> projections = new LinkedList<>();
+    
+    private final List<ExpressionSegment> distinctOnItems = new LinkedList<>();
     
     @Setter
     private boolean distinctRow;
