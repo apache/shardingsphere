@@ -20,6 +20,17 @@ package org.apache.shardingsphere.proxy.frontend.firebird;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBlobContinuationBpbException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBpbTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSegmentExceedsBlobException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSegmentTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSmallDataException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BlobFilterNotFoundException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBpbVersionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ParameterConversionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.StringTruncationException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.TransliterationFailedException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnknownBatchBlobIdException;
 import org.apache.shardingsphere.database.protocol.firebird.codec.FirebirdPacketCodecEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -110,6 +121,16 @@ class FirebirdFrontendEngineTest {
         return Stream.of(
                 Arguments.of("mark when in transaction", true, false, new Exception("error"), true),
                 Arguments.of("skip when in transaction exception", true, false, new InTransactionException(), false),
+                Arguments.of("skip when batch blob continuation bpb exception", true, false, new BatchBlobContinuationBpbException(4L), false),
+                Arguments.of("skip when batch bpb too big exception", true, false, new BatchBpbTooBigException(8L, 4L), false),
+                Arguments.of("skip when batch segment exceeds blob exception", true, false, new BatchSegmentExceedsBlobException(50, 10), false),
+                Arguments.of("skip when batch segment too big exception", true, false, new BatchSegmentTooBigException(50, 10), false),
+                Arguments.of("skip when batch small data exception", true, false, new BatchSmallDataException("BLOB"), false),
+                Arguments.of("skip when blob filter not found exception", true, false, new BlobFilterNotFoundException(0, 2), false),
+                Arguments.of("skip when invalid bpb version exception", true, false, new InvalidBpbVersionException(2, 1), false),
+                Arguments.of("skip when parameter conversion exception", true, false, new ParameterConversionException(new StringTruncationException(20, 32)), false),
+                Arguments.of("skip when transliteration failed exception", true, false, new TransliterationFailedException(), false),
+                Arguments.of("skip when unknown batch blob id exception", true, false, new UnknownBatchBlobIdException(1L), false),
                 Arguments.of("skip when not in transaction", false, false, new Exception("error"), false),
                 Arguments.of("keep marked when already occurred", true, true, new Exception("error"), true));
     }
