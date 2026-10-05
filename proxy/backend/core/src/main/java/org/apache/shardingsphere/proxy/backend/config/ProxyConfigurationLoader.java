@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.proxy.backend.config.checker.YamlProxyConfigurationChecker;
+import org.apache.shardingsphere.proxy.backend.config.validator.ProxyConfigurationLoadResultValidator;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 
@@ -78,16 +78,17 @@ public final class ProxyConfigurationLoader {
      * Load configuration of ShardingSphere-Proxy.
      *
      * @param path configuration path of ShardingSphere-Proxy
-     * @return configuration of ShardingSphere-Proxy
+     * @return configuration load result of ShardingSphere-Proxy
      * @throws IOException IO exception
      */
-    public static YamlProxyConfiguration load(final String path) throws IOException {
+    public static ProxyConfigurationLoadResult load(final String path) throws IOException {
         YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getGlobalConfigFile(path));
         File configPath = getResourceFile(path);
         Collection<YamlProxyDatabaseConfiguration> databaseConfigs = loadDatabaseConfigurations(configPath);
-        YamlProxyConfigurationChecker.checkDataSources(serverConfig.getDataSources(), databaseConfigs);
-        return new YamlProxyConfiguration(serverConfig, databaseConfigs.stream().collect(Collectors.toMap(
+        ProxyConfigurationLoadResult result = new ProxyConfigurationLoadResult(serverConfig, databaseConfigs.stream().collect(Collectors.toMap(
                 YamlProxyDatabaseConfiguration::getDatabaseName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+        ProxyConfigurationLoadResultValidator.validate(result);
+        return result;
     }
     
     private static File getGlobalConfigFile(final String path) {
