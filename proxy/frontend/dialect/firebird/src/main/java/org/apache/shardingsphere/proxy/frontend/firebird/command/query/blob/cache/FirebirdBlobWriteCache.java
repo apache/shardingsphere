@@ -75,9 +75,10 @@ public final class FirebirdBlobWriteCache {
      * @param connectionId connection id
      * @param blobHandle blob handle
      * @param blobId blob id
+     * @param transactionId owning transaction id
      */
-    public void registerBlob(final int connectionId, final int blobHandle, final long blobId) {
-        FirebirdBlobWrite write = new FirebirdBlobWrite(blobHandle, blobId);
+    public void registerBlob(final int connectionId, final int blobHandle, final long blobId, final int transactionId) {
+        FirebirdBlobWrite write = new FirebirdBlobWrite(blobHandle, blobId, transactionId);
         getHandleMap(connectionId).put(blobHandle, write);
         getIdMap(connectionId).put(blobId, write);
     }
@@ -144,7 +145,7 @@ public final class FirebirdBlobWriteCache {
         if (null == write) {
             return Optional.empty();
         }
-        return Optional.of(write.getBytes());
+        return write.getBytes();
     }
     
     /**
@@ -169,6 +170,31 @@ public final class FirebirdBlobWriteCache {
     public boolean isClosed(final int connectionId, final long blobId) {
         FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
         return null != write && write.isClosed();
+    }
+    
+    /**
+     * Use data of a closed BLOB write in a statement of transaction.
+     *
+     * <p>After the first use the data stays available for reuse in the transaction only until the garbage collector releases it, see {@link FirebirdBlobWrite}.</p>
+     *
+     * @param connectionId connection id
+     * @param blobId blob id
+     * @param transactionId transaction id of the statement
+     * @return BLOB data, or empty if the BLOB cannot be used by transaction or its data was released
+     */
+    public Optional<byte[]> useBlobData(final int connectionId, final long blobId, final int transactionId) {
+        if (!isAvailable(connectionId, blobId, transactionId)) {
+            return Optional.empty();
+        }
+        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
+        Optional<byte[]> result = write.getBytes();
+        write.markUsed();
+        return result;
+    }
+    
+    private boolean isAvailable(final int connectionId, final long blobId, final int transactionId) {
+        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
+        return null != write && write.isClosed() && write.getTransactionId() == transactionId;
     }
     
     /**
