@@ -70,6 +70,7 @@ import org.mockito.MockedConstruction;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -325,23 +326,45 @@ class ShardingDQLResultMergerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertMergeDistinctRowWithNullValuesArguments")
-    void assertMergeDistinctRowWithNullValues(final String name, final String databaseTypeName,
-                                              final List<Object> firstShardValues, final List<Object> secondShardValues, final List<Object> expectedValues) throws SQLException {
+    void assertMergeDistinctRowWithNullValues(final String name, final String databaseTypeName, final Collection<Object> firstShardValues, final Collection<Object> secondShardValues,
+                                              final List<Object> expectedValues) throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, databaseTypeName);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("col1"))));
         SelectStatement selectStatement = withProjections(buildSelectStatement(databaseType), projectionsSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-                selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
-        MergedResult actual = new ShardingDQLResultMerger(databaseType).merge(Arrays.asList(createQueryResult(firstShardValues), createQueryResult(secondShardValues)),
-                selectStatementContext, createDatabase(databaseType), mock(ConnectionContext.class));
+        SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
+        MergedResult actual = new ShardingDQLResultMerger(databaseType).merge(Arrays.asList(createSingleColumnQueryResult(firstShardValues), createSingleColumnQueryResult(secondShardValues)),
+                selectStatementContext, createDialectDatabase(databaseType), mock(ConnectionContext.class));
         List<Object> actualValues = new LinkedList<>();
         while (actual.next()) {
             actualValues.add(actual.getValue(1, Object.class));
         }
         assertThat(actualValues, is(expectedValues));
+    }
+    
+    private QueryResult createSingleColumnQueryResult(final Collection<Object> values) throws SQLException {
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getColumnCount()).thenReturn(1);
+        when(result.getMetaData().getColumnLabel(1)).thenReturn("col1");
+        Iterator<Object> iterator = values.iterator();
+        AtomicReference<Object> currentValue = new AtomicReference<>();
+        when(result.next()).thenAnswer(invocation -> {
+            if (!iterator.hasNext()) {
+                return false;
+            }
+            currentValue.set(iterator.next());
+            return true;
+        });
+        when(result.getValue(1, Object.class)).thenAnswer(invocation -> currentValue.get());
+        return result;
+    }
+    
+    private ShardingSphereDatabase createDialectDatabase(final DatabaseType databaseType) {
+        String schemaName = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema().orElse("foo_db");
+        ShardingSphereSchema schema = new ShardingSphereSchema(schemaName, databaseType, Collections.singleton(createTable()), Collections.emptyList());
+        return new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singleton(schema), new ConfigurationProperties(new Properties()));
     }
     
     private static Stream<Arguments> assertMergeDistinctRowWithNullValuesArguments() {
@@ -587,30 +610,6 @@ class ShardingDQLResultMergerTest {
         when(result.getMetaData().getColumnLabel(1)).thenReturn("count(*)");
         when(result.getValue(1, Object.class)).thenReturn(0);
         return result;
-    }
-    
-    private QueryResult createQueryResult(final List<Object> values) throws SQLException {
-        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().getColumnCount()).thenReturn(1);
-        when(result.getMetaData().getColumnLabel(1)).thenReturn("col1");
-        Iterator<Object> iterator = values.iterator();
-        AtomicReference<Object> currentValue = new AtomicReference<>();
-        when(result.next()).thenAnswer(invocation -> {
-            if (!iterator.hasNext()) {
-                return false;
-            }
-            currentValue.set(iterator.next());
-            return true;
-        });
-        when(result.getValue(1, Object.class)).thenAnswer(invocation -> currentValue.get());
-        return result;
-    }
-    
-    private ShardingSphereDatabase createDatabase(final DatabaseType databaseType) {
-        String schemaName = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema().orElse("foo_db");
-        ShardingSphereSchema schema = new ShardingSphereSchema(schemaName, databaseType, Collections.singleton(createTable()), Collections.emptyList());
-        return new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singleton(schema),
-                new ConfigurationProperties(new Properties()));
     }
     
     private ShardingSphereDatabase createDatabase() {
