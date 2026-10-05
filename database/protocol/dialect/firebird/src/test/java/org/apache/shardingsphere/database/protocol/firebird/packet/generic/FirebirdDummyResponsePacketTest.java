@@ -29,7 +29,7 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-final class FirebirdDummyResponsePacketTest {
+class FirebirdDummyResponsePacketTest {
     
     @Test
     void assertWrite() {
