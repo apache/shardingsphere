@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-final class FirebirdSliceResponsePacketTest {
+class FirebirdSliceResponsePacketTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertWriteArguments")
