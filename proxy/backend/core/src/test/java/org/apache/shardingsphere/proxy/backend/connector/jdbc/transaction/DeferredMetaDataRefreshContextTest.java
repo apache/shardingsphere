@@ -30,7 +30,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-final class DeferredMetaDataRefreshContextTest {
+class DeferredMetaDataRefreshContextTest {
     
     private final ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
     
