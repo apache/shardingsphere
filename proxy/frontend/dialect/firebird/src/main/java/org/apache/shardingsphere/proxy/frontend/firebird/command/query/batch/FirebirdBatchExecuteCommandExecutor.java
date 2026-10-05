@@ -174,7 +174,7 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
     private void resolveBatchBlobIds(final List<Object> params, final List<FirebirdBatchColumnDescriptor> columnDescriptors, final Map<Long, Long> blobIds,
                                      final Map<Long, byte[]> streamBlobContents) {
         for (int i = 0; i < columnDescriptors.size(); i++) {
-            if (!columnDescriptors.get(i).isBatchBlob() || null == params.get(i) || 0L == (Long) params.get(i)) {
+            if (!columnDescriptors.get(i).isBatchBlobId() || null == params.get(i) || 0L == (Long) params.get(i)) {
                 continue;
             }
             long batchBlobId = (Long) params.get(i);

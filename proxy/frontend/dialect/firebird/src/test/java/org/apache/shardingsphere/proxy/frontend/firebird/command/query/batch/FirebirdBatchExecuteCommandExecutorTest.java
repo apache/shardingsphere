@@ -262,14 +262,14 @@ class FirebirdBatchExecuteCommandExecutorTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("blobParameterArguments")
     @SuppressWarnings("unchecked")
-    void assertExecuteWithBlobParameters(final String name, final long blobId, final byte[] expectedBytes, final boolean batchBlob) throws SQLException {
+    void assertExecuteWithBlobParameters(final String name, final long blobId, final byte[] expectedBytes, final boolean batchBlobId) throws SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
         List<List<Object>> params = Arrays.asList(Arrays.asList(13L, blobId), Arrays.asList(14L, blobId));
         when(batchStatement.getParameterValues()).thenReturn(params);
-        FirebirdBatchColumnDescriptor columnDescriptor = createBlobColumnDescriptor(batchBlob);
+        FirebirdBatchColumnDescriptor columnDescriptor = createBlobColumnDescriptor(batchBlobId);
         when(batchStatement.getColumnDescriptors()).thenReturn(Arrays.asList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.INT64, 8, 0, 0), columnDescriptor));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
@@ -318,13 +318,13 @@ class FirebirdBatchExecuteCommandExecutorTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("zeroBlobIdArguments")
     @SuppressWarnings("unchecked")
-    void assertExecuteWithZeroBlobId(final String name, final boolean batchBlob, final Map<Long, Long> registeredBlobIds, final long blobId) throws SQLException {
+    void assertExecuteWithZeroBlobId(final String name, final boolean batchBlobId, final Map<Long, Long> registeredBlobIds, final long blobId) throws SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(batchStatement.getParameterValues()).thenReturn(Collections.singletonList(Collections.singletonList(blobId)));
-        FirebirdBatchColumnDescriptor columnDescriptor = createBlobColumnDescriptor(batchBlob);
+        FirebirdBatchColumnDescriptor columnDescriptor = createBlobColumnDescriptor(batchBlobId);
         when(batchStatement.getColumnDescriptors()).thenReturn(Collections.singletonList(columnDescriptor));
         if (!registeredBlobIds.isEmpty()) {
             when(batchStatement.getBlobIds()).thenReturn(new HashMap<>(registeredBlobIds));
@@ -976,8 +976,8 @@ class FirebirdBatchExecuteCommandExecutorTest {
                 2, 0, (byte) BlrConstants.blr_long, 0, (byte) BlrConstants.blr_short, 0, (byte) BlrConstants.blr_end, (byte) BlrConstants.blr_eoc});
     }
     
-    private FirebirdBatchColumnDescriptor createBlobColumnDescriptor(final boolean batchBlob) {
-        ByteBuf blobBlr = batchBlob ? Unpooled.buffer().writeByte(BlrConstants.blr_blob2).writeZero(4) : Unpooled.buffer().writeByte(BlrConstants.blr_quad).writeByte(0);
+    private FirebirdBatchColumnDescriptor createBlobColumnDescriptor(final boolean batchBlobId) {
+        ByteBuf blobBlr = batchBlobId ? Unpooled.buffer().writeByte(BlrConstants.blr_blob2).writeZero(4) : Unpooled.buffer().writeByte(BlrConstants.blr_quad).writeByte(0);
         ByteBuf blr = Unpooled.buffer().writeByte(BlrConstants.blr_version5).writeByte(BlrConstants.blr_begin).writeByte(BlrConstants.blr_message).writeByte(0).writeShortLE(2).writeBytes(blobBlr)
                 .writeByte(BlrConstants.blr_short).writeByte(0).writeByte(BlrConstants.blr_end).writeByte(BlrConstants.blr_eoc);
         return FirebirdParseBatchBlr.parse(blr, blr.readableBytes()).getFields().get(0);
