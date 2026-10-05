@@ -25,6 +25,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.lang.ref.Reference;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -34,6 +35,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -62,7 +64,7 @@ class FirebirdBlobWriteCacheTest {
     
     @Test
     void assertRegisterBlobCreatesMappingsWhenConnectionMissing() {
-        CACHE.registerBlob(2, 3, 4L);
+        CACHE.registerBlob(2, 3, 4L, 1);
         OptionalLong actualBlobId = CACHE.getBlobId(2, 3);
         assertTrue(actualBlobId.isPresent());
         assertThat(actualBlobId.getAsLong(), is(4L));
@@ -82,7 +84,7 @@ class FirebirdBlobWriteCacheTest {
         CACHE.registerConnection(connectionId);
         boolean actualClosedWhenMissing = CACHE.isClosed(connectionId, blobId);
         assertFalse(actualClosedWhenMissing);
-        CACHE.registerBlob(connectionId, blobHandle, blobId);
+        CACHE.registerBlob(connectionId, blobHandle, blobId, 1);
         OptionalInt actualSizeAfterAppend = CACHE.appendSegment(connectionId, blobHandle, new byte[]{1, 2, 3});
         assertTrue(actualSizeAfterAppend.isPresent());
         assertThat(actualSizeAfterAppend.getAsInt(), is(3));
@@ -101,15 +103,64 @@ class FirebirdBlobWriteCacheTest {
     }
     
     @Test
+    void assertGetBlobDataAfterClose() {
+        CACHE.registerBlob(1, 11, 21L, 31);
+        CACHE.appendSegment(1, 11, new byte[]{1, 2});
+        CACHE.appendSegment(1, 11, new byte[]{3});
+        CACHE.closeWrite(1, 11);
+        byte[] actual = CACHE.getBlobData(1, 21L).get();
+        assertThat(actual, is(new byte[]{1, 2, 3}));
+        assertThat(CACHE.getBlobData(1, 21L).get(), sameInstance(actual));
+    }
+    
+    @Test
+    void assertReuseBlobData() {
+        CACHE.registerBlob(1, 11, 21L, 31);
+        CACHE.appendSegment(1, 11, new byte[]{1, 2, 3});
+        CACHE.closeWrite(1, 11);
+        byte[] actual = CACHE.useBlobData(1, 21L, 31).get();
+        assertThat(actual, is(new byte[]{1, 2, 3}));
+        assertThat(CACHE.useBlobData(1, 21L, 31).get(), sameInstance(actual));
+    }
+    
+    @Test
+    void assertUseBlobDataOfOtherTransaction() {
+        CACHE.registerBlob(1, 11, 21L, 31);
+        CACHE.closeWrite(1, 11);
+        assertFalse(CACHE.useBlobData(1, 21L, 32).isPresent());
+    }
+    
+    @Test
+    void assertUseBlobDataBeforeClose() {
+        CACHE.registerBlob(1, 11, 21L, 31);
+        assertFalse(CACHE.useBlobData(1, 21L, 31).isPresent());
+    }
+    
+    @Test
+    void assertUseBlobDataReleasedByGarbageCollector() {
+        CACHE.registerBlob(1, 11, 21L, 31);
+        CACHE.appendSegment(1, 11, new byte[]{1, 2, 3});
+        CACHE.closeWrite(1, 11);
+        CACHE.useBlobData(1, 21L, 31);
+        releaseSoftlyReachableData(getIdCache().get(1).get(21L));
+        assertFalse(CACHE.useBlobData(1, 21L, 31).isPresent());
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void releaseSoftlyReachableData(final FirebirdBlobWrite write) {
+        ((Reference<?>) Plugins.getMemberAccessor().get(FirebirdBlobWrite.class.getDeclaredField("usedContent"), write)).clear();
+    }
+    
+    @Test
     void assertRemoveWriteDoesNotRemoveReusedHandle() {
         int connectionId = 12;
         int blobHandle = 8;
         long oldBlobId = 9L;
         long expectedBlobId = 10L;
         CACHE.registerConnection(connectionId);
-        CACHE.registerBlob(connectionId, blobHandle, oldBlobId);
+        CACHE.registerBlob(connectionId, blobHandle, oldBlobId, 1);
         CACHE.closeWrite(connectionId, blobHandle);
-        CACHE.registerBlob(connectionId, blobHandle, expectedBlobId);
+        CACHE.registerBlob(connectionId, blobHandle, expectedBlobId, 1);
         CACHE.removeWrite(connectionId, oldBlobId);
         OptionalLong actualBlobId = CACHE.getBlobId(connectionId, blobHandle);
         assertTrue(actualBlobId.isPresent());
