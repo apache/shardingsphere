@@ -21,6 +21,7 @@ import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfigur
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.globalclock.yaml.config.YamlGlobalClockRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
@@ -65,7 +66,7 @@ class ProxyConfigurationLoaderTest {
     
     @Test
     void assertLoadEmptyConfiguration() throws IOException {
-        YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/empty/");
+        ProxyConfigurationLoadResult actual = ProxyConfigurationLoader.load("/conf/empty/");
         YamlProxyServerConfiguration serverConfig = actual.getServerConfiguration();
         assertNull(serverConfig.getMode());
         assertNull(serverConfig.getAuthority());
@@ -76,7 +77,7 @@ class ProxyConfigurationLoaderTest {
     
     @Test
     void assertLoad() throws IOException {
-        YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/config_loader/");
+        ProxyConfigurationLoadResult actual = ProxyConfigurationLoader.load("/conf/config_loader/");
         Iterator<YamlRuleConfiguration> actualGlobalRules = actual.getServerConfiguration().getRules().iterator();
         // TODO assert mode
         // TODO assert authority rule
@@ -113,7 +114,7 @@ class ProxyConfigurationLoaderTest {
                 + "dataSources:\n"
                 + "  ds_0:\n"
                 + "    url: jdbc:mock://127.0.0.1/compatible\n");
-        YamlProxyConfiguration actual = ProxyConfigurationLoader.load(tempDir.toString());
+        ProxyConfigurationLoadResult actual = ProxyConfigurationLoader.load(tempDir.toString());
         YamlProxyServerConfiguration serverConfig = actual.getServerConfiguration();
         assertThat(serverConfig.getRules().size(), is(6));
         Iterator<YamlRuleConfiguration> rules = serverConfig.getRules().iterator();
@@ -154,10 +155,18 @@ class ProxyConfigurationLoaderTest {
     @Test
     void assertLoadWithFilesystemPath(@TempDir final Path tempDir) throws IOException {
         writeConfigurationFile(tempDir, "global.yaml", "");
-        YamlProxyConfiguration actual = ProxyConfigurationLoader.load(tempDir.toString());
+        ProxyConfigurationLoadResult actual = ProxyConfigurationLoader.load(tempDir.toString());
         assertNotNull(actual.getServerConfiguration());
         assertTrue(actual.getServerConfiguration().getRules().isEmpty());
         assertTrue(actual.getDatabaseConfigurations().isEmpty());
+    }
+    
+    @Test
+    void assertLoadWithDuplicateGlobalAndDatabaseDataSource(@TempDir final Path tempDir) throws IOException {
+        writeConfigurationFile(tempDir, "global.yaml", "dataSources:\n  ds_0:\n    url: jdbc:mock://127.0.0.1/global\n");
+        writeConfigurationFile(tempDir, "database-duplicate.yaml", "databaseName: foo_db\ndataSources:\n  ds_0:\n    url: jdbc:mock://127.0.0.1/local\n");
+        DuplicateStorageUnitException actual = assertThrows(DuplicateStorageUnitException.class, () -> ProxyConfigurationLoader.load(tempDir.toString()));
+        assertThat(actual.getMessage(), is("Duplicate storage unit names 'ds_0' on database 'foo_db'."));
     }
     
     @Test
@@ -175,7 +184,7 @@ class ProxyConfigurationLoaderTest {
                 + "  users:\n"
                 + "    - user: root\n"
                 + "      password: root\n");
-        YamlProxyConfiguration actual = ProxyConfigurationLoader.load(tempDir.toString());
+        ProxyConfigurationLoadResult actual = ProxyConfigurationLoader.load(tempDir.toString());
         assertNotNull(actual.getServerConfiguration());
         assertFalse(actual.getServerConfiguration().getRules().isEmpty());
         assertTrue(actual.getDatabaseConfigurations().isEmpty());
@@ -183,14 +192,14 @@ class ProxyConfigurationLoaderTest {
     
     @Test
     void assertLoadFromClasspathWhenPathDoesNotExistOnFilesystem() throws IOException {
-        YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/config_loader/");
+        ProxyConfigurationLoadResult actual = ProxyConfigurationLoader.load("/conf/config_loader/");
         assertNotNull(actual.getServerConfiguration());
         assertThat(actual.getDatabaseConfigurations().size(), is(3));
     }
     
     @Test
     void assertLoadFromClasspathWithCompatibleServerYaml() throws IOException {
-        YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/compatible_server_yaml/");
+        ProxyConfigurationLoadResult actual = ProxyConfigurationLoader.load("/conf/compatible_server_yaml/");
         assertNotNull(actual.getServerConfiguration());
         assertFalse(actual.getServerConfiguration().getRules().isEmpty());
         assertTrue(actual.getDatabaseConfigurations().isEmpty());

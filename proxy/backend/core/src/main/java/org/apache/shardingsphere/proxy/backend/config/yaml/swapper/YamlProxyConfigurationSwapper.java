@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourceP
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoadResult;
 import org.apache.shardingsphere.proxy.backend.config.ProxyGlobalConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
@@ -53,14 +53,14 @@ public final class YamlProxyConfigurationSwapper {
     /**
      * Swap YAML proxy configuration to proxy configuration.
      *
-     * @param yamlConfig YAML proxy configuration
+     * @param loadResult proxy configuration load result
      * @return proxy configuration
      */
-    public ProxyConfiguration swap(final YamlProxyConfiguration yamlConfig) {
+    public ProxyConfiguration swap(final ProxyConfigurationLoadResult loadResult) {
         boolean isInstanceConnectionEnabled =
-                (boolean) yamlConfig.getServerConfiguration().getProps().getOrDefault(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED.getKey(), Boolean.FALSE);
-        Map<String, DatabaseConfiguration> databaseConfigs = swapDatabaseConfigurations(yamlConfig.getDatabaseConfigurations(), isInstanceConnectionEnabled);
-        ProxyGlobalConfiguration globalConfig = swapGlobalConfiguration(yamlConfig.getServerConfiguration());
+                (boolean) loadResult.getServerConfiguration().getProps().getOrDefault(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED.getKey(), Boolean.FALSE);
+        Map<String, DatabaseConfiguration> databaseConfigs = swapDatabaseConfigurations(loadResult.getDatabaseConfigurations(), isInstanceConnectionEnabled);
+        ProxyGlobalConfiguration globalConfig = swapGlobalConfiguration(loadResult.getServerConfiguration());
         return new ProxyConfiguration(databaseConfigs, globalConfig);
     }
     

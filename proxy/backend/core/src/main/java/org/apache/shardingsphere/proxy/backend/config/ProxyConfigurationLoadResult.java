@@ -19,17 +19,19 @@ package org.apache.shardingsphere.proxy.backend.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.backend.config.validator.constraint.NoConflictingDataSourceNames;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 
 import java.util.Map;
 
 /**
- * YAML configuration for ShardingSphere-Proxy.
+ * Proxy configuration load result.
  */
 @RequiredArgsConstructor
 @Getter
-public final class YamlProxyConfiguration {
+@NoConflictingDataSourceNames
+public final class ProxyConfigurationLoadResult {
     
     private final YamlProxyServerConfiguration serverConfiguration;
     
