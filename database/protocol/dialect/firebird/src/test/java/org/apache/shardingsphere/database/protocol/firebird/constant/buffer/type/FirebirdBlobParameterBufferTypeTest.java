@@ -31,12 +31,20 @@ class FirebirdBlobParameterBufferTypeTest {
     @Test
     void assertValueOf() {
         assertThat(FirebirdBlobParameterBufferType.valueOf(3), is(FirebirdBlobParameterBufferType.TYPE));
+    }
+    
+    @Test
+    void assertValueOfWithUnknownCode() {
         assertThrows(NullPointerException.class, () -> FirebirdBlobParameterBufferType.valueOf(999));
     }
     
     @Test
     void assertIsTraditionalType() {
         assertTrue(FirebirdBlobParameterBufferType.isTraditionalType(1));
+    }
+    
+    @Test
+    void assertIsTraditionalTypeWithNonTraditionalVersion() {
         assertFalse(FirebirdBlobParameterBufferType.isTraditionalType(2));
     }
     

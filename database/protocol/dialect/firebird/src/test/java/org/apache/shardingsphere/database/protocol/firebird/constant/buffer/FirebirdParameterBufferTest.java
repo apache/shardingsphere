@@ -104,7 +104,7 @@ class FirebirdParameterBufferTest {
         buffer.writeByte(1);
         buffer.writeBytes(new byte[]{1, 1, 7});
         buffer.writeBytes(new byte[]{2, 2, (byte) 0xD2, 0x04});
-        FirebirdParameterBuffer parameterBuffer = new FirebirdParameterBuffer(createValueOf(), version -> version == 1);
+        FirebirdParameterBuffer parameterBuffer = new FirebirdParameterBuffer(createValueOf(), version -> 1 == version);
         parameterBuffer.parseBuffer(buffer);
         assertThat(parameterBuffer.<Integer>getValue(intType), is(7));
         assertThat(parameterBuffer.<Integer>getValue(booleanType), is(1234));
@@ -118,7 +118,7 @@ class FirebirdParameterBufferTest {
         buffer.writeByte(1);
         buffer.writeIntLE(2);
         buffer.writeBytes(new byte[]{(byte) 0xD2, 0x04});
-        FirebirdParameterBuffer parameterBuffer = new FirebirdParameterBuffer(createValueOf(), version -> version == 1);
+        FirebirdParameterBuffer parameterBuffer = new FirebirdParameterBuffer(createValueOf(), version -> 1 == version);
         parameterBuffer.parseBuffer(buffer);
         assertThat(parameterBuffer.<Integer>getValue(intType), is(1234));
     }

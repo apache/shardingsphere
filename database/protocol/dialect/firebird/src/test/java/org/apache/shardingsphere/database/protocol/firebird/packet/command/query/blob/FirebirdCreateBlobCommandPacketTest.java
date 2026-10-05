@@ -79,7 +79,11 @@ class FirebirdCreateBlobCommandPacketTest {
     void assertIsStreamBlob(final String name, final byte[] blobParameterBuffer, final boolean expectedStreamBlob) {
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(blobParameterBuffer));
         FirebirdCreateBlobCommandPacket packet = new FirebirdCreateBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB2, payload);
-        assertThat(packet.isStreamBlob(), is(expectedStreamBlob));
+        if (expectedStreamBlob) {
+            assertTrue(packet.isStreamBlob());
+        } else {
+            assertFalse(packet.isStreamBlob());
+        }
     }
     
     private static Stream<Arguments> blobParameterBufferCases() {

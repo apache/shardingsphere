@@ -150,7 +150,6 @@ class FirebirdOpenBlobCommandExecutorTest {
     
     @Test
     void assertExecuteWithZeroBlobIdOpensSegmentedBlob() {
-        when(packet.getBlobId()).thenReturn(0L);
         FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(packet, connectionSession).execute().iterator().next();
         assertThat(FirebirdBlobReadCache.getInstance().isStreamBlob(CONNECTION_ID, actual.getHandle()), is(Optional.of(false)));
     }
