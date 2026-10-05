@@ -292,7 +292,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         if (!pushDownMetaDataRefreshEngine.isNeedRefresh()) {
             return;
         }
-        if (isDeferrableTableDDL && databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()) {
+        if (isDeferrableTableDDL && isInDeferrableTransaction()) {
             String schemaName = SchemaRefreshUtils.getActualSchemaName(database, queryContext.getSqlStatementContext());
             Collection<RouteUnit> routeUnits = executionContext.getRouteContext().getRouteUnits();
             for (IdentifierValue each : getDeferredTableNames()) {
@@ -302,6 +302,14 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         }
         pushDownMetaDataRefreshEngine.refresh(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(),
                 database, contextManager.getMetaDataContexts().getMetaData().getProps(), executionContext.getRouteContext().getRouteUnits());
+    }
+    
+    private boolean isInDeferrableTransaction() {
+        if (!databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()) {
+            return false;
+        }
+        TransactionType transactionType = TransactionUtils.getTransactionType(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext());
+        return TransactionType.BASE != transactionType;
     }
     
     private Collection<IdentifierValue> getDeferredTableNames() {

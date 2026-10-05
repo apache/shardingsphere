@@ -389,11 +389,11 @@ class ContextManagerTest {
         setPersistServiceFacade(persistServiceFacade);
         when(database.getIdentifierContext()).thenReturn(DatabaseIdentifierContextFactory.createDefault());
         try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
-            schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anyCollection(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class)))
-                    .thenReturn(Collections.emptyMap());
+            schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anyCollection(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class))).thenReturn(Collections.emptyMap());
             contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("FOO_TBL"));
         }
         verify(persistServiceFacade.getModeFacade().getMetaDataManagerService()).dropTables(database, "foo_schema", Collections.singleton("foo_tbl"));
+        verify(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).iterator().next()).remove("foo_schema", "foo_tbl");
     }
     
     @Test

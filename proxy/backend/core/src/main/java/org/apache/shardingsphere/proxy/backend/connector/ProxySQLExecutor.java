@@ -150,8 +150,7 @@ public final class ProxySQLExecutor {
         DialectTransactionOption transactionOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption();
         boolean isDDLWithoutMetaDataChanged = isDDLWithoutMetaDataChanged(sqlStatement);
         if (isInXATransaction()) {
-            return transactionOption.isSupportDDLInXATransaction()
-                    && (isDDLWithoutMetaDataChanged || transactionOption.isSupportMetaDataRefreshInTransaction() || isDeferrableTableDDL);
+            return transactionOption.isSupportDDLInXATransaction() && (isDDLWithoutMetaDataChanged || transactionOption.isSupportMetaDataRefreshInTransaction() || isDeferrableTableDDL);
         }
         if (isInBaseTransaction()) {
             return transactionOption.isSupportMetaDataRefreshInTransaction() || isDDLWithoutMetaDataChanged;

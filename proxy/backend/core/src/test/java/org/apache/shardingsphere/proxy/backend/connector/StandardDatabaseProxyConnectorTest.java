@@ -325,6 +325,7 @@ class StandardDatabaseProxyConnectorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(AlterTableStatement.builder()
                 .databaseType(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).table(new SimpleTableSegment(new TableNameSegment(0, 0, tableName))).build());
         when(databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()).thenReturn(true);
+        when(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext().getTransactionType()).thenReturn(Optional.of("LOCAL"));
         ShardingSphereDatabase database = mockDatabase();
         when(database.getAllSchemas()).thenReturn(Collections.emptyList());
         when(database.getIdentifierContext().normalizeProtocol(any(), any())).thenReturn("foo_schema");
@@ -361,6 +362,7 @@ class StandardDatabaseProxyConnectorTest {
                 Arrays.asList(new SimpleTableSegment(new TableNameSegment(0, 0, firstTable)), new SimpleTableSegment(new TableNameSegment(0, 0, secondTable))), false, false);
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(dropTableStatement);
         when(databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()).thenReturn(true);
+        when(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext().getTransactionType()).thenReturn(Optional.of("LOCAL"));
         ShardingSphereDatabase database = mockDatabase();
         when(database.getAllSchemas()).thenReturn(Collections.emptyList());
         when(database.getIdentifierContext().normalizeProtocol(any(), any())).thenReturn("foo_schema");
@@ -388,6 +390,45 @@ class StandardDatabaseProxyConnectorTest {
             engine.execute();
             verify(databaseConnectionManager.getDeferredMetaDataRefreshContext()).add("foo_db", "foo_schema", "ds_1", firstTable);
             verify(databaseConnectionManager.getDeferredMetaDataRefreshContext()).add("foo_db", "foo_schema", "ds_0", secondTable);
+        }
+    }
+    
+    @Test
+    void assertExecuteDoesNotDeferMetaDataRefreshForBaseTransaction() throws SQLException {
+        IdentifierValue tableName = new IdentifierValue("\"MixedCase\"");
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(AlterTableStatement.builder()
+                .databaseType(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).table(new SimpleTableSegment(new TableNameSegment(0, 0, tableName))).build());
+        when(databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()).thenReturn(true);
+        when(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext().getTransactionType()).thenReturn(Optional.of("BASE"));
+        ShardingSphereDatabase database = mockDatabase();
+        when(database.getAllSchemas()).thenReturn(Collections.emptyList());
+        when(database.getIdentifierContext().normalizeProtocol(any(), any())).thenReturn("foo_schema");
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, database));
+        setField(engine, "proxySQLExecutor", mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS));
+        ExecutionContext executionContext = mock(ExecutionContext.class, RETURNS_DEEP_STUBS);
+        when(executionContext.getExecutionUnits()).thenReturn(Collections.singletonList(mock(ExecutionUnit.class)));
+        when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(executionContext.getRouteContext().getRouteUnits())
+                .thenReturn(Collections.singletonList(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("MixedCase", "MixedCase")))));
+        AdvancedProxySQLExecutor advancedProxySQLExecutor = mock(AdvancedProxySQLExecutor.class);
+        when(advancedProxySQLExecutor.execute(any(ExecutionContext.class), any(ContextManager.class), any(ShardingSphereDatabase.class), any(DatabaseProxyConnector.class)))
+                .thenReturn(Collections.singletonList(new UpdateResult(1, 0L)));
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getTransactionOption())
+                .thenReturn(new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, false, false, false, false, true, Collections.emptyList()));
+        try (
+                MockedConstruction<KernelProcessor> ignoredKernelProcessor = mockConstruction(KernelProcessor.class,
+                        (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext));
+                MockedConstruction<DatabaseTypeRegistry> ignoredDatabaseTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
+                        (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData));
+                MockedConstruction<PushDownMetaDataRefreshEngine> mockedPushDownMetaDataRefreshEngine = mockConstruction(PushDownMetaDataRefreshEngine.class,
+                        (mock, context) -> when(mock.isNeedRefresh()).thenReturn(true));
+                MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
+            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.singleton(advancedProxySQLExecutor));
+            engine.execute();
+            verify(databaseConnectionManager.getDeferredMetaDataRefreshContext(), never()).add(any(), any(), any(), any());
+            PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = mockedPushDownMetaDataRefreshEngine.constructed().iterator().next();
+            verify(pushDownMetaDataRefreshEngine).refresh(any(), eq(database), any(ConfigurationProperties.class), any(Collection.class));
         }
     }
     
