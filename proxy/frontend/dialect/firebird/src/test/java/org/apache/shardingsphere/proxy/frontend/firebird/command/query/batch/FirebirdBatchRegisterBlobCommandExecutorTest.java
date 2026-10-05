@@ -72,7 +72,7 @@ class FirebirdBatchRegisterBlobCommandExecutorTest {
     @Test
     void assertExecute() {
         when(batchRegistry.getBatchStatement(9, 7)).thenReturn(batchStatement);
-        when(batchStatement.hasBatchBlobColumn()).thenReturn(true);
+        when(batchStatement.hasBatchBlobIdColumn()).thenReturn(true);
         Map<Long, Long> blobIds = new HashMap<>(2);
         when(batchStatement.getBlobIds()).thenReturn(blobIds);
         when(packet.getExistingBlobId()).thenReturn(2L);
@@ -88,7 +88,7 @@ class FirebirdBatchRegisterBlobCommandExecutorTest {
     @Test
     void assertExecuteWithDuplicateBlob() {
         when(batchRegistry.getBatchStatement(9, 7)).thenReturn(batchStatement);
-        when(batchStatement.hasBatchBlobColumn()).thenReturn(true);
+        when(batchStatement.hasBatchBlobIdColumn()).thenReturn(true);
         Map<Long, Long> blobIds = new HashMap<>(2);
         blobIds.put(1L, 2L);
         when(batchStatement.getBlobIds()).thenReturn(blobIds);

@@ -21,15 +21,19 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchBlobStream;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchBlobStreamCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSetBpbCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -54,6 +58,8 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     private final List<ByteBuf> pendingMessages = new LinkedList<>();
     
     private final Map<Integer, List<FirebirdBatchColumnDescriptor>> deferredBatchFormats = new HashMap<>(1, 1F);
+    
+    private final Map<Integer, FirebirdBatchBlobStream> batchBlobStreams = new HashMap<>(1, 1F);
     
     private FirebirdCommandPacketType pendingPacketType;
     
@@ -88,7 +94,11 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             out.clear();
             resetState();
             in.skipBytes(in.readableBytes());
-            context.channel().writeAndFlush(FirebirdErrorPacketFactory.newInstance(ex)).addListener(ChannelFutureListener.CLOSE);
+            if (ex instanceof InvalidBlobStreamException) {
+                context.channel().close();
+            } else {
+                context.channel().writeAndFlush(FirebirdErrorPacketFactory.newInstance(ex)).addListener(ChannelFutureListener.CLOSE);
+            }
         }
     }
     
@@ -155,6 +165,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             if (FirebirdCommandPacketType.BATCH_CREATE == commandType && buffer.readableBytes() > packetLength) {
                 rememberBatchFormat(buffer, packetLength, charset);
             }
+            trackBatchBlobStream(buffer, commandType, packetLength, charset);
             pendingPacketType = null;
             out.add(buffer.readRetainedSlice(packetLength));
         }
@@ -167,11 +178,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         ByteBuf slice = buffer.retainedSlice(readerIndex, readableBytes);
         try {
             FirebirdPacketPayload payload = new FirebirdPacketPayload(slice, charset);
-            List<FirebirdBatchColumnDescriptor> columnDescriptors = getDeferredBatchFormat(buffer, commandType);
-            int expectedLength = null == columnDescriptors
-                    ? FirebirdCommandPacketFactory.getExpectedLength(commandType, payload,
-                            context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get(), context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get())
-                    : FirebirdBatchMessageCommandPacket.getLength(payload, columnDescriptors);
+            int expectedLength = getExpectedLength(context, buffer, commandType, payload);
             if (expectedLength < 0) {
                 return -1;
             }
@@ -186,6 +193,30 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         }
     }
     
+    private int getExpectedLength(final ChannelHandlerContext context, final ByteBuf buffer, final FirebirdCommandPacketType commandType, final FirebirdPacketPayload payload) {
+        if (FirebirdCommandPacketType.BATCH_BLOB_STREAM == commandType) {
+            return getBatchBlobStreamLength(buffer, payload);
+        }
+        List<FirebirdBatchColumnDescriptor> columnDescriptors = getDeferredBatchFormat(buffer, commandType);
+        return null == columnDescriptors
+                ? FirebirdCommandPacketFactory.getExpectedLength(commandType, payload,
+                        context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get(), context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get())
+                : FirebirdBatchMessageCommandPacket.getLength(payload, columnDescriptors);
+    }
+    
+    private int getBatchBlobStreamLength(final ByteBuf buffer, final FirebirdPacketPayload payload) {
+        int statementHandle = buffer.getInt(buffer.readerIndex() + MESSAGE_TYPE_LENGTH);
+        FirebirdBatchBlobStream blobStream = batchBlobStreams.computeIfAbsent(statementHandle, key -> new FirebirdBatchBlobStream()).copy();
+        int result;
+        try {
+            result = FirebirdBatchBlobStreamCommandPacket.getLength(payload, blobStream);
+        } catch (final SQLDialectException ex) {
+            throw new InvalidBlobStreamException(ex);
+        }
+        batchBlobStreams.put(statementHandle, blobStream);
+        return result;
+    }
+    
     private List<FirebirdBatchColumnDescriptor> getDeferredBatchFormat(final ByteBuf buffer, final FirebirdCommandPacketType commandType) {
         return FirebirdCommandPacketType.BATCH_MSG == commandType && buffer.readableBytes() >= 8
                 ? deferredBatchFormats.get(buffer.getInt(buffer.readerIndex() + MESSAGE_TYPE_LENGTH))
@@ -197,6 +228,15 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 new FirebirdPacketPayload(buffer.slice(buffer.readerIndex(), packetLength), charset));
         ByteBuf batchBlr = packet.getBatchBlr();
         deferredBatchFormats.put(packet.getStatementHandle(), FirebirdParseBatchBlr.parse(batchBlr, batchBlr.readableBytes()).getFields());
+    }
+    
+    private void trackBatchBlobStream(final ByteBuf buffer, final FirebirdCommandPacketType commandType, final int packetLength, final Charset charset) {
+        if (FirebirdCommandPacketType.BATCH_CREATE == commandType) {
+            batchBlobStreams.put(buffer.getInt(buffer.readerIndex() + MESSAGE_TYPE_LENGTH), new FirebirdBatchBlobStream());
+        } else if (FirebirdCommandPacketType.BATCH_SET_BPB == commandType) {
+            FirebirdBatchSetBpbCommandPacket packet = new FirebirdBatchSetBpbCommandPacket(new FirebirdPacketPayload(buffer.slice(buffer.readerIndex(), packetLength), charset));
+            batchBlobStreams.computeIfAbsent(packet.getStatementHandle(), key -> new FirebirdBatchBlobStream()).setDefaultBpb(packet.getBpb());
+        }
     }
     
     @Override
@@ -219,5 +259,17 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     @Override
     public FirebirdPacketPayload createPacketPayload(final ByteBuf message, final Charset charset) {
         return new FirebirdPacketPayload(message, charset);
+    }
+    
+    /**
+     * Invalid stream portion of {@code op_batch_blob_stream}: Firebird fails to decode the packet in {@code xdr_blob_stream} and closes the connection without response.
+     */
+    private static final class InvalidBlobStreamException extends RuntimeException {
+        
+        private static final long serialVersionUID = 3197564018632745511L;
+        
+        InvalidBlobStreamException(final SQLDialectException cause) {
+            super(cause);
+        }
     }
 }
