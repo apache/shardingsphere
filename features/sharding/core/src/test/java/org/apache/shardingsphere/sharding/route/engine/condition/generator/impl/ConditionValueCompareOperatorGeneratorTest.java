@@ -155,8 +155,7 @@ class ConditionValueCompareOperatorGeneratorTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("rightColumnComparisonArguments")
     void assertGenerateConditionValueWithRightColumn(final String name, final String operator, final Range<Integer> expectedRange) {
-        BinaryOperationExpression predicate = new BinaryOperationExpression(
-                0, 0, new LiteralExpressionSegment(0, 0, 1), mock(ColumnSegment.class), operator, null);
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, new LiteralExpressionSegment(0, 0, 1), mock(ColumnSegment.class), operator, null);
         Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class));
         assertTrue(actual.isPresent());
         assertThat(((RangeShardingConditionValue<Integer>) actual.get()).getValueRange(), is(expectedRange));

@@ -43,6 +43,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -135,7 +136,7 @@ class WhereClauseShardingConditionEngineTest {
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, new LiteralExpressionSegment(0, 0, "100"), binaryColumn, "<", null);
         when(whereSegment.getExpr()).thenReturn(expression);
         when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
-        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
+        Collection<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
         assertTrue(actual.isEmpty());
     }
     
@@ -146,7 +147,7 @@ class WhereClauseShardingConditionEngineTest {
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, new LiteralExpressionSegment(0, 0, 100), right, "<", null);
         when(whereSegment.getExpr()).thenReturn(expression);
         when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
-        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
+        Collection<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
         assertTrue(actual.isEmpty());
     }
 }
