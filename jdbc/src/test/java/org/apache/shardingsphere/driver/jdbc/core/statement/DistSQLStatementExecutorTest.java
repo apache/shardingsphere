@@ -17,31 +17,46 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.context.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.type.rul.sql.ParseStatement;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorEngine;
+import org.apache.shardingsphere.mode.exclusive.callback.ExclusiveOperationVoidCallback;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedConstruction;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
@@ -81,6 +96,32 @@ class DistSQLStatementExecutorTest {
             new DistSQLStatementExecutor(connection, mock(StatementManager.class), mock(Statement.class)).executeUpdate(queryContext);
             verify(mockedEngines.constructed().get(0)).executeUpdate();
         }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideLockClusterStatements")
+    void assertExecuteUpdateWithLockCluster(final String name, final LockClusterStatement sqlStatement,
+                                            final long expectedTimeoutMillis, final ShardingSphereState expectedState) throws SQLException {
+        ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
+        ContextManager contextManager = connection.getContextManager();
+        when(contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()).thenReturn(true);
+        when(contextManager.getStateContext().getState()).thenReturn(ShardingSphereState.OK);
+        ExclusiveOperatorEngine exclusiveOperatorEngine = contextManager.getExclusiveOperatorEngine();
+        doAnswer(invocation -> {
+            ExclusiveOperationVoidCallback callback = invocation.getArgument(2);
+            callback.execute();
+            return null;
+        }).when(exclusiveOperatorEngine).operate(any(), anyLong(), any(ExclusiveOperationVoidCallback.class));
+        new DistSQLStatementExecutor(connection, mock(StatementManager.class), mock(Statement.class)).executeUpdate(createQueryContext(sqlStatement));
+        verify(exclusiveOperatorEngine).operate(any(), eq(expectedTimeoutMillis), any(ExclusiveOperationVoidCallback.class));
+        verify(contextManager.getPersistServiceFacade().getStateService()).update(expectedState);
+    }
+    
+    private static Stream<Arguments> provideLockClusterStatements() {
+        return Stream.of(
+                Arguments.of("write lock with explicit timeout", new LockClusterStatement(new AlgorithmSegment("WRITE", new Properties()), 2000L), 2000L, ShardingSphereState.READ_ONLY),
+                Arguments.of("write lock with default timeout", new LockClusterStatement(new AlgorithmSegment("WRITE", new Properties())), 3000L, ShardingSphereState.READ_ONLY),
+                Arguments.of("read-write lock with explicit timeout", new LockClusterStatement(new AlgorithmSegment("READ_WRITE", new Properties()), 2000L), 2000L, ShardingSphereState.UNAVAILABLE));
     }
     
     @Test

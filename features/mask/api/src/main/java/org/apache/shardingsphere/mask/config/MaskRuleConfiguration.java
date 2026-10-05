@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfigur
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.validator.constraint.reference.ConfigurationReferenceExists;
 import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
+import org.apache.shardingsphere.infra.config.rule.validator.constraint.unique.UniqueTableNames;
 import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 
@@ -45,6 +46,7 @@ public final class MaskRuleConfiguration implements DatabaseRuleConfiguration, E
     
     @NotNull
     @Valid
+    @UniqueTableNames(groups = RuleConfigurationTypeValidationGroup.class)
     private final Collection<@NotNull MaskTableRuleConfiguration> tables;
     
     @NotNull

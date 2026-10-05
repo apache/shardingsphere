@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.test.infra.framework.extension.log;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -24,6 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Log capture settings.
  */
+@ExtendWith(MockitoExtension.class)
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LogCaptureSettings {

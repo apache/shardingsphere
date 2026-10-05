@@ -19,48 +19,21 @@ package org.apache.shardingsphere.sharding.checker.config;
 
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Sharding rule configuration checker.
  */
 public final class ShardingRuleConfigurationChecker implements DatabaseRuleConfigurationChecker<ShardingRuleConfiguration> {
-    
-    @Override
-    public void check(final String databaseName, final ShardingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        ruleConfig.getTables().forEach(this::checkDataNodeSchemas);
-    }
-    
-    private void checkDataNodeSchemas(final ShardingTableRuleConfiguration tableRuleConfig) {
-        Collection<String> actualDataNodes = InlineExpressionParserFactory.newInstance(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
-        Map<String, String> schemaNamesByDataSource = new HashMap<>(actualDataNodes.size(), 1F);
-        for (String each : actualDataNodes) {
-            DataNode dataNode = new DataNode(each);
-            if (null == dataNode.getSchemaName()) {
-                continue;
-            }
-            String configuredSchemaName = schemaNamesByDataSource.putIfAbsent(dataNode.getDataSourceName(), dataNode.getSchemaName());
-            ShardingSpherePreconditions.checkState(null == configuredSchemaName || configuredSchemaName.equalsIgnoreCase(dataNode.getSchemaName()),
-                    () -> new InvalidRuleConfigurationException("sharding table", Collections.singleton(tableRuleConfig.getLogicTable()),
-                            Collections.singleton(String.format("Multiple schemas are configured for storage unit '%s'.", dataNode.getDataSourceName()))));
-        }
-    }
     
     @Override
     public Collection<String> getRequiredDataSourceNames(final ShardingRuleConfiguration ruleConfig) {

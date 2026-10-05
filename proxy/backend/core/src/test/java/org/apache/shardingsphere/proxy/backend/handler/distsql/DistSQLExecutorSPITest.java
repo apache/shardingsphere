@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -48,9 +48,12 @@ class DistSQLExecutorSPITest {
     }
     
     private boolean isMigratedExecutor(final String className) {
-        return className.startsWith("org.apache.shardingsphere.distsql.handler.executor.ral.queryable.")
-                || className.startsWith("org.apache.shardingsphere.distsql.handler.executor.ral.updatable.")
-                || className.startsWith("org.apache.shardingsphere.distsql.handler.executor.rul.")
+        return className.startsWith("org.apache.shardingsphere.distsql.handler.executor.configuration.")
+                || className.startsWith("org.apache.shardingsphere.distsql.handler.executor.metadata.")
+                || className.startsWith("org.apache.shardingsphere.distsql.handler.executor.computenode.")
+                || className.startsWith("org.apache.shardingsphere.distsql.handler.executor.variable.")
+                || className.startsWith("org.apache.shardingsphere.distsql.handler.executor.lock.")
+                || className.startsWith("org.apache.shardingsphere.distsql.handler.executor.preview.")
                 || "org.apache.shardingsphere.parser.distsql.handler.query.ParseDistSQLExecutor".equals(className);
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.listener;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
@@ -36,7 +37,11 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.schedule.spi.CoordinatorRegistryCenterProvider;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
@@ -52,12 +57,15 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(LogCaptureExtension.class)
+@LogCaptureSettings(suppressOutput = true)
 class PipelineContextManagerLifecycleListenerTest {
     
     @Test
@@ -129,9 +137,10 @@ class PipelineContextManagerLifecycleListenerTest {
     }
     
     @Test
-    void assertInitializeIgnoresDispatchFailure() {
+    void assertInitializeIgnoresDispatchFailure(final LogCaptureAssertion logCaptureAssertion) {
         ContextManager contextManager = mockContextManager();
         PipelineContextKey contextKey = new PipelineContextKey("foo_db", InstanceType.JDBC);
+        RuntimeException expectedException = new RuntimeException("expected");
         try (
                 MockedStatic<PipelineContextManager> ignoredContextManager = mockStatic(PipelineContextManager.class);
                 MockedStatic<PipelineMetaDataNodeWatcher> ignoredWatcher = mockStatic(PipelineMetaDataNodeWatcher.class);
@@ -139,9 +148,10 @@ class PipelineContextManagerLifecycleListenerTest {
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
                 MockedStatic<PipelineAPIFactory> pipelineAPIFactory = mockStatic(PipelineAPIFactory.class)) {
             typedSPILoader.when(() -> TypedSPILoader.findService(CoordinatorRegistryCenterProvider.class, "FIXTURE")).thenReturn(Optional.of(mock(CoordinatorRegistryCenterProvider.class)));
-            pipelineAPIFactory.when(() -> PipelineAPIFactory.getJobConfigurationAPI(contextKey)).thenThrow(new RuntimeException("expected"));
+            pipelineAPIFactory.when(() -> PipelineAPIFactory.getJobConfigurationAPI(contextKey)).thenThrow(expectedException);
             assertDoesNotThrow(() -> new PipelineContextManagerLifecycleListener().onInitialized(contextManager));
         }
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @Test
@@ -179,7 +189,7 @@ class PipelineContextManagerLifecycleListenerTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getPreSelectedDatabaseName()).thenReturn("foo_db");
         when(result.getComputeNodeInstanceContext().getInstance().getMetaData().getType()).thenReturn(InstanceType.JDBC);
-        when(result.getComputeNodeInstanceContext().getModeConfiguration().getRepository().getType()).thenReturn("FIXTURE");
+        lenient().when(result.getComputeNodeInstanceContext().getModeConfiguration().getRepository().getType()).thenReturn("FIXTURE");
         return result;
     }
     

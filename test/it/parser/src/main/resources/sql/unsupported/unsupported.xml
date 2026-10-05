@@ -352,6 +352,19 @@
     <sql-case id="assert_show_databases_parse_conflict" value="SHOW DATABASES" db-types="Oracle" />
     <sql-case id="assert_show_schemas_parse_conflict" value="SHOW SCHEMAS" db-types="Oracle" />
     <sql-case id="assert_show_tables_parse_conflict" value="SHOW TABLES" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_flashback_adjacent_expressions" value="FLASHBACK DATABASE TO TIMESTAMP SYSDATE SYSDATE" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_flashback_unclosed_expression" value="FLASHBACK DATABASE TO TIMESTAMP (SYSDATE" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_model_adjacent_expressions" value="SELECT s FROM foo_table MODEL DIMENSION BY (d) MEASURES (s) RULES (s[1] = s[2] + 1 2)" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_model_incomplete_addition" value="SELECT s FROM foo_table MODEL DIMENSION BY (d) MEASURES (s) RULES (s[1] = s[2] +)" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_model_incomplete_division" value="SELECT s FROM foo_table MODEL DIMENSION BY (d) MEASURES (s) RULES (s[1] = s[2] /)" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_execute_immediate_adjacent_arguments" value="BEGIN EXECUTE IMMEDIATE 'BEGIN NULL; END;' USING a b; END;" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_execute_immediate_missing_mode_separator" value="BEGIN EXECUTE IMMEDIATE 'BEGIN NULL; END;' USING IN a OUT b; END;" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_open_cursor_adjacent_arguments" value="BEGIN OPEN foo_cursor(1 2); END;" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_for_cursor_adjacent_arguments" value="BEGIN FOR r IN foo_cursor(1 2) LOOP NULL; END LOOP; END;" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_record_constructor_missing_separator" value="DECLARE v foo_record := foo_record(1 b=&gt;2); BEGIN NULL; END;" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_forall_string_body" value="BEGIN FORALL i IN 1..v.COUNT 'DELETE FROM foo_table'; END;" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_forall_parenthesized_body" value="BEGIN FORALL i IN 1..v.COUNT (v(i)); END;" db-types="Oracle" />
+    <sql-case id="assert_select_order_by_before_and_after_for_update_oracle" value="SELECT 1 FROM DUAL ORDER BY 1 FOR UPDATE NOWAIT ORDER BY 1" db-types="Oracle" />
     <!-- TODO open this case when MySQLStatement change to SEMI_? EOF -->
     <!--    <sql-case id="assert_parse_multi_statements" value="SHOW VARIABLES LIKE 'sql_mode'; SELECT COUNT(*) AS support_ndb FROM information_schema;" db-types="MySQL" />-->
 </sql-cases>

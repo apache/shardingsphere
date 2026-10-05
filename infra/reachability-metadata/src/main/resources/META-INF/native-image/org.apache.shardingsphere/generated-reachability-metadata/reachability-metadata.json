@@ -1118,7 +1118,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.broadcast.distsql.handler.update.CreateBroadcastTableRuleExecutor",
       "methods": [
@@ -1130,7 +1130,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.broadcast.distsql.handler.update.DropBroadcastTableRuleExecutor",
       "methods": [
@@ -1850,7 +1850,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.distsql.handler.executor.rdl.resource.AlterStorageUnitExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.resource.AlterStorageUnitExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -1862,7 +1862,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.distsql.handler.executor.rdl.resource.RegisterStorageUnitExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.resource.RegisterStorageUnitExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -1874,7 +1874,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.distsql.handler.executor.rdl.resource.UnregisterStorageUnitExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.resource.UnregisterStorageUnitExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -2190,7 +2190,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.encrypt.distsql.handler.update.AlterEncryptRuleExecutor",
       "methods": [
@@ -2202,7 +2202,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.encrypt.distsql.handler.update.CreateEncryptRuleExecutor",
       "methods": [
@@ -2214,7 +2214,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.encrypt.distsql.handler.update.DropEncryptRuleExecutor",
       "methods": [
@@ -3349,7 +3349,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.mask.distsql.handler.update.AlterMaskRuleExecutor",
       "methods": [
@@ -3361,7 +3361,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.mask.distsql.handler.update.CreateMaskRuleExecutor",
       "methods": [
@@ -3373,7 +3373,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.mask.distsql.handler.update.DropMaskRuleExecutor",
       "methods": [
@@ -4119,7 +4119,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.computenode.SetComputeNodeStateExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.computenode.SetComputeNodeStateExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4131,7 +4131,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.imports.ImportDatabaseConfigurationExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.configuration.imports.ImportDatabaseConfigurationExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4143,7 +4143,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.imports.ImportMetaDataExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.configuration.imports.ImportMetaDataExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4155,7 +4155,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.lock.LockClusterExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.lock.LockClusterExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4167,7 +4167,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.lock.UnlockClusterExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.lock.UnlockClusterExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4179,7 +4179,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.refresh.RefreshDatabaseMetaDataExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.metadata.RefreshDatabaseMetaDataExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4191,7 +4191,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.refresh.RefreshTableMetaDataExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.metadata.RefreshTableMetaDataExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4203,7 +4203,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"
       },
-      "type": "org.apache.shardingsphere.distsql.handler.executor.ral.updatable.variable.SetDistVariableExecutor",
+      "type": "org.apache.shardingsphere.distsql.handler.executor.variable.SetDistVariableExecutor",
       "methods": [
         {
           "name": "<init>",
@@ -4535,7 +4535,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.readwritesplitting.distsql.handler.update.AlterReadwriteSplittingRuleExecutor",
       "methods": [
@@ -4559,7 +4559,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.readwritesplitting.distsql.handler.update.CreateReadwriteSplittingRuleExecutor",
       "methods": [
@@ -4571,7 +4571,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.readwritesplitting.distsql.handler.update.DropReadwriteSplittingRuleExecutor",
       "methods": [
@@ -4875,7 +4875,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.shadow.distsql.handler.update.AlterDefaultShadowAlgorithmExecutor",
       "methods": [
@@ -4887,7 +4887,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.shadow.distsql.handler.update.AlterShadowRuleExecutor",
       "methods": [
@@ -4899,7 +4899,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.shadow.distsql.handler.update.CreateDefaultShadowAlgorithmExecutor",
       "methods": [
@@ -4911,7 +4911,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.shadow.distsql.handler.update.CreateShadowRuleExecutor",
       "methods": [
@@ -4923,7 +4923,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.shadow.distsql.handler.update.DropDefaultShadowAlgorithmExecutor",
       "methods": [
@@ -4935,7 +4935,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowAlgorithmExecutor",
       "methods": [
@@ -4947,7 +4947,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowRuleExecutor",
       "methods": [
@@ -5650,7 +5650,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.AlterDefaultShardingStrategyExecutor",
       "methods": [
@@ -5662,7 +5662,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingKeyGenerateStrategyExecutor",
       "methods": [
@@ -5674,7 +5674,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingKeyGeneratorExecutor",
       "methods": [
@@ -5686,7 +5686,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingTableReferenceRuleExecutor",
       "methods": [
@@ -5698,7 +5698,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingTableRuleExecutor",
       "methods": [
@@ -5710,7 +5710,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.CreateDefaultShardingStrategyExecutor",
       "methods": [
@@ -5722,7 +5722,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingKeyGenerateStrategyExecutor",
       "methods": [
@@ -5734,7 +5734,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingKeyGeneratorExecutor",
       "methods": [
@@ -5746,7 +5746,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableReferenceRuleExecutor",
       "methods": [
@@ -5758,7 +5758,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableRuleExecutor",
       "methods": [
@@ -5770,7 +5770,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.DropDefaultShardingStrategyExecutor",
       "methods": [
@@ -5782,7 +5782,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingAlgorithmExecutor",
       "methods": [
@@ -5794,7 +5794,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingAuditorExecutor",
       "methods": [
@@ -5806,7 +5806,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingKeyGenerateStrategyExecutor",
       "methods": [
@@ -5818,7 +5818,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingKeyGeneratorExecutor",
       "methods": [
@@ -5830,7 +5830,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingTableReferenceExecutor",
       "methods": [
@@ -5842,7 +5842,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingTableRuleExecutor",
       "methods": [
@@ -6281,7 +6281,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.single.distsql.handler.update.LoadSingleTableExecutor",
       "methods": [
@@ -6293,7 +6293,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.single.distsql.handler.update.SetDefaultSingleTableStorageUnitExecutor",
       "methods": [
@@ -6305,7 +6305,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory"
+        "typeReached": "org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory"
       },
       "type": "org.apache.shardingsphere.single.distsql.handler.update.UnloadSingleTableExecutor",
       "methods": [
@@ -8017,19 +8017,19 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"
       },
-      "glob": "META-INF/services/org.apache.shardingsphere.distsql.handler.engine.update.AdvancedDistSQLUpdateExecutor"
+      "glob": "META-INF/services/org.apache.shardingsphere.distsql.handler.executor.spi.update.AdvancedDistSQLUpdateExecutor"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"
       },
-      "glob": "META-INF/services/org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor"
+      "glob": "META-INF/services/org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"
       },
-      "glob": "META-INF/services/org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor"
+      "glob": "META-INF/services/org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.database.DatabaseRuleDefinitionExecutor"
     },
     {
       "condition": {

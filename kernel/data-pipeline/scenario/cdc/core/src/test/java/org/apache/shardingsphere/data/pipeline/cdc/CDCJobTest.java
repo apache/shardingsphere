@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import io.netty.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
@@ -66,6 +67,9 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -105,7 +109,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
+@ExtendWith({AutoMockExtension.class, LogCaptureExtension.class})
+@LogCaptureSettings(suppressOutput = true)
 @StaticMockSettings({
         PipelineJobIdUtils.class, PipelineProcessConfigurationUtils.class, PipelineDataSourceConfigurationFactory.class,
         OrderedSPILoader.class, PipelineAPIFactory.class, PipelineJobProgressPersistService.class,
@@ -157,17 +162,18 @@ class CDCJobTest {
     }
     
     @Test
-    void assertExecuteInitTasksFailureStopsJob() {
+    void assertExecuteInitTasksFailureStopsJob(final LogCaptureAssertion logCaptureAssertion) {
         CDCJobConfiguration jobConfig = mockJobConfiguration(
                 Collections.singletonList(new JobDataNodeLine(Collections.singletonList(new JobDataNodeEntry("logic_tbl", Collections.singletonList(new DataNode("ds_0.tbl_0")))))));
         ShardingContext shardingContext = mockShardingContext("param");
         prepareJobTypeAndContext(jobConfig);
         CDCJobAPI jobAPI = mock(CDCJobAPI.class);
+        RuntimeException expectedException = new RuntimeException();
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
                 MockedConstruction<PipelineProcessConfigurationPersistService> ignoredProcess = mockPersistService(
                         new PipelineProcessConfiguration(new PipelineReadConfiguration(1, 1, 1, null), new PipelineWriteConfiguration(1, 1, null), null));
-                MockedConstruction<CDCJobPreparer> ignoredPreparer = mockConstruction(CDCJobPreparer.class, (mock, context) -> doThrow(RuntimeException.class).when(mock).initTasks(anyCollection()));
+                MockedConstruction<CDCJobPreparer> ignoredPreparer = mockConstruction(CDCJobPreparer.class, (mock, context) -> doThrow(expectedException).when(mock).initTasks(anyCollection()));
                 MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class)) {
             typedSPILoader.when(() -> TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING")).thenReturn(jobAPI);
             PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS);
@@ -181,6 +187,7 @@ class CDCJobTest {
             verify(jobAPI).disable("foo_job_id");
             jobRegistryMocked.verify(() -> PipelineJobRegistry.stop("foo_job_id"));
         }
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -267,12 +274,13 @@ class CDCJobTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertExecuteIncrementalFailureSendError() {
+    void assertExecuteIncrementalFailureSendError(final LogCaptureAssertion logCaptureAssertion) {
         CDCJobConfiguration jobConfig = mockJobConfiguration(
                 Collections.singletonList(new JobDataNodeLine(Collections.singletonList(new JobDataNodeEntry("logic_tbl", Collections.singletonList(new DataNode("ds_0.tbl_0")))))));
         ShardingContext shardingContext = mockShardingContext("param");
         prepareJobTypeAndContext(jobConfig);
         CDCJobAPI jobAPI = mock(CDCJobAPI.class);
+        RuntimeException expectedException = new RuntimeException("failure");
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
                 MockedConstruction<PipelineProcessConfigurationPersistService> ignoredProcess = mockPersistService(
@@ -302,7 +310,7 @@ class CDCJobTest {
                 if (0 == triggerCounter.getAndIncrement()) {
                     callback.onSuccess();
                 } else {
-                    callback.onFailure(new RuntimeException("failure"));
+                    callback.onFailure(expectedException);
                 }
                 return null;
             });
@@ -313,16 +321,18 @@ class CDCJobTest {
             verify(jobAPI).disable("foo_job_id");
             jobRegistryMocked.verify(() -> PipelineJobRegistry.stop("foo_job_id"));
         }
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertExecuteIncrementalFailureWithoutSocketSink() {
+    void assertExecuteIncrementalFailureWithoutSocketSink(final LogCaptureAssertion logCaptureAssertion) {
         CDCJobConfiguration jobConfig = mockJobConfiguration(
                 Collections.singletonList(new JobDataNodeLine(Collections.singletonList(new JobDataNodeEntry("logic_tbl", Collections.singletonList(new DataNode("ds_0.tbl_0")))))));
         ShardingContext shardingContext = mockShardingContext("param");
         prepareJobTypeAndContext(jobConfig);
         CDCJobAPI jobAPI = mock(CDCJobAPI.class);
+        RuntimeException expectedException = new RuntimeException("failure");
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
                 MockedConstruction<PipelineProcessConfigurationPersistService> ignoredProcess = mockPersistService(
@@ -346,7 +356,7 @@ class CDCJobTest {
                 if (0 == triggerCounter.getAndIncrement()) {
                     callback.onSuccess();
                 } else {
-                    callback.onFailure(new RuntimeException("failure"));
+                    callback.onFailure(expectedException);
                 }
                 return null;
             });
@@ -355,6 +365,7 @@ class CDCJobTest {
             verify(jobAPI).disable("foo_job_id");
             jobRegistryMocked.verify(() -> PipelineJobRegistry.stop("foo_job_id"));
         }
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @SuppressWarnings("unchecked")

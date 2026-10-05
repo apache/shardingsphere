@@ -67,7 +67,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -78,7 +77,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-final class EncryptOpenQuerySupportedCheckerTest {
+class EncryptOpenQuerySupportedCheckerTest {
     
     @Test
     void assertIsCheckWithSelectFromOpenQuery() {
@@ -167,8 +166,8 @@ final class EncryptOpenQuerySupportedCheckerTest {
     void assertIsCheckWithBinarySubqueryOpenQuery() {
         SelectStatement selectStatement = mockSQLServerSelectWithSimpleFrom();
         SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        BinaryOperationExpression binaryExpr = new BinaryOperationExpression(0, 80, new LiteralExpressionSegment(0, 2, "col"),
-                new SubqueryExpressionSegment(subquerySegment), "=", "col = (SELECT ...)");
+        BinaryOperationExpression binaryExpr = new BinaryOperationExpression(0, 80, new LiteralExpressionSegment(0, 2, "col"), new SubqueryExpressionSegment(subquerySegment), "=",
+                "col = (SELECT ...)");
         when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, binaryExpr)));
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSQLStatementContext(selectStatement)));
     }
@@ -196,8 +195,8 @@ final class EncryptOpenQuerySupportedCheckerTest {
     void assertIsCheckWithBetweenSubqueryOpenQuery() {
         SelectStatement selectStatement = mockSQLServerSelectWithSimpleFrom();
         SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        BetweenExpression betweenExpr = new BetweenExpression(0, 80, new LiteralExpressionSegment(0, 2, "id"),
-                new SubqueryExpressionSegment(subquerySegment), new LiteralExpressionSegment(0, 3, 100), false);
+        BetweenExpression betweenExpr = new BetweenExpression(0, 80, new LiteralExpressionSegment(0, 2, "id"), new SubqueryExpressionSegment(subquerySegment),
+                new LiteralExpressionSegment(0, 3, 100), false);
         when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, betweenExpr)));
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSQLStatementContext(selectStatement)));
     }
@@ -206,8 +205,8 @@ final class EncryptOpenQuerySupportedCheckerTest {
     void assertIsCheckWithBetweenLeftSubqueryOpenQuery() {
         SelectStatement selectStatement = mockSQLServerSelectWithSimpleFrom();
         SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        BetweenExpression betweenExpr = new BetweenExpression(0, 80, new SubqueryExpressionSegment(subquerySegment),
-                new LiteralExpressionSegment(0, 1, 0), new LiteralExpressionSegment(0, 1, 2), false);
+        BetweenExpression betweenExpr = new BetweenExpression(0, 80, new SubqueryExpressionSegment(subquerySegment), new LiteralExpressionSegment(0, 1, 0), new LiteralExpressionSegment(0, 1, 2),
+                false);
         when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, betweenExpr)));
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSQLStatementContext(selectStatement)));
     }
@@ -227,8 +226,7 @@ final class EncryptOpenQuerySupportedCheckerTest {
         SelectStatement selectStatement = mockSQLServerSelectWithSimpleFrom();
         stubSelectNegativePaths(selectStatement);
         SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        CaseWhenExpression caseWhenExpr = new CaseWhenExpression(0, 80, null,
-                Collections.singletonList(new ExistsSubqueryExpression(0, 80, subquerySegment)),
+        CaseWhenExpression caseWhenExpr = new CaseWhenExpression(0, 80, null, Collections.singletonList(new ExistsSubqueryExpression(0, 80, subquerySegment)),
                 Collections.singletonList(new LiteralExpressionSegment(0, 1, 1)), new LiteralExpressionSegment(0, 1, 0), "CASE WHEN ...");
         ProjectionsSegment projections = new ProjectionsSegment(0, 80);
         projections.getProjections().add(new ExpressionProjectionSegment(0, 80, "CASE WHEN ...", caseWhenExpr));
@@ -242,8 +240,7 @@ final class EncryptOpenQuerySupportedCheckerTest {
         SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
         FunctionSegment funcSeg = new FunctionSegment(0, 80, "ISNULL", "ISNULL((SELECT ...), 0)");
         funcSeg.getParameters().add(new SubqueryExpressionSegment(subquerySegment));
-        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80,
-                new BinaryOperationExpression(0, 80, funcSeg, new LiteralExpressionSegment(0, 1, 0), ">", "ISNULL(...) > 0"))));
+        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 80, new BinaryOperationExpression(0, 80, funcSeg, new LiteralExpressionSegment(0, 1, 0), ">", "ISNULL(...) > 0"))));
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSQLStatementContext(selectStatement)));
     }
     
@@ -351,7 +348,7 @@ final class EncryptOpenQuerySupportedCheckerTest {
         when(insertStatement.getInsertSelect()).thenReturn(Optional.empty());
         when(insertStatement.getWith()).thenReturn(Optional.empty());
         SubquerySegment subquerySegment = mockSubqueryWithOpenQueryFrom();
-        InsertValuesSegment valuesSegment = new InsertValuesSegment(0, 80, Arrays.asList(new SubqueryExpressionSegment(subquerySegment)));
+        InsertValuesSegment valuesSegment = new InsertValuesSegment(0, 80, Collections.singletonList(new SubqueryExpressionSegment(subquerySegment)));
         when(insertStatement.getValues()).thenReturn(Collections.singletonList(valuesSegment));
         assertTrue(new EncryptOpenQuerySupportedChecker().isCheck(createSQLStatementContext(insertStatement)));
     }
@@ -504,8 +501,7 @@ final class EncryptOpenQuerySupportedCheckerTest {
     @Test
     void assertCheck() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        assertThrows(UnsupportedEncryptSQLException.class,
-                () -> new EncryptOpenQuerySupportedChecker().check(EncryptGeneratorFixtureBuilder.createEncryptRule(), null, null, sqlStatementContext));
+        assertThrows(UnsupportedEncryptSQLException.class, () -> new EncryptOpenQuerySupportedChecker().check(EncryptGeneratorFixtureBuilder.createEncryptRule(), null, null, sqlStatementContext));
     }
     
     private <T extends SQLStatement> T mockSQLServerStatement(final Class<T> statementClass) {

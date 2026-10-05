@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.completion.handler;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
@@ -274,7 +273,7 @@ class MetadataCompletionHandlerTest {
     }
     
     private ShardingSphereTable createTableMetadata() {
-        return new ShardingSphereTable("t_order", List.of(), List.of(), List.of(), TableType.TABLE);
+        return new ShardingSphereTable("t_order", List.of(), List.of(), List.of());
     }
     
     private void assertCandidate(final MCPCompletionHandlerResult actual, final String expectedValue) {

@@ -163,6 +163,8 @@
     <sql-case id="select_current_date_function_with_complete_regular_function" value="SELECT * FROM t_order WHERE date = CURRENT_DATE()" db-types="MySQL" />
     <sql-case id="select_current_time_function_with_shorthand_regular_function" value="SELECT * FROM t_order WHERE time = CURRENT_TIME" db-types="MySQL" />
     <sql-case id="select_current_time_function_with_complete_regular_function" value="SELECT * FROM t_order WHERE time = CURRENT_TIME()" db-types="MySQL" />
+    <sql-case id="select_oracle_model_nested_addition" value="SELECT s FROM foo_table MODEL DIMENSION BY (d) MEASURES (s) RULES (s[1] = s[2] + (s[3] + 1))" db-types="Oracle" />
+    <sql-case id="select_oracle_model_division" value="SELECT s FROM foo_table MODEL DIMENSION BY (d) MEASURES (s) RULES (s[1] = s[2] / 2)" db-types="Oracle" />
     <sql-case id="select_with_model_partition_dimension" value="SELECT country, prod, year, s FROM sales_view_ref MODEL PARTITION BY (country) DIMENSION BY (prod, year) MEASURES (sale s) IGNORE NAV UNIQUE DIMENSION RULES UPSERT SEQUENTIAL ORDER (s[prod='Mouse Pad', year=2001] = s['Mouse Pad', 1999] + s['Mouse Pad', 2000],
     s['Standard Mouse', 2002] = s['Standard Mouse', 2001]) ORDER BY country, prod, year" db-types="Oracle" />
     <sql-case id="select_with_model_dimension" value="SELECT country, year, sale, csum FROM (SELECT country, year, SUM(sale) sale FROM sales_view_ref GROUP BY country, year) MODEL DIMENSION BY (country, year) MEASURES (sale, 0 csum) RULES (csum[any, any] = SUM(sale) OVER (PARTITION BY country ORDER BY year ROWS UNBOUNDED PRECEDING)) ORDER BY country, year" db-types="Oracle" />

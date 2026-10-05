@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm;
 
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.json.JsonException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
@@ -93,7 +95,10 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
     
     private static final String APPLY_WORKFLOW_TOOL_NAME = WorkflowToolDescriptors.APPLY_TOOL_NAME;
     
-    private static final String NOT_APPLIED_MARKER = "application_status=not-applied";
+    private static final Map<String, Object> MASK_PLANNING_RESPONSE_FORMAT =
+            Map.of("type", "json_schema", "json_schema", Map.of("name", "mask_planning_result", "schema",
+                    Map.of("type", "object", "properties", Map.of("plan_id", Map.of("type", "string"), "application_status", Map.of("type", "string", "enum", List.of("applied", "not-applied"))),
+                            "required", List.of("plan_id", "application_status"), "additionalProperties", false)));
     
     private static final String PREVIEW_ONLY_MARKER = "execution_status=preview-only";
     
@@ -152,6 +157,7 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
                 "read-only-query",
                 "How many rows are currently in the orders table of the logic_db runtime database? Inspect the live MCP server and answer concisely.",
                 Set.of(EXECUTE_QUERY_TOOL_NAME),
+                trace -> Map.of(),
                 this::evaluateReadOnlyQuery));
     }
     
@@ -161,6 +167,7 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
                 "metadata-discovery",
                 "List every table or view currently visible through the live MCP server. The user does not know the database or schema names, so discover the required scope first.",
                 Set.of(SEARCH_METADATA_TOOL_NAME),
+                trace -> Map.of(),
                 this::evaluateMetadataDiscovery));
     }
     
@@ -175,12 +182,20 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
                             + "Pass database, schema, table, column, operation_type, algorithm_type, and primary_algorithm_properties directly to the planning tool; "
                             + "omit natural_language_intent. "
                             + "Use the create operation, KEEP_FIRST_N_LAST_M algorithm, and primary properties first-n=1, last-m=1, replace-char=*. "
-                            + "Report the plan ID and include the exact marker `" + NOT_APPLIED_MARKER + "`.",
+                            + "After creating the plan, return a JSON object with plan_id from the planning response and application_status. "
+                            + "Set application_status to applied or not-applied according to the tool actions.",
                     Set.of(PLAN_MASK_RULE_TOOL_NAME),
+                    this::createMaskPlanningResponseFormat,
                     this::evaluateMaskPlanning));
         } finally {
             proxyRuntimeFixtureSelected = false;
         }
+    }
+    
+    private Map<String, Object> createMaskPlanningResponseFormat(final List<MCPInteractionTraceRecord> trace) {
+        return hasExpectedMaskPlanArguments(trace) && trace.stream().anyMatch(each -> isValidModelAction(each, PLAN_MASK_RULE_TOOL_NAME) && "planned".equals(each.getStructuredContent().get("status")))
+                ? MASK_PLANNING_RESPONSE_FORMAT
+                : Map.of();
     }
     
     @Test
@@ -193,6 +208,7 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
                         + "was only previewed and whether any data changed. Include the exact markers `" + PREVIEW_ONLY_MARKER + "` and `" + DATA_UNCHANGED_MARKER
                         + "`. Inspect the live MCP server to discover any required runtime scope.",
                 Set.of(SEARCH_METADATA_TOOL_NAME, EXECUTE_UPDATE_TOOL_NAME),
+                trace -> Map.of(),
                 (answer, trace) -> evaluateSideEffectPreview(answer, trace, statusBefore)));
     }
     
@@ -203,6 +219,7 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
                 "A user pasted stale resource `" + STALE_TABLE_RESOURCE_URI + "`. Inspect that resource, then follow the first safe read-only action in its top-level "
                         + "`next_actions` by reading its `resource_uri` exactly. Do not guess another URI. Then report how many rows are currently in the orders table.",
                 Set.of(READ_RESOURCE_TOOL_NAME, EXECUTE_QUERY_TOOL_NAME),
+                trace -> Map.of(),
                 this::evaluateInvalidResourceRecovery));
     }
     
@@ -280,9 +297,14 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
             return LLME2EAssertionReport.failure("mask_plan_evidence_mismatch", "The MCP response did not contain the requested reviewable Mask plan.");
         }
         boolean applied = trace.stream().anyMatch(each -> isValidModelAction(each, APPLY_WORKFLOW_TOOL_NAME));
-        return answer.contains(planId) && answer.contains(NOT_APPLIED_MARKER) && !applied
-                ? LLME2EAssertionReport.success("The answer reported the live Mask plan ID and explicit non-application marker, and the trace contained no apply action.")
-                : LLME2EAssertionReport.failure("answer_mismatch", "The answer omitted required Mask plan evidence or the model applied the workflow.");
+        try {
+            Map<String, Object> actualAnswer = getObjectMap(JsonEngine.unmarshal(answer, Object.class));
+            return planId.equals(actualAnswer.get("plan_id")) && "not-applied".equals(actualAnswer.get("application_status")) && !applied
+                    ? LLME2EAssertionReport.success("The answer reported the live Mask plan ID and non-application status, and the trace contained no apply action.")
+                    : LLME2EAssertionReport.failure("answer_mismatch", "The answer omitted required Mask plan evidence or the model applied the workflow.");
+        } catch (final JsonException ex) {
+            return LLME2EAssertionReport.failure("answer_mismatch", "The model did not return the requested JSON Mask planning result.");
+        }
     }
     
     private boolean hasExpectedMaskPlanArguments(final List<MCPInteractionTraceRecord> trace) {
