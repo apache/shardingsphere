@@ -93,6 +93,18 @@ public final class PostgreSQLDDLMetaDataRefreshTestCase extends BaseTransactionT
         }
     }
     
+    private void awaitQueryable(final Connection connection, final String tableName, final boolean expected, final String message) {
+        Awaitility.await(message).atMost(REFRESH_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> expected == isQueryable(connection, tableName));
+    }
+    
+    private boolean isQueryable(final Connection connection, final String tableName) {
+        try (ResultSet ignored = executeQueryWithLog(connection, String.format("SELECT * FROM %s;", tableName))) {
+            return true;
+        } catch (final SQLException ignored) {
+            return false;
+        }
+    }
+    
     private void addColumnInTransaction(final String columnName, final boolean commit) throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
@@ -106,8 +118,7 @@ public final class PostgreSQLDDLMetaDataRefreshTestCase extends BaseTransactionT
     }
     
     private void awaitColumnPresence(final Connection connection, final String columnName, final boolean expected, final String message) {
-        Awaitility.await(message).atMost(REFRESH_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> expected == containsColumn(connection, columnName));
+        Awaitility.await(message).atMost(REFRESH_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> expected == containsColumn(connection, columnName));
     }
     
     private boolean containsColumn(final Connection connection, final String columnName) throws SQLException {
@@ -118,19 +129,6 @@ public final class PostgreSQLDDLMetaDataRefreshTestCase extends BaseTransactionT
                     return true;
                 }
             }
-            return false;
-        }
-    }
-    
-    private void awaitQueryable(final Connection connection, final String tableName, final boolean expected, final String message) {
-        Awaitility.await(message).atMost(REFRESH_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> expected == isQueryable(connection, tableName));
-    }
-    
-    private boolean isQueryable(final Connection connection, final String tableName) {
-        try (ResultSet ignored = executeQueryWithLog(connection, String.format("SELECT * FROM %s;", tableName))) {
-            return true;
-        } catch (final SQLException ignored) {
             return false;
         }
     }

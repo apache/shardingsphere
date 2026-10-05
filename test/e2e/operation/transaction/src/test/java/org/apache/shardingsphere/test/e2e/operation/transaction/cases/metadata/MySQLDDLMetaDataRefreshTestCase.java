@@ -70,8 +70,7 @@ public final class MySQLDDLMetaDataRefreshTestCase extends BaseTransactionTestCa
     }
     
     private void awaitColumnPresence(final Connection connection, final boolean expected, final String message) {
-        Awaitility.await(message).atMost(REFRESH_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> expected == containsAddedColumn(connection));
+        Awaitility.await(message).atMost(REFRESH_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> expected == containsAddedColumn(connection));
     }
     
     private boolean containsAddedColumn(final Connection connection) throws SQLException {

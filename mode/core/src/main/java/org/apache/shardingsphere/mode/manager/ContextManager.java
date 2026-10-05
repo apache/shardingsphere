@@ -42,6 +42,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorEngine;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerFactory;
@@ -299,10 +300,12 @@ public final class ContextManager implements AutoCloseable {
     public void reconcileTable(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName, final IdentifierValue tableName) {
         MetaDataManagerPersistService metaDataManagerPersistService = persistServiceFacade.getModeFacade().getMetaDataManagerService();
         try {
+            String candidateTableName = TableRefreshUtils.getTableLoadCandidateName(database, tableName);
             ShardingSphereTable loadedTable = new TableMetaDataRefresherLoader().loadCreatedTable(
                     database, logicDataSourceName, schemaName, tableName, metaDataContexts.getMetaData().getProps(), database.getAllSchemas());
             if (null == loadedTable) {
-                metaDataManagerPersistService.dropTables(database, schemaName, Collections.singleton(TableRefreshUtils.getTableLoadCandidateName(database, tableName)));
+                database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.remove(schemaName, candidateTableName));
+                metaDataManagerPersistService.dropTables(database, schemaName, Collections.singleton(candidateTableName));
             } else if (database.containsSchema(schemaName) && database.getSchema(schemaName).containsTable(tableName)) {
                 metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(loadedTable));
             } else {
