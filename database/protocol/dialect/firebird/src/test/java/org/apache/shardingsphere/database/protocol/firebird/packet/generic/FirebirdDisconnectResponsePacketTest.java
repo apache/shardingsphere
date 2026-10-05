@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -28,12 +29,13 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class FirebirdDisconnectResponsePacketTest {
+final class FirebirdDisconnectResponsePacketTest {
     
     @Test
     void assertWrite() {
         ByteBuf byteBuf = Unpooled.buffer();
-        new FirebirdDisconnectResponsePacket().write(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
+        PacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        new FirebirdDisconnectResponsePacket().write(payload);
         assertThat(byteBuf.readableBytes(), is(4));
         assertThat(byteBuf.readInt(), is(FirebirdCommandPacketType.DISCONNECT.getValue()));
     }

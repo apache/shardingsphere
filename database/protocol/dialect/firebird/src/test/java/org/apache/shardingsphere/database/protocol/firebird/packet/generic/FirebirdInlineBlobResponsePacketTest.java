@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -32,7 +33,7 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class FirebirdInlineBlobResponsePacketTest {
+final class FirebirdInlineBlobResponsePacketTest {
     
     @Test
     void assertWrite() {
@@ -50,7 +51,8 @@ class FirebirdInlineBlobResponsePacketTest {
     
     private static void assertWriteBytes(final int transactionId, final long blobId, final FirebirdPacket blobInfo, final FirebirdPacket blobData, final byte[] expectedBytes) {
         ByteBuf byteBuf = Unpooled.buffer();
-        new FirebirdInlineBlobResponsePacket(transactionId, blobId, blobInfo, blobData).write(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
+        PacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        new FirebirdInlineBlobResponsePacket(transactionId, blobId, blobInfo, blobData).write(payload);
         byte[] actual = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(actual);
         assertThat(actual, is(expectedBytes));
