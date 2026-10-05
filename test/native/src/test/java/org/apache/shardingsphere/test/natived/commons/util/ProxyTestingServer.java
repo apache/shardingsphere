@@ -21,8 +21,8 @@ import lombok.Getter;
 import org.apache.curator.test.InstanceSpec;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoadResult;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
-import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.frontend.CDCServer;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
@@ -60,12 +60,12 @@ public final class ProxyTestingServer {
         String[] args = new String[]{String.valueOf(proxyPort), configAbsolutePath, "0.0.0.0"};
         try {
             BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
-            YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
+            ProxyConfigurationLoadResult loadResult = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
             int port = bootstrapArgs.getPort().orElseThrow(() -> new IllegalStateException("Check `org.apache.curator.test.InstanceSpec#getRandomPort`."));
             List<String> addresses = bootstrapArgs.getAddresses();
             checkPort(addresses, port);
-            new BootstrapInitializer().init(yamlConfig, port);
-            Optional.ofNullable((Integer) yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey()))
+            new BootstrapInitializer().init(loadResult, port);
+            Optional.ofNullable((Integer) loadResult.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey()))
                     .ifPresent(optional -> new Thread(new CDCServer(addresses, optional)).start());
             ProxySSLContext.init();
             proxy = new ShardingSphereProxy();

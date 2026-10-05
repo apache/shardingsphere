@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.synonym.PoolPropertySynonyms;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -62,10 +61,11 @@ class PipelineDataSourceConfigurationUtilsTest {
         dataSourceProps.put("maxPoolSize", 2);
         dataSourceProps.put("maximumPoolSize", 3);
         ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = mock(ShardingSpherePipelineDataSourceConfiguration.class);
-        when(pipelineDataSourceConfig.getRootConfig()).thenReturn(createYamlRootConfiguration(dataSourceProps));
+        Map<String, DataSourcePoolProperties> dataSources = new LinkedHashMap<>(1, 1F);
+        dataSources.put("ds_0", new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", dataSourceProps));
+        when(pipelineDataSourceConfig.getDataSourcePoolPropertiesMap()).thenReturn(dataSources);
         PipelineDataSourceConfigurationUtils.transformPipelineDataSourceConfiguration("foo_job", pipelineDataSourceConfig, Collections.singletonMap("ds_0", mockStorageUnit()));
-        assertThat(dataSourceProps.get("maxPoolSize"), is(10));
-        assertThat(dataSourceProps.get("maximumPoolSize"), is(20));
+        assertThat(dataSources.get("ds_0").getPoolPropertySynonyms().getStandardProperties().get("maxPoolSize"), is(10));
     }
     
     @Test
@@ -138,13 +138,6 @@ class PipelineDataSourceConfigurationUtilsTest {
         result.put("password", PASSWORD);
         result.put("maxPoolSize", maxPoolSize);
         result.put("maximumPoolSize", maximumPoolSize);
-        return result;
-    }
-    
-    private YamlRootConfiguration createYamlRootConfiguration(final Map<String, Object> dataSourceProps) {
-        YamlRootConfiguration result = new YamlRootConfiguration();
-        result.setDatabaseName("foo_db");
-        result.setDataSources(Collections.singletonMap("ds_0", dataSourceProps));
         return result;
     }
     

@@ -67,7 +67,6 @@ public final class DatabaseRulesBuilder {
                                                        final ComputeNodeInstanceContext computeNodeInstanceContext, final ResourceMetaData resourceMetaData) {
         RuleConfigurationValidator.validate(databaseConfig.getRuleConfigurations());
         Map<RuleConfiguration, DatabaseRuleBuilder> ruleBuilderMap = getRuleBuilderMap(databaseConfig);
-        RuleConfigurationValidator.validate(ruleBuilderMap.keySet());
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, DatabaseRuleBuilder> entry : ruleBuilderMap.entrySet()) {
             DatabaseRuleConfigurationChecker configChecker = OrderedSPILoader.getServicesByClass(
@@ -153,7 +152,9 @@ public final class DatabaseRulesBuilder {
         Map<RuleConfiguration, DatabaseRuleBuilder> result = new LinkedHashMap<>(defaultBuilders.size(), 1F);
         // TODO consider about order for new put items
         for (Entry<DatabaseRuleBuilder, DefaultDatabaseRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
-            result.put(entry.getValue().build(), entry.getKey());
+            RuleConfiguration ruleConfig = entry.getValue().build();
+            RuleConfigurationValidator.validate(ruleConfig);
+            result.put(ruleConfig, entry.getKey());
         }
         return result;
     }

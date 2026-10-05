@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.json.JsonEngine;
@@ -154,7 +153,7 @@ public final class WorkflowAlgorithmUtils {
             return true;
         }
         if (hasSecretReference(properties)) {
-            return containsServiceType(serviceInterface, actualAlgorithmType);
+            return TypedSPILoader.containsService(serviceInterface, actualAlgorithmType);
         }
         try {
             TypedSPILoader.checkService(serviceInterface, actualAlgorithmType, createProperties(properties));
@@ -268,25 +267,5 @@ public final class WorkflowAlgorithmUtils {
     
     private static String trimToEmpty(final String value) {
         return null == value ? "" : value.trim();
-    }
-    
-    private static <T extends TypedSPI> boolean containsServiceType(final Class<T> serviceInterface, final String algorithmType) {
-        for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
-            if (matchesType(algorithmType, each)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private static boolean matchesType(final String type, final TypedSPI instance) {
-        Object instanceType = instance.getType();
-        if (null == instanceType) {
-            return false;
-        }
-        if (instanceType instanceof String) {
-            return instanceType.toString().equalsIgnoreCase(type) || instance.getTypeAliases().contains(type);
-        }
-        return instanceType.equals(type) || instance.getTypeAliases().contains(type);
     }
 }

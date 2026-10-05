@@ -20,7 +20,10 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ya
 import com.google.common.base.Splitter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.convert.ConvertYamlConfigurationExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDatabaseConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.spi.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.convert.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -28,8 +31,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -88,9 +89,9 @@ class ConvertYamlConfigurationExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("mockedYamlCases")
-    void assertExecuteWithMockedYamlConfiguration(final String caseName, final YamlProxyDatabaseConfiguration yamlConfig, final String expectedRow) {
+    void assertExecuteWithMockedYamlConfiguration(final String caseName, final YamlDatabaseConfiguration yamlConfig, final String expectedRow) {
         try (MockedStatic<YamlEngine> mockedYamlEngine = mockStatic(YamlEngine.class)) {
-            mockedYamlEngine.when(() -> YamlEngine.unmarshal(any(File.class), eq(YamlProxyDatabaseConfiguration.class))).thenReturn(yamlConfig);
+            mockedYamlEngine.when(() -> YamlEngine.unmarshal(any(File.class), eq(YamlDatabaseConfiguration.class))).thenReturn(yamlConfig);
             Collection<LocalDataQueryResultRow> actual = executor.getRows(new ConvertYamlConfigurationStatement("mocked-path.yaml"), mock());
             assertRowData(actual, expectedRow);
         }
@@ -192,24 +193,24 @@ class ConvertYamlConfigurationExecutorTest {
                         ");")));
     }
     
-    private static YamlProxyDatabaseConfiguration createYamlConfigWithNullDataSources() {
-        YamlProxyDatabaseConfiguration result = new YamlProxyDatabaseConfiguration();
+    private static YamlDatabaseConfiguration createYamlConfigWithNullDataSources() {
+        YamlDatabaseConfiguration result = new YamlDatabaseConfiguration();
         result.setDatabaseName("null_data_sources_db");
         result.setDataSources(null);
         result.setRules(Collections.emptyList());
         return result;
     }
     
-    private static YamlProxyDatabaseConfiguration createYamlConfigWithNullRules() {
-        YamlProxyDatabaseConfiguration result = new YamlProxyDatabaseConfiguration();
+    private static YamlDatabaseConfiguration createYamlConfigWithNullRules() {
+        YamlDatabaseConfiguration result = new YamlDatabaseConfiguration();
         result.setDatabaseName("null_rules_db");
         result.setDataSources(Collections.singletonMap("ds_0", createDataSourceConfig()));
         result.setRules(null);
         return result;
     }
     
-    private static YamlProxyDataSourceConfiguration createDataSourceConfig() {
-        YamlProxyDataSourceConfiguration result = new YamlProxyDataSourceConfiguration();
+    private static YamlDataSourceConfiguration createDataSourceConfig() {
+        YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
         result.setUrl("jdbc:mysql://127.0.0.1:3306/demo_convert_ds_0?useSSL=false");
         result.setUsername("root");
         result.setPassword("12345678");

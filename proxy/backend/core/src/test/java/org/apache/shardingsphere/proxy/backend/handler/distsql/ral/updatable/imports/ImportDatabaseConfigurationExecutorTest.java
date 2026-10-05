@@ -19,7 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.im
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.imports.ImportDatabaseConfigurationExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;

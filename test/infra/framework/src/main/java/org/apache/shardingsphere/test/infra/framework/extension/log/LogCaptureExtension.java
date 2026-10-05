@@ -36,19 +36,35 @@ public final class LogCaptureExtension implements BeforeEachCallback, AfterEachC
     
     private Logger logger;
     
+    private boolean suppressOutput;
+    
+    private boolean originalAdditivity;
+    
     @Override
     public void beforeEach(final ExtensionContext context) {
-        String logTopic = context.getRequiredTestClass().getName().substring(0, context.getRequiredTestClass().getName().lastIndexOf("Test"));
+        LogCaptureSettings logCaptureSettings = context.getRequiredTestClass().getAnnotation(LogCaptureSettings.class);
+        String logTopic = null == logCaptureSettings || logCaptureSettings.value().isEmpty()
+                ? context.getRequiredTestClass().getName().substring(0, context.getRequiredTestClass().getName().lastIndexOf("Test"))
+                : logCaptureSettings.value();
         logger = (Logger) LoggerFactory.getLogger(logTopic);
         listAppender = new ListAppender<>();
         listAppender.start();
         logger.addAppender(listAppender);
+        suppressOutput = null != logCaptureSettings && logCaptureSettings.suppressOutput();
+        if (suppressOutput) {
+            originalAdditivity = logger.isAdditive();
+            logger.setAdditive(false);
+        }
     }
     
     @Override
     public void afterEach(final ExtensionContext context) {
         if (null != logger && null != listAppender) {
             logger.detachAppender(listAppender);
+            if (suppressOutput) {
+                logger.setAdditive(originalAdditivity);
+                listAppender.list.forEach(logger::callAppenders);
+            }
         }
     }
     

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.converter;
 
 import org.apache.shardingsphere.distsql.handler.constant.DistSQLConstants;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.convert.AlgorithmDistSQLConverter;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.convert.spi.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;

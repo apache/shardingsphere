@@ -105,11 +105,12 @@ public final class ShardingRouteContextCheckUtils {
         Collection<ShardingConditionValue> values = new LinkedList<>();
         String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
         for (ColumnAssignmentSegment each : assignments) {
-            String shardingColumn = each.getColumns().get(0).getIdentifier().getValue();
-            if (shardingRule.findShardingColumn(shardingColumn, tableName).isPresent()) {
-                Optional<Object> assignmentValue = getShardingColumnAssignmentValue(each, params);
-                assignmentValue.ifPresent(optional -> values.add(new ListShardingConditionValue(shardingColumn, tableName, Collections.singletonList(optional))));
+            Optional<String> shardingColumn = shardingRule.findShardingColumn(each.getColumns().get(0).getIdentifier().getValue(), tableName);
+            if (!shardingColumn.isPresent()) {
+                continue;
             }
+            Optional<Object> assignmentValue = getShardingColumnAssignmentValue(each, params);
+            assignmentValue.ifPresent(optional -> values.add(new ListShardingConditionValue(shardingColumn.get(), tableName, Collections.singletonList(optional))));
         }
         if (values.isEmpty()) {
             return Optional.empty();

@@ -92,7 +92,7 @@
     <sql-case id="alter_schema_set_dbproperties" value="ALTER SCHEMA test_db SET DBPROPERTIES ('create_date'='2025-7-2');" db-types="Hive" />
     <sql-case id="alter_database_set_owner_user" value="ALTER DATABASE test_db SET OWNER USER developer;" db-types="Hive" />
     <sql-case id="alter_database_set_owner_role" value="ALTER DATABASE test_db SET OWNER ROLE admin_role;" db-types="Hive" />
-    <sql-case id="alter_schema_set_owner_user" value="ALTER DATABASE test_db SET OWNER USER developer;" db-types="Hive" />
+    <sql-case id="alter_schema_set_owner_user" value="ALTER SCHEMA test_db SET OWNER USER developer;" db-types="Hive" />
     <sql-case id="alter_schema_set_owner_role" value="ALTER SCHEMA test_db SET OWNER ROLE admin_role;" db-types="Hive" />
     <sql-case id="alter_database_set_location" value="ALTER DATABASE test_db SET LOCATION 'hdfs://namenode:8020/user/hive/warehouse/new_test_db';" db-types="Hive" />
     <sql-case id="alter_schema_set_location" value="ALTER SCHEMA test_db SET LOCATION 'hdfs://namenode:8020/user/hive/warehouse/another_location';" db-types="Hive" />

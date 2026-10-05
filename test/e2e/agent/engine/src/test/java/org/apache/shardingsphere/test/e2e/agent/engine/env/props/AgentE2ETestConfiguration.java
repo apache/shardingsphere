@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.e2e.agent.engine.env.props;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
 
 import java.util.Properties;
 
@@ -32,6 +34,8 @@ public final class AgentE2ETestConfiguration {
     private static final AgentE2ETestConfiguration INSTANCE = new AgentE2ETestConfiguration();
     
     private final String adapter;
+    
+    private final Type runType;
     
     private final String pluginType;
     
@@ -46,6 +50,7 @@ public final class AgentE2ETestConfiguration {
     private AgentE2ETestConfiguration() {
         Properties envProps = EnvironmentPropertiesLoader.loadProperties("env/engine-env.properties");
         adapter = envProps.getProperty("e2e.env.adapter");
+        runType = new RunEnvironment(envProps).getType();
         pluginType = envProps.getProperty("e2e.env.plugin.type");
         pluginImageName = envProps.getProperty("e2e.env.plugin.image");
         logEnabled = Boolean.parseBoolean(envProps.getProperty("e2e.env.log.enabled", Boolean.FALSE.toString()));
@@ -68,6 +73,6 @@ public final class AgentE2ETestConfiguration {
      * @return contains or not
      */
     public boolean containsTestParameter() {
-        return !Strings.isNullOrEmpty(adapter) && !Strings.isNullOrEmpty(pluginType);
+        return Type.DOCKER == runType && !Strings.isNullOrEmpty(adapter) && !Strings.isNullOrEmpty(pluginType);
     }
 }

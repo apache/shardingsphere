@@ -27,6 +27,8 @@ import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.api.plugin.AgentPluginEnable;
 import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
 import org.apache.shardingsphere.fixture.targeted.TargetObjectFixture;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
@@ -39,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
@@ -51,6 +54,29 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class StaticMethodAdviceExecutorTest {
+    
+    private final Logger logger = Logger.getLogger(StaticMethodAdviceExecutor.class.getName());
+    
+    private final List<LogRecord> records = new LinkedList<>();
+    
+    private final Handler handler = new RecordingHandler(records);
+    
+    private boolean originalUseParentHandlers;
+    
+    @BeforeEach
+    void setUp() {
+        originalUseParentHandlers = logger.getUseParentHandlers();
+        logger.setUseParentHandlers(false);
+        logger.addHandler(handler);
+    }
+    
+    @AfterEach
+    void tearDown() {
+        logger.removeHandler(handler);
+        logger.setUseParentHandlers(originalUseParentHandlers);
+        handler.close();
+        records.forEach(logger::log);
+    }
     
     @Test
     void assertAdviceWhenCallableSucceeded() throws ReflectiveOperationException {
@@ -82,6 +108,16 @@ class StaticMethodAdviceExecutorTest {
         };
         assertThrows(IllegalStateException.class, () -> executor.advice(TargetObjectFixture.class, method, new Object[]{queue}, callable));
         assertThat(queue, is(Arrays.asList("plain before foo", "config before bar", "plain throw foo", "plain after foo", "config after bar")));
+        assertLog("Failed to execute the error handler of method `{0}` in class `{1}`, {2}.", method.getName(), "callable error");
+    }
+    
+    private void assertLog(final String expectedMessage, final String methodName, final String errorMessage) {
+        assertThat(records.size(), is(1));
+        LogRecord actual = records.get(0);
+        assertThat(actual.getLevel(), is(Level.SEVERE));
+        assertThat(actual.getMessage(), is(expectedMessage));
+        assertThat(actual.getParameters(), is(new String[]{methodName, TargetObjectFixture.class.getName(), errorMessage}));
+        records.remove(0);
     }
     
     @Test
@@ -113,6 +149,7 @@ class StaticMethodAdviceExecutorTest {
         Object actualResult = executor.advice(TargetObjectFixture.class, method, new Object[]{queue}, callable);
         assertThat(actualResult, is("result"));
         assertThat(queue, is(Arrays.asList("origin call", "first after foo", "second after bar")));
+        assertLog("Failed to execute the pre-method of method `{0}` in class `{1}`, {2}.", method.getName(), "before");
     }
     
     @Test
@@ -130,6 +167,7 @@ class StaticMethodAdviceExecutorTest {
         Object actualResult = executor.advice(TargetObjectFixture.class, method, new Object[]{queue}, callable);
         assertThat(actualResult, is("result"));
         assertThat(queue, is(Arrays.asList("first before foo", "second before bar", "origin call")));
+        assertLog("Failed to execute the post-method of method `{0}` in class `{1}` {2}.", method.getName(), "after");
     }
     
     @Test
@@ -140,16 +178,8 @@ class StaticMethodAdviceExecutorTest {
         StaticMethodAdviceExecutor executor = new StaticMethodAdviceExecutor(advices);
         Method method = TargetObjectFixture.class.getMethod("staticCall", List.class);
         Callable<Object> callable = () -> "result";
-        List<LogRecord> records = new LinkedList<>();
-        Logger logger = Logger.getLogger(StaticMethodAdviceExecutor.class.getName());
-        Handler handler = new RecordingHandler(records);
-        logger.addHandler(handler);
-        try {
-            executor.advice(TargetObjectFixture.class, method, new Object[]{queue}, callable);
-            assertThat(records.get(0).getParameters()[1], is(TargetObjectFixture.class.getName()));
-        } finally {
-            logger.removeHandler(handler);
-        }
+        executor.advice(TargetObjectFixture.class, method, new Object[]{queue}, callable);
+        assertLog("Failed to execute the pre-method of method `{0}` in class `{1}`, {2}.", method.getName(), "before");
     }
     
     @Test
@@ -162,16 +192,8 @@ class StaticMethodAdviceExecutorTest {
         Callable<Object> callable = () -> {
             throw new IllegalStateException("callable error");
         };
-        List<LogRecord> records = new LinkedList<>();
-        Logger logger = Logger.getLogger(StaticMethodAdviceExecutor.class.getName());
-        Handler handler = new RecordingHandler(records);
-        logger.addHandler(handler);
-        try {
-            assertThrows(IllegalStateException.class, () -> executor.advice(TargetObjectFixture.class, method, new Object[]{queue}, callable));
-            assertThat(records.get(0).getParameters()[1], is(TargetObjectFixture.class.getName()));
-        } finally {
-            logger.removeHandler(handler);
-        }
+        assertThrows(IllegalStateException.class, () -> executor.advice(TargetObjectFixture.class, method, new Object[]{queue}, callable));
+        assertLog("Failed to execute the error handler of method `{0}` in class `{1}`, {2}.", method.getName(), "callable error");
     }
     
     @Test
@@ -182,16 +204,8 @@ class StaticMethodAdviceExecutorTest {
         StaticMethodAdviceExecutor executor = new StaticMethodAdviceExecutor(advices);
         Method method = TargetObjectFixture.class.getMethod("staticCall", List.class);
         Callable<Object> callable = () -> "result";
-        List<LogRecord> records = new LinkedList<>();
-        Logger logger = Logger.getLogger(StaticMethodAdviceExecutor.class.getName());
-        Handler handler = new RecordingHandler(records);
-        logger.addHandler(handler);
-        try {
-            executor.advice(TargetObjectFixture.class, method, new Object[]{queue}, callable);
-            assertThat(records.get(0).getParameters()[1], is(TargetObjectFixture.class.getName()));
-        } finally {
-            logger.removeHandler(handler);
-        }
+        executor.advice(TargetObjectFixture.class, method, new Object[]{queue}, callable);
+        assertLog("Failed to execute the post-method of method `{0}` in class `{1}` {2}.", method.getName(), "after");
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

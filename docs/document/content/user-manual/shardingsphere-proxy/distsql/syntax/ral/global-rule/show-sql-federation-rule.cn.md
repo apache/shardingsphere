@@ -25,9 +25,10 @@ ShowSQLFederationRule ::=
 
 | 列        | 说明                |
 |----------|-------------------|
-| sql_federation_enabled    | 是否开启联邦查询          |
+| sql_federation_enabled    | 所选 Provider 是否开启联邦查询 |
 | all_query_use_sql_federation | 是否全部查询 SQL 使用联邦查询 |
 | execution_plan_cache    | 执行计划缓存            |
+| provider_type           | 所选联邦查询 Provider 类型 |
 
 ### 示例
 
@@ -39,11 +40,11 @@ SHOW SQL_FEDERATION RULE;
 
 ```sql
 mysql> show sql_federation rule;
-+------------------------+------------------------------+-------------------------------------------+
-| sql_federation_enabled | all_query_use_sql_federation | execution_plan_cache                      |
-+------------------------+------------------------------+-------------------------------------------+
-| true                   | false                        | initialCapacity: 2000, maximumSize: 65535 |
-+------------------------+------------------------------+-------------------------------------------+
++------------------------+------------------------------+-------------------------------------------+---------------+
+| sql_federation_enabled | all_query_use_sql_federation | execution_plan_cache                      | provider_type |
++------------------------+------------------------------+-------------------------------------------+---------------+
+| true                   | false                        | initialCapacity: 2000, maximumSize: 65535 | CALCITE       |
++------------------------+------------------------------+-------------------------------------------+---------------+
 1 row in set (0.31 sec)
 ```
 

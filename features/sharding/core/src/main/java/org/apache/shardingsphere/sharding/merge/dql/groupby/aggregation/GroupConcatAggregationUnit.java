@@ -46,6 +46,6 @@ public final class GroupConcatAggregationUnit implements AggregationUnit {
     
     @Override
     public Comparable<?> getResult() {
-        return String.join(separator, values);
+        return values.isEmpty() ? null : String.join(separator, values);
     }
 }

@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.driver.executor.engine.batch.preparedstatement.DriverExecuteBatchExecutor;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -95,6 +97,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final DriverExecutorFacade driverExecutorFacade;
     
+    private final DistSQLStatementExecutor distSQLStatementExecutor;
+    
     private final DriverExecuteBatchExecutor executeBatchExecutor;
     
     private final List<PreparedStatement> statements = new ArrayList<>();
@@ -145,13 +149,16 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         hintValueContext = SQLHintUtils.extractHint(originSQL);
         ShardingSphereDatabase currentDatabase = metaData.getDatabase(connection.getCurrentDatabaseName());
         SQLStatement sqlStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(currentDatabase.getProtocolType()).parse(sql, true);
-        sqlStatementContext = new SQLBindEngine(metaData, connection.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
+        sqlStatementContext = sqlStatement instanceof DistSQLStatement
+                ? new CommonSQLStatementContext(sqlStatement)
+                : new SQLBindEngine(metaData, connection.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
         String usedDatabaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabaseName(connection.getCurrentDatabaseName());
         usedDatabase = metaData.getDatabase(usedDatabaseName);
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         statementManager = new StatementManager();
         connection.registerStatementManager(statementManager);
+        distSQLStatementExecutor = new DistSQLStatementExecutor(connection, statementManager, this);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.PREPARED_STATEMENT, currentDatabase);
         executeBatchExecutor = new DriverExecuteBatchExecutor(connection, metaData, statementOption, statementManager, usedDatabase);
@@ -174,6 +181,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             QueryContext queryContext = createQueryContext();
             this.queryContext = queryContext;
             handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
+            if (sqlStatementContext.getSqlStatement() instanceof DistSQLStatement) {
+                currentResultSet = distSQLStatementExecutor.executeQuery(queryContext);
+                return currentResultSet;
+            }
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
             currentResultSet =
                     driverExecutorFacade.executeQuery(usedDatabase, metaData, queryContext, this, columnLabelAndIndexMap, (StatementAddCallback<PreparedStatement>) this::addStatements,
@@ -213,6 +224,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             QueryContext queryContext = createQueryContext();
             this.queryContext = queryContext;
             handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
+            if (sqlStatementContext.getSqlStatement() instanceof DistSQLStatement) {
+                distSQLStatementExecutor.executeUpdate(queryContext);
+                setLocalUpdateCount(0);
+                return 0;
+            }
             int result = driverExecutorFacade.executeUpdate(usedDatabase, metaData, queryContext,
                     (sql, statement) -> ((PreparedStatement) statement).executeUpdate(), (StatementAddCallback<PreparedStatement>) this::addStatements, createReplayCallback());
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
@@ -235,9 +251,17 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 return statements.iterator().next().execute();
             }
             clearPrevious();
-            QueryContext queryContext = createQueryContext();
-            this.queryContext = queryContext;
+            this.queryContext = createQueryContext();
             handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
+            if (sqlStatementContext.getSqlStatement() instanceof DistSQLStatement) {
+                if (distSQLStatementExecutor.isQuery(queryContext)) {
+                    currentResultSet = distSQLStatementExecutor.executeQuery(queryContext);
+                    return true;
+                }
+                distSQLStatementExecutor.executeUpdate(queryContext);
+                setLocalUpdateCount(0);
+                return false;
+            }
             boolean result = driverExecutorFacade.execute(usedDatabase, metaData, queryContext, (sql, statement) -> ((PreparedStatement) statement).execute(),
                     (StatementAddCallback<PreparedStatement>) this::addStatements, createReplayCallback());
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
@@ -254,6 +278,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public ResultSet getResultSet() throws SQLException {
+        if (sqlStatementContext.getSqlStatement() instanceof DistSQLStatement) {
+            return currentResultSet;
+        }
         if (null != currentResultSet) {
             return currentResultSet;
         }
@@ -293,8 +320,12 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
     }
     
-    private void clearPrevious() {
+    private void clearPrevious() throws SQLException {
+        if (sqlStatementContext.getSqlStatement() instanceof DistSQLStatement && null != currentResultSet) {
+            currentResultSet.close();
+        }
         currentResultSet = null;
+        setLocalUpdateCount(-1);
         statements.clear();
         parameterSets.clear();
         generatedValues.clear();
@@ -337,8 +368,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             hasBatchGeneratedValues = true;
         }
         currentResultSet = null;
-        QueryContext queryContext = createQueryContext();
-        this.queryContext = queryContext;
+        this.queryContext = createQueryContext();
         executeBatchExecutor.addBatch(queryContext, usedDatabase);
         findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
         clearParameters();
@@ -346,6 +376,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public int[] executeBatch() throws SQLException {
+        setLocalUpdateCount(-1);
         try {
             if (!hasBatchGeneratedValues) {
                 generatedValues.clear();
@@ -369,7 +400,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public void clearBatch() {
-        currentResultSet = null;
+        if (!(sqlStatementContext.getSqlStatement() instanceof DistSQLStatement)) {
+            currentResultSet = null;
+        }
         closeCurrentBatchGeneratedKeysResultSet();
         executeBatchExecutor.clear();
         clearParameters();
@@ -421,6 +454,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     protected void closeExecutor() throws SQLException {
+        if (sqlStatementContext.getSqlStatement() instanceof DistSQLStatement && null != currentResultSet) {
+            currentResultSet.close();
+        }
         driverExecutorFacade.close();
     }
 }

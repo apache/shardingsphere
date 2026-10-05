@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sqlfederation.distsql.handler.query;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.executor.spi.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
@@ -40,16 +40,17 @@ public final class ShowSQLFederationRuleExecutor implements DistSQLQueryExecutor
     
     @Override
     public Collection<String> getColumnNames(final ShowSQLFederationRuleStatement sqlStatement) {
-        return Arrays.asList("sql_federation_enabled", "all_query_use_sql_federation", "execution_plan_cache");
+        return Arrays.asList("sql_federation_enabled", "all_query_use_sql_federation", "execution_plan_cache", "provider_type");
     }
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowSQLFederationRuleStatement sqlStatement, final ContextManager contextManager) {
         SQLFederationRuleConfiguration ruleConfig = rule.getConfiguration();
-        boolean sqlFederationEnabled = ruleConfig.isSqlFederationEnabled();
+        boolean sqlFederationEnabled = rule.isSqlFederationEnabled();
         boolean allQueryUseSQLFederation = ruleConfig.isAllQueryUseSQLFederation();
         String executionPlanCache = String.valueOf(ruleConfig.getExecutionPlanCache());
-        return Collections.singleton(new LocalDataQueryResultRow(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache));
+        String providerType = rule.getProvider().getType();
+        return Collections.singleton(new LocalDataQueryResultRow(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache, providerType));
     }
     
     @Override

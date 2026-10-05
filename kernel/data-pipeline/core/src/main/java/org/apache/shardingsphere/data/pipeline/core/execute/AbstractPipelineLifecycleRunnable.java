@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 
 import java.time.Instant;
@@ -35,6 +36,7 @@ public abstract class AbstractPipelineLifecycleRunnable implements PipelineLifec
     
     private volatile long startTimeMillis;
     
+    @HighFrequencyInvocation
     protected boolean isRunning() {
         Boolean running = this.running.get();
         return null != running && running;

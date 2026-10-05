@@ -58,7 +58,6 @@ import java.util.Objects;
 /**
  * MySQL incremental dumper.
  */
-@HighFrequencyInvocation
 @Slf4j
 public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunnable implements IncrementalDumper {
     
@@ -98,6 +97,11 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     protected void runBlocking() {
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
+        consumeBinlogEvents();
+    }
+    
+    @HighFrequencyInvocation
+    private void consumeBinlogEvents() {
         while (isRunning()) {
             handleEvents(client.poll());
         }

@@ -82,16 +82,6 @@
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-exporter-zipkin</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.squareup.okhttp3</groupId>
-                    <artifactId>okhttp</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-exporter-otlp</artifactId>
         </dependency>
         <dependency>
@@ -159,10 +149,6 @@
                                 <relocation>
                                     <pattern>okio</pattern>
                                     <shadedPattern>${shade.package}.okio</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>zipkin2</pattern>
-                                    <shadedPattern>${shade.package}.zipkin2</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.fasterxml.jackson</pattern>

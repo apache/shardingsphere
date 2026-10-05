@@ -28,6 +28,6 @@ public final class ShardingValueOffsetException extends ShardingSQLException {
     private static final long serialVersionUID = 734610922729978886L;
     
     public ShardingValueOffsetException(final Comparable<?> shardingValue, final int startOffset, final int stopOffset) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 23, "Sharding value %s subtract stop offset %d can not be less than start offset %d.", shardingValue, startOffset, stopOffset);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 23, "Sharding value %s subtract stop offset %d can not be less than start offset %d.", shardingValue, stopOffset, startOffset);
     }
 }

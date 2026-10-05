@@ -23,9 +23,6 @@
     <sql-case id="assert_dist_SQL_show_rule_parse_conflict" value="SHOW REPLICA_QUERY RULE FROM schema_name" />
     <sql-case id="unsupported_show_table_metadata_with_single_quoted_table_name" value="SHOW TABLE METADATA 'T_ORDER'" db-types="ShardingSphere" />
     <sql-case id="unsupported_refresh_table_metadata_with_single_quoted_table_name" value="REFRESH TABLE METADATA 'T_ORDER'" db-types="ShardingSphere" />
-    <sql-case id="with_select" value="WITH cte AS (SELECT 0 /*! ) */ SELECT * FROM cte a, cte b;" db-types="MySQL" />
-    <sql-case id="with_select_comment" value="WITH cte AS /*! ( */ SELECT 0) SELECT * FROM cte a, cte b;" db-types="MySQL" />
-    <sql-case id="select_case_when" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
     <sql-case id="unsupported_select_json_value_on_error_for_doris" value="SELECT JSON_VALUE('{&quot;price&quot;: &quot;49.95&quot;}', '$.price' RETURNING DECIMAL(4,1) null on empty default 0 on error)" db-types="Doris" />
     <sql-case id="unsupported_alter_database_set_replica_quota_with_unit_for_doris" value="ALTER DATABASE example_db SET REPLICA QUOTA 1G" db-types="Doris" />
     <sql-case id="unsupported_alter_database_set_transaction_quota_with_unit_for_doris" value="ALTER DATABASE example_db SET TRANSACTION QUOTA 1G" db-types="Doris" />
@@ -52,8 +49,6 @@
     <sql-case id="unsupported_doris_show_database_with_exponent_id" value="SHOW DATABASE 1e2" db-types="Doris" />
     <sql-case id="unsupported_doris_show_table_with_decimal_id" value="SHOW TABLE 1.2" db-types="Doris" />
     <sql-case id="unsupported_doris_show_table_with_exponent_id" value="SHOW TABLE 1e2" db-types="Doris" />
-    <sql-case id="select_like" value="select conname, obj_description(oid, 'pg_constraint') as desc from pg_constraint where conname like 'at_partitioned%' order by conname" db-types="PostgreSQL" />
-    <sql-case id="select_keyword" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
     <sql-case id="unsupported_date_literal_for_clickhouse" value="SELECT DATE '2024-01-01'" db-types="ClickHouse" />
     <sql-case id="unsupported_merge_for_clickhouse" value="MERGE INTO t_order AS o USING t_order_item AS i ON o.order_id = i.order_id WHEN MATCHED THEN UPDATE SET status = 1" db-types="ClickHouse" />
     <sql-case id="unsupported_create_table_for_clickhouse" value="CREATE TABLE t_order (order_id INT)" db-types="ClickHouse" />
@@ -357,6 +352,19 @@
     <sql-case id="assert_show_databases_parse_conflict" value="SHOW DATABASES" db-types="Oracle" />
     <sql-case id="assert_show_schemas_parse_conflict" value="SHOW SCHEMAS" db-types="Oracle" />
     <sql-case id="assert_show_tables_parse_conflict" value="SHOW TABLES" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_flashback_adjacent_expressions" value="FLASHBACK DATABASE TO TIMESTAMP SYSDATE SYSDATE" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_flashback_unclosed_expression" value="FLASHBACK DATABASE TO TIMESTAMP (SYSDATE" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_model_adjacent_expressions" value="SELECT s FROM foo_table MODEL DIMENSION BY (d) MEASURES (s) RULES (s[1] = s[2] + 1 2)" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_model_incomplete_addition" value="SELECT s FROM foo_table MODEL DIMENSION BY (d) MEASURES (s) RULES (s[1] = s[2] +)" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_model_incomplete_division" value="SELECT s FROM foo_table MODEL DIMENSION BY (d) MEASURES (s) RULES (s[1] = s[2] /)" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_execute_immediate_adjacent_arguments" value="BEGIN EXECUTE IMMEDIATE 'BEGIN NULL; END;' USING a b; END;" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_execute_immediate_missing_mode_separator" value="BEGIN EXECUTE IMMEDIATE 'BEGIN NULL; END;' USING IN a OUT b; END;" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_open_cursor_adjacent_arguments" value="BEGIN OPEN foo_cursor(1 2); END;" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_for_cursor_adjacent_arguments" value="BEGIN FOR r IN foo_cursor(1 2) LOOP NULL; END LOOP; END;" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_record_constructor_missing_separator" value="DECLARE v foo_record := foo_record(1 b=&gt;2); BEGIN NULL; END;" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_forall_string_body" value="BEGIN FORALL i IN 1..v.COUNT 'DELETE FROM foo_table'; END;" db-types="Oracle" />
+    <sql-case id="unsupported_oracle_forall_parenthesized_body" value="BEGIN FORALL i IN 1..v.COUNT (v(i)); END;" db-types="Oracle" />
+    <sql-case id="assert_select_order_by_before_and_after_for_update_oracle" value="SELECT 1 FROM DUAL ORDER BY 1 FOR UPDATE NOWAIT ORDER BY 1" db-types="Oracle" />
     <!-- TODO open this case when MySQLStatement change to SEMI_? EOF -->
     <!--    <sql-case id="assert_parse_multi_statements" value="SHOW VARIABLES LIKE 'sql_mode'; SELECT COUNT(*) AS support_ndb FROM information_schema;" db-types="MySQL" />-->
 </sql-cases>

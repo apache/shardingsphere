@@ -31,11 +31,11 @@ import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfigura
 @Setter
 public final class YamlSQLFederationRuleConfiguration implements YamlGlobalRuleConfiguration {
     
-    private boolean sqlFederationEnabled;
-    
     private boolean allQueryUseSQLFederation;
     
     private YamlSQLFederationExecutionPlanCacheRuleConfiguration executionPlanCache;
+    
+    private String providerType;
     
     @Override
     public Class<SQLFederationRuleConfiguration> getRuleConfigurationType() {

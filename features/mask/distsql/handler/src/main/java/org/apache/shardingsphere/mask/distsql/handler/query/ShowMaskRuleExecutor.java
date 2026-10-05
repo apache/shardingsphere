@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mask.distsql.handler.query;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.executor.spi.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;

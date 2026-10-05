@@ -39,12 +39,12 @@ permissions:
   contents: read
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
 
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
+    uses: ./.github/workflows/reusable-global-environment.yml
 
   prepare-e2e-matrix:
     if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}

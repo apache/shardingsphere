@@ -50,9 +50,13 @@ property
     ;
 
 tableName
-    : IDENTIFIER_
+    : identifier
     ;
 
 ruleName
-    : IDENTIFIER_
+    : identifier
+    ;
+
+identifier
+    : IDENTIFIER_ | SQL_HINT
     ;
