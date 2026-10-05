@@ -46,7 +46,7 @@ public final class FirebirdBatchRegisterBlobCommandExecutor implements CommandEx
     public Collection<DatabasePacket> execute() {
         FirebirdBatchStatement batchStatement = FirebirdBatchStatementManager.getInstance().getBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
         ShardingSpherePreconditions.checkNotNull(batchStatement, () -> new InvalidBatchHandleException(packet.getStatementHandle()));
-        ShardingSpherePreconditions.checkState(batchStatement.hasBatchBlobColumn(), () -> new BatchWithoutBlobsException(packet.getStatementHandle()));
+        ShardingSpherePreconditions.checkState(batchStatement.hasBatchBlobIdColumn(), () -> new BatchWithoutBlobsException(packet.getStatementHandle()));
         Long previousBlobId = batchStatement.getBlobIds().putIfAbsent(packet.getBatchBlobId(), packet.getExistingBlobId());
         ShardingSpherePreconditions.checkState(null == previousBlobId, () -> new RepeatedBatchBlobIdException(packet.getBatchBlobId()));
         return Collections.singleton(new FirebirdGenericResponsePacket());
