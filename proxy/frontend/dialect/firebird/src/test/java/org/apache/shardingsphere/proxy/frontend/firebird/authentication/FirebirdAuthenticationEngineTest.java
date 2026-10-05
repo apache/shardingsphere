@@ -198,12 +198,14 @@ class FirebirdAuthenticationEngineTest {
     void assertAuthenticateAttach(final String name, final boolean containsDatabase, final ShardingSphereUser user, final String currentUsername,
                                   final String currentDatabase, final String encoding, final boolean expectException, final boolean expectAuthenticateCall,
                                   final boolean expectFinished, final String expectedDatabase, final String expectedUsername,
-                                  final String encryptedPassword, final String attachAuthData) {
+                                  final String encryptedPassword, final String attachAuthData, final int expectedCharsetId) {
         AuthorityRule rule = mock(AuthorityRule.class);
         lenient().when(rule.findUser(any(Grantee.class))).thenReturn(Optional.ofNullable(user));
         mockProxyContext(rule, containsDatabase);
         Attribute<Charset> charsetAttr = mock(Attribute.class);
         when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(charsetAttr);
+        Attribute<Integer> charsetIdAttr = mock(Attribute.class);
+        when(context.channel().attr(FirebirdConstant.CONNECTION_CHARSET_ID)).thenReturn(charsetIdAttr);
         Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine,
                 AuthenticationResultBuilder.continued(currentUsername, "", currentDatabase, Collections.emptyMap()));
         FirebirdSRPAuthenticationData authData = mock(FirebirdSRPAuthenticationData.class);
@@ -220,6 +222,7 @@ class FirebirdAuthenticationEngineTest {
                 assertThrows(UnknownDatabaseException.class, () -> authenticationEngine.authenticate(context, payload));
             }
             verify(charsetAttr).set(FirebirdCharacterSets.findCharacterSet(encoding));
+            verify(charsetIdAttr).set(expectedCharsetId);
             return;
         }
         try (MockedConstruction<FirebirdAttachPacket> ignored = mockConstruction(FirebirdAttachPacket.class, (attachPacket, construction) -> {
@@ -236,6 +239,7 @@ class FirebirdAuthenticationEngineTest {
         }
         verify(context).writeAndFlush(isA(FirebirdGenericResponsePacket.class));
         verify(charsetAttr).set(FirebirdCharacterSets.findCharacterSet(encoding));
+        verify(charsetIdAttr).set(expectedCharsetId);
         if (expectAuthenticateCall && null != user) {
             ArgumentCaptor<Object[]> authInfoCaptor = ArgumentCaptor.forClass(Object[].class);
             verify(authenticator).authenticate(any(), authInfoCaptor.capture());
@@ -274,6 +278,8 @@ class FirebirdAuthenticationEngineTest {
         mockProxyContext(rule, true);
         Attribute<Charset> charsetAttr = mock(Attribute.class);
         when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(charsetAttr);
+        Attribute<Integer> charsetIdAttr = mock(Attribute.class);
+        when(context.channel().attr(FirebirdConstant.CONNECTION_CHARSET_ID)).thenReturn(charsetIdAttr);
         Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine,
                 AuthenticationResultBuilder.continued("root", "", "db", Collections.emptyMap()));
         FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.ATTACH);
@@ -287,6 +293,7 @@ class FirebirdAuthenticationEngineTest {
             assertTrue(actual.isFinished());
         }
         verify(charsetAttr).set(FirebirdCharacterSets.findCharacterSet("NONE"));
+        verify(charsetIdAttr).set(0);
     }
     
     @Test
@@ -382,8 +389,9 @@ class FirebirdAuthenticationEngineTest {
     
     private static Stream<Arguments> attachArguments() {
         return Stream.of(
-                Arguments.of("attachWithUser", true, new ShardingSphereUser("root", "pwd", ""), "root", "db", "UTF8", false, true, true, "db", "root", "cipher_pwd", "client_auth"),
-                Arguments.of("attachUnknownDatabase", false, new ShardingSphereUser("root", "pwd", ""), "root", "missing_db", "UTF8", true, false, false, "", "root", null, null),
-                Arguments.of("attachEmptyDatabase", false, new ShardingSphereUser("root", "pwd", ""), "root", "", "NONE", false, true, true, "", "root", "cipher_pwd", "client_auth"));
+                Arguments.of("attachWithUser", true, new ShardingSphereUser("root", "pwd", ""), "root", "db", "UTF8", false, true, true, "db", "root", "cipher_pwd", "client_auth", 4),
+                Arguments.of("attachUnknownDatabase", false, new ShardingSphereUser("root", "pwd", ""), "root", "missing_db", "UTF8", true, false, false, "", "root", null, null, 4),
+                Arguments.of("attachEmptyDatabase", false, new ShardingSphereUser("root", "pwd", ""), "root", "", "NONE", false, true, true, "", "root", "cipher_pwd", "client_auth", 0),
+                Arguments.of("attachWithJavaCharsetName", true, new ShardingSphereUser("root", "pwd", ""), "root", "db", "UTF-8", false, true, true, "db", "root", "cipher_pwd", "client_auth", 127));
     }
 }
