@@ -45,6 +45,7 @@
 1. SQL Binder: Fix wrong bind info when order by refer column from with temporary table - [#38353](https://github.com/apache/shardingsphere/pull/38353)
 1. SQL Binder: Fix wrong column label case for PostgreSQL and openGauss function projections - [#39393](https://github.com/apache/shardingsphere/pull/39393)
 1. SQL Binder: Bind PostgreSQL SYSTEM_USER as a niladic function instead of a column - [#39385](https://github.com/apache/shardingsphere/pull/39385)
+1. SQL Binder: Preserve RETURNING clause when binding UPDATE and DELETE statements - [#40070](https://github.com/apache/shardingsphere/pull/40070)
 1. Metadata: Fix MySQL metadata loading fallback when JDBC catalog is null for named tables - [#38855](https://github.com/apache/shardingsphere/pull/38855)
 1. Metadata: Fix Oracle metadata version comparison skipping identity and collation columns on 18c and later - [#39104](https://github.com/apache/shardingsphere/pull/39104)
 1. Metadata: Fix wrong logic table metadata when config same actual table name in different storage unit - [#39157](https://github.com/apache/shardingsphere/pull/39157)
