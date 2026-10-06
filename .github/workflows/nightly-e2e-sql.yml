@@ -41,6 +41,7 @@ jobs:
   prepare-e2e-artifacts:
     name: Prepare E2E Artifacts
     needs: global-environment
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     steps:

@@ -47,8 +47,8 @@ jobs:
 
   release-mcp:
     name: Release - MCP
-    if: github.repository == 'apache/shardingsphere'
     needs: global-environment
+    if: github.repository == 'apache/shardingsphere'
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     permissions:
       contents: read

@@ -44,7 +44,7 @@ jobs:
     name: Import Global Environment
     uses: ./.github/workflows/reusable-global-environment.yml
   nativetest:
-    if: ${{ github.event_name == 'schedule' && needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' || github.event_name != 'schedule' && github.repository == 'apache/shardingsphere' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     needs: global-environment
     name: GraalVM - GraalVM CE ${{ matrix.java-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
