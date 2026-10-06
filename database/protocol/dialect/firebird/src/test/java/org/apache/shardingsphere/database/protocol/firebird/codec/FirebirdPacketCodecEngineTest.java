@@ -103,6 +103,12 @@ class FirebirdPacketCodecEngineTest {
         assertThat(codecEngine.isValidHeader(readableBytes), is(expectedValid));
     }
     
+    @Test
+    void assertIsValidHeaderWithPendingMessage() {
+        getPendingMessages().add(Unpooled.wrappedBuffer(new byte[]{1, 2}));
+        assertTrue(codecEngine.isValidHeader(2));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("fixedLengthCommandCases")
     void assertDecodeFixedLengthCommand(final String name, final FirebirdCommandPacketType commandType, final int packetLength, final int packetCount) {
@@ -283,6 +289,25 @@ class FirebirdPacketCodecEngineTest {
         assertThat(encodedError.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
         assertFalse(channel.isOpen());
         encodedError.release();
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("shortTailReadCases")
+    void assertDecodePacketCompletedByShortTailRead(final String name, final ByteBuf[] reads, final int packetCount) {
+        EmbeddedChannel channel = new EmbeddedChannel(new PacketCodec(new FirebirdPacketCodecEngine()));
+        channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
+        channel.attr(FirebirdConstant.CURRENT_CONNECTION).set(BATCH_CONNECTION_ID);
+        for (ByteBuf each : reads) {
+            channel.writeInbound(each);
+        }
+        for (int i = 0; i < packetCount; i++) {
+            ByteBuf actual = channel.readInbound();
+            assertThat(actual.readableBytes(), is(8));
+            assertThat(actual.getInt(0), is(FirebirdCommandPacketType.COMMIT.getValue()));
+            actual.release();
+        }
+        assertNull(channel.readInbound());
+        assertTrue(channel.isOpen());
     }
     
     @Test
@@ -604,6 +629,13 @@ class FirebirdPacketCodecEngineTest {
                 Arguments.of("readable bytes greater than header", 5, true),
                 Arguments.of("readable bytes equal to header", 4, true),
                 Arguments.of("readable bytes less than header", 3, false));
+    }
+    
+    private static Stream<Arguments> shortTailReadCases() {
+        ByteBuf commit = Unpooled.buffer(8).writeInt(FirebirdCommandPacketType.COMMIT.getValue()).writeInt(1);
+        return Stream.of(
+                Arguments.of("body completed by short read", new ByteBuf[]{commit.copy(0, 6), commit.copy(6, 2)}, 1),
+                Arguments.of("header completed by short reads", new ByteBuf[]{Unpooled.wrappedBuffer(commit.copy(), commit.copy(0, 2)), commit.copy(2, 3), commit.copy(5, 3)}, 2));
     }
     
     private static Stream<Arguments> fixedLengthCommandCases() {
