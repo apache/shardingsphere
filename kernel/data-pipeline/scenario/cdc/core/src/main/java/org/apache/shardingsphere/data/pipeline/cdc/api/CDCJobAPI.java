@@ -35,7 +35,6 @@ import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLineConvertUtils;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.swapper.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
@@ -65,6 +64,7 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -156,7 +156,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     }
     
     private void checkDataSources(final CDCJobConfiguration jobConfig) {
-        Map<String, Map<String, Object>> dataSources = jobConfig.getDataSourceConfig().getRootConfig().getDataSources();
+        Map<String, DataSourcePoolProperties> dataSources = jobConfig.getDataSourceConfig().getDataSourcePoolPropertiesMap();
         for (DataNode each : getDataNodes(jobConfig)) {
             ShardingSpherePreconditions.checkContainsKey(dataSources, each.getDataSourceName(),
                     () -> new PipelineInvalidParameterException(String.format("Data source `%s` does not exist in job data source configuration.", each.getDataSourceName())));
@@ -190,14 +190,14 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         sinkConfig.setProps(sinkProps);
         result.setSinkConfig(sinkConfig);
         ShardingSphereDatabase database = PipelineContextManager.getContext(contextKey).getMetaDataContexts().getMetaData().getDatabase(param.getDatabaseName());
-        result.setDataSourceConfiguration(pipelineDataSourceConfigSwapper.swapToYamlConfiguration(getDataSourceConfiguration(database)));
+        ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = getDataSourceConfiguration(database);
+        result.setDataSourceConfiguration(pipelineDataSourceConfigSwapper.swapToYamlConfiguration(dataSourceConfig));
         List<JobDataNodeLine> jobDataNodeLines = JobDataNodeLineConvertUtils.convertDataNodesToLines(param.getTableAndDataNodesMap());
         result.setJobShardingDataNodes(jobDataNodeLines.stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
         JobDataNodeLine tableFirstDataNodes = new JobDataNodeLine(param.getTableAndDataNodesMap().entrySet().stream()
                 .map(entry -> new JobDataNodeEntry(entry.getKey(), entry.getValue().subList(0, 1))).collect(Collectors.toList()));
         result.setTablesFirstDataNodes(tableFirstDataNodes.marshal());
-        result.setSourceDatabaseType(PipelineDataSourceConfigurationFactory.newInstance(
-                result.getDataSourceConfiguration().getType(), result.getDataSourceConfiguration().getParameter()).getDatabaseType().getType());
+        result.setSourceDatabaseType(dataSourceConfig.getDatabaseType().getType());
         return result;
     }
     
@@ -327,12 +327,12 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     }
     
     private void cleanup(final CDCJobConfiguration jobConfig) {
-        for (Entry<String, Map<String, Object>> entry : jobConfig.getDataSourceConfig().getRootConfig().getDataSources().entrySet()) {
+        for (String each : jobConfig.getDataSourceConfig().getDataSourcePoolPropertiesMap().keySet()) {
             try {
-                StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = new StandardPipelineDataSourceConfiguration(entry.getValue());
+                StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = jobConfig.getDataSourceConfig().getActualDataSourceConfiguration(each);
                 new IncrementalTaskPositionManager(pipelineDataSourceConfig.getDatabaseType()).destroyPosition(jobConfig.getJobId(), pipelineDataSourceConfig);
             } catch (final SQLException ex) {
-                log.warn("job destroying failed, jobId={}, dataSourceName={}", jobConfig.getJobId(), entry.getKey(), ex);
+                log.warn("job destroying failed, jobId={}, dataSourceName={}", jobConfig.getJobId(), each, ex);
             }
         }
     }

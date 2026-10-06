@@ -1108,7 +1108,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitUnsetVariable(final UnsetVariableContext ctx) {
-        String scope = null != ctx.optionType() ? ctx.optionType().getText() : "SESSION";
+        String scope = null == ctx.optionType() ? "SESSION" : ctx.optionType().getText();
         String variableName = ctx.unsetVariableName().getText();
         return new UnsetVariableStatement(getDatabaseType(), scope, variableName);
     }
@@ -1229,7 +1229,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         RepositoryNameContext repositoryNameCtx = ctx.repositoryName();
         IdentifierValue identifierValue = (IdentifierValue) visit(repositoryNameCtx);
         result.setRepositoryName(new RepositoryNameSegment(repositoryNameCtx.start.getStartIndex(), repositoryNameCtx.stop.getStopIndex(), identifierValue));
-        result.setStorageType(null != ctx.S3() ? "S3" : "HDFS");
+        result.setStorageType(null == ctx.S3() ? "HDFS" : "S3");
         result.setLocation(((StringLiteralValue) visit(ctx.string_())).getValue());
         result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
         return result;
@@ -1377,10 +1377,10 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     private String getDorisAlterSystemAction(final DorisAlterSystemActionContext ctx) {
         if (null != ctx.FOLLOWER()) {
-            return null != ctx.ADD() ? "ADD FOLLOWER" : "DROP FOLLOWER";
+            return null == ctx.ADD() ? "DROP FOLLOWER" : "ADD FOLLOWER";
         }
         if (null != ctx.OBSERVER()) {
-            return null != ctx.ADD() ? "ADD OBSERVER" : "DROP OBSERVER";
+            return null == ctx.ADD() ? "DROP OBSERVER" : "ADD OBSERVER";
         }
         return "";
     }
@@ -1537,7 +1537,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     private void setShowResourcesWhereClause(final DorisShowResourcesStatement result, final ShowResourcesWhereClauseContext ctx) {
         ShowResourcesNameWhereConditionContext nameWhereCondition = ctx.showResourcesWhereCondition().showResourcesNameWhereCondition();
         if (null != nameWhereCondition) {
-            String type = null != nameWhereCondition.LIKE() ? "LIKE" : "=";
+            String type = null == nameWhereCondition.LIKE() ? "=" : "LIKE";
             String value = SQLUtils.getExactlyValue(nameWhereCondition.string_().getText());
             result.setNameCondition(new ShowResourcesNameConditionSegment(nameWhereCondition.start.getStartIndex(), nameWhereCondition.stop.getStopIndex(), type, value));
         }

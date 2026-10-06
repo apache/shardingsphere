@@ -17,13 +17,22 @@
 
 package org.apache.shardingsphere.broadcast.config;
 
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BroadcastRuleConfigurationTest {
@@ -36,5 +45,32 @@ class BroadcastRuleConfigurationTest {
         assertTrue(actual.contains("bar_tbl"));
         assertTrue(actual.contains("FOO_TBL"));
         assertTrue(actual.contains("BAR_tbl"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("validRuleConfigurationArguments")
+    void assertValidateValidRuleConfiguration(final String name, final BroadcastRuleConfiguration ruleConfig) {
+        assertDoesNotThrow(() -> RuleConfigurationValidator.validate(ruleConfig));
+    }
+    
+    private static Stream<Arguments> validRuleConfigurationArguments() {
+        return Stream.of(
+                Arguments.of("Empty tables", new BroadcastRuleConfiguration(Collections.emptyList())),
+                Arguments.of("Single table", new BroadcastRuleConfiguration(Collections.singleton("foo_tbl"))),
+                Arguments.of("Multiple tables", new BroadcastRuleConfiguration(Arrays.asList("foo_tbl", "bar_tbl"))));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidRuleConfigurationArguments")
+    void assertValidateInvalidRuleConfiguration(final String name, final BroadcastRuleConfiguration ruleConfig) {
+        assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+    }
+    
+    private static Stream<Arguments> invalidRuleConfigurationArguments() {
+        return Stream.of(
+                Arguments.of("Null tables", new BroadcastRuleConfiguration(null)),
+                Arguments.of("Null table", new BroadcastRuleConfiguration(Collections.singleton(null))),
+                Arguments.of("Empty table", new BroadcastRuleConfiguration(Collections.singleton(""))),
+                Arguments.of("Blank table", new BroadcastRuleConfiguration(Collections.singleton(" "))));
     }
 }

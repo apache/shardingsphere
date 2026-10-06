@@ -21,14 +21,16 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnItemSegment;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -39,7 +41,9 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -64,30 +68,6 @@ class AlterEncryptRuleExecutorTest {
     }
     
     @Test
-    void assertExecuteUpdateWithConflictAssistQueryColumnNames() {
-        EncryptRule rule = mock(EncryptRule.class);
-        when(rule.getAllTableNames()).thenReturn(Collections.singleton("t_encrypt"));
-        assertThrows(InvalidRuleConfigurationException.class,
-                () -> new DistSQLUpdateExecuteEngine(createColumnNameConflictedSQLStatement("user_id", "like_column"), "foo_db", mockContextManager(rule), null).executeUpdate());
-    }
-    
-    @Test
-    void assertExecuteUpdateWithConflictLikeColumnNames() {
-        EncryptRule rule = mock(EncryptRule.class);
-        when(rule.getAllTableNames()).thenReturn(Collections.singleton("t_encrypt"));
-        assertThrows(InvalidRuleConfigurationException.class,
-                () -> new DistSQLUpdateExecuteEngine(createColumnNameConflictedSQLStatement("assisted_column", "user_id"), "foo_db", mockContextManager(rule), null).executeUpdate());
-    }
-    
-    private AlterEncryptRuleStatement createColumnNameConflictedSQLStatement(final String assistQueryColumnName, final String likeColumnName) {
-        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id",
-                new EncryptColumnItemSegment("user_cipher", new AlgorithmSegment("MD5", new Properties())),
-                new EncryptColumnItemSegment(assistQueryColumnName, new AlgorithmSegment("MD5", new Properties())),
-                new EncryptColumnItemSegment(likeColumnName, new AlgorithmSegment("MD5", new Properties())));
-        return new AlterEncryptRuleStatement(Collections.singleton(new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment))));
-    }
-    
-    @Test
     void assertExecuteUpdateWithAssistQueryAndLikeColumns() throws SQLException {
         EncryptRule rule = mock(EncryptRule.class);
         when(rule.getAllTableNames()).thenReturn(Collections.singleton("t_encrypt"));
@@ -109,6 +89,54 @@ class AlterEncryptRuleExecutorTest {
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         metaDataManagerPersistService.removeRuleConfigurationItem(any(), argThat(this::assertToBeDroppedRuleConfiguration));
         assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), argThat(this::assertToBeAlteredRuleConfiguration)));
+    }
+    
+    @Test
+    void assertBuildToBeDroppedRuleConfigurationWhenAssistedAndLikeQueriesRemoved() {
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfigurationWithGeneratedEncryptors());
+        AlterEncryptRuleExecutor executor = new AlterEncryptRuleExecutor();
+        executor.setRule(rule);
+        EncryptColumnRuleConfiguration alteredColumn = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "foo_cipher"));
+        EncryptRuleConfiguration toBeAlteredRuleConfig = new EncryptRuleConfiguration(
+                Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(alteredColumn))), Collections.emptyMap());
+        EncryptRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(toBeAlteredRuleConfig);
+        assertTrue(actual.getTables().isEmpty());
+        assertThat(actual.getEncryptors().size(), is(2));
+        assertTrue(actual.getEncryptors().containsKey("foo_assisted"));
+        assertTrue(actual.getEncryptors().containsKey("foo_like"));
+    }
+    
+    @Test
+    void assertBuildToBeDroppedRuleConfigurationWhenAlteredTableNameCaseDiffers() {
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfigurationWithGeneratedEncryptors());
+        AlterEncryptRuleExecutor executor = new AlterEncryptRuleExecutor();
+        executor.setRule(rule);
+        EncryptColumnRuleConfiguration alteredColumn = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "foo_cipher"));
+        EncryptRuleConfiguration toBeAlteredRuleConfig = new EncryptRuleConfiguration(
+                Collections.singleton(new EncryptTableRuleConfiguration("T_ENCRYPT", Collections.singleton(alteredColumn))), Collections.emptyMap());
+        EncryptRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(toBeAlteredRuleConfig);
+        assertTrue(actual.getTables().isEmpty());
+        assertThat(actual.getEncryptors().size(), is(2));
+        assertTrue(actual.getEncryptors().containsKey("foo_assisted"));
+        assertTrue(actual.getEncryptors().containsKey("foo_like"));
+    }
+    
+    @Test
+    void assertBuildToBeDroppedRuleConfigurationWhenColumnDefinitionUnchanged() {
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfigurationWithGeneratedEncryptors());
+        AlterEncryptRuleExecutor executor = new AlterEncryptRuleExecutor();
+        executor.setRule(rule);
+        EncryptColumnRuleConfiguration alteredColumn = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "foo_cipher"));
+        alteredColumn.setAssistedQuery(new EncryptColumnItemRuleConfiguration("user_assisted", "foo_assisted"));
+        alteredColumn.setLikeQuery(new EncryptColumnItemRuleConfiguration("user_like", "foo_like"));
+        EncryptRuleConfiguration toBeAlteredRuleConfig = new EncryptRuleConfiguration(
+                Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(alteredColumn))), Collections.emptyMap());
+        EncryptRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(toBeAlteredRuleConfig);
+        assertTrue(actual.getTables().isEmpty());
+        assertTrue(actual.getEncryptors().isEmpty());
     }
     
     private ContextManager mockContextManager(final EncryptRule rule) {
@@ -140,6 +168,18 @@ class AlterEncryptRuleExecutorTest {
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {
         EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList());
         return new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(tableRuleConfig)), Collections.emptyMap());
+    }
+    
+    private EncryptRuleConfiguration createCurrentRuleConfigurationWithGeneratedEncryptors() {
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "foo_cipher"));
+        columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("user_assisted", "foo_assisted"));
+        columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("user_like", "foo_like"));
+        Map<String, AlgorithmConfiguration> encryptors = new HashMap<>(3, 1F);
+        encryptors.put("foo_cipher", new AlgorithmConfiguration("MD5", new Properties()));
+        encryptors.put("foo_assisted", new AlgorithmConfiguration("MD5", new Properties()));
+        encryptors.put("foo_like", new AlgorithmConfiguration("MD5", new Properties()));
+        EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig));
+        return new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(tableRuleConfig)), encryptors);
     }
     
     private boolean assertToBeDroppedRuleConfiguration(final EncryptRuleConfiguration actual) {

@@ -378,7 +378,7 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
         if (null == assertion.getInitialSQL()) {
             return;
         }
-        try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
+        try (Connection connection = getEnvironmentEngine().getTargetDataSource(assertion.getTargetDataSourceName()).getConnection()) {
             executeInitSQLs(assertion, connection);
         }
     }
@@ -401,7 +401,7 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     
     protected void executeDestroySQLs(final SQLE2ETestCaseAssertion assertion) throws SQLException {
         if (null != assertion.getDestroySQL()) {
-            try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
+            try (Connection connection = getEnvironmentEngine().getTargetDataSource(assertion.getTargetDataSourceName()).getConnection()) {
                 executeDestroySQLs(assertion, connection);
             }
         }

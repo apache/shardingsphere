@@ -35,7 +35,7 @@ env:
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
+    uses: ./.github/workflows/reusable-global-environment.yml
 
   check-spotbugs:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
@@ -52,9 +52,10 @@ jobs:
         run: ./mvnw clean install spotbugs:check -Pcheck -T1C
 
   check-dead-links:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - Dead Links
-    runs-on: ubuntu-latest
+    needs: global-environment
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6.0.1
@@ -81,10 +82,10 @@ jobs:
           done
 
   check-codeql:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - CodeQL
     needs: global-environment
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 100
     permissions:
       actions: read
@@ -108,9 +109,10 @@ jobs:
           category: "/language:java"
 
   check-stale:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - Stale Issues
-    runs-on: ubuntu-latest
+    needs: global-environment
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 10
     permissions:
       issues: write

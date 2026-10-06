@@ -107,7 +107,7 @@
     </test-case>
 
     <test-case sql="UPDATE t_data_type_date SET creation_date = ?, update_date = ? where id = ?" db-types="MySQL" scenario-types="passthrough">
-        <assertion parameters="2018-08-08:Date, 2018-08-08:datetime, 1:int" expected-data-file="update_date_values.xml"/>
+        <assertion target-data-source-name="passthrough_secondary" parameters="2018-08-08:Date, 2018-08-08:datetime, 1:int" expected-data-file="update_date_values.xml"/>
     </test-case>
 
     <test-case sql="UPDATE t_user SET password = ? WHERE user_id = ?" db-types="Hive" scenario-types="encrypt" skip-batch="true">

@@ -39,6 +39,7 @@ import org.apache.shardingsphere.test.e2e.sql.env.container.compose.ContainerCom
 import org.apache.shardingsphere.test.e2e.sql.env.container.config.SQLE2EProxyContainerConfigurationFactory;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -81,7 +82,17 @@ public final class ClusterContainerComposer implements ContainerComposer {
     
     @Override
     public DataSource getTargetDataSource() {
-        return adapterContainer.getTargetDataSource(governanceContainer.getServerLists());
+        return getTargetDataSource(null);
+    }
+    
+    @Override
+    public DataSource getTargetDataSource(final String dataSourceName) {
+        return adapterContainer.getTargetDataSource(governanceContainer.getServerLists(), dataSourceName);
+    }
+    
+    @Override
+    public Collection<DataSource> getTargetDataSources() {
+        return adapterContainer.getTargetDataSources();
     }
     
     @Override

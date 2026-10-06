@@ -19,7 +19,9 @@ package org.apache.shardingsphere.data.pipeline.core.importer.sink.type;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImporterJobWriteException;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
@@ -40,6 +42,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +53,6 @@ import java.util.stream.Collectors;
 /**
  * Pipeline data source sink.
  */
-@HighFrequencyInvocation
 @Slf4j
 public final class PipelineDataSourceSink implements PipelineSink {
     
@@ -66,15 +68,23 @@ public final class PipelineDataSourceSink implements PipelineSink {
     
     public PipelineDataSourceSink(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
-        dataSource = dataSourceManager.getDataSource(importerConfig.getDataSourceConfig());
-        importSQLBuilder = new PipelineImportSQLBuilder(importerConfig.getDataSourceConfig().getDatabaseType());
+        PipelineDataSource pipelineDataSource = dataSourceManager.getDataSource(importerConfig.getDataSourceConfig());
+        dataSource = pipelineDataSource;
+        importSQLBuilder = new PipelineImportSQLBuilder(importerConfig.getDataSourceConfig().getDatabaseType(), pipelineDataSource.getIdentifierContext(),
+                importerConfig.getDataSourceConfig() instanceof ShardingSpherePipelineDataSourceConfiguration);
         groupEngine = new DataRecordGroupEngine();
         runningStatement = new AtomicReference<>();
     }
     
+    @HighFrequencyInvocation
     @Override
     public PipelineJobUpdateProgress write(final String ackId, final Collection<Record> records) {
-        List<DataRecord> dataRecords = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).collect(Collectors.toList());
+        List<DataRecord> dataRecords = new ArrayList<>();
+        for (Record record : records) {
+            if (record instanceof DataRecord) {
+                dataRecords.add((DataRecord) record);
+            }
+        }
         if (dataRecords.isEmpty()) {
             return new PipelineJobUpdateProgress(0);
         }

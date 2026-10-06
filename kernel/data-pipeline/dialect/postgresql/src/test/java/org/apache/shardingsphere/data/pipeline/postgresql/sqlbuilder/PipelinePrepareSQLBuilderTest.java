@@ -19,6 +19,8 @@ package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +31,8 @@ import static org.hamcrest.Matchers.is;
 
 class PipelinePrepareSQLBuilderTest {
     
-    private final PipelinePrepareSQLBuilder sqlBuilder = new PipelinePrepareSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+    private final PipelinePrepareSQLBuilder sqlBuilder = new PipelinePrepareSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"),
+            new DatabaseIdentifierContext(IdentifierCasePolicyResolver.resolveProtocol(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"))));
     
     @Test
     void assertBuildCountSQLWithActualIdentifiers() {

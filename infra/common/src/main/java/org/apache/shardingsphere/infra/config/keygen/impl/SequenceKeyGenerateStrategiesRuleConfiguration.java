@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * Sequence key generate strategies rule configuration.
  */
@@ -28,8 +30,10 @@ import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfig
 @Getter
 public final class SequenceKeyGenerateStrategiesRuleConfiguration implements KeyGenerateStrategiesConfiguration {
     
+    @NotBlank
     private final String keyGeneratorName;
     
+    @NotBlank
     private final String keyGenerateSequence;
     
     @Override

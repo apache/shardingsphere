@@ -26,8 +26,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 /**
  * Show dist variable statement test case.
  */
-@Setter
 @Getter
+@Setter
 public final class ShowDistVariableStatementTestCase extends SQLParserTestCase {
     
     @XmlAttribute

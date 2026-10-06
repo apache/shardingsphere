@@ -48,6 +48,10 @@ public final class MCPResourceNavigationDescriptorValidator {
                     () -> new IllegalStateException(String.format("Resource navigation references unknown source `%s`.", each.getFrom())));
             ShardingSpherePreconditions.checkState(publicIdentifiers.contains(each.getTo()),
                     () -> new IllegalStateException(String.format("Resource navigation references unknown target `%s`.", each.getTo())));
+            ShardingSpherePreconditions.checkState(each.getRequiredArguments().size() == new HashSet<>(each.getRequiredArguments()).size(), () -> new IllegalStateException(
+                    String.format("Resource navigation `%s` to `%s` must not contain duplicate required arguments.", each.getFrom(), each.getTo())));
+            ShardingSpherePreconditions.checkState(each.getCarriedArguments().size() == new HashSet<>(each.getCarriedArguments()).size(), () -> new IllegalStateException(
+                    String.format("Resource navigation `%s` to `%s` must not contain duplicate carried arguments.", each.getFrom(), each.getTo())));
             ShardingSpherePreconditions.checkState(registered.add(each.getFrom() + "->" + each.getTo()),
                     () -> new IllegalStateException(String.format("Duplicate MCP resource navigation `%s` to `%s`.", each.getFrom(), each.getTo())));
         }

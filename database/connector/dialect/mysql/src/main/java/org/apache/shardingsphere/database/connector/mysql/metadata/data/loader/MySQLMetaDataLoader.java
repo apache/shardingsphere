@@ -49,6 +49,8 @@ import java.util.stream.Collectors;
  */
 public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
     
+    private static final String PRIMARY_KEY_INDEX_NAME = "PRIMARY";
+    
     private static final String ORDER_BY_ORDINAL_POSITION = " ORDER BY ORDINAL_POSITION";
     
     private static final String TABLE_META_DATA_NO_ORDER =
@@ -72,16 +74,29 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(material.getDataSource(), material.getActualTableNames());
         Collection<String> viewNames = columnMetaDataMap.isEmpty() ? Collections.emptySet() : loadViewNames(material.getDataSource(), columnMetaDataMap.keySet());
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(material.getDataSource(), columnMetaDataMap.keySet());
-        Map<String, Collection<ConstraintMetaData>> constraintMetaDataMap =
-                columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadConstraintMetaDataMap(material.getDataSource(), columnMetaDataMap.keySet());
+        Map<String, Collection<ConstraintMetaData>> constraintMetaDataMap = columnMetaDataMap.isEmpty()
+                ? Collections.emptyMap()
+                : loadConstraintMetaDataMap(material.getDataSource(), columnMetaDataMap.keySet());
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
             Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
+            Collection<ColumnMetaData> columnMetaDataList = revisePrimaryKeyColumnMetaData(entry.getValue(), indexMetaDataList);
             Collection<ConstraintMetaData> constraintMetaDataList = constraintMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
             TableMetaData tableMetaData = new TableMetaData(
-                    entry.getKey(), entry.getValue(), indexMetaDataList, constraintMetaDataList, viewNames.contains(entry.getKey()) ? TableType.VIEW : TableType.TABLE);
+                    entry.getKey(), columnMetaDataList, indexMetaDataList, constraintMetaDataList, viewNames.contains(entry.getKey()) ? TableType.VIEW : TableType.TABLE);
             tableMetaDataList.add(tableMetaData);
         }
         return Collections.singletonList(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaDataList));
+    }
+    
+    private Collection<ColumnMetaData> revisePrimaryKeyColumnMetaData(final Collection<ColumnMetaData> columnMetaDataList, final Collection<IndexMetaData> indexMetaDataList) {
+        Collection<String> primaryKeyColumns = indexMetaDataList.stream()
+                .filter(each -> PRIMARY_KEY_INDEX_NAME.equalsIgnoreCase(each.getName())).findFirst().map(IndexMetaData::getColumns).orElse(Collections.emptyList());
+        Collection<ColumnMetaData> result = new LinkedList<>();
+        for (ColumnMetaData each : columnMetaDataList) {
+            result.add(new ColumnMetaData(each.getName(),
+                    each.getDataType(), primaryKeyColumns.contains(each.getName()), each.isGenerated(), each.isCaseSensitive(), each.isVisible(), each.isUnsigned(), each.isNullable()));
+        }
+        return result;
     }
     
     private Collection<String> loadViewNames(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
@@ -153,10 +168,10 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
         String dataType = resultSet.getString("DATA_TYPE");
         boolean primaryKey = "PRI".equalsIgnoreCase(resultSet.getString("COLUMN_KEY"));
         String extra = resultSet.getString("EXTRA");
-        boolean generated = "auto_increment".equals(extra);
+        boolean generated = extra.contains("auto_increment");
         String collationName = resultSet.getString("COLLATION_NAME");
         boolean caseSensitive = null != collationName && !collationName.endsWith("_ci");
-        boolean visible = !"INVISIBLE".equalsIgnoreCase(extra);
+        boolean visible = !extra.contains("INVISIBLE");
         boolean unsigned = resultSet.getString("COLUMN_TYPE").toUpperCase().contains("UNSIGNED");
         boolean nullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
         return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), primaryKey, generated, caseSensitive, visible, unsigned, nullable);

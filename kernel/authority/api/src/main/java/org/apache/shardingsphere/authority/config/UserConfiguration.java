@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * User configuration.
  */
@@ -28,6 +30,7 @@ import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration
 @Getter
 public final class UserConfiguration implements GlobalRuleConfiguration {
     
+    @NotBlank
     private final String username;
     
     private final String password;

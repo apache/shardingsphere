@@ -246,7 +246,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             if (each instanceof ColumnProjection) {
                 String tableName = ((ColumnProjection) each).getOriginalTable().getValue();
                 ShardingSphereTable table = schema.getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
-                if (table == null) {
+                if (null == table) {
                     table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema("system_tables")
                             .getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
                 }
@@ -283,7 +283,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             }
             return subqueryProjections;
         }
-        if (returningSegment == null) {
+        if (null == returningSegment) {
             return Collections.emptyList();
         }
         ProjectionEngine projectionEngine = new ProjectionEngine(sqlStatementContext.getSqlStatement().getDatabaseType());

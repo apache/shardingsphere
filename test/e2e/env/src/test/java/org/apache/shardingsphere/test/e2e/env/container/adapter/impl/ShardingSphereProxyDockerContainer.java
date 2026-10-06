@@ -33,7 +33,9 @@ import javax.sql.DataSource;
 import java.sql.DriverManager;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ShardingSphere proxy docker container.
@@ -44,7 +46,7 @@ public final class ShardingSphereProxyDockerContainer extends DockerE2EContainer
     
     private final StorageContainerConnectOption storageContainerConnectOption;
     
-    private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
+    private final Map<String, DataSource> targetDataSources = new ConcurrentHashMap<>();
     
     public ShardingSphereProxyDockerContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
         super(ProxyContainerConstants.PROXY_CONTAINER_NAME_PREFIX, config.getAdapterContainerImage());
@@ -70,12 +72,23 @@ public final class ShardingSphereProxyDockerContainer extends DockerE2EContainer
     
     @Override
     public DataSource getTargetDataSource(final String serverLists) {
-        DataSource dataSource = targetDataSourceProvider.get();
-        if (null == dataSource) {
-            targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(
-                    storageContainerConnectOption.getProxyURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2));
-        }
-        return targetDataSourceProvider.get();
+        return getTargetDataSource(serverLists, config.getProxyDataSourceName());
+    }
+    
+    @Override
+    public DataSource getTargetDataSource(final String serverLists, final String dataSourceName) {
+        String effectiveDataSourceName = Strings.isNullOrEmpty(dataSourceName) ? config.getProxyDataSourceName() : dataSourceName;
+        return targetDataSources.computeIfAbsent(effectiveDataSourceName, this::createTargetDataSource);
+    }
+    
+    private DataSource createTargetDataSource(final String dataSourceName) {
+        return StorageContainerUtils.generateDataSource(
+                storageContainerConnectOption.getProxyURL(getHost(), getMappedPort(3307), dataSourceName), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2);
+    }
+    
+    @Override
+    public Collection<DataSource> getTargetDataSources() {
+        return targetDataSources.values();
     }
     
     @Override

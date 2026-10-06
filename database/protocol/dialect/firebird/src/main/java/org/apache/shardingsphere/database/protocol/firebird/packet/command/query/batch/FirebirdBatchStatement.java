@@ -27,8 +27,8 @@ import java.util.List;
 /**
  * Firebird batch statement metadata.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class FirebirdBatchStatement {
     
     private final int statementHandle;

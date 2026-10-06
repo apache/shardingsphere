@@ -17,6 +17,77 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_case_when">
+        <from>
+            <join-table join-type="LEFT">
+                <left>
+                    <simple-table name="pg_class" alias="c" start-index="213" stop-index="222" />
+                </left>
+                <right>
+                    <simple-table name="old_oids" start-index="234" stop-index="241" />
+                </right>
+                <using-columns name="relname" start-index="250" stop-index="256" />
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="206">
+            <column-projection name="relname" start-index="7" stop-index="13" />
+            <expression-projection text="c.oid = oldoid" alias="orig_oid" start-index="15" stop-index="40" />
+            <expression-projection text="case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end" alias="storage" start-index="42" stop-index="155">
+                <expr>
+                    <case-when-expression>
+                        <case-expr>
+                            <column name="relfilenode" start-index="47" stop-index="57" />
+                        </case-expr>
+                        <when-exprs>
+                            <literal-expression value="0" start-index="64" stop-index="64" />
+                        </when-exprs>
+                        <when-exprs>
+                            <column name="oid" start-index="83" stop-index="87">
+                                <owner name="c" start-index="83" stop-index="83" />
+                            </column>
+                        </when-exprs>
+                        <when-exprs>
+                            <column name="oldfilenode" start-index="105" stop-index="115" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="none" start-index="71" stop-index="76" />
+                        </then-exprs>
+                        <then-exprs>
+                            <literal-expression value="own" start-index="94" stop-index="98" />
+                        </then-exprs>
+                        <then-exprs>
+                            <literal-expression value="orig" start-index="122" stop-index="127" />
+                        </then-exprs>
+                        <else-expr>
+                            <literal-expression value="OTHER" start-index="134" stop-index="140" />
+                        </else-expr>
+                    </case-when-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="obj_description(c.oid, 'pg_class')" alias="description" start-index="158" stop-index="206" />
+        </projections>
+        <where start-index="259" stop-index="294">
+            <expr>
+                <binary-operation-expression start-index="265" stop-index="294">
+                    <left>
+                        <column name="relname" start-index="265" stop-index="271" />
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="278" stop-index="294">
+                            <items>
+                                <literal-expression value="at_partitioned%" start-index="278" stop-index="294" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="relname" start-index="305" stop-index="311" />
+        </order-by>
+    </select>
+
     <select sql-case-id="select_with_performance_schema_global_status">
         <from>
             <simple-table name="global_status" start-index="24" stop-index="55">
@@ -323,6 +394,279 @@
                 </expr>
             </expression-projection>
         </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_mixed_concat_projection">
+        <from>
+            <simple-table name="foo_table" start-index="1177" stop-index="1196">
+                <owner name="foo_schema" start-index="1177" stop-index="1186" />
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="1170">
+            <expression-projection text="COL_00||CHR(124)||COL_01||CHR(124)||COL_02||CHR(124)||COL_03||CHR(124)||COL_04||CHR(124)||COL_05||CHR(124)||COL_06||CHR(124)||COL_07||CHR(124)||COL_08||CHR(124)||COL_09||CHR(124)||COL_10||CHR(124)||COL_11||CHR(124)||TO_CHAR(COL_12, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||COL_13||CHR(124)||COL_14||CHR(124)||COL_15||CHR(124)||COL_16||CHR(124)||TO_CHAR(COL_17, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||COL_18||CHR(124)||COL_19||CHR(124)||COL_20||CHR(124)||COL_21||CHR(124)||TO_CHAR(COL_22, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||COL_23||CHR(124)||COL_24||CHR(124)||COL_25||CHR(124)||COL_26||CHR(124)||COL_27||CHR(124)||COL_28||CHR(124)||COL_29||CHR(124)||COL_30||CHR(124)||COL_31||CHR(124)||COL_32||CHR(124)||COL_33||CHR(124)||COL_34||CHR(124)||COL_35||CHR(124)||COL_36||CHR(124)||COL_37||CHR(124)||TO_CHAR(COL_38, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||TO_CHAR(COL_39, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||TO_CHAR(COL_40, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||COL_41||CHR(124)||COL_42||CHR(124)||COL_43||CHR(124)||COL_44||CHR(124)||COL_45||CHR(124)||COL_46||CHR(124)||COL_47||CHR(124)||COL_48||CHR(124)||COL_49||CHR(124)||COL_50||CHR(124)||COL_51||CHR(124)||COL_52||CHR(124)||COL_53" start-index="7" stop-index="1170" />
+        </projections>
+        <where start-index="1198" stop-index="1213">
+            <expr>
+                <binary-operation-expression start-index="1204" stop-index="1213">
+                    <left><column name="rownum" start-index="1204" stop-index="1209" /></left>
+                    <operator>&lt;</operator>
+                    <right><literal-expression value="2" start-index="1213" stop-index="1213" /></right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_oracle_long_function_concat_24">
+        <from>
+            <simple-table name="foo_table" start-index="865" stop-index="873" />
+        </from>
+        <projections start-index="7" stop-index="858">
+            <expression-projection text="foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)" start-index="7" stop-index="858" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_function_concat_48">
+        <from>
+            <simple-table name="foo_table" start-index="1729" stop-index="1737" />
+        </from>
+        <projections start-index="7" stop-index="1722">
+            <expression-projection text="foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)" start-index="7" stop-index="1722" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_function_concat_96">
+        <from>
+            <simple-table name="foo_table" start-index="3457" stop-index="3465" />
+        </from>
+        <projections start-index="7" stop-index="3450">
+            <expression-projection text="foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)||CHR(124)||foo_function(foo_column)" start-index="7" stop-index="3450" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_to_char_concat_24">
+        <from>
+            <simple-table name="foo_table" start-index="1057" stop-index="1065" />
+        </from>
+        <projections start-index="7" stop-index="1050">
+            <expression-projection text="TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')" start-index="7" stop-index="1050" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_to_char_concat_48">
+        <from>
+            <simple-table name="foo_table" start-index="2113" stop-index="2121" />
+        </from>
+        <projections start-index="7" stop-index="2106">
+            <expression-projection text="TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')" start-index="7" stop-index="2106" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_to_char_concat_96">
+        <from>
+            <simple-table name="foo_table" start-index="4225" stop-index="4233" />
+        </from>
+        <projections start-index="7" stop-index="4218">
+            <expression-projection text="TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')||CHR(124)||TO_CHAR(foo_column,'YYYY-MM-DD')" start-index="7" stop-index="4218" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_nested_function_concat_24">
+        <from>
+            <simple-table name="foo_table" start-index="1201" stop-index="1209" />
+        </from>
+        <projections start-index="7" stop-index="1194">
+            <expression-projection text="foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))" start-index="7" stop-index="1194" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_nested_function_concat_48">
+        <from>
+            <simple-table name="foo_table" start-index="2401" stop-index="2409" />
+        </from>
+        <projections start-index="7" stop-index="2394">
+            <expression-projection text="foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))" start-index="7" stop-index="2394" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_nested_function_concat_96">
+        <from>
+            <simple-table name="foo_table" start-index="4801" stop-index="4809" />
+        </from>
+        <projections start-index="7" stop-index="4794">
+            <expression-projection text="foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))||CHR(124)||foo_function(bar_function(foo_column))" start-index="7" stop-index="4794" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_qualified_function_concat_24">
+        <from>
+            <simple-table name="foo_table" start-index="1129" stop-index="1137" />
+        </from>
+        <projections start-index="7" stop-index="1122">
+            <expression-projection text="foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)" start-index="7" stop-index="1122" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_qualified_function_concat_48">
+        <from>
+            <simple-table name="foo_table" start-index="2257" stop-index="2265" />
+        </from>
+        <projections start-index="7" stop-index="2250">
+            <expression-projection text="foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)" start-index="7" stop-index="2250" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_qualified_function_concat_96">
+        <from>
+            <simple-table name="foo_table" start-index="4513" stop-index="4521" />
+        </from>
+        <projections start-index="7" stop-index="4506">
+            <expression-projection text="foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)||CHR(124)||foo_schema.foo_function(foo_column)" start-index="7" stop-index="4506" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_cast_concat_24">
+        <from>
+            <simple-table name="foo_table" start-index="1057" stop-index="1065" />
+        </from>
+        <projections start-index="7" stop-index="1050">
+            <expression-projection text="CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))" start-index="7" stop-index="1050" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_cast_concat_48">
+        <from>
+            <simple-table name="foo_table" start-index="2113" stop-index="2121" />
+        </from>
+        <projections start-index="7" stop-index="2106">
+            <expression-projection text="CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))" start-index="7" stop-index="2106" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_cast_concat_96">
+        <from>
+            <simple-table name="foo_table" start-index="4225" stop-index="4233" />
+        </from>
+        <projections start-index="7" stop-index="4218">
+            <expression-projection text="CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))||CHR(124)||CAST(foo_column AS VARCHAR2(20))" start-index="7" stop-index="4218" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_long_unaliased_concat_projection">
+        <from>
+            <simple-table name="foo_table" start-index="1297" stop-index="1316">
+                <owner name="foo_schema" start-index="1297" stop-index="1306" />
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="1290">
+            <expression-projection text="COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2" start-index="7" stop-index="1290" />
+        </projections>
+        <where start-index="1318" stop-index="1344">
+            <expr>
+                <binary-operation-expression start-index="1324" stop-index="1344">
+                    <left>
+                        <binary-operation-expression start-index="1324" stop-index="1329">
+                            <left>
+                                <column name="id" start-index="1324" stop-index="1325" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="1329" stop-index="1329" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="1335" stop-index="1344">
+                            <left>
+                                <column name="rownum" start-index="1335" stop-index="1340" />
+                            </left>
+                            <operator>&lt;</operator>
+                            <right>
+                                <literal-expression value="2" start-index="1344" stop-index="1344" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_oracle_long_aliased_concat_projection">
+        <from>
+            <simple-table name="foo_table" start-index="1311" stop-index="1330">
+                <owner name="foo_schema" start-index="1311" stop-index="1320" />
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="1304">
+            <expression-projection text="COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2||CHR(124)||COL_VARCHAR2" alias="EXPORT_ROW" start-index="7" stop-index="1304" />
+        </projections>
+        <where start-index="1332" stop-index="1358">
+            <expr>
+                <binary-operation-expression start-index="1338" stop-index="1358">
+                    <left>
+                        <binary-operation-expression start-index="1338" stop-index="1343">
+                            <left>
+                                <column name="id" start-index="1338" stop-index="1339" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="1343" stop-index="1343" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="1349" stop-index="1358">
+                            <left>
+                                <column name="rownum" start-index="1349" stop-index="1354" />
+                            </left>
+                            <operator>&lt;</operator>
+                            <right>
+                                <literal-expression value="2" start-index="1358" stop-index="1358" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_oracle_long_six_to_char_concat_projection">
+        <from>
+            <simple-table name="foo_table" start-index="1167" stop-index="1175" />
+        </from>
+        <projections start-index="7" stop-index="1160">
+            <expression-projection text="COL_0||CHR(124)||COL_1||CHR(124)||COL_2||CHR(124)||COL_3||CHR(124)||COL_4||CHR(124)||COL_5||CHR(124)||COL_6||CHR(124)||COL_7||CHR(124)||COL_8||CHR(124)||COL_9||CHR(124)||COL_10||CHR(124)||COL_11||CHR(124)||TO_CHAR(COL_12, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||COL_13||CHR(124)||COL_14||CHR(124)||COL_15||CHR(124)||COL_16||CHR(124)||TO_CHAR(COL_17, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||COL_18||CHR(124)||COL_19||CHR(124)||COL_20||CHR(124)||COL_21||CHR(124)||TO_CHAR(COL_22, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||COL_23||CHR(124)||COL_24||CHR(124)||COL_25||CHR(124)||COL_26||CHR(124)||COL_27||CHR(124)||COL_28||CHR(124)||COL_29||CHR(124)||COL_30||CHR(124)||COL_31||CHR(124)||COL_32||CHR(124)||COL_33||CHR(124)||COL_34||CHR(124)||COL_35||CHR(124)||COL_36||CHR(124)||COL_37||CHR(124)||TO_CHAR(COL_38, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||TO_CHAR(COL_39, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||TO_CHAR(COL_40, 'YYYY-MM-DD HH24:MI:SS')||CHR(124)||COL_41||CHR(124)||COL_42||CHR(124)||COL_43||CHR(124)||COL_44||CHR(124)||COL_45||CHR(124)||COL_46||CHR(124)||COL_47||CHR(124)||COL_48||CHR(124)||COL_49||CHR(124)||COL_50||CHR(124)||COL_51||CHR(124)||COL_52||CHR(124)||COL_53" start-index="7" stop-index="1160" />
+        </projections>
+        <where start-index="1177" stop-index="1203">
+            <expr>
+                <binary-operation-expression start-index="1183" stop-index="1203">
+                    <left>
+                        <binary-operation-expression start-index="1183" stop-index="1188">
+                            <left>
+                                <column name="id" start-index="1183" stop-index="1184" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="1188" stop-index="1188" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="1194" stop-index="1203">
+                            <left>
+                                <column name="rownum" start-index="1194" stop-index="1199" />
+                            </left>
+                            <operator>&lt;</operator>
+                            <right>
+                                <literal-expression value="2" start-index="1203" stop-index="1203" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </select>
 
     <select sql-case-id="select_oracle_full_width_arithmetic_and_concat">

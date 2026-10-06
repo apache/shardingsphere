@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.constra
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.index.PostgreSQLIndexSQLGenerator;
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.table.PostgreSQLTablePropertiesLoader;
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template.PostgreSQLPipelineFreemarkerManager;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -47,17 +48,19 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     }
     
     @Override
-    public Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord) {
+    public Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord, final PipelineSQLSegmentBuilder sqlSegmentBuilder) {
         // TODO without unique key, job has been interrupted, which may lead to data duplication
         if (dataRecord.getUniqueKeyValue().isEmpty()) {
             return Optional.empty();
         }
         StringBuilder result = new StringBuilder("ON CONFLICT (");
-        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
-        result.append(dataRecord.getColumns().stream().filter(Column::isUniqueKey).map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName())).collect(Collectors.joining(",")));
+        result.append(dataRecord.getColumns().stream().filter(Column::isUniqueKey).map(each -> sqlSegmentBuilder.getEscapedIdentifier(IdentifierScope.COLUMN, each.getName()))
+                .collect(Collectors.joining(",")));
         result.append(") DO UPDATE SET ");
         result.append(dataRecord.getColumns().stream()
-                .filter(each -> !each.isUniqueKey()).map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName()) + "=EXCLUDED." + sqlSegmentBuilder.getEscapedIdentifier(each.getName()))
+                .filter(each -> !each.isUniqueKey())
+                .map(each -> sqlSegmentBuilder.getEscapedIdentifier(IdentifierScope.COLUMN, each.getName()) + "=EXCLUDED."
+                        + sqlSegmentBuilder.getEscapedIdentifier(IdentifierScope.COLUMN, each.getName()))
                 .collect(Collectors.joining(",")));
         return Optional.of(result.toString());
     }

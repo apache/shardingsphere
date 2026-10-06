@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.driver;
 
+import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -148,6 +151,61 @@ class ShardingSphereDriverTest {
             assertTrue(resultSet.next());
             assertThat(resultSet.getInt(1), is(1));
         }
+    }
+    
+    @Test
+    void assertResultSetRemainsUsableAfterAnotherStatementCloses() throws SQLException {
+        try (Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/driver-fixture-h2-mysql.yaml")) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("DROP TABLE IF EXISTS t_order");
+                statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT)");
+                statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 101), (2, 102)");
+            }
+            assertTrue(connection.getAutoCommit());
+            try (Statement queryStatement = connection.createStatement()) {
+                ResultSet resultSet = queryStatement.executeQuery("SELECT order_id, user_id FROM t_order ORDER BY order_id");
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(1));
+                executeAndCloseSecondaryStatement(connection);
+                assertThat(resultSet.getInt(2), is(101));
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(2));
+                assertThat(resultSet.getInt(2), is(102));
+            }
+        }
+    }
+    
+    private void executeAndCloseSecondaryStatement(final Connection connection) throws SQLException {
+        try (
+                Statement secondaryStatement = connection.createStatement();
+                ResultSet secondaryResultSet = secondaryStatement.executeQuery("SELECT COUNT(1) FROM t_order")) {
+            assertTrue(secondaryResultSet.next());
+            assertThat(secondaryResultSet.getInt(1), is(2));
+        }
+    }
+    
+    @Test
+    void assertCachedConnectionsClearedWhenLastStatementCloses() throws SQLException, ReflectiveOperationException {
+        try (Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/driver-fixture-h2-mysql.yaml")) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("DROP TABLE IF EXISTS t_order");
+                statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT)");
+                statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 101), (2, 102)");
+            }
+            Statement queryStatement = connection.createStatement();
+            try (ResultSet resultSet = queryStatement.executeQuery("SELECT order_id FROM t_order")) {
+                assertTrue(resultSet.next());
+                assertFalse(getCachedConnections(connection).isEmpty());
+            }
+            queryStatement.close();
+            assertTrue(getCachedConnections(connection).isEmpty());
+        }
+    }
+    
+    private Multimap<?, ?> getCachedConnections(final Connection connection) throws ReflectiveOperationException {
+        DriverDatabaseConnectionManager databaseConnectionManager = ((ShardingSphereConnection) connection).getDatabaseConnectionManager();
+        return (Multimap<?, ?>) Plugins.getMemberAccessor().get(
+                DriverDatabaseConnectionManager.class.getDeclaredField("cachedConnections"), databaseConnectionManager);
     }
     
     @Test

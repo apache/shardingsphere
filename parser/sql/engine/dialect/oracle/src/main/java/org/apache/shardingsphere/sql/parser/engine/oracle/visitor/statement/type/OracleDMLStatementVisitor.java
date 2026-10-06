@@ -122,6 +122,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Update
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UsingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WithClauseContext;
+import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
@@ -576,6 +577,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.groupByClause()) {
             result.groupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
+        if (null != ctx.havingClause()) {
+            result.having((HavingSegment) visit(ctx.havingClause()));
+        }
         if (null != ctx.modelClause()) {
             result.model((ModelSegment) visit(ctx.modelClause()));
         }
@@ -608,9 +612,19 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         SelectStatement result = (SelectStatement) visit(ctx.selectSubquery());
-        if (null != ctx.forUpdateClause()) {
+        if (null != ctx.orderByClause() && result.getOrderBy().isPresent()) {
+            throw new SQLParsingException("Duplicated ORDER BY clause.");
+        }
+        if (null != ctx.forUpdateClause() || null != ctx.orderByClause()) {
             SelectStatement previous = result;
-            result = createSelectStatementBuilder(previous).lock((LockSegment) visit(ctx.forUpdateClause())).build();
+            SelectStatement.SelectStatementBuilder builder = createSelectStatementBuilder(previous);
+            if (null != ctx.forUpdateClause()) {
+                builder.lock((LockSegment) visit(ctx.forUpdateClause()));
+            }
+            if (null != ctx.orderByClause()) {
+                builder.orderBy((OrderBySegment) visit(ctx.orderByClause()));
+            }
+            result = builder.build();
             result.addParameterMarkers(previous.getParameterMarkers());
             result.getVariableNames().addAll(previous.getVariableNames());
             result.getComments().addAll(previous.getComments());
@@ -748,9 +762,20 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result = createSelectCombineClause(ctx, left);
         } else {
             result = null == ctx.queryBlock() ? (SelectStatement) visit(ctx.parenthesisSelectSubquery()) : (SelectStatement) visit(ctx.queryBlock());
+            if (null != ctx.withClause()) {
+                SelectStatement previous = result;
+                result = createSelectStatementBuilder(previous).with((WithSegment) visit(ctx.withClause())).build();
+                result.addParameterMarkers(previous.getParameterMarkers());
+                result.getVariableNames().addAll(previous.getVariableNames());
+                result.getComments().addAll(previous.getComments());
+            }
         }
         if (null != ctx.orderByClause()) {
+            SelectStatement previous = result;
             result = createSelectStatementBuilder(result).orderBy((OrderBySegment) visit(ctx.orderByClause())).build();
+            result.addParameterMarkers(previous.getParameterMarkers());
+            result.getVariableNames().addAll(previous.getVariableNames());
+            result.getComments().addAll(previous.getComments());
         }
         result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         result.getVariableNames().addAll(getVariableNames());
@@ -769,9 +794,19 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             combineType = CombineType.MINUS;
         }
         SelectStatement right = (SelectStatement) visit(ctx.selectSubquery(1));
+        OrderBySegment orderBy = null;
+        if (null != ctx.selectSubquery(1).orderByClause()) {
+            orderBy = right.getOrderBy().orElse(null);
+            SelectStatement previous = right;
+            right = createSelectStatementBuilder(previous).orderBy(null).build();
+            right.addParameterMarkers(previous.getParameterMarkers());
+            right.getVariableNames().addAll(previous.getVariableNames());
+            right.getComments().addAll(previous.getComments());
+        }
         SelectStatement result = SelectStatement.builder().databaseType(getDatabaseType()).projections(left.getProjections()).from(left.getFrom().orElse(null)).with(left.getWith().orElse(null))
                 .combine(new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), createSubquerySegment(ctx.selectSubquery(0), left), combineType,
                         createSubquerySegment(ctx.selectSubquery(1), right)))
+                .orderBy(orderBy)
                 .build();
         result.addParameterMarkers(left.getParameterMarkers());
         result.addParameterMarkers(right.getParameterMarkers());
@@ -806,9 +841,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         }
         if (null != ctx.groupByClause()) {
             result.groupBy((GroupBySegment) visit(ctx.groupByClause()));
-            if (null != ctx.groupByClause().havingClause()) {
-                result.having((HavingSegment) visit(ctx.groupByClause().havingClause()));
-            }
+        }
+        if (null != ctx.havingClause()) {
+            result.having((HavingSegment) visit(ctx.havingClause()));
         }
         if (null != ctx.modelClause()) {
             result.model((ModelSegment) visit(ctx.modelClause()));
@@ -1553,7 +1588,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             ColumnSegment column = (ColumnSegment) expression;
             return new ColumnOrderByItemSegment(column, OrderDirection.ASC, null);
         }
-        if (expression instanceof LiteralExpressionSegment) {
+        if (expression instanceof LiteralExpressionSegment && !((LiteralExpressionSegment) expression).isNullLiteral()) {
             LiteralExpressionSegment literalExpression = (LiteralExpressionSegment) expression;
             return new IndexOrderByItemSegment(literalExpression.getStartIndex(), literalExpression.getStopIndex(),
                     SQLUtils.getExactlyNumber(literalExpression.getLiterals().toString(), 10).intValue(), OrderDirection.ASC, null);

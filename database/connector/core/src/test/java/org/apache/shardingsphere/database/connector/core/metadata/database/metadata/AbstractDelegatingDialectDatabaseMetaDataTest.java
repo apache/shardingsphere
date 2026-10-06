@@ -41,7 +41,6 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -90,11 +89,6 @@ class AbstractDelegatingDialectDatabaseMetaDataTest {
         assertThat(metaData.getProtocolVersionOption(), is(delegate.getProtocolVersionOption()));
         when(delegate.getFunctionOption()).thenReturn(mock(DialectFunctionOption.class));
         assertThat(metaData.getFunctionOption(), is(delegate.getFunctionOption()));
-    }
-    
-    @Test
-    void assertRejectNullDelegate() {
-        assertThrows(NullPointerException.class, () -> new FixtureDelegatingDialectDatabaseMetaData(null));
     }
     
     @Test

@@ -127,7 +127,7 @@ public final class SubqueryExtractor {
         if (needRecursive) {
             SelectStatement select = subquery.getSelect();
             extractSubquerySegments(result, select, true, parentSubqueryType);
-            if (!select.getSubqueryType().isPresent() && parentSubqueryType != null) {
+            if (!select.getSubqueryType().isPresent() && null != parentSubqueryType) {
                 select = select.withSubqueryType(parentSubqueryType);
             }
             if (parentSubqueryType == SubqueryType.WITH) {

@@ -85,12 +85,16 @@ public final class TopPaginationContextEngine {
         if (!(predicateSegment instanceof BinaryOperationExpression)) {
             return Optional.empty();
         }
+        ExpressionSegment right = ((BinaryOperationExpression) predicateSegment).getRight();
+        if (right instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) right).isNullLiteral()) {
+            return Optional.empty();
+        }
         String operator = ((BinaryOperationExpression) predicateSegment).getOperator();
         switch (operator) {
             case ">":
-                return Optional.of(createRowNumberValueSegment(((BinaryOperationExpression) predicateSegment).getRight(), false));
+                return Optional.of(createRowNumberValueSegment(right, false));
             case ">=":
-                return Optional.of(createRowNumberValueSegment(((BinaryOperationExpression) predicateSegment).getRight(), true));
+                return Optional.of(createRowNumberValueSegment(right, true));
             default:
                 return Optional.empty();
         }

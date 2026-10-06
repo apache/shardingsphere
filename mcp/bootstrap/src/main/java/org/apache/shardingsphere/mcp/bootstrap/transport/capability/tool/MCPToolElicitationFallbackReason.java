@@ -23,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * MCP tool elicitation fallback reason.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public enum MCPToolElicitationFallbackReason {
     
     CLIENT_UNSUPPORTED("client_unsupported", "structured_fallback"),

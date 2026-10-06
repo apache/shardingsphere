@@ -47,7 +47,7 @@ public final class SQLExtensionOperatorTable {
     
     public static final SqlBinaryOperator SIGNED_RIGHT_SHIFT = new SqlBinaryOperator(">>", SqlKind.OTHER, 30, true, null, null, null);
     
-    public static final SqlPrefixOperator NOT_SIGN = new SqlPrefixOperator("!", SqlKind.OTHER, 26, null, null, null);
+    public static final SqlPrefixOperator NOT_SIGN = new SqlPrefixOperator("!", SqlKind.OTHER, 80, null, null, null);
     
     public static final SqlBinaryOperator XOR = new SqlBinaryOperator("XOR", SqlKind.OTHER, 30, true, null, null, null);
     

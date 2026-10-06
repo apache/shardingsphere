@@ -35,7 +35,7 @@ env:
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
+    uses: ./.github/workflows/reusable-global-environment.yml
 
   ci:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
@@ -62,37 +62,3 @@ jobs:
         run: ./mvnw clean install -B -ntp -T1C
       - name: Build Examples with Maven
         run: ./mvnw clean package -B -f examples/pom.xml -T1C
-
-  ci-native-test:
-    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    name: NativeTest CI - GraalVM CE on ${{ matrix.os }}
-    needs: global-environment
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
-    strategy:
-      max-parallel: 15
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
-    steps:
-      - uses: actions/checkout@v6.0.1
-      - name: Free Disk Space on Ubuntu
-        if: matrix.os == 'ubuntu-latest'
-        run: ./test/native/src/test/resources/test-native/sh/free-disk-space.sh
-      - name: Setup Rancher Desktop without GUI on Windows Server
-        if: matrix.os == 'windows-latest'
-        run: ./test/native/src/test/resources/test-native/ps1/config-rdctl.ps1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
-        with:
-          java-version: '25.0.2'
-          distribution: 'graalvm'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
-          cache-suffix: 'native-test'
-      # TODO Remove this workaround after. The graalvm native image built with windows server is missing some GRMs for testcontainers
-      - name: Run test with GraalVM CE
-        if: matrix.os == 'windows-latest'
-        run: ./mvnw -PgenerateMetadata -e -T 1C clean verify
-      - name: Run nativeTest with GraalVM CE
-        if: matrix.os == 'ubuntu-latest'
-        run: ./mvnw -PnativeTestInShardingSphere -e clean verify

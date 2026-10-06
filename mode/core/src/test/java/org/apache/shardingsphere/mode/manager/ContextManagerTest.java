@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
@@ -60,6 +61,9 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -82,6 +86,7 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -101,7 +106,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, LogCaptureExtension.class})
+@LogCaptureSettings(suppressOutput = true)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ContextManagerTest {
     
@@ -219,18 +225,20 @@ class ContextManagerTest {
     }
     
     @Test
-    void assertReloadDatabaseWhenSQLExceptionThrown() {
+    void assertReloadDatabaseWhenSQLExceptionThrown(final LogCaptureAssertion logCaptureAssertion) {
         setPersistServiceFacade(mockPersistServiceFacade());
         MetaDataContextManager metaDataContextManager = mock(MetaDataContextManager.class, RETURNS_DEEP_STUBS);
         SwitchingResource switchingResource = new SwitchingResource(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap());
         when(metaDataContextManager.getResourceSwitchManager().switchByAlterStorageUnit(any(ResourceMetaData.class), anyMap(), anyBoolean())).thenReturn(switchingResource);
         setMetaDataContextManager(metaDataContextManager);
+        SQLException expectedException = new SQLException();
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createChangedDatabaseByRebuild("foo_db", switchingResource, Collections.emptyList(), metaDataContexts)).thenThrow(SQLException.class))) {
+                        (mock, context) -> when(mock.createChangedDatabaseByRebuild("foo_db", switchingResource, Collections.emptyList(), metaDataContexts)).thenThrow(expectedException))) {
             contextManager.reloadDatabase(database);
             verify(metaDataContexts, never()).update(any());
         }
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @Test
@@ -266,14 +274,16 @@ class ContextManagerTest {
     }
     
     @Test
-    void assertReloadSchemaWithSQLException() {
+    void assertReloadSchemaWithSQLException(final LogCaptureAssertion logCaptureAssertion) {
         setPersistServiceFacade(mockPersistServiceFacade());
+        SQLException expectedException = new SQLException();
         try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
-            schemaBuilderMock.when(() -> GenericSchemaBuilder.build(any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class))).thenThrow(SQLException.class);
+            schemaBuilderMock.when(() -> GenericSchemaBuilder.build(any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class))).thenThrow(expectedException);
             contextManager.reloadSchema(database, "foo_schema", "foo_ds");
             verify(database, never()).dropSchema(any());
             verify(database, never()).addSchema(any());
         }
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @Test
@@ -320,7 +330,7 @@ class ContextManagerTest {
     }
     
     @Test
-    void assertReloadSchemaWithCanonicalSchemaName() throws SQLException {
+    void assertReloadSchemaWithCanonicalSchemaName() {
         DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         StorageUnit storageUnit = mock(StorageUnit.class);
@@ -354,13 +364,16 @@ class ContextManagerTest {
     }
     
     @Test
-    void assertReloadTableWithSQLException() {
+    void assertReloadTableWithSQLException(final LogCaptureAssertion logCaptureAssertion) {
         PersistServiceFacade persistServiceFacade = mockPersistServiceFacade();
         setPersistServiceFacade(persistServiceFacade);
+        SQLException expectedException = new SQLException();
         try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
-            schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anySet(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class))).thenThrow(SQLException.class);
+            schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anySet(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class))).thenThrow(expectedException);
             contextManager.reloadTable(database, "foo_schema", "foo_tbl");
+            logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
             contextManager.reloadTable(database, "foo_schema", "foo_ds", "foo_tbl");
+            logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
             verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getTable(), never()).persist(any(), any(), any());
             verify(persistServiceFacade.getModeFacade().getMetaDataManagerService(), never()).dropTables(any(), any(), any());
         }

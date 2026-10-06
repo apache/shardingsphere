@@ -20,12 +20,11 @@ package org.apache.shardingsphere.data.pipeline.sharding;
 import org.apache.shardingsphere.data.pipeline.core.importer.PipelineRequiredColumnsExtractor;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlComplexShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -36,66 +35,59 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PipelineShardingColumnsExtractorTest {
     
     @SuppressWarnings("unchecked")
-    private final PipelineRequiredColumnsExtractor<YamlShardingRuleConfiguration> extractor = OrderedSPILoader.getServicesByClass(
-            PipelineRequiredColumnsExtractor.class, Collections.singleton(YamlShardingRuleConfiguration.class)).get(YamlShardingRuleConfiguration.class);
+    private final PipelineRequiredColumnsExtractor<ShardingRuleConfiguration> extractor = OrderedSPILoader.getServicesByClass(
+            PipelineRequiredColumnsExtractor.class, Collections.singleton(ShardingRuleConfiguration.class)).get(ShardingRuleConfiguration.class);
+    
+    @Test
+    void assertOrderedSPILoader() {
+        assertThat(extractor, isA(PipelineShardingColumnsExtractor.class));
+    }
     
     @Test
     void assertGetTableAndRequiredColumnsMap() {
-        YamlShardingRuleConfiguration yamlConfig = new YamlShardingRuleConfiguration();
-        yamlConfig.setDefaultDatabaseStrategy(createYAMLStandardStrategyConfiguration("default_db_col"));
-        yamlConfig.setDefaultTableStrategy(createYAMLStandardStrategyConfiguration("default_tbl_col"));
-        yamlConfig.getTables().put("t_explicit", getYamlExplicitTableRuleConfiguration());
-        yamlConfig.getTables().put("t_default", getYamlTableRuleConfiguration("t_default"));
-        yamlConfig.getTables().put("t_ignored", getYamlTableRuleConfiguration("t_ignored"));
-        yamlConfig.getAutoTables().put("t_auto", getYamlShardingAutoTableRuleConfiguration("t_auto"));
-        yamlConfig.getAutoTables().put("t_ignored_auto", getYamlShardingAutoTableRuleConfiguration("t_ignored_auto"));
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.setDefaultDatabaseShardingStrategy(createStandardShardingStrategyConfiguration("default_db_col"));
+        ruleConfig.setDefaultTableShardingStrategy(createStandardShardingStrategyConfiguration("default_tbl_col"));
+        ruleConfig.getTables().add(getExplicitTableRuleConfiguration());
+        ruleConfig.getTables().add(getTableRuleConfiguration("t_default"));
+        ruleConfig.getTables().add(getTableRuleConfiguration("t_ignored"));
+        ruleConfig.getAutoTables().add(getShardingAutoTableRuleConfiguration("t_auto"));
+        ruleConfig.getAutoTables().add(getShardingAutoTableRuleConfiguration("t_ignored_auto"));
         Collection<ShardingSphereIdentifier> logicTables = Arrays.asList(
-                new ShardingSphereIdentifier("t_explicit"), new ShardingSphereIdentifier("t_default"), new ShardingSphereIdentifier("t_auto"));
-        Map<ShardingSphereIdentifier, Collection<String>> actual = extractor.getTableAndRequiredColumnsMap(yamlConfig, logicTables);
+                new ShardingSphereIdentifier("T_EXPLICIT"), new ShardingSphereIdentifier("t_default"), new ShardingSphereIdentifier("t_auto"));
+        Map<ShardingSphereIdentifier, Collection<String>> actual = extractor.getTableAndRequiredColumnsMap(ruleConfig, logicTables);
         assertThat(actual.size(), is(3));
         assertThat(actual.get(new ShardingSphereIdentifier("t_explicit")), containsInAnyOrder("user_id", "order_id", "item_id"));
         assertThat(actual.get(new ShardingSphereIdentifier("t_default")), containsInAnyOrder("default_db_col", "default_tbl_col"));
         assertTrue(actual.get(new ShardingSphereIdentifier("t_auto")).isEmpty());
     }
     
-    private YamlTableRuleConfiguration getYamlExplicitTableRuleConfiguration() {
-        YamlTableRuleConfiguration result = new YamlTableRuleConfiguration();
-        result.setLogicTable("t_explicit");
-        result.setDatabaseStrategy(createYAMLComplexStrategyConfiguration("user_id,order_id"));
-        result.setTableStrategy(createYAMLComplexStrategyConfiguration("item_id"));
+    private ShardingTableRuleConfiguration getExplicitTableRuleConfiguration() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_explicit", "ds_0.t_explicit");
+        result.setDatabaseShardingStrategy(createComplexShardingStrategyConfiguration("user_id,order_id"));
+        result.setTableShardingStrategy(createComplexShardingStrategyConfiguration("item_id"));
         return result;
     }
     
-    private YamlTableRuleConfiguration getYamlTableRuleConfiguration(final String tableName) {
-        YamlTableRuleConfiguration result = new YamlTableRuleConfiguration();
-        result.setLogicTable(tableName);
-        return result;
+    private ShardingTableRuleConfiguration getTableRuleConfiguration(final String tableName) {
+        return new ShardingTableRuleConfiguration(tableName, "ds_0." + tableName);
     }
     
-    private YamlShardingAutoTableRuleConfiguration getYamlShardingAutoTableRuleConfiguration(final String tableName) {
-        YamlShardingAutoTableRuleConfiguration result = new YamlShardingAutoTableRuleConfiguration();
-        result.setLogicTable(tableName);
-        return result;
+    private ShardingAutoTableRuleConfiguration getShardingAutoTableRuleConfiguration(final String tableName) {
+        return new ShardingAutoTableRuleConfiguration(tableName, "ds_0");
     }
     
-    private YamlShardingStrategyConfiguration createYAMLStandardStrategyConfiguration(final String column) {
-        YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
-        YamlStandardShardingStrategyConfiguration standard = new YamlStandardShardingStrategyConfiguration();
-        standard.setShardingColumn(column);
-        result.setStandard(standard);
-        return result;
+    private StandardShardingStrategyConfiguration createStandardShardingStrategyConfiguration(final String column) {
+        return new StandardShardingStrategyConfiguration(column, "foo_algorithm");
     }
     
-    private YamlShardingStrategyConfiguration createYAMLComplexStrategyConfiguration(final String columns) {
-        YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
-        YamlComplexShardingStrategyConfiguration complex = new YamlComplexShardingStrategyConfiguration();
-        complex.setShardingColumns(columns);
-        result.setComplex(complex);
-        return result;
+    private ComplexShardingStrategyConfiguration createComplexShardingStrategyConfiguration(final String columns) {
+        return new ComplexShardingStrategyConfiguration(columns, "foo_algorithm");
     }
 }

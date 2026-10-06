@@ -20,8 +20,10 @@ package org.apache.shardingsphere.mode.metadata.manager.rule;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationCheckEngine;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -58,12 +60,14 @@ public final class DatabaseRuleConfigurationManager {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public synchronized void refresh(final String databaseName, final RuleConfiguration ruleConfig) throws SQLException {
         Collection<ShardingSphereRule> rules = new LinkedList<>(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
+        RuleConfigurationValidator.validate(ruleConfig);
         if (isRuleConfigurationEmpty(ruleConfig)) {
             refreshMetadata(databaseName, ruleConfig, false, rules);
             return;
         }
         Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
         if (toBeChangedRule.isPresent() && toBeChangedRule.get() instanceof PartialRuleUpdateSupported) {
+            DatabaseRuleConfigurationCheckEngine.check(ruleConfig, metaDataContexts.getMetaData().getDatabase(databaseName));
             boolean needRefreshSchemas = ((PartialRuleUpdateSupported) toBeChangedRule.get()).partialUpdate(ruleConfig);
             ((PartialRuleUpdateSupported) toBeChangedRule.get()).updateConfiguration(ruleConfig);
             if (needRefreshSchemas) {
@@ -74,7 +78,7 @@ public final class DatabaseRuleConfigurationManager {
         }
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     private boolean isRuleConfigurationEmpty(final RuleConfiguration ruleConfig) {
         if (!(ruleConfig instanceof DatabaseRuleConfiguration)) {
             return false;
@@ -82,7 +86,7 @@ public final class DatabaseRuleConfigurationManager {
         return TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, ruleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) ruleConfig);
     }
     
-    private void refreshMetadata(final String databaseName, final RuleConfiguration ruleConfig, final boolean addRuleConfig, final Collection<ShardingSphereRule> rules) throws SQLException {
+    private void refreshMetadata(final String databaseName, final RuleConfiguration ruleConfig, final boolean addRuleConfig, final Collection<ShardingSphereRule> rules) {
         Collection<ShardingSphereRule> toBeRemovedRules = rules.stream().filter(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass())).collect(Collectors.toList());
         rules.removeAll(toBeRemovedRules);
         Collection<RuleConfiguration> ruleConfigs = rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
@@ -92,7 +96,7 @@ public final class DatabaseRuleConfigurationManager {
         refreshMetadata(databaseName, ruleConfigs, toBeRemovedRules);
     }
     
-    private void refreshMetadata(final String databaseName, final Collection<RuleConfiguration> ruleConfigs, final Collection<ShardingSphereRule> toBeRemovedRules) throws SQLException {
+    private void refreshMetadata(final String databaseName, final Collection<RuleConfiguration> ruleConfigs, final Collection<ShardingSphereRule> toBeRemovedRules) {
         metaDataContexts.update(new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).createByAlterRule(databaseName, ruleConfigs, metaDataContexts));
         closeOriginalRules(toBeRemovedRules);
     }

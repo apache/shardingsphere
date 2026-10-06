@@ -41,31 +41,39 @@
     </show-migration-check-status>
     
     <migrate-table sql-case-id="migrate-table-without-schema-target-db">
-        <source-resource-name>ds_0</source-resource-name>
-        <source-table-name>t_order</source-table-name>
-        <target-table-name>t_order</target-table-name>
+        <source-resource-name name="ds_0" />
+        <source-table-name name="t_order" />
+        <target-table-name name="t_order" />
     </migrate-table>
     
     <migrate-table sql-case-id="migrate-table-with-schema">
-        <source-resource-name>ds_0</source-resource-name>
-        <source-schema-name>public</source-schema-name>
-        <source-table-name>t_order</source-table-name>
-        <target-table-name>t_order</target-table-name>
+        <source-resource-name name="ds_0" />
+        <source-schema-name name="public" />
+        <source-table-name name="t_order" />
+        <target-table-name name="t_order" />
     </migrate-table>
     
     <migrate-table sql-case-id="migrate-table-with-target-db">
-        <source-resource-name>ds_0</source-resource-name>
-        <source-table-name>t_order</source-table-name>
+        <source-resource-name name="ds_0" />
+        <source-table-name name="t_order" />
         <target-database-name>sharding_db</target-database-name>
-        <target-table-name>t_order</target-table-name>
+        <target-table-name name="t_order" />
     </migrate-table>
     
     <migrate-table sql-case-id="migrate-table-with-schema-target-db">
-        <source-resource-name>ds_0</source-resource-name>
-        <source-schema-name>public</source-schema-name>
-        <source-table-name>t_order</source-table-name>
+        <source-resource-name name="ds_0" />
+        <source-schema-name name="public" />
+        <source-table-name name="t_order" />
         <target-database-name>sharding_db</target-database-name>
-        <target-table-name>t_order</target-table-name>
+        <target-table-name name="t_order" />
+    </migrate-table>
+
+    <migrate-table sql-case-id="migrate-table-with-qualified-identifiers">
+        <source-resource-name name="FOO_DS" start-delimiter="`" end-delimiter="`" />
+        <source-schema-name name="FOO_SCHEMA" start-delimiter="`" end-delimiter="`" />
+        <source-table-name name="FOO_TABLE" start-delimiter="`" end-delimiter="`" />
+        <target-database-name>target_db</target-database-name>
+        <target-table-name name="FOO_TABLE" />
     </migrate-table>
     
     <rollback-migration sql-case-id="rollback-migration">

@@ -17,16 +17,18 @@
 
 package org.apache.shardingsphere.distsql.handler.engine.update;
 
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorAwareSetter;
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.database.DatabaseRuleDefinitionExecuteEngine;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.global.GlobalRuleDefinitionExecuteEngine;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutorFactory;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorRequiredChecker;
-import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
+import org.apache.shardingsphere.distsql.handler.context.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.prepare.DatabaseNameUtils;
+import org.apache.shardingsphere.distsql.handler.engine.prepare.DistSQLExecutorAwareSetter;
+import org.apache.shardingsphere.distsql.handler.engine.prepare.DistSQLExecutorRequiredChecker;
+import org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.engine.update.rule.database.DatabaseRuleDefinitionExecutorFactory;
+import org.apache.shardingsphere.distsql.handler.engine.update.rule.global.GlobalRuleDefinitionExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.engine.update.rule.global.GlobalRuleDefinitionExecutorFactory;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.AdvancedDistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.database.DatabaseRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.DatabaseRuleDefinitionStatement;

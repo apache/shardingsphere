@@ -36,13 +36,18 @@ permissions:
   contents: read
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
 
 jobs:
-  mcp-unit-tests:
-    name: MCP - Unit Tests with JDK 21
-    if: github.repository == 'apache/shardingsphere'
-    runs-on: ubuntu-latest
+  global-environment:
+    name: Import Global Environment
+    uses: ./.github/workflows/reusable-global-environment.yml
+
+  mcp-ci:
+    name: MCP - CI with JDK 21
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
+    needs: global-environment
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6.0.1

@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 /**
  * Aggregation distinct projection.
  */
-@EqualsAndHashCode(callSuper = true)
 @Getter
+@EqualsAndHashCode(callSuper = true)
 public final class AggregationDistinctProjection extends AggregationProjection {
     
     private final int startIndex;

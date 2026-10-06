@@ -19,9 +19,11 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 
 import java.util.Optional;
 
@@ -34,9 +36,9 @@ public final class PipelineDataConsistencyCalculateSQLBuilder {
     
     private final PipelineSQLSegmentBuilder sqlSegmentBuilder;
     
-    public PipelineDataConsistencyCalculateSQLBuilder(final DatabaseType databaseType) {
+    public PipelineDataConsistencyCalculateSQLBuilder(final DatabaseType databaseType, final DatabaseIdentifierContext identifierContext) {
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
-        sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
+        sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType, identifierContext);
     }
     
     /**
@@ -47,6 +49,6 @@ public final class PipelineDataConsistencyCalculateSQLBuilder {
      * @return built SQL
      */
     public Optional<String> buildCRC32SQL(final QualifiedTable qualifiedTable, final String columnName) {
-        return dialectSQLBuilder.buildCRC32SQL(sqlSegmentBuilder.getQualifiedTableName(qualifiedTable), sqlSegmentBuilder.getEscapedIdentifier(columnName));
+        return dialectSQLBuilder.buildCRC32SQL(sqlSegmentBuilder.getQualifiedTableName(qualifiedTable), sqlSegmentBuilder.getEscapedIdentifier(IdentifierScope.COLUMN, columnName));
     }
 }

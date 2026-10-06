@@ -151,6 +151,9 @@ public final class ExpressionAssert {
         } else {
             assertNotNull(actual, assertContext.getText("Actual literal expression should exist."));
             assertThat(assertContext.getText("Literal assertion error: "), String.valueOf(actual.getLiterals()), is(expected.getValue()));
+            if (null != expected.getNullLiteral()) {
+                assertThat(assertContext.getText("Null literal assertion error: "), actual.isNullLiteral(), is(expected.getNullLiteral()));
+            }
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
@@ -187,6 +190,9 @@ public final class ExpressionAssert {
             assertNull(actual, assertContext.getText("Actual subquery expression should not exist."));
         } else {
             assertNotNull(actual, assertContext.getText("Actual subquery expression should exist."));
+            if (null != expected.getText()) {
+                assertThat(assertContext.getText("Subquery text assertion error: "), actual.getText(), is(expected.getText()));
+            }
             assertSubquery(assertContext, actual.getSubquery(), expected);
         }
     }

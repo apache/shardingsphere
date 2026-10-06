@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -29,7 +30,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.PreparedStatement;
@@ -45,7 +50,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,27 +71,35 @@ class JDBCExecutorCallbackTest {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
     }
     
-    @Test
-    void assertExecuteFailedAndProtocolTypeDifferentWithDatabaseType() throws SQLException {
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(booleans = {true, false})
+    void assertExecuteWithSaneResult(final boolean isTrunkThread) throws SQLException {
         Object saneResult = new Object();
+        SQLException expectedException = new SQLException("foo_failure");
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
+        when(resourceMetaData.getStorageUnits().containsKey("ds")).thenReturn(true);
         when(resourceMetaData.getStorageUnits().get("ds").getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        JDBCExecutorCallback<Object> callback =
-                new JDBCExecutorCallback<Object>(TypedSPILoader.getService(DatabaseType.class, "MySQL"), resourceMetaData, mock(SelectStatement.class), true) {
-                    
-                    @Override
-                    protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
-                        throw new SQLException("");
-                    }
-                    
-                    @Override
-                    protected Optional<Object> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
-                        return Optional.of(saneResult);
-                    }
-                };
-        String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
-        assertThat(callback.execute(units, true, processId), is(Collections.singletonList(saneResult)));
-        assertThat(callback.execute(units, false, processId), is(Collections.emptyList()));
+        JDBCExecutorCallback<Object> callback = new JDBCExecutorCallback<Object>(mock(DatabaseType.class), resourceMetaData, mock(SelectStatement.class), true) {
+            
+            @Override
+            protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
+                throw expectedException;
+            }
+            
+            @Override
+            protected Optional<Object> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
+                return Optional.of(saneResult);
+            }
+        };
+        try (MockedConstruction<SPISQLExecutionHook> mocked = mockConstruction(SPISQLExecutionHook.class)) {
+            assertThat(callback.execute(units, isTrunkThread, "foo_process"), is(isTrunkThread ? Collections.singletonList(saneResult) : Collections.emptyList()));
+            assertThat(mocked.constructed().size(), is(1));
+            SPISQLExecutionHook sqlExecutionHook = mocked.constructed().get(0);
+            InOrder inOrder = inOrder(sqlExecutionHook);
+            inOrder.verify(sqlExecutionHook).start("ds", "SELECT now()", Collections.emptyList(), resourceMetaData.getStorageUnits().get("ds").getConnectionProperties(), isTrunkThread);
+            inOrder.verify(sqlExecutionHook).finishFailure(expectedException);
+            verifyNoMoreInteractions(sqlExecutionHook);
+        }
     }
     
     @Test

@@ -43,7 +43,7 @@ public final class ReflectContext implements AutoCloseable {
      *
      * @param javaClassPath java class path
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public ReflectContext(final String javaClassPath) {
         Object builderInstance = Class.forName(CONTEXT_CLASS_NAME)
                 .getMethod("newBuilder", String[].class)
@@ -68,7 +68,7 @@ public final class ReflectContext implements AutoCloseable {
      * @param languageId languageId
      * @return {@link org.apache.shardingsphere.infra.expr.espresso.ReflectValue}
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public ReflectValue getBindings(final String languageId) {
         Object valueInstance = Class.forName(CONTEXT_CLASS_NAME)
                 .getMethod("getBindings", String.class)
@@ -77,7 +77,7 @@ public final class ReflectContext implements AutoCloseable {
     }
     
     @Override
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public void close() {
         Class.forName(CONTEXT_CLASS_NAME).getMethod("close").invoke(contextInstance);
     }

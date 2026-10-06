@@ -262,9 +262,9 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             int columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
             String columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
             Integer typeOID = columnTypeOIDs.get(columnIndex);
-            columnDescriptions.add(null != typeOID
-                    ? new PostgreSQLColumnDescription(columnName, columnIndex, typeOID, columnLength, PostgreSQLValueFormat.TEXT.getCode())
-                    : new PostgreSQLColumnDescription(columnName, columnIndex, columnType, columnLength, columnTypeName));
+            columnDescriptions.add(null == typeOID
+                    ? new PostgreSQLColumnDescription(columnName, columnIndex, columnType, columnLength, columnTypeName)
+                    : new PostgreSQLColumnDescription(columnName, columnIndex, typeOID, columnLength, PostgreSQLValueFormat.TEXT.getCode()));
         }
         logicPreparedStatement.setRowDescription(new PostgreSQLRowDescriptionPacket(columnDescriptions));
     }

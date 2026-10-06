@@ -71,7 +71,7 @@ public final class FirebirdSRPAuthenticationData {
     
     private byte[] sessionKey;
     
-    @SneakyThrows
+    @SneakyThrows(NoSuchAlgorithmException.class)
     public FirebirdSRPAuthenticationData(final String hashAlgorithm, final String username, final String password, final String userPublicKey) {
         sha1Md = MessageDigest.getInstance("SHA-1");
         clientProofHashAlgorithm = hashAlgorithm;
@@ -215,7 +215,7 @@ public final class FirebirdSRPAuthenticationData {
      * @return normalized login
      */
     static String normalizeLogin(final String login) {
-        if (login == null || login.isEmpty()) {
+        if (null == login || login.isEmpty()) {
             return login;
         }
         if (login.length() > 2 && login.charAt(0) == '"' && login.charAt(login.length() - 1) == '"') {

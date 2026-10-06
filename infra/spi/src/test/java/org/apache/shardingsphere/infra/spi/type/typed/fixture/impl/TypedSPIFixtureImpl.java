@@ -43,4 +43,9 @@ public final class TypedSPIFixtureImpl implements TypedSPIFixture {
     public Collection<Object> getTypeAliases() {
         return Collections.singleton("TYPED.ALIAS");
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

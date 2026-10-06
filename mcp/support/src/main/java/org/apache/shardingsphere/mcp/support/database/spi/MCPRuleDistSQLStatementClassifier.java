@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.mcp.support.database.spi;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * Classifier for feature-specific rule DistSQL statements.
  */
+@SingletonSPI
 public interface MCPRuleDistSQLStatementClassifier extends ShardingSphereSPI {
     
     /**

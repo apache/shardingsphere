@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sharding.api.config.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * Sharding table reference rule configuration.
  */
@@ -27,7 +29,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class ShardingTableReferenceRuleConfiguration {
     
+    @NotBlank
     private final String name;
     
+    @NotBlank
     private final String reference;
 }

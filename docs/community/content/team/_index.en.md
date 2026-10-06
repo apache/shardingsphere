@@ -349,6 +349,11 @@ chapter = true
                 <b>Chenyang Ma</b>
             </a>
         </td>
+         <td>
+            <a href="https://github.com/ClaireLytt" target="_blank">
+                <b>Yantong Li</b>
+            </a>
+        </td>
     </tr>
 </table>
 

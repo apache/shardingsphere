@@ -31,8 +31,8 @@ import java.io.Serializable;
  * So this customized class object will be returned on parsing.</p>
  */
 @RequiredArgsConstructor
-@EqualsAndHashCode
 @Getter
+@EqualsAndHashCode
 public final class MySQLBinaryString implements Serializable {
     
     private static final long serialVersionUID = 2448062591593788665L;

@@ -21,7 +21,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
+import org.apache.shardingsphere.transaction.config.validator.ValidTransactionProviderType;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.Properties;
 
 /**
@@ -30,8 +34,11 @@ import java.util.Properties;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
+@ValidTransactionProviderType(groups = RuleConfigurationTypeValidationGroup.class)
 public final class TransactionRuleConfiguration implements GlobalRuleConfiguration {
     
+    @NotBlank
+    @Pattern(regexp = "LOCAL|XA|BASE", flags = Pattern.Flag.CASE_INSENSITIVE)
     private final String defaultType;
     
     private final String providerType;

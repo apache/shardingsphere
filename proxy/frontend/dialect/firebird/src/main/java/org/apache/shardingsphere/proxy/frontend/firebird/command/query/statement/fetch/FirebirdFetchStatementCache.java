@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -98,7 +99,7 @@ public final class FirebirdFetchStatementCache {
      *
      * @param connectionId connection ID
      */
-    @SneakyThrows
+    @SneakyThrows(SQLException.class)
     public void unregisterConnection(final int connectionId) {
         Map<Integer, ProxyBackendHandler> statements = statementRegistry.remove(connectionId);
         if (null == statements) {

@@ -1201,9 +1201,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         }
         if (nameSegmentIterator.hasNext()) {
             NameSegment databaseName = nameSegmentIterator.next();
-            if (null != owner) {
-                owner.setOwner(new OwnerSegment(databaseName.getStartIndex(), databaseName.getStopIndex(), databaseName.getIdentifier()));
-            }
+            owner.setOwner(new OwnerSegment(databaseName.getStartIndex(), databaseName.getStopIndex(), databaseName.getIdentifier()));
         }
         return result;
     }
@@ -1254,8 +1252,8 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCursorName(final CursorNameContext ctx) {
-        return null != ctx.name() ? new CursorNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.name()))
-                : new CursorNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.hostVariable()));
+        return null == ctx.name() ? new CursorNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.hostVariable()))
+                : new CursorNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.name()));
     }
     
     @Override

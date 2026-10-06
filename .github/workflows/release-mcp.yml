@@ -35,7 +35,7 @@ permissions:
   contents: read
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
   MCP_IMAGE: ghcr.io/apache/shardingsphere-mcp
   MCP_PUBLISHER_VERSION: v1.7.9
   MCP_SERVER_NAME: io.github.apache/shardingsphere-mcp
@@ -43,13 +43,13 @@ env:
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
+    uses: ./.github/workflows/reusable-global-environment.yml
 
   release-mcp:
     name: Release - MCP
-    if: github.repository == 'apache/shardingsphere'
     needs: global-environment
-    runs-on: ubuntu-latest
+    if: github.repository == 'apache/shardingsphere'
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     permissions:
       contents: read
       id-token: write
@@ -99,9 +99,8 @@ jobs:
             exit 1
           fi
           DISTRIBUTION_HOME=$(cd "${DISTRIBUTION_HOME}" && pwd)
-          ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-            -Dtest=PackagedDistributionE2ETest \
-            -Dsurefire.failIfNoSpecifiedTests=true \
+          ./mvnw -pl test/e2e/mcp verify -Dspotless.skip=true \
+            -Dit.test=PackagedDistributionE2EIT \
             -De2e.run.type=DOCKER \
             -Dmcp.e2e.container.image=shardingsphere-mcp-release:local \
             -Dmcp.distribution.home="${DISTRIBUTION_HOME}" \
@@ -151,9 +150,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-            -Dtest=PackagedDistributionE2ETest#assertLaunchContainerOverHttp+assertLaunchContainerOverStdio \
-            -Dsurefire.failIfNoSpecifiedTests=true \
+          ./mvnw -pl test/e2e/mcp verify -Dspotless.skip=true \
+            -Dit.test=PackagedDistributionE2EIT#assertLaunchContainerOverHttp+assertLaunchContainerOverStdio \
             -De2e.run.type=DOCKER \
             -Dmcp.e2e.container.image="${{ env.MCP_IMAGE }}@${{ steps.push-image.outputs.digest }}" \
             -B -ntp

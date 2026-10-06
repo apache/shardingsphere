@@ -142,7 +142,7 @@ class LiteralExpressionConverterTest {
     
     @Test
     void assertConvertUtilDate() {
-        Date date = java.sql.Date.valueOf("2020-01-01");
+        Date date = Date.valueOf("2020-01-01");
         SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, date), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getTypeName(), is(SqlTypeName.DATE));

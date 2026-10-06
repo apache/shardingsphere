@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.postgresql;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -32,12 +33,14 @@ public final class PostgreSQLProjectionIdentifierExtractor implements DialectPro
     
     @Override
     public String getIdentifierValue(final IdentifierValue identifierValue) {
-        return identifierValue.getValue().toLowerCase();
+        return PostgreSQLIdentifierUtils.isUnicodeQuoted(identifierValue.getValue())
+                ? PostgreSQLIdentifierUtils.unquoteUnicode(identifierValue.getValue())
+                : PostgreSQLIdentifierUtils.fold(identifierValue.getValue());
     }
     
     @Override
     public String getColumnNameFromFunction(final String functionName, final String functionExpression) {
-        return functionName.toLowerCase();
+        return PostgreSQLIdentifierUtils.fold(functionName);
     }
     
     @Override
@@ -47,13 +50,23 @@ public final class PostgreSQLProjectionIdentifierExtractor implements DialectPro
         }
         ExpressionSegment innerExpressionSegment = ((ExpressionProjectionSegment) expressionSegment).getExpr();
         if (innerExpressionSegment instanceof FunctionSegment) {
-            return ((FunctionSegment) innerExpressionSegment).getFunctionName();
+            return getColumnNameFromFunctionSegment((FunctionSegment) innerExpressionSegment);
         }
         if (innerExpressionSegment instanceof AggregationProjectionSegment) {
             AggregationProjectionSegment aggregationProjectionSegment = (AggregationProjectionSegment) innerExpressionSegment;
             return getColumnNameFromFunction(aggregationProjectionSegment.getType().name(), aggregationProjectionSegment.getExpression());
         }
         return "?column?";
+    }
+    
+    private String getColumnNameFromFunctionSegment(final FunctionSegment functionSegment) {
+        if (PostgreSQLIdentifierUtils.isUnicodeQuoted(functionSegment.getFunctionName())) {
+            return PostgreSQLIdentifierUtils.unquoteUnicode(functionSegment.getFunctionName());
+        }
+        IdentifierValue functionName = new IdentifierValue(functionSegment.getFunctionName());
+        return QuoteCharacter.NONE == functionName.getQuoteCharacter()
+                ? getColumnNameFromFunction(functionName.getValue(), functionSegment.getText())
+                : functionName.getValue();
     }
     
     @Override

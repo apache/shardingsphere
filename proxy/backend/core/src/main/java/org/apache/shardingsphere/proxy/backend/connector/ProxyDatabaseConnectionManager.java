@@ -160,14 +160,12 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     }
     
     private List<Connection> createNewConnections(final String databaseName, final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(databaseName.toLowerCase(), dataSourceName, connectionSize, connectionMode);
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource()
+                .getConnections(databaseName.toLowerCase(), dataSourceName, connectionSize, connectionMode, this::replayTransactionOptions);
         setSessionVariablesIfNecessary(result);
-        for (Connection each : result) {
-            replayTransactionOption(each);
-        }
         if (connectionSession.getConnectionContext().getTransactionContext().isTransactionStarted()) {
             for (Connection each : result) {
-                replayMethodsInvocation(each);
+                processConnectionPostProcessors(each);
             }
         }
         return result;
@@ -220,17 +218,14 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         }
     }
     
-    private void replayMethodsInvocation(final Connection target) throws SQLException {
+    private void processConnectionPostProcessors(final Connection target) throws SQLException {
         for (ConnectionPostProcessor each : connectionPostProcessors) {
             each.process(target);
         }
     }
     
     @SuppressWarnings("MagicConstant")
-    private void replayTransactionOption(final Connection connection) throws SQLException {
-        if (null == connection) {
-            return;
-        }
+    private void replayTransactionOptions(final Connection connection) throws SQLException {
         if (connectionSession.isReadOnly()) {
             connection.setReadOnly(true);
         }

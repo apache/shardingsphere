@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.manager.resource;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -35,6 +36,9 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMetaDataPersistService;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
@@ -49,6 +53,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -65,7 +71,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
-@ExtendWith(AutoMockExtension.class)
+@ExtendWith({AutoMockExtension.class, LogCaptureExtension.class})
+@LogCaptureSettings(suppressOutput = true)
 class StorageUnitManagerTest {
     
     private static final String DATABASE_NAME = "foo_db";
@@ -77,7 +84,8 @@ class StorageUnitManagerTest {
         SwitchingResource switchingResource = new SwitchingResource(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap());
         when(resourceSwitchManager.switchByRegisterStorageUnit(any(ResourceMetaData.class), any(Map.class), anyBoolean())).thenReturn(switchingResource);
         ShardingSphereDatabase reloadDatabase = mock(ShardingSphereDatabase.class);
-        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class));
+        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(reloadDatabase.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         MetaDataContexts reloadMetaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(reloadMetaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(reloadDatabase);
@@ -93,15 +101,17 @@ class StorageUnitManagerTest {
     }
     
     @Test
-    void assertRegisterLogsErrorWhenSQLException() {
+    void assertRegisterLogsErrorWhenSQLException(final LogCaptureAssertion logCaptureAssertion) {
         MetaDataContexts metaDataContexts = mockMetaDataContexts();
         ResourceSwitchManager resourceSwitchManager = mock(ResourceSwitchManager.class);
+        SQLException expectedException = new SQLException("register error");
         doAnswer(invocation -> {
-            throw new SQLException("register error");
+            throw expectedException;
         }).when(resourceSwitchManager).switchByRegisterStorageUnit(any(ResourceMetaData.class), any(Map.class), anyBoolean());
         assertDoesNotThrow(() -> createManager(metaDataContexts, resourceSwitchManager).register(DATABASE_NAME, Collections.emptyMap()));
         verify(metaDataContexts, never()).update(any(MetaDataContexts.class));
         verify(metaDataContexts.getMetaData(), never()).putDatabase(any(ShardingSphereDatabase.class));
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @Test
@@ -132,7 +142,8 @@ class StorageUnitManagerTest {
         MetaDataContexts reloadMetaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(reloadMetaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(reloadDatabase);
         when(reloadMetaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class));
+        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(schema));
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
@@ -143,15 +154,17 @@ class StorageUnitManagerTest {
     }
     
     @Test
-    void assertAlterLogsErrorWhenSQLException() {
+    void assertAlterLogsErrorWhenSQLException(final LogCaptureAssertion logCaptureAssertion) {
         MetaDataContexts metaDataContexts = mockMetaDataContexts();
         ResourceSwitchManager resourceSwitchManager = mock(ResourceSwitchManager.class);
+        SQLException expectedException = new SQLException("alter error");
         doAnswer(invocation -> {
-            throw new SQLException("alter error");
+            throw expectedException;
         }).when(resourceSwitchManager).switchByAlterStorageUnit(any(ResourceMetaData.class), any(Map.class), anyBoolean());
         assertDoesNotThrow(() -> createManager(metaDataContexts, resourceSwitchManager).alter(DATABASE_NAME, Collections.emptyMap()));
         verify(metaDataContexts, never()).update(any(MetaDataContexts.class));
         verify(metaDataContexts.getMetaData(), never()).putDatabase(any(ShardingSphereDatabase.class));
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @Test
@@ -164,7 +177,8 @@ class StorageUnitManagerTest {
         MetaDataContexts reloadMetaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(reloadMetaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(reloadDatabase);
         when(reloadMetaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class));
+        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(schema));
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
@@ -175,15 +189,17 @@ class StorageUnitManagerTest {
     }
     
     @Test
-    void assertUnregisterLogsErrorWhenSQLException() {
+    void assertUnregisterLogsErrorWhenSQLException(final LogCaptureAssertion logCaptureAssertion) {
         MetaDataContexts metaDataContexts = mockMetaDataContexts();
         ResourceSwitchManager resourceSwitchManager = mock(ResourceSwitchManager.class);
+        SQLException expectedException = new SQLException("unregister error");
         doAnswer(invocation -> {
-            throw new SQLException("unregister error");
+            throw expectedException;
         }).when(resourceSwitchManager).switchByUnregisterStorageUnit(any(ResourceMetaData.class), any(Collection.class));
         assertDoesNotThrow(() -> createManager(metaDataContexts, resourceSwitchManager).unregister(DATABASE_NAME, "ds_0"));
         verify(metaDataContexts, never()).update(any(MetaDataContexts.class));
         verify(metaDataContexts.getMetaData(), never()).putDatabase(any(ShardingSphereDatabase.class));
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     private MetaDataContexts mockMetaDataContexts() {
@@ -194,7 +210,7 @@ class StorageUnitManagerTest {
         when(database.getResourceMetaData()).thenReturn(new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()));
         when(database.getRuleMetaData().getRules()).thenReturn(Arrays.asList(mock(ShardingSphereRule.class, withSettings().extraInterfaces(AutoCloseable.class)), mock(ShardingSphereRule.class)));
         when(metaData.getDatabase(DATABASE_NAME)).thenReturn(database);
-        when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
+        lenient().when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
         return result;
     }
     
@@ -208,7 +224,7 @@ class StorageUnitManagerTest {
         return new StorageUnitManager(metaDataContexts, mock(ComputeNodeInstanceContext.class), resourceSwitchManager, metaDataPersistFacade);
     }
     
-    @SneakyThrows
+    @SneakyThrows(Exception.class)
     private void verifyClosableRuleInvoked(final MetaDataContexts metaDataContexts) {
         verify((AutoCloseable) metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData().getRules().iterator().next()).close();
     }

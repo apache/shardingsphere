@@ -57,7 +57,7 @@ public final class BuildIndexStatement extends DDLStatement {
         
         @Override
         public Collection<IndexSegment> getIndexes() {
-            return null != index ? Collections.singleton(index) : Collections.emptyList();
+            return null == index ? Collections.emptyList() : Collections.singleton(index);
         }
         
         @Override

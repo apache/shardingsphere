@@ -42,7 +42,11 @@ public final class OracleProjectionIdentifierExtractor implements DialectProject
     @Override
     public String getColumnNameFromExpression(final ExpressionSegment expressionSegment) {
         if (expressionSegment instanceof ExpressionProjectionSegment && ((ExpressionProjectionSegment) expressionSegment).getExpr() instanceof LiteralExpressionSegment) {
-            Object literal = ((LiteralExpressionSegment) ((ExpressionProjectionSegment) expressionSegment).getExpr()).getLiterals();
+            LiteralExpressionSegment literalExpression = (LiteralExpressionSegment) ((ExpressionProjectionSegment) expressionSegment).getExpr();
+            if (literalExpression.isNullLiteral()) {
+                return "NULL";
+            }
+            Object literal = literalExpression.getLiterals();
             if (literal instanceof String) {
                 return String.format("'%s'", literal.toString().replace("'", "''"));
             }

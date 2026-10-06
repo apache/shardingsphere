@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -25,9 +24,12 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
 import org.apache.shardingsphere.driver.jdbc.core.savepoint.ShardingSphereSavepoint;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.connection.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -64,7 +66,9 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final MethodInvocationRecorder<Connection> methodInvocationRecorder = new MethodInvocationRecorder<>();
+    private final MethodInvocationRecorder<Connection> preTransactionMethodInvocationRecorder = new MethodInvocationRecorder<>();
+    
+    private final MethodInvocationRecorder<Connection> postConnectionCreationMethodInvocationRecorder = new MethodInvocationRecorder<>();
     
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
@@ -78,7 +82,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     }
     
     private String getKey(final String databaseName, final String dataSourceName) {
-        return databaseName.toLowerCase() + "." + dataSourceName;
+        return String.join(".", databaseName.toLowerCase(), dataSourceName);
     }
     
     /**
@@ -98,7 +102,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @throws SQLException SQL exception
      */
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
-        methodInvocationRecorder.record("setAutoCommit", connection -> connection.setAutoCommit(autoCommit));
+        postConnectionCreationMethodInvocationRecorder.record("setAutoCommit", connection -> connection.setAutoCommit(autoCommit));
         forceExecuteTemplate.execute(getCachedConnections(), connection -> connection.setAutoCommit(autoCommit));
         if (autoCommit) {
             clearCachedConnections();
@@ -107,6 +111,15 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     
     private Collection<Connection> getCachedConnections() {
         return cachedConnections.values();
+    }
+    
+    /**
+     * Get cached physical connection size.
+     *
+     * @return cached physical connection size
+     */
+    public int getConnectionSize() {
+        return cachedConnections.size();
     }
     
     /**
@@ -202,7 +215,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     }
     
     private void clear() {
-        methodInvocationRecorder.remove("setSavepoint");
+        postConnectionCreationMethodInvocationRecorder.remove("setSavepoint");
         for (Connection each : getCachedConnections()) {
             ConnectionSavepointManager.getInstance().transactionFinished(each);
         }
@@ -221,7 +234,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         for (Connection each : getCachedConnections()) {
             ConnectionSavepointManager.getInstance().setSavepoint(each, savepointName);
         }
-        methodInvocationRecorder.record("setSavepoint", target -> ConnectionSavepointManager.getInstance().setSavepoint(target, savepointName));
+        postConnectionCreationMethodInvocationRecorder.record("setSavepoint", target -> ConnectionSavepointManager.getInstance().setSavepoint(target, savepointName));
         return result;
     }
     
@@ -236,7 +249,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         for (Connection each : getCachedConnections()) {
             ConnectionSavepointManager.getInstance().setSavepoint(each, result.getSavepointName());
         }
-        methodInvocationRecorder.record("setSavepoint", target -> ConnectionSavepointManager.getInstance().setSavepoint(target, result.getSavepointName()));
+        postConnectionCreationMethodInvocationRecorder.record("setSavepoint", target -> ConnectionSavepointManager.getInstance().setSavepoint(target, result.getSavepointName()));
         return result;
     }
     
@@ -247,7 +260,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @throws SQLException SQL exception
      */
     public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
-        methodInvocationRecorder.remove("setSavepoint");
+        postConnectionCreationMethodInvocationRecorder.remove("setSavepoint");
         for (Connection each : getCachedConnections()) {
             ConnectionSavepointManager.getInstance().releaseSavepoint(each, savepoint.getSavepointName());
         }
@@ -270,7 +283,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @throws SQLException SQL exception
      */
     public void setTransactionIsolation(final int level) throws SQLException {
-        methodInvocationRecorder.record("setTransactionIsolation", connection -> connection.setTransactionIsolation(level));
+        preTransactionMethodInvocationRecorder.record("setTransactionIsolation", connection -> connection.setTransactionIsolation(level));
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setTransactionIsolation(level));
     }
     
@@ -281,7 +294,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @throws SQLException SQL exception
      */
     public void setReadOnly(final boolean readOnly) throws SQLException {
-        methodInvocationRecorder.record("setReadOnly", connection -> connection.setReadOnly(readOnly));
+        preTransactionMethodInvocationRecorder.record("setReadOnly", connection -> connection.setReadOnly(readOnly));
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setReadOnly(readOnly));
     }
     
@@ -333,11 +346,11 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         return getConnections0(databaseName, dataSourceName, connectionOffset, connectionSize, connectionMode);
     }
     
+    @HighFrequencyInvocation
     private List<Connection> getConnections0(final String databaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
                                              final ConnectionMode connectionMode) throws SQLException {
         String cacheKey = getKey(databaseName, dataSourceName);
-        DataSource dataSource = currentDatabaseName.equals(databaseName) ? dataSourceMap.get(cacheKey) : contextManager.getStorageUnits(databaseName).get(dataSourceName).getDataSource();
-        Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
+        DataSource dataSource = getDataSource(databaseName, dataSourceName, cacheKey);
         Collection<Connection> connections;
         synchronized (cachedConnections) {
             connections = cachedConnections.get(cacheKey);
@@ -365,13 +378,29 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         return result;
     }
     
+    private DataSource getDataSource(final String databaseName, final String dataSourceName, final String cacheKey) throws SQLException {
+        if (!currentDatabaseName.equals(databaseName) || connectionContext.getTransactionContext().isTransactionStarted()) {
+            DataSource dataSource = currentDatabaseName.equals(databaseName) ? dataSourceMap.get(cacheKey) : contextManager.getStorageUnits(databaseName).get(dataSourceName).getDataSource();
+            ShardingSpherePreconditions.checkNotNull(dataSource, () -> new NullPointerException(String.format("Missing the data source name: '%s'", dataSourceName)));
+            return dataSource;
+        }
+        StorageUnit storageUnit = contextManager.getStorageUnits(databaseName).get(dataSourceName);
+        ShardingSpherePreconditions.checkNotNull(storageUnit, () -> new NullPointerException(String.format("Missing the data source name: '%s'", dataSourceName)));
+        DataSource result = storageUnit.getDataSource();
+        if (result != dataSourceMap.get(cacheKey)) {
+            forceExecuteTemplate.execute(cachedConnections.removeAll(cacheKey), Connection::close);
+            dataSourceMap.put(cacheKey, result);
+        }
+        return result;
+    }
+    
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     private List<Connection> createConnections(final String databaseName, final String dataSourceName, final DataSource dataSource, final int connectionSize,
                                                final ConnectionMode connectionMode) throws SQLException {
         if (1 == connectionSize) {
             Connection connection = createConnection(databaseName, dataSourceName, dataSource, connectionContext.getTransactionContext());
             try {
-                methodInvocationRecorder.replay(connection);
+                postConnectionCreationMethodInvocationRecorder.replay(connection);
             } catch (final SQLException ex) {
                 connection.close();
                 throw ex;
@@ -392,7 +421,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         for (int i = 0; i < connectionSize; i++) {
             try {
                 Connection connection = createConnection(databaseName, dataSourceName, dataSource, transactionConnectionContext);
-                methodInvocationRecorder.replay(connection);
+                postConnectionCreationMethodInvocationRecorder.replay(connection);
                 result.add(connection);
             } catch (final SQLException ex) {
                 for (Connection each : result) {
@@ -406,8 +435,19 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     
     private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource,
                                         final TransactionConnectionContext transactionConnectionContext) throws SQLException {
-        Optional<Connection> connectionInTransaction = getConnectionTransaction().getConnection(databaseName, dataSourceName, transactionConnectionContext);
-        return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
+        Optional<Connection> connectionInTransaction = getConnectionTransaction().getConnection(
+                databaseName, dataSourceName, transactionConnectionContext, preTransactionMethodInvocationRecorder::replay);
+        if (connectionInTransaction.isPresent()) {
+            return connectionInTransaction.get();
+        }
+        Connection result = dataSource.getConnection();
+        try {
+            preTransactionMethodInvocationRecorder.replay(result);
+        } catch (final SQLException ex) {
+            result.close();
+            throw ex;
+        }
+        return result;
     }
     
     @Override

@@ -42,17 +42,19 @@ permissions:
   contents: read
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
   SEGMENT_DOWNLOAD_TIMEOUT_MINS: 1
 
 jobs:
   global-environment:
     name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
+    uses: ./.github/workflows/reusable-global-environment.yml
 
   detect-and-generate-matrix:
     name: Detect Changes and Generate Matrix
-    runs-on: ubuntu-latest
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
+    needs: global-environment
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 5
     outputs:
       smoke-matrix: ${{ steps.generate-matrix.outputs.smoke-matrix }}
@@ -68,7 +70,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - id: filter
-        uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d
         with:
           filters: .github/workflows/resources/filter/e2e-sql-filters.yml
       - id: generate-matrix
@@ -128,9 +130,9 @@ jobs:
 
   prepare-e2e-artifacts:
     name: Prepare E2E Artifacts
-    if: github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true'
+    if: needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true'
     needs: [ global-environment, detect-and-generate-matrix ]
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6.0.1
@@ -141,7 +143,7 @@ jobs:
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
       - name: Build E2E Image
-        run: ./mvnw -B clean install -am -pl test/e2e/sql -Pe2e.env.docker -DskipTests -Dspotless.apply.skip=true
+        run: ./mvnw -B clean install -am -pl test/e2e/sql -Pe2e.env.docker -DskipTests
       - uses: ./.github/workflows/resources/actions/save-maven-cache
         with:
           cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
@@ -152,8 +154,8 @@ jobs:
   e2e-sql-smoke:
     name: E2E - SQL (Smoke)
     needs: [ detect-and-generate-matrix, prepare-e2e-artifacts, global-environment ]
-    if: always() && github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true' && needs.detect-and-generate-matrix.result == 'success' && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
-    runs-on: ubuntu-latest
+    if: always() && needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true' && needs.detect-and-generate-matrix.result == 'success' && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     strategy:
       max-parallel: 15
@@ -183,16 +185,16 @@ jobs:
         with:
           load-docker-image: ${{ matrix.adapter == 'proxy' }}
       - name: Run E2E Test
-        run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -De2e.run.type=DOCKER -De2e.artifact.modes=${{ matrix.mode }} -De2e.artifact.adapters=${{ matrix.adapter }} -De2e.run.additional.cases=false -De2e.scenarios=${{ matrix.scenario }} -De2e.artifact.databases=${{ matrix.database }} ${{ matrix.additional-options }}
+        run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -De2e.run.type=DOCKER -De2e.artifact.modes=${{ matrix.mode }} -De2e.artifact.adapters=${{ matrix.adapter }} -De2e.run.additional.cases=false -De2e.scenarios=${{ matrix.scenario }} -De2e.artifact.databases=${{ matrix.database }} ${{ matrix.additional-options }}
 
   detect-remaining-matrix:
     name: Detect Remaining Matrix
-    needs: [ detect-and-generate-matrix, e2e-sql-smoke ]
+    needs: [ detect-and-generate-matrix, e2e-sql-smoke, global-environment ]
     if: >-
       always()
       && needs.detect-and-generate-matrix.outputs.has-jobs == 'true'
       && needs.e2e-sql-smoke.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 5
     outputs:
       matrix: ${{ steps.generate.outputs.matrix }}
@@ -228,10 +230,10 @@ jobs:
     needs: [ detect-remaining-matrix, prepare-e2e-artifacts, global-environment ]
     if: >-
       always()
-      && github.repository == 'apache/shardingsphere'
+      && needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true'
       && needs.detect-remaining-matrix.outputs.has-remaining-jobs == 'true'
       && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     strategy:
       max-parallel: 15
@@ -256,4 +258,4 @@ jobs:
         with:
           load-docker-image: ${{ matrix.adapter == 'proxy' }}
       - name: Run E2E Test
-        run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -De2e.run.type=DOCKER -De2e.artifact.modes=${{ matrix.mode }} -De2e.artifact.adapters=${{ matrix.adapter }} -De2e.run.additional.cases=false -De2e.scenarios=${{ matrix.scenario }} -De2e.artifact.databases=${{ matrix.database }} ${{ matrix.additional-options }}
+        run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -De2e.run.type=DOCKER -De2e.artifact.modes=${{ matrix.mode }} -De2e.artifact.adapters=${{ matrix.adapter }} -De2e.run.additional.cases=false -De2e.scenarios=${{ matrix.scenario }} -De2e.artifact.databases=${{ matrix.database }} ${{ matrix.additional-options }}

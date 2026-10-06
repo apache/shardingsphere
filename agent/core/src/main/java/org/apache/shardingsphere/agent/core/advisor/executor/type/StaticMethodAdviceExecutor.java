@@ -60,7 +60,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
      * @return return value of target invocation
      */
     @RuntimeType
-    @SneakyThrows
+    @SneakyThrows(Throwable.class)
     public Object advice(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
         adviceBefore(klass, method, args);
         Object result = null;

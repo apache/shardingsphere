@@ -76,7 +76,8 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     private static final String PRIMARY_KEY_COLUMN_META_DATA_SQL =
             "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME FROM ALL_CONS_COLUMNS WHERE OWNER = ? AND TABLE_NAME IN (%s) AND CONSTRAINT_NAME IN (%s)";
     
-    private static final String INDEX_COLUMN_META_DATA_SQL = "SELECT INDEX_NAME, COLUMN_NAME FROM ALL_IND_COLUMNS WHERE INDEX_OWNER = ? AND INDEX_NAME IN (%s)";
+    private static final String INDEX_COLUMN_META_DATA_SQL =
+            "SELECT INDEX_NAME, COLUMN_NAME FROM ALL_IND_COLUMNS WHERE INDEX_OWNER = ? AND INDEX_NAME IN (%s) ORDER BY INDEX_NAME, COLUMN_POSITION";
     
     private static final int COLLATION_START_MAJOR_VERSION = 12;
     
@@ -166,7 +167,6 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private boolean isCaseSensitive(final int dataType, final String collation, final boolean collationSupported) {
-        // TODO Resolve case sensitivity from session parameters for Oracle versions earlier than 12.2 and session-dependent collations.
         return collationSupported ? null != collation && isCaseSensitive(collation) : dataTypeOption.isStringDataType(dataType);
     }
     

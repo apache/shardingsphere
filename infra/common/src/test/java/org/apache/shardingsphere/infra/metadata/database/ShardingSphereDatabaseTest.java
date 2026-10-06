@@ -56,6 +56,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -476,7 +477,7 @@ class ShardingSphereDatabaseTest {
     
     @Test
     void assertRefreshIdentifierContextWithUpperCaseSchema() {
-        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", java.sql.Types.INTEGER, false, true, false, true, false, false);
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", Types.INTEGER, false, true, false, true, false, false);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
         ShardingSphereDatabase database = createDatabase(postgreSQLDatabaseType, schema);

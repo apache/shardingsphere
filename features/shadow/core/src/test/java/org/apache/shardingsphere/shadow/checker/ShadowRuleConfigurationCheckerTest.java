@@ -18,18 +18,13 @@
 package org.apache.shardingsphere.shadow.checker;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.exception.metadata.MissingRequiredProductionDataSourceException;
 import org.apache.shardingsphere.shadow.exception.metadata.MissingRequiredShadowDataSourceException;
-import org.apache.shardingsphere.shadow.exception.metadata.NotImplementHintShadowAlgorithmException;
-import org.apache.shardingsphere.shadow.exception.metadata.ShadowDataSourceMappingNotFoundException;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,67 +50,6 @@ class ShadowRuleConfigurationCheckerTest {
     void setUp() {
         ruleConfigChecker = (ShadowRuleConfigurationChecker) OrderedSPILoader.getServicesByClass(
                 DatabaseRuleConfigurationChecker.class, Collections.singleton(ShadowRuleConfiguration.class)).get(ShadowRuleConfiguration.class);
-    }
-    
-    @Test
-    void assertCheckWithNotExistedDefaultShadowAlgorithm() {
-        assertThrows(NotImplementHintShadowAlgorithmException.class,
-                () -> ruleConfigChecker.check("foo_db", createRuleConfigurationWithNotExistedDefaultShadowAlgorithm(), createDataSourceMap(), Collections.emptyList()));
-    }
-    
-    private ShadowRuleConfiguration createRuleConfigurationWithNotExistedDefaultShadowAlgorithm() {
-        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setShadowAlgorithms(Collections.singletonMap("foo-algo", new AlgorithmConfiguration("SQL_HINT", new Properties())));
-        result.setDefaultShadowAlgorithmName("bar-algo");
-        result.setDataSources(Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "prod_ds", "shadow_ds")));
-        result.setTables(Collections.singletonMap("foo_tbl", new ShadowTableConfiguration(Collections.singletonList("foo_ds"), Collections.singleton("foo-algo"))));
-        return result;
-    }
-    
-    @Test
-    void assertCheckWithInvalidDefaultShadowAlgorithm() {
-        assertThrows(NotImplementHintShadowAlgorithmException.class,
-                () -> ruleConfigChecker.check("foo_db", createRuleConfigurationWithInvalidDefaultShadowAlgorithm(), createDataSourceMap(), Collections.emptyList()));
-    }
-    
-    private ShadowRuleConfiguration createRuleConfigurationWithInvalidDefaultShadowAlgorithm() {
-        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setShadowAlgorithms(Collections.singletonMap("foo-algo", new AlgorithmConfiguration("REGEX_MATCH",
-                PropertiesBuilder.build(new Property("column", "foo_id"), new Property("operation", "insert"), new Property("regex", "[1]")))));
-        result.setDefaultShadowAlgorithmName("foo-algo");
-        result.setDataSources(Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "prod_ds", "shadow_ds")));
-        result.setTables(Collections.singletonMap("foo_tbl", new ShadowTableConfiguration(Collections.singletonList("foo_ds"), Collections.singleton("foo-algo"))));
-        return result;
-    }
-    
-    @Test
-    void assertCheckWithInvalidShadowTableDataSourcesReferences() {
-        assertThrows(ShadowDataSourceMappingNotFoundException.class,
-                () -> ruleConfigChecker.check("foo_db", createRuleConfigurationWithInvalidShadowTableDataSourcesReferences(), createDataSourceMap(), Collections.emptyList()));
-    }
-    
-    private ShadowRuleConfiguration createRuleConfigurationWithInvalidShadowTableDataSourcesReferences() {
-        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setShadowAlgorithms(Collections.singletonMap("foo-algo", new AlgorithmConfiguration("SQL_HINT", new Properties())));
-        result.setDefaultShadowAlgorithmName("foo-algo");
-        result.setDataSources(Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "prod_ds", "shadow_ds")));
-        result.setTables(Collections.singletonMap("foo_tbl", new ShadowTableConfiguration(Collections.singletonList("bar_ds"), Collections.singleton("foo-algo"))));
-        return result;
-    }
-    
-    @Test
-    void assertCheckWithInvalidShadowTableAlgorithmsReferences() {
-        assertThrows(MissingRequiredAlgorithmException.class,
-                () -> ruleConfigChecker.check("foo_db", createRuleConfigurationWithInvalidShadowTableAlgorithmsReferences(), createDataSourceMap(), Collections.emptyList()));
-    }
-    
-    private ShadowRuleConfiguration createRuleConfigurationWithInvalidShadowTableAlgorithmsReferences() {
-        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setShadowAlgorithms(Collections.singletonMap("foo-algo", new AlgorithmConfiguration("SQL_HINT", new Properties())));
-        result.setDefaultShadowAlgorithmName("foo-algo");
-        result.setDataSources(Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "prod_ds", "shadow_ds")));
-        result.setTables(Collections.singletonMap("foo_tbl", new ShadowTableConfiguration(Collections.singletonList("foo_ds"), Collections.singleton("bar-algo"))));
-        return result;
     }
     
     @Test

@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * Column key generate strategies configuration.
  */
@@ -28,10 +30,13 @@ import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfig
 @Getter
 public final class ColumnKeyGenerateStrategiesRuleConfiguration implements KeyGenerateStrategiesConfiguration {
     
+    @NotBlank
     private final String keyGeneratorName;
     
+    @NotBlank
     private final String logicTable;
     
+    @NotBlank
     private final String keyGenerateColumn;
     
     @Override

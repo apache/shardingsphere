@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoadResult;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
@@ -89,7 +89,7 @@ class BootstrapInitializerTest {
         when(instanceMetaDataBuilder.build(3307, "")).thenReturn(instanceMetaData);
         when(contextManagerBuilder.isDefault()).thenReturn(true);
         registerSingletonService(ContextManagerBuilder.class, contextManagerBuilder);
-        new BootstrapInitializer().init(createYamlProxyConfiguration(null), 3307);
+        new BootstrapInitializer().init(createProxyConfigurationLoadResult(null), 3307);
         ArgumentCaptor<ContextManagerBuilderParameter> paramCaptor = ArgumentCaptor.forClass(ContextManagerBuilderParameter.class);
         verify(instanceMetaDataBuilder).build(3307, "");
         verify(contextManagerBuilder).build(paramCaptor.capture(), any(EventBusContext.class));
@@ -116,8 +116,8 @@ class BootstrapInitializerTest {
         when(instanceMetaDataBuilder.build(3307, "")).thenReturn(instanceMetaData);
         when(contextManagerBuilder.getType()).thenReturn("Cluster");
         registerSingletonService(ContextManagerBuilder.class, contextManagerBuilder);
-        YamlProxyConfiguration yamlConfig = createYamlProxyConfiguration(yamlModeConfig);
-        new BootstrapInitializer().init(yamlConfig, 3307);
+        ProxyConfigurationLoadResult loadResult = createProxyConfigurationLoadResult(yamlModeConfig);
+        new BootstrapInitializer().init(loadResult, 3307);
         ArgumentCaptor<ContextManagerBuilderParameter> paramCaptor = ArgumentCaptor.forClass(ContextManagerBuilderParameter.class);
         verify(instanceMetaDataBuilder).build(3307, "");
         verify(contextManagerBuilder).build(paramCaptor.capture(), any(EventBusContext.class));
@@ -142,18 +142,18 @@ class BootstrapInitializerTest {
         when(contextManagerBuilder.isDefault()).thenReturn(true);
         registerSingletonService(ContextManagerBuilder.class, contextManagerBuilder);
         BootstrapInitializer bootstrapInitializer = new BootstrapInitializer();
-        bootstrapInitializer.init(createYamlProxyConfiguration(null), 3307);
+        bootstrapInitializer.init(createProxyConfigurationLoadResult(null), 3307);
         BackendExecutorContext.getInstance().shutdown();
-        bootstrapInitializer.init(createYamlProxyConfiguration(null), 3307);
+        bootstrapInitializer.init(createProxyConfigurationLoadResult(null), 3307);
         verify(BackendExecutorContext.getInstance(), times(2)).init();
     }
     
-    private YamlProxyConfiguration createYamlProxyConfiguration(final YamlModeConfiguration modeConfig) {
+    private ProxyConfigurationLoadResult createProxyConfigurationLoadResult(final YamlModeConfiguration modeConfig) {
         YamlProxyServerConfiguration serverConfig = new YamlProxyServerConfiguration();
         serverConfig.setMode(modeConfig);
         YamlProxyDatabaseConfiguration databaseConfig = new YamlProxyDatabaseConfiguration();
         databaseConfig.setDatabaseName("logic_db");
-        return new YamlProxyConfiguration(serverConfig, Collections.singletonMap("logic_db", databaseConfig));
+        return new ProxyConfigurationLoadResult(serverConfig, Collections.singletonMap("logic_db", databaseConfig));
     }
     
     @SuppressWarnings("unchecked")

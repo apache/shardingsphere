@@ -145,8 +145,8 @@ class DatabaseMetaDataPersistFacadeTest {
         databaseMetaDataFacade.renameSchema(createMetaData(database), database, "foo_schema", "bar_schema");
         verify(tableMetaDataService).persist("foo_db", "bar_schema", schema.getAllTables());
         verify(viewMetaDataService).persist("foo_db", "bar_schema", schema.getAllViews());
-        verify(schemaMetaDataService).drop("foo_db", "foo_schema");
         verify(schemaMetaDataService, never()).add(anyString(), anyString());
+        verify(schemaMetaDataService).drop("foo_db", "foo_schema");
     }
     
     @Test

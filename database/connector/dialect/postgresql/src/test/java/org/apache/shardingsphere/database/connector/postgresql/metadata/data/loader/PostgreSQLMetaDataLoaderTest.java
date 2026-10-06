@@ -36,6 +36,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -49,7 +50,7 @@ import static org.mockito.Mockito.when;
 
 class PostgreSQLMetaDataLoaderTest {
     
-    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema, is_nullable"
+    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema, is_nullable, is_identity"
             + " FROM information_schema.columns WHERE table_schema IN ('public')";
     
     private static final String TABLE_META_DATA_SQL_WITHOUT_TABLES = BASIC_TABLE_META_DATA_SQL + " ORDER BY ordinal_position";
@@ -65,12 +66,14 @@ class PostgreSQLMetaDataLoaderTest {
     private static final String ADVANCE_INDEX_META_DATA_SQL =
             "SELECT idx.relname as index_name, insp.nspname as index_schema, tbl.relname as table_name, att.attname AS column_name, pgi.indisunique as is_unique"
                     + " FROM pg_index pgi JOIN pg_class idx ON idx.oid = pgi.indexrelid JOIN pg_namespace insp ON insp.oid = idx.relnamespace JOIN pg_class tbl ON tbl.oid = pgi.indrelid"
-                    + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = ANY(pgi.indkey) WHERE tnsp.nspname IN ('public')";
+                    + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace JOIN generate_subscripts(pgi.indkey, 1) AS index_position(position) ON TRUE"
+                    + " JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = pgi.indkey[index_position.position] WHERE tnsp.nspname IN ('public')"
+                    + " ORDER BY insp.nspname, idx.relname, index_position.position";
     
-    private static final String BASIC_CONSTRAINT_META_DATA_SQL = "SELECT tc.table_schema,tc.table_name,tc.constraint_name,pgo.relname refer_table_name FROM information_schema.table_constraints tc "
-            + "JOIN pg_constraint pgc ON tc.constraint_name = pgc.conname AND contype='f' "
-            + "JOIN pg_class pgo ON pgc.confrelid = pgo.oid "
-            + "WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_schema IN ('public')";
+    private static final String BASIC_CONSTRAINT_META_DATA_SQL =
+            "SELECT tnsp.nspname AS table_schema, tbl.relname AS table_name, pgc.conname AS constraint_name, ref.relname AS refer_table_name"
+                    + " FROM pg_constraint pgc JOIN pg_class tbl ON tbl.oid = pgc.conrelid JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace"
+                    + " JOIN pg_class ref ON ref.oid = pgc.confrelid WHERE pgc.contype = 'f' AND tnsp.nspname IN ('public')";
     
     private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_name FROM information_schema.role_table_grants";
     
@@ -88,11 +91,12 @@ class PostgreSQLMetaDataLoaderTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadArguments")
     void assertLoad(final String name, final Collection<String> actualTableNames, final String tableMetaDataSQL, final String roleTableGrantsSQL,
-                    final String viewMetaDataSQL, final boolean hasView, final String secondColumnDefault) throws SQLException {
+                    final String viewMetaDataSQL, final boolean hasView, final String idColumnDefault, final String idColumnIdentity,
+                    final String secondColumnDefault) throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
         when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
-        ResultSet tableResultSet = mockTableMetaDataResultSet(secondColumnDefault);
+        ResultSet tableResultSet = mockTableMetaDataResultSet(idColumnDefault, idColumnIdentity, secondColumnDefault);
         when(dataSource.getConnection().prepareStatement(tableMetaDataSQL).executeQuery()).thenReturn(tableResultSet);
         ResultSet primaryKeyResultSet = mockPrimaryKeyMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
@@ -133,7 +137,7 @@ class PostgreSQLMetaDataLoaderTest {
         return result;
     }
     
-    private ResultSet mockTableMetaDataResultSet(final String secondColumnDefault) throws SQLException {
+    private ResultSet mockTableMetaDataResultSet(final String idColumnDefault, final String idColumnIdentity, final String secondColumnDefault) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, false);
         when(result.getString("table_name")).thenReturn("ignored_tbl", "tbl", "tbl");
@@ -141,9 +145,10 @@ class PostgreSQLMetaDataLoaderTest {
         when(result.getInt("ordinal_position")).thenReturn(1, 2, 3);
         when(result.getString("data_type")).thenReturn("integer", "character varying");
         when(result.getString("udt_name")).thenReturn("int4", "varchar");
-        when(result.getString("column_default")).thenReturn("nextval('id_seq'::regclass)", secondColumnDefault);
+        when(result.getString("column_default")).thenReturn(idColumnDefault, secondColumnDefault);
         when(result.getString("table_schema")).thenReturn("public", "public");
         when(result.getString("is_nullable")).thenReturn("NO", "YES");
+        when(result.getString("is_identity")).thenReturn(idColumnIdentity, "NO");
         return result;
     }
     
@@ -167,12 +172,12 @@ class PostgreSQLMetaDataLoaderTest {
     
     private ResultSet mockAdvanceIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, false);
-        when(result.getString("table_name")).thenReturn("tbl", "tbl", "tbl");
-        when(result.getString("column_name")).thenReturn("id", "id", "id");
-        when(result.getString("index_name")).thenReturn("missing_index", "not_matched", "id");
-        when(result.getString("index_schema")).thenReturn("ignored_schema", "public", "public");
-        when(result.getBoolean("is_unique")).thenReturn(false, true, true);
+        when(result.next()).thenReturn(true, true, true, true, false);
+        when(result.getString("table_name")).thenReturn("tbl", "tbl", "tbl", "tbl");
+        when(result.getString("column_name")).thenReturn("id", "id", "name", "id");
+        when(result.getString("index_name")).thenReturn("missing_index", "not_matched", "id", "id");
+        when(result.getString("index_schema")).thenReturn("ignored_schema", "public", "public", "public");
+        when(result.getBoolean("is_unique")).thenReturn(false, true, true, true);
         return result;
     }
     
@@ -210,7 +215,7 @@ class PostgreSQLMetaDataLoaderTest {
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, true, true, false, true));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
-        IndexMetaData indexMetaData = new IndexMetaData("id", Collections.singletonList("id"));
+        IndexMetaData indexMetaData = new IndexMetaData("id", Arrays.asList("name", "id"));
         indexMetaData.setUnique(true);
         assertIndexMetaData(indexesIterator.next(), indexMetaData);
         assertThat(actualTableMetaData.getConstraints().size(), is(1));
@@ -242,10 +247,11 @@ class PostgreSQLMetaDataLoaderTest {
     
     private static Stream<Arguments> loadArguments() {
         return Stream.of(
-                Arguments.of("without tables", Collections.emptyList(), TABLE_META_DATA_SQL_WITHOUT_TABLES, LOAD_ALL_ROLE_TABLE_GRANTS_SQL, VIEW_META_DATA_SQL_WITHOUT_TABLES, false, null),
-                Arguments.of("with view table", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES, LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL,
-                        VIEW_META_DATA_SQL_WITH_TABLES, true, null),
+                Arguments.of("without tables", Collections.emptyList(), TABLE_META_DATA_SQL_WITHOUT_TABLES, LOAD_ALL_ROLE_TABLE_GRANTS_SQL, VIEW_META_DATA_SQL_WITHOUT_TABLES,
+                        false, "nextval('id_seq'::regclass)", "NO", null),
+                Arguments.of("with identity and view table", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES, LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL,
+                        VIEW_META_DATA_SQL_WITH_TABLES, true, null, "YES", null),
                 Arguments.of("with non generated default", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES, LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL,
-                        VIEW_META_DATA_SQL_WITH_TABLES, false, "'anonymous'"));
+                        VIEW_META_DATA_SQL_WITH_TABLES, false, "nextval('id_seq'::regclass)", "NO", "'anonymous'"));
     }
 }

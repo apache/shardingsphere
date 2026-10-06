@@ -21,7 +21,7 @@ detailed Reference Analysis unless the user explicitly requests it.
 
 The default maintainer reply must:
 - Start by addressing the issue author when the author is known, for example `Hi @user, thanks for the question.`
-- State the supportability decision in the first paragraph: supported, not supported, bug, enhancement, invalid usage, duplicate, or needs more information.
+- State the supportability decision in the first paragraph: supported, not supported, bug, enhancement, invalid usage, duplicate, out of scope, or needs more information or maintainer discussion.
 - Explain the reason from the ShardingSphere project point of view using official docs, repository code, or issue evidence.
 - Give the next action: correct usage, label/close recommendation, required missing facts, or PR/design expectations.
 - Read like a community member helping in the issue thread, not an external analyst summarizing the issue.
@@ -71,7 +71,7 @@ Use only the following sources:
 - Apache ShardingSphere official documentation.
 - Apache ShardingSphere official repository code and tests.
 - Target GitHub issue content (body, comments, and linked PRs in the same repository).
-- Same-repository GitHub issues/PRs needed to verify a duplicate or prior fix relationship.
+- Same-repository GitHub issues/PRs needed to verify a duplicate, prior fix, explicit project-responsibility decision, or accepted behavior boundary.
 
 Do not use blogs, third-party tutorials, or forum posts as evidence.
 
@@ -127,16 +127,23 @@ Before classifying an issue as `Duplicate`, check the evidence against at least 
 
 For `Duplicate`, the maintainer reply should link the original PR/issue, recommend `type: duplicate`, and close as duplicate unless the reporter can still reproduce on a version that includes the fix.
 
-## Reasonability Gate
+## Problem Validity and Project Commitment Gate
 
-Run this gate before asking for more reproduction details:
-1. Is the request about configuration, usage, rule semantics, SQL support boundaries, or expected feature behavior?
-2. Do official docs or repository code already define the behavior boundary clearly enough?
-3. Would the requested behavior require a new semantic contract rather than fixing a mismatch?
+Run this gate before asking for more reproduction details, accepting a new behavior, or inviting implementation:
+1. Does the evidence establish a real problem and a coherent expected behavior, or do official docs and repository code already identify invalid or unsupported usage?
+2. Is the requested behavior owned by ShardingSphere's database upper layer rather than by a database engine, driver, application, or external operational tool?
+3. Would the resolution preserve an existing supported contract or add a project commitment such as new semantics, configuration, API or SPI, compatibility, topology, database, dialect, or cross-module support?
+4. What is the narrowest user-visible behavior justified by the reported scenario, and does the proposed solution add hypothetical reuse, unsupported generalization, or commitments beyond that behavior?
+5. Do official project positioning, maintained contracts, or an explicit public maintainer decision accept every new commitment?
 
-If the answer supports invalid usage or unsupported behavior, classify as `Misunderstanding / Invalid Usage` or `Question` and answer directly.
-Do not default to `Needs More Info` only because the issue lacks a full SQL, database version, or stack trace when the current evidence is already enough to judge supportability.
-Use `Needs More Info` only when missing facts block the supportability decision or root-cause classification.
+If the evidence supports invalid or unsupported usage, classify the issue as `Misunderstanding / Invalid Usage` or `Question` and answer directly.
+Classify `Out of Scope / Won't Fix` only when official project positioning, maintained contracts, or an explicit public maintainer decision proves that another owner is responsible or that the request conflicts with the project boundary.
+When project responsibility or acceptance of a new commitment remains a maintainer choice, classify the request as an `Enhancement` that requires maintainer discussion rather than declaring it accepted or out of scope.
+When the problem is valid but the proposed solution is broader than the evidenced behavior, retain the supported issue classification and require a narrower behavior contract instead of rejecting the problem.
+An open issue, labels, popularity, available contributors, or submitted code do not establish project acceptance, and an exact existing behavior or special case does not authorize a broader generalization.
+Do not invite a PR or recommend `status: volunteer wanted` until public evidence establishes ShardingSphere ownership and acceptance of the requested behavior boundary.
+Do not default to `Needs More Info` only because the issue lacks a full SQL, database version, or stack trace when the current evidence is already enough to judge supportability or project responsibility.
+Use `Needs More Info` only when missing facts block the supportability, project-responsibility, or root-cause classification.
 
 ## GitHub Access Preflight
 
@@ -201,9 +208,11 @@ Mention topology in the default maintainer reply only when it changes the suppor
     - Bug
     - Duplicate
     - Enhancement
-5. If behavior changes are needed, explain scope and compatibility impact.
+    - Out of Scope / Won't Fix
+5. Separate the problem classification from acceptance of the proposed solution.
+6. If behavior changes are needed, explain project responsibility, the narrowest accepted behavior, compatibility impact, and every new project commitment.
 
-Always complete root-cause analysis before recommendations.
+Complete root-cause analysis before Bug recommendations; for Question, Misunderstanding / Invalid Usage, and Out of Scope / Won't Fix, establish the decisive supportability or ownership evidence without inventing a code-level root cause.
 
 ## Evidence Method
 
@@ -241,8 +250,9 @@ Before final conclusion, provide issue type and label recommendations:
 - Question: recommend `type: question`
 - Misunderstanding / Invalid Usage: recommend `type: question`, `status: invalid`
 - Bug: recommend `type: bug`, optionally with module/database labels (for example `in: SQL parse`, `db: SQLServer`)
-- Enhancement: recommend `type: enhancement`, and optionally `status: volunteer wanted` to invite community contribution
+- Enhancement: recommend `type: enhancement`; recommend `status: volunteer wanted` only after public evidence establishes project acceptance of the requested behavior boundary
 - Duplicate: recommend `type: duplicate`, optionally with module/database labels when the duplicate scope is clear
+- Out of Scope / Won't Fix: recommend closure with only an existing project label supported by repository or target-issue evidence; do not invent a label
 
 When type is Bug/Enhancement/Duplicate, add module/database labels when evidence is sufficient:
 - Parser-related -> `in: SQL parse`
@@ -297,14 +307,21 @@ Default to maintainer replies shaped by the issue type:
 
 5. Enhancement
 - Acknowledge the requested behavior as new or changed capability.
-- Explain design questions, compatibility impact, and expected tests before accepting implementation.
-- Invite community contribution when suitable.
-- Recommend `type: enhancement` and optionally `status: volunteer wanted`.
+- State that classification as an Enhancement does not by itself accept implementation or expand the supported contract.
+- Explain ShardingSphere ownership, the narrowest requested behavior, new project commitments, compatibility impact, and expected tests before accepting implementation.
+- When acceptance remains a maintainer choice, request that decision and do not invite implementation yet.
+- Invite community contribution and recommend `status: volunteer wanted` only after public evidence establishes acceptance of the behavior boundary.
+- Recommend `type: enhancement`.
 
 6. Needs More Info
 - Ask only for facts that block classification or root-cause judgment.
 - Use one concise consolidated list and set a 7-14 day follow-up window.
 - Recommend `status: need more info`.
+
+7. Out of Scope / Won't Fix
+- Identify the official project-positioning, maintained-contract, or explicit public maintainer evidence that assigns the behavior to another owner or conflicts with the project boundary.
+- Explain why local usefulness, popularity, available implementation, or a superficially small change does not establish a ShardingSphere commitment.
+- Recommend closure without inviting a PR, and use only an existing label supported by repository or target-issue evidence.
 
 For explicit Maintainer Reply + Reference Analysis and Reference Analysis Only
 modes, use the detailed four-/five-section structures in the output reference.
@@ -323,8 +340,10 @@ In the maintainer reply portion:
 - Do not start with `Problem Understanding`, `Root Cause`, `Problem Analysis`, or `Problem Conclusion`.
 - Do not expose `OBS-*` / `INF-*` evidence IDs unless the user explicitly asks for evidence IDs in the reply.
 - Do not write from a detached observer perspective such as `the reporter wants` or `the issue asks`.
-- Do not over-request reproduction details after the Reasonability Gate has enough evidence to classify unsupported or invalid usage.
+- Do not over-request reproduction details after the Problem Validity and Project Commitment Gate has enough evidence to classify unsupported, invalid, or out-of-scope behavior.
 - Do not recommend a PR for invalid usage unless reframed as a clearly justified enhancement.
+- Do not present an Enhancement classification, issue label, contributor interest, or available patch as proof that the project accepted a new behavior.
+- Do not generalize an exact existing behavior or special case into a wider database, dialect, topology, module, API, or SPI commitment without direct acceptance evidence.
 - For questions, invite broader community participation when it can help the issue author or improve documentation.
 
 Before final output, run this self-check:
@@ -401,6 +420,7 @@ If lint fails, mark analysis as incomplete.
 
 - Do not recommend behavior that conflicts with official ShardingSphere conventions.
 - Do not provide certainty when evidence is insufficient.
+- Do not accept or invite implementation of a new project commitment before its ownership and narrow behavior boundary are established by public evidence.
 - Do not output a neutral machine-style report when the user asked for a reply to an issue author.
 - Do not append Reference Analysis unless the user explicitly requests it.
 - Source and workaround restrictions are governed by Source Policy and Response Strategy by Type.

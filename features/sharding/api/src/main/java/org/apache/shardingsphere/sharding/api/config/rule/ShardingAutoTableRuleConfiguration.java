@@ -23,6 +23,10 @@ import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
  * Sharding auto table rule configuration.
  */
@@ -31,11 +35,15 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 @Setter
 public final class ShardingAutoTableRuleConfiguration {
     
+    @NotBlank
     private final String logicTable;
     
     private final String actualDataSources;
     
+    @NotNull
+    @Valid
     private ShardingStrategyConfiguration shardingStrategy;
     
+    @Valid
     private ShardingAuditStrategyConfiguration auditStrategy;
 }

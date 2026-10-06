@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  * Create index push down meta data refresher.
@@ -59,7 +60,7 @@ public final class CreateIndexPushDownMetaDataRefresher implements PushDownMetaD
         String actualIndexName = TableRefreshUtils.getActualIndexName(database, schemaName, tableName, indexIdentifier);
         newTable.putIndex(new ShardingSphereIndex(actualIndexName,
                 TableRefreshUtils.getActualColumnNames(database, schemaName, tableName,
-                        sqlStatement.getColumns().stream().map(ColumnSegment::getIdentifier).collect(java.util.stream.Collectors.toList())),
+                        sqlStatement.getColumns().stream().map(ColumnSegment::getIdentifier).collect(Collectors.toList())),
                 false));
         metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(newTable));
     }

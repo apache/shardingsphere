@@ -26,8 +26,8 @@ import lombok.Getter;
  * <p>The logical database is the only strong execution boundary.
  * The optional schema field is a namespace hint for unqualified object names.</p>
  */
-@Getter
 @AllArgsConstructor
+@Getter
 public final class SQLExecutionRequest {
     
     private final String sessionId;

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.CreateTableSQL
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -45,11 +46,12 @@ public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuil
     }
     
     @Override
-    public Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord) {
+    public Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord, final PipelineSQLSegmentBuilder sqlSegmentBuilder) {
         StringBuilder result = new StringBuilder("ON DUPLICATE KEY UPDATE ");
-        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
         result.append(dataRecord.getColumns().stream()
-                .filter(each -> !each.isUniqueKey()).map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName()) + "=EXCLUDED." + sqlSegmentBuilder.getEscapedIdentifier(each.getName()))
+                .filter(each -> !each.isUniqueKey())
+                .map(each -> sqlSegmentBuilder.getEscapedIdentifier(IdentifierScope.COLUMN, each.getName()) + "=EXCLUDED."
+                        + sqlSegmentBuilder.getEscapedIdentifier(IdentifierScope.COLUMN, each.getName()))
                 .collect(Collectors.joining(",")));
         return Optional.of(result.toString());
     }

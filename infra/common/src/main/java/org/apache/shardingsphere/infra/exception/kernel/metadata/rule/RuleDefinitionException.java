@@ -34,6 +34,10 @@ public abstract class RuleDefinitionException extends MetaDataSQLException {
         super(sqlState, getErrorCode(errorCode), reason, messageArgs);
     }
     
+    protected RuleDefinitionException(final SQLState sqlState, final int errorCode, final Exception cause, final String reason, final Object... messageArgs) {
+        super(sqlState, getErrorCode(errorCode), cause, reason, messageArgs);
+    }
+    
     private static int getErrorCode(final int errorCode) {
         Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
         return RULE_CODE * 100 + errorCode;

@@ -84,15 +84,16 @@ public final class EncryptPredicateValueTokenGenerator implements CollectionSQLT
     private Optional<SQLToken> generateSQLToken(final String schemaName, final EncryptTable encryptTable, final EncryptCondition encryptCondition) {
         int startIndex = encryptCondition.getStartIndex();
         int stopIndex = encryptCondition.getStopIndex();
-        Map<Integer, Object> indexValues = getPositionValues(encryptCondition.getPositionValueMap().keySet(),
-                getEncryptedValues(schemaName, encryptTable, encryptCondition, new EncryptConditionValues(encryptCondition).get(parameters)));
+        Map<Integer, Object> indexValues = getPositionValues(
+                encryptCondition.getPositionValueMap().keySet(), getEncryptedValues(schemaName, encryptTable, encryptCondition, new EncryptConditionValues(encryptCondition).get(parameters)));
         Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
         if (encryptCondition instanceof EncryptBinaryCondition) {
             return Optional.of(generateBinarySQLTokens((EncryptBinaryCondition) encryptCondition, startIndex, stopIndex, indexValues, parameterMarkerIndexes));
         }
-        return encryptCondition instanceof EncryptInCondition
-                ? Optional.of(new EncryptPredicateInRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes))
-                : Optional.of(new EncryptPredicateEqualRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes));
+        if (encryptCondition instanceof EncryptInCondition) {
+            return Optional.of(new EncryptPredicateInRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes));
+        }
+        return Optional.of(new EncryptPredicateEqualRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes));
     }
     
     private SQLToken generateBinarySQLTokens(final EncryptBinaryCondition encryptCondition, final int startIndex, final int stopIndex,

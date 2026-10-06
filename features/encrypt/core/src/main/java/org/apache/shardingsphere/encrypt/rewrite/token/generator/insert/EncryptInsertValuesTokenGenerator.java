@@ -105,8 +105,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         String tableName = insertStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         EncryptTable encryptTable = rule.getEncryptTable(tableName);
         int count = 0;
-        String schemaName = insertStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(database::getDefaultSchemaName);
+        String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(database::getDefaultSchemaName);
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             applyInsertColumnTokens(insertValuesToken.getInsertValues().get(count), encryptToken(schemaName, encryptTable, insertStatementContext, each));
             count++;
@@ -118,8 +117,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         Collection<InsertValuesSegment> insertValuesSegments = insertStatementContext.getSqlStatement().getValues();
         InsertValuesToken result = new EncryptInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         EncryptTable encryptTable = rule.getEncryptTable(tableName);
-        String schemaName = insertStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(database::getDefaultSchemaName);
+        String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(database::getDefaultSchemaName);
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = new InsertValue(new LinkedList<>(each.getValueExpressions()));
             applyInsertColumnTokens(insertValueToken, encryptToken(schemaName, encryptTable, insertStatementContext, each));
@@ -163,8 +161,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
             int parameterIndexCount = getParameterIndexCount(insertValueContext.getValueExpressions());
             generateCipherColumnToken(schemaName, tableName, encryptColumn, valueExpression, columnIndex, literalValue).ifPresent(result::add);
             if (encryptColumn.getAssistedQuery().isPresent()) {
-                addAssistedQueryColumn(schemaName, tableName, encryptColumn, valueExpression, columnIndex, literalValue, parameterIndexCount)
-                        .ifPresent(result::add);
+                addAssistedQueryColumn(schemaName, tableName, encryptColumn, valueExpression, columnIndex, literalValue, parameterIndexCount).ifPresent(result::add);
             }
             if (encryptColumn.getLikeQuery().isPresent()) {
                 addLikeQueryColumn(schemaName, tableName, encryptColumn, valueExpression, columnIndex, literalValue, parameterIndexCount).ifPresent(result::add);

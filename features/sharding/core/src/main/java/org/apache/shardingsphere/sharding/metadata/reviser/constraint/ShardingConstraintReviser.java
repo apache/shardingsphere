@@ -38,6 +38,9 @@ public final class ShardingConstraintReviser implements ConstraintReviser<Shardi
     @Override
     public Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData, final ShardingRule rule) {
         for (DataNode each : shardingTable.getActualDataNodes()) {
+            if (!each.getTableName().equalsIgnoreCase(tableName)) {
+                continue;
+            }
             String referencedTableName = originalMetaData.getReferencedTableName();
             Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
             if (logicIndexName.isPresent()) {
@@ -50,6 +53,6 @@ public final class ShardingConstraintReviser implements ConstraintReviser<Shardi
     
     private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
         String indexNameSuffix = "_" + actualTableName;
-        return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.empty();
+        return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.substring(0, actualIndexName.length() - indexNameSuffix.length())) : Optional.empty();
     }
 }

@@ -81,9 +81,9 @@ public final class YamlShadowRuleConfigurationSwapper implements YamlRuleConfigu
         result.setDataSources(swapToDataSources(yamlConfig.getDataSources()));
         result.setTables(swapToShadowTables(yamlConfig.getTables()));
         result.setShadowAlgorithms(swapToShadowAlgorithms(yamlConfig.getShadowAlgorithms()));
+        result.setDefaultShadowAlgorithmName(yamlConfig.getDefaultShadowAlgorithmName());
         setTableDefaultShadowDataSource(result.getTables(), result.getDataSources());
         setTableDefaultShadowAlgorithm(result.getTables(), result.getDefaultShadowAlgorithmName());
-        result.setDefaultShadowAlgorithmName(yamlConfig.getDefaultShadowAlgorithmName());
         return result;
     }
     

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionOptionReplayCallback;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -67,10 +68,12 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -113,18 +116,31 @@ class JDBCBackendDataSourceTest {
     
     @Test
     void assertGetConnectionsSucceed() throws SQLException {
-        List<Connection> actual = new JDBCBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 5, ConnectionMode.MEMORY_STRICTLY);
+        TransactionOptionReplayCallback transactionOptionReplayCallback = mock(TransactionOptionReplayCallback.class);
+        List<Connection> actual = new JDBCBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 5, ConnectionMode.MEMORY_STRICTLY, transactionOptionReplayCallback);
         assertThat(actual.size(), is(5));
+        verify(transactionOptionReplayCallback, times(5)).replay(any(Connection.class));
     }
     
     @Test
     void assertGetConnectionsFailed() {
-        assertThrows(OverallConnectionNotEnoughException.class, () -> new JDBCBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 6, ConnectionMode.MEMORY_STRICTLY));
+        assertThrows(OverallConnectionNotEnoughException.class,
+                () -> new JDBCBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 6, ConnectionMode.MEMORY_STRICTLY, mock()));
+    }
+    
+    @Test
+    void assertCloseConnectionWhenTransactionOptionReplayFailed() throws SQLException {
+        SQLException expectedException = new SQLException("replay transaction option failed");
+        assertThat(assertThrows(SQLException.class, () -> new JDBCBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 1, ConnectionMode.MEMORY_STRICTLY, connection -> {
+            throw expectedException;
+        })), is(expectedException));
+        List<Connection> actual = new JDBCBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 5, ConnectionMode.MEMORY_STRICTLY, mock());
+        assertThat(actual.size(), is(5));
     }
     
     @Test
     void assertGetConnectionsWithConnectionStrictlyMode() throws SQLException {
-        List<Connection> actual = new JDBCBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 0), 2, ConnectionMode.CONNECTION_STRICTLY);
+        List<Connection> actual = new JDBCBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 0), 2, ConnectionMode.CONNECTION_STRICTLY, mock());
         assertThat(actual.size(), is(2));
     }
     
@@ -137,8 +153,9 @@ class JDBCBackendDataSourceTest {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("schema").getResourceMetaData().getStorageUnits().get("cached.ds1")).thenReturn(storageUnit);
         ShardingSphereDistributedTransactionManager distributedTransactionManager = mock(ShardingSphereDistributedTransactionManager.class);
         when(distributedTransactionManager.isInTransaction()).thenReturn(true);
+        TransactionOptionReplayCallback transactionOptionReplayCallback = mock(TransactionOptionReplayCallback.class);
         Connection connection = mock(Connection.class);
-        when(distributedTransactionManager.getConnection("schema", "cached.ds1")).thenReturn(connection);
+        when(distributedTransactionManager.getConnection("schema", "cached.ds1", transactionOptionReplayCallback)).thenReturn(connection);
         ShardingSphereTransactionManagerEngine engine = mock(ShardingSphereTransactionManagerEngine.class);
         when(engine.getTransactionManager(TransactionType.XA)).thenReturn(distributedTransactionManager);
         TransactionRule transactionRule = mock(TransactionRule.class);
@@ -149,8 +166,9 @@ class JDBCBackendDataSourceTest {
         GlobalDataSourceRegistry.getInstance().getCachedDataSources().put("cached", dataSource);
         try {
             when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            List<Connection> actual = new JDBCBackendDataSource().getConnections("schema", "cached.ds1", 1, ConnectionMode.CONNECTION_STRICTLY);
+            List<Connection> actual = new JDBCBackendDataSource().getConnections("schema", "cached.ds1", 1, ConnectionMode.CONNECTION_STRICTLY, transactionOptionReplayCallback);
             assertThat(actual.size(), is(1));
+            verify(distributedTransactionManager).getConnection("schema", "cached.ds1", transactionOptionReplayCallback);
             verify(connection).setCatalog("ds1");
             verify(dataSource, never()).getConnection();
         } finally {
@@ -194,7 +212,7 @@ class JDBCBackendDataSourceTest {
             try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
                 ContextManager contextManager = mockContextManager();
                 proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-                return jdbcBackendDataSource.getConnections("schema", datasourceName, connectionSize, connectionMode);
+                return jdbcBackendDataSource.getConnections("schema", datasourceName, connectionSize, connectionMode, mock());
             }
         }
     }

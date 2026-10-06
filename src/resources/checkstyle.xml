@@ -16,12 +16,10 @@
   ~ limitations under the License.
   -->
 
-<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://checkstyle.sourceforge.net/dtds/configuration_1_3.dtd">
+<!DOCTYPE module PUBLIC "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN" "https://checkstyle.org/dtds/configuration_1_3.dtd">
 <module name="Checker">
     <property name="severity" value="error" />
     <property name="fileExtensions" value="java, xml, properties" />
-    
-    <module name="SeverityMatchFilter" />
     
     <module name="Header">
         <property name="fileExtensions" value="java" />
@@ -62,6 +60,10 @@
             <property name="allowSamelineMultipleAnnotations" value="true" />
         </module>
         <module name="AnnotationUseStyle" />
+        <module name="MatchXpath">
+            <property name="query" value="//MODIFIERS[FINAL/following-sibling::ANNOTATION]" />
+            <message key="matchxpath.match" value="Place annotations before the final modifier." />
+        </module>
         <module name="MissingDeprecated" />
         <module name="MissingOverride" />
         <module name="MissingOverrideOnRecordAccessor" />
@@ -87,6 +89,10 @@
         
         <!-- Class Design -->
         <module name="FinalClass" />
+        <module name="MatchXpath">
+            <property name="query" value="//CLASS_DEF[./IDENT[ends-with(@text, 'Test')]]/MODIFIERS/FINAL" />
+            <message key="matchxpath.match" value="Unit-test classes must not be declared final." />
+        </module>
         <!-- cannot recognize for lombok @NoArgsConstructor(access = AccessLevel.PRIVATE), just ignore -->
         <!--<module name="HideUtilityClassConstructor" />-->
         <module name="InnerTypeLast" />
@@ -127,6 +133,22 @@
                       value="//METHOD_DEF[./MODIFIERS/ANNOTATION[(./IDENT[@text='Test'] or ./DOT/IDENT[@text='Test'] or ./IDENT[@text='ParameterizedTest'] or ./DOT/IDENT[@text='ParameterizedTest'] or ./IDENT[@text='RepeatedTest'] or ./DOT/IDENT[@text='RepeatedTest'] or ./IDENT[@text='TestFactory'] or ./DOT/IDENT[@text='TestFactory'] or ./IDENT[@text='TestTemplate'] or ./DOT/IDENT[@text='TestTemplate'])] and not(./IDENT[starts-with(@text, 'assert')])]" />
             <message key="matchxpath.match" value="Test method names must start with 'assert'." />
         </module>
+        <module name="MatchXpath">
+            <property name="query" value="//VARIABLE_DEF[./MODIFIERS/FINAL and (parent::FOR_INIT or parent::FOR_EACH_CLAUSE)]" />
+            <message key="matchxpath.match" value="Do not declare for-loop variables as final." />
+        </module>
+        <module name="MatchXpath">
+            <property name="query" value="//*[self::EQUAL or self::NOT_EQUAL][./*[last()][self::LITERAL_NULL]]" />
+            <message key="matchxpath.match" value="Place null on the left side of == and != comparisons." />
+        </module>
+        <module name="MatchXpath">
+            <property name="query" value="//QUESTION[./*[1][self::NOT_EQUAL and ./*[1][self::LITERAL_NULL]]]" />
+            <message key="matchxpath.match" value="Use null == value and put the null-result branch first in ternary expressions." />
+        </module>
+        <module name="MatchXpath">
+            <property name="query" value="//ANNOTATION[((./IDENT[@text='SneakyThrows'] and ancestor::COMPILATION_UNIT/IMPORT/DOT[./IDENT[@text='lombok'] and ./IDENT[@text='SneakyThrows']]) or ./DOT[./IDENT[@text='lombok'] and ./IDENT[@text='SneakyThrows']]) and not(.//LITERAL_CLASS)]" />
+            <message key="matchxpath.match" value="Specify exception types in @SneakyThrows or remove the annotation." />
+        </module>
         <module name="IllegalType" />
         <module name="IllegalType">
             <property name="tokens" value="IMPORT, PARAMETER_DEF" />
@@ -163,7 +185,9 @@
         <module name="UnusedLocalVariable">
             <property name="jdkVersion" value="21" />
         </module>
-        <module name="VariableDeclarationUsageDistance" />
+        <module name="VariableDeclarationUsageDistance">
+            <property name="allowedDistance" value="7" />
+        </module>
         <module name="RegexpSinglelineJava">
             <property name="format" value="^(?!\s*import\s+java\.util\.Map\.Entry\s*;).*\b(?:java\.util\.)?Map\.Entry\b" />
             <property name="ignoreComments" value="true" />
@@ -201,7 +225,13 @@
             <property name="illegalClasses" value=".*[.]StringUtils([.].*)?,.*[.]CollectionUtils([.].*)?,org[.]junit[.]jupiter[.]api[.](Assertions|Assumptions),org[.]hamcrest[.](CoreMatchers|MatcherAssert|Matchers),org[.]mockito[.](ArgumentMatchers|Mockito),org[.]apache[.]shardingsphere[.]test[.]infra[.]framework[.]matcher[.](ShardingSphereArgumentVerifyMatchers|ShardingSphereAssertionMatchers)" />
         </module>
         <module name="RedundantImport" />
+        <module name="UnnecessaryFullyQualifiedType" />
         <module name="UnusedImports" />
+        <module name="MatchXpath">
+            <property name="query"
+                      value="//DOT[not(ancestor::IMPORT) and ((./IDENT[@text='AccessLevel'] and ./IDENT[@text='lombok']) or (./IDENT[@text='Arrays'] and ./DOT[./IDENT[@text='util'] and ./IDENT[@text='java']]) or (./IDENT[@text='Collectors'] and ./DOT[./IDENT[@text='stream'] and ./DOT[./IDENT[@text='util'] and ./IDENT[@text='java']]]) or (./IDENT[@text=('Types', 'Time', 'Timestamp')] and ./DOT[./IDENT[@text='sql'] and ./IDENT[@text='java']]) or (./IDENT[@text='Date'] and ./DOT[./IDENT[@text='sql'] and ./IDENT[@text='java']] and ancestor::COMPILATION_UNIT/IMPORT/DOT[./IDENT[@text='Date'] and ./DOT[./IDENT[@text='sql'] and ./IDENT[@text='java']]]))]" />
+            <message key="matchxpath.match" value="Import and use the simple type name instead of a package-qualified type name." />
+        </module>
         
         <!-- Javadoc Comments -->
         <module name="AtclauseOrder">
@@ -315,9 +345,16 @@
         <module name="RecordTypeParameterName" />
         <module name="StaticVariableName" />
         <module name="TypeName" />
+        <module name="TypeName">
+            <property name="id" value="UtilityTypeName" />
+            <property name="format" value="^(?!.*Util$).*$" />
+            <message key="name.invalidPattern" value="Use the Utils suffix instead of Util for type name ''{0}''." />
+        </module>
         
         <!-- Size Violations -->
-        <module name="AnonInnerLength" />
+        <module name="AnonInnerLength">
+            <property name="max" value="30" />
+        </module>
         <module name="ExecutableStatementCount">
             <property name="severity" value="warning" />
             <property name="max" value="50" />

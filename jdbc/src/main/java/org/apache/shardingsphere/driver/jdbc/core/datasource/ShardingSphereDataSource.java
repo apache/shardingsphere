@@ -110,10 +110,22 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     @Override
     public void close() throws SQLException {
+        SQLException exception = null;
         for (StorageUnit each : contextManager.getStorageUnits(databaseName).values()) {
-            close(each.getDataSource());
+            try {
+                close(each.getDataSource());
+            } catch (final SQLException ex) {
+                if (null == exception) {
+                    exception = ex;
+                } else {
+                    exception.addSuppressed(ex);
+                }
+            }
         }
         contextManager.close();
+        if (null != exception) {
+            throw exception;
+        }
     }
     
     private void close(final DataSource dataSource) throws SQLException {

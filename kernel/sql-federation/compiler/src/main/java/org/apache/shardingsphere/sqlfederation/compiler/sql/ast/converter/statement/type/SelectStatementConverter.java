@@ -23,7 +23,14 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.from.TableConverter;
@@ -49,9 +56,10 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
     
     @Override
     public SqlNode convert(final SelectStatement selectStatement) {
+        checkUnsupportedOpenGaussFeatures(selectStatement);
         SqlSelect sqlSelect = convertSelect(selectStatement);
         SqlNode sqlWith = convertWith(sqlSelect, selectStatement);
-        SqlNode sqlCombine = convertCombine(null != sqlWith ? sqlWith : sqlSelect, selectStatement);
+        SqlNode sqlCombine = convertCombine(null == sqlWith ? sqlSelect : sqlWith, selectStatement);
         SqlNodeList orderBy = selectStatement.getOrderBy().flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = selectStatement.getLimit();
         if (limit.isPresent()) {
@@ -60,6 +68,44 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
             return new SqlOrderBy(SqlParserPos.ZERO, sqlCombine, orderBy, offset, rowCount);
         }
         return orderBy.isEmpty() ? sqlCombine : new SqlOrderBy(SqlParserPos.ZERO, sqlCombine, orderBy, null, null);
+    }
+    
+    private void checkUnsupportedOpenGaussFeatures(final SelectStatement selectStatement) {
+        if (!"openGauss".equals(selectStatement.getDatabaseType().getType())) {
+            return;
+        }
+        ShardingSpherePreconditions.checkState(!containsCube(selectStatement),
+                () -> new UnsupportedSQLOperationException("openGauss CUBE query in SQL Federation"));
+        ShardingSpherePreconditions.checkState(!containsAggregationWithNamedWindow(selectStatement),
+                () -> new UnsupportedSQLOperationException("openGauss aggregate query with a named window in SQL Federation"));
+    }
+    
+    private boolean containsCube(final SelectStatement selectStatement) {
+        if (!selectStatement.getGroupBy().isPresent() || !selectStatement.getGroupBy().get().isContainsGroupingExtension()) {
+            return false;
+        }
+        GroupBySegment groupBy = selectStatement.getGroupBy().get();
+        for (OrderByItemSegment each : groupBy.getGroupByItems()) {
+            if (each instanceof ExpressionOrderByItemSegment && isCubeExpression(((ExpressionOrderByItemSegment) each).getExpression())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isCubeExpression(final String expression) {
+        int leftParenthesisIndex = expression.indexOf('(');
+        return leftParenthesisIndex > 0 && "CUBE".equalsIgnoreCase(expression.substring(0, leftParenthesisIndex).trim());
+    }
+    
+    private boolean containsAggregationWithNamedWindow(final SelectStatement selectStatement) {
+        for (ProjectionSegment each : selectStatement.getProjections().getProjections()) {
+            if (each instanceof AggregationProjectionSegment && ((AggregationProjectionSegment) each).getWindow().isPresent()
+                    && null != ((AggregationProjectionSegment) each).getWindow().get().getWindowName()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private SqlNode convertWith(final SqlNode sqlSelect, final SelectStatement selectStatement) {

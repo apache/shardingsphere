@@ -33,8 +33,17 @@ public class LiteralExpressionSegment implements SimpleExpressionSegment {
     
     private final Object literals;
     
+    /**
+     * Judge whether this literal represents SQL NULL.
+     *
+     * @return true if this literal represents SQL NULL, otherwise false
+     */
+    public boolean isNullLiteral() {
+        return null == literals;
+    }
+    
     @Override
     public String getText() {
-        return null != literals ? literals.toString() : null;
+        return null == literals ? null : literals.toString();
     }
 }

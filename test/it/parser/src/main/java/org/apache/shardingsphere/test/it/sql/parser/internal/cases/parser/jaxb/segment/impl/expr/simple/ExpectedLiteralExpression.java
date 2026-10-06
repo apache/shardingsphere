@@ -31,4 +31,7 @@ public final class ExpectedLiteralExpression extends ExpectedBaseSimpleExpressio
     
     @XmlAttribute
     private String value;
+    
+    @XmlAttribute(name = "null-literal")
+    private Boolean nullLiteral;
 }

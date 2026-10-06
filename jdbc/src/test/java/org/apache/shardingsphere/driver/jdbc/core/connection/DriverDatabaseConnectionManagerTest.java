@@ -22,10 +22,13 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionOptionReplayCallback;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,22 +46,29 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class DriverDatabaseConnectionManagerTest {
     
+    private ContextManager contextManager;
+    
     private DriverDatabaseConnectionManager databaseConnectionManager;
     
     @BeforeEach
     void setUp() throws SQLException {
-        databaseConnectionManager = new DriverDatabaseConnectionManager("foo_db", mockContextManager());
+        contextManager = mockContextManager();
+        databaseConnectionManager = new DriverDatabaseConnectionManager("foo_db", contextManager);
     }
     
     private ContextManager mockContextManager() throws SQLException {
@@ -116,6 +126,15 @@ class DriverDatabaseConnectionManagerTest {
     }
     
     @Test
+    void assertGetRandomConnectionAfterDataSourceReplacement() throws SQLException {
+        databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        Connection expectedConnection = mock(Connection.class);
+        contextManager.getStorageUnits("foo_db").put("ds", mockStorageUnit(new MockedDataSource(expectedConnection)));
+        Connection actual = databaseConnectionManager.getRandomConnection();
+        assertThat(actual, sameInstance(expectedConnection));
+    }
+    
+    @Test
     void assertGetConnection() throws SQLException {
         assertThat(databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY),
                 is(databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
@@ -143,6 +162,122 @@ class DriverDatabaseConnectionManagerTest {
     void assertGetConnectionsWhenEmptyCache() throws SQLException {
         List<Connection> actual = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
+    }
+    
+    @Test
+    void assertGetConnectionsAfterDataSourceReplacement() throws SQLException {
+        Connection expectedConnection = mock(Connection.class);
+        contextManager.getStorageUnits("foo_db").put("ds", mockStorageUnit(new MockedDataSource(expectedConnection)));
+        Connection actual = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        assertThat(actual, sameInstance(expectedConnection));
+    }
+    
+    @Test
+    void assertGetConnectionsAfterCachedDataSourceReplacement() throws SQLException {
+        Map<String, StorageUnit> storageUnits = contextManager.getStorageUnits("foo_db");
+        Connection expectedOtherConnection = mock(Connection.class);
+        storageUnits.put("other_ds", mockStorageUnit(new MockedDataSource(expectedOtherConnection)));
+        databaseConnectionManager = new DriverDatabaseConnectionManager("foo_db", contextManager);
+        Connection oldConnection = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        databaseConnectionManager.getConnections("foo_db", "other_ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        Connection expectedConnection = mock(Connection.class);
+        storageUnits.put("ds", mockStorageUnit(new MockedDataSource(expectedConnection)));
+        Connection actual = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        assertThat(actual, sameInstance(expectedConnection));
+        assertThat(databaseConnectionManager.getConnections("foo_db", "other_ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0), sameInstance(expectedOtherConnection));
+        verify(oldConnection).close();
+        verify(expectedOtherConnection, never()).close();
+    }
+    
+    @Test
+    void assertGetConnectionsDuringLocalTransactionAfterDataSourceReplacement() throws SQLException {
+        MockedDataSource originalDataSource = (MockedDataSource) contextManager.getStorageUnits("foo_db").get("ds").getDataSource();
+        Connection expectedConnection = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(TransactionType.LOCAL.name(), null);
+        Connection expectedReplacementConnection = mock(Connection.class);
+        contextManager.getStorageUnits("foo_db").put("ds", mockStorageUnit(new MockedDataSource(expectedReplacementConnection)));
+        List<Connection> actual = databaseConnectionManager.getConnections("foo_db", "ds", 0, 2, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(actual.get(0), sameInstance(expectedConnection));
+        assertTrue(originalDataSource.getOpenedConnections().contains(actual.get(1)));
+        verify(expectedConnection, never()).close();
+        databaseConnectionManager.getConnectionContext().getTransactionContext().close();
+        Connection actualReplacementConnection = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        assertThat(actualReplacementConnection, sameInstance(expectedReplacementConnection));
+        verify(expectedConnection).close();
+        verify(actual.get(1)).close();
+    }
+    
+    @Test
+    void assertGetConnectionsDuringDistributedTransactionAfterDataSourceReplacement() throws SQLException {
+        Connection expectedConnection = mock(Connection.class);
+        Connection expectedAdditionalConnection = mock(Connection.class);
+        ShardingSphereDistributedTransactionManager transactionManager = mock(ShardingSphereDistributedTransactionManager.class);
+        when(transactionManager.isInTransaction()).thenReturn(true);
+        when(transactionManager.getConnection(eq("foo_db"), eq("ds"), any(TransactionOptionReplayCallback.class))).thenReturn(expectedConnection, expectedAdditionalConnection);
+        databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(TransactionType.XA.name(), transactionManager);
+        databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        Connection expectedReplacementConnection = mock(Connection.class);
+        contextManager.getStorageUnits("foo_db").put("ds", mockStorageUnit(new MockedDataSource(expectedReplacementConnection)));
+        List<Connection> actual = databaseConnectionManager.getConnections("foo_db", "ds", 0, 2, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(actual.get(0), sameInstance(expectedConnection));
+        assertThat(actual.get(1), sameInstance(expectedAdditionalConnection));
+        verify(expectedConnection, never()).close();
+        verify(expectedAdditionalConnection, never()).close();
+        databaseConnectionManager.getConnectionContext().getTransactionContext().close();
+        Connection actualReplacementConnection = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        assertThat(actualReplacementConnection, sameInstance(expectedReplacementConnection));
+        verify(expectedConnection).close();
+        verify(expectedAdditionalConnection).close();
+    }
+    
+    @Test
+    void assertGetConnectionsFromAnotherDatabase() throws SQLException {
+        Connection expectedConnection = mock(Connection.class);
+        StorageUnit storageUnit = mockStorageUnit(new MockedDataSource(expectedConnection));
+        when(contextManager.getStorageUnits("bar_db")).thenReturn(Collections.singletonMap("ds", storageUnit));
+        Connection actual = databaseConnectionManager.getConnections("bar_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        assertThat(actual, sameInstance(expectedConnection));
+    }
+    
+    @Test
+    void assertGetConnectionsWithMissingStorageUnit() {
+        when(contextManager.getStorageUnits("foo_db")).thenReturn(Collections.emptyMap());
+        NullPointerException actual = assertThrows(NullPointerException.class, () -> databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY));
+        assertThat(actual.getMessage(), is("Missing the data source name: 'ds'"));
+    }
+    
+    @Test
+    void assertReplayTransactionOptionInDistributedTransaction() throws SQLException {
+        Connection expectedConnection = mock(Connection.class);
+        ShardingSphereDistributedTransactionManager transactionManager = mock(ShardingSphereDistributedTransactionManager.class);
+        when(transactionManager.isInTransaction()).thenReturn(true);
+        when(transactionManager.getConnection(eq("foo_db"), eq("ds"), any(TransactionOptionReplayCallback.class))).thenAnswer(invocation -> {
+            invocation.getArgument(2, TransactionOptionReplayCallback.class).replay(expectedConnection);
+            return expectedConnection;
+        });
+        databaseConnectionManager.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        databaseConnectionManager.setReadOnly(true);
+        databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(TransactionType.XA.name(), transactionManager);
+        List<Connection> actual = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(actual, is(Collections.singletonList(expectedConnection)));
+        verify(expectedConnection).setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        verify(expectedConnection).setReadOnly(true);
+    }
+    
+    @Test
+    void assertCloseConnectionWhenTransactionOptionReplayFailed() throws SQLException {
+        Connection connection = mock(Connection.class);
+        SQLException expectedException = new SQLException("replay transaction option failed");
+        doThrow(expectedException).when(connection).setReadOnly(true);
+        DataSource dataSource = mock(DataSource.class);
+        when(dataSource.getConnection()).thenReturn(connection);
+        ContextManager contextManager = mockContextManager();
+        StorageUnit storageUnit = mockStorageUnit(dataSource);
+        when(contextManager.getStorageUnits("foo_db")).thenReturn(Collections.singletonMap("ds", storageUnit));
+        DriverDatabaseConnectionManager connectionManager = new DriverDatabaseConnectionManager("foo_db", contextManager);
+        connectionManager.setReadOnly(true);
+        assertThat(assertThrows(SQLException.class, () -> connectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY)), is(expectedException));
+        verify(connection).close();
     }
     
     @Test

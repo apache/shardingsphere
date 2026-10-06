@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sharding.api.config.strategy.audit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 /**
@@ -29,7 +31,8 @@ import java.util.Collection;
 @Getter
 public final class ShardingAuditStrategyConfiguration {
     
-    private final Collection<String> auditorNames;
+    @NotNull
+    private final Collection<@NotBlank String> auditorNames;
     
     private final boolean allowHintDisable;
 }

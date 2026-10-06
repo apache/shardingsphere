@@ -21,6 +21,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.validation.constraints.PositiveOrZero;
+
 /**
  * Cache option.
  */
@@ -29,8 +31,10 @@ import lombok.RequiredArgsConstructor;
 @EqualsAndHashCode
 public final class CacheOption {
     
+    @PositiveOrZero
     private final int initialCapacity;
     
+    @PositiveOrZero
     private final long maximumSize;
     
     @Override

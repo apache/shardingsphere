@@ -31,17 +31,38 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class MCPResourceNavigationDescriptorValidatorTest {
     
     @Test
-    void assertValidate() {
+    void assertValidateWithUnknownSource() {
         MCPResourceNavigationDescriptor navigation = new MCPResourceNavigationDescriptor("missing", "database_gateway_test_tool", List.of(), List.of(), "Read test tool.");
+        IllegalStateException actual = assertThrows(IllegalStateException.class,
+                () -> MCPResourceNavigationDescriptorValidator.validate(List.of(navigation), createCatalog()));
+        assertThat(actual.getMessage(), is("Resource navigation references unknown source `missing`."));
+    }
+    
+    @Test
+    void assertValidateWithDuplicateRequiredArguments() {
+        MCPResourceNavigationDescriptor navigation = new MCPResourceNavigationDescriptor("database_gateway_test_tool", "database_gateway_test_tool",
+                List.of("database", "database"), List.of(), "Read test tool.");
+        IllegalStateException actual = assertThrows(IllegalStateException.class,
+                () -> MCPResourceNavigationDescriptorValidator.validate(List.of(navigation), createCatalog()));
+        assertThat(actual.getMessage(), is("Resource navigation `database_gateway_test_tool` to `database_gateway_test_tool` must not contain duplicate required arguments."));
+    }
+    
+    @Test
+    void assertValidateWithDuplicateCarriedArguments() {
+        MCPResourceNavigationDescriptor navigation = new MCPResourceNavigationDescriptor("database_gateway_test_tool", "database_gateway_test_tool",
+                List.of(), List.of("database", "database"), "Read test tool.");
+        IllegalStateException actual = assertThrows(IllegalStateException.class,
+                () -> MCPResourceNavigationDescriptorValidator.validate(List.of(navigation), createCatalog()));
+        assertThat(actual.getMessage(), is("Resource navigation `database_gateway_test_tool` to `database_gateway_test_tool` must not contain duplicate carried arguments."));
+    }
+    
+    private MCPDescriptorCatalog createCatalog() {
         MCPToolDescriptor toolDescriptor = new MCPToolDescriptor("database_gateway_test_tool", "Test Tool", "Run a test tool.",
                 Map.of("type", "object", "properties", Map.of("query", Map.of("type", "string", "description", "Query.")),
                         "required", List.of("query"), "additionalProperties", false),
                 Map.of("type", "object", "properties", Map.of("status", Map.of("type", "string", "description", "Status.")), "examples", List.of(Map.of("status", "ok"))),
                 MCPToolAnnotations.builder().title("Test Tool").readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(), Map.of());
-        MCPDescriptorCatalog catalog = new MCPDescriptorCatalog(new MCPProtocolDescriptorCatalog(List.of(), List.of(), List.of(toolDescriptor), List.of()),
+        return new MCPDescriptorCatalog(new MCPProtocolDescriptorCatalog(List.of(), List.of(), List.of(toolDescriptor), List.of()),
                 new MCPShardingSphereDescriptorCatalog(List.of(), List.of(), List.of(), List.of(), List.of()));
-        IllegalStateException actual = assertThrows(IllegalStateException.class,
-                () -> MCPResourceNavigationDescriptorValidator.validate(List.of(navigation), catalog));
-        assertThat(actual.getMessage(), is("Resource navigation references unknown source `missing`."));
     }
 }

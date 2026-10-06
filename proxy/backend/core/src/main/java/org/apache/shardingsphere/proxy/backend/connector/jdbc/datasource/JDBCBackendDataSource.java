@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.GlobalDataSourceRegistr
 import org.apache.shardingsphere.infra.exception.kernel.connection.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.BackendDataSource;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionOptionReplayCallback;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
@@ -39,7 +40,8 @@ import java.util.List;
 public final class JDBCBackendDataSource implements BackendDataSource {
     
     @Override
-    public List<Connection> getConnections(final String databaseName, final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+    public List<Connection> getConnections(final String databaseName, final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode,
+                                           final TransactionOptionReplayCallback transactionOptionReplayCallback) throws SQLException {
         DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()
                 .getDatabase(databaseName).getResourceMetaData().getStorageUnits().get(dataSourceName).getDataSource();
         if (dataSourceName.contains(".")) {
@@ -50,22 +52,22 @@ public final class JDBCBackendDataSource implements BackendDataSource {
         }
         Preconditions.checkNotNull(dataSource, "Can not get connection from datasource %s.", dataSourceName);
         if (1 == connectionSize) {
-            return Collections.singletonList(createConnection(databaseName, dataSourceName, dataSource));
+            return Collections.singletonList(createConnection(databaseName, dataSourceName, dataSource, transactionOptionReplayCallback));
         }
         if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
-            return createConnections(databaseName, dataSourceName, dataSource, connectionSize);
+            return createConnections(databaseName, dataSourceName, dataSource, connectionSize, transactionOptionReplayCallback);
         }
         synchronized (dataSource) {
-            return createConnections(databaseName, dataSourceName, dataSource, connectionSize);
+            return createConnections(databaseName, dataSourceName, dataSource, connectionSize, transactionOptionReplayCallback);
         }
     }
     
-    private List<Connection> createConnections(final String databaseName, final String dataSourceName,
-                                               final DataSource dataSource, final int connectionSize) throws SQLException {
+    private List<Connection> createConnections(final String databaseName, final String dataSourceName, final DataSource dataSource, final int connectionSize,
+                                               final TransactionOptionReplayCallback transactionOptionReplayCallback) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
         for (int i = 0; i < connectionSize; i++) {
             try {
-                result.add(createConnection(databaseName, dataSourceName, dataSource));
+                result.add(createConnection(databaseName, dataSourceName, dataSource, transactionOptionReplayCallback));
             } catch (final SQLException ex) {
                 for (Connection each : result) {
                     each.close();
@@ -76,13 +78,23 @@ public final class JDBCBackendDataSource implements BackendDataSource {
         return result;
     }
     
-    private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource) throws SQLException {
+    private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource,
+                                        final TransactionOptionReplayCallback transactionOptionReplayCallback) throws SQLException {
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         ShardingSphereDistributedTransactionManager distributedTransactionManager = transactionRule.getResource().getTransactionManager(transactionRule.getDefaultType());
-        Connection result = isInDistributedTransaction(distributedTransactionManager) ? distributedTransactionManager.getConnection(databaseName, dataSourceName) : dataSource.getConnection();
+        boolean inDistributedTransaction = isInDistributedTransaction(distributedTransactionManager);
+        Connection result = inDistributedTransaction ? distributedTransactionManager.getConnection(databaseName, dataSourceName, transactionOptionReplayCallback) : dataSource.getConnection();
         if (dataSourceName.contains(".")) {
             String catalog = dataSourceName.split("\\.")[1];
             result.setCatalog(catalog);
+        }
+        if (!inDistributedTransaction) {
+            try {
+                transactionOptionReplayCallback.replay(result);
+            } catch (final SQLException ex) {
+                result.close();
+                throw ex;
+            }
         }
         return result;
     }

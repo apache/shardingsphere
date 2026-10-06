@@ -18,18 +18,15 @@
 package org.apache.shardingsphere.sqlfederation.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
-import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContextFactory;
-import org.apache.shardingsphere.sqlfederation.compiler.exception.InvalidExecutionPlanCacheConfigException;
-import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * SQL federation rule.
@@ -39,32 +36,26 @@ public final class SQLFederationRule implements GlobalRule {
     
     private final SQLFederationRuleConfiguration configuration;
     
-    private final AtomicReference<CompilerContext> compilerContext;
+    private final SQLFederationProvider provider;
+    
+    private final boolean sqlFederationEnabled;
     
     public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig, final Collection<ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
-        compilerContext = new AtomicReference<>(CompilerContextFactory.create(databases));
-        checkExecutionPlanCacheConfiguration(ruleConfig.getExecutionPlanCache());
+        provider = createProvider(databases);
+        sqlFederationEnabled = provider.isSQLFederationEnabled();
     }
     
-    private void checkExecutionPlanCacheConfiguration(final SQLFederationCacheOption executionPlanCache) {
-        ShardingSpherePreconditions.checkState(executionPlanCache.getInitialCapacity() > 0,
-                () -> new InvalidExecutionPlanCacheConfigException("initialCapacity", executionPlanCache.getInitialCapacity()));
-        ShardingSpherePreconditions.checkState(executionPlanCache.getMaximumSize() > 0, () -> new InvalidExecutionPlanCacheConfigException("maximumSize", executionPlanCache.getMaximumSize()));
-    }
-    
-    /**
-     * Get compiler context.
-     *
-     * @return compiler context
-     */
-    public CompilerContext getCompilerContext() {
-        return compilerContext.get();
+    private SQLFederationProvider createProvider(final Collection<ShardingSphereDatabase> databases) {
+        SQLFederationProvider result = TypedSPILoader.findService(SQLFederationProvider.class, configuration.getProviderType())
+                .orElseThrow(() -> new ServiceProviderNotFoundException(SQLFederationProvider.class, configuration.getProviderType()));
+        result.initialize(configuration, databases);
+        return result;
     }
     
     @Override
     public void refresh(final Collection<ShardingSphereDatabase> databases, final GlobalRuleChangedType changedType) {
-        compilerContext.set(CompilerContextFactory.create(databases));
+        provider.refresh(databases);
     }
     
     @Override

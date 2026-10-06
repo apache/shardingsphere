@@ -31,8 +31,8 @@ import java.util.List;
 /**
  * Firebird batch message format parser, port of {@code PARSE_msg_format} / {@code parse_format} from Firebird {@code parser.cpp}.
  */
-@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public final class FirebirdParseBatchBlr {
     
     private static final int HEADER_LENGTH = 4;
@@ -215,7 +215,7 @@ public final class FirebirdParseBatchBlr {
     }
     
     private static int alignTo(final int value, final int alignment) {
-        return value + alignment - 1 & ~(alignment - 1);
+        return value + alignment - 1 & -alignment;
     }
     
 }

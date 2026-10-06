@@ -19,8 +19,11 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -33,9 +36,24 @@ public final class PipelinePrepareSQLBuilder {
     
     private final PipelineSQLSegmentBuilder sqlSegmentBuilder;
     
+    /**
+     * Create a builder for actual identifiers only. Creating a schema requires an endpoint context.
+     *
+     * @param databaseType database type
+     */
     public PipelinePrepareSQLBuilder(final DatabaseType databaseType) {
+        this(databaseType, null);
+    }
+    
+    /**
+     * Create a builder using the SQL endpoint identifier context.
+     *
+     * @param databaseType database type
+     * @param identifierContext endpoint context, or null for actual identifiers only
+     */
+    public PipelinePrepareSQLBuilder(final DatabaseType databaseType, @Nullable final DatabaseIdentifierContext identifierContext) {
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
-        sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
+        sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType, identifierContext);
     }
     
     /**
@@ -45,18 +63,18 @@ public final class PipelinePrepareSQLBuilder {
      * @return create schema SQL
      */
     public Optional<String> buildCreateSchemaSQL(final String schemaName) {
-        return dialectSQLBuilder.buildCreateSchemaSQL(sqlSegmentBuilder.getEscapedIdentifier(schemaName));
+        return dialectSQLBuilder.buildCreateSchemaSQL(sqlSegmentBuilder.getEscapedIdentifier(IdentifierScope.SCHEMA, schemaName));
     }
     
     /**
-     * Build drop SQL.
+     * Build drop SQL for resolved actual identifiers.
      *
-     * @param schemaName schema name
-     * @param tableName table name
+     * @param schemaName actual schema name
+     * @param tableName actual table name
      * @return drop SQL
      */
     public String buildDropSQL(final String schemaName, final String tableName) {
-        return String.format("DROP TABLE IF EXISTS %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
+        return String.format("DROP TABLE IF EXISTS %s", sqlSegmentBuilder.getQualifiedActualTableName(schemaName, tableName));
     }
     
     /**

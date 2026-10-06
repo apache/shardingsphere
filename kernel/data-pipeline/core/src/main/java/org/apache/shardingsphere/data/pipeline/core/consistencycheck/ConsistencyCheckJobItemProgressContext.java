@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.TableCheckRangePosition;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
@@ -58,6 +59,8 @@ public final class ConsistencyCheckJobItemProgressContext implements PipelineJob
     private final List<TableCheckRangePosition> tableCheckRangePositions = new ArrayList<>();
     
     private final String sourceDatabaseType;
+    
+    private volatile JobStatus status;
     
     @Override
     public void onProgressUpdated(final PipelineJobUpdateProgress updateProgress) {

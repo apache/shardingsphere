@@ -23,8 +23,15 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.constraint.reference.ConfigurationReferenceExists;
+import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
+import org.apache.shardingsphere.infra.config.rule.validator.constraint.unique.UniqueTableNames;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,11 +41,18 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
+@ConfigurationReferenceExists(referencePaths = "tables.columns.maskAlgorithm", pool = "maskAlgorithms", groups = RuleConfigurationTypeValidationGroup.class)
 public final class MaskRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
-    private final Collection<MaskTableRuleConfiguration> tables;
+    @NotNull
+    @Valid
+    @UniqueTableNames(groups = RuleConfigurationTypeValidationGroup.class)
+    private final Collection<@NotNull MaskTableRuleConfiguration> tables;
     
-    private final Map<String, AlgorithmConfiguration> maskAlgorithms;
+    @NotNull
+    @Valid
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.mask.spi.MaskAlgorithm", groups = RuleConfigurationTypeValidationGroup.class)
+    private final Map<@NotBlank String, @NotNull AlgorithmConfiguration> maskAlgorithms;
     
     @Override
     public Collection<String> getLogicTableNames() {

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.transaction.spi;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionManager;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionOptionReplayCallback;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
@@ -60,10 +61,11 @@ public interface ShardingSphereDistributedTransactionManager extends TypedSPI, T
      *
      * @param databaseName database name
      * @param dataSourceName data source name
+     * @param transactionOptionReplayCallback transaction option replay callback
      * @return connection
      * @throws SQLException SQL exception
      */
-    Connection getConnection(String databaseName, String dataSourceName) throws SQLException;
+    Connection getConnection(String databaseName, String dataSourceName, TransactionOptionReplayCallback transactionOptionReplayCallback) throws SQLException;
     
     /**
      * Begin transaction.

@@ -156,11 +156,11 @@ deleteSpecification
     ;
 
 select
-    : selectSubquery forUpdateClause?
+    : selectSubquery forUpdateClause? orderByClause?
     ;
 
 selectSubquery
-    : selectSubquery combineType selectSubquery | ((queryBlock | parenthesisSelectSubquery) pivotClause? orderByClause? rowLimitingClause)
+    : selectSubquery combineType selectSubquery | ((queryBlock | withClause parenthesisSelectSubquery | parenthesisSelectSubquery) pivotClause? orderByClause? rowLimitingClause)
     ;
 
 combineType
@@ -173,7 +173,7 @@ parenthesisSelectSubquery
 
 queryBlock
     : unquotedTextQueryBlock
-    | withClause? SELECT hint? duplicateSpecification? selectList selectIntoClause? selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
+    | withClause? SELECT hint? duplicateSpecification? selectList selectIntoClause? selectFromClause whereClause? hierarchicalQueryClause? groupByClause? havingClause? modelClause?
     ;
 
 unquotedTextQueryBlock
@@ -679,7 +679,7 @@ hierarchicalQueryClause
     ;
 
 groupByClause
-    : GROUP BY groupByItem (COMMA_ groupByItem)* havingClause?
+    : GROUP BY groupByItem (COMMA_ groupByItem)*
     ;
 
 groupByItem
@@ -768,7 +768,7 @@ subquery
 modelExpr
     : (numberLiterals ASTERISK_)? ((measureColumn LBT_ (condition | expr) (COMMA_ (condition | expr))* RBT_)
     | (aggregationFunction LBT_ (((condition | expr) (COMMA_ (condition | expr))*) | (singleColumnForLoop (COMMA_ singleColumnForLoop)*) | multiColumnForLoop) RBT_)
-    | analyticFunction) ((PLUS_ | SLASH_) LP_? modelExpr* RP_? | ASTERISK_ (numberLiterals | parameterMarker) (ASTERISK_ modelExpr)?)?
+    | analyticFunction) ((PLUS_ | SLASH_) (LP_ modelExpr RP_ | modelExpr) | ASTERISK_ (numberLiterals | parameterMarker) (ASTERISK_ modelExpr)?)?
     | expr
     ;
 
