@@ -52,6 +52,7 @@
 1. SQL Binder: Fix PostgreSQL SYSTEM_USER being incorrectly bound as a column - [#39385](https://github.com/apache/shardingsphere/pull/39385)
 1. SQL Binder: Preserve RETURNING clause when binding UPDATE and DELETE statements - [#40070](https://github.com/apache/shardingsphere/pull/40070)
 1. SQL Binder: Fix recursive CTE binding when anchor query uses shorthand projection - [#40073](https://github.com/apache/shardingsphere/pull/40073)
+1. SQL Binder: Keep outer table scope when binding quantified ANY/ALL subqueries - [#40071](https://github.com/apache/shardingsphere/pull/40071)
 1. Metadata: Fix MySQL metadata loading fallback when JDBC catalog is null for named tables - [#38855](https://github.com/apache/shardingsphere/pull/38855)
 1. Metadata: Fix Oracle metadata version comparison skipping identity and collation columns on 18c and later - [#39104](https://github.com/apache/shardingsphere/pull/39104)
 1. Metadata: Fix wrong logic table metadata when config same actual table name in different storage unit - [#39157](https://github.com/apache/shardingsphere/pull/39157)
