@@ -38,7 +38,7 @@ jobs:
     uses: ./.github/workflows/reusable-global-environment.yml
 
   check-and-report-jacoco:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Schedule - Jacoco report
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
