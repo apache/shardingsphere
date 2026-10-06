@@ -79,6 +79,7 @@ jobs:
         additional-options: [ '' ]
         include:
           - adapter: proxy
+            mode: Cluster
             database: MySQL
             scenario: passthrough
             additional-options: '-Dmysql-connector-java.version=8.4.0'
