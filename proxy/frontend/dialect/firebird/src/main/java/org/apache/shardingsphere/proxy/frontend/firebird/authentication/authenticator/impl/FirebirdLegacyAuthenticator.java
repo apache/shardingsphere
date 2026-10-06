@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticator;
 import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Legacy authenticator for Firebird.
  *
@@ -35,7 +37,7 @@ public final class FirebirdLegacyAuthenticator implements FirebirdAuthenticator 
     public boolean authenticate(final ShardingSphereUser user, final Object[] authInfo) {
         // TODO update when version 6 of jaybird comes out
         String password = (String) authInfo[0];
-        String expectedPassword = UnixCrypt.crypt(user.getPassword(), SALT).substring(2, 13);
+        String expectedPassword = UnixCrypt.crypt(user.getPassword(), SALT, StandardCharsets.UTF_8.name()).substring(2, 13);
         return expectedPassword.equals(password);
     }
     

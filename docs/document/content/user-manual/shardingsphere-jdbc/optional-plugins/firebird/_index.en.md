@@ -23,7 +23,7 @@ the possible Maven dependencies are as follows,
     <dependency>
         <groupId>org.firebirdsql.jdbc</groupId>
         <artifactId>jaybird</artifactId>
-        <version>5.0.10.java8</version>
+        <version>5.0.13.java8</version>
     </dependency>
 </dependencies>
 ```
@@ -53,7 +53,7 @@ services:
 Create some business databases in Firebird through third-party tools.
 
 Third-party tools including DBeaver Community cannot create databases for Firebird.
-Below is the Java API of the Maven module `org.firebirdsql.jdbc:jaybird:5.0.10.java8` as an example.
+Below is the Java API of the Maven module `org.firebirdsql.jdbc:jaybird:5.0.13.java8` as an example.
 
 ```java
 import org.firebirdsql.management.FBManager;
