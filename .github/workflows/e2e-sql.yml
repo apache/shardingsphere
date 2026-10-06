@@ -129,7 +129,7 @@ jobs:
 
   prepare-e2e-artifacts:
     name: Prepare E2E Artifacts
-    if: github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true'
+    if: needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true'
     needs: [ global-environment, detect-and-generate-matrix ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
@@ -153,7 +153,7 @@ jobs:
   e2e-sql-smoke:
     name: E2E - SQL (Smoke)
     needs: [ detect-and-generate-matrix, prepare-e2e-artifacts, global-environment ]
-    if: always() && github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true' && needs.detect-and-generate-matrix.result == 'success' && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
+    if: always() && needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true' && needs.detect-and-generate-matrix.result == 'success' && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     strategy:
@@ -229,7 +229,7 @@ jobs:
     needs: [ detect-remaining-matrix, prepare-e2e-artifacts, global-environment ]
     if: >-
       always()
-      && github.repository == 'apache/shardingsphere'
+      && needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true'
       && needs.detect-remaining-matrix.outputs.has-remaining-jobs == 'true'
       && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
