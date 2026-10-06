@@ -34,6 +34,8 @@ on:
       - '!distribution/**/src/main/release-docs/**'
       - '!examples/**'
       - '!*.md'
+  schedule:
+    - cron: '0 0 * * 1-5' # Once a day between Monday and Friday. UTC time
   workflow_dispatch:
 
 concurrency:
@@ -56,7 +58,7 @@ jobs:
     name: Build E2E Image
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
-    timeout-minutes: 20
+    timeout-minutes: ${{ github.event_name == 'schedule' && 40 || 20 }}
     steps:
       - uses: actions/checkout@v6.0.1
       - id: setup-build-environment
@@ -96,7 +98,7 @@ jobs:
     if: github.repository == 'apache/shardingsphere'
     needs: [ global-environment, build-e2e-image ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
-    timeout-minutes: 15
+    timeout-minutes: ${{ github.event_name == 'schedule' && 40 || 15 }}
     strategy:
       max-parallel: 15
       fail-fast: false
