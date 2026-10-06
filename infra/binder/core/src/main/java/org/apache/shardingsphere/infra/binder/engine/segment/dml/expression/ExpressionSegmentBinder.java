@@ -134,7 +134,10 @@ public final class ExpressionSegmentBinder {
             return OuterJoinExpressionBinder.bind((OuterJoinExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof QuantifySubqueryExpression) {
-            return QuantifySubqueryExpressionBinder.bind((QuantifySubqueryExpression) segment, binderContext, tableBinderContexts);
+            Multimap<CaseInsensitiveString, TableSegmentBinderContext> newOuterTableBinderContexts = LinkedHashMultimap.create();
+            newOuterTableBinderContexts.putAll(outerTableBinderContexts);
+            newOuterTableBinderContexts.putAll(tableBinderContexts);
+            return QuantifySubqueryExpressionBinder.bind((QuantifySubqueryExpression) segment, binderContext, newOuterTableBinderContexts);
         }
         if (segment instanceof RowExpression) {
             return RowExpressionBinder.bind((RowExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
