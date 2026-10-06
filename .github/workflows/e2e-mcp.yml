@@ -140,7 +140,7 @@ jobs:
 
   e2e-mcp-functionality:
     name: E2E - MCP Functionality
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     needs: [ global-environment, e2e-mcp-build-images ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
@@ -185,7 +185,7 @@ jobs:
 
   e2e-mcp-conformance:
     name: E2E - MCP Conformance
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     needs: [ global-environment, e2e-mcp-build-images ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 30
@@ -276,7 +276,7 @@ jobs:
 
   e2e-mcp-llm:
     name: E2E - MCP LLM - ${{ matrix.id }}
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     needs: [ global-environment, e2e-mcp-build-images, e2e-mcp-build-llm-image ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
