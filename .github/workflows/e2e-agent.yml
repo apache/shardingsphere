@@ -54,7 +54,7 @@ jobs:
     uses: ./.github/workflows/reusable-global-environment.yml
 
   build-e2e-image:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Build E2E Image
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
@@ -95,7 +95,7 @@ jobs:
 
   agent-mysql:
     name: E2E - Agent with MySQL
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     needs: [ global-environment, build-e2e-image ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
