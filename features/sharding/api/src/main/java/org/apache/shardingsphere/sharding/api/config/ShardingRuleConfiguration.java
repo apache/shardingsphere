@@ -81,15 +81,18 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     private Map<@NotBlank String, @NotNull KeyGenerateStrategiesConfiguration> keyGenerateStrategies = new LinkedHashMap<>();
     
     @NotNull
-    @SPITypeExists(spiClassName = "org.apache.shardingsphere.sharding.spi.ShardingAlgorithm")
+    @Valid
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.sharding.spi.ShardingAlgorithm", groups = RuleConfigurationTypeValidationGroup.class)
     private Map<@NotBlank String, @NotNull AlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
     @NotNull
-    @SPITypeExists(spiClassName = "org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm")
+    @Valid
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm", groups = RuleConfigurationTypeValidationGroup.class)
     private Map<@NotBlank String, @NotNull AlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
     @NotNull
-    @SPITypeExists(spiClassName = "org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm")
+    @Valid
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm", groups = RuleConfigurationTypeValidationGroup.class)
     private Map<@NotBlank String, @NotNull AlgorithmConfiguration> auditors = new LinkedHashMap<>();
     
     @Override
