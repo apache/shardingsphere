@@ -52,6 +52,7 @@ jobs:
 
   detect-and-generate-matrix:
     name: Detect Changes and Generate Matrix
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 5

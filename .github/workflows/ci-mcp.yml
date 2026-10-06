@@ -45,7 +45,7 @@ jobs:
 
   mcp-ci:
     name: MCP - CI with JDK 21
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 30
