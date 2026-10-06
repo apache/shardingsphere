@@ -38,7 +38,7 @@ jobs:
       - name: Set Global Environment
         id: global-environment
         env:
-          GLOBAL_REPOSITORY: ${{ vars.GLOBAL_REPOSITORY || (github.repository == 'apache/shardingsphere' && github.event_name == 'pull_request' && github.repository) || '' }}
+          GLOBAL_REPOSITORY: ${{ vars.GLOBAL_REPOSITORY }}
         run: |
           echo "GLOBAL_CACHE_PREFIX=${GLOBAL_REPOSITORY//\//-}" >> "$GITHUB_OUTPUT"
           if [ "$GITHUB_REPOSITORY" = "$GLOBAL_REPOSITORY" ]; then
@@ -46,7 +46,7 @@ jobs:
             echo "GLOBAL_JOB_ENABLED=true" >> "$GITHUB_OUTPUT"
           fi
     outputs:
-      GLOBAL_RUNS_ON: ${{ github.repository == 'apache/shardingsphere' && github.event_name == 'pull_request' && 'ubuntu-latest' || vars.GLOBAL_RUNS_ON }}
+      GLOBAL_RUNS_ON: ${{ vars.GLOBAL_RUNS_ON }}
       GLOBAL_JOB_ENABLED: ${{ steps.global-environment.outputs.GLOBAL_JOB_ENABLED }}
       GLOBAL_CACHE_PREFIX: ${{ steps.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE: ${{ steps.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE }}
