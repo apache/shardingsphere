@@ -48,7 +48,11 @@ jobs:
       max-parallel: 15
       fail-fast: false
       matrix:
-        database: [ mysql, postgresql ]
+        include:
+          - database: mysql
+            test: ExternalMySQLParserIT
+          - database: postgresql
+            test: ExternalPostgreSQLParserIT
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
@@ -57,9 +61,9 @@ jobs:
       - name: Build Project with Maven
         run: ./mvnw -T1C -B -ntp clean install
       - name: Run SQL Parser
-        continue-on-error: true
-        run: ./mvnw -nsu -B install -f parser/sql/dialect/${{ matrix.database }}/pom.xml -Dsql.parser.external.it.enabled=true
+        run: ./mvnw -nsu -B install -f test/it/parser/pom.xml -Dsql.parser.external.it.enabled=true -Dit.test=${{ matrix.test }}
       - uses: actions/upload-artifact@v6
+        if: ${{ !cancelled() }}
         with:
           name: sql-report-${{ matrix.database }}
           path: /tmp/*.csv
