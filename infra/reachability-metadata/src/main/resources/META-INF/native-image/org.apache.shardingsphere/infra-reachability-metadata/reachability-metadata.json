@@ -462,6 +462,211 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.constraints.NotEmptyValidator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.constraints.NotEmptyValidatorForCharSequence",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.constraints.NotEmptyValidatorForCollection",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.constraints.NotEmptyValidatorForMap",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.jsr.ApacheValidatorFactory",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "javax.validation.spi.ConfigurationState"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.jsr.ConstraintAnnotationAttributes$Types",
+      "fields": [
+        {
+          "name": "message"
+        },
+        {
+          "name": "groups"
+        },
+        {
+          "name": "payload"
+        },
+        {
+          "name": "validationAppliesTo"
+        },
+        {
+          "name": "value"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.jsr.valueextraction.FxExtractor$Activation",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.jsr.valueextraction.IterableElementExtractor",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.jsr.valueextraction.ListElementExtractor",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.jsr.valueextraction.MapExtractor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.jsr.valueextraction.MapExtractor$ForKey",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.jsr.valueextraction.MapExtractor$ForValue",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.jsr.valueextraction.OptionalExtractor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.jsr.valueextraction.OptionalExtractor$ForDouble",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.jsr.valueextraction.OptionalExtractor$ForInt",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.jsr.valueextraction.OptionalExtractor$ForLong",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.bval.jsr.valueextraction.OptionalExtractor$ForObject",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
       },
       "type": "org.apache.shardingsphere.infra.config.rule.validator.constraint.reference.ConfigurationReferenceExistsValidator",
@@ -623,10 +828,111 @@
         "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
       },
       "type": "org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration",
+      "fields": [
+        {
+          "name": "type"
+        }
+      ],
       "methods": [
         {
           "name": "getType",
           "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "javax.validation.constraints.NotEmpty",
+      "methods": [
+        {
+          "name": "message",
+          "parameterTypes": []
+        },
+        {
+          "name": "groups",
+          "parameterTypes": []
+        },
+        {
+          "name": "payload",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration",
+      "fields": [
+        {
+          "name": "type"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getType",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "javax.validation.constraints.NotEmpty",
+      "methods": [
+        {
+          "name": "message",
+          "parameterTypes": []
+        },
+        {
+          "name": "groups",
+          "parameterTypes": []
+        },
+        {
+          "name": "payload",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration",
+      "fields": [
+        {
+          "name": "read"
+        },
+        {
+          "name": "write"
+        },
+        {
+          "name": "streamChannel"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineReadConfiguration",
+      "fields": [
+        {
+          "name": "rateLimiter"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineWriteConfiguration",
+      "fields": [
+        {
+          "name": "rateLimiter"
         }
       ]
     },
@@ -1749,6 +2055,24 @@
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.config.validator.ProxyConfigurationLoadResultValidator"
+      },
+      "glob": "org/apache/bval/jsr/valueextraction/DefaultExtractors.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "bundle": "org.apache.bval.jsr.ValidationMessages"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
+      },
+      "glob": "org/apache/bval/jsr/DefaultConstraints.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService"
       },
       "glob": "org/apache/bval/jsr/valueextraction/DefaultExtractors.properties"
     },

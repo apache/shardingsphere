@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 
+import javax.validation.Valid;
+
 /**
  * Pipeline write configuration.
  */
@@ -34,5 +36,6 @@ public final class PipelineWriteConfiguration {
     
     private final Integer batchSize;
     
+    @Valid
     private final AlgorithmConfiguration rateLimiter;
 }

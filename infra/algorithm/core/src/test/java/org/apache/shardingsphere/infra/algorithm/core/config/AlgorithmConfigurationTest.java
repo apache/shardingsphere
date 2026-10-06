@@ -18,12 +18,17 @@
 package org.apache.shardingsphere.infra.algorithm.core.config;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AlgorithmConfigurationTest {
@@ -33,7 +38,7 @@ class AlgorithmConfigurationTest {
         Properties props = new Properties();
         AlgorithmConfiguration actual = new AlgorithmConfiguration("INLINE", props);
         assertThat(actual.getType(), is("INLINE"));
-        assertThat(actual.getProps(), is(props));
+        assertThat(actual.getProps(), sameInstance(props));
     }
     
     @Test
@@ -43,8 +48,13 @@ class AlgorithmConfigurationTest {
         assertTrue(actual.getProps().isEmpty());
     }
     
-    @Test
-    void assertConstructWithEmptyType() {
-        assertThat(assertThrows(IllegalArgumentException.class, () -> new AlgorithmConfiguration("", new Properties())).getMessage(), is("Type is required."));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideTypes")
+    void assertConstructWithoutTypeValidation(final String name, final String type) {
+        assertDoesNotThrow(() -> new AlgorithmConfiguration(type, new Properties()));
+    }
+    
+    private static Stream<Arguments> provideTypes() {
+        return Stream.of(Arguments.of("Null type", null), Arguments.of("Empty type", ""), Arguments.of("Whitespace type", " "));
     }
 }
