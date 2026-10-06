@@ -28,10 +28,12 @@ on:
       - 'test/native/pom.xml'
       - 'test/native/native-image-filter/**'
       - 'test/native/src/**'
+  schedule:
+    - cron: '0 13 * * 1-5' # Once a day between Monday and Friday. UTC time
   workflow_dispatch:
 
 concurrency:
-  group: graalvm-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.event_name == 'schedule' && 'nightly-graalvm' || 'graalvm' }}-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -42,7 +44,7 @@ jobs:
     name: Import Global Environment
     uses: ./.github/workflows/reusable-global-environment.yml
   nativetest:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ github.event_name == 'schedule' && needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' || github.event_name != 'schedule' && github.repository == 'apache/shardingsphere' }}
     needs: global-environment
     name: GraalVM - GraalVM CE ${{ matrix.java-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -55,6 +57,9 @@ jobs:
         os: [ 'ubuntu-latest' ]
     steps:
       - uses: actions/checkout@v6.0.1
+      - name: Configure Maven for Nightly Tests
+        if: github.event_name == 'schedule'
+        run: echo "MAVEN_OPTS=-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3" >> "$GITHUB_ENV"
       - name: Free Disk Space on Ubuntu
         if: matrix.os == 'ubuntu-latest'
         run: ./test/native/src/test/resources/test-native/sh/free-disk-space.sh
