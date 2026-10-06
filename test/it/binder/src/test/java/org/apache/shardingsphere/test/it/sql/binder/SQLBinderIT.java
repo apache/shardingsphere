@@ -101,15 +101,24 @@ public abstract class SQLBinderIT {
      * @return bound SQL statement
      */
     protected final SQLStatement bindSQLStatement(final String databaseType, final String sql, final ConfigurationProperties props) {
-        HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
-        SQLStatement sqlStatement = new SQLStatementVisitorEngine(databaseType).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
-        return new SQLBindEngine(mockMetaData(TypedSPILoader.getService(DatabaseType.class, databaseType), props), "foo_db_1", hintValueContext).bind(sqlStatement).getSqlStatement();
+        return bindSQLStatement(databaseType, sql, props, "foo_db_1");
     }
     
-    private ShardingSphereMetaData mockMetaData(final DatabaseType databaseType, final ConfigurationProperties props) {
+    protected final SQLStatement bindSQLStatement(final String databaseType, final String sql, final ConfigurationProperties props, final String currentDatabaseName) {
+        HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
+        SQLStatement sqlStatement = new SQLStatementVisitorEngine(databaseType).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
+        return new SQLBindEngine(mockMetaData(TypedSPILoader.getService(DatabaseType.class, databaseType), props, currentDatabaseName), currentDatabaseName, hintValueContext)
+                .bind(sqlStatement).getSqlStatement();
+    }
+    
+    private ShardingSphereMetaData mockMetaData(final DatabaseType databaseType, final ConfigurationProperties props, final String currentDatabaseName) {
         Collection<ShardingSphereDatabase> databases = new LinkedList<>();
         databases.add(new ShardingSphereDatabase("foo_db_1", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), mockSchemas(databaseType, "foo_db_1", props), props));
         databases.add(new ShardingSphereDatabase("foo_db_2", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), mockSchemas(databaseType, "foo_db_2", props), props));
+        if (!"foo_db_1".equals(currentDatabaseName) && !"foo_db_2".equals(currentDatabaseName)) {
+            databases.add(new ShardingSphereDatabase(currentDatabaseName, databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class),
+                    SystemSchemaBuilder.build(currentDatabaseName, databaseType, props).values(), props));
+        }
         return new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), props);
     }
     

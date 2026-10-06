@@ -64,6 +64,15 @@ public interface DialectSchemaOption {
     }
     
     /**
+     * Judge whether an unqualified table name that is the target of a DDL statement, such as {@code DROP TABLE} or {@code ALTER TABLE}, resolves to the default system schema.
+     *
+     * @return DDL target resolves to default system schema or not
+     */
+    default boolean isDDLTargetResolvedToSystemSchema() {
+        return true;
+    }
+    
+    /**
      * Get schema semantics.
      *
      * @return schema semantics

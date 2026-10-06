@@ -25,12 +25,18 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.test.it.sql.binder.SQLBinderIT;
 import org.apache.shardingsphere.test.it.sql.binder.SQLBinderITSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.Properties;
@@ -69,7 +75,7 @@ class OracleBinderIT extends SQLBinderIT {
     }
     
     @Test
-    void assertBindCurrentSchemaTableShadowingDictionaryViewName() {
+    void assertBindDictionaryViewNameExistingInCurrentSchema() {
         String sql = "SELECT USER_COL FROM ALL_VIEWS";
         SelectStatement actual = (SelectStatement) bindSQLStatement("Oracle", sql);
         ProjectionSegment actualProjection = actual.getProjections().getProjections().get(0);
@@ -109,20 +115,20 @@ class OracleBinderIT extends SQLBinderIT {
     }
     
     @Test
-    void assertBindCreateTableNotShadowedByDictionaryViewName() {
+    void assertBindCreateTableWithDictionaryViewName() {
         String sql = "CREATE TABLE ALL_TABLES (FOO_COL NUMBER)";
         CreateTableStatement actual = (CreateTableStatement) bindSQLStatement("Oracle", sql, new ConfigurationProperties(new Properties()));
         assertThat(actual.getTable().getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("FOO_DB_1"));
     }
     
     @Test
-    void assertBindQuotedIdentifierDoesNotMatchDictionaryView() {
+    void assertBindQuotedLowerCaseDictionaryViewName() {
         String sql = "SELECT SEQUENCE_NAME FROM \"all_sequences\"";
         assertThrows(TableNotFoundException.class, () -> bindSQLStatement("Oracle", sql, new ConfigurationProperties(new Properties())));
     }
     
     @Test
-    void assertBindQuotedIdentifierMatchesDictionaryViewWithExactCase() {
+    void assertBindQuotedDictionaryViewName() {
         String sql = "SELECT SEQUENCE_NAME FROM \"ALL_SEQUENCES\"";
         SelectStatement actual = (SelectStatement) bindSQLStatement("Oracle", sql, new ConfigurationProperties(new Properties()));
         assertColumnBound(actual.getProjections().getProjections().get(0), "ALL_SEQUENCES", "SEQUENCE_NAME");
@@ -133,6 +139,38 @@ class OracleBinderIT extends SQLBinderIT {
         String sql = "CREATE VIEW v1 AS SELECT READ_ONLY FROM ALL_TABLES";
         CreateViewStatement actual = (CreateViewStatement) bindSQLStatement("Oracle", sql, new ConfigurationProperties(new Properties()));
         assertColumnBound(actual.getSelect().getProjections().getProjections().get(0), "ALL_TABLES", "READ_ONLY");
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"DROP TABLE ALL_TABLES", "ALTER TABLE ALL_TABLES ADD (FOO_COL NUMBER)", "TRUNCATE TABLE ALL_TABLES",
+            "CREATE INDEX idx_foo ON ALL_TABLES (OWNER)", "DROP VIEW ALL_SYNONYMS", "ALTER VIEW ALL_SYNONYMS COMPILE"})
+    void assertBindDDLTargetWithDictionaryViewName(final String sql) {
+        assertThrows(TableNotFoundException.class, () -> bindSQLStatement("Oracle", sql, new ConfigurationProperties(new Properties())));
+    }
+    
+    @Test
+    void assertBindUpdateDBLinkTableSharingDictionaryViewName() {
+        String sql = "UPDATE ALL_TABLES@REMOTE_LINK SET USER_COL = 1";
+        UpdateStatement actual = (UpdateStatement) bindSQLStatement("Oracle", sql, new ConfigurationProperties(new Properties()));
+        assertRemoteTableBound((SimpleTableSegment) actual.getTable());
+    }
+    
+    @Test
+    void assertBindInsertDBLinkTableSharingDictionaryViewName() {
+        String sql = "INSERT INTO ALL_TABLES@REMOTE_LINK (USER_COL) VALUES (1)";
+        InsertStatement actual = (InsertStatement) bindSQLStatement("Oracle", sql, new ConfigurationProperties(new Properties()));
+        assertRemoteTableBound(actual.getTable().get());
+    }
+    
+    @Test
+    void assertBindDeleteDBLinkTableSharingDictionaryViewName() {
+        String sql = "DELETE FROM ALL_TABLES@REMOTE_LINK WHERE USER_COL = 1";
+        DeleteStatement actual = (DeleteStatement) bindSQLStatement("Oracle", sql, new ConfigurationProperties(new Properties()));
+        assertRemoteTableBound((SimpleTableSegment) actual.getTable());
+    }
+    
+    private void assertRemoteTableBound(final SimpleTableSegment actual) {
+        assertThat(actual.getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("FOO_DB_1"));
     }
     
     private void assertColumnBound(final ProjectionSegment actualProjection, final String expectedTable, final String expectedColumn) {

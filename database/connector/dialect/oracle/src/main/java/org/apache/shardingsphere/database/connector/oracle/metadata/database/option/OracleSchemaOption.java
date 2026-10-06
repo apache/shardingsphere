@@ -62,6 +62,11 @@ public final class OracleSchemaOption implements DialectSchemaOption {
     }
     
     @Override
+    public boolean isDDLTargetResolvedToSystemSchema() {
+        return false;
+    }
+    
+    @Override
     public DialectSchemaSemantics getSchemaSemantics() {
         return delegate.getSchemaSemantics();
     }

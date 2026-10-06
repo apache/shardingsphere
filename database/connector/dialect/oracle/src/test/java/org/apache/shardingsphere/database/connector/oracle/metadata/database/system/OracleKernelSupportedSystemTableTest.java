@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
-class OracleKernelSupportedSystemTableTest {
+final class OracleKernelSupportedSystemTableTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
     

@@ -39,6 +39,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -47,6 +48,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -138,6 +140,27 @@ class ShardingSphereDatabaseFactoryTest {
         assertThat(actual.getAllSchemas().size(), is(1));
         assertThat(actual.getRuleMetaData().getRules().size(), is(1));
         assertTrue(actual.containsSchema("foo_schema"));
+    }
+    
+    @Test
+    void assertCreateWithSchemasWithoutSystemSchemas() {
+        DatabaseType oracleDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create(
+                "foo_db", oracleDatabaseType, databaseConfig, mock(), Collections.singletonList(new ShardingSphereSchema("FOO_DB", oracleDatabaseType)));
+        assertThat(actual.getAllSchemas().size(), is(3));
+        assertTrue(actual.containsSchema("FOO_DB"));
+        assertTrue(actual.getSchema("SYS").containsTable("ALL_SEQUENCES"));
+        assertTrue(actual.containsSchema("SYSTEM_LOBS"));
+    }
+    
+    @Test
+    void assertCreateWithSchemasContainingPersistedSystemSchema() {
+        DatabaseType oracleDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        ShardingSphereSchema expectedSystemSchema = new ShardingSphereSchema("SYS", oracleDatabaseType);
+        ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create(
+                "foo_db", oracleDatabaseType, databaseConfig, mock(), Arrays.asList(new ShardingSphereSchema("FOO_DB", oracleDatabaseType), expectedSystemSchema));
+        assertThat(actual.getAllSchemas().size(), is(3));
+        assertThat(actual.getSchema("SYS"), sameInstance(expectedSystemSchema));
     }
     
     @Test

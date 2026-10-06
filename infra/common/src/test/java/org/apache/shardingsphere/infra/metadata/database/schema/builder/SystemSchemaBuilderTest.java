@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -73,6 +75,31 @@ class SystemSchemaBuilderTest {
         assertTrue(actual.get("sys").containsTable("all_views"));
         assertTrue(actual.get("sys").containsTable("user_tables"));
         assertTrue(actual.get("system_lobs").getAllTables().isEmpty());
+    }
+    
+    @Test
+    void assertBuildWithAllSystemSchemasExcluded() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        Map<String, ShardingSphereSchema> actual = SystemSchemaBuilder.build("foo_db", databaseType, new ConfigurationProperties(PropertiesBuilder.build()),
+                Arrays.asList("information_schema", "pg_catalog", "shardingsphere"));
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    void assertBuildWithUserSchemaDifferingFromSystemSchemaInCase() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        Map<String, ShardingSphereSchema> actual = SystemSchemaBuilder.build("foo_db", databaseType, new ConfigurationProperties(PropertiesBuilder.build()),
+                Collections.singleton("INFORMATION_SCHEMA"));
+        assertThat(actual.size(), is(3));
+        assertTrue(actual.containsKey("information_schema"));
+    }
+    
+    @Test
+    void assertBuildWithSystemSchemaExcluded() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        Map<String, ShardingSphereSchema> actual = SystemSchemaBuilder.build("foo_db", databaseType, new ConfigurationProperties(PropertiesBuilder.build()), Collections.singleton("SYS"));
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.containsKey("system_lobs"));
     }
     
     @Test

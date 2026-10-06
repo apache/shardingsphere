@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
@@ -35,14 +36,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SQLBinderITSettings("PostgreSQL")
 class PostgreSQLBinderIT extends SQLBinderIT {
     
     @Test
-    void assertBindDoesNotShadowSystemCatalogTableWithCurrentSchemaTable() {
+    void assertBindSystemCatalogTableNameExistingInCurrentSchema() {
         String sql = "SELECT relname FROM pg_class";
         SelectStatement actual = (SelectStatement) bindSQLStatement("PostgreSQL", sql);
         ProjectionSegment actualProjection = actual.getProjections().getProjections().get(0);
@@ -52,14 +52,14 @@ class PostgreSQLBinderIT extends SQLBinderIT {
     }
     
     @Test
-    void assertBindCreateTableNotShadowedBySystemCatalogTableName() {
+    void assertBindCreateTableWithSystemCatalogTableName() {
         String sql = "CREATE TABLE pg_extension (foo_col text)";
         CreateTableStatement actual = (CreateTableStatement) bindSQLStatement("PostgreSQL", sql);
         assertThat(actual.getTable().getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("public"));
     }
     
     @Test
-    void assertBindQuotedSystemCatalogTableNameStillMatchesDictionary() {
+    void assertBindQuotedSystemCatalogTableName() {
         String sql = "SELECT relname FROM \"pg_class\"";
         SelectStatement actual = (SelectStatement) bindSQLStatement("PostgreSQL", sql);
         ProjectionSegment actualProjection = actual.getProjections().getProjections().get(0);
@@ -69,20 +69,20 @@ class PostgreSQLBinderIT extends SQLBinderIT {
     }
     
     @Test
-    void assertBindCreateIndexOnExistingSystemCatalogTableStillResolvesToDictionary() {
+    void assertBindCreateIndexOnSystemCatalogTable() {
         String sql = "CREATE INDEX idx_pg_extension_extname ON pg_extension (extname)";
         CreateIndexStatement actual = (CreateIndexStatement) bindSQLStatement("PostgreSQL", sql);
         assertThat(actual.getTable().getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("pg_catalog"));
     }
     
     @Test
-    void assertBindOwnerQualifiedQuotedIdentifierDoesNotMatchDictionaryView() {
+    void assertBindOwnerQualifiedQuotedUpperCaseSystemCatalogTableName() {
         String sql = "SELECT relname FROM pg_catalog.\"PG_CLASS\"";
         assertThrows(TableNotFoundException.class, () -> bindSQLStatement("PostgreSQL", sql));
     }
     
     @Test
-    void assertBindOwnerQualifiedQuotedIdentifierMatchesDictionaryViewWithExactCase() {
+    void assertBindOwnerQualifiedQuotedSystemCatalogTableName() {
         String sql = "SELECT relname FROM pg_catalog.\"pg_class\"";
         SelectStatement actual = (SelectStatement) bindSQLStatement("PostgreSQL", sql);
         ProjectionSegment actualProjection = actual.getProjections().getProjections().get(0);
@@ -92,30 +92,32 @@ class PostgreSQLBinderIT extends SQLBinderIT {
     }
     
     @Test
-    void assertBindRenameTargetNotShadowedBySystemCatalogTableName() {
+    void assertBindRenameTableToSystemCatalogTableName() {
         String sql = "ALTER TABLE t_order RENAME TO pg_extension";
         AlterTableStatement actual = (AlterTableStatement) bindSQLStatement("PostgreSQL", sql);
         assertThat(actual.getRenameTable().get().getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("public"));
     }
     
     @Test
-    void assertBindQuotedSystemCatalogTableNameStillMatchesDictionaryWhenAssemblyDisabled() {
+    void assertBindOwnerQualifiedQuotedSystemCatalogTableNameWithAssemblyDisabled() {
         ConfigurationProperties props = new ConfigurationProperties(
                 PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), Boolean.FALSE.toString())));
         String sql = "SELECT * FROM pg_catalog.\"pg_indexes\"";
-        assertDoesNotThrow(() -> bindSQLStatement("PostgreSQL", sql, props));
+        SelectStatement actual = (SelectStatement) bindSQLStatement("PostgreSQL", sql, props);
+        assertThat(((SimpleTableSegment) actual.getFrom().get()).getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("pg_catalog"));
     }
     
     @Test
-    void assertBindUnqualifiedQuotedSystemCatalogTableNameMatchesDictionaryWhenAssemblyDisabled() {
+    void assertBindQuotedSystemCatalogTableNameWithAssemblyDisabled() {
         ConfigurationProperties props = new ConfigurationProperties(
                 PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), Boolean.FALSE.toString())));
         String sql = "SELECT * FROM \"pg_indexes\"";
-        assertDoesNotThrow(() -> bindSQLStatement("PostgreSQL", sql, props));
+        SelectStatement actual = (SelectStatement) bindSQLStatement("PostgreSQL", sql, props);
+        assertThat(((SimpleTableSegment) actual.getFrom().get()).getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("pg_catalog"));
     }
     
     @Test
-    void assertBindUnqualifiedQuotedIdentifierDoesNotMatchDictionaryViewWhenAssemblyDisabled() {
+    void assertBindQuotedUpperCaseSystemCatalogTableNameWithAssemblyDisabled() {
         ConfigurationProperties props = new ConfigurationProperties(
                 PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), Boolean.FALSE.toString())));
         String sql = "SELECT * FROM \"PG_INDEXES\"";

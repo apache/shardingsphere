@@ -61,4 +61,14 @@ class OracleSchemaOptionTest {
     void assertGetDefaultSystemSchema() {
         assertThat(new OracleSchemaOption().getDefaultSystemSchema(), is(Optional.of("SYS")));
     }
+    
+    @Test
+    void assertIsSystemSchemaPreferredOverCurrentSchema() {
+        assertFalse(new OracleSchemaOption().isSystemSchemaPreferredOverCurrentSchema());
+    }
+    
+    @Test
+    void assertIsDDLTargetResolvedToSystemSchema() {
+        assertFalse(new OracleSchemaOption().isDDLTargetResolvedToSystemSchema());
+    }
 }

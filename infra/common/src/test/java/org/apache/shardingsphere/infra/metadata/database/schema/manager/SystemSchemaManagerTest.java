@@ -68,12 +68,6 @@ class SystemSchemaManagerTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("isSystemTableArguments")
-    void assertIsSystemTable(final String name, final String schema, final String tableName, final boolean expectedResult) {
-        assertThat(SystemSchemaManager.isSystemTable(schema, tableName), is(expectedResult));
-    }
-    
-    @ParameterizedTest(name = "{0}")
     @MethodSource("isSystemTableWithDatabaseTypeArguments")
     void assertIsSystemTableWithDatabaseType(final String name, final String databaseType, final String schema,
                                              final String tableName, final boolean commonSchemaManagerAvailable, final boolean expectedResult) {
@@ -122,16 +116,6 @@ class SystemSchemaManagerTest {
                 Arguments.of("postgresql pg_catalog", "PostgreSQL", "pg_catalog", 134, "pg_database"),
                 Arguments.of("openGauss information_schema", "openGauss", "information_schema", 66, "columns"),
                 Arguments.of("openGauss pg_catalog", "openGauss", "pg_catalog", 240, "pg_database"));
-    }
-    
-    private static Stream<Arguments> isSystemTableArguments() {
-        return Stream.of(
-                Arguments.of("common information_schema table", "information_schema", "columns", true),
-                Arguments.of("postgresql catalog table", "pg_catalog", "pg_database", true),
-                Arguments.of("common shardingsphere table", "shardingsphere", "cluster_information", true),
-                Arguments.of("non system table", "sharding_db", "t_order", false),
-                Arguments.of("unknown table in common schema", "shardingsphere", "foo_tbl", false),
-                Arguments.of("cross dialect schema name collision, untyped lookup ignores database type", "sys", "all_sequences", true));
     }
     
     private static Stream<Arguments> isSystemTableWithDatabaseTypeArguments() {
