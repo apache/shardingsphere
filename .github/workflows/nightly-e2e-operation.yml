@@ -47,7 +47,7 @@ jobs:
     uses: ./.github/workflows/reusable-global-environment.yml
 
   prepare-e2e-matrix:
-    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Prepare E2E Matrix
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
@@ -79,7 +79,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
   prepare-e2e-artifacts:
-    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Prepare E2E Artifacts
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
@@ -108,7 +108,7 @@ jobs:
       - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
 
   e2e-operation-job:
-    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image }} with JDK ${{ matrix.java-version }}
     needs: [ global-environment, prepare-e2e-matrix, prepare-e2e-artifacts ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
