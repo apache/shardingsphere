@@ -66,3 +66,36 @@ try (
     }
 }
 ```
+
+### 执行 DistSQL
+
+ShardingSphere-JDBC 支持通过 JDBC `Statement` 执行 DistSQL，也支持不含参数占位符的 `PreparedStatement`。
+以下示例适用于 `5.5.4-SNAPSHOT` 开发版本，使用 `Statement` 注册存储单元、创建分片规则并查询规则。
+运行示例前，请确保类路径中包含 ShardingSphere-JDBC 及 H2 JDBC 驱动。
+
+`ShardingSphereDataSourceFactory.createDataSource(databaseName, null)` 创建不含存储单元和业务规则的逻辑库。
+运行模式为 `null` 时，默认使用 Standalone 模式和 Memory 元数据仓库，配置不会在应用重启后保留。
+
+```java
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource("jdbc_distsql_demo", null);
+try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+    statement.executeUpdate("REGISTER STORAGE UNIT ds_0 (URL='jdbc:h2:mem:jdbc_distsql_demo;MODE=MySQL',USER='sa',PASSWORD='',"
+            + "PROPERTIES('driverClassName'='org.h2.Driver'))");
+    statement.executeUpdate("CREATE SHARDING TABLE RULE t_order (STORAGE_UNITS(ds_0),"
+            + "SHARDING_COLUMN=user_id,TYPE(NAME='MOD',PROPERTIES('sharding-count'='1')),"
+            + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='SNOWFLAKE')))");
+    try (ResultSet resultSet = statement.executeQuery("SHOW SHARDING TABLE RULES")) {
+        while (resultSet.next()) {
+            System.out.println(resultSet.getString("table"));
+        }
+    }
+} finally {
+    ((AutoCloseable) dataSource).close();
+}
+```
+
+使用 `executeUpdate` 执行非查询 DistSQL，使用 `executeQuery` 执行返回结果集的 DistSQL，也可以使用 `execute` 判断是否返回结果集。
+非查询 DistSQL 不能在事务中执行，应使用自动提交的连接执行此类语句。
+具体语句的可用性取决于类路径中的 DistSQL 执行器和运行模式。
+ShardingSphere-JDBC 的默认依赖不包含数据迁移和 CDC 所需的数据管道执行器。
+详细语法请参见 [DistSQL 参考](/cn/user-manual/shardingsphere-proxy/distsql/)。
