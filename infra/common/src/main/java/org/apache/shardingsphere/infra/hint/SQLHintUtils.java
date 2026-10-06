@@ -85,10 +85,10 @@ public final class SQLHintUtils {
         for (Entry<String, String> entry : hintKeyValues.entrySet()) {
             Comparable<?> value = convert(entry.getValue());
             if (containsHintKey(Objects.toString(entry.getKey()), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY)) {
-                result.getShardingDatabaseValues().put(Objects.toString(entry.getKey()).toUpperCase(), value);
+                result.getShardingDatabaseValues().put(getShardingValueKey(Objects.toString(entry.getKey()), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY), value);
             }
             if (containsHintKey(Objects.toString(entry.getKey()), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY)) {
-                result.getShardingTableValues().put(Objects.toString(entry.getKey()).toUpperCase(), value);
+                result.getShardingTableValues().put(getShardingValueKey(Objects.toString(entry.getKey()), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY), value);
             }
         }
         return result;
@@ -132,6 +132,10 @@ public final class SQLHintUtils {
     
     private static boolean containsHintKey(final String hintPropKey, final SQLHintPropertiesKey sqlHintPropsKey) {
         return hintPropKey.contains(sqlHintPropsKey.getKey()) || hintPropKey.contains(sqlHintPropsKey.getAlias());
+    }
+    
+    private static String getShardingValueKey(final String hintPropKey, final SQLHintPropertiesKey sqlHintPropsKey) {
+        return hintPropKey.replace(sqlHintPropsKey.getAlias(), sqlHintPropsKey.getKey()).toUpperCase();
     }
     
     private static String getHintValue(final Map<String, String> hintKeyValues, final SQLHintPropertiesKey sqlHintPropsKey) {

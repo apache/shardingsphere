@@ -89,16 +89,18 @@ class SQLHintUtilsTest {
     private static Stream<Arguments> extractHintShardingDatabaseValueArguments() {
         return Stream.of(
                 Arguments.of("default_numeric_value", "/* SHARDINGSPHERE_HINT: SHARDING_DATABASE_VALUE=10 */", Collections.<Comparable<?>>singletonList(new BigInteger("10"))),
+                Arguments.of("default_alias_numeric_value", "/* SHARDINGSPHERE_HINT: shardingDatabaseValue=10 */", Collections.<Comparable<?>>singletonList(new BigInteger("10"))),
                 Arguments.of("table_numeric_value", "/* SHARDINGSPHERE_HINT: t_order.SHARDING_DATABASE_VALUE=10 */", Collections.<Comparable<?>>singletonList(new BigInteger("10"))),
-                Arguments.of("table_alias_numeric_value", "/* SHARDINGSPHERE_HINT: t_order.shardingDatabaseValue=10 */", Collections.<Comparable<?>>emptyList()),
+                Arguments.of("table_alias_numeric_value", "/* SHARDINGSPHERE_HINT: t_order.shardingDatabaseValue=10 */", Collections.<Comparable<?>>singletonList(new BigInteger("10"))),
                 Arguments.of("table_string_value", "/* SHARDINGSPHERE_HINT: t_order.SHARDING_DATABASE_VALUE=a */", Collections.<Comparable<?>>singletonList("a")));
     }
     
     private static Stream<Arguments> extractHintShardingTableValueArguments() {
         return Stream.of(
                 Arguments.of("default_numeric_value", "/* SHARDINGSPHERE_HINT: SHARDING_TABLE_VALUE=10 */", Collections.<Comparable<?>>singletonList(new BigInteger("10"))),
+                Arguments.of("default_alias_numeric_value", "/* SHARDINGSPHERE_HINT: shardingTableValue=10 */", Collections.<Comparable<?>>singletonList(new BigInteger("10"))),
                 Arguments.of("table_numeric_value", "/* SHARDINGSPHERE_HINT: t_order.SHARDING_TABLE_VALUE=10 */", Collections.<Comparable<?>>singletonList(new BigInteger("10"))),
-                Arguments.of("table_alias_numeric_value", "/* SHARDINGSPHERE_HINT: t_order.shardingTableValue=10 */", Collections.<Comparable<?>>emptyList()),
+                Arguments.of("table_alias_numeric_value", "/* SHARDINGSPHERE_HINT: t_order.shardingTableValue=10 */", Collections.<Comparable<?>>singletonList(new BigInteger("10"))),
                 Arguments.of("table_string_value", "/* SHARDINGSPHERE_HINT: t_order.SHARDING_TABLE_VALUE=a */", Collections.<Comparable<?>>singletonList("a")));
     }
     
