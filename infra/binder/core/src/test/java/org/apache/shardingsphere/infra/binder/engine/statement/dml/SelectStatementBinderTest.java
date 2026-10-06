@@ -495,6 +495,32 @@ class SelectStatementBinderTest {
         assertThat(actualCycleColumn.getColumnBoundInfo().getTableSourceType().name(), is("TEMPORARY_TABLE"));
     }
     
+    @Test
+    void assertBindRecursiveCteWithShorthandAnchorProjection() {
+        ProjectionsSegment anchorProjections = new ProjectionsSegment(0, 0);
+        anchorProjections.getProjections().add(new ShorthandProjectionSegment(0, 0));
+        SelectStatement anchorSelect = SelectStatement.builder().databaseType(databaseType).projections(anchorProjections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))).build();
+        SelectStatement recursiveSelect = SelectStatement.builder().databaseType(databaseType).projections(createOrderProjections())
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("product_tree")))).build();
+        SelectStatement withSelectStatement = SelectStatement.builder().databaseType(databaseType).projections(anchorProjections)
+                .combine(new CombineSegment(0, 0, new SubquerySegment(0, 0, anchorSelect, ""), CombineType.UNION_ALL, new SubquerySegment(0, 0, recursiveSelect, ""))).build();
+        WithSegment withSegment = new WithSegment(0, 0, new LinkedList<>(Collections.singleton(createCommonTableExpression("product_tree", withSelectStatement))), true);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).with(withSegment).projections(createOrderProjections())
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("product_tree")))).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement,
+                new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        CommonTableExpressionSegment actualCommonTableExpression = actual.getWith().get().getCommonTableExpressions().iterator().next();
+        SelectStatement actualRecursiveSelect = actualCommonTableExpression.getSubquery().getSelect().getCombine().get().getRight().getSelect();
+        ColumnSegment actualRecursiveUserIdColumn = ((ColumnProjectionSegment) actualRecursiveSelect.getProjections().getProjections().iterator().next()).getColumn();
+        assertThat(actualRecursiveUserIdColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actualRecursiveUserIdColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("user_id"));
+        assertThat(actualRecursiveUserIdColumn.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+        List<ProjectionSegment> actualProjections = new ArrayList<>(actual.getProjections().getProjections());
+        assertThat(((ColumnProjectionSegment) actualProjections.get(0)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnProjectionSegment) actualProjections.get(1)).getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
+    }
+    
     private WhereSegment createWhereSegment() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "nvl", "nvl(status, 0)");
         functionSegment.getParameters().add(new ColumnSegment(0, 0, new IdentifierValue("status")));
