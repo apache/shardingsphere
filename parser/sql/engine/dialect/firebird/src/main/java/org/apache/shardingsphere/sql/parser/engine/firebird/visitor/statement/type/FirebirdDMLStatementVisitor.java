@@ -385,7 +385,8 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.getChild(0))).getValue().longValue());
         }
         if (ctx.getChildCount() == 1 && ctx.getChild(0) instanceof ParameterMarkerContext) {
-            ParameterMarkerSegment result = new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.getChild(0))).getValue());
+            ParameterMarkerSegment result =
+                    new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.getChild(0))).getValue());
             getParameterMarkerSegments().add(result);
             return result;
         }
