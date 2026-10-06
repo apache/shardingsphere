@@ -82,9 +82,11 @@ jobs:
             scenario: passthrough
             additional-options: '-Dmysql-connector-java.version=8.4.0'
           - adapter: jdbc
+            mode: Standalone
             database: Hive
             scenario: encrypt
           - adapter: jdbc
+            mode: Standalone
             database: Hive
             scenario: mask
         exclude:
