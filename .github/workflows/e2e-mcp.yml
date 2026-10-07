@@ -58,7 +58,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
         with:
           java-version: '21'
           cache-suffix: 'e2e-mcp'
@@ -90,13 +90,13 @@ jobs:
           fi
           tar -czf "${artifact_dir}/mcp-distribution-home.tar.gz" -C distribution/mcp/target "$(basename "${distribution_home}")"
       - name: Upload MCP Maven Repository
-        uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
+        uses: ./.github/actions/upload-e2e-artifacts
         with:
           artifact-name: mcp-e2e-maven-repository
           artifact-dir: ${{ runner.temp }}/mcp-e2e-maven-repository
           docker-images: ''
       - name: Upload MCP Distribution
-        uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
+        uses: ./.github/actions/upload-e2e-artifacts
         with:
           artifact-name: mcp-e2e-distribution
           artifact-dir: ${{ runner.temp }}/mcp-e2e-distribution
@@ -130,7 +130,7 @@ jobs:
           printf 'image_tag=%s\n' "${image_tag}" >> "${GITHUB_OUTPUT}"
           sh "${build_script}"
       - name: Upload MCP LLM Runtime Image
-        uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
+        uses: ./.github/actions/upload-e2e-artifacts
         with:
           artifact-name: mcp-e2e-llm-runtime-image
           artifact-dir: ${{ runner.temp }}/mcp-e2e-llm-runtime-artifacts
@@ -146,20 +146,20 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
         with:
           java-version: '21'
           cache-suffix: 'e2e-mcp'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
       - name: Download MCP Maven Repository
-        uses: ./.github/workflows/resources/actions/download-e2e-artifacts
+        uses: ./.github/actions/download-e2e-artifacts
         with:
           artifact-name: mcp-e2e-maven-repository
           artifact-dir: ${{ runner.temp }}/mcp-e2e-maven-repository
           load-docker-image: 'false'
       - name: Download MCP Distribution
-        uses: ./.github/workflows/resources/actions/download-e2e-artifacts
+        uses: ./.github/actions/download-e2e-artifacts
         with:
           artifact-name: mcp-e2e-distribution
           artifact-dir: ${{ runner.temp }}/mcp-e2e-distribution
@@ -192,7 +192,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - name: Download MCP Distribution
-        uses: ./.github/workflows/resources/actions/download-e2e-artifacts
+        uses: ./.github/actions/download-e2e-artifacts
         with:
           artifact-name: mcp-e2e-distribution
           artifact-dir: ${{ runner.temp }}/mcp-e2e-distribution
@@ -297,20 +297,20 @@ jobs:
             test: LLMHttpE2EIT#assertInvalidResourceRecovery
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
         with:
           java-version: '21'
           cache-suffix: 'e2e-mcp'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
       - name: Download MCP Maven Repository
-        uses: ./.github/workflows/resources/actions/download-e2e-artifacts
+        uses: ./.github/actions/download-e2e-artifacts
         with:
           artifact-name: mcp-e2e-maven-repository
           artifact-dir: ${{ runner.temp }}/mcp-e2e-maven-repository
           load-docker-image: 'false'
       - name: Download MCP LLM Runtime Image
-        uses: ./.github/workflows/resources/actions/download-e2e-artifacts
+        uses: ./.github/actions/download-e2e-artifacts
         with:
           artifact-name: mcp-e2e-llm-runtime-image
           artifact-dir: ${{ runner.temp }}/mcp-e2e-llm-runtime-artifacts

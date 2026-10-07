@@ -54,7 +54,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: git config --global core.longpaths true
       - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
         with:
           java-version: ${{ matrix.java-version }}
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
