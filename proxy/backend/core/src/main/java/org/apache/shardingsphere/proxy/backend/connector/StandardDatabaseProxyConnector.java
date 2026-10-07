@@ -397,7 +397,9 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
                 continue;
             }
             try {
-                each.cancel();
+                if (!isClosed(each)) {
+                    each.cancel();
+                }
                 each.close();
             } catch (final SQLException ex) {
                 result.add(ex);
@@ -409,6 +411,14 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     
     private boolean isCachedPreparedStatement(final Statement statement) {
         return statement instanceof PreparedStatement && databaseConnectionManager.getConnectionSession().getPreparedStatementCacheContext().contains(statement);
+    }
+    
+    private boolean isClosed(final Statement statement) {
+        try {
+            return statement.isClosed();
+        } catch (final SQLException ignored) {
+            return false;
+        }
     }
     
     private Optional<SQLException> closeSQLFederationEngine() {
