@@ -51,7 +51,8 @@ public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration
     private final Collection<@NotNull EncryptTableRuleConfiguration> tables;
     
     @NotNull
-    @SPITypeExists(spiClassName = "org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm")
+    @Valid
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm", groups = RuleConfigurationTypeValidationGroup.class)
     private final Map<@NotBlank String, @NotNull AlgorithmConfiguration> encryptors;
     
     @Override
