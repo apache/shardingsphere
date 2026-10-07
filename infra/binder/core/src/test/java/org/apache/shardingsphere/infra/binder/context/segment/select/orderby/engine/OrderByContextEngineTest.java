@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -49,6 +50,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class OrderByContextEngineTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final DatabaseType mysqlDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     @Test
     void assertCreateOrderByWithoutOrderBy() {
@@ -95,6 +98,21 @@ class OrderByContextEngineTest {
         List<OrderByItem> items = (List<OrderByItem>) actualOrderByContext.getItems();
         assertThat(((ColumnOrderByItemSegment) items.get(0).getSegment()).getColumn(), is(columnProjectionSegment1.getColumn()));
         assertThat(((ColumnOrderByItemSegment) items.get(1).getSegment()).getColumn(), is(columnProjectionSegment2.getColumn()));
+        assertTrue(actualOrderByContext.isGenerated());
+    }
+    
+    @Test
+    void assertCreateOrderInDistinctByWithoutOrderByResolvesDefaultNullsOrderType() {
+        ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(new ColumnSegment(0, 1, new IdentifierValue("user_id")));
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 1);
+        projectionsSegment.setDistinctRow(true);
+        projectionsSegment.getProjections().add(columnProjectionSegment);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(mysqlDatabaseType).projections(projectionsSegment).build();
+        GroupByContext groupByContext = new GroupByContext(Collections.emptyList());
+        OrderByContext actualOrderByContext = new OrderByContextEngine(mysqlDatabaseType).createOrderBy(selectStatement, groupByContext);
+        assertThat(actualOrderByContext.getItems().size(), is(1));
+        ColumnOrderByItemSegment actualSegment = (ColumnOrderByItemSegment) ((List<OrderByItem>) actualOrderByContext.getItems()).get(0).getSegment();
+        assertThat(actualSegment.getNullsOrderType(), is(Optional.of(NullsOrderType.FIRST)));
         assertTrue(actualOrderByContext.isGenerated());
     }
 }

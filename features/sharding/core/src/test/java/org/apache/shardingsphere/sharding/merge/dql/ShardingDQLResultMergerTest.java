@@ -75,6 +75,7 @@ import java.util.Properties;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -450,6 +451,45 @@ class ShardingDQLResultMergerTest {
                 selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
         assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class)), isA(GroupByMemoryMergedResult.class));
+    }
+    
+    @Test
+    void assertMergedDistinctRowWithNullValueForMySQL() throws SQLException {
+        SelectStatement selectStatement = buildSelectStatement(mysqlDatabaseType);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.setDistinctRow(true);
+        projectionsSegment.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        selectStatement = withProjections(selectStatement, projectionsSegment);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
+                selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
+        MergedResult actual = resultMerger.merge(createQueryResultsWithNullAndTen(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class), is(nullValue()));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class), is(10));
+        assertFalse(actual.next());
+    }
+    
+    private List<QueryResult> createQueryResultsWithNullAndTen() throws SQLException {
+        QueryResult queryResultWithNullAndTen = createQueryResult("user_id");
+        when(queryResultWithNullAndTen.next()).thenReturn(true, true, false);
+        when(queryResultWithNullAndTen.getValue(1, Object.class)).thenReturn(null, 10);
+        QueryResult queryResultWithTen = createQueryResult("user_id");
+        when(queryResultWithTen.next()).thenReturn(true, false);
+        when(queryResultWithTen.getValue(1, Object.class)).thenReturn(10);
+        List<QueryResult> result = new LinkedList<>();
+        result.add(queryResultWithNullAndTen);
+        result.add(queryResultWithTen);
+        return result;
+    }
+    
+    private QueryResult createQueryResult(final String columnLabel) throws SQLException {
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getColumnCount()).thenReturn(1);
+        when(result.getMetaData().getColumnLabel(1)).thenReturn(columnLabel);
+        return result;
     }
     
     @Test

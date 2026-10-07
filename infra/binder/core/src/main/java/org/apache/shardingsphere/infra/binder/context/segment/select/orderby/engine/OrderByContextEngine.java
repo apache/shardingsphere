@@ -75,7 +75,8 @@ public final class OrderByContextEngine {
                 if (projectionSegment instanceof ColumnProjectionSegment) {
                     ColumnProjectionSegment columnProjectionSegment = (ColumnProjectionSegment) projectionSegment;
                     ColumnOrderByItemSegment columnOrderByItemSegment =
-                            new ColumnOrderByItemSegment(columnProjectionSegment.getColumn(), OrderDirection.ASC, dialectDatabaseMetaData.getDefaultNullsOrderType());
+                            new ColumnOrderByItemSegment(columnProjectionSegment.getColumn(), OrderDirection.ASC,
+                                    dialectDatabaseMetaData.getDefaultNullsOrderType().getResolvedOrderType(OrderDirection.ASC.name()));
                     OrderByItem item = new OrderByItem(columnOrderByItemSegment);
                     item.setIndex(index++);
                     orderByItems.add(item);
