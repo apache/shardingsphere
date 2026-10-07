@@ -17,9 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.sql.it.distsql.ral;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Splitter;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioCommonPath;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.row.DataSetRow;
@@ -36,19 +43,26 @@ import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -61,20 +75,20 @@ class RALE2EIT implements SQLE2EIT {
     @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertExecute(final AssertionTestParameter testParam) throws SQLException {
+    void assertExecute(final AssertionTestParameter testParam) throws SQLException, IOException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         init(context);
         try {
-            assertExecute(context);
+            assertExecute(context, testParam);
         } finally {
             tearDown(context);
         }
     }
     
-    private void assertExecute(final SQLE2EITContext context) throws SQLException {
+    private void assertExecute(final SQLE2EITContext context, final AssertionTestParameter testParam) throws SQLException, IOException {
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
-                assertResultSet(context, statement);
+                assertResultSet(context, statement, testParam);
             }
         }
     }
@@ -119,26 +133,47 @@ class RALE2EIT implements SQLE2EIT {
         Awaitility.await().pollDelay(1L, TimeUnit.SECONDS).until(() -> true);
     }
     
-    private void assertResultSet(final SQLE2EITContext context, final Statement statement) throws SQLException {
+    private void assertResultSet(final SQLE2EITContext context, final Statement statement, final AssertionTestParameter testParam) throws SQLException, IOException {
         if (null == context.getAssertion().getAssertionSQL()) {
-            assertResultSet(context, statement, context.getSQL());
+            assertResultSet(context, statement, context.getSQL(), testParam);
         } else {
             statement.execute(context.getSQL());
             Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
-            assertResultSet(context, statement, context.getAssertion().getAssertionSQL().getSql());
+            assertResultSet(context, statement, context.getAssertion().getAssertionSQL().getSql(), testParam);
         }
     }
     
-    private void assertResultSet(final SQLE2EITContext context, final Statement statement, final String sql) throws SQLException {
+    private void assertResultSet(final SQLE2EITContext context, final Statement statement, final String sql, final AssertionTestParameter testParam) throws SQLException, IOException {
         statement.execute(sql);
         try (ResultSet resultSet = statement.getResultSet()) {
-            assertResultSet(context, resultSet);
+            assertResultSet(context, resultSet, testParam);
         }
     }
     
-    private void assertResultSet(final SQLE2EITContext context, final ResultSet resultSet) throws SQLException {
-        assertMetaData(resultSet.getMetaData(), getExpectedColumns(context));
-        assertRows(resultSet, getIgnoreAssertColumns(context), context.getDataSet().getRows());
+    private void assertResultSet(final SQLE2EITContext context, final ResultSet resultSet, final AssertionTestParameter testParam) throws SQLException, IOException {
+        assertMetaData(resultSet.getMetaData(), getExpectedColumns(context), context, testParam);
+        if ("jdbc".equals(testParam.getAdapter()) && ("show_storage_units.xml".equals(context.getAssertion().getExpectedDataFile())
+                || "show_sharding_table_rule.xml".equals(context.getAssertion().getExpectedDataFile()) || "show_tables.xml".equals(context.getAssertion().getExpectedDataFile()))) {
+            assertThat(getActualRows(resultSet), containsInAnyOrder(getExpectedJdbcRows(context, testParam).toArray()));
+        } else {
+            assertRows(resultSet, getIgnoreAssertColumns(context), context.getDataSet().getRows());
+        }
+    }
+    
+    private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected,
+                                final SQLE2EITContext context, final AssertionTestParameter testParam) throws SQLException, IOException {
+        assertThat(actual.getColumnCount(), is(expected.size()));
+        int index = 1;
+        for (DataSetColumn each : expected) {
+            if ("jdbc".equals(testParam.getAdapter()) && "show_tables.xml".equals(context.getAssertion().getExpectedDataFile())) {
+                Collection<String> columnLabels = getDataSourceConfigurations(testParam).values().stream()
+                        .map(dataSource -> URI.create(dataSource.get("url").toString().substring("jdbc:".length())))
+                        .map(uri -> "tables_in_" + uri.getPath().substring(1).toLowerCase()).collect(Collectors.toList());
+                assertThat(columnLabels, hasItem(actual.getColumnLabel(index++).toLowerCase()));
+            } else {
+                assertThat(actual.getColumnLabel(index++).toLowerCase(), is(each.getName().toLowerCase()));
+            }
+        }
     }
     
     private Collection<DataSetColumn> getExpectedColumns(final SQLE2EITContext context) {
@@ -149,20 +184,64 @@ class RALE2EIT implements SQLE2EIT {
         return result;
     }
     
+    private Collection<List<Object>> getActualRows(final ResultSet actual) throws SQLException {
+        Collection<List<Object>> result = new LinkedList<>();
+        ResultSetMetaData actualMetaData = actual.getMetaData();
+        while (actual.next()) {
+            result.add(getActualRow(actual, actualMetaData));
+        }
+        return result;
+    }
+    
+    private List<Object> getActualRow(final ResultSet actual, final ResultSetMetaData actualMetaData) throws SQLException {
+        List<Object> result = new ArrayList<>(actualMetaData.getColumnCount());
+        for (int columnIndex = 1; columnIndex <= actualMetaData.getColumnCount(); columnIndex++) {
+            String actualValue = String.valueOf(actual.getObject(columnIndex)).trim();
+            assertThat(String.valueOf(actual.getObject(actualMetaData.getColumnLabel(columnIndex))).trim(), is(actualValue));
+            result.add("other_attributes".equals(actualMetaData.getColumnLabel(columnIndex)) ? JsonEngine.unmarshal(actualValue, JsonNode.class) : actualValue);
+        }
+        return result;
+    }
+    
+    private Collection<List<Object>> getExpectedJdbcRows(final SQLE2EITContext context, final AssertionTestParameter testParam) throws IOException {
+        Collection<List<Object>> result = context.getDataSet().getRows().stream().map(each -> new ArrayList<Object>(each.splitValues("|"))).collect(Collectors.toList());
+        if ("show_storage_units.xml".equals(context.getAssertion().getExpectedDataFile())) {
+            Map<String, Map<String, Object>> dataSources = getDataSourceConfigurations(testParam);
+            URI uri = URI.create(((HikariDataSource) environmentEngine.getActualDataSourceMap().values().iterator().next()).getJdbcUrl().substring("jdbc:".length()));
+            for (List<Object> each : result) {
+                Map<String, Object> dataSource = dataSources.get(each.get(0));
+                each.set(2, uri.getHost());
+                each.set(3, String.valueOf(uri.getPort()));
+                each.set(8, dataSource.get("maxPoolSize").toString());
+                each.set(9, dataSource.get("minPoolSize").toString());
+                each.set(11, getExpectedStorageUnitAttributes(each.get(11).toString(), dataSource));
+            }
+        }
+        return result;
+    }
+    
+    private Map<String, Map<String, Object>> getDataSourceConfigurations(final AssertionTestParameter testParam) throws IOException {
+        File configurationFile = new File(new ScenarioCommonPath(testParam.getScenario()).getRuleConfigurationFile(testParam.getDatabaseType()));
+        return YamlEngine.unmarshal(configurationFile, YamlRootConfiguration.class).getDataSources();
+    }
+    
+    private ObjectNode getExpectedStorageUnitAttributes(final String attributes, final Map<String, Object> dataSource) {
+        ObjectNode result = JsonEngine.unmarshal(attributes, ObjectNode.class);
+        ObjectNode queryProperties = result.putObject("queryProperties");
+        URI uri = URI.create(dataSource.get("url").toString().substring("jdbc:".length()));
+        for (String each : Splitter.on('&').split(uri.getQuery())) {
+            List<String> property = Splitter.on('=').limit(2).splitToList(each);
+            queryProperties.put(property.get(0), property.get(1));
+        }
+        return result;
+    }
+    
     private Collection<String> getIgnoreAssertColumns(final SQLE2EITContext context) {
         Collection<String> result = new LinkedList<>();
         for (DataSetMetaData each : context.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns().stream().filter(DataSetColumn::isIgnoreAssertData).map(DataSetColumn::getName).collect(Collectors.toList()));
         }
         return result;
-    }
-    
-    private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
-        assertThat(actual.getColumnCount(), is(expected.size()));
-        int index = 1;
-        for (DataSetColumn each : expected) {
-            assertThat(actual.getColumnLabel(index++).toLowerCase(), is(each.getName().toLowerCase()));
-        }
     }
     
     private void assertRows(final ResultSet actual, final Collection<String> notAssertionColumns, final List<DataSetRow> expected) throws SQLException {

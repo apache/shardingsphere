@@ -47,7 +47,7 @@ jobs:
     uses: ./.github/workflows/reusable-global-environment.yml
 
   prepare-e2e-matrix:
-    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Prepare E2E Matrix
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
@@ -79,7 +79,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
   prepare-e2e-artifacts:
-    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Prepare E2E Artifacts
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
@@ -87,7 +87,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - id: setup-build-environment
-        uses: ./.github/workflows/resources/actions/setup-build-environment
+        uses: ./.github/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-operation'
           cache-save-enabled: 'false'
@@ -100,15 +100,15 @@ jobs:
           FORMATTED_PL=$(echo "$MODULE_LIST" | sed "s|,|,$PREFIX|g" | sed "s|^|$PREFIX|")
           echo "Ready to build: $FORMATTED_PL"
           ./mvnw -B clean install -am -pl "$FORMATTED_PL" -Pe2e.env.docker -DskipTests
-      - uses: ./.github/workflows/resources/actions/save-maven-cache
+      - uses: ./.github/actions/save-maven-cache
         with:
           cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
           cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
-      - uses: ./.github/workflows/resources/actions/upload-source-snapshot
-      - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
+      - uses: ./.github/actions/upload-source-snapshot
+      - uses: ./.github/actions/upload-e2e-artifacts
 
   e2e-operation-job:
-    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image }} with JDK ${{ matrix.java-version }}
     needs: [ global-environment, prepare-e2e-matrix, prepare-e2e-artifacts ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
@@ -150,13 +150,13 @@ jobs:
         run: |
           find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
           tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
         with:
           java-version: ${{ matrix.java-version }}
           cache-suffix: 'e2e-operation'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
-      - uses: ./.github/workflows/resources/actions/download-e2e-artifacts
+      - uses: ./.github/actions/download-e2e-artifacts
       - name: Run ${{ matrix.operation }} on ${{ matrix.image }}
         env:
           DOCKER_IMAGE: ${{ matrix.image }}
