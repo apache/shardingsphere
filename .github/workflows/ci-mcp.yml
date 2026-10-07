@@ -22,7 +22,7 @@ on:
     branches: [ master ]
     paths:
       - '.github/workflows/ci-mcp.yml'
-      - '.github/workflows/resources/actions/setup-build-environment/**'
+      - '.github/actions/setup-build-environment/**'
       - 'pom.xml'
       - 'database/connector/**'
       - 'mcp/**'
@@ -51,7 +51,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
         with:
           java-version: '21'
           cache-suffix: 'mcp'

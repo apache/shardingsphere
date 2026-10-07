@@ -22,7 +22,7 @@ on:
   pull_request:
     branches: [ master ]
     paths:
-      - '.github/workflows/resources/actions/setup-build-environment/action.yml'
+      - '.github/actions/setup-build-environment/action.yml'
       - '.github/workflows/graalvm.yml'
       - 'infra/reachability-metadata/src/**'
       - 'test/native/pom.xml'
@@ -33,7 +33,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.event_name == 'schedule' && 'nightly-graalvm' || 'graalvm' }}-${{ github.workflow }}-${{ github.ref }}
+  group: ci-graalvm-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -54,19 +54,19 @@ jobs:
       fail-fast: false
       matrix:
         # TODO After the issue at https://github.com/apache/shardingsphere/issues/38857 is resolved, add `windows-latest`
-        os: [ 'ubuntu-latest' ]
+        os: [ '${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}' ]
     steps:
       - uses: actions/checkout@v6.0.1
       - name: Configure Maven for Nightly Tests
         if: github.event_name == 'schedule'
         run: echo "MAVEN_OPTS=-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3" >> "$GITHUB_ENV"
       - name: Free Disk Space on Ubuntu
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == '${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}'
         run: ./test/native/src/test/resources/test-native/sh/free-disk-space.sh
       - name: Setup Rancher Desktop without GUI on Windows Server
         if: matrix.os == 'windows-latest'
         run: ./test/native/src/test/resources/test-native/ps1/config-rdctl.ps1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
         with:
           distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -75,5 +75,5 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: ./mvnw -PgenerateMetadata -e -T 1C clean verify
       - name: Run nativeTest with GraalVM CE ${{ matrix.java-version }}
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == '${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}'
         run: ./mvnw -PnativeTestInShardingSphere -e clean verify
