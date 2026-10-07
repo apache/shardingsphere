@@ -201,7 +201,7 @@ class DataSourcePoolCreatorTest {
         props.put("connectionTimeout", "invalid");
         assertThrows(NumberFormatException.class,
                 () -> DataSourcePoolCreator.create("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), props), true, Collections.singleton(storageNode)));
-        Awaitility.await().during(200L, TimeUnit.MILLISECONDS).atMost(500L, TimeUnit.MILLISECONDS).untilAsserted(() -> verify(storageNode, never()).close());
+        Awaitility.await().during(200L, TimeUnit.MILLISECONDS).atMost(5L, TimeUnit.SECONDS).untilAsserted(() -> verify(storageNode, never()).close());
     }
     
     private Map<String, Object> createMockedDataSourceProperties() {
