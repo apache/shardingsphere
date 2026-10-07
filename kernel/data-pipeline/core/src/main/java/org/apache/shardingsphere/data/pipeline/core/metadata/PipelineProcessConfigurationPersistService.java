@@ -18,17 +18,27 @@
 package org.apache.shardingsphere.data.pipeline.core.metadata;
 
 import com.google.common.base.Strings;
+import org.apache.bval.jsr.ApacheValidationProvider;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Pipeline process configuration persist service.
  */
 public final class PipelineProcessConfigurationPersistService implements PipelineMetaDataPersistService<PipelineProcessConfiguration> {
+    
+    private static final Validator VALIDATOR = Validation.byProvider(ApacheValidationProvider.class).configure().buildValidatorFactory().getValidator();
     
     private final YamlPipelineProcessConfigurationSwapper swapper = new YamlPipelineProcessConfigurationSwapper();
     
@@ -39,12 +49,24 @@ public final class PipelineProcessConfigurationPersistService implements Pipelin
             return null;
         }
         YamlPipelineProcessConfiguration yamlConfig = YamlEngine.unmarshal(yamlText, YamlPipelineProcessConfiguration.class, true);
-        return swapper.swapToObject(yamlConfig);
+        PipelineProcessConfiguration result = swapper.swapToObject(yamlConfig);
+        validate(result);
+        return result;
     }
     
     @Override
     public void persist(final PipelineContextKey contextKey, final String jobType, final PipelineProcessConfiguration processConfig) {
+        validate(processConfig);
         String yamlText = YamlEngine.marshal(swapper.swapToYamlConfiguration(processConfig));
         PipelineAPIFactory.getPipelineGovernanceFacade(contextKey).getMetaDataFacade().getProcessConfiguration().persist(jobType, yamlText);
+    }
+    
+    private void validate(final PipelineProcessConfiguration processConfig) {
+        if (null == processConfig) {
+            return;
+        }
+        Collection<ConstraintViolation<PipelineProcessConfiguration>> violations = VALIDATOR.validate(processConfig);
+        ShardingSpherePreconditions.checkMustEmpty(violations,
+                () -> new IllegalArgumentException(violations.stream().map(ConstraintViolation::getMessage).distinct().sorted().collect(Collectors.joining("; "))));
     }
 }

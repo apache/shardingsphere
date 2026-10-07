@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -25,9 +24,12 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
 import org.apache.shardingsphere.driver.jdbc.core.savepoint.ShardingSphereSavepoint;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.connection.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -80,7 +82,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     }
     
     private String getKey(final String databaseName, final String dataSourceName) {
-        return databaseName.toLowerCase() + "." + dataSourceName;
+        return String.join(".", databaseName.toLowerCase(), dataSourceName);
     }
     
     /**
@@ -344,11 +346,11 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         return getConnections0(databaseName, dataSourceName, connectionOffset, connectionSize, connectionMode);
     }
     
+    @HighFrequencyInvocation
     private List<Connection> getConnections0(final String databaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
                                              final ConnectionMode connectionMode) throws SQLException {
         String cacheKey = getKey(databaseName, dataSourceName);
-        DataSource dataSource = currentDatabaseName.equals(databaseName) ? dataSourceMap.get(cacheKey) : contextManager.getStorageUnits(databaseName).get(dataSourceName).getDataSource();
-        Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
+        DataSource dataSource = getDataSource(databaseName, dataSourceName, cacheKey);
         Collection<Connection> connections;
         synchronized (cachedConnections) {
             connections = cachedConnections.get(cacheKey);
@@ -372,6 +374,22 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
             synchronized (cachedConnections) {
                 cachedConnections.putAll(cacheKey, newConnections);
             }
+        }
+        return result;
+    }
+    
+    private DataSource getDataSource(final String databaseName, final String dataSourceName, final String cacheKey) throws SQLException {
+        if (!currentDatabaseName.equals(databaseName) || connectionContext.getTransactionContext().isTransactionStarted()) {
+            DataSource dataSource = currentDatabaseName.equals(databaseName) ? dataSourceMap.get(cacheKey) : contextManager.getStorageUnits(databaseName).get(dataSourceName).getDataSource();
+            ShardingSpherePreconditions.checkNotNull(dataSource, () -> new NullPointerException(String.format("Missing the data source name: '%s'", dataSourceName)));
+            return dataSource;
+        }
+        StorageUnit storageUnit = contextManager.getStorageUnits(databaseName).get(dataSourceName);
+        ShardingSpherePreconditions.checkNotNull(storageUnit, () -> new NullPointerException(String.format("Missing the data source name: '%s'", dataSourceName)));
+        DataSource result = storageUnit.getDataSource();
+        if (result != dataSourceMap.get(cacheKey)) {
+            forceExecuteTemplate.execute(cachedConnections.removeAll(cacheKey), Connection::close);
+            dataSourceMap.put(cacheKey, result);
         }
         return result;
     }

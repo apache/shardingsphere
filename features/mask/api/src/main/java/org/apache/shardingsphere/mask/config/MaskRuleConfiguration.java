@@ -50,7 +50,8 @@ public final class MaskRuleConfiguration implements DatabaseRuleConfiguration, E
     private final Collection<@NotNull MaskTableRuleConfiguration> tables;
     
     @NotNull
-    @SPITypeExists(spiClassName = "org.apache.shardingsphere.mask.spi.MaskAlgorithm")
+    @Valid
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.mask.spi.MaskAlgorithm", groups = RuleConfigurationTypeValidationGroup.class)
     private final Map<@NotBlank String, @NotNull AlgorithmConfiguration> maskAlgorithms;
     
     @Override
