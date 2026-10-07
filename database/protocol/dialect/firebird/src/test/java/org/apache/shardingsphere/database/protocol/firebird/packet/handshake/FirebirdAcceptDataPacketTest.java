@@ -42,19 +42,19 @@ class FirebirdAcceptDataPacketTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("writeArguments")
     void assertWrite(final String name, final byte[] salt, final String publicKey, final FirebirdAuthenticationMethod plugin,
-                     final int authenticated, final String keys, final int expectedPayloadLength, final boolean expectedPayloadData) {
+                     final int authenticated, final String keys, final int expectedPayloadLength, final boolean expectedPayloadData, final int expectedPadding) {
         FirebirdAcceptDataPacket packet = new FirebirdAcceptDataPacket(salt, publicKey, plugin, authenticated, keys);
         packet.write((PacketPayload) payload);
         InOrder order = inOrder(payload);
         order.verify(payload).writeInt4(expectedPayloadLength);
-        verifyPayloadData(order, payload, expectedPayloadData, salt, publicKey);
+        verifyPayloadData(order, payload, expectedPayloadData, salt, publicKey, expectedPadding);
         order.verify(payload).writeString(plugin.getMethodName());
         order.verify(payload).writeInt4(authenticated);
         order.verify(payload).writeString(keys);
         order.verifyNoMoreInteractions();
     }
     
-    private void verifyPayloadData(final InOrder order, final FirebirdPacketPayload payload, final boolean expectedPayloadData, final byte[] salt, final String publicKey) {
+    private void verifyPayloadData(final InOrder order, final FirebirdPacketPayload payload, final boolean expectedPayloadData, final byte[] salt, final String publicKey, final int expectedPadding) {
         if (!expectedPayloadData) {
             return;
         }
@@ -62,12 +62,13 @@ class FirebirdAcceptDataPacketTest {
         order.verify(payload).writeBytes(salt);
         order.verify(payload).writeInt2LE(publicKey.length());
         order.verify(payload).writeBytes(publicKey.getBytes(StandardCharsets.US_ASCII));
+        order.verify(payload).writeBytes(new byte[expectedPadding]);
     }
     
     private static Stream<Arguments> writeArguments() {
         return Stream.of(
-                Arguments.of("salt_and_public_key", new byte[]{1, 2}, "key", FirebirdAuthenticationMethod.SRP, 1, "k", 9, true),
-                Arguments.of("empty_salt", new byte[0], "key", FirebirdAuthenticationMethod.SRP224, 0, "", 0, false),
-                Arguments.of("empty_public_key", new byte[]{1, 2}, "", FirebirdAuthenticationMethod.LEGACY_AUTH, 7, "keys", 0, false));
+                Arguments.of("salt_and_public_key", new byte[]{1, 2}, "key", FirebirdAuthenticationMethod.SRP, 1, "k", 9, true, 3),
+                Arguments.of("empty_salt", new byte[0], "key", FirebirdAuthenticationMethod.SRP224, 0, "", 0, false, 0),
+                Arguments.of("empty_public_key", new byte[]{1, 2}, "", FirebirdAuthenticationMethod.LEGACY_AUTH, 7, "keys", 0, false, 0));
     }
 }

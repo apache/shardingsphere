@@ -45,11 +45,13 @@ public final class FirebirdAcceptDataPacket extends FirebirdPacket {
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         if (salt.length != 0 && !publicKey.isEmpty()) {
-            payload.writeInt4(salt.length + publicKey.length() + 4);
+            int length = salt.length + publicKey.length() + 4;
+            payload.writeInt4(length);
             payload.writeInt2LE(salt.length);
             payload.writeBytes(salt);
             payload.writeInt2LE(publicKey.length());
             payload.writeBytes(publicKey.getBytes(StandardCharsets.US_ASCII));
+            payload.writeBytes(new byte[(4 - length) & 3]);
         } else {
             payload.writeInt4(0);
         }
