@@ -42,7 +42,7 @@ permissions:
   contents: read
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
+  MAVEN_OPTS: -Dhttp.keepAlive=false
   MCP_DISTRIBUTION_IMAGE: apache/shardingsphere-mcp-e2e:local
 
 jobs:
@@ -103,40 +103,6 @@ jobs:
           include-maven-repository: 'false'
           docker-images: |
             ${{ env.MCP_DISTRIBUTION_IMAGE }}=mcp-distribution-image.tar
-
-  e2e-mcp-build-llm-image:
-    name: E2E - MCP Build LLM Image
-    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    needs: global-environment
-    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v6.0.1
-      - name: Check Docker Environment
-        run: |
-          docker version
-          docker system df
-      - name: Build MCP LLM Runtime Image
-        id: mcp-llm-runtime-image
-        shell: bash
-        run: |
-          set -euo pipefail
-          build_script="test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh"
-          image_tag="$(sh "${build_script}" --print | sed -n 's/^image_tag=//p')"
-          if [[ -z "${image_tag}" || "${image_tag}" == *$'\n'* ]]; then
-            echo "MCP LLM build script must print exactly one non-empty image_tag." >&2
-            exit 1
-          fi
-          printf 'image_tag=%s\n' "${image_tag}" >> "${GITHUB_OUTPUT}"
-          sh "${build_script}"
-      - name: Upload MCP LLM Runtime Image
-        uses: ./.github/actions/upload-e2e-artifacts
-        with:
-          artifact-name: mcp-e2e-llm-runtime-image
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-llm-runtime-artifacts
-          include-maven-repository: 'false'
-          docker-images: |
-            ${{ steps.mcp-llm-runtime-image.outputs.image_tag }}=mcp-llm-runtime-image.tar
 
   e2e-mcp-functionality:
     name: E2E - MCP Functionality
@@ -277,7 +243,7 @@ jobs:
   e2e-mcp-llm:
     name: E2E - MCP LLM - ${{ matrix.id }}
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    needs: [ global-environment, e2e-mcp-build-images, e2e-mcp-build-llm-image ]
+    needs: [ global-environment, e2e-mcp-build-images ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
     strategy:
@@ -309,13 +275,28 @@ jobs:
           artifact-name: mcp-e2e-maven-repository
           artifact-dir: ${{ runner.temp }}/mcp-e2e-maven-repository
           load-docker-image: 'false'
-      - name: Download MCP LLM Runtime Image
-        uses: ./.github/actions/download-e2e-artifacts
-        with:
-          artifact-name: mcp-e2e-llm-runtime-image
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-llm-runtime-artifacts
-          restore-maven-repository: 'false'
-          docker-image-archives: mcp-llm-runtime-image.tar
+      - name: Prepare MCP LLM with Docker Model Runner
+        shell: bash
+        env:
+          MODEL_RUNNER_CONTROLLER_VERSION: v1.2.8@sha256:5bdc2bac71c1b70453f7dec5b527031bc6d8d99b8d1b2a10a8bcca073ae257a3
+          MODEL_RUNNER_CONTROLLER_VARIANT: cpu
+        run: |
+          set -euo pipefail
+          . /etc/os-release
+          sudo install -m 0755 -d /etc/apt/keyrings
+          sudo curl --fail --silent --show-error --location https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+          sudo chmod a+r /etc/apt/keyrings/docker.asc
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu ${UBUNTU_CODENAME:-$VERSION_CODENAME} stable" \
+            | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          sudo apt-get update
+          sudo apt-get install -y "docker-model-plugin=1.2.6-1~ubuntu.${VERSION_ID}~${UBUNTU_CODENAME:-$VERSION_CODENAME}"
+          docker model install-runner --gpu none
+          model="$(awk -F= '$1 == "mcp.llm.model" {print $2}' test/e2e/mcp/src/test/resources/env/e2e-env.properties)"
+          docker model pull "${model}"
+          docker model configure --context-size 8192 "${model}" -- \
+            --jinja --reasoning-budget 0 --reasoning-format deepseek --chat-template-kwargs '{"enable_thinking":false}' \
+            --parallel 1 -b 256 -ub 128 --cache-ram 0 --no-cache-prompt
+          docker model run --detach "${model}"
       - name: Run MCP LLM E2E
         env:
           TESTCONTAINERS_RYUK_DISABLED: 'true'
