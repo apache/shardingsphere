@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.config;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
@@ -38,7 +36,7 @@ import java.util.UUID;
 /**
  * LLM E2E configuration.
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 @Getter
 public final class LLME2EConfiguration {
@@ -47,13 +45,11 @@ public final class LLME2EConfiguration {
     
     private static final DateTimeFormatter RUN_ID_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss", Locale.ENGLISH);
     
-    private static final String DEFAULT_BASE_URL = "http://127.0.0.1:8080/v1";
+    private static final String DEFAULT_BASE_URL = "http://127.0.0.1:12434/engines/v1";
     
-    private static final String DEFAULT_MODEL_NAME = "unsloth/Qwen3.5-9B-GGUF:Q3_K_M";
+    private static final String DEFAULT_MODEL_NAME = "docker.io/ai/qwen3.5:9b-q4_K_XL";
     
     private static final String DEFAULT_API_KEY = "mcp-llm-score";
-    
-    private static final String DEFAULT_SERVER_IMAGE = "apache/shardingsphere-mcp-llm-runtime:local";
     
     private final String baseUrl;
     
@@ -71,14 +67,6 @@ public final class LLME2EConfiguration {
     
     private final RuntimeMode runtimeMode;
     
-    private final String serverImage;
-    
-    private final String baseServerImage;
-    
-    private final String baseServerImageDigest;
-    
-    private final ModelMetadata modelMetadata;
-    
     /**
      * Load LLM E2E configuration.
      *
@@ -87,7 +75,6 @@ public final class LLME2EConfiguration {
     public static LLME2EConfiguration load() {
         Properties props = EnvironmentPropertiesLoader.loadProperties();
         RuntimeMode runtimeMode = RuntimeMode.from(readString(props, "mcp.llm.runtime-mode", RuntimeMode.DOCKER.getValue()));
-        ModelMetadata modelMetadata = readModelMetadata(props);
         return LLME2EConfiguration.builder()
                 .baseUrl(normalizeBaseUrl(readString(props, "mcp.llm.base-url", DEFAULT_BASE_URL)))
                 .modelName(readString(props, "mcp.llm.model", DEFAULT_MODEL_NAME))
@@ -97,11 +84,33 @@ public final class LLME2EConfiguration {
                 .artifactRoot(Paths.get(readString(props, "mcp.llm.artifact-root", "target/llm-e2e")))
                 .runId(readString(props, "mcp.llm.run-id", createDefaultRunId()))
                 .runtimeMode(runtimeMode)
-                .serverImage(readString(props, "mcp.llm.server-image", DEFAULT_SERVER_IMAGE))
-                .baseServerImage(readString(props, "mcp.llm.base-server-image", ""))
-                .baseServerImageDigest(readString(props, "mcp.llm.base-server-image-digest", ""))
-                .modelMetadata(modelMetadata)
                 .build();
+    }
+    
+    private static String readString(final Properties props, final String propertyName, final String defaultValue) {
+        String result = props.getProperty(propertyName);
+        return null == result || result.trim().isEmpty() ? defaultValue : result.trim();
+    }
+    
+    private static String normalizeBaseUrl(final String baseUrl) {
+        return baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
+    }
+    
+    private static int readInteger(final Properties props, final String propertyName, final int defaultValue) {
+        String result = readString(props, propertyName, String.valueOf(defaultValue));
+        try {
+            int parsedValue = Integer.parseInt(result);
+            if (parsedValue <= 0) {
+                throw new IllegalStateException(String.format("MCP LLM E2E property `%s` must be a positive integer, but was `%s`.", propertyName, result));
+            }
+            return parsedValue;
+        } catch (final NumberFormatException ex) {
+            throw new IllegalStateException(String.format("MCP LLM E2E property `%s` must be a positive integer, but was `%s`.", propertyName, result), ex);
+        }
+    }
+    
+    private static String createDefaultRunId() {
+        return RUN_ID_FORMATTER.format(LocalDateTime.now()) + "-" + UUID.randomUUID().toString().substring(0, 8);
     }
     
     /**
@@ -115,17 +124,6 @@ public final class LLME2EConfiguration {
         Path result = artifactRoot.resolve(runId).resolve(scenarioId);
         Files.createDirectories(result);
         return result;
-    }
-    
-    /**
-     * Create a copy with another model endpoint and API key.
-     *
-     * @param baseUrl model endpoint base URL
-     * @param apiKey API key
-     * @return copied configuration
-     */
-    public LLME2EConfiguration withModelEndpoint(final String baseUrl, final String apiKey) {
-        return toBuilder().baseUrl(normalizeBaseUrl(baseUrl)).apiKey(apiKey).build();
     }
     
     /**
@@ -155,86 +153,6 @@ public final class LLME2EConfiguration {
      */
     public String getModelsUrl() {
         return baseUrl + "/models";
-    }
-    
-    /**
-     * Get model SHA-256 checksum.
-     *
-     * @return model SHA-256 checksum
-     */
-    public String getModelSha256() {
-        return modelMetadata.getSha256();
-    }
-    
-    private static String readString(final Properties props, final String propertyName, final String defaultValue) {
-        String result = props.getProperty(propertyName);
-        return null == result || result.trim().isEmpty() ? defaultValue : result.trim();
-    }
-    
-    private static String readRequiredString(final Properties props, final String propertyName) {
-        String result = readString(props, propertyName, "");
-        if (result.isEmpty()) {
-            throw new IllegalStateException(String.format("MCP LLM E2E property `%s` is required.", propertyName));
-        }
-        return result;
-    }
-    
-    private static int readInteger(final Properties props, final String propertyName, final int defaultValue) {
-        String result = readString(props, propertyName, String.valueOf(defaultValue));
-        try {
-            int parsedValue = Integer.parseInt(result);
-            if (parsedValue <= 0) {
-                throw new IllegalStateException(String.format("MCP LLM E2E property `%s` must be a positive integer, but was `%s`.", propertyName, result));
-            }
-            return parsedValue;
-        } catch (final NumberFormatException ex) {
-            throw new IllegalStateException(String.format("MCP LLM E2E property `%s` must be a positive integer, but was `%s`.", propertyName, result), ex);
-        }
-    }
-    
-    private static ModelMetadata readModelMetadata(final Properties props) {
-        return new ModelMetadata(
-                readRequiredString(props, "mcp.llm.model-repository"),
-                readRequiredString(props, "mcp.llm.model-file-name"),
-                readRequiredString(props, "mcp.llm.model-quantization"),
-                readRequiredString(props, "mcp.llm.model-revision"),
-                readRequiredString(props, "mcp.llm.model-sha256"));
-    }
-    
-    private static String normalizeBaseUrl(final String baseUrl) {
-        return baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
-    }
-    
-    private static String createDefaultRunId() {
-        return RUN_ID_FORMATTER.format(LocalDateTime.now()) + "-" + UUID.randomUUID().toString().substring(0, 8);
-    }
-    
-    /**
-     * LLM model metadata.
-     */
-    @RequiredArgsConstructor
-    @Getter
-    @EqualsAndHashCode
-    public static final class ModelMetadata {
-        
-        private final String repository;
-        
-        private final String fileName;
-        
-        private final String quantization;
-        
-        private final String revision;
-        
-        private final String sha256;
-        
-        /**
-         * Get model path inside the runtime container.
-         *
-         * @return model path
-         */
-        public String getContainerPath() {
-            return "/models/" + fileName;
-        }
     }
     
     /**

@@ -116,7 +116,7 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
                     + "(?!(?:true|false|null)(?:\\s*[,}\\]]|\\s*$))[\"']?(?!<redacted>)[^\\s,\"'}]+"
                     + "|(Bearer\\s+)(?!<redacted>)[A-Za-z0-9._~+/=-]+|jdbc:");
     
-    private static LLMRuntimeSupport.ModelRuntime llmRuntime;
+    private static LLME2EConfiguration llmConfiguration;
     
     private final LLMConversationArtifactWriter artifactWriter = new LLMConversationArtifactWriter();
     
@@ -128,15 +128,8 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
     
     @BeforeAll
     static void prepareLLMRuntime() throws InterruptedException {
-        llmRuntime = LLMRuntimeSupport.prepare(LLME2EConfiguration.load());
-    }
-    
-    @AfterAll
-    static void closeLLMRuntime() {
-        if (null != llmRuntime) {
-            llmRuntime.close();
-            llmRuntime = null;
-        }
+        llmConfiguration = LLME2EConfiguration.load();
+        LLMRuntimeSupport.prepare(llmConfiguration);
     }
     
     @AfterAll
@@ -225,16 +218,16 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
     
     private void runScenario(final Scenario scenario) throws IOException {
         prepareRuntimeFixture();
-        LLMRuntimeSupport.ModelRuntime modelRuntime = getRequiredLLMRuntime();
-        assertThat("LLM E2E requires Docker-owned runtime evidence.", modelRuntime.getEvidence().get("scoreClosing"), is(Boolean.TRUE));
+        LLME2EConfiguration config = getRequiredLLMConfiguration();
+        assertThat("LLM E2E requires Docker Model Runner.", config.getRuntimeMode(), is(LLME2EConfiguration.RuntimeMode.DOCKER));
         Result actualResult = new LLMConversationRunner(
                 MAX_TURNS,
-                new LLMChatModelClient(modelRuntime.getConfiguration(), HttpClient.newHttpClient()),
+                new LLMChatModelClient(config, HttpClient.newHttpClient()),
                 createInteractionClient(),
-                modelRuntime.getConfiguration().getModelName()).run(scenario);
-        Path artifactDirectory = modelRuntime.getConfiguration().createArtifactDirectory("llm-http/" + scenario.id());
+                config.getModelName()).run(scenario);
+        Path artifactDirectory = config.createArtifactDirectory("llm-http/" + scenario.id());
         Collection<String> sensitiveValues = getArtifactSensitiveValues();
-        artifactWriter.write(artifactDirectory, actualResult, modelRuntime.getEvidence(), sensitiveValues);
+        artifactWriter.write(artifactDirectory, actualResult, sensitiveValues);
         assertArtifacts(artifactDirectory, sensitiveValues);
         assertTrue(actualResult.assertionReport().isSuccess(), () -> createFailureMessage(scenario.id(), actualResult.assertionReport(), artifactDirectory));
         assertFalse(actualResult.evidence().interactionTrace().isEmpty(), scenario.id() + " must capture MCP evidence.");
@@ -483,7 +476,7 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
     
     private Collection<String> getArtifactSensitiveValues() {
         Set<String> result = new LinkedHashSet<>();
-        addArtifactSensitiveValue(result, getRequiredLLMRuntime().getConfiguration().getApiKey());
+        addArtifactSensitiveValue(result, getRequiredLLMConfiguration().getApiKey());
         for (RuntimeDatabaseConfiguration each : getRuntimeDatabases().values()) {
             addArtifactSensitiveValue(result, each.getJdbcUrl());
             addArtifactSensitiveValue(result, each.getPassword());
@@ -600,10 +593,10 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
         return proxyRuntimeFixture;
     }
     
-    private static LLMRuntimeSupport.ModelRuntime getRequiredLLMRuntime() {
-        if (null == llmRuntime) {
-            throw new IllegalStateException("LLM runtime was not initialized.");
+    private static LLME2EConfiguration getRequiredLLMConfiguration() {
+        if (null == llmConfiguration) {
+            throw new IllegalStateException("LLM configuration was not initialized.");
         }
-        return llmRuntime;
+        return llmConfiguration;
     }
 }
