@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 
+import javax.validation.Valid;
+
 /**
  * Pipeline read configuration.
  */
@@ -36,5 +38,6 @@ public final class PipelineReadConfiguration {
     
     private final Integer shardingSize;
     
+    @Valid
     private final AlgorithmConfiguration rateLimiter;
 }

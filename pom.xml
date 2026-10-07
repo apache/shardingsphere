@@ -1354,6 +1354,7 @@
                                 <formats>
                                     <format>
                                         <includes>
+                                            <include>.github/actions/**/*.yml</include>
                                             <include>.github/workflows/**/*.yml</include>
                                         </includes>
                                         <trimTrailingWhitespace />

@@ -52,6 +52,7 @@ jobs:
 
   detect-and-generate-matrix:
     name: Detect Changes and Generate Matrix
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 5
@@ -129,31 +130,31 @@ jobs:
 
   prepare-e2e-artifacts:
     name: Prepare E2E Artifacts
-    if: github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true'
+    if: needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true'
     needs: [ global-environment, detect-and-generate-matrix ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6.0.1
       - id: setup-build-environment
-        uses: ./.github/workflows/resources/actions/setup-build-environment
+        uses: ./.github/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
       - name: Build E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/sql -Pe2e.env.docker -DskipTests
-      - uses: ./.github/workflows/resources/actions/save-maven-cache
+      - uses: ./.github/actions/save-maven-cache
         with:
           cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
           cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
-      - uses: ./.github/workflows/resources/actions/upload-source-snapshot
-      - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
+      - uses: ./.github/actions/upload-source-snapshot
+      - uses: ./.github/actions/upload-e2e-artifacts
 
   e2e-sql-smoke:
     name: E2E - SQL (Smoke)
     needs: [ detect-and-generate-matrix, prepare-e2e-artifacts, global-environment ]
-    if: always() && github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true' && needs.detect-and-generate-matrix.result == 'success' && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
+    if: always() && needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true' && needs.detect-and-generate-matrix.result == 'success' && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     strategy:
@@ -175,12 +176,12 @@ jobs:
         run: |
           find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
           tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
-      - uses: ./.github/workflows/resources/actions/download-e2e-artifacts
+      - uses: ./.github/actions/download-e2e-artifacts
         with:
           load-docker-image: ${{ matrix.adapter == 'proxy' }}
       - name: Run E2E Test
@@ -229,7 +230,7 @@ jobs:
     needs: [ detect-remaining-matrix, prepare-e2e-artifacts, global-environment ]
     if: >-
       always()
-      && github.repository == 'apache/shardingsphere'
+      && needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true'
       && needs.detect-remaining-matrix.outputs.has-remaining-jobs == 'true'
       && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
@@ -248,12 +249,12 @@ jobs:
         run: |
           find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
           tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
-      - uses: ./.github/workflows/resources/actions/download-e2e-artifacts
+      - uses: ./.github/actions/download-e2e-artifacts
         with:
           load-docker-image: ${{ matrix.adapter == 'proxy' }}
       - name: Run E2E Test

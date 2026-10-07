@@ -142,8 +142,11 @@ public final class E2ETestParameterGenerator {
         if (sqlStatementClass == RALStatement.class) {
             return "empty_rules".equals(scenario);
         }
-        if (sqlStatementClass == RDLStatement.class || "distsql_rdl".equals(scenario)) {
-            return sqlStatementClass == RDLStatement.class && "distsql_rdl".equals(scenario);
+        if (sqlStatementClass == RDLStatement.class) {
+            return scenarios.isEmpty() ? "distsql_rdl".equals(scenario) : scenarios.contains(scenario);
+        }
+        if ("distsql_rdl".equals(scenario) || "distsql_rdl_empty".equals(scenario)) {
+            return false;
         }
         if ("empty_rules".equals(scenario)) {
             return false;

@@ -45,14 +45,14 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
         with:
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Run SpotBugs
         run: ./mvnw clean install spotbugs:check -Pcheck -T1C
 
   check-dead-links:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - Dead Links
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
@@ -82,7 +82,7 @@ jobs:
           done
 
   check-codeql:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - CodeQL
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
@@ -93,7 +93,7 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
         with:
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Initialize CodeQL
@@ -109,7 +109,7 @@ jobs:
           category: "/language:java"
 
   check-stale:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - Stale Issues
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
@@ -140,7 +140,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
         with:
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Run Dependency Convergence Check
@@ -156,7 +156,7 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
         with:
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Run OWASP Check
@@ -177,7 +177,7 @@ jobs:
     timeout-minutes: 80
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
       - name: Install Project
         run: ./mvnw clean install -DskipTests -T1C
       - name: Build with maven and execute jacoco aggregation script

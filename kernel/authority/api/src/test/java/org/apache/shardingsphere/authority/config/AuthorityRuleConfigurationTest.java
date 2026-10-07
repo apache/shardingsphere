@@ -28,6 +28,8 @@ import java.util.Collections;
 import java.util.Properties;
 import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -49,6 +51,8 @@ class AuthorityRuleConfigurationTest {
                         Collections.singleton(userConfig), privilegeProvider, Collections.emptyMap(), null)),
                 Arguments.of("User with null hostname", createRuleConfiguration(new UserConfiguration("foo_user", null, null, null, false))),
                 Arguments.of("User with empty hostname", createRuleConfiguration(new UserConfiguration("foo_user", null, "", null, false))),
+                Arguments.of("Whitespace authenticator type remains nonempty", new AuthorityRuleConfiguration(Collections.emptyList(), privilegeProvider,
+                        Collections.singletonMap("foo_authenticator", createAlgorithmConfiguration(" ")), null)),
                 Arguments.of("Complete configuration", new AuthorityRuleConfiguration(Collections.singleton(
                         new UserConfiguration("foo_admin", "foo_password", "localhost", "foo_authenticator", true)), privilegeProvider,
                         Collections.singletonMap("foo_authenticator", createAlgorithmConfiguration("MD5")), "foo_authenticator")));
@@ -56,6 +60,28 @@ class AuthorityRuleConfigurationTest {
     
     private static AlgorithmConfiguration createAlgorithmConfiguration(final String type) {
         return new AlgorithmConfiguration(type, new Properties());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("algorithmTypeArguments")
+    void assertValidateAlgorithmType(final String name, final AuthorityRuleConfiguration ruleConfig, final String expectedMessage) {
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'AuthorityRuleConfiguration' rule, error message is: " + expectedMessage));
+    }
+    
+    private static Stream<Arguments> algorithmTypeArguments() {
+        AlgorithmConfiguration privilegeProvider = createAlgorithmConfiguration("FIXTURE");
+        return Stream.of(
+                Arguments.of("Null privilege provider type before SPI", new AuthorityRuleConfiguration(Collections.emptyList(), createAlgorithmConfiguration(null), Collections.emptyMap(), null),
+                        "Property `privilegeProvider.type` Type is required."),
+                Arguments.of("Empty privilege provider type before SPI", new AuthorityRuleConfiguration(Collections.emptyList(), createAlgorithmConfiguration(""), Collections.emptyMap(), null),
+                        "Property `privilegeProvider.type` Type is required."),
+                Arguments.of("Whitespace privilege provider type reaches SPI", new AuthorityRuleConfiguration(Collections.emptyList(), createAlgorithmConfiguration(" "), Collections.emptyMap(), null),
+                        "Property `privilegeProvider` does not match an available SPI implementation."),
+                Arguments.of("Null authenticator type", new AuthorityRuleConfiguration(Collections.emptyList(), privilegeProvider,
+                        Collections.singletonMap("foo_authenticator", createAlgorithmConfiguration(null)), null), "Property `authenticators[foo_authenticator].type` Type is required."),
+                Arguments.of("Empty authenticator type", new AuthorityRuleConfiguration(Collections.emptyList(), privilegeProvider,
+                        Collections.singletonMap("foo_authenticator", createAlgorithmConfiguration("")), null), "Property `authenticators[foo_authenticator].type` Type is required."));
     }
     
     @ParameterizedTest(name = "{0}")

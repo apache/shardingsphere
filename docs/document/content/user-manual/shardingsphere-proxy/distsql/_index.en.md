@@ -64,7 +64,8 @@ Now, the user experience has been greatly improved:
 
 ## Limitations
 
-DistSQL can be used only with ShardingSphere-Proxy, not with ShardingSphere-JDBC for now.
+DistSQL can be used with ShardingSphere-Proxy and ShardingSphere-JDBC.
+For JDBC execution and limitations, see [Java API: Execute DistSQL](/en/user-manual/shardingsphere-jdbc/java-api/).
 
 ## How it works
 

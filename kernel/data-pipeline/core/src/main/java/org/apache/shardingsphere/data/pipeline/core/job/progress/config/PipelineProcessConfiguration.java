@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 
+import javax.validation.Valid;
+
 /**
  * Pipeline process configuration.
  */
@@ -30,9 +32,12 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 @ToString
 public final class PipelineProcessConfiguration {
     
+    @Valid
     private final PipelineReadConfiguration read;
     
+    @Valid
     private final PipelineWriteConfiguration write;
     
+    @Valid
     private final AlgorithmConfiguration streamChannel;
 }
