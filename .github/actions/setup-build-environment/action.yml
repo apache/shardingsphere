@@ -23,9 +23,9 @@ description: |
   with support for multi-project isolation and build scope optimization.
 
   Usage:
-    - uses: ./.github/workflows/resources/actions/setup-build-environment
+    - uses: ./.github/actions/setup-build-environment
 
-    - uses: ./.github/workflows/resources/actions/setup-build-environment
+    - uses: ./.github/actions/setup-build-environment
       with:
         java-version: '21'
         cache-suffix: 'e2e-sql'

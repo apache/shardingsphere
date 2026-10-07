@@ -34,6 +34,8 @@ on:
       - '!distribution/**/src/main/release-docs/**'
       - '!examples/**'
       - '!*.md'
+  schedule:
+    - cron: '0 0 * * 1-5' # Once a day between Monday and Friday. UTC time
   workflow_dispatch:
 
 concurrency:
@@ -52,15 +54,15 @@ jobs:
     uses: ./.github/workflows/reusable-global-environment.yml
 
   build-e2e-image:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Build E2E Image
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6.0.1
       - id: setup-build-environment
-        uses: ./.github/workflows/resources/actions/setup-build-environment
+        uses: ./.github/actions/setup-build-environment
         with:
           java-version: 21
           cache-suffix: 'e2e-agent'
@@ -79,7 +81,7 @@ jobs:
           retention-days: 10
       - name: Build JDBC E2E Image
         run: ./mvnw install -DskipTests -Pe2e.env.jdbc -f test/e2e/agent/engine/pom.xml
-      - uses: ./.github/workflows/resources/actions/save-maven-cache
+      - uses: ./.github/actions/save-maven-cache
         with:
           cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
           cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
@@ -93,10 +95,10 @@ jobs:
 
   agent-mysql:
     name: E2E - Agent with MySQL
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     needs: [ global-environment, build-e2e-image ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
-    timeout-minutes: 15
+    timeout-minutes: 40
     strategy:
       max-parallel: 15
       fail-fast: false
@@ -122,7 +124,7 @@ jobs:
             plugin: jaeger
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - uses: ./.github/actions/setup-build-environment
         with:
           java-version: 21
           cache-suffix: 'e2e-agent'

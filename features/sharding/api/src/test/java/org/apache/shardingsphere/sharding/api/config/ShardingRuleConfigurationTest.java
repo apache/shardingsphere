@@ -302,6 +302,35 @@ class ShardingRuleConfigurationTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("algorithmTypeArguments")
+    void assertValidateAlgorithmType(final String name, final ShardingRuleConfiguration ruleConfig, final String expectedMessage) {
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'ShardingRuleConfiguration' rule, error message is: " + expectedMessage));
+    }
+    
+    private static Stream<Arguments> algorithmTypeArguments() {
+        return Stream.of(
+                Arguments.of("Null sharding algorithm type before SPI", createShardingAlgorithmsRuleConfiguration("foo_sharding", new AlgorithmConfiguration(null, new Properties())),
+                        "Property `shardingAlgorithms[foo_sharding].type` Type is required."),
+                Arguments.of("Empty sharding algorithm type before SPI", createShardingAlgorithmsRuleConfiguration("foo_sharding", new AlgorithmConfiguration("", new Properties())),
+                        "Property `shardingAlgorithms[foo_sharding].type` Type is required."),
+                Arguments.of("Whitespace sharding algorithm type reaches SPI", createShardingAlgorithmsRuleConfiguration("foo_sharding", new AlgorithmConfiguration(" ", new Properties())),
+                        "Property `shardingAlgorithms` does not match an available SPI implementation."),
+                Arguments.of("Null key generator type before SPI", createKeyGeneratorsRuleConfiguration("foo_key_generator", new AlgorithmConfiguration(null, new Properties())),
+                        "Property `keyGenerators[foo_key_generator].type` Type is required."),
+                Arguments.of("Empty key generator type before SPI", createKeyGeneratorsRuleConfiguration("foo_key_generator", new AlgorithmConfiguration("", new Properties())),
+                        "Property `keyGenerators[foo_key_generator].type` Type is required."),
+                Arguments.of("Whitespace key generator type reaches SPI", createKeyGeneratorsRuleConfiguration("foo_key_generator", new AlgorithmConfiguration(" ", new Properties())),
+                        "Property `keyGenerators` does not match an available SPI implementation."),
+                Arguments.of("Null auditor type before SPI", createAuditorsRuleConfiguration("foo_auditor", new AlgorithmConfiguration(null, new Properties())),
+                        "Property `auditors[foo_auditor].type` Type is required."),
+                Arguments.of("Empty auditor type before SPI", createAuditorsRuleConfiguration("foo_auditor", new AlgorithmConfiguration("", new Properties())),
+                        "Property `auditors[foo_auditor].type` Type is required."),
+                Arguments.of("Whitespace auditor type reaches SPI", createAuditorsRuleConfiguration("foo_auditor", new AlgorithmConfiguration(" ", new Properties())),
+                        "Property `auditors` does not match an available SPI implementation."));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("invalidReferenceRuleConfigurationArguments")
     void assertValidateInvalidReferenceRuleConfiguration(final String name, final ShardingRuleConfiguration ruleConfig) {
         assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));

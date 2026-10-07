@@ -53,7 +53,8 @@ public final class ShadowRuleConfiguration implements DatabaseRuleConfiguration,
     private Map<@NotBlank String, @NotNull ShadowTableConfiguration> tables = new LinkedHashMap<>();
     
     @NotNull
-    @SPITypeExists(spiClassName = "org.apache.shardingsphere.shadow.spi.ShadowAlgorithm")
+    @Valid
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.shadow.spi.ShadowAlgorithm", groups = RuleConfigurationTypeValidationGroup.class)
     private Map<@NotBlank String, @NotNull AlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
     
     private String defaultShadowAlgorithmName;

@@ -91,6 +91,21 @@ class EncryptRuleConfigurationTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("algorithmTypeArguments")
+    void assertValidateAlgorithmType(final String name, final String type, final String expectedMessage) {
+        EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Collections.emptyList(), Collections.singletonMap("foo_encryptor", new AlgorithmConfiguration(type, new Properties())));
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'EncryptRuleConfiguration' rule, error message is: " + expectedMessage));
+    }
+    
+    private static Stream<Arguments> algorithmTypeArguments() {
+        return Stream.of(
+                Arguments.of("Null encryptor type before SPI", null, "Property `encryptors[foo_encryptor].type` Type is required."),
+                Arguments.of("Empty encryptor type before SPI", "", "Property `encryptors[foo_encryptor].type` Type is required."),
+                Arguments.of("Whitespace encryptor type reaches SPI", " ", "Property `encryptors` does not match an available SPI implementation."));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("invalidRuleConfigurationArguments")
     void assertValidateInvalidRuleConfiguration(final String name, final EncryptRuleConfiguration ruleConfig) {
         assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
