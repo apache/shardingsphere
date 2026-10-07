@@ -39,14 +39,17 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
+
 jobs:
   global-environment:
     name: Import Global Environment
     uses: ./.github/workflows/reusable-global-environment.yml
   nativetest:
-    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    needs: global-environment
     name: GraalVM - GraalVM CE ${{ matrix.java-version }} on ${{ matrix.os }}
+    needs: global-environment
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
@@ -57,9 +60,6 @@ jobs:
         os: [ '${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}' ]
     steps:
       - uses: actions/checkout@v6.0.1
-      - name: Configure Maven for Nightly Tests
-        if: github.event_name == 'schedule'
-        run: echo "MAVEN_OPTS=-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3" >> "$GITHUB_ENV"
       - name: Free Disk Space on Ubuntu
         if: matrix.os == '${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}'
         run: ./test/native/src/test/resources/test-native/sh/free-disk-space.sh
