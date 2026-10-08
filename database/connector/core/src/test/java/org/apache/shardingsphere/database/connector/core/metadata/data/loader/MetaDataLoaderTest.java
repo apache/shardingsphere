@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.connector.core.metadata.data.loader;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import ch.qos.logback.core.read.ListAppender;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
@@ -170,8 +171,7 @@ class MetaDataLoaderTest {
         assertThat(appenderList.size(), is(1));
         LoggingEvent event = appenderList.get(0);
         assertThat(event.getLevel(), is(Level.WARN));
-        assertThat(event.getFormattedMessage(), containsString("foo_ds.t_order"));
-        assertThat(event.getFormattedMessage(), containsString("missing from loaded metadata"));
+        assertThat(event.getFormattedMessage(), is("The following tables are missing from loaded metadata: [foo_ds.foo_db.t_order]"));
     }
     
     @Test
@@ -201,6 +201,8 @@ class MetaDataLoaderTest {
             LoggingEvent event = appenderList.get(0);
             assertThat(event.getLevel(), is(Level.WARN));
             assertThat(event.getFormattedMessage(), containsString("Dialect load schema meta data error, load by default."));
+            assertTrue(event.getThrowableProxy() instanceof ThrowableProxy);
+            assertThat(((ThrowableProxy) event.getThrowableProxy()).getClassName(), is(SQLException.class.getName()));
         }
     }
     
@@ -212,8 +214,59 @@ class MetaDataLoaderTest {
         assertThat(appenderList.size(), is(1));
         LoggingEvent event = appenderList.get(0);
         assertThat(event.getLevel(), is(Level.WARN));
-        assertThat(event.getFormattedMessage(), containsString("foo_ds.t_order"));
-        assertThat(event.getFormattedMessage(), containsString("foo_ds.t_order_item"));
+        assertThat(event.getFormattedMessage(), is("The following tables are missing from loaded metadata: [foo_ds.foo_db.t_order, foo_ds.foo_db.t_order_item]"));
+    }
+    
+    @Test
+    void assertMissingTableWarningForMultipleStorageUnits() throws SQLException {
+        MetaDataLoaderMaterial firstMaterial = new MetaDataLoaderMaterial(
+                Collections.singleton("t_order"), "foo_ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        MetaDataLoaderMaterial secondMaterial = new MetaDataLoaderMaterial(
+                Collections.singleton("t_order"), "foo_ds_2", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        MetaDataLoader.load(Arrays.asList(firstMaterial, secondMaterial));
+        assertThat(appenderList.size(), is(1));
+        assertThat(appenderList.get(0).getFormattedMessage(), is("The following tables are missing from loaded metadata: [foo_ds_1.foo_db.t_order, foo_ds_2.foo_db.t_order]"));
+    }
+    
+    @Test
+    void assertMissingTableWarningWhenSameNameLoadedInOtherSchema() throws Exception {
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("foo"), "dialect_success", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "public");
+        DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
+        when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
+        when(dialectMetaDataLoader.load(material)).thenReturn(Collections.singleton(
+                new SchemaMetaData("archive", Collections.singleton(new TableMetaData("foo", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())))));
+        try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
+            MetaDataLoader.load(Collections.singleton(material));
+            assertThat(appenderList.size(), is(1));
+            assertThat(appenderList.get(0).getFormattedMessage(), is("The following tables are missing from loaded metadata: [dialect_success.public.foo]"));
+        }
+    }
+    
+    @Test
+    void assertMissingTableWarningKeepsPhysicalNameCase() throws Exception {
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Arrays.asList("Foo", "foo"), "dialect_success", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
+        when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
+        when(dialectMetaDataLoader.load(material)).thenReturn(Collections.singleton(
+                new SchemaMetaData("foo_db", Collections.singleton(new TableMetaData("foo", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())))));
+        try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
+            MetaDataLoader.load(Collections.singleton(material));
+            assertThat(appenderList.size(), is(1));
+            assertThat(appenderList.get(0).getFormattedMessage(), is("The following tables are missing from loaded metadata: [dialect_success.foo_db.Foo]"));
+        }
+    }
+    
+    @Test
+    void assertNoMissingTableWarningWhenSchemaAwareLoadMatches() throws Exception {
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("foo"), "dialect_success", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "public");
+        DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
+        when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
+        when(dialectMetaDataLoader.load(material)).thenReturn(Collections.singleton(
+                new SchemaMetaData("public", Collections.singleton(new TableMetaData("foo", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())))));
+        try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
+            MetaDataLoader.load(Collections.singleton(material));
+            assertTrue(appenderList.isEmpty());
+        }
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
