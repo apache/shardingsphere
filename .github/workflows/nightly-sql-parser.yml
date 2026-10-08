@@ -60,10 +60,31 @@ jobs:
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Build Project with Maven
         run: ./mvnw -T1C -B -ntp clean install
+      - name: Clear Previous SQL Parser XML
+        run: rm -f test/it/parser/target/failsafe-reports/TEST-*${{ matrix.test }}.xml
       - name: Run SQL Parser
-        run: ./mvnw -nsu -B install -f test/it/parser/pom.xml -Dsql.parser.external.it.enabled=true -Dit.test=${{ matrix.test }}
+        id: sql-parser
+        run: |
+          mkdir -p "$RUNNER_TEMP/sql-parser-report-${{ matrix.database }}"
+          ./mvnw -nsu -B install -f test/it/parser/pom.xml -Pexternal-sql-parser-report \
+            -Dsql.parser.external.it.enabled=true -Dit.test=${{ matrix.test }} \
+            -Dsql.parser.external.it.report.path="$RUNNER_TEMP/sql-parser-report-${{ matrix.database }}/"
+      - name: Set up Python for SQL Report
+        if: ${{ !cancelled() && steps.sql-parser.outcome != 'skipped' }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Generate SQL Parser Excel Report
+        if: ${{ !cancelled() && steps.sql-parser.outcome != 'skipped' }}
+        run: |
+          python -m pip install --disable-pip-version-check --target "$RUNNER_TEMP/sql-parser-report-dependencies" openpyxl==3.1.5
+          PYTHONPATH="$RUNNER_TEMP/sql-parser-report-dependencies" python .github/scripts/generate-sql-parser-report.py \
+            --reports-dir test/it/parser/target/failsafe-reports --test-class ${{ matrix.test }} \
+            --database ${{ matrix.database }} \
+            --output "$RUNNER_TEMP/sql-parser-report-${{ matrix.database }}/${{ matrix.database }}-errors.xlsx"
       - uses: actions/upload-artifact@v6
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.sql-parser.outcome != 'skipped' }}
         with:
           name: sql-report-${{ matrix.database }}
-          path: /tmp/*.csv
+          path: ${{ runner.temp }}/sql-parser-report-${{ matrix.database }}/
+          if-no-files-found: error
