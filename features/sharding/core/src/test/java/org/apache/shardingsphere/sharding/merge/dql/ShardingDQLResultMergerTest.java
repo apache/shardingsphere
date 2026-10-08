@@ -47,6 +47,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
@@ -328,20 +330,26 @@ class ShardingDQLResultMergerTest {
     @MethodSource("assertMergeDistinctRowWithNullValuesArguments")
     void assertMergeDistinctRowWithNullValues(final String name, final String databaseTypeName, final Collection<Object> firstShardValues, final Collection<Object> secondShardValues,
                                               final List<Object> expectedValues) throws SQLException {
+        ColumnProjectionSegment projection = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("col1")));
+        assertThat(getMergedDistinctRowValues(databaseTypeName, projection, firstShardValues, secondShardValues), is(expectedValues));
+    }
+    
+    private List<Object> getMergedDistinctRowValues(final String databaseTypeName, final ProjectionSegment projection, final Collection<Object> firstShardValues,
+                                                    final Collection<Object> secondShardValues) throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, databaseTypeName);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.setDistinctRow(true);
-        projectionsSegment.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("col1"))));
+        projectionsSegment.getProjections().add(projection);
         SelectStatement selectStatement = withProjections(buildSelectStatement(databaseType), projectionsSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
-        MergedResult actual = new ShardingDQLResultMerger(databaseType).merge(Arrays.asList(createSingleColumnQueryResult(firstShardValues), createSingleColumnQueryResult(secondShardValues)),
+        MergedResult mergedResult = new ShardingDQLResultMerger(databaseType).merge(Arrays.asList(createSingleColumnQueryResult(firstShardValues), createSingleColumnQueryResult(secondShardValues)),
                 selectStatementContext, createDialectDatabase(databaseType), mock(ConnectionContext.class));
-        List<Object> actualValues = new LinkedList<>();
-        while (actual.next()) {
-            actualValues.add(actual.getValue(1, Object.class));
+        List<Object> result = new LinkedList<>();
+        while (mergedResult.next()) {
+            result.add(mergedResult.getValue(1, Object.class));
         }
-        assertThat(actualValues, is(expectedValues));
+        return result;
     }
     
     private QueryResult createSingleColumnQueryResult(final Collection<Object> values) throws SQLException {
@@ -372,6 +380,14 @@ class ShardingDQLResultMergerTest {
                 Arguments.of("MySQL sorts NULL values first", "MySQL", Arrays.asList(null, 5), Arrays.asList(null, 10), Arrays.asList(null, 5, 10)),
                 Arguments.of("ClickHouse sorts NULL values last", "ClickHouse", Arrays.asList(5, null), Arrays.asList(10, null), Arrays.asList(5, 10, null)),
                 Arguments.of("Presto sorts NULL values last", "Presto", Arrays.asList(5, null), Arrays.asList(10, null), Arrays.asList(5, 10, null)));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertMergeDistinctRowWithNullValuesArguments")
+    void assertMergeDistinctExpressionWithNullValues(final String name, final String databaseTypeName, final Collection<Object> firstShardValues, final Collection<Object> secondShardValues,
+                                                     final List<Object> expectedValues) throws SQLException {
+        ExpressionProjectionSegment projection = new ExpressionProjectionSegment(0, 0, "col1 + 1");
+        assertThat(getMergedDistinctRowValues(databaseTypeName, projection, firstShardValues, secondShardValues), is(expectedValues));
     }
     
     @Test
