@@ -187,9 +187,9 @@
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <checkstyle.version>14.1.0</checkstyle.version>
         <maven-pmd-plugin.version>3.20.0</maven-pmd-plugin.version>
-        <spotbugs-maven-plugin.version>4.7.2.1</spotbugs-maven-plugin.version>
+        <spotbugs-maven-plugin.version>4.7.3.6</spotbugs-maven-plugin.version>
         <fb-contrib.version>7.6.0</fb-contrib.version>
-        <findsecbugs.version>1.12.0</findsecbugs.version>
+        <findsecbugs.version>1.14.0</findsecbugs.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
         
         <!-- Report plugin versions -->
@@ -1447,8 +1447,8 @@
                                 <excludeFilterFile>${maven.multiModuleProjectDirectory}/src/resources/spotbugs.xml</excludeFilterFile>
                                 <plugins>
                                     <plugin>
-                                        <groupId>com.mebigfatguy.fb-contrib</groupId>
-                                        <artifactId>fb-contrib</artifactId>
+                                        <groupId>com.mebigfatguy.sb-contrib</groupId>
+                                        <artifactId>sb-contrib</artifactId>
                                         <version>${fb-contrib.version}</version>
                                     </plugin>
                                     <plugin>
