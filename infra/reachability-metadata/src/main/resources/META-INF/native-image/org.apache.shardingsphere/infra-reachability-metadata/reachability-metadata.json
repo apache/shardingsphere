@@ -2031,6 +2031,108 @@
       },
       "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.type.PostgreSQLDMLStatementVisitor",
       "allPublicConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration",
+      "fields": [
+        {
+          "name": "providerType"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration",
+      "fields": [
+        {
+          "name": "logicTable"
+        },
+        {
+          "name": "shardingStrategy"
+        },
+        {
+          "name": "auditStrategy"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.sharding.api.config.validator.ShardingTableRuleConfigurationValidator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.util.yaml.YamlEngine"
+      },
+      "type": "org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration",
+      "allPublicConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration"
+      },
+      "type": "org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfigurationBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration"
+      },
+      "type": "org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfigurationCustomizer"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.core.SQLParserFactory"
+      },
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.parser.MySQLLexer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.antlr.v4.runtime.CharStream"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.core.SQLParserFactory"
+      },
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.parser.MySQLParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.antlr.v4.runtime.TokenStream"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.core.database.visitor.SQLStatementVisitorFactory"
+      },
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.type.MySQLDDLStatementVisitor",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
+          ]
+        }
+      ]
     }
   ],
   "resources": [
