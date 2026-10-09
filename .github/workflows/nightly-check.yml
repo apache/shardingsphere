@@ -46,8 +46,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/actions/setup-build-environment
-        with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Run SpotBugs
         run: ./mvnw clean install spotbugs:check -Pcheck -T1C
 
@@ -94,8 +92,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/actions/setup-build-environment
-        with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
@@ -141,8 +137,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/actions/setup-build-environment
-        with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Run Dependency Convergence Check
         run: |
           sed -i '/<requireMavenVersion>/i \                                    <dependencyConvergence/>' pom.xml
@@ -157,8 +151,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/actions/setup-build-environment
-        with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Run OWASP Check
         # https://nvd.nist.gov/developers/request-an-api-key
         run: ./mvnw clean dependency-check:aggregate -DnvdApiKey=${{ secrets.NIST_NVD_API_KEY }}

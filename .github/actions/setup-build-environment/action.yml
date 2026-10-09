@@ -31,7 +31,7 @@ description: |
         cache-suffix: 'e2e-sql'
 
   Cache key format: {cache-prefix}-maven-{cache-suffix}-{pom.xml hash}
-  Default cache-prefix: 'apache-shardingsphere'
+  Cache prefix: workflow repository owner/name with '/' replaced by '-'.
   Default cache-suffix: 'full'
 
 inputs:
@@ -43,13 +43,6 @@ inputs:
     description: 'Java distribution (default: temurin)'
     required: false
     default: 'temurin'
-  cache-prefix:
-    description: |
-      Cache key prefix for multi-project isolation.
-      Used to separate caches between different projects or forks.
-      Default: 'apache-shardingsphere'
-    required: false
-    default: 'apache-shardingsphere'
   cache-suffix:
     description: |
       Cache key suffix for build scope optimization.
@@ -119,6 +112,10 @@ runs:
           exit 1
         fi
         echo "E2E_MAVEN_REPOSITORY=$repository" >> "$GITHUB_ENV"
+    - name: Set Maven Cache Prefix
+      id: cache-prefix
+      shell: bash
+      run: echo "value=${GITHUB_REPOSITORY//\//-}" >> "$GITHUB_OUTPUT"
     - name: Restore Maven Cache
       id: restore-maven-cache
       uses: actions/cache/restore@v5.0.1
@@ -127,12 +124,12 @@ runs:
           ${{ inputs.maven-repository-dir || '~/.m2/repository' }}
           !${{ inputs.maven-repository-dir || '~/.m2/repository' }}/org/apache/shardingsphere
           ${{ inputs.maven-repository-dir || '~/.m2/repository' }}/org/apache/shardingsphere/elasticjob
-        key: ${{ inputs.cache-prefix }}-maven-${{ inputs.cache-suffix }}-${{ hashFiles('**/pom.xml') }}
+        key: ${{ steps.cache-prefix.outputs.value }}-maven-${{ inputs.cache-suffix }}-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
-          ${{ inputs.cache-prefix }}-maven-${{ inputs.cache-suffix }}-
-          ${{ inputs.cache-prefix }}-maven-full-
-          ${{ inputs.cache-prefix }}-maven-
-          ${{ inputs.cache-prefix }}-
+          ${{ steps.cache-prefix.outputs.value }}-maven-${{ inputs.cache-suffix }}-
+          ${{ steps.cache-prefix.outputs.value }}-maven-full-
+          ${{ steps.cache-prefix.outputs.value }}-maven-
+          ${{ steps.cache-prefix.outputs.value }}-
     - name: Remove Previous E2E Maven Artifacts
       if: inputs.maven-repository-dir != ''
       shell: bash
@@ -160,4 +157,4 @@ runs:
           ${{ inputs.maven-repository-dir || '~/.m2/repository' }}
           !${{ inputs.maven-repository-dir || '~/.m2/repository' }}/org/apache/shardingsphere
           ${{ inputs.maven-repository-dir || '~/.m2/repository' }}/org/apache/shardingsphere/elasticjob
-        key: ${{ inputs.cache-prefix }}-maven-${{ inputs.cache-suffix }}-${{ hashFiles('**/pom.xml') }}
+        key: ${{ steps.cache-prefix.outputs.value }}-maven-${{ inputs.cache-suffix }}-${{ hashFiles('**/pom.xml') }}
