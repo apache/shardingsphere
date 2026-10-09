@@ -19,10 +19,12 @@ package org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Scenario data path.
@@ -63,6 +65,11 @@ public final class ScenarioDataPath {
     
     private String getFile(final String fileName) {
         String path = String.join("/", scenarioDirectory, fileName);
+        if ("runtime".equals(System.getProperty("org.graalvm.nativeimage.imagecode"))) {
+            File result = new File("src/test/resources", path);
+            assertTrue(result.isFile(), String.format("File `%s` must exist.", path));
+            return result.getAbsolutePath();
+        }
         URL url = Thread.currentThread().getContextClassLoader().getResource(path);
         assertNotNull(url, String.format("File `%s` must exist.", path));
         return url.getFile();
