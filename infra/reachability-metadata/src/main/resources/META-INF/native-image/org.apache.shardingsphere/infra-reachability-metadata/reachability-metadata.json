@@ -705,6 +705,18 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
       },
+      "type": "org.apache.shardingsphere.sharding.api.config.validator.ShardingTableRuleConfigurationValidator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
       "type": "org.apache.shardingsphere.transaction.config.validator.TransactionProviderTypeValidator",
       "methods": [
         {
@@ -1103,6 +1115,17 @@
         {
           "name": "getMaskAlgorithm",
           "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator"
+      },
+      "type": "org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration",
+      "fields": [
+        {
+          "name": "providerType"
         }
       ]
     },
