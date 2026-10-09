@@ -67,22 +67,29 @@ jobs:
           ./mvnw -nsu -B install -f test/it/parser/pom.xml -Pexternal-sql-parser-report \
             -Dsql.parser.external.it.enabled=true -Dit.test=${{ matrix.test }} \
             -Dsql.parser.external.it.report.path="$RUNNER_TEMP/sql-parser-report-${{ matrix.database }}/"
-      - name: Set up Python for SQL Report
+      - name: Generate SQL Parser Report
         if: ${{ !cancelled() && steps.sql-parser.outcome != 'skipped' }}
-        uses: actions/setup-python@v6
+        uses: mikepenz/action-junit-report@b7b80d7ac5b1da46d6aaff9fb57ad50d8453bcb3 # v6.6.0
         with:
-          python-version: '3.12'
-      - name: Generate SQL Parser Excel Report
-        if: ${{ !cancelled() && steps.sql-parser.outcome != 'skipped' }}
-        run: |
-          python -m pip install --disable-pip-version-check --target "$RUNNER_TEMP/sql-parser-report-dependencies" openpyxl==3.1.5
-          PYTHONPATH="$RUNNER_TEMP/sql-parser-report-dependencies" python .github/scripts/generate-sql-parser-report.py \
-            --reports-dir test/it/parser/target/failsafe-reports --test-class ${{ matrix.test }} \
-            --database ${{ matrix.database }} \
-            --output "$RUNNER_TEMP/sql-parser-report-${{ matrix.database }}/${{ matrix.database }}-errors.xlsx"
+          report_paths: 'test/it/parser/target/failsafe-reports/TEST-*${{ matrix.test }}.xml'
+          check_name: 'SQL Parser - ${{ matrix.database }}'
+          skip_annotations: true
+          detailed_summary: true
+          failed_summary_logs: true
+          include_skipped: false
+          truncate_stack_traces: false
+          require_tests: true
+          fail_on_parse_error: true
       - uses: actions/upload-artifact@v6
         if: ${{ !cancelled() && steps.sql-parser.outcome != 'skipped' }}
         with:
           name: sql-report-${{ matrix.database }}
           path: ${{ runner.temp }}/sql-parser-report-${{ matrix.database }}/
+          if-no-files-found: error
+      - name: Upload SQL Parser XML
+        if: ${{ !cancelled() && steps.sql-parser.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: sql-parser-xml-${{ matrix.database }}
+          path: test/it/parser/target/failsafe-reports/TEST-*${{ matrix.test }}.xml
           if-no-files-found: error
