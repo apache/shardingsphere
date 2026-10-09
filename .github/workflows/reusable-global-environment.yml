@@ -18,8 +18,6 @@
 on:
   workflow_call:
     outputs:
-      GLOBAL_CACHE_PREFIX:
-        value: ${{ jobs.init-environment.outputs.GLOBAL_CACHE_PREFIX }}
       GLOBAL_RUNS_ON:
         value: ${{ jobs.init-environment.outputs.GLOBAL_RUNS_ON }}
       GLOBAL_JOB_ENABLED:
@@ -38,11 +36,9 @@ jobs:
         env:
           GLOBAL_REPOSITORY: ${{ vars.GLOBAL_REPOSITORY || 'apache/shardingsphere' }}
         run: |
-          echo "GLOBAL_CACHE_PREFIX=${GLOBAL_REPOSITORY//\//-}" >> "$GITHUB_OUTPUT"
           if [ "$GITHUB_REPOSITORY" = "$GLOBAL_REPOSITORY" ]; then
             echo "GLOBAL_JOB_ENABLED=true" >> "$GITHUB_OUTPUT"
           fi
     outputs:
       GLOBAL_RUNS_ON: ${{ vars.GLOBAL_RUNS_ON || 'ubuntu-latest' }}
       GLOBAL_JOB_ENABLED: ${{ steps.global-environment.outputs.GLOBAL_JOB_ENABLED }}
-      GLOBAL_CACHE_PREFIX: ${{ steps.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
