@@ -108,8 +108,6 @@
                         <artifactId>dockerfile-maven-plugin</artifactId>
                         <configuration>
                             <repository>${docker.proxy.image.name}</repository>
-                            <tag>${project.version}</tag>
-                            <tag>latest</tag>
                             <buildArgs>
                                 <APP_NAME>${docker.proxy.distribution.name}</APP_NAME>
                             </buildArgs>
@@ -200,7 +198,6 @@
                         <artifactId>dockerfile-maven-plugin</artifactId>
                         <configuration>
                             <repository>${docker.jdbc.image.name}</repository>
-                            <tag>latest</tag>
                             <contextDirectory>${docker.jdbc.context.directory}</contextDirectory>
                             <dockerfile>${docker.jdbc.context.directory}/Dockerfile</dockerfile>
                         </configuration>
