@@ -1,0 +1,233 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: 'Prepare E2E Docker'
+description: 'Cache source and tool images and pull standard images or models'
+
+inputs:
+  type:
+    description: 'Artifact type: source, standard or tool'
+    required: true
+  operation:
+    description: 'Source image operation: restore, save or load'
+    required: false
+    default: 'restore'
+  image:
+    description: 'Image repository, or the built image reference for source save'
+    required: false
+  archive:
+    description: 'Image archive to load for a source consumer'
+    required: false
+  source-revision:
+    description: 'Fixed Tool commit or expected commit for source load'
+    required: false
+  kind:
+    description: 'Standard artifact kind: image or model'
+    required: false
+    default: 'image'
+  reference:
+    description: 'Standard image or model reference including its version'
+    required: false
+  dockerfile:
+    description: 'Tool Dockerfile with a fixed base image digest'
+    required: false
+  context:
+    description: 'Tool build context checked out at source-revision'
+    required: false
+
+outputs:
+  image:
+    description: 'Prepared image reference for this job, or the standard artifact reference'
+    value: ${{ inputs.type == 'standard' && inputs.reference || steps.identity.outputs.image }}
+  cache-hit:
+    description: 'Whether the exact image cache was restored'
+    value: ${{ steps.restore.outputs.cache-hit || 'false' }}
+  archive:
+    description: 'Image archive available until the upload action consumes it'
+    value: ${{ steps.identity.outputs.archive }}
+
+runs:
+  using: composite
+  steps:
+    - name: Check Docker Artifact Type
+      shell: bash
+      env:
+        TYPE: ${{ inputs.type }}
+        OPERATION: ${{ inputs.operation }}
+        KIND: ${{ inputs.kind }}
+      run: |
+        case "$TYPE:$OPERATION:$KIND" in
+          source:restore:*|source:save:*|source:load:*|standard:*:image|standard:*:model|tool:*:*) ;;
+          *) echo '::error::Unsupported Docker artifact type, source operation or standard kind.'; exit 1 ;;
+        esac
+    - name: Pull Standard Artifact
+      if: inputs.type == 'standard'
+      shell: bash
+      env:
+        KIND: ${{ inputs.kind }}
+        REFERENCE: ${{ inputs.reference }}
+      run: |
+        set -euo pipefail
+        if [[ "$KIND" == 'model' ]]; then
+          docker model pull "$REFERENCE"
+        else
+          docker pull "$REFERENCE"
+        fi
+    - name: Identify Docker Artifact
+      if: inputs.type != 'standard'
+      id: identity
+      shell: bash
+      env:
+        TYPE: ${{ inputs.type }}
+        OPERATION: ${{ inputs.operation }}
+        IMAGE: ${{ inputs.image }}
+        ARCHIVE: ${{ inputs.archive }}
+        SOURCE_REVISION: ${{ inputs.source-revision }}
+        DOCKERFILE: ${{ inputs.dockerfile }}
+      run: |
+        set -euo pipefail
+        PLATFORM="$(docker version --format '{{.Server.Os}}/{{.Server.Arch}}')"
+        repository="$IMAGE"
+        source_sha="$SOURCE_REVISION"
+        if [[ "$TYPE" == 'source' ]]; then
+          if [[ "$OPERATION" == 'load' ]]; then
+            if [[ -z "$source_sha" || ! -s "$ARCHIVE" || ! -s "$ARCHIVE.json" ]]; then
+              echo '::error::Source image load requires the expected commit, archive and identity.'
+              exit 1
+            fi
+            repository="$(jq -er '.image_repository' "$ARCHIVE.json")"
+          else
+            source_sha="$(git rev-parse HEAD)"
+            if [[ "$OPERATION" == 'save' ]]; then
+              repository="${IMAGE%:*}"
+            fi
+          fi
+          fingerprint="$(printf '%s\0' "$repository" "$source_sha" "$PLATFORM" | shasum -a 256 | awk '{print $1}')"
+        else
+          if [[ -z "$source_sha" ]]; then
+            echo '::error::Tool image preparation requires a fixed source commit.'
+            exit 1
+          fi
+          fingerprint="$({ printf '%s\0' "$repository" "$source_sha" "$PLATFORM"; cat "$DOCKERFILE"; } | shasum -a 256 | awk '{print $1}')"
+        fi
+        if [[ -z "$repository" ]]; then
+          echo '::error::Docker image repository is required.'
+          exit 1
+        fi
+        cache_key="e2e-docker-$TYPE-v3-$fingerprint"
+        cache_path=".e2e-cache/docker/$TYPE/$repository"
+        if [[ "$TYPE" != 'source' || "$OPERATION" != 'save' ]]; then
+          image_identity="$fingerprint"
+          if [[ "$TYPE" == 'source' ]]; then
+            image_identity="$source_sha"
+          fi
+          staging_dir="$(mktemp -d "/tmp/$image_identity-XXXXXX")"
+          trap 'rmdir "$staging_dir"' EXIT
+          IMAGE="$repository:${staging_dir##*/}"
+        fi
+        if [[ "$TYPE" != 'source' || "$OPERATION" != 'load' ]]; then
+          ARCHIVE="$GITHUB_WORKSPACE/$cache_path/image.tar"
+        fi
+        if [[ "$TYPE" == 'tool' || "$OPERATION" == 'restore' ]]; then
+          rm -rf "$GITHUB_WORKSPACE/$cache_path"
+        fi
+        printf 'image=%s\nsource-sha=%s\nplatform=%s\narchive=%s\ncache-key=%s\ncache-path=%s\nrepository=%s\n' \
+          "$IMAGE" "$source_sha" "$PLATFORM" "$ARCHIVE" "$cache_key" "$cache_path" "$repository" >> "$GITHUB_OUTPUT"
+    - name: Restore Docker Image Cache
+      if: inputs.type == 'tool' || (inputs.type == 'source' && inputs.operation == 'restore')
+      id: restore
+      uses: actions/cache/restore@v5.0.1
+      with:
+        path: |
+          ${{ steps.identity.outputs.cache-path }}/image.tar
+          ${{ steps.identity.outputs.cache-path }}/image.tar.json
+        key: ${{ steps.identity.outputs.cache-key }}
+    - name: Load Docker Image
+      if: (inputs.type == 'source' && inputs.operation == 'load') || steps.restore.outputs.cache-hit == 'true'
+      shell: bash
+      env:
+        ARCHIVE: ${{ steps.identity.outputs.archive }}
+        IMAGE: ${{ steps.identity.outputs.image }}
+        SOURCE_SHA: ${{ steps.identity.outputs.source-sha }}
+        REPOSITORY: ${{ steps.identity.outputs.repository }}
+        PLATFORM: ${{ steps.identity.outputs.platform }}
+        CACHE_KEY: ${{ steps.identity.outputs.cache-key }}
+      run: |
+        set -euo pipefail
+        if [[ ! -s "$ARCHIVE" || ! -s "$ARCHIVE.json" ]]; then
+          echo '::error::Missing Docker image archive or identity.'
+          exit 1
+        fi
+        if ! jq -e --arg source_sha "$SOURCE_SHA" --arg repository "$REPOSITORY" --arg platform "$PLATFORM" --arg cache_key "$CACHE_KEY" \
+          '.source_sha == $source_sha and .image_repository == $repository and .platform == $platform and .cache_key == $cache_key' "$ARCHIVE.json" >/dev/null; then
+          echo '::error::Docker image archive does not match the expected source, repository, platform and cache key.'
+          exit 1
+        fi
+        archive_sha256="$(jq -er '.archive_sha256' "$ARCHIVE.json")"
+        if [[ "$(shasum -a 256 "$ARCHIVE" | awk '{print $1}')" != "$archive_sha256" ]]; then
+          echo '::error::Docker image archive checksum mismatch.'
+          exit 1
+        fi
+        image_id="$(jq -er '.image_id' "$ARCHIVE.json")"
+        docker load -i "$ARCHIVE"
+        if [[ "$(docker image inspect --format '{{.Id}}' "$image_id")" != "$image_id" ]]; then
+          echo '::error::Docker image identity mismatch.'
+          exit 1
+        fi
+        docker tag "$image_id" "$IMAGE"
+    - name: Build Tool Image
+      if: inputs.type == 'tool' && steps.restore.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        IMAGE: ${{ steps.identity.outputs.image }}
+        PLATFORM: ${{ steps.identity.outputs.platform }}
+        DOCKERFILE: ${{ inputs.dockerfile }}
+        BUILD_CONTEXT: ${{ inputs.context }}
+      run: |
+        set -euo pipefail
+        docker build --platform "$PLATFORM" -f "$DOCKERFILE" -t "$IMAGE" "$BUILD_CONTEXT"
+    - name: Save Docker Image
+      if: (inputs.type == 'source' && inputs.operation == 'save') || (inputs.type == 'tool' && steps.restore.outputs.cache-hit != 'true')
+      shell: bash
+      env:
+        IMAGE: ${{ steps.identity.outputs.image }}
+        SOURCE_SHA: ${{ steps.identity.outputs.source-sha }}
+        REPOSITORY: ${{ steps.identity.outputs.repository }}
+        PLATFORM: ${{ steps.identity.outputs.platform }}
+        CACHE_KEY: ${{ steps.identity.outputs.cache-key }}
+        CACHE_PATH: ${{ steps.identity.outputs.cache-path }}
+      run: |
+        set -euo pipefail
+        staging_dir="$(mktemp -d "/tmp/$SOURCE_SHA-XXXXXX")"
+        trap 'rm -rf "$staging_dir"' EXIT
+        image_id="$(docker image inspect --format '{{.Id}}' "$IMAGE")"
+        docker save -o "$staging_dir/image.tar" "$image_id"
+        archive_sha256="$(shasum -a 256 "$staging_dir/image.tar" | awk '{print $1}')"
+        jq -n --arg source_sha "$SOURCE_SHA" --arg repository "$REPOSITORY" --arg image_id "$image_id" \
+          --arg platform "$PLATFORM" --arg cache_key "$CACHE_KEY" --arg archive_sha256 "$archive_sha256" \
+          '{source_sha: $source_sha, image_repository: $repository, image_id: $image_id, platform: $platform, cache_key: $cache_key, archive_sha256: $archive_sha256}' \
+          > "$staging_dir/image.tar.json"
+        mkdir -p "$GITHUB_WORKSPACE/$CACHE_PATH"
+        mv "$staging_dir/image.tar" "$staging_dir/image.tar.json" "$GITHUB_WORKSPACE/$CACHE_PATH/"
+    - name: Save Docker Image Cache
+      if: (inputs.type == 'source' && inputs.operation == 'save') || (inputs.type == 'tool' && steps.restore.outputs.cache-hit != 'true')
+      uses: actions/cache/save@v5.0.1
+      with:
+        path: |
+          ${{ steps.identity.outputs.cache-path }}/image.tar
+          ${{ steps.identity.outputs.cache-path }}/image.tar.json
+        key: ${{ steps.identity.outputs.cache-key }}

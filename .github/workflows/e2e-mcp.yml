@@ -43,7 +43,8 @@ permissions:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false
-  MCP_DISTRIBUTION_IMAGE: apache/shardingsphere-mcp-e2e:local
+  MAVEN_REPOSITORY_DIR: ../.e2e-maven/repository
+  MCP_CONFORMANCE_REF: 21a9a2febd7100d7c17ac1021ee7f2ed9f66a1e0
 
 jobs:
   global-environment:
@@ -56,53 +57,61 @@ jobs:
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
+    outputs:
+      maven-artifact-id: ${{ steps.upload-maven.outputs.artifact-id }}
+      distribution-artifact-id: ${{ steps.upload-distribution.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/actions/setup-build-environment
         with:
           java-version: '21'
+          maven-repository-dir: ${{ env.MAVEN_REPOSITORY_DIR }}
           cache-suffix: 'e2e-mcp'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
+      - name: Restore MCP Distribution Image Cache
+        id: prepare-image
+        uses: ./.github/actions/prepare-e2e-docker
+        with:
+          type: source
+          image: apache/shardingsphere-mcp-e2e
       - name: Check Docker Environment
         run: |
           docker version
           docker system df
       - name: Build MCP E2E Test Dependencies and Distribution
-        run: ./mvnw -pl test/e2e/mcp,distribution/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp,distribution/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
       - name: Build MCP Distribution Image
+        if: steps.prepare-image.outputs.cache-hit != 'true'
+        env:
+          MCP_DISTRIBUTION_IMAGE: ${{ steps.prepare-image.outputs.image }}
         run: |
           docker build \
             --platform "$(docker version --format '{{.Server.Os}}/{{.Server.Arch}}')" \
             -f distribution/mcp/Dockerfile \
             -t "${MCP_DISTRIBUTION_IMAGE}" \
             distribution/mcp/target
-      - name: Package MCP Distribution Home
-        shell: bash
-        run: |
-          set -euo pipefail
-          artifact_dir="${RUNNER_TEMP}/mcp-e2e-distribution"
-          mkdir -p "${artifact_dir}"
-          distribution_home="$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | head -n 1)"
-          if [[ -z "${distribution_home}" ]]; then
-            echo "Packaged MCP distribution was not found." 1>&2
-            exit 1
-          fi
-          tar -czf "${artifact_dir}/mcp-distribution-home.tar.gz" -C distribution/mcp/target "$(basename "${distribution_home}")"
+      - name: Save E2E Image Cache
+        if: steps.prepare-image.outputs.cache-hit != 'true'
+        uses: ./.github/actions/prepare-e2e-docker
+        with:
+          type: source
+          operation: save
+          image: ${{ steps.prepare-image.outputs.image }}
       - name: Upload MCP Maven Repository
+        id: upload-maven
         uses: ./.github/actions/upload-e2e-artifacts
         with:
           artifact-name: mcp-e2e-maven-repository
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-maven-repository
-          docker-images: ''
+          maven-repository-dir: ${{ env.MAVEN_REPOSITORY_DIR }}
       - name: Upload MCP Distribution
+        id: upload-distribution
         uses: ./.github/actions/upload-e2e-artifacts
         with:
           artifact-name: mcp-e2e-distribution
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-distribution
           include-maven-repository: 'false'
-          docker-images: |
-            ${{ env.MCP_DISTRIBUTION_IMAGE }}=mcp-distribution-image.tar
+          include-distribution: 'true'
+          image-archive: ${{ steps.prepare-image.outputs.archive }}
 
   e2e-mcp-functionality:
     name: E2E - MCP Functionality
@@ -114,6 +123,7 @@ jobs:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/actions/setup-build-environment
         with:
+          maven-repository-dir: ${{ env.MAVEN_REPOSITORY_DIR }}
           java-version: '21'
           cache-suffix: 'e2e-mcp'
           cache-save-enabled: 'false'
@@ -121,24 +131,18 @@ jobs:
       - name: Download MCP Maven Repository
         uses: ./.github/actions/download-e2e-artifacts
         with:
-          artifact-name: mcp-e2e-maven-repository
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-maven-repository
+          maven-repository-dir: ${{ env.MAVEN_REPOSITORY_DIR }}
+          artifact-id: ${{ needs.e2e-mcp-build-images.outputs.maven-artifact-id }}
           load-docker-image: 'false'
       - name: Download MCP Distribution
+        id: download-distribution
         uses: ./.github/actions/download-e2e-artifacts
         with:
-          artifact-name: mcp-e2e-distribution
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-distribution
+          artifact-id: ${{ needs.e2e-mcp-build-images.outputs.distribution-artifact-id }}
           restore-maven-repository: 'false'
-          docker-image-archives: mcp-distribution-image.tar
-      - name: Restore MCP Distribution Home
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p distribution/mcp/target
-          tar -xzf "${RUNNER_TEMP}/mcp-e2e-distribution/mcp-distribution-home.tar.gz" -C distribution/mcp/target
+          restore-distribution: 'true'
       - name: Run MCP Functionality E2E
-        run: ./mvnw -pl test/e2e/mcp verify -Pe2e.mcp.functionality -De2e.run.type=DOCKER -Dmcp.e2e.container.image=${{ env.MCP_DISTRIBUTION_IMAGE }} -Dmcp.e2e.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/functionality-e2e" -Dspotless.skip=true -B -ntp
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp verify -Pe2e.mcp.functionality -De2e.run.type=DOCKER -Dmcp.e2e.container.image="${{ steps.download-distribution.outputs.image }}" -Dmcp.e2e.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/functionality-e2e" -Dspotless.skip=true -B -ntp
       - name: Upload MCP Functionality E2E Artifacts
         if: always()
         uses: actions/upload-artifact@v6
@@ -158,30 +162,31 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - name: Download MCP Distribution
+        id: download-distribution
         uses: ./.github/actions/download-e2e-artifacts
         with:
-          artifact-name: mcp-e2e-distribution
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-distribution
+          artifact-id: ${{ needs.e2e-mcp-build-images.outputs.distribution-artifact-id }}
           restore-maven-repository: 'false'
-          docker-image-archives: mcp-distribution-image.tar
       - name: Checkout Pinned MCP Conformance Runner
         uses: actions/checkout@v6.0.1
         with:
           repository: modelcontextprotocol/conformance
-          ref: 21a9a2febd7100d7c17ac1021ee7f2ed9f66a1e0
+          ref: ${{ env.MCP_CONFORMANCE_REF }}
           path: .mcp-conformance
-      - uses: actions/setup-node@v6
+      - name: Prepare MCP Conformance Runner
+        id: prepare-conformance
+        uses: ./.github/actions/prepare-e2e-docker
         with:
-          node-version: '22'
-          cache: npm
-          cache-dependency-path: .mcp-conformance/package-lock.json
-      - name: Build MCP Conformance Runner
-        working-directory: .mcp-conformance
-        run: |
-          npm ci --ignore-scripts
-          npm run build
+          type: tool
+          image: apache/shardingsphere-mcp-conformance
+          dockerfile: test/e2e/mcp/src/test/resources/docker/conformance/Dockerfile
+          context: .mcp-conformance
+          source-revision: ${{ env.MCP_CONFORMANCE_REF }}
       - name: Run MCP 2025-11-25 Conformance Scenarios
         shell: bash
+        env:
+          CONFORMANCE_IMAGE: ${{ steps.prepare-conformance.outputs.image }}
+          MCP_DISTRIBUTION_IMAGE: ${{ steps.download-distribution.outputs.image }}
         run: |
           set -euo pipefail
           generic_scenarios=(
@@ -193,9 +198,11 @@ jobs:
             prompts-list
             dns-rebinding-protection
           )
-          container_name="shardingsphere-mcp-conformance"
+          container_name="shardingsphere-mcp-conformance-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          runner_name="${container_name}-runner"
           cleanup() {
             docker logs "${container_name}" >"${RUNNER_TEMP}/mcp-conformance-server.log" 2>&1 || true
+            docker rm -f "${runner_name}" >/dev/null 2>&1 || true
             docker rm -f "${container_name}" >/dev/null 2>&1 || true
           }
           trap cleanup EXIT
@@ -212,7 +219,8 @@ jobs:
           results_root="${RUNNER_TEMP}/mcp-conformance-results"
           mkdir -p "${results_root}"
           version_scenarios="$(
-            node .mcp-conformance/dist/index.js list --server --spec-version 2025-11-25 \
+            docker run --rm --name "${runner_name}" --network host --user "$(id -u):$(id -g)" \
+              "${CONFORMANCE_IMAGE}" list --server --spec-version 2025-11-25 \
               | sed -nE 's/^[[:space:]]+- ([^ ]+).*/\1/p'
           )"
           for scenario in "${generic_scenarios[@]}"; do
@@ -220,10 +228,12 @@ jobs:
               echo "MCP conformance scenario '${scenario}' is unavailable for protocol version 2025-11-25." >&2
               exit 1
             fi
-            node .mcp-conformance/dist/index.js server \
+            docker run --rm --name "${runner_name}" --network host --user "$(id -u):$(id -g)" \
+              --mount "type=bind,src=${results_root},dst=/results" \
+              "${CONFORMANCE_IMAGE}" server \
               --url http://127.0.0.1:18088/mcp \
               --scenario "${scenario}" \
-              --output-dir "${results_root}/${scenario}"
+              --output-dir "/results/${scenario}"
             checks_file="$(find "${results_root}/${scenario}" -type f -name checks.json -print -quit 2>/dev/null || true)"
             if [[ -z "${checks_file}" ]] || ! jq -e 'type == "array" and length > 0' "${checks_file}" >/dev/null; then
               echo "MCP conformance scenario '${scenario}' produced no checks." >&2
@@ -265,6 +275,7 @@ jobs:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/actions/setup-build-environment
         with:
+          maven-repository-dir: ${{ env.MAVEN_REPOSITORY_DIR }}
           java-version: '21'
           cache-suffix: 'e2e-mcp'
           cache-save-enabled: 'false'
@@ -272,10 +283,11 @@ jobs:
       - name: Download MCP Maven Repository
         uses: ./.github/actions/download-e2e-artifacts
         with:
-          artifact-name: mcp-e2e-maven-repository
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-maven-repository
+          maven-repository-dir: ${{ env.MAVEN_REPOSITORY_DIR }}
+          artifact-id: ${{ needs.e2e-mcp-build-images.outputs.maven-artifact-id }}
           load-docker-image: 'false'
-      - name: Prepare MCP LLM with Docker Model Runner
+      - name: Install Docker Model Runner
+        id: install-model-runner
         shell: bash
         env:
           MODEL_RUNNER_CONTROLLER_VERSION: v1.2.8@sha256:5bdc2bac71c1b70453f7dec5b527031bc6d8d99b8d1b2a10a8bcca073ae257a3
@@ -292,15 +304,27 @@ jobs:
           sudo apt-get install -y "docker-model-plugin=1.2.6-1~ubuntu.${VERSION_ID}~${UBUNTU_CODENAME:-$VERSION_CODENAME}"
           docker model install-runner --gpu none
           model="$(awk -F= '$1 == "mcp.llm.model" {print $2}' test/e2e/mcp/src/test/resources/env/e2e-env.properties)"
-          docker model pull "${model}"
-          docker model configure --context-size 8192 "${model}" -- \
+          echo "model=${model}" >> "${GITHUB_OUTPUT}"
+      - name: Pull MCP LLM
+        uses: ./.github/actions/prepare-e2e-docker
+        with:
+          type: standard
+          kind: model
+          reference: ${{ steps.install-model-runner.outputs.model }}
+      - name: Configure MCP LLM
+        shell: bash
+        env:
+          MCP_LLM_MODEL: ${{ steps.install-model-runner.outputs.model }}
+        run: |
+          set -euo pipefail
+          docker model configure --context-size 8192 "${MCP_LLM_MODEL}" -- \
             --jinja --reasoning-budget 0 --reasoning-format deepseek --chat-template-kwargs '{"enable_thinking":false}' \
             --parallel 1 -b 256 -ub 128 --cache-ram 0 --no-cache-prompt
-          docker model run --detach "${model}"
+          docker model run --detach "${MCP_LLM_MODEL}"
       - name: Run MCP LLM E2E
         env:
           TESTCONTAINERS_RYUK_DISABLED: 'true'
-        run: ./mvnw -pl test/e2e/mcp verify -Pe2e.mcp.llm -De2e.run.type=DOCKER -Dspotless.skip=true -Dit.test='${{ matrix.test }}' -Dmcp.llm.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/llm-e2e" -Dmcp.llm.run-id=gha-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.id }} -B -ntp
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp verify -Pe2e.mcp.llm -De2e.run.type=DOCKER -Dspotless.skip=true -Dit.test='${{ matrix.test }}' -Dmcp.llm.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/llm-e2e" -Dmcp.llm.run-id=gha-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.id }} -B -ntp
       - name: Upload MCP LLM E2E Artifacts
         if: always()
         uses: actions/upload-artifact@v6

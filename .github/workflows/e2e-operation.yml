@@ -33,6 +33,7 @@ permissions:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
+  MAVEN_REPOSITORY_DIR: ../.e2e-maven/repository
 
 jobs:
   global-environment:
@@ -61,28 +62,42 @@ jobs:
     needs: [ global-environment, detect-changed-files ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
+    outputs:
+      artifact-id: ${{ steps.upload-e2e-artifacts.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@v6.0.1
       - id: setup-build-environment
         uses: ./.github/actions/setup-build-environment
         with:
+          maven-repository-dir: ${{ env.MAVEN_REPOSITORY_DIR }}
           cache-suffix: 'e2e-operation'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
-      - name: Maven Install
-        env:
-          PREFIX: "test/e2e/operation/"
-          MODULE_LIST: "transaction,pipeline,showprocesslist"
-        run: |
-          FORMATTED_PL=$(echo "$MODULE_LIST" | sed "s|,|,$PREFIX|g" | sed "s|^|$PREFIX|")
-          echo "Ready to build: $FORMATTED_PL"
-          ./mvnw -B clean install -am -pl "$FORMATTED_PL" -Pe2e.env.docker -DskipTests
+      - name: Restore E2E Image Cache
+        id: prepare-image
+        uses: ./.github/actions/prepare-e2e-docker
+        with:
+          type: source
+          image: apache/shardingsphere-proxy-test
+      - name: Build E2E Image
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -B clean install -am -pl test/e2e/operation/transaction,test/e2e/operation/pipeline,test/e2e/operation/showprocesslist -Pe2e.env.docker -DskipTests -Ddocker.image.name="${{ steps.prepare-image.outputs.image }}" -Dexec.skip=${{ steps.prepare-image.outputs.cache-hit == 'true' }}
+      - name: Save E2E Image Cache
+        if: steps.prepare-image.outputs.cache-hit != 'true'
+        uses: ./.github/actions/prepare-e2e-docker
+        with:
+          type: source
+          operation: save
+          image: ${{ steps.prepare-image.outputs.image }}
       - uses: ./.github/actions/save-maven-cache
         with:
+          maven-repository-dir: ${{ env.MAVEN_REPOSITORY_DIR }}
           cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
           cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
-      - uses: ./.github/actions/upload-source-snapshot
-      - uses: ./.github/actions/upload-e2e-artifacts
+      - id: upload-e2e-artifacts
+        uses: ./.github/actions/upload-e2e-artifacts
+        with:
+          maven-repository-dir: ${{ env.MAVEN_REPOSITORY_DIR }}
+          image-archive: ${{ steps.prepare-image.outputs.archive }}
 
   e2e-operation:
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
@@ -116,20 +131,19 @@ jobs:
           echo "runner.temp=${{ runner.temp }}"
           echo "RUNNER_TEMP=$RUNNER_TEMP"
           echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
-      - name: Download Source Snapshot
-        uses: actions/download-artifact@v8
+      - uses: actions/checkout@v6.0.1
         with:
-          name: source-snapshot
-          path: ${{ runner.temp }}/source-snapshot
-      - name: Restore Source Snapshot
-        run: |
-          find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
-          tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
+          ref: ${{ github.sha }}
       - uses: ./.github/actions/setup-build-environment
         with:
+          maven-repository-dir: ${{ env.MAVEN_REPOSITORY_DIR }}
           cache-suffix: 'e2e-operation'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
-      - uses: ./.github/actions/download-e2e-artifacts
+      - id: download-e2e-artifacts
+        uses: ./.github/actions/download-e2e-artifacts
+        with:
+          maven-repository-dir: ${{ env.MAVEN_REPOSITORY_DIR }}
+          artifact-id: ${{ needs.prepare-e2e-artifacts.outputs.artifact-id }}
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
-        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${{ matrix.image.type }}=${{ matrix.image.version }}
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${{ matrix.image.type }}=${{ matrix.image.version }} -De2e.docker.proxy.image="${{ steps.download-e2e-artifacts.outputs.image }}"

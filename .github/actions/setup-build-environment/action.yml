@@ -62,6 +62,10 @@ inputs:
     description: 'Whether to save Maven cache in this action (default: true)'
     required: false
     default: 'true'
+  maven-repository-dir:
+    description: 'Runner-specific Maven repository directory; empty keeps the default repository'
+    required: false
+    default: ''
   github-token:
     description: 'GitHub token for authenticated GraalVM Community downloads (optional when distribution is graalvm)'
     required: false
@@ -101,26 +105,59 @@ runs:
         set -euo pipefail
         docker version
         docker compose version
+    - name: Prepare E2E Maven Repository
+      if: inputs.maven-repository-dir != ''
+      shell: bash
+      env:
+        MAVEN_REPOSITORY_DIR: ${{ inputs.maven-repository-dir }}
+      run: |
+        set -euo pipefail
+        mkdir -p "$MAVEN_REPOSITORY_DIR"
+        repository="$(cd "$MAVEN_REPOSITORY_DIR" && pwd -P)"
+        if [[ "$repository" == / ]]; then
+          echo '::error::The Maven repository must not be the filesystem root.'
+          exit 1
+        fi
+        echo "E2E_MAVEN_REPOSITORY=$repository" >> "$GITHUB_ENV"
     - name: Restore Maven Cache
       id: restore-maven-cache
       uses: actions/cache/restore@v5.0.1
       with:
         path: |
-          ~/.m2/repository
-          !~/.m2/repository/org/apache/shardingsphere
-          ~/.m2/repository/org/apache/shardingsphere/elasticjob
+          ${{ inputs.maven-repository-dir || '~/.m2/repository' }}
+          !${{ inputs.maven-repository-dir || '~/.m2/repository' }}/org/apache/shardingsphere
+          ${{ inputs.maven-repository-dir || '~/.m2/repository' }}/org/apache/shardingsphere/elasticjob
         key: ${{ inputs.cache-prefix }}-maven-${{ inputs.cache-suffix }}-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ inputs.cache-prefix }}-maven-${{ inputs.cache-suffix }}-
           ${{ inputs.cache-prefix }}-maven-full-
           ${{ inputs.cache-prefix }}-maven-
           ${{ inputs.cache-prefix }}-
+    - name: Remove Previous E2E Maven Artifacts
+      if: inputs.maven-repository-dir != ''
+      shell: bash
+      run: |
+        set -euo pipefail
+        group_dir="$E2E_MAVEN_REPOSITORY"
+        for directory in org apache shardingsphere; do
+          group_dir="$group_dir/$directory"
+          if [[ -e "$group_dir" || -L "$group_dir" ]]; then
+            group_dir="$(cd "$group_dir" && pwd -P)"
+            if [[ "$group_dir" != "$E2E_MAVEN_REPOSITORY/"* ]]; then
+              echo '::error::The ShardingSphere Maven directory must remain inside the configured repository.'
+              exit 1
+            fi
+          fi
+        done
+        if [[ -d "$group_dir" ]]; then
+          find "$group_dir" -mindepth 1 -maxdepth 1 ! -name elasticjob -exec rm -rf -- {} +
+        fi
     - name: Save Maven Cache
       if: inputs.cache-save-enabled == 'true' && github.event_name != 'pull_request' && steps.restore-maven-cache.outputs.cache-hit != 'true'
       uses: actions/cache/save@v5.0.1
       with:
         path: |
-          ~/.m2/repository
-          !~/.m2/repository/org/apache/shardingsphere
-          ~/.m2/repository/org/apache/shardingsphere/elasticjob
+          ${{ inputs.maven-repository-dir || '~/.m2/repository' }}
+          !${{ inputs.maven-repository-dir || '~/.m2/repository' }}/org/apache/shardingsphere
+          ${{ inputs.maven-repository-dir || '~/.m2/repository' }}/org/apache/shardingsphere/elasticjob
         key: ${{ inputs.cache-prefix }}-maven-${{ inputs.cache-suffix }}-${{ hashFiles('**/pom.xml') }}
