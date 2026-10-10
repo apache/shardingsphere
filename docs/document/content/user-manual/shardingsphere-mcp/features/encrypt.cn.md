@@ -103,7 +103,7 @@ ShardingSphere-MCP 面向模型返回计划、workflow resource、预览、执�
 | 人工执行 | “导出人工执行包，不要自动执行。”    | 由运维人员在受控环境审查和执行。         |
 | 校验   | “校验刚才的加密规则是否生效。”     | 查看规则状态和 workflow 执行结果。   |
 
-规则变更的通用审查流程见[规则变更流程](../plugin-workflow/)。
+规则变更的通用审查流程见[规则变更流程](/cn/user-manual/shardingsphere-mcp/features/plugin-workflow/)。
 
 ## 限制
 

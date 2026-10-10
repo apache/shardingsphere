@@ -103,7 +103,7 @@ Preview first, then review rule DistSQL and side-effect scope before execution.
 | Manual execution | "Export a manual execution package without automatic execution."  | Let operators review and execute in a controlled environment.      |
 | Validate         | "Validate whether the previous encryption rule has taken effect." | Check rule state and workflow execution result.                    |
 
-For the general review flow of rule changes, see [Rule Change Flow](../plugin-workflow/).
+For the general review flow of rule changes, see [Rule Change Flow](/en/user-manual/shardingsphere-mcp/features/plugin-workflow/).
 
 ## Limitations
 

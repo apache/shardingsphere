@@ -5,7 +5,7 @@ chapter = true
 +++
 
 ShardingSphere-MCP 通过功能插件扩展领域能力。
-功能插件如果需要多步骤治理变更，会通过[规则变更流程](plugin-workflow/)完成需求确认、预览、执行和校验。
+功能插件如果需要多步骤治理变更，会通过[规则变更流程](/cn/user-manual/shardingsphere-mcp/features/plugin-workflow/)完成需求确认、预览、执行和校验。
 
 发行包默认包含以下官方 MCP 功能插件：
 

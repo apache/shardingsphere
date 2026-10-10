@@ -144,7 +144,7 @@ Use it when only metadata inspection, object search, or controlled queries again
 Users see metadata from the target database itself, not ShardingSphere rule state.
 Tasks that depend on ShardingSphere rules, such as data encryption and data masking, do not apply to direct database connections.
 
-For natural-language tasks supported by each connection target, see [Capability Catalog](../capabilities/).
+For natural-language tasks supported by each connection target, see [Capability Catalog](/en/user-manual/shardingsphere-mcp/capabilities/).
 
 ## Plugin directory
 

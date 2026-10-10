@@ -99,4 +99,4 @@ weight = 2
 | 执行规则变更   | “确认执行刚才的规则变更计划。”                              | 仅 Proxy | 有副作用，执行前应完成审查。               |
 | 校验规则变更   | “校验刚才的脱敏规则是否生效。”                              | 仅 Proxy | 查看规则状态和 workflow 执行结果。       |
 
-详细用法见[数据加密](../features/encrypt/)、[数据脱敏](../features/mask/)、[广播表](../features/broadcast/)、[读写分离](../features/readwrite-splitting/)、[影子库](../features/shadow/)和[分片](../features/sharding/)。
+详细用法见[数据加密](/cn/user-manual/shardingsphere-mcp/features/encrypt/)、[数据脱敏](/cn/user-manual/shardingsphere-mcp/features/mask/)、[广播表](/cn/user-manual/shardingsphere-mcp/features/broadcast/)、[读写分离](/cn/user-manual/shardingsphere-mcp/features/readwrite-splitting/)、[影子库](/cn/user-manual/shardingsphere-mcp/features/shadow/)和[分片](/cn/user-manual/shardingsphere-mcp/features/sharding/)。

@@ -13,11 +13,11 @@ This page explains how to connect an already running ShardingSphere-MCP HTTP Ser
 
 ## Prerequisites
 
-- Start the HTTP MCP Server by following [Quick Start](../../quick-start/).
+- Start the HTTP MCP Server by following [Quick Start](/en/user-manual/shardingsphere-mcp/quick-start/).
 - Expose only a secured remote endpoint that ChatGPT can reach. The built-in ShardingSphere-MCP HTTP Server does not provide authentication or authorization.
 - For remote platform access, place ShardingSphere-MCP behind a trusted gateway or reverse proxy that provides TLS termination, authentication,
   authorization policy, network access control, and audit logs.
-  See [Deployment](../../deployment/) and [Configuration](../../configuration/) for the security boundary.
+  See [Deployment](/en/user-manual/shardingsphere-mcp/deployment/) and [Configuration](/en/user-manual/shardingsphere-mcp/configuration/) for the security boundary.
 - The secured remote endpoint supports `SSE` or `streaming HTTP`.
 - Use a ChatGPT web account that is eligible for Developer Mode. The current beta is available on the web to Pro, Plus, Business, Enterprise, and Education accounts.
 - Decide whether the secured remote endpoint uses `OAuth`, `No Authentication`, or `Mixed Authentication`.
@@ -61,18 +61,18 @@ If the integration fails, check these items first:
 - ChatGPT Developer Mode supports both read and write tools. Review write actions and approval prompts carefully before allowing SQL execution or rule changes.
 - This entry point works only with remote MCP Servers. It does not connect to local `STDIO` processes.
 - When multiple apps are enabled in the same conversation, explicitly tell ChatGPT to prefer ShardingSphere-MCP.
-- This page covers the ChatGPT product UI path only. For OpenAI API code integration, use [OpenAI Responses API](../openai-responses-api/).
-- See the [Capability Catalog](../../capabilities/) for the supported task surface and usage boundaries.
+- This page covers the ChatGPT product UI path only. For OpenAI API code integration, use [OpenAI Responses API](/en/user-manual/shardingsphere-mcp/client-integration/openai-responses-api/).
+- See the [Capability Catalog](/en/user-manual/shardingsphere-mcp/capabilities/) for the supported task surface and usage boundaries.
 
 ## References
 
 ### Related documents
 
-- [Quick Start](../../quick-start/)
-- [Capability Catalog](../../capabilities/)
-- [Configuration](../../configuration/)
-- [Codex](../codex/)
-- [OpenAI Responses API](../openai-responses-api/)
+- [Quick Start](/en/user-manual/shardingsphere-mcp/quick-start/)
+- [Capability Catalog](/en/user-manual/shardingsphere-mcp/capabilities/)
+- [Configuration](/en/user-manual/shardingsphere-mcp/configuration/)
+- [Codex](/en/user-manual/shardingsphere-mcp/client-integration/codex/)
+- [OpenAI Responses API](/en/user-manual/shardingsphere-mcp/client-integration/openai-responses-api/)
 
 ### Official references
 

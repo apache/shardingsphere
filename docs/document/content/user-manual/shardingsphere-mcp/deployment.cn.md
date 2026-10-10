@@ -149,7 +149,7 @@ server {
 
 ### 会话归属接线样例
 
-如果外层网关已经能识别调用方身份，可以让网关在转发请求时覆写会话归属请求头，再由 MCP Runtime 绑定到会话上下文。请求头名称与前缀应和[配置说明](../configuration/)中的 `transport.http.sessionAttributionSource` 保持一致。
+如果外层网关已经能识别调用方身份，可以让网关在转发请求时覆写会话归属请求头，再由 MCP Runtime 绑定到会话上下文。请求头名称与前缀应和[配置说明](/cn/user-manual/shardingsphere-mcp/configuration/)中的 `transport.http.sessionAttributionSource` 保持一致。
 
 Nginx 示例：
 
@@ -202,7 +202,7 @@ location /mcp {
 
 2. MCP 协议已就绪
 
-   - 通过 AI 应用确认 MCP Server 已被识别，或按[自研集成附录](../developer-appendix/)中的协议调试示例完成 `initialize` 和能力读取。
+   - 通过 AI 应用确认 MCP Server 已被识别，或按[自研集成附录](/cn/user-manual/shardingsphere-mcp/developer-appendix/)中的协议调试示例完成 `initialize` 和能力读取。
    - 如果只能确认 HTTP 返回，但无法读取 capabilities、resources 或 tools，说明端点可达但协议尚未正确接通。
 
 3. 运行时数据库已就绪
@@ -222,7 +222,7 @@ location /mcp {
 
 - `shardingsphere://runtime` 提供当前 transport、runtime 数据库摘要、运行状态和基础诊断信息。
 - 运行时保护信息会反映查询行数限制、查询超时和会话级工具调用保护等边界。
-- 当运行时数据库连接失败时，可结合错误分类和恢复建议定位问题；详细分类说明见[常见问题](../troubleshooting/)。
+- 当运行时数据库连接失败时，可结合错误分类和恢复建议定位问题；详细分类说明见[常见问题](/cn/user-manual/shardingsphere-mcp/troubleshooting/)。
 
 ### 最小排障信息
 
@@ -234,4 +234,4 @@ location /mcp {
 - AI 应用中的 MCP Server 配置摘要。
 - 失败任务、错误分类和 `logs/mcp.log` 中相关日志片段。
 
-进一步的症状定位、错误分类和运行时保护说明见[常见问题](../troubleshooting/)；需要直接调试 MCP 协议请求时，见[自研集成附录](../developer-appendix/)。
+进一步的症状定位、错误分类和运行时保护说明见[常见问题](/cn/user-manual/shardingsphere-mcp/troubleshooting/)；需要直接调试 MCP 协议请求时，见[自研集成附录](/cn/user-manual/shardingsphere-mcp/developer-appendix/)。
