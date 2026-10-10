@@ -29,7 +29,7 @@ permissions:
 jobs:
   init-environment:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 1
     steps:
       - name: Set Global Environment
         id: global-environment
