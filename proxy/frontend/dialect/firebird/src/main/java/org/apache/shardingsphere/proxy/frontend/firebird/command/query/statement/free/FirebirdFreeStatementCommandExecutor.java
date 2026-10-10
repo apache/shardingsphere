@@ -51,6 +51,7 @@ public final class FirebirdFreeStatementCommandExecutor implements CommandExecut
                 FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), true);
                 break;
             case FirebirdFreeStatementPacket.CLOSE:
+                FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementId());
                 FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), false);
                 break;
             default:
