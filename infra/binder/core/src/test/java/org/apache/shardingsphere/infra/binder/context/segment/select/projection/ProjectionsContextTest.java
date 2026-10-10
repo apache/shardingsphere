@@ -46,6 +46,13 @@ import static org.mockito.Mockito.when;
 class ProjectionsContextTest {
     
     @Test
+    void assertColumnLabelAndIndexMapWithExplicitDerivedAlias() {
+        ColumnProjection projection = new ColumnProjection("foo_table", "order_id", "ORDER_BY_DERIVED_9", mock(DatabaseType.class));
+        ProjectionsContext context = new ProjectionsContext(0, 0, false, Collections.singleton(projection));
+        assertThat(context.getColumnLabelAndIndexMap().get("ORDER_BY_DERIVED_9"), is(1));
+    }
+    
+    @Test
     void assertIsUnqualifiedShorthandProjectionWithEmptyItems() {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.emptySet());
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
