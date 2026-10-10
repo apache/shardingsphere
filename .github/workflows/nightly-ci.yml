@@ -30,6 +30,7 @@ permissions:
   contents: read
 
 env:
+  MAVEN_ARGS: -B -ntp -fae
   MAVEN_OPTS: -Dhttp.keepAlive=false
 
 jobs:
@@ -58,6 +59,6 @@ jobs:
         with:
           java-version: ${{ matrix.java-version }}
       - name: Build Project with Maven
-        run: ./mvnw clean install -B -ntp -T1C
+        run: ./mvnw clean install -T1C
       - name: Build Examples with Maven
-        run: ./mvnw clean package -B -f examples/pom.xml -T1C
+        run: ./mvnw clean package -f examples/pom.xml -T1C

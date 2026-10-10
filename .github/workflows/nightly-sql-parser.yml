@@ -30,6 +30,7 @@ permissions:
   contents: read
 
 env:
+  MAVEN_ARGS: -B -ntp -fae
   MAVEN_OPTS: -Dhttp.keepAlive=false
   RUNS_ON: ubuntu-latest
 
@@ -57,14 +58,14 @@ jobs:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/actions/setup-build-environment
       - name: Build Project with Maven
-        run: ./mvnw -T1C -B -ntp clean install
+        run: ./mvnw -T1C clean install
       - name: Clear Previous SQL Parser XML
         run: rm -f test/it/parser/target/failsafe-reports/TEST-*${{ matrix.test }}.xml
       - name: Run SQL Parser
         id: sql-parser
         run: |
           mkdir -p "$RUNNER_TEMP/sql-parser-report-${{ matrix.database }}"
-          ./mvnw -nsu -B install -f test/it/parser/pom.xml -Pexternal-sql-parser-report \
+          ./mvnw -nsu install -f test/it/parser/pom.xml -Pexternal-sql-parser-report \
             -Dsql.parser.external.it.enabled=true -Dit.test=${{ matrix.test }} \
             -Dsql.parser.external.it.report.path="$RUNNER_TEMP/sql-parser-report-${{ matrix.database }}/"
       - name: Generate SQL Parser Report

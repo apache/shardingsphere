@@ -44,6 +44,7 @@ permissions:
   contents: read
 
 env:
+  MAVEN_ARGS: -B -ntp -fae
   MAVEN_OPTS: -Dhttp.keepAlive=false
 
 jobs:
@@ -61,4 +62,4 @@ jobs:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/actions/setup-build-environment
       - name: Build and Run Tests
-        run: ./mvnw clean install -T1C -B -ntp -fae
+        run: ./mvnw clean install -T1C
