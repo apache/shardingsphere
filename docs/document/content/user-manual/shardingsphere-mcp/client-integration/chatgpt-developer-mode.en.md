@@ -76,4 +76,4 @@ If the integration fails, check these items first:
 
 ### Official references
 
-- [ChatGPT Developer mode](https://platform.openai.com/docs/guides/developer-mode)
+- [Connect and test your plugin](https://developers.openai.com/plugins/deploy/connect-chatgpt)
