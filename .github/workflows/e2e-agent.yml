@@ -65,7 +65,7 @@ jobs:
       proxy-artifact-id: ${{ steps.upload-proxy-image.outputs.artifact-id }}
       jdbc-artifact-id: ${{ steps.upload-jdbc-image.outputs.artifact-id }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - id: setup-build-environment
         uses: ./.github/actions/setup-build-environment
         with:
@@ -165,7 +165,7 @@ jobs:
             feature: tracing
             plugin: jaeger
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
         with:
           maven-repository-dir: ${{ env.MAVEN_REPOSITORY_DIR }}

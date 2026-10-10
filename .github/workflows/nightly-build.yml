@@ -54,7 +54,7 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
       - name: Build Project
         run: |
@@ -77,7 +77,7 @@ jobs:
       packages: write
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ inputs.commit-id }}
       - uses: ./.github/actions/setup-build-environment
@@ -105,7 +105,7 @@ jobs:
         os: [ 'ubuntu-latest', 'ubuntu-24.04-arm' ]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ inputs.commit-id }}
       - uses: ./.github/actions/setup-build-environment
@@ -136,7 +136,7 @@ jobs:
       packages: write
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ inputs.commit-id }}
       - uses: ./.github/actions/setup-build-environment
@@ -156,7 +156,7 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
       - name: Build with Maven
         run: ./mvnw clean install -T1C -DskipTests
@@ -208,7 +208,7 @@ jobs:
           - 2181:2181
         options: --health-cmd="echo ruok | nc localhost 2181" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
         with:
           enable-docker-setup: 'true'

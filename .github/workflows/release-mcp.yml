@@ -57,7 +57,7 @@ jobs:
       packages: write
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.event_name == 'release' && github.event.release.tag_name || inputs.version }}
       - uses: ./.github/actions/setup-build-environment
