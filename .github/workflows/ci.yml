@@ -22,6 +22,10 @@ on:
     branches: [ master ]
     paths:
       - '.github/workflows/ci.yml'
+      - '.github/workflows/reusable-global-environment.yml'
+      - '.github/actions/setup-build-environment/**'
+      - 'mvnw'
+      - '.mvn/**'
       - '**/pom.xml'
       - '**/src/main/**'
       - '**/src/test/**'
@@ -29,9 +33,7 @@ on:
       - 'test/it/**'
       - '!test/e2e/**'
       - 'test/e2e/driver/**'
-      - '!*.md'
-  repository_dispatch:
-    types: ci-completed
+      - '!**/*.md'
   workflow_dispatch:
 
 concurrency:
