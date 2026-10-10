@@ -13,11 +13,11 @@ This page explains how to connect an already running ShardingSphere-MCP HTTP Ser
 
 ## Prerequisites
 
-- Start the HTTP MCP Server by following [Quick Start](../../quick-start/).
+- Start the HTTP MCP Server by following [Quick Start](/en/user-manual/shardingsphere-mcp/quick-start/).
 - Expose only a secured remote HTTPS endpoint that the Anthropic Messages API can reach. The built-in ShardingSphere-MCP HTTP Server does not provide authentication or authorization.
 - For remote platform access, place ShardingSphere-MCP behind a trusted gateway or reverse proxy that provides TLS termination, authentication,
   authorization policy, network access control, and audit logs.
-  See [Deployment](../../deployment/) and [Configuration](../../configuration/) for the security boundary.
+  See [Deployment](/en/user-manual/shardingsphere-mcp/deployment/) and [Configuration](/en/user-manual/shardingsphere-mcp/configuration/) for the security boundary.
 - The secured remote endpoint supports `Streamable HTTP` or `SSE`.
 - Prepare an Anthropic API key.
 - The current MCP Connector version requires the request header `anthropic-beta: mcp-client-2025-11-20`.
@@ -111,17 +111,17 @@ If the integration fails, check these items first:
 - The platform integration currently supports tool calls only. It does not expose the full MCP resource surface.
 - By default, `mcp_toolset` enables all tools exposed by the remote MCP Server. For read-only assistants or controlled trial environments, explicitly disable write-oriented tools that are not needed.
 - This feature currently requires the `anthropic-beta: mcp-client-2025-11-20` header. If Anthropic updates the beta version, update the documentation and the request configuration together.
-- This page covers the Anthropic platform API path only. For Claude Code CLI integration, use [Claude Code](../claude-code/).
-- See the [Capability Catalog](../../capabilities/) for the supported task surface and usage boundaries.
+- This page covers the Anthropic platform API path only. For Claude Code CLI integration, use [Claude Code](/en/user-manual/shardingsphere-mcp/client-integration/claude-code/).
+- See the [Capability Catalog](/en/user-manual/shardingsphere-mcp/capabilities/) for the supported task surface and usage boundaries.
 
 ## References
 
 ### Related documents
 
-- [Quick Start](../../quick-start/)
-- [Capability Catalog](../../capabilities/)
-- [Configuration](../../configuration/)
-- [Claude Code](../claude-code/)
+- [Quick Start](/en/user-manual/shardingsphere-mcp/quick-start/)
+- [Capability Catalog](/en/user-manual/shardingsphere-mcp/capabilities/)
+- [Configuration](/en/user-manual/shardingsphere-mcp/configuration/)
+- [Claude Code](/en/user-manual/shardingsphere-mcp/client-integration/claude-code/)
 
 ### Official references
 

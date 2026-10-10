@@ -13,7 +13,7 @@ This page explains how to connect Claude Code to an already running ShardingSphe
 
 ## Prerequisites
 
-- Prepare the ShardingSphere-MCP distribution and database configuration by following [Quick Start](../../quick-start/).
+- Prepare the ShardingSphere-MCP distribution and database configuration by following [Quick Start](/en/user-manual/shardingsphere-mcp/quick-start/).
 - Claude Code CLI is available.
 - For HTTP transport, the Claude Code environment can reach `http://127.0.0.1:18088/mcp`, or the actual MCP Server address you configured.
 
@@ -84,18 +84,18 @@ Invocation succeeds when:
 
 - When using STDIO, Claude Code must be able to access the local ShardingSphere-MCP distribution and the matching configuration file.
 - A single `shardingsphere` server name should map to only one integration method. If you need both HTTP and STDIO, use different server names.
-- See the [Capability Catalog](../../capabilities/) for the supported task surface and usage boundaries.
+- See the [Capability Catalog](/en/user-manual/shardingsphere-mcp/capabilities/) for the supported task surface and usage boundaries.
 - When SQL execution or rule changes are involved, review the preview content before confirming execution.
-- If you want to integrate ShardingSphere-MCP through the Anthropic platform API, use [Anthropic MCP Connector](../anthropic-mcp-connector/) instead.
+- If you want to integrate ShardingSphere-MCP through the Anthropic platform API, use [Anthropic MCP Connector](/en/user-manual/shardingsphere-mcp/client-integration/anthropic-mcp-connector/) instead.
 
 ## References
 
 ### Related documents
 
-- [Quick Start](../../quick-start/)
-- [Capability Catalog](../../capabilities/)
-- [Configuration](../../configuration/)
-- [Anthropic MCP Connector](../anthropic-mcp-connector/)
+- [Quick Start](/en/user-manual/shardingsphere-mcp/quick-start/)
+- [Capability Catalog](/en/user-manual/shardingsphere-mcp/capabilities/)
+- [Configuration](/en/user-manual/shardingsphere-mcp/configuration/)
+- [Anthropic MCP Connector](/en/user-manual/shardingsphere-mcp/client-integration/anthropic-mcp-connector/)
 
 ### Official references
 

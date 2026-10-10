@@ -26,7 +26,7 @@ It generates broadcast rule DistSQL only. It does not generate physical table DD
 - Broadcast planning does not require algorithm recommendations or property requirements.
 - Preview the workflow before execution and validate Proxy-visible rule state after execution.
 
-For the general review flow of rule changes, see [Rule Change Flow](../plugin-workflow/).
+For the general review flow of rule changes, see [Rule Change Flow](/en/user-manual/shardingsphere-mcp/features/plugin-workflow/).
 
 ## Limitations
 

@@ -69,8 +69,8 @@ start "ShardingSphere MCP" cmd /c "bin\start.bat > logs\mcp-http.log 2>&1"
 
 典型客户端配置见：
 
-- [Codex](../client-integration/codex/)
-- [Claude Code](../client-integration/claude-code/)
+- [Codex](/cn/user-manual/shardingsphere-mcp/client-integration/codex/)
+- [Claude Code](/cn/user-manual/shardingsphere-mcp/client-integration/claude-code/)
 
 其他客户端请按其自身文档配置 ShardingSphere-MCP 地址：`http://127.0.0.1:18088/mcp`。
 
@@ -83,5 +83,5 @@ start "ShardingSphere MCP" cmd /c "bin\start.bat > logs\mcp-http.log 2>&1"
 - “查询 `orders` 前 10 行。”
 
 如果可以返回逻辑库、表结构或查询结果，说明 MCP Server 已经可以通过 AI 应用访问目标 ShardingSphere-Proxy 逻辑库。
-进一步的部署方式、健康检查和基础可观测入口，请参考[部署说明](../deployment/)。
-如果 AI 应用无法连接或看不到逻辑库，请查看[常见问题](../troubleshooting/)。
+进一步的部署方式、健康检查和基础可观测入口，请参考[部署说明](/cn/user-manual/shardingsphere-mcp/deployment/)。
+如果 AI 应用无法连接或看不到逻辑库，请查看[常见问题](/cn/user-manual/shardingsphere-mcp/troubleshooting/)。
