@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -77,6 +78,7 @@ public final class FirebirdParameterBuffer {
         }
     }
     
+    @HighFrequencyInvocation
     private int readSizedIntValue(final ByteBuf parameterBuffer, final int length) {
         int result = 0;
         for (int i = 0; i < length; i++) {

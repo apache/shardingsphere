@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -109,6 +110,7 @@ public final class FirebirdBlobReadCache {
      * @param blobHandle blob handle
      * @return optional total BLOB size
      */
+    @HighFrequencyInvocation
     public OptionalInt getTotalSize(final int connectionId, final int blobHandle) {
         BlobReadCursor cursor = getCursorMap(connectionId).get(blobHandle);
         return null == cursor ? OptionalInt.empty() : OptionalInt.of(cursor.content.length);
@@ -121,6 +123,7 @@ public final class FirebirdBlobReadCache {
      * @param blobHandle blob handle
      * @return optional stream BLOB state
      */
+    @HighFrequencyInvocation
     public Optional<Boolean> isStreamBlob(final int connectionId, final int blobHandle) {
         BlobReadCursor cursor = getCursorMap(connectionId).get(blobHandle);
         return null == cursor ? Optional.empty() : Optional.of(cursor.streamBlob);
@@ -138,6 +141,7 @@ public final class FirebirdBlobReadCache {
      * @param offset offset to position by
      * @return optional resulting position
      */
+    @HighFrequencyInvocation
     public OptionalInt seek(final int connectionId, final int blobHandle, final int seekMode, final int offset) {
         BlobReadCursor cursor = getCursorMap(connectionId).get(blobHandle);
         return null == cursor ? OptionalInt.empty() : OptionalInt.of(cursor.seek(seekMode, offset));
@@ -171,6 +175,7 @@ public final class FirebirdBlobReadCache {
             return content.length - offset;
         }
         
+        @HighFrequencyInvocation
         private int seek(final int seekMode, final int seekOffset) {
             int position = getSeekPosition(seekMode, seekOffset);
             offset = Math.min(Math.max(position, 0), content.length);

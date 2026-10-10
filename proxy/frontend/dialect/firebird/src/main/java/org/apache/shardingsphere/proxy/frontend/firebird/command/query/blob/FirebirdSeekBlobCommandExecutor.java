@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -50,6 +51,7 @@ public final class FirebirdSeekBlobCommandExecutor implements CommandExecutor {
     private final ConnectionSession connectionSession;
     
     @Override
+    @HighFrequencyInvocation
     public Collection<DatabasePacket> execute() {
         int connectionId = connectionSession.getConnectionId();
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionId, packet.getBlobHandle());

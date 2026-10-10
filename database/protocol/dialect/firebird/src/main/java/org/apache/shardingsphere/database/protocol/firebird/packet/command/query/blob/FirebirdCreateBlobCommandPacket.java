@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.type
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 /**
  * Firebird create blob command packet.
@@ -58,6 +59,7 @@ public final class FirebirdCreateBlobCommandPacket extends FirebirdCommandPacket
      *
      * @return stream blob or not
      */
+    @HighFrequencyInvocation
     public boolean isStreamBlob() {
         Integer blobType = bpb.getValue(FirebirdBlobParameterBufferType.TYPE);
         return null != blobType && BLOB_TYPE_STREAM == blobType;

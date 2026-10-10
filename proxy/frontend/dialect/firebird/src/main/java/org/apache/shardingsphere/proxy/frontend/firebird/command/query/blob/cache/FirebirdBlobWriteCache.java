@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cac
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.Map;
 import java.util.Optional;
@@ -179,6 +180,7 @@ public final class FirebirdBlobWriteCache {
      * @param blobId blob id
      * @return whether the BLOB is a stream BLOB
      */
+    @HighFrequencyInvocation
     public boolean isStreamBlob(final int connectionId, final long blobId) {
         FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
         return null != write && write.isStreamBlob();

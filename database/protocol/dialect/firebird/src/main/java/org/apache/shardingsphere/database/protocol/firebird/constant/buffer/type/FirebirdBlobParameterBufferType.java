@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdValueFormat;
 import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.FirebirdParameterBuffer;
 import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.FirebirdParameterBufferType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,6 +65,7 @@ public enum FirebirdBlobParameterBufferType implements FirebirdParameterBufferTy
      * @param code bpb type code
      * @return Firebird bpb type
      */
+    @HighFrequencyInvocation
     public static FirebirdBlobParameterBufferType valueOf(final int code) {
         FirebirdBlobParameterBufferType result = FIREBIRD_BPB_TYPE_CACHE.get(code);
         Preconditions.checkNotNull(result, "Cannot find code '%d' in bpb type", code);
@@ -76,6 +78,7 @@ public enum FirebirdBlobParameterBufferType implements FirebirdParameterBufferTy
      * @param version version of parameter buffer
      * @return is traditional type
      */
+    @HighFrequencyInvocation
     public static boolean isTraditionalType(final int version) {
         return 1 == version;
     }
@@ -85,6 +88,7 @@ public enum FirebirdBlobParameterBufferType implements FirebirdParameterBufferTy
      *
      * @return Firebird blob parameter buffer
      */
+    @HighFrequencyInvocation
     public static FirebirdParameterBuffer createBuffer() {
         return new FirebirdParameterBuffer(FirebirdBlobParameterBufferType::valueOf, FirebirdBlobParameterBufferType::isTraditionalType);
     }
