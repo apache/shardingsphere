@@ -32,7 +32,7 @@ permissions:
   contents: read
 
 env:
-  MAVEN_ARGS: -B -ntp -fae
+  MAVEN_ARGS: -B -ntp -fae -e
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
   MAVEN_REPOSITORY_DIR: ../.e2e-maven/repository
 

@@ -35,7 +35,7 @@ permissions:
   contents: read
 
 env:
-  MAVEN_ARGS: -B -ntp -fae
+  MAVEN_ARGS: -B -ntp -fae -e
   MAVEN_OPTS: -Dhttp.keepAlive=false
   MCP_IMAGE: ghcr.io/apache/shardingsphere-mcp
   MCP_PUBLISHER_VERSION: v1.7.9
