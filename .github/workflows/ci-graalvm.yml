@@ -74,7 +74,7 @@ jobs:
       # TODO Remove this workaround after. The graalvm native image built with windows server is missing some GRMs for testcontainers
       - name: Run test with GraalVM CE
         if: matrix.os == 'windows-latest'
-        run: ./mvnw -PgenerateMetadata -e -T 1C clean verify
+        run: ./mvnw -PgenerateMetadata -e -T1C clean verify
       - name: Run nativeTest with GraalVM CE ${{ matrix.java-version }}
         if: matrix.os == '${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}'
         run: ./mvnw -PnativeTestInShardingSphere -e clean verify
