@@ -106,7 +106,7 @@
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
         <bval.version>2.0.6</bval.version>
         
-        <netty.version>4.2.9.Final</netty.version>
+        <netty.version>4.2.19.Final</netty.version>
         <bouncycastle.version>1.84</bouncycastle.version>
         
         <curator.version>5.7.0</curator.version>
