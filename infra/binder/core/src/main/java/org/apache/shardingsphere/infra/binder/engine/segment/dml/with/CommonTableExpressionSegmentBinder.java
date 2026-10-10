@@ -131,23 +131,11 @@ public final class CommonTableExpressionSegmentBinder {
     }
     
     private static Collection<ProjectionSegment> createRecursiveWithProjections(final CommonTableExpressionSegment segment, final SQLStatementBinderContext binderContext) {
-        Collection<ColumnSegment> definitionColumns = getDefinitionColumns(segment.getColumns(), segment.getSubquery());
-        if (!definitionColumns.isEmpty()) {
-            SelectStatement boundAnchorSelect = bindAnchorSelect(segment, binderContext);
-            Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
-                    boundAnchorSelect.getProjections().getProjections(), new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
-            return createBoundDefinitionColumns(definitionColumns, subqueryProjections);
-        }
-        Collection<ProjectionSegment> result = new LinkedList<>();
         SelectStatement boundAnchorSelect = bindAnchorSelect(segment, binderContext);
-        for (ProjectionSegment each : boundAnchorSelect.getProjections().getProjections()) {
-            if (each instanceof ColumnProjectionSegment) {
-                result.add(new ColumnProjectionSegment(((ColumnProjectionSegment) each).getColumn()));
-            } else {
-                result.add(new ColumnProjectionSegment(new ColumnSegment(each.getStartIndex(), each.getStopIndex(), new IdentifierValue(each.getColumnLabel()))));
-            }
-        }
-        return result;
+        Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
+                boundAnchorSelect.getProjections().getProjections(), new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
+        Collection<ColumnSegment> definitionColumns = getDefinitionColumns(segment.getColumns(), segment.getSubquery());
+        return definitionColumns.isEmpty() ? subqueryProjections : createBoundDefinitionColumns(definitionColumns, subqueryProjections);
     }
     
     private static SelectStatement bindAnchorSelect(final CommonTableExpressionSegment segment, final SQLStatementBinderContext binderContext) {
