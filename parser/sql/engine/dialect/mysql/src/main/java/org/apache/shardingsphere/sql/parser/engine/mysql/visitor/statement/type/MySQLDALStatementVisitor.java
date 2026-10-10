@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Explain
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FlushContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GetDiagnosticsStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HelpContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InstallComponentContext;
@@ -241,6 +242,11 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     public MySQLDALStatementVisitor(final DatabaseType databaseType) {
         super(databaseType);
+    }
+    
+    @Override
+    public ASTNode visitGetDiagnosticsStatement(final GetDiagnosticsStatementContext ctx) {
+        return new SQLStatement(getDatabaseType());
     }
     
     @Override

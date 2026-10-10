@@ -85,8 +85,8 @@ aclType
 
 grantIdentifier
     : ASTERISK_ # grantLevelGlobal
-    | ASTERISK_ DOT_ASTERISK_ # grantLevelGlobal
-    | databaseName DOT_ASTERISK_ # grantLevelDatabaseGlobal
+    | ASTERISK_ (DOT_ASTERISK_ | DOT_ ASTERISK_) # grantLevelGlobal
+    | databaseName (DOT_ASTERISK_ | DOT_ ASTERISK_) # grantLevelDatabaseGlobal
     | tableName # grantLevelTable
     ;
 

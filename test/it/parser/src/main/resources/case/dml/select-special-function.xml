@@ -6948,4 +6948,176 @@
         </projections>
     </select>
 
+    <select sql-case-id="timestampadd_sql_tsi_unit">
+        <from>
+            <simple-table start-index="56" stop-index="62" name="t_order" />
+        </from>
+        <projections start-index="7" stop-index="49">
+            <expression-projection start-index="7" stop-index="49" text="TIMESTAMPADD(SQL_TSI_SECOND, 1, order_date)">
+                <expr>
+                    <function start-index="7" stop-index="49" function-name="TIMESTAMPADD" text="TIMESTAMPADD(SQL_TSI_SECOND, 1, order_date)">
+                        <parameter>
+                            <interval-unit-expression start-index="20" stop-index="33">
+                                <interval-unit>SECOND</interval-unit>
+                            </interval-unit-expression>
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="36" stop-index="36" value="1" />
+                        </parameter>
+                        <parameter>
+                            <column start-index="39" stop-index="48" name="order_date" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="timestampdiff_sql_tsi_unit">
+        <from>
+            <simple-table start-index="64" stop-index="70" name="t_order" />
+        </from>
+        <projections start-index="7" stop-index="57">
+            <expression-projection start-index="7" stop-index="57" text="TIMESTAMPDIFF(SQL_TSI_MINUTE, start_time, end_time)">
+                <expr>
+                    <function start-index="7" stop-index="57" function-name="TIMESTAMPDIFF" text="TIMESTAMPDIFF(SQL_TSI_MINUTE, start_time, end_time)">
+                        <parameter>
+                            <interval-unit-expression start-index="21" stop-index="34">
+                                <interval-unit>MINUTE</interval-unit>
+                            </interval-unit-expression>
+                        </parameter>
+                        <parameter>
+                            <column start-index="37" stop-index="46" name="start_time" />
+                        </parameter>
+                        <parameter>
+                            <column start-index="49" stop-index="56" name="end_time" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cast_float_precision">
+        <projections start-index="7" stop-index="26">
+            <expression-projection text="CAST(1 AS FLOAT(24))" start-index="7" stop-index="26">
+                <expr>
+                    <function function-name="CAST" text="CAST(1 AS FLOAT(24))" start-index="7" stop-index="26">
+                        <parameter>
+                            <literal-expression value="1" start-index="12" stop-index="12" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="FLOAT" start-index="17" stop-index="25">
+                                <data-type-length precision="24" start-index="22" stop-index="25" />
+                            </data-type>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_variance_all">
+        <projections start-index="7" stop-index="21">
+            <expression-projection text="VARIANCE(ALL 1)" start-index="7" stop-index="21">
+                <expr>
+                    <function function-name="VARIANCE" text="VARIANCE(ALL 1)" start-index="7" stop-index="21">
+                        <parameter>
+                            <literal-expression value="1" start-index="20" stop-index="20" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_trailing_decimal">
+        <projections start-index="7" stop-index="8">
+            <expression-projection text="8" start-index="7" stop-index="8">
+                <expr>
+                    <literal-expression value="8" start-index="7" stop-index="8" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_spaced_qualified_shorthand">
+        <projections start-index="7" stop-index="11">
+            <shorthand-projection start-index="7" stop-index="11">
+                <owner name="t" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <from>
+            <simple-table name="t" start-index="18" stop-index="18" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_json_table_exists_path">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <function-table start-index="14" stop-index="95" table-alias="t">
+                <table-function function-name="JSON_TABLE" text="JSON_TABLE('[]', '$[*]' COLUMNS (id FOR ORDINALITY, p INT EXISTS PATH '$.a'))">
+                    <parameter>
+                        <literal-expression value="[]" start-index="25" stop-index="28" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="$[*]" start-index="31" stop-index="36" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="COLUMNS (id FOR ORDINALITY, p INT EXISTS PATH '$.a')" start-index="38" stop-index="89" />
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+    <select sql-case-id="select_qualified_digit_identifier">
+        <projections start-index="7" stop-index="16">
+            <column-projection name="1a20" start-index="7" stop-index="16">
+                <owner name="event" start-index="7" stop-index="11" />
+            </column-projection>
+        </projections>
+        <from>
+            <simple-table name="event" start-index="23" stop-index="27" />
+        </from>
+    </select>
+    <select sql-case-id="select_leading_decimal_alias">
+        <projections start-index="7" stop-index="22">
+            <expression-projection text="0.0" alias="$p" start-index="7" stop-index="10">
+                <expr>
+                    <literal-expression value="0.0" start-index="7" stop-index="8" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="0.1" alias="a20" start-index="13" stop-index="17">
+                <expr>
+                    <literal-expression value="0.1" start-index="13" stop-index="14" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="0.2" alias="_" start-index="20" stop-index="22">
+                <expr>
+                    <literal-expression value="0.2" start-index="20" stop-index="21" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_qualified_scientific_identifier">
+        <projections start-index="7" stop-index="18">
+            <column-projection name="1e1a20" start-index="7" stop-index="18">
+                <owner name="event" start-index="7" stop-index="11" />
+            </column-projection>
+        </projections>
+        <from>
+            <simple-table name="event" start-index="25" stop-index="29" />
+        </from>
+    </select>
+    <select sql-case-id="select_leading_scientific_alias">
+        <projections start-index="7" stop-index="13">
+            <expression-projection text="1" alias="a20" start-index="7" stop-index="13">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="10" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

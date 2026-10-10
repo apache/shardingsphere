@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.context;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb;
 
 /**
- * Route stage context.
+ * Common SQL statement test case.
  */
-public interface RouteStageContext {
+public final class CommonSQLStatementTestCase extends SQLParserTestCase {
 }

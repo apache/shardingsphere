@@ -5743,4 +5743,132 @@
             <column name="SEQ" />
         </column-definition>
     </create-table>
+    <create-table sql-case-id="create_table_column_charset_variants">
+        <table start-index="13" stop-index="14" name="t1" />
+        <column-definition start-index="17" stop-index="37" type="VARCHAR" charset-name="" collate-name="">
+            <column name="c1" />
+        </column-definition>
+        <column-definition start-index="40" stop-index="55" type="CHAR" charset-name="" collate-name="">
+            <column name="c2" />
+        </column-definition>
+        <column-definition start-index="58" stop-index="75" type="CHAR" charset-name="" collate-name="">
+            <column name="c3" />
+        </column-definition>
+        <column-definition start-index="78" stop-index="92" type="CHAR" charset-name="" collate-name="">
+            <column name="c4" />
+        </column-definition>
+        <column-definition start-index="95" stop-index="128" type="CHAR" charset-name="utf8mb4" collate-name="">
+            <column name="c5" />
+        </column-definition>
+        <column-definition start-index="131" stop-index="161" type="CHAR" charset-name="BINARY" collate-name="">
+            <column name="c6" />
+        </column-definition>
+        <column-definition start-index="164" stop-index="188" type="CHAR" charset-name="" collate-name="BINARY">
+            <column name="c7" />
+        </column-definition>
+        <column-definition start-index="191" stop-index="222" type="CHAR" charset-name="" collate-name="utf8mb4_bin">
+            <column name="c8" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_unnamed_check_constraint">
+        <table start-index="13" stop-index="14" name="t1" />
+        <column-definition start-index="17" stop-index="22" type="INT">
+            <column name="c1" />
+        </column-definition>
+        <constraint-definition start-index="25" stop-index="49" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_long_varchar">
+        <table start-index="13" stop-index="14" name="t1" />
+        <column-definition start-index="17" stop-index="31" type="LONG VARCHAR">
+            <column name="c1" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_convert_using_binary">
+        <table start-index="13" stop-index="14" name="t1" />
+        <select>
+            <projections start-index="26" stop-index="58">
+                <expression-projection start-index="26" stop-index="58" text="CONVERT('abc' USING BINARY)" alias="c1">
+                    <expr>
+                        <function start-index="26" stop-index="52" function-name="CONVERT" text="CONVERT('abc' USING BINARY)">
+                            <parameter>
+                                <literal-expression start-index="34" stop-index="38" value="abc" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression start-index="46" stop-index="51" value="BINARY" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_integer_type_aliases">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="INT1" start-index="16" stop-index="21">
+            <column name="a" />
+        </column-definition>
+        <column-definition type="INT2" start-index="24" stop-index="29">
+            <column name="b" />
+        </column-definition>
+        <column-definition type="INT3" start-index="32" stop-index="37">
+            <column name="c" />
+        </column-definition>
+        <column-definition type="INT4" start-index="40" stop-index="45">
+            <column name="d" />
+        </column-definition>
+        <column-definition type="INT8" start-index="48" stop-index="53">
+            <column name="e" />
+        </column-definition>
+        <column-definition type="LONG" start-index="56" stop-index="61">
+            <column name="f" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_now_default_update">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="TIMESTAMP" start-index="16" stop-index="58">
+            <column name="a" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_empty_merge_union">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="INT" start-index="16" stop-index="20">
+            <column name="a" />
+        </column-definition>
+        <create-table-option start-index="23" stop-index="30" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_nodegroup">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="INT" start-index="16" stop-index="20">
+            <column name="a" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_dollar_identifiers">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="INT" start-index="16" stop-index="22">
+            <column name="$$a" />
+        </column-definition>
+        <column-definition type="INT" start-index="25" stop-index="32">
+            <column name="b$$c" />
+        </column-definition>
+        <column-definition type="INT" start-index="35" stop-index="43">
+            <column name="$$d$$" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_digit_identifiers">
+        <table name="1a20" start-index="13" stop-index="19">
+            <owner name="db" start-index="13" stop-index="14" />
+        </table>
+        <column-definition type="INT" start-index="22" stop-index="29">
+            <column name="1a20" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

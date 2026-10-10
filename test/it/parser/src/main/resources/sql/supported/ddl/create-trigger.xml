@@ -137,4 +137,6 @@ END;" db-types="Oracle" />
     <sql-case id="create_trigger_pg_after_insert" value="CREATE TRIGGER t_merge_trigger AFTER INSERT ON t_merge_target FOR EACH ROW EXECUTE FUNCTION merge_notify()" db-types="PostgreSQL" />
     <sql-case id="create_trigger_pg_multi_events_when" value="CREATE TRIGGER check_update BEFORE INSERT OR DELETE ON t_merge_target FOR EACH ROW WHEN (order_id = 1) EXECUTE PROCEDURE process_order_audit()" db-types="PostgreSQL" />
     <sql-case id="create_trigger_pg_constraint" value="CREATE CONSTRAINT TRIGGER FROM t_merge_target DEFERRABLE FOR EACH ROW WHEN (order_id = 1) EXECUTE FUNCTION merge_notify()" db-types="PostgreSQL" />
+    <sql-case id="create_trigger_if_not_exists_mysql" value="CREATE TRIGGER IF NOT EXISTS tr BEFORE INSERT ON t FOR EACH ROW SET @a=1" db-types="MySQL,Doris" />
+
 </sql-cases>

@@ -19,6 +19,38 @@ grammar MySQLStatement;
 
 import Comments, DDLStatement, TCLStatement, LCLStatement, DCLStatement;
 
+@lexer::members {
+    private int previousTokenType;
+    private boolean javaScriptRoutine;
+
+    private void adjustNumberToken() {
+        if ('.' == _input.LA(_tokenStartCharIndex - _input.index())) {
+            int previousCharacter = _input.LA(_tokenStartCharIndex - _input.index() - 1);
+            int nextCharacter = _input.LA(1);
+            if ((Character.isLetterOrDigit(previousCharacter) || '_' == previousCharacter || '$' == previousCharacter || previousCharacter >= 0x80 && previousCharacter <= 0xFFFF)
+                    && (Character.isLetter(nextCharacter) || '_' == nextCharacter || '$' == nextCharacter || nextCharacter >= 0x80 && nextCharacter <= 0xFFFF)) {
+                _input.seek(_tokenStartCharIndex + 1);
+                setCharPositionInLine(_tokenStartCharPositionInLine + 1);
+                setType(DOT_);
+            }
+        }
+    }
+
+    @Override
+    public org.antlr.v4.runtime.Token emit() {
+        org.antlr.v4.runtime.Token result = super.emit();
+        if (org.antlr.v4.runtime.Token.DEFAULT_CHANNEL == result.getChannel()) {
+            if (JAVASCRIPT == result.getType() && LANGUAGE == previousTokenType) {
+                javaScriptRoutine = true;
+            } else if (SEMI_ == result.getType() || DOLLAR_QUOTED_TEXT == result.getType()) {
+                javaScriptRoutine = false;
+            }
+            previousTokenType = result.getType();
+        }
+        return result;
+    }
+}
+
 execute
     : (select
     | insert

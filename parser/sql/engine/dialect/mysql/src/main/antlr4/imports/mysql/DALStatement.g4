@@ -280,7 +280,7 @@ uninstall
     ;
 
 installComponent
-    : INSTALL COMPONENT componentName (COMMA_ componentName)*
+    : INSTALL COMPONENT componentName (COMMA_ componentName)* (SET (GLOBAL | PERSIST)? internalVariableName EQ_ setExprOrDefault (COMMA_ (GLOBAL | PERSIST)? internalVariableName EQ_ setExprOrDefault)*)?
     ;
 
 installPlugin

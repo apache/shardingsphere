@@ -85,6 +85,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticP
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticPrivilegeTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticPrivilegeUpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticPrivilegeUsageContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TextOrIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TlsOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UsernameContext;
 import org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.MySQLStatementVisitor;
@@ -727,7 +728,11 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.userIdentifierOrText()) {
             result.setUser(new IdentifierValue(ctx.userIdentifierOrText().textOrIdentifier(0).getText()).getValue());
             if (null != ctx.userIdentifierOrText().AT_()) {
-                result.setHost(new IdentifierValue(ctx.userIdentifierOrText().textOrIdentifier(1).getText()).getValue());
+                TextOrIdentifierContext hostContext = ctx.userIdentifierOrText().textOrIdentifier(1);
+                String host = null == hostContext ? "" : hostContext.getStart().getText();
+                host = null == ctx.userIdentifierOrText().textOrIdentifier(2) ? host
+                        : ctx.userIdentifierOrText().textOrIdentifier().stream().skip(1).map(each -> each.getText()).collect(Collectors.joining("."));
+                result.setHost(new IdentifierValue(host).getValue());
             }
         }
         return result;
