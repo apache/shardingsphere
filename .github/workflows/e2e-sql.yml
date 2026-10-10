@@ -70,7 +70,7 @@ jobs:
       effective-reduction-ratio: ${{ steps.generate-matrix.outputs.effective-reduction-ratio }}
       filter-json: ${{ steps.generate-matrix.outputs.filter-json }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - id: filter
         uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d
         with:
@@ -139,7 +139,7 @@ jobs:
     outputs:
       artifact-id: ${{ steps.upload-e2e-artifacts.outputs.artifact-id }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - id: setup-build-environment
         uses: ./.github/actions/setup-build-environment
         with:
@@ -189,7 +189,7 @@ jobs:
           echo "runner.temp=${{ runner.temp }}"
           echo "RUNNER_TEMP=$RUNNER_TEMP"
           echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.sha }}
       - uses: ./.github/actions/setup-build-environment
@@ -220,7 +220,7 @@ jobs:
       matrix: ${{ steps.generate.outputs.matrix }}
       has-remaining-jobs: ${{ steps.generate.outputs.has-remaining-jobs }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.sha }}
       - name: Detect Remaining Matrix
@@ -254,7 +254,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.detect-remaining-matrix.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.sha }}
       - uses: ./.github/actions/setup-build-environment

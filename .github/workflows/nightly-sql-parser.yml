@@ -55,7 +55,7 @@ jobs:
           - database: postgresql
             test: ExternalPostgreSQLParserIT
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
       - name: Build Project with Maven
         run: ./mvnw -T1C clean install

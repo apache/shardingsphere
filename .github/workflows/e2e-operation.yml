@@ -48,7 +48,7 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d
         id: filter
         with:
@@ -66,7 +66,7 @@ jobs:
     outputs:
       artifact-id: ${{ steps.upload-e2e-artifacts.outputs.artifact-id }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - id: setup-build-environment
         uses: ./.github/actions/setup-build-environment
         with:
@@ -132,7 +132,7 @@ jobs:
           echo "runner.temp=${{ runner.temp }}"
           echo "RUNNER_TEMP=$RUNNER_TEMP"
           echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.sha }}
       - uses: ./.github/actions/setup-build-environment

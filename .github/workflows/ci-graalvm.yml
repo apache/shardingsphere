@@ -60,7 +60,7 @@ jobs:
         # TODO After the issue at https://github.com/apache/shardingsphere/issues/38857 is resolved, add `windows-latest`
         os: [ '${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}' ]
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - name: Free Disk Space on Ubuntu
         if: matrix.os == '${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}'
         run: ./test/native/src/test/resources/test-native/sh/free-disk-space.sh
