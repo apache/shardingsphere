@@ -35,7 +35,7 @@ on:
           - pairwise
 
 concurrency:
-  group: e2e-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:

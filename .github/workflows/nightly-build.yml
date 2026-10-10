@@ -28,7 +28,7 @@ on:
         description: 'Commit ID to build. Default is the latest commit on the default branch.'
 
 concurrency:
-  group: nightly-build-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
