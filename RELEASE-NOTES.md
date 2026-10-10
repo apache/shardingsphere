@@ -23,6 +23,7 @@
 1. Infra: Fix invalid target selection after counter overflow in `RoundRobinLoadBalanceAlgorithm` - [#39340](https://github.com/apache/shardingsphere/pull/39340)
 1. Infra: Reject incomplete WEIGHT load balancer properties during rule configuration validation - [#39378](https://github.com/apache/shardingsphere/pull/39378)
 1. Infra: Fix stale weights in WEIGHT load balancer after same-size read data source changes - [#39995](https://github.com/apache/shardingsphere/pull/39995)
+1. Infra: Fix false table existence check failures for quoted schema names in `SupportedSQLCheckEngine` - [#40069](https://github.com/apache/shardingsphere/pull/40069)
 1. SQL Parser: Preserve unary NOT as NotExpression for scalar-subquery table extraction in PostgreSQL - [#38187](https://github.com/apache/shardingsphere/pull/38187)
 1. SQL Parser: Fix wrong parameter index parse in MySQL, Doris - [#38624](https://github.com/apache/shardingsphere/pull/38624)
 1. SQL Parser: Fix reversed parameter marker order for openGauss `LIMIT offset, row-count` - [#39242](https://github.com/apache/shardingsphere/pull/39242)
