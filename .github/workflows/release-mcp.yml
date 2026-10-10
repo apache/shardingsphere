@@ -35,6 +35,7 @@ permissions:
   contents: read
 
 env:
+  MAVEN_ARGS: -B -ntp -fae
   MAVEN_OPTS: -Dhttp.keepAlive=false
   MCP_IMAGE: ghcr.io/apache/shardingsphere-mcp
   MCP_PUBLISHER_VERSION: v1.7.9
@@ -83,9 +84,9 @@ jobs:
           echo "identifier=${{ env.MCP_IMAGE }}:${VERSION}" >> "${GITHUB_OUTPUT}"
           echo "tags=${TAGS}" >> "${GITHUB_OUTPUT}"
       - name: Run and Install MCP JDK 21 Subchain Tests
-        run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
+        run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false
       - name: Package MCP Distribution
-        run: ./mvnw -pl distribution/mcp -DskipTests package -B -ntp
+        run: ./mvnw -pl distribution/mcp -DskipTests package
       - name: Build Local MCP Docker Image
         run: docker build -f distribution/mcp/Dockerfile -t shardingsphere-mcp-release:local distribution/mcp/target
       - name: Run MCP Distribution E2E
@@ -102,8 +103,7 @@ jobs:
             -Dit.test=PackagedDistributionE2EIT \
             -De2e.run.type=DOCKER \
             -Dmcp.e2e.container.image=shardingsphere-mcp-release:local \
-            -Dmcp.distribution.home="${DISTRIBUTION_HOME}" \
-            -B -ntp
+            -Dmcp.distribution.home="${DISTRIBUTION_HOME}"
       - name: Prepare MCP Registry Metadata
         shell: bash
         run: |
@@ -111,7 +111,7 @@ jobs:
           ./mvnw -pl mcp/registry -DskipTests -DskipITs -Dspotless.skip=true \
             -Dexec.mainClass=org.apache.shardingsphere.mcp.registry.MCPRegistryMetadataCommand \
             -Dexec.args="--version ${{ steps.release-version.outputs.version }} --identifier ${{ steps.release-version.outputs.identifier }} --dockerfile-path distribution/mcp/Dockerfile" \
-            compile exec:java -B -ntp
+            compile exec:java
       - name: Login Container Registry
         uses: docker/login-action@v3
         with:
@@ -152,8 +152,7 @@ jobs:
           ./mvnw -pl test/e2e/mcp verify -Dspotless.skip=true \
             -Dit.test=PackagedDistributionE2EIT#assertLaunchContainerOverHttp+assertLaunchContainerOverStdio \
             -De2e.run.type=DOCKER \
-            -Dmcp.e2e.container.image="${{ env.MCP_IMAGE }}@${{ steps.push-image.outputs.digest }}" \
-            -B -ntp
+            -Dmcp.e2e.container.image="${{ env.MCP_IMAGE }}@${{ steps.push-image.outputs.digest }}"
       - name: Install MCP Publisher
         shell: bash
         run: |

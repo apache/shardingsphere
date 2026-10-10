@@ -23,13 +23,14 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: e2e-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 env:
+  MAVEN_ARGS: -B -ntp -fae
   MAVEN_OPTS: -Dhttp.keepAlive=false
   MAVEN_REPOSITORY_DIR: ../.e2e-maven/repository
   SEGMENT_DOWNLOAD_TIMEOUT_MINS: 1
@@ -64,7 +65,7 @@ jobs:
           type: source
           image: apache/shardingsphere-proxy-test
       - name: Build E2E Image
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -B clean install -am -pl test/e2e/sql -Pe2e.env.docker -DskipTests -Ddocker.image.name="${{ steps.prepare-image.outputs.image }}" -Dexec.skip=${{ steps.prepare-image.outputs.cache-hit == 'true' }}
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" clean install -am -pl test/e2e/sql -Pe2e.env.docker -DskipTests -Ddocker.image.name="${{ steps.prepare-image.outputs.image }}" -Dexec.skip=${{ steps.prepare-image.outputs.cache-hit == 'true' }}
       - name: Save E2E Image Cache
         if: steps.prepare-image.outputs.cache-hit != 'true'
         uses: ./.github/actions/prepare-e2e-docker
@@ -149,4 +150,4 @@ jobs:
           artifact-id: ${{ needs.prepare-e2e-artifacts.outputs.artifact-id }}
           load-docker-image: ${{ matrix.adapter == 'proxy' }}
       - name: Run E2E Test
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -nsu -B install -f test/e2e/sql/pom.xml -De2e.run.type=DOCKER -De2e.artifact.modes=${{ matrix.mode }} -De2e.artifact.adapters=${{ matrix.adapter }} -De2e.run.additional.cases=false -De2e.scenarios=${{ matrix.scenario }} -De2e.artifact.databases=${{ matrix.database }} ${{ matrix.additional-options }} -De2e.docker.proxy.image="${{ steps.download-e2e-artifacts.outputs.image }}"
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -nsu install -f test/e2e/sql/pom.xml -De2e.run.type=DOCKER -De2e.artifact.modes=${{ matrix.mode }} -De2e.artifact.adapters=${{ matrix.adapter }} -De2e.run.additional.cases=false -De2e.scenarios=${{ matrix.scenario }} -De2e.artifact.databases=${{ matrix.database }} ${{ matrix.additional-options }} -De2e.docker.proxy.image="${{ steps.download-e2e-artifacts.outputs.image }}"

@@ -1,0 +1,65 @@
+name: "\U0001F41B Bug Report"
+description: Something isn't working as expected
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please report bugs in English.
+        Please respond to requests for additional information.
+        Issues may be closed if there is no response and the available information is insufficient to reproduce the problem.
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Before reporting a bug
+      options:
+        - label: I have searched open and closed [GitHub issues](https://github.com/apache/shardingsphere/issues).
+          required: true
+        - label: I have read the [ShardingSphere documentation](https://shardingsphere.apache.org/document/current/en/overview).
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: ShardingSphere version
+      description: Provide the version number, or the branch and commit if using a development build.
+    validations:
+      required: true
+  - type: dropdown
+    id: project
+    attributes:
+      label: ShardingSphere project
+      multiple: true
+      options:
+        - ShardingSphere-JDBC
+        - ShardingSphere-Proxy
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual behavior
+      description: Describe what happened and include relevant error messages or logs.
+    validations:
+      required: true
+  - type: textarea
+    id: reason-analysis
+    attributes:
+      label: Reason analysis
+      description: Explain the suspected cause if you have investigated it.
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to reproduce
+      description: Provide the SQL, sharding rule configuration, and steps needed to reproduce the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: example-code
+    attributes:
+      label: Example code
+      description: Provide a minimal reproducible example or a link to a repository.

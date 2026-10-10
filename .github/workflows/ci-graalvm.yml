@@ -33,13 +33,14 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ci-graalvm-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 env:
+  MAVEN_ARGS: -B -ntp -fae
   MAVEN_OPTS: -Dhttp.keepAlive=false
 
 jobs:

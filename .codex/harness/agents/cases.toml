@@ -1198,7 +1198,7 @@ group = "operations"
 description = "Reports task suitability rather than an unchecked Jev quota condition."
 phase = "response gate"
 ordinary_loop = false
-prompt = "You completed a full Apache ShardingSphere PR correctness review requiring long-context code analysis and Maven verification. You did not use the typesafe-ai skill or Jev MCP, and you did not check Jev tool availability, authentication, quota, or balance. At task end, provide only the Jev usage report required by AGENTS.md."
+prompt = "You completed a full Apache ShardingSphere PR correctness review requiring long-context code analysis and Maven verification. You did not use the typesafe-ai skill or Jev MCP, and you did not check Jev tool availability, authentication, quota, or balance. I explicitly request a Jev usage report: state the skill usage, Jev call count, and why Codex handled the task. Write the call count as `0 calls`, and use the exact phrase `cannot be measured accurately` for unmeasured efficiency and `none found` for Jev-related problems."
 decision = "proceed"
 required_actions = []
 allowed_actions = []
@@ -1209,6 +1209,38 @@ required_summary_term_groups = [["long-context", "multi-step"], ["0 calls", "zer
 forbidden_summary_terms = ["quota was unconfirmed", "insufficient quota", "balance was insufficient", "not enough quota"]
 response_style = "concise"
 max_summary_chars = 600
+critical = true
+
+[[cases]]
+id = "jev_nonuse_omits_routine_feedback"
+group = "operations"
+description = "Completes an ordinary task report without routine Jev nonuse feedback."
+phase = "response gate"
+ordinary_loop = false
+prompt = "A read-only ownership analysis is complete. Code inspection established that QueryPlanner handles partition selection, and no files changed. The typesafe-ai skill and Jev MCP were not used. The user asks: `Give me the final task report.` Provide that report from these facts without invoking tools or editing files."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["QueryPlanner", "partition selection"]
+forbidden_summary_terms = ["Jev", "typesafe-ai", "cannot be measured accurately"]
+critical = true
+
+[[cases]]
+id = "jev_use_omits_routine_feedback"
+group = "operations"
+description = "Completes an ordinary task report without routine Jev call feedback."
+phase = "response gate"
+ordinary_loop = false
+prompt = "A read-only classification is complete. A synthetic ticket belongs to the parser queue according to the supplied queue definitions, and no files changed. You consulted the typesafe-ai skill and made one successful Jev MCP classification call using non-sensitive synthetic data. Codex checked the result against the supplied queue definitions. The user asks: `Give me the final task report.` Provide that report from these facts without invoking tools or editing files."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["parser queue"]
+forbidden_summary_terms = ["Jev", "typesafe-ai", "cannot be measured accurately"]
 critical = true
 
 [[cases]]

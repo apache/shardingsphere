@@ -35,13 +35,14 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: e2e-mcp-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 env:
+  MAVEN_ARGS: -B -ntp -fae
   MAVEN_OPTS: -Dhttp.keepAlive=false
   MAVEN_REPOSITORY_DIR: ../.e2e-maven/repository
   MCP_CONFORMANCE_REF: 21a9a2febd7100d7c17ac1021ee7f2ed9f66a1e0
@@ -80,7 +81,7 @@ jobs:
           docker version
           docker system df
       - name: Build MCP E2E Test Dependencies and Distribution
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp,distribution/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp,distribution/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true
       - name: Build MCP Distribution Image
         if: steps.prepare-image.outputs.cache-hit != 'true'
         env:
@@ -142,7 +143,7 @@ jobs:
           restore-maven-repository: 'false'
           restore-distribution: 'true'
       - name: Run MCP Functionality E2E
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp verify -Pe2e.mcp.functionality -De2e.run.type=DOCKER -Dmcp.e2e.container.image="${{ steps.download-distribution.outputs.image }}" -Dmcp.e2e.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/functionality-e2e" -Dspotless.skip=true -B -ntp
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp verify -Pe2e.mcp.functionality -De2e.run.type=DOCKER -Dmcp.e2e.container.image="${{ steps.download-distribution.outputs.image }}" -Dmcp.e2e.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/functionality-e2e" -Dspotless.skip=true
       - name: Upload MCP Functionality E2E Artifacts
         if: always()
         uses: actions/upload-artifact@v6
@@ -324,7 +325,7 @@ jobs:
       - name: Run MCP LLM E2E
         env:
           TESTCONTAINERS_RYUK_DISABLED: 'true'
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp verify -Pe2e.mcp.llm -De2e.run.type=DOCKER -Dspotless.skip=true -Dit.test='${{ matrix.test }}' -Dmcp.llm.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/llm-e2e" -Dmcp.llm.run-id=gha-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.id }} -B -ntp
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp verify -Pe2e.mcp.llm -De2e.run.type=DOCKER -Dspotless.skip=true -Dit.test='${{ matrix.test }}' -Dmcp.llm.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/llm-e2e" -Dmcp.llm.run-id=gha-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.id }}
       - name: Upload MCP LLM E2E Artifacts
         if: always()
         uses: actions/upload-artifact@v6

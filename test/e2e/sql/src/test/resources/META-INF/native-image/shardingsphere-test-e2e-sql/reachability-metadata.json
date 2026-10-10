@@ -1,0 +1,243 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "type": "org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.database.DatabaseEnvironment",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "type": "org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.database.DatabaseEnvironmentAttribute"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "type": "org.apache.shardingsphere.test.e2e.sql.cases.SQLE2ETestCases",
+      "fields": [
+        {
+          "name": "testCases"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "type": "org.apache.shardingsphere.test.e2e.sql.cases.casse.SQLE2ETestCase",
+      "fields": [
+        {
+          "name": "adapters"
+        },
+        {
+          "name": "assertions"
+        },
+        {
+          "name": "dbTypes"
+        },
+        {
+          "name": "scenarioComments"
+        },
+        {
+          "name": "scenarioTypes"
+        },
+        {
+          "name": "sql"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "type": "org.apache.shardingsphere.test.e2e.sql.cases.casse.assertion.SQLE2ETestCaseAssertion",
+      "fields": [
+        {
+          "name": "assertionSQL"
+        },
+        {
+          "name": "destroySQL"
+        },
+        {
+          "name": "expectedDataFile"
+        },
+        {
+          "name": "initialSQL"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "type": "org.apache.shardingsphere.test.e2e.sql.cases.casse.assertion.SQLE2ETestCaseAssertionSQL",
+      "fields": [
+        {
+          "name": "sql"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "type": "org.apache.shardingsphere.test.e2e.sql.cases.dataset.DataSet",
+      "fields": [
+        {
+          "name": "metaDataList"
+        },
+        {
+          "name": "rows"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "type": "org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetColumn",
+      "fields": [
+        {
+          "name": "name"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "type": "org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetIndex"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "type": "org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetMetaData",
+      "fields": [
+        {
+          "name": "columns"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "type": "org.apache.shardingsphere.test.e2e.sql.cases.dataset.row.DataSetRow",
+      "fields": [
+        {
+          "name": "values"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "type": "com.sun.xml.bind.v2.ContextFactory",
+      "methods": [
+        {
+          "name": "createContext",
+          "parameterTypes": [
+            "java.lang.Class[]",
+            "java.util.Map"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "type": {
+        "proxy": [
+          "javax.xml.bind.annotation.XmlAccessorType",
+          "com.sun.xml.bind.v2.model.annotation.Locatable"
+        ]
+      }
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "glob": "env/e2e-env.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "glob": "container/mysql/init-sql/00-common-init-authority.sql"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "glob": "container/mysql/init-sql/99-common-check-ready.sql"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.test.e2e.sql.it.distsql.rdl.RDLE2EIT"
+      },
+      "glob": "META-INF/services/javax.xml.bind.JAXBContext"
+    }
+  ]
+}
