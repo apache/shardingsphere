@@ -55,8 +55,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -143,6 +147,66 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertCommonData(spanItems, parentSpan.getSpanContext().getSpanId());
         assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.ERROR));
+    }
+    
+    @Test
+    void assertConcurrentInvocations() throws InterruptedException {
+        OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
+        JDBCExecutionUnit otherExecutionUnit = new JDBCExecutionUnit(
+                new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit("SELECT 2", Collections.emptyList())), null, executionUnit.getStorageResource());
+        CountDownLatch invocationAStarted = new CountDownLatch(1);
+        CountDownLatch invocationBStarted = new CountDownLatch(1);
+        AtomicReference<Throwable> workerError = new AtomicReference<>();
+        Thread threadA = new Thread(() -> {
+            try {
+                advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
+                invocationAStarted.countDown();
+                if (!invocationBStarted.await(5L, TimeUnit.SECONDS)) {
+                    workerError.set(new AssertionError("timed out waiting for invocation B to start"));
+                    return;
+                }
+                advice.afterMethod(targetObject, null, new Object[]{executionUnit, false}, null, "OpenTelemetry");
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                workerError.set(ex);
+            }
+        });
+        Thread threadB = new Thread(() -> {
+            try {
+                if (!invocationAStarted.await(5L, TimeUnit.SECONDS)) {
+                    workerError.set(new AssertionError("timed out waiting for invocation A to start"));
+                    return;
+                }
+                advice.beforeMethod(targetObject, null, new Object[]{otherExecutionUnit, false}, "OpenTelemetry");
+                invocationBStarted.countDown();
+                advice.onThrowing(targetObject, null, new Object[]{otherExecutionUnit, false}, new IOException("mock"), "OpenTelemetry");
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                workerError.set(ex);
+            }
+        });
+        threadA.start();
+        threadB.start();
+        threadA.join(5000L);
+        threadB.join(5000L);
+        assertThat(workerError.get(), is(nullValue()));
+        List<SpanData> spanItems = testExporter.getFinishedSpanItems();
+        assertThat(spanItems.size(), is(2));
+        SpanData spanA = findSpanByStatement(spanItems, SQL);
+        SpanData spanB = findSpanByStatement(spanItems, "SELECT 2");
+        assertThat(spanA.getStatus().getStatusCode(), is(StatusCode.OK));
+        assertThat(spanB.getStatus().getStatusCode(), is(StatusCode.ERROR));
+        assertThat(spanA.getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
+        assertThat(spanB.getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
+    }
+    
+    private SpanData findSpanByStatement(final List<SpanData> spanItems, final String sql) {
+        for (SpanData each : spanItems) {
+            if (sql.equals(each.getAttributes().get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)))) {
+                return each;
+            }
+        }
+        throw new AssertionError("No span found with statement: " + sql);
     }
     
     private void assertCommonData(final List<SpanData> spanItems, final String expectedParentSpanId) {

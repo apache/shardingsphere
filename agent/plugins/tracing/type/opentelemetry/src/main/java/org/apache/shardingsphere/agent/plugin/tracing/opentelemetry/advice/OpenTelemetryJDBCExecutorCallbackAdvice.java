@@ -32,10 +32,15 @@ import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.Connecti
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 /**
  * OpenTelemetry JDBC executor callback advice executor.
  */
 public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCExecutorCallbackAdvice<Span> {
+    
+    private static final ThreadLocal<Deque<Span>> ACTIVE_SPANS = ThreadLocal.withInitial(ArrayDeque::new);
     
     @Override
     protected void recordExecuteInfo(final Span parentSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread,
@@ -53,12 +58,12 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
                 .setAttribute(AttributeConstants.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql())
                 .setAttribute(AttributeConstants.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString())
                 .setAttribute(AttributeConstants.SPAN_KIND, AttributeConstants.SPAN_KIND_CLIENT);
-        target.setAttachment(spanBuilder.startSpan());
+        ACTIVE_SPANS.get().push(spanBuilder.startSpan());
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
-        Span span = (Span) target.getAttachment();
+        Span span = ACTIVE_SPANS.get().poll();
         if (null != span) {
             span.setStatus(StatusCode.OK);
             span.end();
@@ -67,7 +72,7 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Throwable throwable, final String pluginType) {
-        Span span = (Span) target.getAttachment();
+        Span span = ACTIVE_SPANS.get().poll();
         if (null != span) {
             span.setStatus(StatusCode.ERROR).recordException(throwable);
             span.end();
