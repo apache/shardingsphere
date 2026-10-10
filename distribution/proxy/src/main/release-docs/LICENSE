@@ -250,11 +250,11 @@ The text of each license is the standard Apache 2.0 license.
     gson 2.10.1: https://github.com/google/gson, Apache 2.0
     guava 33.4.8-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 4.0.3: https://github.com/brettwooldridge/HikariCP, Apache 2.0
-    jackson-annotations 2.18.6: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-core 2.18.6: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-databind 2.18.6: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-datatype-jdk8 2.18.6: http://github.com/FasterXML/jackson-modules-java8, Apache 2.0
-    jackson-datatype-jsr310 2.18.6: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-annotations 2.22: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-core 2.22.3: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-databind 2.22.3: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-datatype-jdk8 2.22.3: http://github.com/FasterXML/jackson-modules-java8, Apache 2.0
+    jackson-datatype-jsr310 2.22.3: http://github.com/FasterXML/jackson, Apache 2.0
     jakarta.validation-api 2.0.2: https://beanvalidation.org/, Apache 2.0
     javassist 3.29.2-GA: https://www.javassist.org/, Apache 2.0
     jcl-over-slf4j 2.0.17: https://github.com/qos-ch/slf4j, Apache 2.0
@@ -301,8 +301,8 @@ The text of each license is the standard Apache 2.0 license.
     snakeyaml 2.2: https://bitbucket.org/snakeyaml/snakeyaml, Apache 2.0
     transmittable-thread-local 2.14.2: https://github.com/alibaba/transmittable-thread-local, Apache 2.0
     uzaygezen-core 0.2: https://code.google.com/p/uzaygezen, Apache 2.0
-    zookeeper 3.9.5: https://github.com/apache/zookeeper, Apache 2.0
-    zookeeper-jute 3.9.5: https://github.com/apache/zookeeper, Apache 2.0
+    zookeeper 3.9.6: https://github.com/apache/zookeeper, Apache 2.0
+    zookeeper-jute 3.9.6: https://github.com/apache/zookeeper, Apache 2.0
     java-util 4.103.0: https://github.com/jdereg/java-util, Apache 2.0
 
 ========================================================================
@@ -362,3 +362,6 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     checker-qual 3.39.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
     jul-to-slf4j 2.0.17: https://www.slf4j.org, MIT
     slf4j-api 2.0.17: https://www.slf4j.org, MIT
+
+jackson-core 2.22.3 bundles Schubfach code under the MIT License.
+See META-INF/Schubfach-LICENSE inside lib/jackson-core-2.22.3.jar for the copyright notice and license text.
