@@ -32,7 +32,7 @@
     }
   ], "replacementPatterns": [
   {
-    "pattern": "^/(cn|en)/(dev-manual|downloads|faq|features|overview|quick-start|reference|test-manual|user-manual)",
+    "pattern": "^/(cn|en)/(build-manual|dev-manual|downloads|faq|features|overview|quick-start|reference|test-manual|user-manual)",
     "replacement": "https://shardingsphere.apache.org/document/current/$1/$2"
   },{
     "pattern": "^/(cn|en)/(videos|material)",
