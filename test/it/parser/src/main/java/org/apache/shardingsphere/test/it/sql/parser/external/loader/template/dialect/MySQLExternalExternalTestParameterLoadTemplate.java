@@ -43,6 +43,8 @@ public final class MySQLExternalExternalTestParameterLoadTemplate implements Ext
     
     private static final Pattern VERSION_COMMENT_PATTERN = Pattern.compile("/\\*!([0-9]{5}).*?\\*/", Pattern.DOTALL);
     
+    private static final Pattern VERSION_COMMENT_START_PATTERN = Pattern.compile("/\\*!([0-9]{5})");
+    
     private static final Pattern DELIMITER_COMMAND_PATTERN = Pattern.compile("(?i)(?:--\\s*)?delimiter\\s+(.+)");
     
     private static final Pattern CONNECTION_COMMAND_PATTERN = Pattern.compile("(?i)(connection|disconnect)\\s+[^\\s;]+\\s*;?");
@@ -58,7 +60,7 @@ public final class MySQLExternalExternalTestParameterLoadTemplate implements Ext
     private static final Pattern CHARACTER_SET_COMMAND_PATTERN = Pattern.compile("(?i)(?:--\\s*)?character_set\\s+([^\\s;]+);?");
     
     private static final Map<String, String> CHARSET_NAMES = ImmutableMap.<String, String>builder().put("utf8mb4", "UTF-8").put("utf8mb3", "UTF-8")
-            .put("binary", "ISO-8859-1").put("latin2", "ISO-8859-2").put("koi8r", "KOI8-R").put("ujis", "EUC-JP").build();
+            .put("binary", "ISO-8859-1").put("latin1", "windows-1252").put("latin2", "ISO-8859-2").put("koi8r", "KOI8-R").put("ujis", "EUC-JP").build();
     
     @Override
     public Charset getContentCharset() {
@@ -70,6 +72,7 @@ public final class MySQLExternalExternalTestParameterLoadTemplate implements Ext
                                                      final List<String> resultFileContent, final String databaseType, final String reportType) {
         Collection<ExternalSQLTestParameter> result = new LinkedList<>();
         List<String> lines = new ArrayList<>();
+        List<String> originalLines = new ArrayList<>();
         String delimiter = ";";
         Charset charset = StandardCharsets.UTF_8;
         int statementState = 0;
@@ -93,11 +96,17 @@ public final class MySQLExternalExternalTestParameterLoadTemplate implements Ext
                 letCommand = !line.endsWith(delimiter);
                 continue;
             }
-            if (blockComment) {
-                blockComment = !line.contains("*/");
-                continue;
-            }
+            String originalLine = line;
             if (lines.isEmpty()) {
+                int sqlStartIndex = getSQLStartIndex(line, blockComment);
+                blockComment = -1 == sqlStartIndex;
+                if (blockComment) {
+                    continue;
+                }
+                line = line.substring(sqlStartIndex).trim();
+                if (sqlStartIndex > 0 && line.equals(delimiter)) {
+                    continue;
+                }
                 String command = line.endsWith(delimiter) ? line.substring(0, line.length() - delimiter.length()).trim() : line;
                 Matcher fileMatcher = FILE_COMMAND_PATTERN.matcher(command);
                 Matcher perlMatcher = PERL_COMMAND_PATTERN.matcher(command);
@@ -131,43 +140,53 @@ public final class MySQLExternalExternalTestParameterLoadTemplate implements Ext
                     delimiter = getNewDelimiter(delimiterMatcher.group(1), delimiter);
                     continue;
                 }
-                if (line.startsWith("/*") && !line.contains("*/")) {
-                    blockComment = true;
-                    continue;
-                }
             }
-            if (line.isEmpty() || lines.isEmpty() && (SQLLineComment.isComment(line) || CONNECTION_COMMAND_PATTERN.matcher(line).matches())) {
+            if (line.isEmpty() || lines.isEmpty() && !isExecutableComment(line, 0) && (SQLLineComment.isComment(line) || CONNECTION_COMMAND_PATTERN.matcher(line).matches())) {
                 continue;
             }
             lines.add(line);
-            statementState = getStatementState(new String(line.getBytes(StandardCharsets.ISO_8859_1), charset), statementState);
+            originalLines.add(originalLine);
+            statementState = getStatementState(decodeSQL(line, charset), statementState);
             if (0 == statementState && line.endsWith(delimiter)) {
-                if (resultFileContent.isEmpty() || existCorrectResultContent(resultFileContent, lines)) {
+                if (resultFileContent.isEmpty() || existCorrectResultContent(resultFileContent, originalLines)) {
                     String sqlCaseId = sqlCaseFileName + ":" + (i + 1);
                     String sql = String.join("\n", lines);
                     sql = sql.substring(0, sql.length() - delimiter.length());
-                    result.add(new ExternalSQLTestParameter(sqlCaseId, databaseType, normalizeVersionComments(new String(sql.getBytes(StandardCharsets.ISO_8859_1), charset)), reportType));
+                    result.add(new ExternalSQLTestParameter(sqlCaseId, databaseType, normalizeVersionComments(decodeSQL(sql, charset)), reportType));
                 }
                 lines.clear();
+                originalLines.clear();
             }
         }
         return result;
     }
     
-    private String normalizeVersionComments(final String sql) {
-        StringBuilder result = new StringBuilder(sql);
-        Matcher matcher = VERSION_COMMENT_PATTERN.matcher(sql);
-        int statementState = 0;
-        int previousEnd = 0;
-        while (matcher.find()) {
-            statementState = getStatementState(sql.substring(previousEnd, matcher.start()), statementState);
-            if (0 == statementState && Integer.parseInt(matcher.group(1)) > MYSQL_8_0_MAX_VERSION) {
-                result.setCharAt(matcher.start() + 2, ' ');
+    private int getSQLStartIndex(final String line, final boolean blockComment) {
+        int result = 0;
+        boolean comment = blockComment;
+        while (result < line.length()) {
+            if (comment || line.startsWith("/*", result) && !isExecutableComment(line, result)) {
+                int commentEndIndex = line.indexOf("*/", result);
+                if (-1 == commentEndIndex) {
+                    return -1;
+                }
+                result = commentEndIndex + 2;
+                comment = false;
+            } else if (line.charAt(result) <= ' ') {
+                result++;
+            } else {
+                break;
             }
-            statementState = getStatementState(matcher.group(), statementState);
-            previousEnd = matcher.end();
         }
-        return result.toString();
+        return comment ? -1 : result;
+    }
+    
+    private boolean isExecutableComment(final String line, final int startIndex) {
+        if (!line.startsWith("/*!", startIndex)) {
+            return false;
+        }
+        Matcher matcher = VERSION_COMMENT_START_PATTERN.matcher(line).region(startIndex, line.length());
+        return !matcher.lookingAt() || Integer.parseInt(matcher.group(1)) <= MYSQL_8_0_MAX_VERSION;
     }
     
     private String getNewDelimiter(final String sql, final String delimiter) {
@@ -176,6 +195,20 @@ public final class MySQLExternalExternalTestParameterLoadTemplate implements Ext
             newDelimiter = newDelimiter.substring(1, newDelimiter.length() - 1);
         }
         return newDelimiter.isEmpty() ? delimiter : newDelimiter;
+    }
+    
+    private String decodeSQL(final String sql, final Charset charset) {
+        if ("windows-1252".equals(charset.name())) {
+            StringBuilder result = new StringBuilder(new String(sql.getBytes(StandardCharsets.ISO_8859_1), charset));
+            for (int i = 0; i < sql.length(); i++) {
+                char character = sql.charAt(i);
+                if (0x81 == character || 0x8D == character || 0x8F == character || 0x90 == character || 0x9D == character) {
+                    result.setCharAt(i, character);
+                }
+            }
+            return result.toString();
+        }
+        return new String(sql.getBytes(StandardCharsets.ISO_8859_1), charset);
     }
     
     private int getStatementState(final String line, final int statementState) {
@@ -226,5 +259,21 @@ public final class MySQLExternalExternalTestParameterLoadTemplate implements Ext
             }
         }
         return -1;
+    }
+    
+    private String normalizeVersionComments(final String sql) {
+        StringBuilder result = new StringBuilder(sql);
+        Matcher matcher = VERSION_COMMENT_PATTERN.matcher(sql);
+        int statementState = 0;
+        int previousEnd = 0;
+        while (matcher.find()) {
+            statementState = getStatementState(sql.substring(previousEnd, matcher.start()), statementState);
+            if (0 == statementState && Integer.parseInt(matcher.group(1)) > MYSQL_8_0_MAX_VERSION) {
+                result.setCharAt(matcher.start() + 2, ' ');
+            }
+            statementState = getStatementState(matcher.group(), statementState);
+            previousEnd = matcher.end();
+        }
+        return result.toString();
     }
 }
