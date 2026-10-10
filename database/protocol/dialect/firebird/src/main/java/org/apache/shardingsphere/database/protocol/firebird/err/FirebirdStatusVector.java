@@ -19,11 +19,15 @@ package org.apache.shardingsphere.database.protocol.firebird.err;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.firebird.exception.FirebirdException;
+import org.apache.shardingsphere.database.exception.firebird.exception.FirebirdException.StatusVectorEntry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.firebirdsql.gds.ISCConstants;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -42,7 +46,7 @@ public final class FirebirdStatusVector extends FirebirdPacket {
     
     public FirebirdStatusVector(final SQLException ex) {
         errorMessage = stripStateSuffix(null == ex.getMessage() ? "" : ex.getMessage());
-        segments = FirebirdErrorSegmentResolver.resolve(ex.getErrorCode(), errorMessage, ex.getSQLState());
+        segments = ex instanceof FirebirdException ? toSegments(((FirebirdException) ex).getStatusVector()) : FirebirdErrorSegmentResolver.resolve(ex.getErrorCode(), errorMessage, ex.getSQLState());
         gdsCode = segments.get(0).gdsCode;
     }
     
@@ -51,21 +55,38 @@ public final class FirebirdStatusVector extends FirebirdPacket {
         return (index >= 0 ? message.substring(0, index) : message).trim();
     }
     
+    private static List<Segment> toSegments(final Collection<StatusVectorEntry> statusVector) {
+        List<Segment> result = new ArrayList<>(statusVector.size());
+        for (StatusVectorEntry each : statusVector) {
+            result.add(new Segment(each.getGdsCode(), each.getArguments(), null));
+        }
+        return result;
+    }
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         for (Segment each : segments) {
             payload.writeInt4(ISCConstants.isc_arg_gds);
             payload.writeInt4(each.gdsCode);
-            for (String argument : each.arguments) {
-                payload.writeInt4(ISCConstants.isc_arg_string);
-                payload.writeString(argument);
-            }
+            writeArguments(payload, each.arguments);
             if (null != each.sqlState) {
                 payload.writeInt4(ISCConstants.isc_arg_sql_state);
                 payload.writeString(each.sqlState);
             }
         }
         payload.writeInt4(ISCConstants.isc_arg_end);
+    }
+    
+    private void writeArguments(final FirebirdPacketPayload payload, final Collection<?> arguments) {
+        for (Object each : arguments) {
+            if (each instanceof Integer) {
+                payload.writeInt4(ISCConstants.isc_arg_number);
+                payload.writeInt4((Integer) each);
+            } else {
+                payload.writeInt4(ISCConstants.isc_arg_string);
+                payload.writeString((String) each);
+            }
+        }
     }
     
     /**
@@ -77,7 +98,7 @@ public final class FirebirdStatusVector extends FirebirdPacket {
         
         private final int gdsCode;
         
-        private final List<String> arguments;
+        private final List<?> arguments;
         
         private final String sqlState;
     }

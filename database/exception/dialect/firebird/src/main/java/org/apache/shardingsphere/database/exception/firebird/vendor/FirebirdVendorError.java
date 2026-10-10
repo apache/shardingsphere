@@ -72,7 +72,51 @@ public enum FirebirdVendorError implements VendorError {
     
     INVALID_SEGSTR_ID(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_bad_segstr_id, "invalid BLOB ID"),
     
-    CANNOT_UPDATE_OLD_BLOB(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_cannot_update_old_blob, "cannot update old BLOB");
+    CANNOT_UPDATE_OLD_BLOB(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_cannot_update_old_blob, "cannot update old BLOB"),
+    
+    UNSUPPORTED_BLOB_FILTER(XOpenSQLState.FEATURE_NOT_SUPPORTED, ISCConstants.isc_wish_list, "feature is not supported; BLOB filter conversion requested by BLOB parameter buffer"),
+    
+    BLOB_FILTER_NOT_FOUND(XOpenSQLState.GENERAL_ERROR, ISCConstants.isc_nofilter, "filter not found to convert type %d to type %d"),
+    
+    TRANSLITERATION_FAILED(FirebirdState.TRANSLITERATION_FAILED, ISCConstants.isc_transliteration_failed, "Cannot transliterate character between character sets"),
+    
+    BATCH_WITHOUT_BLOBS(FirebirdState.BATCH_WITHOUT_BLOBS, ISCConstants.isc_batch_blobs, "There are no blobs in associated with batch statement"),
+    
+    REPEATED_BATCH_BLOB_ID(XOpenSQLState.DATA_EXCEPTION, ISCConstants.isc_batch_rpt_blob, "Repeated blob id %s in registerBlob()"),
+    
+    UNKNOWN_BATCH_BLOB_ID(XOpenSQLState.DATA_EXCEPTION, ISCConstants.isc_batch_blob_id, "Unknown blob ID %s in the batch message"),
+    
+    INVALID_BATCH_BLOB_POLICY(XOpenSQLState.DATA_EXCEPTION, ISCConstants.isc_batch_policy, "Invalid blob policy in the batch for %s() call"),
+    
+    BATCH_DEFAULT_BPB_CHANGE(XOpenSQLState.DATA_EXCEPTION, ISCConstants.isc_batch_defbpb, "Can't change default BPB after adding any data to batch"),
+    
+    BATCH_BLOB_CONTINUATION_BPB(XOpenSQLState.DATA_EXCEPTION, ISCConstants.isc_batch_blob_buf, "Blob buffer format error; Blob continuation should not contain BPB"),
+    
+    BATCH_BLOB_BUFFER_FORMAT(XOpenSQLState.DATA_EXCEPTION, ISCConstants.isc_batch_blob_buf, "Blob buffer format error"),
+    
+    INVALID_CLUMPLET_STRUCTURE(XOpenSQLState.GENERAL_ERROR, ISCConstants.isc_random, "Invalid clumplet buffer structure: %s (%d)"),
+    
+    INVALID_BPB_VERSION(XOpenSQLState.DATA_EXCEPTION, ISCConstants.isc_bpb_version, "Wrong version of blob parameters block %d, should be %d"),
+    
+    BATCH_SMALL_DATA(XOpenSQLState.DATA_EXCEPTION, ISCConstants.isc_batch_blob_buf, "Blob buffer format error; Unusable (too small) data remained in %s buffer"),
+    
+    BATCH_BPB_TOO_BIG(XOpenSQLState.DATA_EXCEPTION, ISCConstants.isc_batch_blob_buf, "Blob buffer format error; Size of BPB (%d) greater than remaining data (%d)"),
+    
+    BATCH_SEGMENT_EXCEEDS_BLOB(XOpenSQLState.DATA_EXCEPTION, ISCConstants.isc_batch_blob_buf, "Blob buffer format error; Size of segment (%d) greater than current BLOB data (%d)"),
+    
+    BATCH_SEGMENT_TOO_BIG(XOpenSQLState.DATA_EXCEPTION, ISCConstants.isc_batch_blob_buf, "Blob buffer format error; Size of segment (%d) greater than available data (%d)"),
+    
+    STRING_TRUNCATION(FirebirdState.STRING_TRUNCATION, ISCConstants.isc_string_truncation,
+            "arithmetic exception, numeric overflow, or string truncation; string right truncation; expected length %d, actual %d"),
+    
+    BLOB_TRUNCATION(FirebirdState.STRING_TRUNCATION, ISCConstants.isc_blob_truncation,
+            "arithmetic exception, numeric overflow, or string truncation; blob truncation when converting to a string: length limit exceeded"),
+    
+    NUMERIC_OUT_OF_RANGE(FirebirdState.NUMERIC_OUT_OF_RANGE, ISCConstants.isc_numeric_out_of_range, "arithmetic exception, numeric overflow, or string truncation; numeric value is out of range"),
+    
+    CONVERSION_ERROR(FirebirdState.CONVERSION_ERROR, ISCConstants.isc_convert_error, "conversion error from string \"%s\""),
+    
+    MALFORMED_STRING(XOpenSQLState.DATA_EXCEPTION, ISCConstants.isc_malformed_string, "Malformed string");
     
     private final SQLState sqlState;
     

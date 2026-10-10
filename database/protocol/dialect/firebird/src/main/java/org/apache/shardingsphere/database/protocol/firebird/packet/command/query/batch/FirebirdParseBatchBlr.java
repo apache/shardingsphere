@@ -21,7 +21,6 @@ import io.netty.buffer.ByteBuf;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.firebirdsql.gds.BlrConstants;
 
@@ -44,33 +43,14 @@ public final class FirebirdParseBatchBlr {
     private final int netLength;
     
     /**
-     * Parse a BLR message buffer into its message format and validate that every field is supported.
+     * Parse a BLR message buffer into its message format.
      *
      * @param blr BLR buffer
      * @param blrLength BLR length
      * @return parsed message format
      * @throws IllegalArgumentException when BLR format is structurally invalid
-     * @throws DatabaseProtocolException when BLR contains a field type that batch operations do not support yet
      */
     public static FirebirdParseBatchBlr parse(final ByteBuf blr, final int blrLength) {
-        FirebirdParseBatchBlr result = parseForFraming(blr, blrLength);
-        validateSupported(result.fields);
-        return result;
-    }
-    
-    /**
-     * Parse a BLR message buffer into its message format for codec framing only, without semantic support validation.
-     *
-     * <p>Used by the packet codec to split a coalesced {@code BATCH_CREATE + BATCH_MSG} frame. Semantically unsupported
-     * but structurally valid fields (such as BLOB) are returned as descriptors instead of being rejected here, so that the
-     * rejection happens later on the command/error path rather than as a codec-level channel close.</p>
-     *
-     * @param blr BLR buffer
-     * @param blrLength BLR length
-     * @return parsed message format
-     * @throws IllegalArgumentException when BLR format is structurally invalid
-     */
-    public static FirebirdParseBatchBlr parseForFraming(final ByteBuf blr, final int blrLength) {
         if (blrLength < HEADER_LENGTH) {
             throw new IllegalArgumentException("BLR is too short: " + blrLength);
         }
@@ -108,15 +88,6 @@ public final class FirebirdParseBatchBlr {
         return blrLength - (buffer.readerIndex() - startReaderIndex);
     }
     
-    private static void validateSupported(final List<FirebirdBatchColumnDescriptor> fields) {
-        for (FirebirdBatchColumnDescriptor each : fields) {
-            if (FirebirdBinaryColumnType.BLOB == each.getType()) {
-                // TODO Implement BATCH_REGBLOB, BATCH_BLOB_STREAM and BATCH_SET_BPB before accepting BLOB fields.
-                throw new DatabaseProtocolException("BLOB fields are not supported in Firebird batch operations");
-            }
-        }
-    }
-    
     private static FirebirdParseBatchBlr parseFormat(final ByteBuf buffer) {
         int count = buffer.readUnsignedByte();
         count += buffer.readUnsignedByte() << 8;
@@ -134,7 +105,10 @@ public final class FirebirdParseBatchBlr {
                     ? HEADER_LENGTH + alignTo(descriptor.getLength() - Short.BYTES, 4)
                     : alignTo(descriptor.getLength(), 4);
             offset = appendNullIndicator(buffer, offset);
-            fields.add(new FirebirdBatchColumnDescriptor(descriptor.getType(), descriptor.getLength(), descriptor.getScale(), fieldOffset));
+            FirebirdBatchColumnDescriptor field = new FirebirdBatchColumnDescriptor(descriptor.getType(), descriptor.getLength(), descriptor.getScale(), fieldOffset);
+            field.setSubType(descriptor.getSubType());
+            field.setBatchBlobId(BlrConstants.blr_blob2 == blrType);
+            fields.add(field);
         }
         return new FirebirdParseBatchBlr(fields, offset, netLength);
     }
@@ -154,8 +128,10 @@ public final class FirebirdParseBatchBlr {
     
     private static FirebirdBatchColumnDescriptor readDescriptor(final ByteBuf buffer, final int blrType) {
         if (BlrConstants.blr_blob2 == blrType) {
-            buffer.skipBytes(4);
-            return new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.BLOB, Long.BYTES, 0, 0);
+            int subType = buffer.readShortLE();
+            FirebirdBatchColumnDescriptor result = new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.BLOB, Long.BYTES, buffer.readUnsignedShortLE(), 0);
+            result.setSubType(subType);
+            return result;
         }
         if (BlrConstants.blr_quad == blrType) {
             int scale = buffer.readByte();
