@@ -39,6 +39,7 @@ permissions:
   contents: read
 
 env:
+  MAVEN_ARGS: -B -ntp -fae
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
   MAVEN_REPOSITORY_DIR: ../.e2e-maven/repository
 
@@ -103,7 +104,7 @@ jobs:
           type: source
           image: apache/shardingsphere-proxy-test
       - name: Build E2E Image
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -B clean install -am -pl test/e2e/operation/transaction,test/e2e/operation/pipeline,test/e2e/operation/showprocesslist -Pe2e.env.docker -DskipTests -Ddocker.image.name="${{ steps.prepare-image.outputs.image }}" -Dexec.skip=${{ steps.prepare-image.outputs.cache-hit == 'true' }}
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" clean install -am -pl test/e2e/operation/transaction,test/e2e/operation/pipeline,test/e2e/operation/showprocesslist -Pe2e.env.docker -DskipTests -Ddocker.image.name="${{ steps.prepare-image.outputs.image }}" -Dexec.skip=${{ steps.prepare-image.outputs.cache-hit == 'true' }}
       - name: Save E2E Image Cache
         if: steps.prepare-image.outputs.cache-hit != 'true'
         uses: ./.github/actions/prepare-e2e-docker
@@ -193,4 +194,4 @@ jobs:
               exit 1
               ;;
           esac
-          ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${DOCKER_IMAGE_PROPERTY}=${DOCKER_IMAGE} -De2e.docker.proxy.image="${{ steps.download-e2e-artifacts.outputs.image }}"
+          ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -nsu install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${DOCKER_IMAGE_PROPERTY}=${DOCKER_IMAGE} -De2e.docker.proxy.image="${{ steps.download-e2e-artifacts.outputs.image }}"

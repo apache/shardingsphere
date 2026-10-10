@@ -29,6 +29,9 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  MAVEN_ARGS: -B -ntp -fae
+
 jobs:
   global-environment:
     name: Import Global Environment

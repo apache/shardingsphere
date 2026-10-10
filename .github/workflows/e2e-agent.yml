@@ -46,6 +46,7 @@ permissions:
   contents: read
 
 env:
+  MAVEN_ARGS: -B -ntp -fae
   MAVEN_OPTS: -Dhttp.keepAlive=false
   MAVEN_REPOSITORY_DIR: ../.e2e-maven/repository
 
@@ -87,7 +88,7 @@ jobs:
           image: apache/shardingsphere-jdbc-agent-test
       - name: Build Project
         if: steps.prepare-proxy-image.outputs.cache-hit != 'true' || steps.prepare-jdbc-image.outputs.cache-hit != 'true'
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -B clean install -DskipTests -Prelease,default-dep
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" clean install -DskipTests -Prelease,default-dep
       - name: Build Proxy E2E Image
         if: steps.prepare-proxy-image.outputs.cache-hit != 'true'
         shell: bash
@@ -187,6 +188,6 @@ jobs:
           artifact-id: ${{ needs.build-e2e-image.outputs.jdbc-artifact-id }}
           restore-maven-repository: 'false'
       - name: Build Project
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -B clean install -am -pl test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }} -DskipTests
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" clean install -am -pl test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }} -DskipTests
       - name: Run E2E Test
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -nsu -B install -f test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }}/pom.xml -De2e.run.type=DOCKER -De2e.env.adapter=${{ matrix.adapter }} -De2e.env.plugin=${{ matrix.plugin }} -Dproxy.image="${{ steps.download-proxy-image.outputs.image }}" -Djdbc.project.image="${{ steps.download-jdbc-image.outputs.image }}"
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -nsu install -f test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }}/pom.xml -De2e.run.type=DOCKER -De2e.env.adapter=${{ matrix.adapter }} -De2e.env.plugin=${{ matrix.plugin }} -Dproxy.image="${{ steps.download-proxy-image.outputs.image }}" -Djdbc.project.image="${{ steps.download-jdbc-image.outputs.image }}"

@@ -30,6 +30,7 @@ permissions:
   contents: read
 
 env:
+  MAVEN_ARGS: -B -ntp -fae
   MAVEN_OPTS: -Dhttp.keepAlive=false
 
 jobs:
@@ -98,7 +99,7 @@ jobs:
           languages: java
       - name: Install Project
         run: |
-          ./mvnw clean install -DskipTests -B -ntp -T1C
+          ./mvnw clean install -DskipTests -T1C
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
@@ -174,7 +175,7 @@ jobs:
         run: ./mvnw clean install -DskipTests -T1C
       - name: Build with maven and execute jacoco aggregation script
         run: |
-          ./mvnw -V -B -ntp verify -Djacoco.skip=false -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
+          ./mvnw -V verify -Djacoco.skip=false -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
           chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh &&
           ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
       - name: Upload coverage reports to codecov
@@ -208,4 +209,4 @@ jobs:
           MAVEN_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-        run: ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=apache_shardingsphere -DskipTests
+        run: ./mvnw clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=apache_shardingsphere -DskipTests
