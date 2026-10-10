@@ -29,7 +29,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ci-mcp-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
