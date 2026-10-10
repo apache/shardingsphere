@@ -17,32 +17,22 @@
 
 package org.apache.shardingsphere.database.connector.oracle.metadata.database.system;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
+import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectKernelSupportedSystemTable;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
- * System database of Oracle.
+ * Kernel supported system table for Oracle.
  */
-public final class OracleSystemDatabase implements DialectSystemDatabase {
-    
-    private static final Collection<String> SYSTEM_SCHEMAS = Arrays.asList("SYS", "SYSTEM_LOBS");
+public final class OracleKernelSupportedSystemTable implements DialectKernelSupportedSystemTable {
     
     @Override
-    public Collection<String> getSystemDatabases() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas(final String databaseName) {
-        return SYSTEM_SCHEMAS;
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return SYSTEM_SCHEMAS;
+    public Map<String, Collection<String>> getSchemaAndTablesMap() {
+        return Collections.singletonMap("SYS", new HashSet<>(Arrays.asList("ALL_TABLES", "USER_TABLES", "ALL_SEQUENCES", "ALL_VIEWS", "ALL_SYNONYMS", "ALL_TAB_COLUMNS")));
     }
     
     @Override

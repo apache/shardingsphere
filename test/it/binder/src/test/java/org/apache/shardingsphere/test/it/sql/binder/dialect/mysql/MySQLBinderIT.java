@@ -17,9 +17,30 @@
 
 package org.apache.shardingsphere.test.it.sql.binder.dialect.mysql;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.test.it.sql.binder.SQLBinderIT;
 import org.apache.shardingsphere.test.it.sql.binder.SQLBinderITSettings;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @SQLBinderITSettings({"MySQL", "H2"})
 class MySQLBinderIT extends SQLBinderIT {
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"SELECT * FROM `EVENTS`", "SELECT * FROM `events`", "SELECT * FROM EVENTS"})
+    void assertBindSystemTableWhenSystemSchemaMetadataAssemblyDisabled(final String sql) {
+        ConfigurationProperties props = new ConfigurationProperties(
+                PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), Boolean.FALSE.toString())));
+        SelectStatement actual = (SelectStatement) bindSQLStatement("MySQL", sql, props, "information_schema");
+        SimpleTableSegment actualTable = (SimpleTableSegment) actual.getFrom().get();
+        assertThat(actualTable.getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("information_schema"));
+    }
 }

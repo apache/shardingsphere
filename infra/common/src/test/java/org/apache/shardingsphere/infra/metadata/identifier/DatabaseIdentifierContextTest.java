@@ -51,6 +51,13 @@ class DatabaseIdentifierContextTest {
     }
     
     @Test
+    void assertGetProtocolLookupMode() {
+        DatabaseIdentifierContext context = new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newQuotedInsensitivePolicySet(), IdentifierCasePolicyFactory.newLowerCasePolicySet(),
+                IdentifierCasePolicyFactory.newLowerCasePolicySet(), false);
+        assertThat(context.getProtocolLookupMode(IdentifierScope.TABLE, QuoteCharacter.QUOTE), is(LookupMode.NORMALIZED));
+    }
+    
+    @Test
     void assertNormalizeProtocol() {
         assertThat(createContextWithDistinctPolicies().normalizeProtocol(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("FOO"));
     }

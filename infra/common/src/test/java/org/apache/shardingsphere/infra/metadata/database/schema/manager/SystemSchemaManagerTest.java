@@ -68,12 +68,6 @@ class SystemSchemaManagerTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("isSystemTableArguments")
-    void assertIsSystemTable(final String name, final String schema, final String tableName, final boolean expectedResult) {
-        assertThat(SystemSchemaManager.isSystemTable(schema, tableName), is(expectedResult));
-    }
-    
-    @ParameterizedTest(name = "{0}")
     @MethodSource("isSystemTableWithDatabaseTypeArguments")
     void assertIsSystemTableWithDatabaseType(final String name, final String databaseType, final String schema,
                                              final String tableName, final boolean commonSchemaManagerAvailable, final boolean expectedResult) {
@@ -124,15 +118,6 @@ class SystemSchemaManagerTest {
                 Arguments.of("openGauss pg_catalog", "openGauss", "pg_catalog", 240, "pg_database"));
     }
     
-    private static Stream<Arguments> isSystemTableArguments() {
-        return Stream.of(
-                Arguments.of("common information_schema table", "information_schema", "columns", true),
-                Arguments.of("postgresql catalog table", "pg_catalog", "pg_database", true),
-                Arguments.of("common shardingsphere table", "shardingsphere", "cluster_information", true),
-                Arguments.of("non system table", "sharding_db", "t_order", false),
-                Arguments.of("unknown table in common schema", "shardingsphere", "foo_tbl", false));
-    }
-    
     private static Stream<Arguments> isSystemTableWithDatabaseTypeArguments() {
         return Stream.of(
                 Arguments.of("mysql with null schema", "MySQL", null, "columns", true, true),
@@ -143,7 +128,8 @@ class SystemSchemaManagerTest {
                 Arguments.of("mysql falls back to common schema", "MySQL", "shardingsphere", "cluster_information", true, true),
                 Arguments.of("unknown database falls back to common schema", "NO_DB", "shardingsphere", "cluster_information", true, true),
                 Arguments.of("unknown database without common schema manager", "NO_DB", "shardingsphere", "cluster_information", false, false),
-                Arguments.of("unknown database unknown table", "NO_DB", "foo_schema", "foo_tbl", true, false));
+                Arguments.of("unknown database unknown table", "NO_DB", "foo_schema", "foo_tbl", true, false),
+                Arguments.of("mysql sys schema does not leak oracle sys schema tables", "MySQL", "sys", "all_sequences", true, false));
     }
     
     private static Stream<Arguments> isSystemTableWithTableNamesArguments() {

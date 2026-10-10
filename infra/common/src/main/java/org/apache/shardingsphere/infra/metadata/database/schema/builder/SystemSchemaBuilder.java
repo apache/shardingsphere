@@ -62,9 +62,23 @@ public final class SystemSchemaBuilder {
      * @return ShardingSphere system schema map
      */
     public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType, final ConfigurationProperties props) {
+        return build(databaseName, databaseType, props, Collections.emptyList());
+    }
+    
+    /**
+     * Build system schema except excluded schemas.
+     *
+     * @param databaseName database name
+     * @param databaseType database type
+     * @param props configuration properties
+     * @param excludedSchemaNames schema names to be excluded, compared exactly
+     * @return ShardingSphere system schema map
+     */
+    public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType, final ConfigurationProperties props,
+                                                          final Collection<String> excludedSchemaNames) {
         SystemDatabase systemDatabase = new SystemDatabase(databaseType);
         boolean isSystemSchemaMetaDataEnabled = isSystemSchemaMetaDataEnabled(props.getProps());
-        return getSystemSchemas(databaseName, databaseType, systemDatabase).stream()
+        return getSystemSchemas(databaseName, databaseType, systemDatabase).stream().filter(each -> !excludedSchemaNames.contains(each))
                 .collect(Collectors.toMap(String::toLowerCase, each -> createSchema(each, databaseType, isSystemSchemaMetaDataEnabled), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
     }
     

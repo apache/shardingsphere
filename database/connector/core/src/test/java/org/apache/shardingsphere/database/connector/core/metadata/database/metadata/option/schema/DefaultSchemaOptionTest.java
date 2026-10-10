@@ -65,6 +65,16 @@ class DefaultSchemaOptionTest {
     }
     
     @Test
+    void assertIsSystemSchemaPreferredOverCurrentSchema() {
+        assertTrue(new DefaultSchemaOption(true, "foo_schema", DialectSchemaSemantics.NATIVE_SCHEMA).isSystemSchemaPreferredOverCurrentSchema());
+    }
+    
+    @Test
+    void assertIsDDLTargetResolvedToSystemSchema() {
+        assertTrue(new DefaultSchemaOption(true, "foo_schema", DialectSchemaSemantics.NATIVE_SCHEMA).isDDLTargetResolvedToSystemSchema());
+    }
+    
+    @Test
     void assertIsSchemaAvailable() {
         assertTrue(new DefaultSchemaOption(true, "foo_schema", DialectSchemaSemantics.NATIVE_SCHEMA).isSchemaAvailable());
     }
