@@ -31,9 +31,11 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -77,6 +79,7 @@ public final class MetaDataLoader {
             }
             throw new SQLException(ex);
         }
+        checkMissingTables(materials, result);
         return result;
     }
     
@@ -87,7 +90,7 @@ public final class MetaDataLoader {
             try {
                 result = dialectLoader.get().load(material);
             } catch (final SQLException ex) {
-                log.debug("{} Dialect load schema meta data error, load by default.", material.getStorageType(), ex);
+                log.warn("{} Dialect load schema meta data error, load by default.", material.getStorageType(), ex);
                 result = loadByDefault(material);
             }
         } else {
@@ -114,5 +117,28 @@ public final class MetaDataLoader {
             SchemaMetaData schemaMetaData = schemaMetaDataMap.computeIfAbsent(each.getName(), key -> new SchemaMetaData(each.getName(), new LinkedList<>()));
             schemaMetaData.getTables().addAll(each.getTables());
         }
+    }
+    
+    private static void checkMissingTables(final Collection<MetaDataLoaderMaterial> materials, final Map<String, SchemaMetaData> result) {
+        Set<String> expected = new LinkedHashSet<>(materials.size(), 1F);
+        for (MetaDataLoaderMaterial each : materials) {
+            for (String tableName : each.getActualTableNames()) {
+                expected.add(buildIdentity(each.getStorageUnitName(), each.getDefaultSchemaName(), tableName));
+            }
+        }
+        Set<String> loaded = new LinkedHashSet<>(result.size(), 1F);
+        for (SchemaMetaData each : result.values()) {
+            for (TableMetaData table : each.getTables()) {
+                loaded.add(buildIdentity(table.getStorageUnitName(), each.getName(), table.getName()));
+            }
+        }
+        expected.removeAll(loaded);
+        if (!expected.isEmpty()) {
+            log.warn("The following tables are missing from loaded metadata: {}", expected);
+        }
+    }
+    
+    private static String buildIdentity(final String storageUnitName, final String schemaName, final String tableName) {
+        return String.join(".", storageUnitName, schemaName, tableName);
     }
 }
