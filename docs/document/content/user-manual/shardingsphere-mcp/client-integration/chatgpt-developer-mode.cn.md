@@ -76,4 +76,4 @@ weight = 4
 
 ### 官方参考
 
-- [ChatGPT Developer mode](https://platform.openai.com/docs/guides/developer-mode)
+- [Connect and test your plugin](https://developers.openai.com/plugins/deploy/connect-chatgpt)
