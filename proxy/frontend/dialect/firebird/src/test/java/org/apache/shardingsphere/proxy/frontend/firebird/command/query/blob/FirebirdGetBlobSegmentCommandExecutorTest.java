@@ -29,12 +29,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -78,7 +82,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
         FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
         FirebirdGenericResponsePacket actualGenericPacket = (FirebirdGenericResponsePacket) actualPackets.iterator().next();
-        assertThat(actualGenericPacket.getHandle(), is(0));
+        assertThat(actualGenericPacket.getHandle(), is(2));
         assertThat(getResponseSegment(actualGenericPacket), is(new byte[]{7, 8, 9}));
     }
     
@@ -136,6 +140,16 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
         assertThat(getResponseSegment(actualGenericPacket), is(new byte[]{4, 5}));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("lastSegmentStateCases")
+    void assertExecuteWithLastSegment(final String name, final int requestedLength, final int expectedState) {
+        FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3});
+        when(packet.getSegmentLength()).thenReturn(requestedLength);
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession).execute().iterator().next();
+        assertThat(actual.getHandle(), is(expectedState));
+        assertThat(getResponseSegment(actual), is(new byte[]{1, 2, 3}));
+    }
+    
     @Test
     void assertExecuteWithRequestedLengthOverMaxSegmentDataLengthExpectsCappedSegment() {
         byte[] content = new byte[0xFFFF + 1];
@@ -175,6 +189,10 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
         assertThat(actualGenericPacket.getHandle(), is(2));
         assertThat(FirebirdBlobReadCache.getInstance().readSegment(2, BLOB_HANDLE, 3).get().getData(), is(new byte[]{1, 2, 3}));
         FirebirdBlobReadCache.getInstance().unregisterConnection(2);
+    }
+    
+    private static Stream<Arguments> lastSegmentStateCases() {
+        return Stream.of(Arguments.of("buffer filled", 5, 0), Arguments.of("room for segment length only", 7, 0), Arguments.of("room for another segment", 8, 2));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
