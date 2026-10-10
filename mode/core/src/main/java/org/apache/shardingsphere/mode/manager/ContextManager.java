@@ -301,10 +301,14 @@ public final class ContextManager implements AutoCloseable {
         MetaDataManagerPersistService metaDataManagerPersistService = persistServiceFacade.getModeFacade().getMetaDataManagerService();
         try {
             String candidateTableName = TableRefreshUtils.getTableLoadCandidateName(database, tableName);
+            boolean wasAlreadyRouted = database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class)
+                    .stream().anyMatch(each -> each.findTableDataNode(schemaName, candidateTableName).isPresent());
             ShardingSphereTable loadedTable = new TableMetaDataRefresherLoader().loadCreatedTable(
                     database, logicDataSourceName, schemaName, tableName, metaDataContexts.getMetaData().getProps(), database.getAllSchemas());
             if (null == loadedTable) {
-                database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.remove(schemaName, candidateTableName));
+                if (!wasAlreadyRouted) {
+                    database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.remove(schemaName, candidateTableName));
+                }
                 metaDataManagerPersistService.dropTables(database, schemaName, Collections.singleton(candidateTableName));
             } else if (database.containsSchema(schemaName) && database.getSchema(schemaName).containsTable(tableName)) {
                 metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(loadedTable));
