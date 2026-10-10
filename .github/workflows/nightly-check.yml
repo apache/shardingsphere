@@ -160,24 +160,3 @@ jobs:
           name: Upload OWASP Check Report
           path: ${{ github.workspace }}/target/dependency-check-report.html
           retention-days: 5
-
-  check-and-report-jacoco:
-    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    name: Check - Jacoco
-    needs: global-environment
-    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
-    timeout-minutes: 80
-    steps:
-      - uses: actions/checkout@v6.0.1
-      - uses: ./.github/actions/setup-build-environment
-      - name: Install Project
-        run: ./mvnw clean install -DskipTests -T1C
-      - name: Build with maven and execute jacoco aggregation script
-        run: |
-          ./mvnw -V -B -ntp verify -Djacoco.skip=false -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
-          chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh &&
-          ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
-      - uses: actions/upload-artifact@v6
-        with:
-          name: jacoco-report
-          path: ${{ github.workspace }}/target/mergeReport/jacoco
