@@ -15,19 +15,21 @@
 # limitations under the License.
 #
 
-name: NativeTest CI - GraalVM Native Image
+name: CI - GraalVM
 
-# Only execute CI when changes involving GraalVM Reachability Metadata and nativeTest are involved. Because most Contributors don't use GraalVM CE.
 on:
   pull_request:
     branches: [ master ]
     paths:
-      - '.github/actions/setup-build-environment/action.yml'
-      - '.github/workflows/graalvm.yml'
-      - 'infra/reachability-metadata/src/**'
-      - 'test/native/pom.xml'
-      - 'test/native/native-image-filter/**'
-      - 'test/native/src/**'
+      - '.github/workflows/ci-graalvm.yml'
+      - '.github/workflows/reusable-global-environment.yml'
+      - '.github/actions/setup-build-environment/**'
+      - 'mvnw'
+      - 'mvnw.cmd'
+      - '.mvn/**'
+      - '**/pom.xml'
+      - 'infra/reachability-metadata/**'
+      - 'test/native/**'
   schedule:
     - cron: '0 13 * * 1-5' # Once a day between Monday and Friday. UTC time
   workflow_dispatch:
@@ -47,14 +49,13 @@ jobs:
   global-environment:
     name: Import Global Environment
     uses: ./.github/workflows/reusable-global-environment.yml
-  nativetest:
-    name: GraalVM - GraalVM CE ${{ matrix.java-version }} on ${{ matrix.os }}
+  ci:
+    name: GraalVM - Native Tests on ${{ matrix.os }}
     needs: global-environment
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
-      max-parallel: 15
       fail-fast: false
       matrix:
         # TODO After the issue at https://github.com/apache/shardingsphere/issues/38857 is resolved, add `windows-latest`
@@ -70,11 +71,10 @@ jobs:
       - uses: ./.github/actions/setup-build-environment
         with:
           distribution: 'graalvm-community'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
       # TODO Remove this workaround after. The graalvm native image built with windows server is missing some GRMs for testcontainers
       - name: Run test with GraalVM CE
         if: matrix.os == 'windows-latest'
         run: ./mvnw -PgenerateMetadata -e -T1C clean verify
-      - name: Run nativeTest with GraalVM CE ${{ matrix.java-version }}
+      - name: Run Native Tests with GraalVM CE
         if: matrix.os == '${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}'
         run: ./mvnw -PnativeTestInShardingSphere -e clean verify
