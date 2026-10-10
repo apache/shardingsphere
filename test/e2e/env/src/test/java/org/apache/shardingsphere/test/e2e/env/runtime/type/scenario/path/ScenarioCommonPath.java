@@ -47,7 +47,7 @@ public final class ScenarioCommonPath {
         if ("runtime".equals(System.getProperty("org.graalvm.nativeimage.imagecode"))) {
             assertTrue(new File("src/test/resources", scenarioDirectory).isDirectory(), String.format("Scenario folder `%s` must exist.", scenarioDirectory));
         } else {
-            assertNotNull(Thread.currentThread().getContextClassLoader().getResource(scenarioDirectory), String.format("Scenario folder `%s` must exist.", scenarioDirectory));    
+            assertNotNull(Thread.currentThread().getContextClassLoader().getResource(scenarioDirectory), String.format("Scenario folder `%s` must exist.", scenarioDirectory));
         }
     }
     
