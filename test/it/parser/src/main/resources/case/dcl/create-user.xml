@@ -105,4 +105,11 @@
     <create-user sql-case-id="create_user_password_require_current_default_doris" />
     <create-user sql-case-id="create_user_failed_login_and_lock_time_doris" />
     <create-user sql-case-id="create_user_password_lock_time_unbounded_doris" />
+    <create-user sql-case-id="create_user_unquoted_dotted_host">
+        <user name="u" host="host.example.com" />
+    </create-user>
+
+    <create-user sql-case-id="create_user_empty_host">
+        <user name="u" host="" />
+    </create-user>
 </sql-parser-test-cases>

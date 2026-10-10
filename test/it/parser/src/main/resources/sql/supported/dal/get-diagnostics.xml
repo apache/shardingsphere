@@ -17,10 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="load_xml_into_table_from_server_file" value="LOAD XML INFILE '/temp/test.xml' INTO TABLE t_order" db-types="MySQL,Doris" />
-    <sql-case id="load_xml_into_table_from_local_file" value="LOAD XML LOCAL INFILE '/temp/test.xml' INTO TABLE t_order" db-types="MySQL,Doris" />
-    <sql-case id="load_xml_into_table_with_schema_name" value="LOAD XML INFILE '/temp/test.xml' INTO TABLE sharding_db.t_order" db-types="MySQL,Doris" />
-    <sql-case id="load_xml_into_table_with_ignore_lines" value="LOAD XML INFILE '/tmp/test.xml' INTO TABLE t_order IGNORE 1 LINES" db-types="MySQL" />
-    <sql-case id="load_xml_rows_identified_by" value="LOAD XML INFILE 'test.xml' INTO TABLE t ROWS IDENTIFIED BY '&lt;row&gt;'" db-types="MySQL,Doris" />
-
+    <sql-case id="get_diagnostics_statement" value="GET DIAGNOSTICS @n = NUMBER, @c = ROW_COUNT" db-types="MySQL" />
+    <sql-case id="get_current_diagnostics_condition" value="GET CURRENT DIAGNOSTICS CONDITION 1 @e = MYSQL_ERRNO, @m = MESSAGE_TEXT" db-types="MySQL" />
+    <sql-case id="get_stacked_diagnostics_condition" value="GET STACKED DIAGNOSTICS CONDITION @n @s = RETURNED_SQLSTATE" db-types="MySQL" />
 </sql-cases>

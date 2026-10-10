@@ -181,4 +181,8 @@
     <sql-case id="grant_drop_role_privilege_doris" value="GRANT DROP ROLE ON *.* TO user1" db-types="Doris" />
     <sql-case id="grant_select_on_table_doris" value="GRANT SELECT ON db1.t_order TO user1" db-types="Doris" />
     <sql-case id="grant_select_sql92" value="GRANT SELECT (order_id) ON t_order TO user1" db-types="SQL92" />
+    <sql-case id="grant_global_spaced_wildcard" value="GRANT SELECT ON * . * TO u@localhost" db-types="MySQL,Doris" />
+
+    <sql-case id="grant_database_spaced_wildcard" value="GRANT SELECT ON db . * TO u@localhost" db-types="MySQL,Doris" />
+
 </sql-cases>

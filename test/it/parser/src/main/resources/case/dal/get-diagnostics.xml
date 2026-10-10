@@ -17,21 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <load-xml sql-case-id="load_xml_into_table_from_server_file">
-        <table name="t_order" start-index="44" stop-index="50" />
-    </load-xml>
-    <load-xml sql-case-id="load_xml_into_table_from_local_file">
-        <table name="t_order" start-index="50" stop-index="56" />
-    </load-xml>
-    <load-xml sql-case-id="load_xml_into_table_with_schema_name">
-        <table name="t_order" start-index="44" stop-index="62">
-            <owner name="sharding_db" start-index="44" stop-index="54" />
-        </table>
-    </load-xml>
-    <load-xml sql-case-id="load_xml_into_table_with_ignore_lines">
-        <table name="t_order" start-index="43" stop-index="49" />
-    </load-xml>
-    <load-xml sql-case-id="load_xml_rows_identified_by">
-        <table name="t" start-index="38" stop-index="38" />
-    </load-xml>
+    <common-statement sql-case-id="get_diagnostics_statement" />
+    <common-statement sql-case-id="get_current_diagnostics_condition" />
+    <common-statement sql-case-id="get_stacked_diagnostics_condition" />
 </sql-parser-test-cases>

@@ -15,24 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.user;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlAttribute;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb;
 
 /**
- * Expected user.
+ * Common SQL statement test case.
  */
-@Getter
-@Setter
-public final class ExpectedUser extends AbstractExpectedSQLSegment {
-    
-    @XmlAttribute
-    private String name;
-    
-    @XmlAttribute
-    private String host;
+public final class CommonSQLStatementTestCase extends SQLParserTestCase {
 }

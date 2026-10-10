@@ -82,7 +82,7 @@ public final class GitHubTestParameterLoadStrategy implements ExternalTestParame
         String casesOwner = patches[3];
         String casesRepo = patches[4];
         String casesDirectory = patches[7];
-        return URI.create(String.join("/", "https://api.github.com/repos", casesOwner, casesRepo, "contents", casesDirectory));
+        return URI.create(String.join("/", "https://api.github.com/repos", casesOwner, casesRepo, "contents", casesDirectory) + "?ref=" + patches[6]);
     }
     
     @SneakyThrows(IOException.class)

@@ -43,11 +43,7 @@ UNDERSCORE_CHARSET
     : UL_ [a-z0-9A-Z]+
     ;
 
-NUMBER_
-    : INT_NUM_
-    | FLOAT_NUM_
-    | DECIMAL_NUM_
-    ;
+NUMBER_: (INT_NUM_ | FLOAT_NUM_ | DECIMAL_NUM_) {adjustNumberToken();};
 
 INT_NUM_
     : DIGIT+
@@ -57,9 +53,7 @@ FLOAT_NUM_
     : INT_NUM_? DOT_? INT_NUM_ E (PLUS_ | MINUS_)? INT_NUM_
     ;
 
-DECIMAL_NUM_
-    : INT_NUM_? DOT_ INT_NUM_
-    ;
+DECIMAL_NUM_: INT_NUM_ DOT_ INT_NUM_? | DOT_ INT_NUM_;
 
 HEX_DIGIT_
     : '0x' HEX_+ | X SQ_ HEX_+ SQ_ | X SQ_ + SQ_
