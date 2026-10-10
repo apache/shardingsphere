@@ -388,12 +388,29 @@ class ContextManagerTest {
         PersistServiceFacade persistServiceFacade = mockPersistServiceFacade();
         setPersistServiceFacade(persistServiceFacade);
         when(database.getIdentifierContext()).thenReturn(DatabaseIdentifierContextFactory.createDefault());
+        MutableDataNodeRuleAttribute ruleAttribute = database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).iterator().next();
+        when(ruleAttribute.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.empty());
         try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
             schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anyCollection(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class))).thenReturn(Collections.emptyMap());
             contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("FOO_TBL"));
         }
         verify(persistServiceFacade.getModeFacade().getMetaDataManagerService()).dropTables(database, "foo_schema", Collections.singleton("foo_tbl"));
-        verify(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).iterator().next()).remove("foo_schema", "foo_tbl");
+        verify(ruleAttribute).remove("foo_schema", "foo_tbl");
+    }
+    
+    @Test
+    void assertReconcileTableDropsWithoutRemovingPreviouslyRoutedTable() {
+        PersistServiceFacade persistServiceFacade = mockPersistServiceFacade();
+        setPersistServiceFacade(persistServiceFacade);
+        when(database.getIdentifierContext()).thenReturn(DatabaseIdentifierContextFactory.createDefault());
+        MutableDataNodeRuleAttribute ruleAttribute = database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).iterator().next();
+        when(ruleAttribute.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(mock(DataNode.class)));
+        try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
+            schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anyCollection(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class))).thenReturn(Collections.emptyMap());
+            contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("FOO_TBL"));
+        }
+        verify(persistServiceFacade.getModeFacade().getMetaDataManagerService()).dropTables(database, "foo_schema", Collections.singleton("foo_tbl"));
+        verify(ruleAttribute, never()).remove(anyString(), anyString());
     }
     
     @Test
