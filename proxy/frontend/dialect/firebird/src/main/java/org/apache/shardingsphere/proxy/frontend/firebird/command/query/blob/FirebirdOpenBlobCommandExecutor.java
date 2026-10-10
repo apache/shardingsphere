@@ -41,6 +41,11 @@ import java.util.Optional;
  * so it is registered with empty content rather than reported as an invalid BLOB id. A negative id refers to a
  * result BLOB returned to the client, while a positive id refers to a BLOB the client created and closed, which
  * Firebird allows to be opened again.</p>
+ *
+ * <p>Firebird stores the BLOB type with the BLOB and restores it when the BLOB is opened, so the type of a BLOB
+ * created by the client is taken from the blob parameter buffer of its create_blob2. A result BLOB is assembled by
+ * the proxy from backend column data without segment boundaries and carries no stored Firebird type, so it is a
+ * stream BLOB. The empty BLOB opened for the NULL quad is not a stream BLOB, matching Firebird.</p>
  */
 @RequiredArgsConstructor
 public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
@@ -54,7 +59,7 @@ public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
         long blobId = packet.getBlobId();
         byte[] blobContent = getBlobContent(blobId);
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(connectionSession.getConnectionId());
-        FirebirdBlobReadCache.getInstance().registerBlob(connectionSession.getConnectionId(), blobHandle, blobContent);
+        FirebirdBlobReadCache.getInstance().registerBlob(connectionSession.getConnectionId(), blobHandle, blobContent, isStreamBlob(blobId));
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(blobHandle).setId(blobId));
     }
     
@@ -75,5 +80,12 @@ public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
         ShardingSpherePreconditions.checkState(FirebirdBlobWriteCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId), () -> new InvalidSegstrIdException(blobId));
         Optional<byte[]> blobData = FirebirdBlobWriteCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId);
         return blobData.get();
+    }
+    
+    private boolean isStreamBlob(final long blobId) {
+        if (0L == blobId) {
+            return false;
+        }
+        return blobId < 0L || FirebirdBlobWriteCache.getInstance().isStreamBlob(connectionSession.getConnectionId(), blobId);
     }
 }

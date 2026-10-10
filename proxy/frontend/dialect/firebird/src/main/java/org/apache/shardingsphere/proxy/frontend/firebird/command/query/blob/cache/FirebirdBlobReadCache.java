@@ -34,11 +34,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>Read direction counterpart of the write cache: open_blob puts the whole BLOB content here,
  * and get_segment hands it out to the client chunk by chunk using a cursor over the original content.
  * Entries are keyed by connection id and blob handle, so concurrent connections and BLOBs do not interfere.</p>
+ *
+ * <p>A cursor lives until close_blob or cancel_blob releases its handle, so a fully read BLOB can be repositioned
+ * by seek_blob and read again, as Firebird clears the end of file state when a BLOB is positioned.</p>
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdBlobReadCache {
     
     private static final FirebirdBlobReadCache INSTANCE = new FirebirdBlobReadCache();
+    
+    private static final int SEEK_MODE_RELATIVE = 1;
+    
+    private static final int SEEK_MODE_FROM_TAIL = 2;
     
     private final Map<Integer, Map<Integer, BlobReadCursor>> cursors = new ConcurrentHashMap<>(16);
     
@@ -70,9 +77,10 @@ public final class FirebirdBlobReadCache {
      * @param connectionId connection id
      * @param blobHandle blob handle
      * @param content blob content
+     * @param streamBlob whether the BLOB is a stream BLOB
      */
-    public void registerBlob(final int connectionId, final int blobHandle, final byte[] content) {
-        getCursorMap(connectionId).put(blobHandle, new BlobReadCursor(content));
+    public void registerBlob(final int connectionId, final int blobHandle, final byte[] content, final boolean streamBlob) {
+        getCursorMap(connectionId).put(blobHandle, new BlobReadCursor(content, streamBlob));
     }
     
     /**
@@ -84,31 +92,55 @@ public final class FirebirdBlobReadCache {
      * @return optional segment data
      */
     public Optional<BlobSegment> readSegment(final int connectionId, final int blobHandle, final int maximumLength) {
-        Map<Integer, BlobReadCursor> cursorMap = getCursorMap(connectionId);
-        BlobReadCursor cursor = cursorMap.get(blobHandle);
+        BlobReadCursor cursor = getCursorMap(connectionId).get(blobHandle);
         if (null == cursor || 0 == cursor.getRemainingSize()) {
             return Optional.empty();
         }
         int segmentLength = Math.min(maximumLength, cursor.getRemainingSize());
         byte[] data = Arrays.copyOfRange(cursor.content, cursor.offset, cursor.offset + segmentLength);
         cursor.offset += segmentLength;
-        boolean complete = 0 == cursor.getRemainingSize();
-        if (complete) {
-            cursorMap.remove(blobHandle);
-        }
-        return Optional.of(new BlobSegment(data, complete));
+        return Optional.of(new BlobSegment(data, 0 == cursor.getRemainingSize()));
     }
     
     /**
-     * Get remaining BLOB size by handle.
+     * Get total BLOB size by handle.
      *
      * @param connectionId connection id
      * @param blobHandle blob handle
-     * @return optional remaining BLOB size
+     * @return optional total BLOB size
      */
-    public OptionalInt getRemainingSize(final int connectionId, final int blobHandle) {
+    public OptionalInt getTotalSize(final int connectionId, final int blobHandle) {
         BlobReadCursor cursor = getCursorMap(connectionId).get(blobHandle);
-        return null == cursor ? OptionalInt.empty() : OptionalInt.of(cursor.getRemainingSize());
+        return null == cursor ? OptionalInt.empty() : OptionalInt.of(cursor.content.length);
+    }
+    
+    /**
+     * Judge whether an opened BLOB is a stream BLOB.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle
+     * @return optional stream BLOB state
+     */
+    public Optional<Boolean> isStreamBlob(final int connectionId, final int blobHandle) {
+        BlobReadCursor cursor = getCursorMap(connectionId).get(blobHandle);
+        return null == cursor ? Optional.empty() : Optional.of(cursor.streamBlob);
+    }
+    
+    /**
+     * Position an opened BLOB for the following reads.
+     *
+     * <p>Mode 1 positions relative to the current position and mode 2 relative to the end of the BLOB,
+     * every other mode positions from the start. The resulting position is limited to the BLOB content.</p>
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle
+     * @param seekMode seek mode
+     * @param offset offset to position by
+     * @return optional resulting position
+     */
+    public OptionalInt seek(final int connectionId, final int blobHandle, final int seekMode, final int offset) {
+        BlobReadCursor cursor = getCursorMap(connectionId).get(blobHandle);
+        return null == cursor ? OptionalInt.empty() : OptionalInt.of(cursor.seek(seekMode, offset));
     }
     
     /**
@@ -131,10 +163,25 @@ public final class FirebirdBlobReadCache {
         
         private final byte[] content;
         
+        private final boolean streamBlob;
+        
         private int offset;
         
         private int getRemainingSize() {
             return content.length - offset;
+        }
+        
+        private int seek(final int seekMode, final int seekOffset) {
+            int position = getSeekPosition(seekMode, seekOffset);
+            offset = Math.min(Math.max(position, 0), content.length);
+            return offset;
+        }
+        
+        private int getSeekPosition(final int seekMode, final int seekOffset) {
+            if (SEEK_MODE_RELATIVE == seekMode) {
+                return offset + seekOffset;
+            }
+            return SEEK_MODE_FROM_TAIL == seekMode ? content.length + seekOffset : seekOffset;
         }
     }
     
