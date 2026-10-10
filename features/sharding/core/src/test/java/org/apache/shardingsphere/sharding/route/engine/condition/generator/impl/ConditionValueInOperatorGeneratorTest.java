@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.HashColumn;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
@@ -90,6 +91,24 @@ class ConditionValueInOperatorGeneratorTest {
         assertThat(((ListShardingConditionValue<?>) shardingConditionValue.get()).getValues(), is(Arrays.asList("test1", null, null, "test2")));
         assertTrue(shardingConditionValue.get().getParameterMarkerIndexes().isEmpty());
         assertThat(shardingConditionValue.get().toString(), is("tbl.id in (test1,,,test2)"));
+    }
+    
+    @Test
+    void assertCommonAndNotEvaluableExpression() {
+        ListExpression listExpression = new ListExpression(0, 0);
+        listExpression.getItems().add(new LiteralExpressionSegment(0, 0, 1));
+        listExpression.getItems().add(new BinaryOperationExpression(0, 0, new LiteralExpressionSegment(0, 0, 2), new LiteralExpressionSegment(0, 0, 2), "+", "2 + 2"));
+        InExpression inExpression = new InExpression(0, 0, null, listExpression, false);
+        assertFalse(generator.generate(inExpression, column, new LinkedList<>(), timestampServiceRule).isPresent());
+    }
+    
+    @Test
+    void assertParameterAndNotEvaluableParameterExpression() {
+        ListExpression listExpression = new ListExpression(0, 0);
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 0));
+        listExpression.getItems().add(new BinaryOperationExpression(0, 0, new ParameterMarkerExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 0), "+", "? + 0"));
+        InExpression inExpression = new InExpression(0, 0, null, listExpression, false);
+        assertFalse(generator.generate(inExpression, column, Arrays.asList(1, 4), timestampServiceRule).isPresent());
     }
     
     @SuppressWarnings("unchecked")
