@@ -44,6 +44,25 @@ policy_assertions = [{source = "code-verification", statements = ["Run the narro
 critical = true
 
 [[cases]]
+id = "load_beta_columns"
+group = "coding / regular"
+description = "Selects an existing capability whose contract fits the task instead of copying a superficially similar sibling implementation."
+phase = "implementation preflight and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Implement BetaColumnLoader.loadColumns(Connection, TableId) in module-a and run its focused unit tests. It must return visible ColumnMeta entries in JDBC encounter order and expose JDBC failures through MetadataReadException while preserving the SQLException cause. Repository context: the target's existing MetadataSession provides getColumnMetaReader(). ColumnMetaReader.readColumns(Connection, TableId) returns ColumnMeta entries in JDBC encounter order after filtering hidden entries; JDBC failures become MetadataReadException with the original cause. Sibling AlphaColumnLoader has the same loadColumns signature for its export path: it queries INFORMATION_SCHEMA, includes hidden entries, sorts alphabetically, and catches SQLException to return an empty list. Current dependencies and signatures permit calling the named components."
+decision = "proceed"
+required_actions = ["inspect_local", "edit_code", "reuse_existing_owner", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "reuse_existing_owner", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings", "propose_commit_message"]
+forbidden_actions = ["edit_non_code", "add_abstraction", "change_public_contract", "mutate_git", "mutate_remote"]
+required_reasons = ["local_code_authorized", "existing_owner_sufficient", "pre_handoff_review_required"]
+required_summary_terms = ["ColumnMetaReader", "readColumns"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "implementation-rules", statements = ["Before choosing an implementation, inspect the current behavior owner, relevant architecture and sibling modules for existing capabilities and patterns that fit the required responsibilities, contracts and dependency boundaries.", "Among designs that satisfy these prerequisites, first preserve the maintained architecture already present in the repository, including its behavior owners, module boundaries, and design patterns, unless the user explicitly requires an authorized architecture change.", "Prefer direct reuse, then composition or delegation, then an existing extension point."]}]
+critical = true
+
+[[cases]]
 id = "task_code_size_limit"
 group = "coding / regular"
 description = "Stops source-code writes when an active task would exceed the authorized 10,000-line limit."
@@ -974,6 +993,28 @@ policy_assertions = [{source = "implementation-rules", statements = ["Remove a p
 critical = true
 
 [[cases]]
+id = "add_cache_inspection_item"
+group = "reasoning"
+description = "Adds a capability item at the abstraction and detail established by comparable peer items."
+phase = "documentation wording review and ordinary completion loop"
+ordinary_loop = true
+profile = "documentation"
+semantic_policy_assertions = true
+prompt = "This is a self-contained wording request; do not edit a local artifact. Add cache inspection to the following capability list and return the revised list. Cache inspection displays current cache entries.\n\n- **Connection inspection**: Lists active connections.\n- **Route preview**: Displays the route for a query."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = ["documentation_wording_required"]
+response_style = "concise"
+max_summary_chars = 180
+required_summary_prefix = "- **Connection inspection**: Lists active connections."
+required_summary_terms = ["- **Route preview**: Displays the route for a query.", "**Cache inspection**", "current cache entries"]
+policy_binding_profile = "documentation"
+policy_assertions = [{source = "documentation-wording", statements = ["Before drafting an addition, read the enclosing section and peer items with the same purpose to determine its structure, abstraction level and detail.", "Place necessary detail using the existing structure and expand only as required for the requested outcome.", "Before handoff, review changed passages in context and correct mismatches in purpose, scope, abstraction level or detail."]}]
+critical = true
+
+[[cases]]
 id = "documentation_wording_preserves_policy"
 group = "reasoning"
 description = "Requires prose simplification to state the core rule directly while preserving scope, strength, and independent conditions."
@@ -1103,7 +1144,7 @@ max_summary_chars = 380
 required_summary_terms = ["Migration-test fixtures may reference", "only while reading archived v1 snapshots", "Before release", "inspect every parser adapter and migration-test fixture"]
 required_summary_term_groups = [["Parser adapters must not reference LegacyNode", "Parser adapters must never reference LegacyNode"]]
 policy_binding_profile = "documentation"
-policy_assertions = [{source = "documentation-wording", statements = ["Use established project technical terms. Do not coin uncommon umbrella terms; when an unavoidable technical term first appears, immediately explain what it means.", "When a supplied established term subsumes several operations, use that term consistently in every rule, exception, and verification statement instead of naming or enumerating only a subset.", "Keep an exception only when a real allowed case has been verified. State why it is allowed and its exact boundary; do not add speculative or overly broad exceptions.", "Simplification must preserve the original scope, obligation strength, valid exceptions, and verification requirements. Do not shorten mechanically or make readers infer a rule that the original text stated explicitly.", "Before handoff, review every changed prose sentence and rewrite any sentence that does not let a reader directly identify what to inspect, what result is a problem, which exceptions apply, and how to verify it."]}]
+policy_assertions = [{source = "documentation-wording", statements = ["Use established project technical terms. Do not coin uncommon umbrella terms; when an unavoidable technical term first appears, immediately explain what it means.", "When a supplied established term subsumes several operations, use that term consistently in every rule, exception, and verification statement instead of naming or enumerating only a subset.", "Keep an exception only when a real allowed case has been verified. State why it is allowed and its exact boundary; do not add speculative or overly broad exceptions.", "Simplification must preserve the original scope, obligation strength, valid exceptions, and verification requirements. Do not shorten mechanically or make readers infer a rule that the original text stated explicitly.", "Verify that each complete operational rule identifies what to inspect, the required action, problem conditions, valid exceptions and verification; rewrite an incomplete rule."]}]
 critical = true
 
 [[cases]]

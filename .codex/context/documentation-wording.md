@@ -19,6 +19,8 @@
 
 Apply this file whenever creating or revising documentation, Skills, prompts, comments, configuration descriptions, or other prose.
 
+- Before drafting an addition, read the enclosing section and peer items with the same purpose to determine its structure, abstraction level and detail.
+  Place necessary detail using the existing structure and expand only as required for the requested outcome.
 - Make each rule understandable to people and Codex on the first reading. State what to inspect, what action to take, what result identifies a problem, and how to verify it; labels such as `authority source`, `constraint strength`, `behavior value`, or `proper ownership` do not replace these instructions.
 - State the core rule, fact, or action first. Follow it with necessary applicability conditions, exceptions, and verification methods in that order.
 - Use established project technical terms. Do not coin uncommon umbrella terms; when an unavoidable technical term first appears, immediately explain what it means.
@@ -33,4 +35,5 @@ Apply this file whenever creating or revising documentation, Skills, prompts, co
 - Keep an example only when it resolves ambiguity, adds an independent decision condition, or materially helps execution. Otherwise remove it or separate it from the rule.
 - Simplification must preserve the original scope, obligation strength, valid exceptions, and verification requirements. Do not shorten mechanically or make readers infer a rule that the original text stated explicitly.
 - Keep each new or changed complete sentence on one physical line, and break a line only after punctuation ends the complete sentence. Do not reflow untouched text merely to make formatting consistent. Never modify ASF license text or its internal formatting.
-- Before handoff, review every changed prose sentence and rewrite any sentence that does not let a reader directly identify what to inspect, what result is a problem, which exceptions apply, and how to verify it.
+- Before handoff, review changed passages in context and correct mismatches in purpose, scope, abstraction level or detail.
+  Verify that each complete operational rule identifies what to inspect, the required action, problem conditions, valid exceptions and verification; rewrite an incomplete rule.
