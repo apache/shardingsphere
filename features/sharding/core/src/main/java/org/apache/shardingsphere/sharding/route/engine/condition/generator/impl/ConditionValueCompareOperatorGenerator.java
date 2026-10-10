@@ -128,11 +128,11 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
     private ExpressionSegment unwrapBinaryOperator(final ExpressionSegment segment) {
         return isBinaryOperator(segment) ? ((UnaryOperationExpression) segment).getExpression() : segment;
     }
-
+    
     private boolean isBinaryOperator(final ExpressionSegment segment) {
         return segment instanceof UnaryOperationExpression && "BINARY".equalsIgnoreCase(((UnaryOperationExpression) segment).getOperator());
     }
-
+    
     private boolean isRangeOperator(final String operator) {
         return GREATER_THAN.equals(operator) || LESS_THAN.equals(operator) || AT_MOST.equals(operator) || AT_LEAST.equals(operator);
     }
