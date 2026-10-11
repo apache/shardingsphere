@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.ColumnIndexOutOfRangeException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
@@ -241,9 +242,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
         }
         
         private int getVisibleColumnIndex(final int column) throws SQLException {
-            if (column < 1 || column > visibleColumnIndexes.length) {
-                throw new ColumnIndexOutOfRangeException(column).toSQLException();
-            }
+            ShardingSpherePreconditions.checkState(column >= 1 && column <= visibleColumnIndexes.length, () -> new ColumnIndexOutOfRangeException(column).toSQLException());
             return visibleColumnIndexes[column - 1];
         }
     }

@@ -108,6 +108,74 @@ class ShardingSphereResultSetMetaDataTest {
         assertThat(metaData.getColumnCount(), is(5));
     }
     
+    private SelectStatementContext createSelectStatementContext(final Collection<String> shorthandColumns) {
+        return createSelectStatementContext(shorthandColumns, (ProjectionSegment) null);
+    }
+    
+    private SelectStatementContext createSelectStatementContext(final Collection<String> shorthandColumns, final ProjectionSegment extraProjectionSegment) {
+        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
+        for (String each : shorthandColumns) {
+            shorthandProjectionSegment.getActualProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue(each))));
+        }
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(shorthandProjectionSegment);
+        if (null != extraProjectionSegment) {
+            projectionsSegment.getProjections().add(extraProjectionSegment);
+        }
+        return createSelectStatementContext(projectionsSegment);
+    }
+    
+    private SelectStatementContext createSelectStatementContext(final ProjectionsSegment projectionsSegment) {
+        return createSelectStatementContext(projectionsSegment, null);
+    }
+    
+    private SelectStatementContext createSelectStatementContext(final ProjectionsSegment projectionsSegment, final GroupBySegment groupBySegment) {
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("t_order"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment)
+                .from(new SimpleTableSegment(tableNameSegment)).groupBy(groupBySegment).build();
+        ShardingSphereMetaData metaData =
+                new ShardingSphereMetaData(Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        SelectStatementContext result = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
+        result.getProjectionsContext().setDerivedColumnsAppended(true);
+        return result;
+    }
+    
+    private SelectStatementContext createSelectStatementContext(final Collection<String> shorthandColumns, final String orderByName) {
+        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
+        for (String each : shorthandColumns) {
+            shorthandProjectionSegment.getActualProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue(each))));
+        }
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(shorthandProjectionSegment);
+        OrderBySegment orderBySegment = new OrderBySegment(0, 0, Collections.singletonList(
+                new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue(orderByName)), OrderDirection.ASC, NullsOrderType.LAST)));
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("t_order"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment)
+                .from(new SimpleTableSegment(tableNameSegment)).orderBy(orderBySegment).build();
+        ShardingSphereMetaData metaData =
+                new ShardingSphereMetaData(Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        SelectStatementContext result = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
+        result.getProjectionsContext().setDerivedColumnsAppended(true);
+        return result;
+    }
+    
+    private ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getName()).thenReturn("foo_db");
+        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
+        when(ruleAttribute.getEnhancedTableNames().contains("t_order")).thenReturn(true);
+        when(result.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
+        return result;
+    }
+    
+    private void stubBackendColumnLabels(final ResultSetMetaData resultSetMetaData, final String... columnLabels) throws SQLException {
+        for (int columnIndex = 1; columnIndex <= columnLabels.length; columnIndex++) {
+            when(resultSetMetaData.getColumnLabel(columnIndex)).thenReturn(columnLabels[columnIndex - 1]);
+        }
+    }
+    
     @Test
     void assertGetColumnNameAndLabelFallBackToResultSetMetaDataWhenProjectionCountMismatches() throws SQLException {
         SelectStatementContext sqlStatementContext = createSelectStatementContext(Arrays.asList("order_id", "user_id", "status", "create_time"));
@@ -289,12 +357,12 @@ class ShardingSphereResultSetMetaDataTest {
             return backendColumnLabels[invocation.getArgument(0, Integer.class) - 1];
         });
         ShardingSphereResultSetMetaData metaData = new ShardingSphereResultSetMetaData(resultSetMetaData, null, sqlStatementContext);
-        int columnCount = metaData.getColumnCount();
-        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+        int actualColumnCount = metaData.getColumnCount();
+        for (int columnIndex = 1; columnIndex <= actualColumnCount; columnIndex++) {
             metaData.getColumnName(columnIndex);
             metaData.getColumnLabel(columnIndex);
         }
-        assertThat(columnCount, is(5));
+        assertThat(actualColumnCount, is(5));
         assertThat(countReadCount.get(), lessThanOrEqualTo(backendColumnLabels.length));
         assertThat(labelReadCount.get(), lessThanOrEqualTo(4 * backendColumnLabels.length));
     }
@@ -346,71 +414,4 @@ class ShardingSphereResultSetMetaDataTest {
                 Arguments.of("average", AggregationType.AVG, "", "AGGREGATION_DISTINCT_DERIVED_0", "AVG(DISTINCT user_id)"));
     }
     
-    private void stubBackendColumnLabels(final ResultSetMetaData resultSetMetaData, final String... columnLabels) throws SQLException {
-        for (int columnIndex = 1; columnIndex <= columnLabels.length; columnIndex++) {
-            when(resultSetMetaData.getColumnLabel(columnIndex)).thenReturn(columnLabels[columnIndex - 1]);
-        }
-    }
-    
-    private SelectStatementContext createSelectStatementContext(final Collection<String> shorthandColumns) {
-        return createSelectStatementContext(shorthandColumns, (ProjectionSegment) null);
-    }
-    
-    private SelectStatementContext createSelectStatementContext(final Collection<String> shorthandColumns, final ProjectionSegment extraProjectionSegment) {
-        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
-        for (String each : shorthandColumns) {
-            shorthandProjectionSegment.getActualProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue(each))));
-        }
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.getProjections().add(shorthandProjectionSegment);
-        if (null != extraProjectionSegment) {
-            projectionsSegment.getProjections().add(extraProjectionSegment);
-        }
-        return createSelectStatementContext(projectionsSegment);
-    }
-    
-    private SelectStatementContext createSelectStatementContext(final Collection<String> shorthandColumns, final String orderByName) {
-        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
-        for (String each : shorthandColumns) {
-            shorthandProjectionSegment.getActualProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue(each))));
-        }
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.getProjections().add(shorthandProjectionSegment);
-        OrderBySegment orderBySegment = new OrderBySegment(0, 0, Collections.singletonList(
-                new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue(orderByName)), OrderDirection.ASC, NullsOrderType.LAST)));
-        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("t_order"));
-        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment)
-                .from(new SimpleTableSegment(tableNameSegment)).orderBy(orderBySegment).build();
-        ShardingSphereMetaData metaData =
-                new ShardingSphereMetaData(Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
-        SelectStatementContext result = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
-        result.getProjectionsContext().setDerivedColumnsAppended(true);
-        return result;
-    }
-    
-    private SelectStatementContext createSelectStatementContext(final ProjectionsSegment projectionsSegment) {
-        return createSelectStatementContext(projectionsSegment, null);
-    }
-    
-    private SelectStatementContext createSelectStatementContext(final ProjectionsSegment projectionsSegment, final GroupBySegment groupBySegment) {
-        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("t_order"));
-        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment)
-                .from(new SimpleTableSegment(tableNameSegment)).groupBy(groupBySegment).build();
-        ShardingSphereMetaData metaData =
-                new ShardingSphereMetaData(Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
-        SelectStatementContext result = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
-        result.getProjectionsContext().setDerivedColumnsAppended(true);
-        return result;
-    }
-    
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getName()).thenReturn("foo_db");
-        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
-        when(ruleAttribute.getEnhancedTableNames().contains("t_order")).thenReturn(true);
-        when(result.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
-        return result;
-    }
 }

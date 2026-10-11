@@ -101,6 +101,29 @@ class ShardingSphereResultSetTest {
     }
     
     @Test
+    void assertFindColumnAfterClose() throws SQLException {
+        JdbcDataSource backend = new JdbcDataSource();
+        backend.setURL("jdbc:h2:mem:foo_find_column_closed;MODE=MySQL;DATABASE_TO_UPPER=false");
+        try (Connection backendConnection = backend.getConnection(); Statement backendStatement = backendConnection.createStatement()) {
+            backendStatement.execute("CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT)");
+            ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
+            rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_0"));
+            try (
+                    ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
+                            Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties());
+                    Connection connection = dataSource.getConnection();
+                    Statement statement = connection.createStatement();
+                    ResultSet actual = statement.executeQuery("SELECT * FROM t_order")) {
+                assertFalse(actual.isClosed());
+                assertThat(actual.findColumn("user_id"), is(2));
+                actual.close();
+                assertTrue(actual.isClosed());
+                assertThrows(SQLException.class, () -> actual.findColumn("user_id"));
+            }
+        }
+    }
+    
+    @Test
     void assertFindColumnWithUnknownLabel() {
         assertThrows(SQLException.class, () -> shardingSphereResultSet.findColumn("absent_label"));
     }

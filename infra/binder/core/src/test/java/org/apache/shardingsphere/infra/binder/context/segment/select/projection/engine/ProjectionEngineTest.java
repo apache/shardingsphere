@@ -92,8 +92,8 @@ class ProjectionEngineTest {
         AggregationProjectionSegment average = distinct
                 ? new AggregationDistinctProjectionSegment(0, 0, AggregationType.AVG, "AVG(DISTINCT user_id)", "user_id")
                 : new AggregationProjectionSegment(0, 0, AggregationType.AVG, "AVG(user_id)");
-        Collection<Projection> projections = new ProjectionEngine(databaseType).createProjections(Arrays.asList(average, column));
-        AggregationProjection actual = (AggregationProjection) projections.iterator().next();
+        Collection<Projection> actualProjections = new ProjectionEngine(databaseType).createProjections(Arrays.asList(average, column));
+        AggregationProjection actual = (AggregationProjection) actualProjections.iterator().next();
         assertThat(actual.getDerivedAggregationProjections().get(0).getAlias().get().getValue(), is("AVG_DERIVED_COUNT_1"));
         assertThat(actual.getDerivedAggregationProjections().get(1).getAlias().get().getValue(), is("AVG_DERIVED_SUM_1"));
     }

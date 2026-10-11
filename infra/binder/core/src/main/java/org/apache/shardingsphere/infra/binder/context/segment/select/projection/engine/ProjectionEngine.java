@@ -166,8 +166,7 @@ public final class ProjectionEngine {
         if (projectionSegment.getWindow().isPresent()) {
             return createExpressionProjection(projectionSegment);
         }
-        IdentifierValue alias =
-                projectionSegment.getAlias().orElseGet(() -> new IdentifierValue(getAggregationDistinctDerivedAlias()));
+        IdentifierValue alias = projectionSegment.getAlias().orElseGet(() -> new IdentifierValue(getAggregationDistinctDerivedAlias()));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
                 projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), projectionSegment, alias,
                 projectionSegment.getDistinctInnerExpression(), databaseType, projectionSegment.getSeparator().orElse(null));

@@ -46,7 +46,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -100,8 +100,7 @@ class QueryHeaderBuilderEngineTest {
                 new IdentifierValue("AGGREGATION_DISTINCT_DERIVED_0"), "user_id", mysql);
         SelectStatementContext context = mock(SelectStatementContext.class);
         when(context.containsDerivedProjections()).thenReturn(true);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false,
-                Arrays.asList(new ColumnProjection(null, "user_id", null, mysql), count));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.asList(new ColumnProjection(null, "user_id", null, mysql), count));
         projectionsContext.setAggregationDistinctColumnsRewritten(true);
         when(context.getProjectionsContext()).thenReturn(projectionsContext);
         ResultSetMetaData returnedMetadata = mock(ResultSetMetaData.class);
@@ -123,7 +122,7 @@ class QueryHeaderBuilderEngineTest {
         DatabaseType mysql = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         SelectStatementContext context = mock(SelectStatementContext.class);
         when(context.containsDerivedProjections()).thenReturn(true);
-        List<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(2);
         projections.add(new ColumnProjection(null, "order_id", null, mysql));
         projections.add(new ColumnProjection(null, "ORDER_BY_DERIVED_9", null, mysql));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);

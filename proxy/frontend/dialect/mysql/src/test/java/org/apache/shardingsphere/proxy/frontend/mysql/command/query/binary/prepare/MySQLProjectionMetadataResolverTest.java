@@ -59,7 +59,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -84,7 +83,7 @@ class MySQLProjectionMetadataResolverTest {
         SelectStatementContext context = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(context.containsDerivedProjections()).thenReturn(true);
         when(context.getTablesContext().getDatabaseName()).thenReturn(Optional.of("foo_db"));
-        List<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(2);
         projections.add(new ColumnProjection(null, "user_id", null, databaseType));
         projections.add(count);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
@@ -213,7 +212,7 @@ class MySQLProjectionMetadataResolverTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.of("foo_db"));
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        List<Projection> projections = new ArrayList<>(1);
+        Collection<Projection> projections = new ArrayList<>(1);
         projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
         projectionsContext.getProjections().add(new DerivedProjection("col1", new IdentifierValue("ORDER_BY_DERIVED_0"), mock(SQLSegment.class)));
@@ -264,7 +263,7 @@ class MySQLProjectionMetadataResolverTest {
         SelectStatementContext context = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(context.getTablesContext().getDatabaseName()).thenReturn(Optional.of("foo_db"));
         when(context.containsDerivedProjections()).thenReturn(true);
-        List<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(2);
         projections.add(new ColumnProjection(null, "order_id", null, databaseType));
         projections.add(new ColumnProjection(null, columnLabel, null, databaseType));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);

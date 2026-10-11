@@ -180,10 +180,6 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return loadProjectionColumnDefinition41Packets(selectStatementContext, characterSet, serverPreparedStatement);
     }
     
-    private boolean containsShorthandProjection(final SelectStatementContext selectStatementContext) {
-        return selectStatementContext.getSqlStatement().getProjections().getProjections().stream().anyMatch(each -> each instanceof ShorthandProjectionSegment);
-    }
-    
     private boolean isProjectionMetadataDerivableLocally(final SelectStatementContext selectStatementContext) {
         if (containsShorthandProjection(selectStatementContext)) {
             return false;
@@ -200,6 +196,10 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             }
         }
         return true;
+    }
+    
+    private boolean containsShorthandProjection(final SelectStatementContext selectStatementContext) {
+        return selectStatementContext.getSqlStatement().getProjections().getProjections().stream().anyMatch(each -> each instanceof ShorthandProjectionSegment);
     }
     
     private Collection<MySQLPacket> createProjectionColumnDefinition41PacketsByLocalMetadata(final SelectStatementContext selectStatementContext, final int characterSet) {

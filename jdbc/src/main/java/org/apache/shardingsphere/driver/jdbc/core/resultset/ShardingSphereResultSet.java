@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.driver.exception.ResultSetClosedException;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
@@ -91,6 +92,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
+        ShardingSpherePreconditions.checkState(!isClosed(), () -> new ResultSetClosedException().toSQLException());
         return getIndexFromColumnLabelAndIndexMap(columnLabel);
     }
     
