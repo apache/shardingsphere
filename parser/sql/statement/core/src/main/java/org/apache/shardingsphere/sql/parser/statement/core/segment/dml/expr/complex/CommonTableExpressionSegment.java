@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -31,6 +32,7 @@ import java.util.Optional;
 
 /**
  * Common table expression segment.
+ * The body is a SELECT subquery or a data-modifying statement; the other body field is null.
  */
 @AllArgsConstructor
 @Getter
@@ -44,11 +46,22 @@ public final class CommonTableExpressionSegment implements TableSegment {
     
     private final SubquerySegment subquery;
     
+    private final DMLStatement dataModification;
+    
     private final Collection<ColumnSegment> columns = new LinkedList<>();
     
     private final Collection<ColumnSegment> searchColumns = new LinkedList<>();
     
     private final Collection<ColumnSegment> cycleColumns = new LinkedList<>();
+    
+    /**
+     * Get the actual statement of the common table expression.
+     *
+     * @return SELECT or data-modifying statement
+     */
+    public DMLStatement getStatement() {
+        return null == dataModification ? subquery.getSelect() : dataModification;
+    }
     
     @Override
     public Optional<String> getAliasName() {

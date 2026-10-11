@@ -82,8 +82,8 @@ public final class CommonTableExpressionSegmentBinder {
         segment.getAliasSegment().ifPresent(subqueryTableSegment::setAlias);
         SubqueryTableSegment boundSubquerySegment =
                 SubqueryTableSegmentBinder.bind(subqueryTableSegment, binderContext, LinkedHashMultimap.create(), tableBinderContexts, true);
-        CommonTableExpressionSegment result = new CommonTableExpressionSegment(
-                segment.getStartIndex(), segment.getStopIndex(), boundSubquerySegment.getAliasSegment().orElse(null), boundSubquerySegment.getSubquery());
+        CommonTableExpressionSegment result = new CommonTableExpressionSegment(segment.getStartIndex(), segment.getStopIndex(), boundSubquerySegment.getAliasSegment().orElse(null),
+                boundSubquerySegment.getSubquery(), null);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts =
                 createCurrentTableBinderContexts(segment.getColumns(), binderContext, boundSubquerySegment.getSubquery());
         segment.getColumns().forEach(each -> result.getColumns().add(ColumnSegmentBinder.bind(each,

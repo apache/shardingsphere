@@ -271,7 +271,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             int startIndex = currentOfClause.CURRENT().getSymbol().getStartIndex();
             int stopIndex = currentOfClause.cursorName().stop.getStopIndex();
             result.where(new WhereSegment(currentOfClause.getStart().getStartIndex(), currentOfClause.getStop().getStopIndex(),
-                    new CommonExpressionSegment(startIndex, stopIndex, currentOfClause.start.getInputStream().getText(new Interval(startIndex, stopIndex)))));
+                    new CommonExpressionSegment(startIndex, stopIndex, currentOfClause.start.getInputStream().getText(new Interval(startIndex, stopIndex)), Collections.emptyList())));
         }
         if (null != ctx.returningClause()) {
             result.returning((ReturningSegment) visit(ctx.returningClause()));
@@ -350,7 +350,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             SubqueryExpressionSegment value = new SubqueryExpressionSegment(subquerySegment);
             return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
         }
-        CommonExpressionSegment value = new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.DEFAULT().getText());
+        CommonExpressionSegment value = new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.DEFAULT().getText(), Collections.emptyList());
         return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
     }
     
@@ -528,7 +528,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             int startIndex = currentOfClause.CURRENT().getSymbol().getStartIndex();
             int stopIndex = currentOfClause.cursorName().stop.getStopIndex();
             result.where(new WhereSegment(currentOfClause.getStart().getStartIndex(), currentOfClause.getStop().getStopIndex(),
-                    new CommonExpressionSegment(startIndex, stopIndex, currentOfClause.start.getInputStream().getText(new Interval(startIndex, stopIndex)))));
+                    new CommonExpressionSegment(startIndex, stopIndex, currentOfClause.start.getInputStream().getText(new Interval(startIndex, stopIndex)), Collections.emptyList())));
         }
         if (null != ctx.returningClause()) {
             result.returning((ReturningSegment) visit(ctx.returningClause()));
@@ -751,7 +751,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitAssignmentValue(final AssignmentValueContext ctx) {
         ExprContext expr = ctx.expr();
-        return null == expr ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText()) : visit(expr);
+        return null == expr ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList()) : visit(expr);
     }
     
     @Override
@@ -1011,7 +1011,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 SubquerySegment subquery = new SubquerySegment(each.selectSubquery().start.getStartIndex(), each.selectSubquery().stop.getStopIndex(), (SelectStatement) visit(each),
                         getOriginalText(each));
                 CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(),
-                        (AliasSegment) visit(each.queryName().alias()), subquery);
+                        (AliasSegment) visit(each.queryName().alias()), subquery, null);
                 addCommonTableExpressionColumns(commonTableExpression, each);
                 commonTableExpressions.add(commonTableExpression);
             }
@@ -1832,7 +1832,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             return new SubqueryExpressionSegment(subquerySegment);
         }
         ExprContext expr = ctx.expr();
-        return null == expr ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText()) : visit(expr);
+        return null == expr ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList()) : visit(expr);
     }
     
     @Override

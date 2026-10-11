@@ -107,7 +107,7 @@ class DeleteStatementBinderTest {
     private WithSegment createWithSegment() {
         return new WithSegment(0, 0, new LinkedList<>(Collections.singletonList(
                 new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("combined_users")),
-                        new SubquerySegment(0, 0, createWithSelectStatement(), "")))),
+                        new SubquerySegment(0, 0, createWithSelectStatement(), ""), null))),
                 false);
     }
     

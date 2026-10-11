@@ -62,6 +62,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataSta
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -178,7 +179,7 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
             result.setOrderBySegment((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.frameClause()) {
-            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText()));
+            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText(), Collections.emptyList()));
         }
         if (null != ctx.identifier()) {
             result.setWindowName(new IdentifierValue(ctx.identifier().getText()));

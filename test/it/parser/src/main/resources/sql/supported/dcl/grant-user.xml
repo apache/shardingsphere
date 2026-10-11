@@ -181,4 +181,10 @@
     <sql-case id="grant_drop_role_privilege_doris" value="GRANT DROP ROLE ON *.* TO user1" db-types="Doris" />
     <sql-case id="grant_select_on_table_doris" value="GRANT SELECT ON db1.t_order TO user1" db-types="Doris" />
     <sql-case id="grant_select_sql92" value="GRANT SELECT (order_id) ON t_order TO user1" db-types="SQL92" />
+    <sql-case id="grant_maintain_on_table_postgresql" value="GRANT MAINTAIN ON foo_schema.foo TO foo_role" db-types="PostgreSQL" />
+    <sql-case id="grant_privilege_granted_by_current_user_postgresql" value="GRANT INSERT ON foo TO foo_role GRANTED BY CURRENT_USER" db-types="PostgreSQL" />
+    <sql-case id="grant_privilege_granted_by_current_role_postgresql" value="GRANT TRUNCATE ON foo TO foo_role GRANTED BY CURRENT_ROLE" db-types="PostgreSQL" />
+    <sql-case id="grant_privileges_granted_by_role_postgresql" value="GRANT SELECT, UPDATE ON foo TO foo_role WITH GRANT OPTION GRANTED BY foo_owner" db-types="PostgreSQL" />
+    <sql-case id="grant_role_options_postgresql" value="GRANT foo_reader TO foo_user WITH ADMIN TRUE, INHERIT FALSE, SET TRUE GRANTED BY foo_owner" db-types="PostgreSQL" />
+    <sql-case id="grant_role_option_keyword_postgresql" value="GRANT foo_reader TO foo_user WITH INHERIT OPTION, SET FALSE" db-types="PostgreSQL" />
 </sql-cases>

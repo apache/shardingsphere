@@ -25,8 +25,9 @@ createTable
     : CREATE createTableSpecification TABLE ifNotExists? tableName
       (createDefinitionClause | (OF anyName (LP_ typedTableElementList RP_)?) | (PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec))?
       inheritClause partitionSpec? tableAccessMethodClause? withOption? onCommitOption? tablespace?
-      (AS select withData?)?
-      (EXECUTE name executeParamClause withData?)?
+      (AS (select | EXECUTE name executeParamClause?) withData?)?
+    | CREATE createTableSpecification TABLE ifNotExists? tableName columnNames
+      tableAccessMethodClause? withOption? onCommitOption? tablespace? AS (select | EXECUTE name executeParamClause?) withData?
     ;
 
 executeParamClause
@@ -58,7 +59,7 @@ typedTableElement
     ;
 
 columnOptions
-    : colId (WITH OPTIONS)? colQualList
+    : colId (WITH OPTIONS)? (columnConstraint | collateClause)*
     ;
 
 colQualList
@@ -91,7 +92,7 @@ accessMethod
 
 createIndex
     : CREATE createIndexSpecification INDEX concurrentlyClause (ifNotExists? indexName)? ON onlyClause tableName
-      accessMethodClause? LP_ indexParams RP_ include? (WITH reloptions)? tablespace? whereClause?
+      accessMethodClause? LP_ indexParams RP_ include? nullsDistinct? (WITH reloptions)? tablespace? whereClause?
     ;
 
 include
@@ -115,7 +116,7 @@ createView
       (LP_ (columnList (COMMA_ columnList)*)? RP_)?
       (WITH reloptions)?
       AS select
-      (WITH (CASCADE | LOCAL)? CHECK OPTION)?
+      (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
 
 columnList
@@ -127,7 +128,7 @@ columnElem
     ;
 
 dropDatabase
-    : DROP DATABASE ifExists? name
+    : DROP DATABASE ifExists? name (WITH? LP_ FORCE RP_)?
     ;
 
 dropGroup
@@ -175,7 +176,7 @@ dropIndexOpt
     ;
 
 truncateTable
-    : TRUNCATE TABLE? onlyClause tableNamesClause restartSeqs? dropTableOpt?
+    : TRUNCATE TABLE? tableNamesClause restartSeqs? dropTableOpt?
     ;
 
 restartSeqs
@@ -196,7 +197,7 @@ createDefinition
     ;
 
 columnDefinition
-    : columnName dataType collateClause? columnConstraint*
+    : columnName dataType (STORAGE colId)? columnCompression? collateClause? columnConstraint*
     ;
 
 columnConstraint
@@ -211,11 +212,11 @@ columnConstraintOption
     : NOT? NULL
     | checkOption
     | DEFAULT defaultExpr
-    | GENERATED ALWAYS AS LP_ aExpr RP_ STORED
+    | GENERATED ALWAYS AS LP_ aExpr RP_ (STORED | VIRTUAL)?
     | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
-    | UNIQUE indexParameters
+    | UNIQUE nullsDistinct? indexParameters
     | primaryKey indexParameters
-    | REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
+    | REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action | ON DELETE SET (NULL | DEFAULT) columnNames)*
     ;
 
 checkOption
@@ -254,11 +255,11 @@ action
     ;
 
 constraintOptionalParam
-    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED | IMMEDIATE))?
+    : constraintAttributeElem*
     ;
 
 likeOption
-    : (INCLUDING | EXCLUDING) (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
+    : (INCLUDING | EXCLUDING) (COMMENTS | COMPRESSION | CONSTRAINTS | DEFAULTS | GENERATED | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
     ;
 
 tableConstraint
@@ -267,10 +268,23 @@ tableConstraint
 
 tableConstraintOption
     : checkOption
-    | UNIQUE columnNames indexParameters
-    | primaryKey columnNames indexParameters
+    | NOT NULL columnName
+    | UNIQUE nullsDistinct? keyColumnNames indexParameters
+    | primaryKey keyColumnNames indexParameters
     | EXCLUDE (USING ignoredIdentifier)? LP_ exclusionConstraintList RP_ indexParameters exclusionWhereClause?
-    | FOREIGN KEY columnNames REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
+    | FOREIGN KEY foreignKeyColumnNames REFERENCES tableName foreignKeyColumnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action | ON DELETE SET (NULL | DEFAULT) columnNames)*
+    ;
+
+nullsDistinct
+    : NULLS NOT? DISTINCT
+    ;
+
+keyColumnNames
+    : LP_ columnName (COMMA_ columnName)* (WITHOUT OVERLAPS)? RP_
+    ;
+
+foreignKeyColumnNames
+    : LP_ columnName (COMMA_ columnName)* (COMMA_ PERIOD columnName)? RP_
     ;
 
 exclusionWhereClause
@@ -364,7 +378,7 @@ alterIndexSetTableSpace
     ;
 
 tableNamesClause
-    : tableNameClause (COMMA_ tableNameClause)*
+    : onlyClause tableNameClause (COMMA_ onlyClause tableNameClause)*
     ;
 
 tableNameClause
@@ -387,7 +401,7 @@ alterTableAction
     | ALTER COLUMN? NUMBER_ SET STATISTICS signedIconst
     | ALTER COLUMN? colId SET reloptions
     | ALTER COLUMN? colId RESET reloptions
-    | ALTER COLUMN? colId SET STORAGE colId
+    | ALTER COLUMN? colId SET STORAGE (colId | DEFAULT)
     | ALTER COLUMN? colId SET columnCompression
     | ALTER COLUMN? colId DROP EXPRESSION ifExists?
     | (DISABLE | ENABLE) TRIGGER (ignoredIdentifier | ALL | USER)?
@@ -396,15 +410,14 @@ alterTableAction
     | ENABLE (REPLICA | ALWAYS) RULE ignoredIdentifier
     | (DISABLE | ENABLE | (NO? FORCE)) ROW LEVEL SECURITY
     | CLUSTER ON indexName
-    | SET (ACCESS METHOD name) (COMMA_ ACCESS METHOD name)*
+    | SET (ACCESS METHOD (name | DEFAULT)) (COMMA_ ACCESS METHOD name)*
     | SET WITHOUT CLUSTER
     | SET (WITH | WITHOUT) OIDS
     | SET STATISTICS signedIconst
     | SET TABLESPACE ignoredIdentifier
     | SET (LOGGED | UNLOGGED)
-    | SET LP_ (storageParameterWithValue) (COMMA_ storageParameterWithValue)* RP_
-    | SET LP_ (storageParameter) (COMMA_ storageParameter)* RP_
-    | RESET LP_ storageParameterWithValue (COMMA_ storageParameterWithValue)* RP_
+    | SET reloptions
+    | RESET reloptions
     | INHERIT tableName
     | NO INHERIT tableName
     | OF dataTypeName
@@ -425,6 +438,7 @@ modifyColumnSpecification
     : modifyColumn (SET DATA)? TYPE dataType collateClause? (USING aExpr)?
     | modifyColumn SET DEFAULT aExpr
     | modifyColumn DROP DEFAULT
+    | modifyColumn SET EXPRESSION AS LP_ aExpr RP_
     | modifyColumn (SET | DROP) NOT NULL
     | modifyColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RP_)?
     | modifyColumn alterColumnSetOption alterColumnSetOption*
@@ -432,7 +446,7 @@ modifyColumnSpecification
     | modifyColumn SET STATISTICS NUMBER_
     | modifyColumn SET LP_ attributeOptions RP_
     | modifyColumn RESET LP_ attributeOptions RP_
-    | modifyColumn SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN)
+    | modifyColumn SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN | DEFAULT)
     ;
 
 modifyColumn
@@ -460,7 +474,7 @@ tableConstraintUsingIndex
     ;
 
 modifyConstraintSpecification
-    : ALTER CONSTRAINT constraintName constraintOptionalParam
+    : ALTER CONSTRAINT constraintName (constraintOptionalParam | INHERIT)
     ;
 
 validateConstraintSpecification
@@ -469,14 +483,6 @@ validateConstraintSpecification
 
 dropConstraintSpecification
     : DROP CONSTRAINT ifExists? constraintName (RESTRICT | CASCADE)?
-    ;
-
-storageParameterWithValue
-    : storageParameter EQ_ aExpr
-    ;
-
-storageParameter
-    : IDENTIFIER_
     ;
 
 renameColumnSpecification
@@ -530,7 +536,7 @@ alterTableCmd
     | ALTER COLUMN? NUMBER_ SET STATISTICS signedIconst
     | ALTER COLUMN? colId SET reloptions
     | ALTER COLUMN? colId RESET reloptions
-    | ALTER COLUMN? colId SET STORAGE colId
+    | ALTER COLUMN? colId SET STORAGE (colId | DEFAULT)
     | ALTER COLUMN? colId SET columnCompression
     | ALTER COLUMN? colId ADD GENERATED generatedWhen AS IDENTITY parenthesizedSeqOptList?
     | ALTER COLUMN? colId alterIdentityColumnOptionList
@@ -546,6 +552,7 @@ alterTableCmd
     | DROP CONSTRAINT ifExists name dropBehavior?
     | DROP CONSTRAINT name dropBehavior?
     | SET WITHOUT OIDS
+    | SET ACCESS METHOD (name | DEFAULT)
     | CLUSTER ON name
     | SET WITHOUT CLUSTER
     | SET LOGGED
@@ -594,6 +601,7 @@ constraintAttributeElem
     | INITIALLY DEFERRED
     | NOT VALID
     | NO INHERIT
+    | NOT? ENFORCED
     ;
 
 alterGenericOptions
@@ -660,12 +668,21 @@ alterOperatorFamily
     ;
 
 alterOperatorFamilyClauses
-    : (ADD | DROP) opclassItemList
+    : ADD opclassItemList
+    | DROP opclassDropList
     | alterOperatorClassClauses
     ;
 
 opclassItemList
     : opclassItem (COMMA_ opclassItem)*
+    ;
+
+opclassDropList
+    : opclassDropItem (COMMA_ opclassDropItem)*
+    ;
+
+opclassDropItem
+    : (OPERATOR | FUNCTION) NUMBER_ LP_ typeList RP_
     ;
 
 opclassItem
@@ -691,7 +708,7 @@ operatorDefList
     ;
 
 operatorDefElem
-    : (RESTRICT | JOIN) EQ_ (NONE | operatorDefArg)
+    : colLabel (EQ_ (NONE | operatorDefArg))?
     ;
 
 operatorDefArg
@@ -785,6 +802,7 @@ defaclPrivilegeTarget
     | SEQUENCES
     | TYPES
     | SCHEMAS
+    | LARGE OBJECTS
     ;
 
 privileges
@@ -825,7 +843,7 @@ alterDomain
 
 alterDomainClause
     : anyName (SET | DROP) NOT NULL
-    | anyName ADD tableConstraint (NOT VALID)?
+    | anyName ADD (tableConstraint | constraintClause? NOT NULL) (NOT VALID)?
     | anyName DROP CONSTRAINT ifExists? name dropBehavior?
     | anyName VALIDATE CONSTRAINT name
     | anyName RENAME CONSTRAINT constraintName TO constraintName
@@ -841,7 +859,7 @@ alterEventTrigger
 
 alterEventTriggerClause
     : DISABLE
-    | ENABLE (REPLICA | ALWAYS)
+    | ENABLE (REPLICA | ALWAYS)?
     | OWNER TO roleSpec
     | RENAME TO tiggerName
     ;
@@ -971,7 +989,7 @@ alterMaterializedViewClauses
     | ifExists? qualifiedName RENAME COLUMN? columnName TO columnName
     | ifExists? qualifiedName RENAME TO qualifiedName
     | ifExists? qualifiedName SET SCHEMA schemaName
-    | ALL IN TABLESPACE name (OWNED BY roleList) SET TABLESPACE name NOWAIT?
+    | ALL IN TABLESPACE name (OWNED BY roleList)? SET TABLESPACE name NOWAIT?
     ;
 
 executeStmt
@@ -1032,7 +1050,7 @@ alterPublication
     ( RENAME TO name
     | OWNER TO roleSpec
     | SET definition
-    | (ADD | SET | DROP) TABLE relationExprList)
+    | (ADD | SET | DROP) publicationObjectList)
     ;
 
 alterRoutine
@@ -1048,7 +1066,7 @@ alterSequence
     ;
 
 alterSequenceClauses
-    : OWNER TO roleSpec | seqOptList | RENAME TO name | SET SCHEMA name
+    : OWNER TO roleSpec | seqOptList | RENAME TO name | SET SCHEMA name | SET (LOGGED | UNLOGGED)
     ;
 
 alterServer
@@ -1082,6 +1100,7 @@ alterSubscription
     | SET PUBLICATION publicationNameList (WITH definition)?
     | ADD PUBLICATION publicationNameList (WITH definition)?
     | DROP PUBLICATION publicationNameList (WITH definition)?
+    | SKIP_SYMBOL definition
     | (ENABLE | DISABLE))
     ;
 
@@ -1099,7 +1118,7 @@ alterSystem
 
 alterTablespace
     : ALTER TABLESPACE name
-    ( SET|RESET reloptions
+    ( (SET | RESET) reloptions
     | RENAME TO name
     | OWNER TO roleSpec)
     ;
@@ -1152,7 +1171,7 @@ alterTypeClauses
     | RENAME TO name
     | RENAME ATTRIBUTE name TO name dropBehavior?
     | SET SCHEMA name
-    | SET LP_ typeDefList RP_
+    | SET definition
     | OWNER TO roleSpec
     ;
 
@@ -1164,22 +1183,6 @@ alterTypeCmd
     : ADD ATTRIBUTE tableFuncElement dropBehavior?
     | DROP ATTRIBUTE ifExists? colId dropBehavior?
     | ALTER ATTRIBUTE colId setData? TYPE typeName collateClause? dropBehavior?
-    ;
-
-typeDefList
-    : typeDefElem (COMMA_ typeDefElem)*
-    ;
-
-typeDefElem
-    : (RECEIVE | SEND | TYPMOD_IN | TYPMOD_OUT | ANALYZE | SUBSCRIPT | STORAGE) EQ_ (NONE | typeDefArg)
-    ;
-
-typeDefArg
-    : funcType
-    | reservedKeyword
-    | qualAllOp
-    | numericOnly
-    | STRING_
     ;
 
 alterUserMapping
@@ -1206,7 +1209,7 @@ close
     ;
 
 cluster
-    : CLUSTER clusterVerboseSpecification? tableName? clusterIndexSpecification?
+    : CLUSTER clusterVerboseSpecification? (tableName clusterIndexSpecification? | indexName ON tableName)?
     ;
 
 clusterVerboseSpecification
@@ -1411,9 +1414,8 @@ tableLikeOption
 
 createFunction
     : CREATE (OR REPLACE)? FUNCTION funcName funcArgsWithDefaults
-    ( RETURNS funcReturn createfuncOptList
-    | RETURNS TABLE LP_ tableFuncColumnList RP_ createfuncOptList
-    | createfuncOptList)
+    (RETURNS funcReturn | RETURNS TABLE LP_ tableFuncColumnList RP_)?
+    (createfuncOptList sqlRoutineBody? | sqlRoutineBody)
     ;
 
 tableFuncColumnList
@@ -1437,7 +1439,7 @@ createfuncOptItem
     ;
 
 transformTypeList
-    : FOR TYPE typeName (COMMA_ FOR TYPE typeName)
+    : FOR TYPE typeName (COMMA_ FOR TYPE typeName)*
     ;
 
 funcAs
@@ -1488,7 +1490,23 @@ createPolicy
     ;
 
 createProcedure
-    : CREATE (OR REPLACE)? PROCEDURE funcName funcArgsWithDefaults createfuncOptList
+    : CREATE (OR REPLACE)? PROCEDURE funcName funcArgsWithDefaults (createfuncOptList sqlRoutineBody? | sqlRoutineBody)
+    ;
+
+sqlRoutineBody
+    : RETURN aExpr
+    | BEGIN ATOMIC (sqlRoutineBodyStatement? SEMI_)* END
+    ;
+
+sqlRoutineBodyStatement
+    : RETURN aExpr
+    | select
+    | insert
+    | update
+    | delete
+    | merge
+    | call
+    | createTable
     ;
 
 createPublication
@@ -1496,7 +1514,24 @@ createPublication
     ;
 
 publicationForTables
-    : FOR TABLE relationExprList | FOR ALL TABLES
+    : FOR publicationObjectList | FOR ALL TABLES
+    ;
+
+publicationObjectList
+    : publicationObject (COMMA_ publicationObject)*
+    ;
+
+publicationObject
+    : TABLE publicationTable (COMMA_ publicationTable)*
+    | TABLES IN SCHEMA publicationSchema (COMMA_ publicationSchema)*
+    ;
+
+publicationTable
+    : relationExpr columnNames? (WHERE LP_ aExpr RP_)?
+    ;
+
+publicationSchema
+    : colId | CURRENT_SCHEMA
     ;
 
 createRule
@@ -1523,8 +1558,8 @@ ruleActionMulti
     ;
 
 createTrigger
-    : CREATE TRIGGER name triggerActionTime triggerEvents ON qualifiedName triggerReferencing? triggerForSpec? triggerWhen? EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs? RP_
-    | CREATE CONSTRAINT TRIGGER (FROM qualifiedName)? constraintAttributeSpec FOR EACH ROW triggerWhen EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs? RP_
+    : CREATE (OR REPLACE)? TRIGGER name triggerActionTime triggerEvents ON qualifiedName triggerReferencing? triggerForSpec? triggerWhen? EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs? RP_
+    | CREATE (OR REPLACE)? CONSTRAINT TRIGGER name AFTER triggerEvents ON qualifiedName (FROM qualifiedName)? constraintAttributeSpec FOR EACH? ROW triggerWhen? EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs? RP_
     ;
 
 triggerEvents
@@ -1592,11 +1627,11 @@ tempOption
     ;
 
 createServer
-    : CREATE SERVER ifNotExists? name (TYPE STRING_)? foreignServerVersion? FOREIGN DATA WRAPPER name createGenericOptions
+    : CREATE SERVER ifNotExists? name (TYPE STRING_)? foreignServerVersion? FOREIGN DATA WRAPPER name createGenericOptions?
     ;
 
 createStatistics
-    : CREATE STATISTICS ifNotExists? anyName optNameList ON exprList FROM fromList
+    : CREATE STATISTICS (ifNotExists anyName | anyName)? optNameList ON exprList FROM fromList
     ;
 
 createSubscription
@@ -1631,7 +1666,7 @@ enumValList
     ;
 
 createUserMapping
-    : CREATE USER MAPPING ifNotExists? FOR authIdent SERVER name createGenericOptions
+    : CREATE USER MAPPING ifNotExists? FOR authIdent SERVER name createGenericOptions?
     ;
 
 discard
@@ -1655,15 +1690,15 @@ dropCast
     ;
 
 dropCollation
-    : DROP COLLATION ifExists? name dropBehavior?
+    : DROP COLLATION ifExists? anyNameList dropBehavior?
     ;
 
 dropConversion
-    : DROP CONVERSION ifExists? name dropBehavior?
+    : DROP CONVERSION ifExists? anyName dropBehavior?
     ;
 
 dropDomain
-    : DROP DOMAIN ifExists? nameList dropBehavior?
+    : DROP DOMAIN ifExists? anyNameList dropBehavior?
     ;
 
 dropEventTrigger
@@ -1879,7 +1914,7 @@ reindexOptionList
     ;
 
 reindexOptionElem
-    : VERBOSE | CONCURRENTLY | TABLESPACE
+    : (VERBOSE | CONCURRENTLY) booleanOrString? | TABLESPACE name
     ;
 
 reindexTargetMultitable
@@ -1964,11 +1999,15 @@ grant
     ;
 
 privilegeClause
-    : privilegeTypes ON onObjectClause (FROM | TO) granteeList (WITH GRANT OPTION)?
+    : privilegeTypes ON onObjectClause (FROM | TO) granteeList (WITH GRANT OPTION)? (GRANTED BY roleSpec)?
     ;
 
 roleClause
-    : privilegeList (FROM | TO) roleList (WITH ADMIN OPTION)? (GRANTED BY roleSpec)?
+    : privilegeList (FROM | TO) roleList (WITH roleGrantOption (COMMA_ roleGrantOption)*)? (GRANTED BY roleSpec)?
+    ;
+
+roleGrantOption
+    : (ADMIN | INHERIT | SET) (OPTION | TRUE | FALSE)
     ;
 
 privilegeTypes
@@ -2017,6 +2056,7 @@ privilegeType
     | TRUNCATE
     | REFERENCES
     | TRIGGER
+    | MAINTAIN
     | CREATE
     | CONNECT
     | TEMPORARY

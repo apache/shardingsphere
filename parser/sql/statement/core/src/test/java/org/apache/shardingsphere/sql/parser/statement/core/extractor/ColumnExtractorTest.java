@@ -241,7 +241,7 @@ class ColumnExtractorTest {
         JoinTableSegment innerJoin = new JoinTableSegment();
         innerJoin.setLeft(new CollectionTableSegment(createColumnSegment("foo_collection_expr")));
         CommonTableExpressionSegment commonTableExpressionSegment = new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("cte_alias")),
-                new SubquerySegment(0, 0, createSelectStatementWithProjection("foo_cte_subquery_column"), ""));
+                new SubquerySegment(0, 0, createSelectStatementWithProjection("foo_cte_subquery_column"), ""), null);
         innerJoin.setRight(commonTableExpressionSegment);
         innerJoin.setCondition(createBinaryOperation("foo_inner_join_left", "bar_inner_join_right"));
         JoinTableSegment result = new JoinTableSegment();

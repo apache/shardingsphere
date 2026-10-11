@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlTableColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlTableFunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.PivotSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.CollectionTableSegment;
@@ -42,7 +43,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.own
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.MergeStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.SelectStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedTableFunction;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedXmlTableColumn;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedCollectionTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedFunctionTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedHintIndexName;
@@ -59,6 +62,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -232,6 +236,7 @@ public final class TableAssert {
             ColumnAssert.assertIs(assertContext, actual.getUsing().get(count), each);
             count++;
         }
+        assertUsingAlias(assertContext, actual, expected);
         assertColumns(assertContext, actual.getLeftQueryPartitionListSegments(), expected.getLeftQueryPartitionColumns(), "Left query partition");
         assertColumns(assertContext, actual.getRightQueryPartitionListSegments(), expected.getRightQueryPartitionColumns(), "Right query partition");
     }
@@ -267,6 +272,17 @@ public final class TableAssert {
         }
     }
     
+    private static void assertUsingAlias(final SQLCaseAssertContext assertContext, final JoinTableSegment actual, final ExpectedJoinTable expected) {
+        if (null == expected.getUsingAlias()) {
+            assertFalse(actual.getUsingAliasSegment().isPresent(), assertContext.getText("USING alias should not exist."));
+            return;
+        }
+        assertTrue(actual.getUsingAliasSegment().isPresent(), assertContext.getText("USING alias should exist."));
+        assertThat(actual.getUsingAliasSegment().get().getIdentifier().getValue(), is(expected.getUsingAlias()));
+        assertThat(actual.getUsingAliasSegment().get().getStartIndex(), is(expected.getUsingAliasStartIndex()));
+        assertThat(actual.getUsingAliasSegment().get().getStopIndex(), is(expected.getUsingAliasStopIndex()));
+    }
+    
     private static void assertPivot(final SQLCaseAssertContext assertContext, final PivotSegment actual, final ExpectedPivot expected) {
         if (null == expected) {
             return;
@@ -292,7 +308,7 @@ public final class TableAssert {
         Iterator<? extends ExpressionSegment> actualIterator = actual.iterator();
         for (ExpectedColumn each : expected) {
             ExpressionSegment actualExpression = actualIterator.next();
-            assertTrue(actualExpression instanceof ColumnSegment, assertContext.getText(segmentName + " column expression assertion error: "));
+            assertThat(assertContext.getText(segmentName + " column expression assertion error: "), actualExpression, isA(ColumnSegment.class));
             ColumnAssert.assertIs(assertContext, (ColumnSegment) actualExpression, each);
         }
     }
@@ -310,10 +326,40 @@ public final class TableAssert {
             XmlTableFunctionSegment actualXmlTableFunction = (XmlTableFunctionSegment) actual;
             assertThat(assertContext.getText("Function name assertion error"), actualXmlTableFunction.getFunctionName(), is(expected.getFunctionName()));
             assertThat(assertContext.getText("Function text assert error"), actual.getText(), is(expected.getText()));
+            assertFunctionParameters(assertContext, actualXmlTableFunction.getXmlTableOption().getParameters(), expected.getParameters());
+            assertXmlTableColumns(assertContext, actualXmlTableFunction.getXmlTableOption().getXmlTableColumnSegments(), expected.getXmlColumns());
         } else if (actual instanceof FunctionSegment) {
             FunctionSegment actualTableFunction = (FunctionSegment) actual;
             assertThat(assertContext.getText("Function name assertion error"), actualTableFunction.getFunctionName(), is(expected.getFunctionName()));
             assertThat(assertContext.getText("Function text assert error"), actual.getText(), is(expected.getText()));
+            assertFunctionParameters(assertContext, actualTableFunction.getParameters(), expected.getParameters());
+        }
+    }
+    
+    private static void assertFunctionParameters(final SQLCaseAssertContext assertContext, final Collection<ExpressionSegment> actual, final List<ExpectedExpression> expected) {
+        if (expected.isEmpty()) {
+            return;
+        }
+        assertThat(assertContext.getText("Table function parameter count assertion error"), actual.size(), is(expected.size()));
+        int count = 0;
+        for (ExpressionSegment each : actual) {
+            ExpressionAssert.assertExpression(assertContext, each, expected.get(count++));
+        }
+    }
+    
+    private static void assertXmlTableColumns(final SQLCaseAssertContext assertContext, final Collection<XmlTableColumnSegment> actual, final List<ExpectedXmlTableColumn> expected) {
+        if (expected.isEmpty()) {
+            return;
+        }
+        assertThat(assertContext.getText("XMLTABLE column count assertion error"), actual.size(), is(expected.size()));
+        int count = 0;
+        for (XmlTableColumnSegment each : actual) {
+            ExpectedXmlTableColumn expectedColumn = expected.get(count++);
+            assertThat(each.getColumnName(), is(expectedColumn.getName()));
+            assertThat(each.getDataType(), is(expectedColumn.getDataType()));
+            assertThat(each.getPath(), is(expectedColumn.getPath()));
+            ExpressionAssert.assertExpression(assertContext, each.getDefaultExpr(), expectedColumn.getDefaultExpr());
+            SQLSegmentAssert.assertIs(assertContext, each, expectedColumn);
         }
     }
     

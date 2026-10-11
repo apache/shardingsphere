@@ -198,8 +198,8 @@ class ExpressionExtractorTest {
         BinaryOperationExpression param1 = new BinaryOperationExpression(0, 0,
                 new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("number")), new LiteralExpressionSegment(0, 0, 1), "+", "number + 1"),
                 new ParameterMarkerExpressionSegment(0, 0, 2), "<=", "number + 1 <= ?");
-        CommonExpressionSegment param2 = new CommonExpressionSegment(0, 0, "1");
-        CommonExpressionSegment param3 = new CommonExpressionSegment(0, 0, "-1");
+        CommonExpressionSegment param2 = new CommonExpressionSegment(0, 0, "1", Collections.emptyList());
+        CommonExpressionSegment param3 = new CommonExpressionSegment(0, 0, "-1", Collections.emptyList());
         functionSegment.getParameters().add(param1);
         functionSegment.getParameters().add(param2);
         functionSegment.getParameters().add(param3);

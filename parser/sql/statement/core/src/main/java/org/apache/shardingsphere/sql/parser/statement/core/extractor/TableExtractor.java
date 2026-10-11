@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.List
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -67,6 +68,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
@@ -114,7 +116,11 @@ public final class TableExtractor {
     
     private void extractTablesFromCTEs(final Collection<CommonTableExpressionSegment> commonTableExpressionSegments) {
         for (CommonTableExpressionSegment each : commonTableExpressionSegments) {
-            extractTablesFromSelect(each.getSubquery().getSelect());
+            if (each.getStatement() instanceof MergeStatement) {
+                extractTablesFromMerge((MergeStatement) each.getStatement());
+            } else {
+                extractTablesFromSQLStatement(each.getStatement());
+            }
         }
     }
     
@@ -157,6 +163,9 @@ public final class TableExtractor {
         }
         if (expressionSegment instanceof ListExpression) {
             ((ListExpression) expressionSegment).getItems().forEach(this::extractTablesFromExpression);
+        }
+        if (expressionSegment instanceof CommonExpressionSegment) {
+            ((CommonExpressionSegment) expressionSegment).getChildren().forEach(this::extractTablesFromExpression);
         }
         if (expressionSegment instanceof ExistsSubqueryExpression) {
             extractTablesFromSelect(((ExistsSubqueryExpression) expressionSegment).getSubquery().getSelect());
@@ -321,6 +330,16 @@ public final class TableExtractor {
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr());
         }
+    }
+    
+    /**
+     * Extract tables from a MERGE body of a common table expression or prepared statement.
+     *
+     * @param mergeStatement merge statement
+     */
+    public void extractTablesFromMerge(final MergeStatement mergeStatement) {
+        extractTablesFromTableSegment(mergeStatement.getTarget());
+        extractTablesFromTableSegment(mergeStatement.getSource());
     }
     
     /**

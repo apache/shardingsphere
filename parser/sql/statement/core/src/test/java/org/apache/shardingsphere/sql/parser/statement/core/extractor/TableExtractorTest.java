@@ -22,11 +22,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -39,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -49,18 +53,28 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.in
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -69,6 +83,50 @@ import static org.mockito.Mockito.when;
 class TableExtractorTest {
     
     private final TableExtractor tableExtractor = new TableExtractor();
+    
+    @Test
+    void assertExtractCommonExpressionTableOrder() {
+        SimpleTableSegment first = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_first")));
+        SimpleTableSegment second = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_second")));
+        CommonExpressionSegment indexed = new CommonExpressionSegment(0, 0, "ARRAY[(SELECT id FROM foo_first)][(SELECT id FROM foo_second)]",
+                Arrays.asList(createSubqueryExpression(first), new CommonExpressionSegment(0, 0, "(SELECT id FROM foo_second)", Collections.singletonList(createSubqueryExpression(second)))));
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ExpressionProjectionSegment(0, 0, "", indexed));
+        tableExtractor.extractTablesFromSelect(SelectStatement.builder().projections(projections).build());
+        assertThat(tableExtractor.getRewriteTables(), contains(first, second));
+    }
+    
+    private SubqueryExpressionSegment createSubqueryExpression(final SimpleTableSegment table) {
+        SelectStatement statement = SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).from(table).build();
+        return new SubqueryExpressionSegment(new SubquerySegment(0, 0, statement, ""));
+    }
+    
+    @Test
+    void assertExtractLegacyCommonExpressionTables() {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 10);
+        projections.getProjections().add(new ExpressionProjectionSegment(0, 10, "legacy text", new CommonExpressionSegment(0, 10, "legacy text", Collections.emptyList())));
+        tableExtractor.extractTablesFromSelect(SelectStatement.builder().projections(projections).build());
+        assertTrue(tableExtractor.getRewriteTables().isEmpty());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getDataModificationArguments")
+    void assertExtractTablesFromDataModification(final String name, final DMLStatement body, final int expectedTableCount) {
+        CommonTableExpressionSegment commonTable = new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("foo_changed")), null, body);
+        WithSegment with = new WithSegment(0, 0, Collections.singletonList(commonTable));
+        tableExtractor.extractTablesFromSelect(SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).with(with).build());
+        assertThat(tableExtractor.getRewriteTables().size(), is(expectedTableCount));
+        assertThat(tableExtractor.getRewriteTables().iterator().next().getTableName().getIdentifier().getValue(), is("foo_target"));
+    }
+    
+    private static Stream<Arguments> getDataModificationArguments() {
+        SimpleTableSegment target = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_target")));
+        SimpleTableSegment source = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_source")));
+        return Stream.of(Arguments.of("insert", InsertStatement.builder().table(target).build(), 1),
+                Arguments.of("update", UpdateStatement.builder().table(target).setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList())).build(), 1),
+                Arguments.of("delete", DeleteStatement.builder().table(target).build(), 1),
+                Arguments.of("merge", MergeStatement.builder().target(target).source(source).build(), 2));
+    }
     
     @Test
     void assertExtractTablesFromSelectProjects() {

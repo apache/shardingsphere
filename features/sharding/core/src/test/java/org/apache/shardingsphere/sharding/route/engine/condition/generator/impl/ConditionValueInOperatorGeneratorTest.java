@@ -56,7 +56,7 @@ class ConditionValueInOperatorGeneratorTest {
     @Test
     void assertNowExpression() {
         ListExpression listExpression = new ListExpression(0, 0);
-        listExpression.getItems().add(new CommonExpressionSegment(0, 0, "now()"));
+        listExpression.getItems().add(new CommonExpressionSegment(0, 0, "now()", Collections.emptyList()));
         InExpression inExpression = new InExpression(0, 0, null, listExpression, false);
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(inExpression, column, new LinkedList<>(), timestampServiceRule);
         assertTrue(shardingConditionValue.isPresent());
