@@ -1665,6 +1665,32 @@ class RunTest(unittest.TestCase):
                 self.assertFalse(any(failure.startswith("summary lacks required terms=") for failure in failures), failures)
                 self.assertTrue(any(failure.startswith("summary contains forbidden terms=") for failure in failures), failures)
 
+    def test_grade_accepts_unambiguous_defensive_guard_removal(self) -> None:
+        case = run.load_cases(["speculative_defensive_guard_is_removed"])[0]
+        actual = {"results": [self._create_case_result(case, "defense=remove;fallback_test=remove")]}
+        result = run.grade([case], actual)[0]
+        self.assertTrue(result["passed"], result["failures"])
+
+    def test_grade_rejects_contradictory_defensive_guard_decisions(self) -> None:
+        case = run.load_cases(["speculative_defensive_guard_is_removed"])[0]
+        for summary in (
+                "defense=remove; fallback_test=remove. Keep the null guard; remove the fallback-only test.",
+                "defense=remove;fallback_test=remove. Keep the null guard.",
+                "defense=remove;fallback_test=remove. Keep the fallback-only test.",
+                "defense=remove;fallback_test=remove;defense=keep"):
+            with self.subTest(summary=summary):
+                actual = {"results": [self._create_case_result(case, summary)]}
+                result = run.grade([case], actual)[0]
+                self.assertFalse(result["passed"], result)
+
+    def test_grade_rejects_malformed_defensive_guard_decisions_within_length_limit(self) -> None:
+        case = run.load_cases(["speculative_defensive_guard_is_removed"])[0]
+        for summary in ("defense=remove\nfallback_test=remove", "defense=removefallback_test=remove"):
+            with self.subTest(summary=summary):
+                actual = {"results": [self._create_case_result(case, summary)]}
+                result = run.grade([case], actual)[0]
+                self.assertFalse(result["passed"], result)
+
     def test_grade_accepts_authorization_contract_examples(self) -> None:
         summaries = {
             "foreseeable_authorizations_are_consolidated": (
