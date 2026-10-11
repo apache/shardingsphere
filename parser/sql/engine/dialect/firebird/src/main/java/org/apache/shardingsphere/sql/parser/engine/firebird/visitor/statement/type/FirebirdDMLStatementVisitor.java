@@ -368,7 +368,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
             if (ctx.rowsClause().expr().size() > 1) {
                 rowCount = (PaginationValueSegment) visitLimitValue(ctx.rowsClause().expr(1));
             }
-        } else if (null != ctx.offsetDefinition()) {
+        } else {
             OffsetDefinitionContext offsetDefinition = ctx.offsetDefinition();
             if (null != offsetDefinition.offsetClause()) {
                 offset = (PaginationValueSegment) visitLimitValue(offsetDefinition.offsetClause().limitOffset());
@@ -381,10 +381,10 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     }
     
     private ASTNode visitLimitValue(final ParserRuleContext ctx) {
-        if (ctx.getChildCount() == 1 && ctx.getChild(0) instanceof NumberLiteralsContext) {
+        if (ctx.getChild(0) instanceof NumberLiteralsContext) {
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.getChild(0))).getValue().longValue());
         }
-        if (ctx.getChildCount() == 1 && ctx.getChild(0) instanceof ParameterMarkerContext) {
+        if (ctx.getChild(0) instanceof ParameterMarkerContext) {
             ParameterMarkerSegment result =
                     new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.getChild(0))).getValue());
             getParameterMarkerSegments().add(result);
