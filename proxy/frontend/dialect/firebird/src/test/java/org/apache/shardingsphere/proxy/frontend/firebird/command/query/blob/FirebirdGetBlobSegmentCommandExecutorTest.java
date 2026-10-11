@@ -143,7 +143,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("lastSegmentStateCases")
     void assertExecuteWithLastSegment(final String name, final int requestedLength, final int expectedState) {
-        FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3});
+        FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3}, false);
         when(packet.getSegmentLength()).thenReturn(requestedLength);
         FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession).execute().iterator().next();
         assertThat(actual.getHandle(), is(expectedState));
