@@ -101,7 +101,6 @@ class SQLRewriteContextTest {
         when(statementContext.getProjectionsContext()).thenReturn(projectionsContext);
         QueryContext queryContext = mock(QueryContext.class);
         when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
-        when(queryContext.getParameters()).thenReturn(Collections.emptyList());
         new SQLRewriteContext(database, queryContext);
         assertFalse(projectionsContext.isDerivedColumnsAppended());
         assertFalse(projectionsContext.isAggregationDistinctColumnsRewritten());

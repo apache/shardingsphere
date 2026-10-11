@@ -184,7 +184,6 @@ class ShardingSphereResultSetMetaDataTest {
         when(resultSetMetaData.getColumnCount()).thenReturn(5);
         stubBackendColumnLabels(resultSetMetaData, "order_id", "add_test", "user_id", "status", "create_time");
         when(resultSetMetaData.getColumnName(2)).thenReturn("add_test");
-        when(resultSetMetaData.getColumnLabel(2)).thenReturn("add_test");
         ShardingSphereResultSetMetaData metaData = new ShardingSphereResultSetMetaData(resultSetMetaData, null, sqlStatementContext);
         assertThat(metaData.getColumnName(2), is("add_test"));
         assertThat(metaData.getColumnLabel(2), is("add_test"));
@@ -296,7 +295,6 @@ class ShardingSphereResultSetMetaDataTest {
     @Test
     void assertGetColumnCountKeepsDerivedNamedColumnWhenNoDerivedProjections() throws SQLException {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
-        when(sqlStatementContext.containsDerivedProjections()).thenReturn(false);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(2);
         stubBackendColumnLabels(resultSetMetaData, "col1", "order_by_derived_0");
@@ -394,7 +392,6 @@ class ShardingSphereResultSetMetaDataTest {
         when(returnedMetadata.getColumnName(1)).thenReturn("order_id");
         when(returnedMetadata.getColumnName(2)).thenReturn("add_test");
         when(returnedMetadata.getColumnName(3)).thenReturn("user_id");
-        when(returnedMetadata.getColumnName(4)).thenReturn("user_id");
         ShardingSphereResultSetMetaData actual = new ShardingSphereResultSetMetaData(returnedMetadata, null, context);
         assertThat(actual.getColumnCount(), is(4));
         String[] expected = {"order_id", "add_test", "user_id", expectedLabel};

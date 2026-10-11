@@ -132,6 +132,19 @@ class MySQLProjectionMetadataResolverTest {
         verify(preparedStatement).close();
     }
     
+    private MySQLPacketPayload createPayload(final MySQLColumnDefinition41Packet packet) {
+        ByteBuf byteBuf = Unpooled.buffer();
+        packet.write(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8));
+        return new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+    }
+    
+    private String readColumnName(final MySQLPacketPayload payload) {
+        for (int i = 0; i < 4; i++) {
+            payload.readStringLenenc();
+        }
+        return payload.readStringLenenc();
+    }
+    
     @Test
     void assertResolveProjectionPackets() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
@@ -163,6 +176,26 @@ class MySQLProjectionMetadataResolverTest {
         assertThat(payload.readInt1(), is(MySQLBinaryColumnType.BLOB.getValue()));
         assertThat(payload.readInt2(), is(MySQLColumnDefinitionFlag.BLOB.getValue()));
         verify(preparedStatement).close();
+    }
+    
+    private void mockResultSetMetaData(final ResultSetMetaData resultSetMetaData) throws SQLException {
+        when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(resultSetMetaData.getColumnName(1)).thenReturn("content");
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("content");
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.CLOB);
+        when(resultSetMetaData.getColumnTypeName(1)).thenReturn("BLOB SUB_TYPE TEXT");
+        when(resultSetMetaData.getColumnDisplaySize(1)).thenReturn(1024);
+        when(resultSetMetaData.isNullable(1)).thenReturn(ResultSetMetaData.columnNullable);
+        when(resultSetMetaData.getTableName(1)).thenReturn("");
+    }
+    
+    private void skipColumnDefinitionStrings(final MySQLPacketPayload payload) {
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
     }
     
     @Test
@@ -350,36 +383,4 @@ class MySQLProjectionMetadataResolverTest {
         verify(preparedStatement).close();
     }
     
-    private void mockResultSetMetaData(final ResultSetMetaData resultSetMetaData) throws SQLException {
-        when(resultSetMetaData.getColumnCount()).thenReturn(1);
-        when(resultSetMetaData.getColumnName(1)).thenReturn("content");
-        when(resultSetMetaData.getColumnLabel(1)).thenReturn("content");
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.CLOB);
-        when(resultSetMetaData.getColumnTypeName(1)).thenReturn("BLOB SUB_TYPE TEXT");
-        when(resultSetMetaData.getColumnDisplaySize(1)).thenReturn(1024);
-        when(resultSetMetaData.isNullable(1)).thenReturn(ResultSetMetaData.columnNullable);
-        when(resultSetMetaData.getTableName(1)).thenReturn("");
-    }
-    
-    private MySQLPacketPayload createPayload(final MySQLColumnDefinition41Packet packet) {
-        ByteBuf byteBuf = Unpooled.buffer();
-        packet.write(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8));
-        return new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-    }
-    
-    private String readColumnName(final MySQLPacketPayload payload) {
-        for (int i = 0; i < 4; i++) {
-            payload.readStringLenenc();
-        }
-        return payload.readStringLenenc();
-    }
-    
-    private void skipColumnDefinitionStrings(final MySQLPacketPayload payload) {
-        payload.readStringLenenc();
-        payload.readStringLenenc();
-        payload.readStringLenenc();
-        payload.readStringLenenc();
-        payload.readStringLenenc();
-        payload.readStringLenenc();
-    }
 }

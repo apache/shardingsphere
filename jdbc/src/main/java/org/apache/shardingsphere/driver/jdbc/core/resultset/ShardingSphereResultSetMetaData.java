@@ -127,6 +127,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
         }
     }
     
+    @HighFrequencyInvocation
     private int getReturnedColumnIndex(final ClientVisibleColumnLayout columnLayout, final int column) throws SQLException {
         return columnLayout.passthrough ? column : columnLayout.getVisibleColumnIndex(column);
     }
@@ -241,6 +242,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
                     ShardingSphereResultSetUtils.createAggregationDistinctColumnLabels(sqlStatementContext, resultSetMetaData));
         }
         
+        @HighFrequencyInvocation
         private int getVisibleColumnIndex(final int column) throws SQLException {
             ShardingSpherePreconditions.checkState(column >= 1 && column <= visibleColumnIndexes.length, () -> new ColumnIndexOutOfRangeException(column).toSQLException());
             return visibleColumnIndexes[column - 1];

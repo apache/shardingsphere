@@ -185,8 +185,7 @@ class QueryHeaderBuilderEngineTest {
         QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
         when(queryHeaderBuilder.build(resultSetMetaData, database, "col_name", "col_label", 1)).thenReturn(expectedQueryHeader);
         when((DatabaseTypedSPI) DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(queryHeaderBuilder);
-        QueryHeader actualQueryHeader =
-                new QueryHeaderBuilderEngine(databaseType).build(sqlStatementContext, resultSetMetaData, resultSet, database, 1);
+        QueryHeader actualQueryHeader = new QueryHeaderBuilderEngine(databaseType).build(sqlStatementContext, resultSetMetaData, resultSet, database, 1);
         assertThat(actualQueryHeader, is(expectedQueryHeader));
         verify(queryHeaderBuilder).appendProtocolAttributes(expectedQueryHeader, resultSet);
     }

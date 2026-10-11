@@ -101,6 +101,26 @@ class ShardingSphereResultSetTest {
     }
     
     @Test
+    void assertFindColumnAfterBackendCloseWhenTypeRemainsAvailable() throws SQLException {
+        List<ResultSet> resultSets = getResultSets();
+        ResultSet backend = resultSets.get(0);
+        when(backend.getType()).thenReturn(ResultSet.TYPE_FORWARD_ONLY);
+        ShardingSphereResultSet actual = new ShardingSphereResultSet(resultSets, mergeResultSet, statement, createSQLStatementContext());
+        when(backend.isClosed()).thenReturn(true);
+        assertThrows(SQLException.class, () -> actual.findColumn("label"));
+    }
+    
+    @Test
+    void assertFindColumnWithCachedColumnsAfterBackendClose() throws SQLException {
+        List<ResultSet> resultSets = getResultSets();
+        ResultSet backend = resultSets.get(0);
+        when(backend.getType()).thenReturn(ResultSet.TYPE_FORWARD_ONLY);
+        ShardingSphereResultSet actual = new ShardingSphereResultSet(resultSets, mergeResultSet, statement, createSQLStatementContext(), Collections.singletonMap("label", 1));
+        when(backend.isClosed()).thenReturn(true);
+        assertThrows(SQLException.class, () -> actual.findColumn("label"));
+    }
+    
+    @Test
     void assertFindColumnAfterClose() throws SQLException {
         JdbcDataSource backend = new JdbcDataSource();
         backend.setURL("jdbc:h2:mem:foo_find_column_closed;MODE=MySQL;DATABASE_TO_UPPER=false");
@@ -121,6 +141,67 @@ class ShardingSphereResultSetTest {
                 assertThrows(SQLException.class, () -> actual.findColumn("user_id"));
             }
         }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("implicitCloseOperations")
+    void assertFindColumnAfterImplicitClose(final String name, final boolean prepared, final String operation) throws SQLException {
+        JdbcDataSource backend = new JdbcDataSource();
+        backend.setURL("jdbc:h2:mem:foo_find_column_implicit_close;MODE=MySQL;DATABASE_TO_UPPER=false");
+        try (Connection backendConnection = backend.getConnection(); Statement backendStatement = backendConnection.createStatement()) {
+            backendStatement.execute("CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT)");
+            ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
+            rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_0"));
+            try (
+                    ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
+                            Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties());
+                    Connection connection = dataSource.getConnection();
+                    Statement statement = prepared ? connection.prepareStatement("SELECT * FROM t_order") : connection.createStatement();
+                    ResultSet actual = prepared ? ((PreparedStatement) statement).executeQuery() : statement.executeQuery("SELECT * FROM t_order")) {
+                assertThat(actual.findColumn("user_id"), is(2));
+                closeResultSetOwner(connection, statement, operation);
+                assertThrows(SQLException.class, () -> actual.findColumn("user_id"));
+            }
+        }
+    }
+    
+    private void closeResultSetOwner(final Connection connection, final Statement statement, final String operation) throws SQLException {
+        if ("statement".equals(operation)) {
+            statement.close();
+            return;
+        }
+        if ("connection".equals(operation)) {
+            connection.close();
+            return;
+        }
+        if ("autoCommit".equals(operation)) {
+            connection.setAutoCommit(false);
+            connection.setAutoCommit(true);
+            return;
+        }
+        if ("reexecution".equals(operation)) {
+            if (statement instanceof PreparedStatement) {
+                ((PreparedStatement) statement).executeQuery();
+            } else {
+                statement.executeQuery("SELECT * FROM t_order");
+            }
+            return;
+        }
+        statement.getMoreResults();
+    }
+    
+    private static Collection<Arguments> implicitCloseOperations() {
+        return Arrays.asList(
+                Arguments.of("statement close", false, "statement"),
+                Arguments.of("connection close", false, "connection"),
+                Arguments.of("statement reexecution", false, "reexecution"),
+                Arguments.of("statement more results", false, "moreResults"),
+                Arguments.of("prepared statement close", true, "statement"),
+                Arguments.of("prepared connection close", true, "connection"),
+                Arguments.of("prepared statement reexecution", true, "reexecution"),
+                Arguments.of("prepared statement more results", true, "moreResults"),
+                Arguments.of("statement physical connection close", false, "autoCommit"),
+                Arguments.of("prepared statement physical connection close", true, "autoCommit"));
     }
     
     @Test
@@ -413,6 +494,79 @@ class ShardingSphereResultSetTest {
     
     private static Collection<Arguments> knownAggregationAliasCollisionQueries() {
         return Arrays.asList(Arguments.of("known real column without drift", false), Arguments.of("known real column with drift", true));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("aggregationAliasCollisionAfterBindingQueries")
+    void assertAggregationAliasCollision(final String name, final String aggregate, final boolean afterShorthand, final boolean appendedGroupBy,
+                                         final String orderBy, final int expectedFirstOrderId) throws SQLException {
+        JdbcDataSource backend = new JdbcDataSource();
+        backend.setURL("jdbc:h2:mem:foo_distinct_alias_collision;MODE=MySQL;DATABASE_TO_UPPER=false");
+        try (
+                Connection backendConnection = backend.getConnection();
+                Statement backendStatement = backendConnection.createStatement();
+                ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
+                        Collections.singletonMap("ds", backend), Collections.singleton(createAggregationAliasCollisionRule(backendStatement)), new Properties())) {
+            for (int index = 0; index < 2; index++) {
+                backendStatement.execute("ALTER TABLE t_order_" + index + " ADD AGGREGATION_DISTINCT_DERIVED_0 INT DEFAULT 99");
+                backendStatement.execute("UPDATE t_order_" + index + " SET AGGREGATION_DISTINCT_DERIVED_0 = " + (99 - index));
+            }
+            String label = aggregate + "(DISTINCT user_id)";
+            String projections = afterShorthand ? "COUNT(DISTINCT user_id) AS foo_count, t_order.*, " + label : label + ", t_order.*";
+            String sql = "SELECT " + projections + " FROM t_order GROUP BY " + (appendedGroupBy ? "order_id + 0" : "order_id") + (orderBy.isEmpty() ? "" : " ORDER BY " + orderBy);
+            try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement(); ResultSet actual = statement.executeQuery(sql)) {
+                String[] expectedLabels = afterShorthand
+                        ? new String[]{"foo_count", "order_id", "user_id", "AGGREGATION_DISTINCT_DERIVED_0", label}
+                        : new String[]{label, "order_id", "user_id", "AGGREGATION_DISTINCT_DERIVED_0"};
+                ResultSetMetaData actualMetadata = actual.getMetaData();
+                assertThat(actualMetadata.getColumnCount(), is(expectedLabels.length));
+                for (int columnIndex = 1; columnIndex <= expectedLabels.length; columnIndex++) {
+                    assertThat(actualMetadata.getColumnLabel(columnIndex), is(expectedLabels[columnIndex - 1]));
+                    assertThat(actualMetadata.getColumnName(columnIndex), is(expectedLabels[columnIndex - 1]));
+                    assertThat(actual.findColumn(expectedLabels[columnIndex - 1]), is(columnIndex));
+                }
+                int actualRowCount = 0;
+                while (actual.next()) {
+                    int expectedAggregate = label.startsWith("COUNT") ? 1 : actual.getInt("order_id") + 8;
+                    assertThat(actual.getInt(label), is(expectedAggregate));
+                    assertThat(actual.getInt(afterShorthand ? 5 : 1), is(expectedAggregate));
+                    assertThat(actual.getInt("AGGREGATION_DISTINCT_DERIVED_0"), is(99 - actual.getInt("order_id")));
+                    assertThat(actual.getInt(4), is(99 - actual.getInt("order_id")));
+                    assertThat(actual.getInt("user_id"), is(actual.getInt("order_id") + 8));
+                    if (!orderBy.isEmpty()) {
+                        assertThat(actual.getInt("order_id"), is(0 == actualRowCount ? expectedFirstOrderId : 1 - expectedFirstOrderId));
+                    }
+                    actualRowCount++;
+                }
+                assertThat(actualRowCount, is(2));
+            }
+        }
+    }
+    
+    private ShardingRuleConfiguration createAggregationAliasCollisionRule(final Statement backendStatement) throws SQLException {
+        for (int index = 0; index < 2; index++) {
+            backendStatement.execute("CREATE TABLE t_order_" + index + " (order_id INT PRIMARY KEY, user_id INT)");
+            backendStatement.execute("INSERT INTO t_order_" + index + " VALUES (" + index + ", " + (index + 8) + ")");
+        }
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..1}"));
+        return result;
+    }
+    
+    private static Collection<Arguments> aggregationAliasCollisionAfterBindingQueries() {
+        return Arrays.asList(
+                Arguments.of("COUNT after shorthand", "COUNT", true, false, "", 0),
+                Arguments.of("SUM after shorthand", "SUM", true, false, "", 0),
+                Arguments.of("COUNT before shorthand", "COUNT", false, false, "", 0),
+                Arguments.of("SUM before shorthand", "SUM", false, false, "", 0),
+                Arguments.of("SUM with appended group by", "SUM", true, true, "", 0),
+                Arguments.of("AVG with appended aggregation columns", "AVG", true, false, "", 0),
+                Arguments.of("aggregate order after shorthand", "SUM", true, false, "SUM(DISTINCT user_id) DESC", 1),
+                Arguments.of("aggregate order before shorthand", "SUM", false, false, "SUM(DISTINCT user_id) DESC", 1),
+                Arguments.of("numeric aggregate order", "SUM", true, false, "5 DESC", 1),
+                Arguments.of("numeric genuine column order", "SUM", true, false, "4 DESC", 0),
+                Arguments.of("genuine column order", "SUM", true, false, "user_id DESC", 1),
+                Arguments.of("quoted aggregate order", "SUM", true, false, "SUM( DISTINCT `user_id` ) DESC", 1));
     }
     
     @BeforeEach

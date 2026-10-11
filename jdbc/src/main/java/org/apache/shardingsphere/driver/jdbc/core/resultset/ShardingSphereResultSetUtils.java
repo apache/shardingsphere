@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
@@ -78,6 +79,15 @@ public final class ShardingSphereResultSetUtils {
     static Map<Integer, String> createAggregationDistinctColumnLabels(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
         if (!mayAppendDerivedColumns(sqlStatementContext) || !((SelectStatementContext) sqlStatementContext).getProjectionsContext().isAggregationDistinctColumnsRewritten()) {
             return Collections.emptyMap();
+        }
+        Map<Integer, AggregationDistinctProjection> projectionsByColumnIndex = ((SelectStatementContext) sqlStatementContext).getProjectionsContext()
+                .getAggregationDistinctProjectionsByColumnIndex(resultSetMetaData.getColumnCount() - getAppendedDerivedColumnIndexes(sqlStatementContext, resultSetMetaData).size());
+        if (!projectionsByColumnIndex.isEmpty()) {
+            Map<Integer, String> result = new HashMap<>(projectionsByColumnIndex.size(), 1F);
+            for (Entry<Integer, AggregationDistinctProjection> entry : projectionsByColumnIndex.entrySet()) {
+                result.put(entry.getKey(), entry.getValue().getColumnLabel());
+            }
+            return result;
         }
         Collection<AggregationDistinctProjection> projections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections();
         Map<String, String> derivedColumnLabels = new CaseInsensitiveMap<>(projections.size(), 1F);

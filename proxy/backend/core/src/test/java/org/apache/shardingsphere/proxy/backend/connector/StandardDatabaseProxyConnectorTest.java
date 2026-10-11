@@ -497,7 +497,6 @@ class StandardDatabaseProxyConnectorTest {
         QueryResult queryResult = mock(QueryResult.class);
         QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(queryResultMetaData.getColumnCount()).thenReturn(1);
         when(queryResultMetaData.getResultSetMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSetMetaData.getColumnName(1)).thenReturn("order_id");
