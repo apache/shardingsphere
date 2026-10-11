@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.merge.dql;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -124,10 +123,10 @@ class ShardingDQLResultMergerTest {
         when(queryResult.getMetaData().getColumnLabel(6)).thenReturn("AGGREGATION_DISTINCT_DERIVED_0");
         new ShardingDQLResultMerger(mysqlDatabaseType).merge(Arrays.asList(queryResult, queryResult), context, database, mock(ConnectionContext.class));
         assertThat(context.getProjectionsContext().getAggregationDistinctProjections().iterator().next().getIndex(), is(6));
-        Iterator<OrderByItem> actualOrderByItems = context.getOrderByContext().getItems().iterator();
-        assertThat(actualOrderByItems.next().getIndex(), is(6));
-        assertThat(actualOrderByItems.next().getIndex(), is(5));
-        assertThat(actualOrderByItems.next().getIndex(), is(3));
+        Iterator<Integer> actualOrderByIndexes = context.getOrderByContext().getItems().stream().map(each -> each.getIndex()).iterator();
+        assertThat(actualOrderByIndexes.next(), is(6));
+        assertThat(actualOrderByIndexes.next(), is(5));
+        assertThat(actualOrderByIndexes.next(), is(3));
     }
     
     @Test
