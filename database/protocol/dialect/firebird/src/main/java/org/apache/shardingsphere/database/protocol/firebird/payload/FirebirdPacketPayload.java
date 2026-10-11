@@ -242,6 +242,24 @@ public final class FirebirdPacketPayload implements PacketPayload {
     }
     
     /**
+     * Write fixed length opaque bytes to byte buffers.
+     *
+     * <p>Unlike {@link #writeBuffer(byte[])} no leading length is written. The value occupies exactly {@code length} bytes,
+     * a shorter value is zero filled, and the result is padded to a 4-byte boundary. This is how Firebird encodes a text
+     * array element, whose storage length is known from the array descriptor rather than from the value itself.</p>
+     *
+     * @param value value to write
+     * @param length logical length of one array element
+     */
+    public void writeOpaque(final String value, final int length) {
+        byte[] bytes = value.getBytes(charset);
+        int written = Math.min(bytes.length, length);
+        byteBuf.writeBytes(bytes, 0, written);
+        byteBuf.writeBytes(new byte[length - written]);
+        byteBuf.writeBytes(new byte[getPadding(length)]);
+    }
+    
+    /**
      * Skip reserved from byte buffers.
      *
      * @param length length of reserved

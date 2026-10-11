@@ -26,7 +26,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Slice response packet for Firebird.
@@ -38,6 +38,10 @@ import java.util.List;
  * elements are written per the XDR binary protocol values, so a SMALLINT element occupies 4 bytes on the wire although its logical
  * size is 2 bytes. The Firebird server likewise writes the same total slice length to both fields.</p>
  *
+ * <p>A text array element is the exception. Firebird encodes it as fixed length opaque data of its storage length, without the
+ * leading length field that a variable length value carries, so {@code elementLength} is what decides how many bytes each text
+ * element occupies. Varying text keeps its own shape and is still written through the binary protocol values.</p>
+ *
  * @see <a href="https://firebirdsql.org/file/documentation/html/en/firebirddocs/wireprotocol/firebird-wire-protocol.html#wireprotocol-responses-slice">Firebird wire protocol - slice response</a>
  */
 @RequiredArgsConstructor
@@ -48,7 +52,9 @@ public final class FirebirdSliceResponsePacket extends FirebirdPacket {
     
     private final FirebirdBinaryColumnType columnType;
     
-    private final List<Object> elements;
+    private final Collection<Object> elements;
+    
+    private final int elementLength;
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
@@ -59,9 +65,15 @@ public final class FirebirdSliceResponsePacket extends FirebirdPacket {
     }
     
     private void writeSliceData(final FirebirdPacketPayload payload) {
+        if (FirebirdBinaryColumnType.TEXT == columnType || FirebirdBinaryColumnType.LEGACY_TEXT == columnType) {
+            for (Object each : elements) {
+                payload.writeOpaque(each.toString(), elementLength);
+            }
+            return;
+        }
         FirebirdBinaryProtocolValue protocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(columnType);
-        for (Object element : elements) {
-            protocolValue.write(payload, element);
+        for (Object each : elements) {
+            protocolValue.write(payload, each);
         }
     }
 }

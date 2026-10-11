@@ -42,13 +42,6 @@ class FirebirdInlineBlobResponsePacketTest {
         assertWriteBytes(7, 9L, blobInfo, blobData, new byte[]{0, 0, 0, 114, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 8, 6, 4, 0, 11, 0, 0, 0, 1, 0, 0, 0, 7, 5, 0, 1, 2, 3, 4, 5, 0});
     }
     
-    @Test
-    void assertWriteWithUnalignedBuffers() {
-        FirebirdPacket blobInfo = new FirebirdGetBlobSegmentResponsePacket(new byte[]{1, 2, 3});
-        FirebirdPacket blobData = new FirebirdGetBlobSegmentResponsePacket(new byte[]{4, 5});
-        assertWriteBytes(1, 2L, blobInfo, blobData, new byte[]{0, 0, 0, 114, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 5, 3, 0, 1, 2, 3, 0, 0, 0, 0, 0, 0, 4, 2, 0, 4, 5});
-    }
-    
     private static void assertWriteBytes(final int transactionId, final long blobId, final FirebirdPacket blobInfo, final FirebirdPacket blobData, final byte[] expectedBytes) {
         ByteBuf byteBuf = Unpooled.buffer();
         PacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
@@ -56,5 +49,12 @@ class FirebirdInlineBlobResponsePacketTest {
         byte[] actual = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(actual);
         assertThat(actual, is(expectedBytes));
+    }
+    
+    @Test
+    void assertWriteWithUnalignedBuffers() {
+        FirebirdPacket blobInfo = new FirebirdGetBlobSegmentResponsePacket(new byte[]{1, 2, 3});
+        FirebirdPacket blobData = new FirebirdGetBlobSegmentResponsePacket(new byte[]{4, 5});
+        assertWriteBytes(1, 2L, blobInfo, blobData, new byte[]{0, 0, 0, 114, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 5, 3, 0, 1, 2, 3, 0, 0, 0, 0, 0, 0, 4, 2, 0, 4, 5});
     }
 }

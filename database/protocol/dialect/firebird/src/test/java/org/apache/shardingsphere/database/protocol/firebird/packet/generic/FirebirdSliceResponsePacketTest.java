@@ -29,6 +29,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -40,29 +41,47 @@ class FirebirdSliceResponsePacketTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertWriteArguments")
-    void assertWrite(final String name, final int sliceLength, final FirebirdBinaryColumnType columnType, final List<Object> elements, final byte[] expectedBytes) {
+    void assertWrite(final String name, final int sliceLength, final FirebirdBinaryColumnType columnType, final Collection<Object> elements, final int elementLength, final byte[] expectedBytes) {
         ByteBuf byteBuf = Unpooled.buffer();
         PacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        new FirebirdSliceResponsePacket(sliceLength, columnType, elements).write(payload);
+        new FirebirdSliceResponsePacket(sliceLength, columnType, elements, elementLength).write(payload);
         byte[] actual = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(actual);
         assertThat(actual, is(expectedBytes));
     }
     
     private static Stream<Arguments> assertWriteArguments() {
-        return Stream.of(Arguments.of("empty_slice", 0, FirebirdBinaryColumnType.SHORT, Collections.emptyList(), new byte[]{0, 0, 0, 60, 0, 0, 0, 0, 0, 0, 0, 0}),
-                Arguments.of("smallint_slice", 2, FirebirdBinaryColumnType.SHORT, Collections.singletonList(1), new byte[]{0, 0, 0, 60, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 1}),
-                Arguments.of("int4_slice", 8, FirebirdBinaryColumnType.LONG, Arrays.asList(1, 2), new byte[]{0, 0, 0, 60, 0, 0, 0, 8, 0, 0, 0, 8, 0, 0, 0, 1, 0, 0, 0, 2}));
+        return Stream.of(
+                Arguments.of("empty_slice", 0, FirebirdBinaryColumnType.SHORT, Collections.emptyList(), 2, new byte[]{0, 0, 0, 60, 0, 0, 0, 0, 0, 0, 0, 0}),
+                Arguments.of("smallint_slice", 2, FirebirdBinaryColumnType.SHORT, Collections.singletonList(1), 2,
+                        new byte[]{0, 0, 0, 60, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 1}),
+                Arguments.of("int4_slice", 8, FirebirdBinaryColumnType.LONG, Arrays.asList(1, 2), 4,
+                        new byte[]{0, 0, 0, 60, 0, 0, 0, 8, 0, 0, 0, 8, 0, 0, 0, 1, 0, 0, 0, 2}),
+                Arguments.of("text_slice", 1, FirebirdBinaryColumnType.TEXT, Collections.singletonList("A"), 1,
+                        new byte[]{0, 0, 0, 60, 0, 0, 0, 1, 0, 0, 0, 1, 65, 0, 0, 0}),
+                Arguments.of("padded_text_slice", 4, FirebirdBinaryColumnType.TEXT, Arrays.asList("A", "B"), 2,
+                        new byte[]{0, 0, 0, 60, 0, 0, 0, 4, 0, 0, 0, 4, 65, 0, 0, 0, 66, 0, 0, 0}));
     }
     
     @Test
     void assertWriteKeepsNextPacketBoundary() {
         ByteBuf byteBuf = Unpooled.buffer();
         PacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        new FirebirdSliceResponsePacket(2, FirebirdBinaryColumnType.SHORT, Collections.singletonList(1)).write(payload);
+        new FirebirdSliceResponsePacket(2, FirebirdBinaryColumnType.SHORT, Collections.singletonList(1), 2).write(payload);
         new FirebirdDummyResponsePacket().write(payload);
         byte[] actual = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(actual);
         assertThat(actual, is(new byte[]{0, 0, 0, 60, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 71}));
+    }
+    
+    @Test
+    void assertTextWriteKeepsNextPacketBoundary() {
+        ByteBuf byteBuf = Unpooled.buffer();
+        PacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        new FirebirdSliceResponsePacket(1, FirebirdBinaryColumnType.TEXT, Collections.singletonList("A"), 1).write(payload);
+        new FirebirdDummyResponsePacket().write(payload);
+        byte[] actual = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(actual);
+        assertThat(actual, is(new byte[]{0, 0, 0, 60, 0, 0, 0, 1, 0, 0, 0, 1, 65, 0, 0, 0, 0, 0, 0, 71}));
     }
 }
