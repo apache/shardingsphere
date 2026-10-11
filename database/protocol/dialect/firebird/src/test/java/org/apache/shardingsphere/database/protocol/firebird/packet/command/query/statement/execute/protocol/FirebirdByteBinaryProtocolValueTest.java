@@ -27,7 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,7 +43,7 @@ class FirebirdByteBinaryProtocolValueTest {
     void assertRead() {
         byte[] expected = {1, 2};
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(expected));
-        assertArrayEquals(expected, (byte[]) new FirebirdByteBinaryProtocolValue().read(payload));
+        assertThat((byte[]) new FirebirdByteBinaryProtocolValue().read(payload), is(expected));
     }
     
     @Test

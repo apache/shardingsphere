@@ -38,8 +38,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -82,7 +82,7 @@ public final class PipelineE2EDistSQLFacade {
                 .replace("${driverClassName}", containerComposer.getDriverClassName())
                 .replace("${url}", containerComposer.getActualJdbcUrlTemplate(storageUnitName,
                         RunEnvironment.Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()));
-        containerComposer.proxyExecuteWithLog(registerStorageUnitSQL, 0);
+        containerComposer.proxyExecuteOneSQLWithLog(registerStorageUnitSQL, 0);
         int timeout = containerComposer.getDatabaseType() instanceof OpenGaussDatabaseType ? 60 : 10;
         Awaitility.waitAtMost(timeout, TimeUnit.SECONDS).ignoreExceptions().pollInterval(3L, TimeUnit.SECONDS).until(() -> containerComposer.showStorageUnitsName().contains(storageUnitName));
     }

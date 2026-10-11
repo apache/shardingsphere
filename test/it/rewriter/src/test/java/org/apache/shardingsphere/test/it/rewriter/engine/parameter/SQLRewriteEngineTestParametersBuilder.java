@@ -139,13 +139,16 @@ public final class SQLRewriteEngineTestParametersBuilder {
                     appendLiteralCases(type, fileName, actualRuleFile, each, databaseType, result);
                     continue;
                 }
-                SQLExecuteType sqlExecuteType = null == each.getInput().getParameters() || each.getInput().getParameters().isEmpty() ? SQLExecuteType.LITERAL : SQLExecuteType.PLACEHOLDER;
                 result.add(new SQLRewriteEngineTestParameters(type, each.getId(), fileName, actualRuleFile, each.getInput().getSql(),
                         createParameters(each.getInput().getParameters(), each.getInput().getSql()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()),
-                        databaseType, sqlExecuteType));
+                        databaseType, getSQLExecuteType(each)));
             }
         }
         return result;
+    }
+    
+    private static SQLExecuteType getSQLExecuteType(final RewriteAssertionEntity each) {
+        return null == each.getInput().getParameters() || each.getInput().getParameters().isEmpty() ? SQLExecuteType.LITERAL : SQLExecuteType.PLACEHOLDER;
     }
     
     private static String resolveRuleFile(final String ruleFile, final String databaseType) {

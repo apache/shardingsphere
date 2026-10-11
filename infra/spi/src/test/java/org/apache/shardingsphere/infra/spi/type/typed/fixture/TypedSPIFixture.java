@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.spi.type.typed.fixture;
 
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 @SingletonSPI
 public interface TypedSPIFixture extends TypedSPI {

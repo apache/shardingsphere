@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
@@ -229,10 +230,13 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     private void alterSingleRuleConfigurationItem(final ShardingSphereDatabase database, final SingleRuleConfiguration toBeAlteredRuleConfig) {
-        Collection<String> originalSingleTables = database.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration().getLogicTableNames();
-        Collection<String> needReloadTables = toBeAlteredRuleConfig.getLogicTableNames().stream().filter(each -> !originalSingleTables.contains(each)).collect(Collectors.toList());
+        Collection<String> originalSingleTables = database.getRuleMetaData().getSingleRule(SingleRule.class).getAttributes()
+                .getAttribute(TableMapperRuleAttribute.class).getLogicTableNames();
         Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig));
         alterRuleItem(database.getName(), metaDataVersions);
+        ShardingSphereDatabase refreshedDatabase = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(database.getName());
+        Collection<String> needReloadTables = refreshedDatabase.getRuleMetaData().getSingleRule(SingleRule.class).getAttributes()
+                .getAttribute(TableMapperRuleAttribute.class).getLogicTableNames().stream().filter(each -> !originalSingleTables.contains(each)).collect(Collectors.toList());
         persistAndAlterSchemaTables(database, needReloadTables);
         clearServicesCache();
     }

@@ -49,6 +49,16 @@ class PostgreSQLPipelineFreemarkerManagerTest {
     }
     
     @Test
+    void assertGetTableIdSQLWithActualIdentifiers() {
+        Map<String, Object> dataModel = new HashMap<>(2, 1F);
+        dataModel.put("schemaName", "UPPER_SCHEMA");
+        dataModel.put("tableName", "UPPER_TABLE");
+        String actual = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(dataModel, "component/table/%s/get_table_id.ftl", 12, 0);
+        String expected = "\nSELECT (pg_catalog.quote_ident('UPPER_SCHEMA') || '.' || pg_catalog.quote_ident('UPPER_TABLE'))::REGCLASS::OID AS tid;\n";
+        assertThat(actual, is(expected));
+    }
+    
+    @Test
     void assertCreateTableTemplateRendersNormalizedSequenceNumbers() {
         Map<String, Object> dataModel = new LinkedHashMap<>(8, 1F);
         dataModel.put("schema", "public");

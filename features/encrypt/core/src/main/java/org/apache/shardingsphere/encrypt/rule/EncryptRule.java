@@ -69,7 +69,7 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
         this.ruleConfig.set(ruleConfig);
         encryptors = createEncryptors(ruleConfig);
         for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
-            each.getColumns().forEach(this::checkEncryptorType);
+            each.getColumns().forEach(columnRuleConfig -> checkEncryptorType(columnRuleConfig, encryptors));
             tables.put(each.getName(), new EncryptTable(each, encryptors));
         }
         attributes.set(buildRuleAttributes());
@@ -89,8 +89,7 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
         return result;
     }
     
-    // TODO How to process changed encryptors and tables if check failed? It should check before rule change
-    private void checkEncryptorType(final EncryptColumnRuleConfiguration columnRuleConfig) {
+    private void checkEncryptorType(final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, EncryptAlgorithm> encryptors) {
         ShardingSpherePreconditions.checkState(encryptors.containsKey(columnRuleConfig.getCipher().getEncryptorName())
                 && encryptors.get(columnRuleConfig.getCipher().getEncryptorName()).getMetaData().isSupportDecrypt(),
                 () -> new MismatchedEncryptAlgorithmTypeException(databaseName, "Cipher", columnRuleConfig.getCipher().getEncryptorName(), "decrypt"));
@@ -163,7 +162,12 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
     
     @Override
     public boolean partialUpdate(final EncryptRuleConfiguration toBeUpdatedRuleConfig) {
-        if (handleAddedEncryptors(toBeUpdatedRuleConfig) || handleRemovedEncryptors(toBeUpdatedRuleConfig)) {
+        Map<String, AlgorithmConfiguration> currentEncryptorConfigs = new CaseInsensitiveMap<>(ruleConfig.get().getEncryptors());
+        Map<String, EncryptAlgorithm> toBeUpdatedEncryptors = createToBeUpdatedEncryptors(toBeUpdatedRuleConfig, currentEncryptorConfigs);
+        for (EncryptTableRuleConfiguration each : toBeUpdatedRuleConfig.getTables()) {
+            each.getColumns().forEach(columnRuleConfig -> checkEncryptorType(columnRuleConfig, toBeUpdatedEncryptors));
+        }
+        if (handleAddedOrUpdatedEncryptors(toBeUpdatedRuleConfig, currentEncryptorConfigs, toBeUpdatedEncryptors) || handleRemovedEncryptors(toBeUpdatedRuleConfig)) {
             return false;
         }
         Collection<String> toBeUpdatedTablesNames = toBeUpdatedRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toCollection(CaseInsensitiveSet::new));
@@ -172,17 +176,29 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
             toBeRemovedTableNames.forEach(tables::remove);
         }
         for (EncryptTableRuleConfiguration encryptTableRuleConfiguration : toBeUpdatedRuleConfig.getTables()) {
-            encryptTableRuleConfiguration.getColumns().forEach(this::checkEncryptorType);
             tables.put(encryptTableRuleConfiguration.getName(), new EncryptTable(encryptTableRuleConfiguration, encryptors));
             attributes.set(buildRuleAttributes());
         }
         return true;
     }
     
-    private boolean handleAddedEncryptors(final EncryptRuleConfiguration toBeUpdatedRuleConfig) {
+    private Map<String, EncryptAlgorithm> createToBeUpdatedEncryptors(final EncryptRuleConfiguration toBeUpdatedRuleConfig,
+                                                                      final Map<String, AlgorithmConfiguration> currentEncryptorConfigs) {
+        Map<String, EncryptAlgorithm> result = new CaseInsensitiveMap<>(encryptors);
+        for (Entry<String, AlgorithmConfiguration> entry : toBeUpdatedRuleConfig.getEncryptors().entrySet()) {
+            if (!entry.getValue().equals(currentEncryptorConfigs.get(entry.getKey()))) {
+                result.put(entry.getKey(), TypedSPILoader.getService(EncryptAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps()));
+            }
+        }
+        result.keySet().removeIf(each -> !toBeUpdatedRuleConfig.getEncryptors().containsKey(each));
+        return result;
+    }
+    
+    private boolean handleAddedOrUpdatedEncryptors(final EncryptRuleConfiguration toBeUpdatedRuleConfig, final Map<String, AlgorithmConfiguration> currentEncryptorConfigs,
+                                                   final Map<String, EncryptAlgorithm> toBeUpdatedEncryptors) {
         return toBeUpdatedRuleConfig.getEncryptors().entrySet().stream()
-                .filter(entry -> !encryptors.containsKey(entry.getKey()))
-                .peek(entry -> encryptors.computeIfAbsent(entry.getKey(), key -> TypedSPILoader.getService(EncryptAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps())))
+                .filter(entry -> !entry.getValue().equals(currentEncryptorConfigs.get(entry.getKey())))
+                .peek(entry -> encryptors.put(entry.getKey(), toBeUpdatedEncryptors.get(entry.getKey())))
                 .findAny().isPresent();
     }
     

@@ -30,7 +30,7 @@ public final class HiveJdbcUrlFetcher implements DialectJdbcUrlFetcher {
     
     @Override
     public String fetch(final Connection connection) throws SQLException {
-        return connection.unwrap(HiveConnection.class).getConnectedUrl();
+        return (connection instanceof HiveConnection ? (HiveConnection) connection : connection.unwrap(HiveConnection.class)).getConnectedUrl();
     }
     
     @Override

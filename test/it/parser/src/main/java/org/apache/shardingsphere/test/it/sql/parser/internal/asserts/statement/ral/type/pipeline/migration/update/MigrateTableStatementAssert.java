@@ -21,12 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.segment.MigrationSourceTargetSegment;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable.MigrateTableStatement;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.MigrateTableStatementTestCase;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Migrate table statement assert.
@@ -45,11 +46,14 @@ public final class MigrateTableStatementAssert {
         assertThat(assertContext.getText("target database name does not match"), actual.getTargetDatabaseName(), is(expected.getTargetDatabaseName()));
         assertThat(actual.getSourceTargetEntries().size(), is(1));
         for (MigrationSourceTargetSegment each : actual.getSourceTargetEntries()) {
-            DataNode dataNode = new DataNode(each.getSourceDatabaseName(), each.getSourceSchemaName(), each.getSourceTableName());
-            assertThat(assertContext.getText("source database name does not match"), dataNode.getDataSourceName(), is(expected.getSourceResourceName()));
-            assertThat(assertContext.getText("source schema name does not match"), dataNode.getSchemaName(), is(expected.getSourceSchemaName()));
-            assertThat(assertContext.getText("source table name does not match"), dataNode.getTableName(), is(expected.getSourceTableName()));
-            assertThat(assertContext.getText("target table name does not match"), each.getTargetTableName(), is(expected.getTargetTableName()));
+            IdentifierValueAssert.assertIs(assertContext, each.getSourceDatabaseIdentifier(), expected.getSourceResourceName(), "source database");
+            if (null == expected.getSourceSchemaName()) {
+                assertNull(each.getSourceSchemaIdentifier(), assertContext.getText("source schema should not exist"));
+            } else {
+                IdentifierValueAssert.assertIs(assertContext, each.getSourceSchemaIdentifier(), expected.getSourceSchemaName(), "source schema");
+            }
+            IdentifierValueAssert.assertIs(assertContext, each.getSourceTableIdentifier(), expected.getSourceTableName(), "source table");
+            IdentifierValueAssert.assertIs(assertContext, each.getTargetTableIdentifier(), expected.getTargetTableName(), "target table");
         }
     }
 }

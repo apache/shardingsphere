@@ -23,17 +23,22 @@ import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
@@ -51,12 +56,16 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SelectStatementConverterTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final DatabaseType openGaussDatabaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
     
     @Test
     void assertConvertWithCombineAndLimit() {
@@ -64,7 +73,7 @@ class SelectStatementConverterTest {
         SelectStatement right = createBaseSelect(false, false);
         CombineSegment combineSegment = new CombineSegment(0, 0, new SubquerySegment(0, 0, left, "left"), CombineType.UNION, new SubquerySegment(0, 0, right, "right"));
         LimitSegment limit = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1L), new ParameterMarkerLimitValueSegment(0, 0, 0));
-        SelectStatement selectStatement = createBaseSelect(true, true, combineSegment, limit, null, null);
+        SelectStatement selectStatement = createBaseSelect(databaseType, true, true, combineSegment, limit, null, null);
         SqlOrderBy actual = (SqlOrderBy) new SelectStatementConverter().convert(selectStatement);
         assertThat(actual.offset, isA(SqlNode.class));
         assertThat(actual.fetch, isA(SqlNode.class));
@@ -73,17 +82,43 @@ class SelectStatementConverterTest {
     
     @Test
     void assertConvertWithoutLimitButWithOrderByAndWindow() {
-        SelectStatement selectStatement = createBaseSelect(false, false, null, null, createOrderBySegment(), createWindowSegment());
+        SelectStatement selectStatement = createBaseSelect(openGaussDatabaseType, false, false, null, null, createOrderBySegment(), createWindowSegment());
         SqlOrderBy actual = (SqlOrderBy) new SelectStatementConverter().convert(selectStatement);
         assertNull(actual.offset);
         assertThat(((SqlSelect) actual.query).getWindowList(), isA(SqlNode.class));
     }
     
-    private SelectStatement createBaseSelect(final boolean withWithSegment, final boolean distinct) {
-        return createBaseSelect(withWithSegment, distinct, null, null, null, null);
+    @Test
+    void assertConvertOpenGaussCube() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(openGaussDatabaseType).projections(createProjectionsSegment()).groupBy(createCubeGroupBySegment()).build();
+        UnsupportedSQLOperationException ex = assertThrows(UnsupportedSQLOperationException.class, () -> new SelectStatementConverter().convert(selectStatement));
+        assertThat(ex.getMessage(), is("Unsupported SQL operation: openGauss CUBE query in SQL Federation."));
     }
     
-    private SelectStatement createBaseSelect(final boolean withWithSegment, final boolean distinct,
+    @Test
+    void assertConvertOpenGaussAggregationWithNamedWindow() {
+        AggregationProjectionSegment aggregationProjection = new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(order_id) OVER window1");
+        WindowItemSegment window = new WindowItemSegment(0, 0);
+        window.setWindowName(new IdentifierValue("window1"));
+        aggregationProjection.setWindow(window);
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(aggregationProjection);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(openGaussDatabaseType).projections(projections).build();
+        UnsupportedSQLOperationException ex = assertThrows(UnsupportedSQLOperationException.class, () -> new SelectStatementConverter().convert(selectStatement));
+        assertThat(ex.getMessage(), is("Unsupported SQL operation: openGauss aggregate query with a named window in SQL Federation."));
+    }
+    
+    @Test
+    void assertConvertCubeForOtherDatabase() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(createProjectionsSegment()).groupBy(createCubeGroupBySegment()).build();
+        assertThat(new SelectStatementConverter().convert(selectStatement), isA(SqlSelect.class));
+    }
+    
+    private SelectStatement createBaseSelect(final boolean withWithSegment, final boolean distinct) {
+        return createBaseSelect(databaseType, withWithSegment, distinct, null, null, null, null);
+    }
+    
+    private SelectStatement createBaseSelect(final DatabaseType databaseType, final boolean withWithSegment, final boolean distinct,
                                              final CombineSegment combine, final LimitSegment limit, final OrderBySegment orderBy, final WindowSegment window) {
         ProjectionsSegment projectionsSegment = createProjectionsSegment();
         projectionsSegment.setDistinctRow(distinct);
@@ -100,6 +135,11 @@ class SelectStatementConverterTest {
                 .orderBy(orderBy)
                 .window(window)
                 .build();
+    }
+    
+    private GroupBySegment createCubeGroupBySegment() {
+        ExpressionOrderByItemSegment cube = new ExpressionOrderByItemSegment(0, 0, "CUBE (user_id)", OrderDirection.ASC, null);
+        return new GroupBySegment(0, 0, Collections.singleton(cube), false, true);
     }
     
     private WithSegment createWithSegment() {

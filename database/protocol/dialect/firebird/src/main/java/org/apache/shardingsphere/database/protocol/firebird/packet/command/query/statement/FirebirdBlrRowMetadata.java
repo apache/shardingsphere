@@ -30,8 +30,8 @@ import java.util.List;
 /**
  * Firebird BLR row metadata.
  */
-@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public final class FirebirdBlrRowMetadata {
     
     private final ByteBuf blr;

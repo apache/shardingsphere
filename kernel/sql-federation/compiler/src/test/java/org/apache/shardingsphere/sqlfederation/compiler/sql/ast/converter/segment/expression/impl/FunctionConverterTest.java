@@ -44,8 +44,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -59,6 +59,30 @@ class FunctionConverterTest {
         FunctionSegment segment = new FunctionSegment(0, 0, "CURRENT_USER", "CURRENT_USER");
         SqlIdentifier actual = (SqlIdentifier) FunctionConverter.convert(segment);
         assertThat(actual.getSimple(), is("CURRENT_USER"));
+    }
+    
+    @Test
+    void assertConvertSysdateWithoutParentheses() {
+        FunctionSegment segment = new FunctionSegment(0, 0, "SYSDATE", "SYSDATE");
+        assertThat(FunctionConverter.convert(segment), isA(SqlIdentifier.class));
+    }
+    
+    @Test
+    void assertConvertSystimestampWithoutParentheses() {
+        FunctionSegment segment = new FunctionSegment(0, 0, "SYSTIMESTAMP", "SYSTIMESTAMP");
+        assertThat(FunctionConverter.convert(segment), isA(SqlIdentifier.class));
+    }
+    
+    @Test
+    void assertConvertFunctionWithParentheses() {
+        FunctionSegment segment = new FunctionSegment(0, 0, "SYSDATE", "SYSDATE()");
+        assertThat(FunctionConverter.convert(segment), isA(SqlBasicCall.class));
+    }
+    
+    @Test
+    void assertConvertOtherFunctionWithoutParentheses() {
+        FunctionSegment segment = new FunctionSegment(0, 0, "CUSTOM_FUNC", "CUSTOM_FUNC");
+        assertThat(FunctionConverter.convert(segment), isA(SqlBasicCall.class));
     }
     
     @Test

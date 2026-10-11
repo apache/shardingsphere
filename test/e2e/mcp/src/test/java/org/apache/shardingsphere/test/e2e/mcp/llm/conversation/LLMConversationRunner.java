@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatCompletion;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatMessage;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatModelClient;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMToolCall;
-import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
-import org.apache.shardingsphere.infra.util.json.JsonEngine;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -35,6 +35,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +51,8 @@ public final class LLMConversationRunner {
     
     private static final String SYSTEM_PROMPT = """
             You are evaluating a live ShardingSphere MCP server. Use the available MCP functions to inspect current state and complete the user's task.
+            Before constructing an UPDATE statement for preview, retrieve the target table's complete column list from MCP.
+            Use the returned column names for both assignments and row selection.
             Choose tools from their advertised names, descriptions, and input schemas. Pass resource URIs only to mcp_read_resource, never as SQL.
             Never guess or stop before retrieving the requested evidence. When target metadata is explicitly marked as already verified, use the requested
             planning response as evidence instead of repeating metadata discovery. Preview side effects without executing them. Use function calls for
@@ -125,8 +128,9 @@ public final class LLMConversationRunner {
                 .collect(Collectors.toSet());
         for (int turnIndex = 0; turnIndex < maxTurns; turnIndex++) {
             LLMChatCompletion completion;
+            Map<String, Object> responseFormat = scenario.finalResponseFormat().apply(artifacts.getTrace());
             try {
-                completion = llmChatClient.complete(messages, toolDefinitions, "auto", false);
+                completion = llmChatClient.complete(messages, responseFormat.isEmpty() ? toolDefinitions : List.of(), responseFormat.isEmpty() ? "auto" : "none", responseFormat);
             } catch (final IOException | IllegalStateException ex) {
                 return artifacts.createResult(scenario, modelName,
                         LLME2EAssertionReport.failure("model_service_unavailable", ex.getMessage()));
@@ -242,9 +246,11 @@ public final class LLMConversationRunner {
      * @param id scenario ID
      * @param question question
      * @param allowedToolNames tools exposed only to this scenario
+     * @param finalResponseFormat final response format derived from sufficient MCP evidence, or an empty map while tools are needed
      * @param evaluator scenario evidence evaluator
      */
     public record Scenario(String id, String question, Set<String> allowedToolNames,
+                           Function<List<MCPInteractionTraceRecord>, Map<String, Object>> finalResponseFormat,
                            BiFunction<String, List<MCPInteractionTraceRecord>, LLME2EAssertionReport> evaluator) {
     }
     

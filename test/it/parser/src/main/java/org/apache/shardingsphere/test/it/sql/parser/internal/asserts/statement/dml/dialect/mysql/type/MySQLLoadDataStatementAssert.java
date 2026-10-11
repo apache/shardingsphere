@@ -31,9 +31,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.tab
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedPartition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.PropertyTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.mysql.MySQLLoadDataStatementTestCase;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -66,13 +65,13 @@ public final class MySQLLoadDataStatementAssert {
     }
     
     private static void assertLocal(final SQLCaseAssertContext assertContext, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {
-        MatcherAssert.assertThat(assertContext.getText("LOCAL flag does not match: "), actual.isLocal(), is(null != expected.getLocal() && expected.getLocal()));
+        assertThat(assertContext.getText("LOCAL flag does not match: "), actual.isLocal(), is(null != expected.getLocal() && expected.getLocal()));
     }
     
     private static void assertFileName(final SQLCaseAssertContext assertContext, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {
         if (null != expected.getFileName()) {
             assertNotNull(actual.getFileName(), assertContext.getText("File name segment should not be null"));
-            MatcherAssert.assertThat(assertContext.getText("File name value does not match: "), actual.getFileName().getValue(), is(expected.getFileName().getValue()));
+            assertThat(assertContext.getText("File name value does not match: "), actual.getFileName().getValue(), is(expected.getFileName().getValue()));
             SQLSegmentAssert.assertIs(assertContext, actual.getFileName(), expected.getFileName());
         }
     }
@@ -87,7 +86,7 @@ public final class MySQLLoadDataStatementAssert {
     
     private static void assertPartitions(final SQLCaseAssertContext assertContext, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {
         if (!expected.getPartitions().isEmpty()) {
-            MatcherAssert.assertThat(assertContext.getText("Partitions size does not match: "), actual.getPartitions().size(), is(expected.getPartitions().size()));
+            assertThat(assertContext.getText("Partitions size does not match: "), actual.getPartitions().size(), is(expected.getPartitions().size()));
             int count = 0;
             for (PartitionSegment each : actual.getPartitions()) {
                 PartitionAssert.assertIs(assertContext, each, expected.getPartitions().get(count));
@@ -99,8 +98,8 @@ public final class MySQLLoadDataStatementAssert {
     private static void assertColumnSeparator(final SQLCaseAssertContext assertContext, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {
         if (null != expected.getColumnSeparator()) {
             assertNotNull(actual.getColumnSeparator().orElse(null), assertContext.getText("Column separator should not be null"));
-            MatcherAssert.assertThat(assertContext.getText("Column separator value does not match: "), actual.getColumnSeparator().get().getValue(),
-                    CoreMatchers.is(expected.getColumnSeparator().getValue()));
+            assertThat(assertContext.getText("Column separator value does not match: "), actual.getColumnSeparator().get().getValue(),
+                    is(expected.getColumnSeparator().getValue()));
             SQLSegmentAssert.assertIs(assertContext, actual.getColumnSeparator().get(), expected.getColumnSeparator());
         }
     }
@@ -108,8 +107,8 @@ public final class MySQLLoadDataStatementAssert {
     private static void assertLineDelimiter(final SQLCaseAssertContext assertContext, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {
         if (null != expected.getLineDelimiter()) {
             assertNotNull(actual.getLineDelimiter().orElse(null), assertContext.getText("Line delimiter should not be null"));
-            MatcherAssert.assertThat(assertContext.getText("Line delimiter value does not match: "), actual.getLineDelimiter().get().getValue(),
-                    CoreMatchers.is(expected.getLineDelimiter().getValue()));
+            assertThat(assertContext.getText("Line delimiter value does not match: "), actual.getLineDelimiter().get().getValue(),
+                    is(expected.getLineDelimiter().getValue()));
             SQLSegmentAssert.assertIs(assertContext, actual.getLineDelimiter().get(), expected.getLineDelimiter());
         }
     }
@@ -117,19 +116,19 @@ public final class MySQLLoadDataStatementAssert {
     private static void assertIgnoreLines(final SQLCaseAssertContext assertContext, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {
         if (null != expected.getIgnoreLines()) {
             assertNotNull(actual.getIgnoreLines().orElse(null), assertContext.getText("Ignore lines segment should not be null"));
-            MatcherAssert.assertThat(assertContext.getText("Ignore lines number does not match: "), actual.getIgnoreLines().get().getNumber(), is(expected.getIgnoreLines().getNumber()));
-            MatcherAssert.assertThat(assertContext.getText("Ignore lines unit does not match: "), actual.getIgnoreLines().get().getUnit(), is(expected.getIgnoreLines().getUnit()));
+            assertThat(assertContext.getText("Ignore lines number does not match: "), actual.getIgnoreLines().get().getNumber(), is(expected.getIgnoreLines().getNumber()));
+            assertThat(assertContext.getText("Ignore lines unit does not match: "), actual.getIgnoreLines().get().getUnit(), is(expected.getIgnoreLines().getUnit()));
             SQLSegmentAssert.assertIs(assertContext, actual.getIgnoreLines().get(), expected.getIgnoreLines());
         }
     }
     
     private static void assertColumnList(final SQLCaseAssertContext assertContext, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {
         if (!expected.getColumns().isEmpty()) {
-            MatcherAssert.assertThat(assertContext.getText("Column list size does not match: "), actual.getColumnList().size(), is(expected.getColumns().size()));
+            assertThat(assertContext.getText("Column list size does not match: "), actual.getColumnList().size(), is(expected.getColumns().size()));
             int count = 0;
             for (ColNameOrUserVarSegment each : actual.getColumnList()) {
                 ExpectedPartition exp = expected.getColumns().get(count);
-                MatcherAssert.assertThat(assertContext.getText("Column name does not match: "), each.getIdentifier().getValue(), is(exp.getName()));
+                assertThat(assertContext.getText("Column name does not match: "), each.getIdentifier().getValue(), is(exp.getName()));
                 SQLSegmentAssert.assertIs(assertContext, each, exp);
                 count++;
             }
@@ -146,7 +145,7 @@ public final class MySQLLoadDataStatementAssert {
     private static void assertProperties(final SQLCaseAssertContext assertContext, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {
         if (!expected.getProperties().isEmpty()) {
             assertNotNull(actual.getProperties().orElse(null), assertContext.getText("Actual properties should exist."));
-            MatcherAssert.assertThat(assertContext.getText("Properties size does not match: "), actual.getProperties().get().getProperties().size(), is(expected.getProperties().size()));
+            assertThat(assertContext.getText("Properties size does not match: "), actual.getProperties().get().getProperties().size(), is(expected.getProperties().size()));
             for (int i = 0; i < expected.getProperties().size(); i++) {
                 assertProperty(assertContext, actual.getProperties().get().getProperties().get(i), expected.getProperties().get(i));
             }
@@ -156,8 +155,8 @@ public final class MySQLLoadDataStatementAssert {
     }
     
     private static void assertProperty(final SQLCaseAssertContext assertContext, final PropertySegment actual, final PropertyTestCase expected) {
-        MatcherAssert.assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), is(expected.getKey()));
-        MatcherAssert.assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), is(expected.getValue()));
+        assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), is(expected.getKey()));
+        assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), is(expected.getValue()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

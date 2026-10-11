@@ -28,7 +28,7 @@
     
     <properties>
         <mcp-java-sdk.version>1.1.2</mcp-java-sdk.version>
-        <tomcat-embed.version>11.0.22</tomcat-embed.version>
+        <tomcat-embed.version>11.0.25</tomcat-embed.version>
     </properties>
     
     <dependencies>
@@ -47,6 +47,12 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-mcp-feature-mask</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-infra-framework</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

@@ -23,11 +23,14 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.model.Col
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,8 +48,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -91,6 +94,7 @@ class TableMetaDataLoaderTest {
         when(dataSource.getConnection().getCatalog()).thenReturn(TEST_CATALOG);
         when(dataSource.getConnection().getMetaData().getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableExistResultSet);
         when(tableExistResultSet.next()).thenReturn(true);
+        when(tableExistResultSet.getString("TABLE_TYPE")).thenReturn("TABLE");
         when(dataSource.getConnection().getMetaData().getTables(TEST_CATALOG, null, NOT_EXISTED_TABLE, null)).thenReturn(mock(ResultSet.class));
         when(dataSource.getConnection().getMetaData().getColumns(TEST_CATALOG, null, TEST_TABLE, "%")).thenReturn(columnResultSet);
         when(columnResultSet.next()).thenReturn(true, true, false);
@@ -127,10 +131,20 @@ class TableMetaDataLoaderTest {
     }
     
     @Test
-    void assertLoadNormalizedTableName() throws SQLException {
+    void assertLoadNormalizedTable() throws SQLException {
         Optional<TableMetaData> actual = TableMetaDataLoader.loadNormalized(dataSource, TEST_TABLE, databaseType);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is(TEST_TABLE));
+        assertThat(actual.get().getType(), is(TableType.TABLE));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"VIEW", "SYSTEM VIEW"})
+    void assertLoadNormalizedView(final String tableType) throws SQLException {
+        when(tableExistResultSet.getString("TABLE_TYPE")).thenReturn(tableType);
+        Optional<TableMetaData> actual = TableMetaDataLoader.loadNormalized(dataSource, TEST_TABLE, databaseType);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getType(), is(TableType.VIEW));
     }
     
     private void assertColumnMetaData(final ColumnMetaData actual, final String name, final int dataType, final boolean primaryKey, final boolean caseSensitive) {

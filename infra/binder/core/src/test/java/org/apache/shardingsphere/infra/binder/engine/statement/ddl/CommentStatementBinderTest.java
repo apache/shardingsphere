@@ -36,8 +36,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -67,7 +67,6 @@ class CommentStatementBinderTest {
         when(metaData.getDatabase(databaseName.getValue())).thenReturn(database);
         when(metaData.getDatabase(eq(databaseName))).thenReturn(database);
         when(database.getDefaultSchemaName()).thenReturn(databaseName.getValue());
-        when(database.containsSchema(eq(databaseName))).thenReturn(true);
         when(database.getSchema(eq(databaseName))).thenReturn(schema);
         when(schema.containsTable(eq(tableName))).thenReturn(true);
         when(schema.getTable(eq(tableName))).thenReturn(table);
@@ -101,7 +100,6 @@ class CommentStatementBinderTest {
         when(metaData.getDatabase(databaseName.getValue())).thenReturn(database);
         when(metaData.getDatabase(eq(databaseName))).thenReturn(database);
         when(database.getDefaultSchemaName()).thenReturn(databaseName.getValue());
-        when(database.containsSchema(eq(databaseName))).thenReturn(true);
         when(database.getSchema(eq(databaseName))).thenReturn(schema);
         when(schema.containsTable(eq(tableName))).thenReturn(true);
         when(schema.getTable(eq(tableName))).thenReturn(table);

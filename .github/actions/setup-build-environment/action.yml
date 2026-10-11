@@ -1,0 +1,160 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: 'Setup Build Environment'
+description: |
+  Setup Java and Maven cache for ShardingSphere builds.
+
+  This action configures Java environment and sets up Maven dependency caching
+  with support for multi-project isolation and build scope optimization.
+
+  Usage:
+    - uses: ./.github/actions/setup-build-environment
+
+    - uses: ./.github/actions/setup-build-environment
+      with:
+        java-version: '21'
+        cache-suffix: 'e2e-sql'
+
+  Cache key format: {cache-prefix}-maven-{cache-suffix}-{pom.xml hash}
+  Cache prefix: workflow repository owner/name with '/' replaced by '-'.
+  Default cache-suffix: 'full'
+
+inputs:
+  java-version:
+    description: 'Java version to setup (default: 21)'
+    required: false
+    default: '21'
+  distribution:
+    description: 'Java distribution (default: temurin)'
+    required: false
+    default: 'temurin'
+  cache-suffix:
+    description: |
+      Cache key suffix for build scope optimization.
+      Examples: 'full' for full build, 'e2e-sql' for E2E SQL tests, 'e2e-agent' for E2E Agent tests.
+      Different suffixes allow separate caches for different build scopes while maintaining fallback chain.
+      Default: 'full'
+    required: false
+    default: 'full'
+  cache-save-enabled:
+    description: 'Whether to save Maven cache in this action (default: true)'
+    required: false
+    default: 'true'
+  maven-repository-dir:
+    description: 'Runner-specific Maven repository directory; empty keeps the default repository'
+    required: false
+    default: ''
+  github-token:
+    description: 'GitHub token for authenticated GraalVM Community downloads (optional when distribution is graalvm)'
+    required: false
+    default: ''
+  enable-docker-setup:
+    description: 'Whether to verify the preinstalled Docker environment on GitHub-hosted runners'
+    required: false
+    default: 'false'
+outputs:
+  cache-hit:
+    description: 'A boolean value to indicate an exact match was found for the primary key'
+    value: ${{ steps.restore-maven-cache.outputs.cache-hit }}
+  cache-primary-key:
+    description: 'A resolved cache key for which cache match was attempted'
+    value: ${{ steps.restore-maven-cache.outputs.cache-primary-key }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Java (Temurin)
+      if: inputs.distribution != 'graalvm-community'
+      uses: actions/setup-java@v5.2.0
+      with:
+        distribution: ${{ inputs.distribution }}
+        java-version: ${{ inputs.java-version }}
+    - name: Setup GraalVM CE
+      if: inputs.distribution == 'graalvm-community'
+      uses: graalvm/setup-graalvm@0426e2e191540e8514dff98dc52a5f5146a2a276 # v1.6.6
+      with:
+        distribution: 'graalvm-community'
+        java-version: '25.0.2'
+        native-image-job-reports: 'true'
+    - name: Verify Preinstalled Docker
+      if: inputs.enable-docker-setup == 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        docker version
+        docker compose version
+    - name: Prepare E2E Maven Repository
+      if: inputs.maven-repository-dir != ''
+      shell: bash
+      env:
+        MAVEN_REPOSITORY_DIR: ${{ inputs.maven-repository-dir }}
+      run: |
+        set -euo pipefail
+        mkdir -p "$MAVEN_REPOSITORY_DIR"
+        repository="$(cd "$MAVEN_REPOSITORY_DIR" && pwd -P)"
+        if [[ "$repository" == / ]]; then
+          echo '::error::The Maven repository must not be the filesystem root.'
+          exit 1
+        fi
+        echo "E2E_MAVEN_REPOSITORY=$repository" >> "$GITHUB_ENV"
+    - name: Set Maven Cache Prefix
+      id: cache-prefix
+      shell: bash
+      run: echo "value=${GITHUB_REPOSITORY//\//-}" >> "$GITHUB_OUTPUT"
+    - name: Restore Maven Cache
+      id: restore-maven-cache
+      uses: actions/cache/restore@v5.0.1
+      with:
+        path: |
+          ${{ inputs.maven-repository-dir || '~/.m2/repository' }}
+          !${{ inputs.maven-repository-dir || '~/.m2/repository' }}/org/apache/shardingsphere
+          ${{ inputs.maven-repository-dir || '~/.m2/repository' }}/org/apache/shardingsphere/elasticjob
+        key: ${{ steps.cache-prefix.outputs.value }}-maven-${{ inputs.cache-suffix }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ steps.cache-prefix.outputs.value }}-maven-${{ inputs.cache-suffix }}-
+          ${{ steps.cache-prefix.outputs.value }}-maven-full-
+          ${{ steps.cache-prefix.outputs.value }}-maven-
+          ${{ steps.cache-prefix.outputs.value }}-
+    - name: Remove Previous E2E Maven Artifacts
+      if: inputs.maven-repository-dir != ''
+      shell: bash
+      run: |
+        set -euo pipefail
+        group_dir="$E2E_MAVEN_REPOSITORY"
+        for directory in org apache shardingsphere; do
+          group_dir="$group_dir/$directory"
+          if [[ -e "$group_dir" || -L "$group_dir" ]]; then
+            group_dir="$(cd "$group_dir" && pwd -P)"
+            if [[ "$group_dir" != "$E2E_MAVEN_REPOSITORY/"* ]]; then
+              echo '::error::The ShardingSphere Maven directory must remain inside the configured repository.'
+              exit 1
+            fi
+          fi
+        done
+        if [[ -d "$group_dir" ]]; then
+          find "$group_dir" -mindepth 1 -maxdepth 1 ! -name elasticjob -exec rm -rf -- {} +
+        fi
+    - name: Save Maven Cache
+      if: inputs.cache-save-enabled == 'true' && github.event_name != 'pull_request' && steps.restore-maven-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v5.0.1
+      with:
+        path: |
+          ${{ inputs.maven-repository-dir || '~/.m2/repository' }}
+          !${{ inputs.maven-repository-dir || '~/.m2/repository' }}/org/apache/shardingsphere
+          ${{ inputs.maven-repository-dir || '~/.m2/repository' }}/org/apache/shardingsphere/elasticjob
+        key: ${{ steps.cache-prefix.outputs.value }}-maven-${{ inputs.cache-suffix }}-${{ hashFiles('**/pom.xml') }}

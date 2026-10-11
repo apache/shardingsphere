@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.sqlfederation.compiler.exception.InvalidExecutionPlanCacheConfigException;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
@@ -37,26 +35,18 @@ public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitio
     
     @Override
     public SQLFederationRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterSQLFederationRuleStatement sqlStatement) {
-        boolean sqlFederationEnabled = null == sqlStatement.getSqlFederationEnabled() ? rule.getConfiguration().isSqlFederationEnabled() : sqlStatement.getSqlFederationEnabled();
         boolean allQueryUseSQLFederation = null == sqlStatement.getAllQueryUseSQLFederation() ? rule.getConfiguration().isAllQueryUseSQLFederation() : sqlStatement.getAllQueryUseSQLFederation();
         SQLFederationCacheOption executionPlanCache = null == sqlStatement.getExecutionPlanCache()
                 ? rule.getConfiguration().getExecutionPlanCache()
                 : createCacheOption(rule.getConfiguration().getExecutionPlanCache(), sqlStatement.getExecutionPlanCache());
-        return new SQLFederationRuleConfiguration(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache);
+        String providerType = null == sqlStatement.getProviderType() ? rule.getConfiguration().getProviderType() : sqlStatement.getProviderType();
+        return new SQLFederationRuleConfiguration(allQueryUseSQLFederation, executionPlanCache, providerType);
     }
     
     private SQLFederationCacheOption createCacheOption(final SQLFederationCacheOption cacheOption, final CacheOptionSegment segment) {
         int initialCapacity = null == segment.getInitialCapacity() ? cacheOption.getInitialCapacity() : segment.getInitialCapacity();
         long maximumSize = null == segment.getMaximumSize() ? cacheOption.getMaximumSize() : segment.getMaximumSize();
-        SQLFederationCacheOption result = new SQLFederationCacheOption(initialCapacity, maximumSize);
-        checkExecutionPlanCacheConfig(result);
-        return result;
-    }
-    
-    private void checkExecutionPlanCacheConfig(final SQLFederationCacheOption executionPlanCache) {
-        ShardingSpherePreconditions.checkState(executionPlanCache.getInitialCapacity() > 0,
-                () -> new InvalidExecutionPlanCacheConfigException("initialCapacity", executionPlanCache.getInitialCapacity()));
-        ShardingSpherePreconditions.checkState(executionPlanCache.getMaximumSize() > 0, () -> new InvalidExecutionPlanCacheConfigException("maximumSize", executionPlanCache.getMaximumSize()));
+        return new SQLFederationCacheOption(initialCapacity, maximumSize);
     }
     
     @Override

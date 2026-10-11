@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.merge.mysql.type;
 
-import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -56,17 +55,23 @@ class MySQLShardingLogicTablesMergedResultTest {
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("table", "ds.table_${0..2}"));
-        return new ShardingRule(shardingRuleConfig, Maps.of("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+        return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     
     @Test
     void assertNextForEmptyQueryResult() throws SQLException {
-        assertFalse(new MySQLShardingLogicTablesMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
+        assertFalse(new MySQLShardingLogicTablesMergedResult(rule, mockSQLStatementContext(), schema, Collections.emptyList()).next());
     }
     
     @Test
     void assertNextForActualTableNameInTableRule() throws SQLException {
-        assertTrue(new MySQLShardingLogicTablesMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult("table_0"))).next());
+        assertTrue(new MySQLShardingLogicTablesMergedResult(rule, mockSQLStatementContext(), schema, Collections.singletonList(mockQueryResult("table_0"))).next());
+    }
+    
+    private SQLStatementContext mockSQLStatementContext() {
+        SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
+        return result;
     }
     
     private QueryResult mockQueryResult(final String value) throws SQLException {

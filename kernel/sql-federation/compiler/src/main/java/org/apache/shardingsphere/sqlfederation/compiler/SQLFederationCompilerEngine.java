@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler;
 
-import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.compiler.compiler.SQLStatementCompilerEngine;
 import org.apache.shardingsphere.sqlfederation.compiler.compiler.SQLStatementCompilerEngineFactory;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheKey;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 
 /**
  * SQL federation compiler engine.

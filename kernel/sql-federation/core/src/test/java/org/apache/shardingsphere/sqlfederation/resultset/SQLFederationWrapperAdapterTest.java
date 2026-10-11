@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -40,7 +40,8 @@ class SQLFederationWrapperAdapterTest {
     @Test
     void assertUnwrapFailure() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class, () -> fixture.unwrap(Comparable.class));
-        assertThat(ex.getMessage(), is("`org.apache.shardingsphere.sqlfederation.resultset.SQLFederationWrapperAdapterTest$WrapperFixture` cannot be unwrapped as `java.lang.Comparable`"));
+        assertThat(ex.getMessage(),
+                is("`org.apache.shardingsphere.sqlfederation.resultset.SQLFederationWrapperAdapterTest$WrapperFixture` cannot be unwrapped as `java.lang.Comparable`"));
     }
     
     @Test

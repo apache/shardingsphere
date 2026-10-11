@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.completion.handler;
 
-import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -26,6 +24,8 @@ import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCand
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
@@ -214,12 +214,15 @@ public final class MetadataCompletionHandler implements MCPCompletionHandler<MCP
             case SCHEMA -> database.isEmpty() ? "" : String.format("shardingsphere://databases/%s/schemas", encode(database));
             case TABLE -> database.isEmpty() || schema.isEmpty() ? "" : String.format("shardingsphere://databases/%s/schemas/%s/tables", encode(database), encode(schema));
             case SEQUENCE -> database.isEmpty() || schema.isEmpty()
-                    ? "" : String.format("shardingsphere://databases/%s/schemas/%s/sequences", encode(database), encode(schema));
+                    ? ""
+                    : String.format("shardingsphere://databases/%s/schemas/%s/sequences", encode(database), encode(schema));
             case STORAGE_UNIT -> database.isEmpty() ? "" : String.format("shardingsphere://databases/%s/storage-units", encode(database));
             case COLUMN -> database.isEmpty() || schema.isEmpty() || table.isEmpty()
-                    ? "" : String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", encode(database), encode(schema), encode(table));
+                    ? ""
+                    : String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", encode(database), encode(schema), encode(table));
             case INDEX -> database.isEmpty() || schema.isEmpty() || table.isEmpty()
-                    ? "" : String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", encode(database), encode(schema), encode(table));
+                    ? ""
+                    : String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", encode(database), encode(schema), encode(table));
             case UNKNOWN -> "";
         };
     }

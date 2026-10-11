@@ -28,6 +28,6 @@ public final class SelectMultipleDataSourcesWithCombineException extends Shardin
     private static final long serialVersionUID = 6817787033278995625L;
     
     public SelectMultipleDataSourcesWithCombineException(final String operation) {
-        super(XOpenSQLState.SYNTAX_ERROR, 36, "SELECT ... %s can not support route to multiple data sources.", operation);
+        super(XOpenSQLState.SYNTAX_ERROR, 43, "SELECT ... %s can not support route to multiple data sources.", operation);
     }
 }

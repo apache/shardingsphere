@@ -29,9 +29,9 @@ import java.util.Optional;
 /**
  * Create table option segment.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-@RequiredArgsConstructor
 public final class CreateTableOptionSegment implements CreateDefinitionSegment {
     
     private final int startIndex;

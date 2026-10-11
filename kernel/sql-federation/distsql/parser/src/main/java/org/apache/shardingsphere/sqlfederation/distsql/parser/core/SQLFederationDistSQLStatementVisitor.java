@@ -46,10 +46,10 @@ public final class SQLFederationDistSQLStatementVisitor extends SQLFederationDis
     
     @Override
     public ASTNode visitSqlFederationRuleDefinition(final SqlFederationRuleDefinitionContext ctx) {
-        Boolean sqlFederationEnabled = null == ctx.sqlFederationEnabled() ? null : Boolean.parseBoolean(IdentifierValueUtils.getValue(ctx.sqlFederationEnabled().boolean_()));
         Boolean allQueryUseSQLFederation = null == ctx.allQueryUseSQLFederation() ? null : Boolean.parseBoolean(IdentifierValueUtils.getValue(ctx.allQueryUseSQLFederation().boolean_()));
         CacheOptionSegment executionPlanCache = null == ctx.executionPlanCache() ? null : visitCacheOption(ctx.executionPlanCache().cacheOption());
-        return new AlterSQLFederationRuleStatement(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache);
+        String providerType = null == ctx.providerType() ? null : IdentifierValueUtils.getValue(ctx.providerType().providerName());
+        return new AlterSQLFederationRuleStatement(allQueryUseSQLFederation, executionPlanCache, providerType);
     }
     
     @Override

@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.infra.config.rule.checker;
 
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureDatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
@@ -78,6 +80,13 @@ class DatabaseRuleConfigurationCheckEngineTest {
     void assertCheckWithoutChecker() {
         when(OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(FixtureRuleConfiguration.class))).thenReturn(Collections.emptyMap());
         assertDoesNotThrow(() -> DatabaseRuleConfigurationCheckEngine.check(new FixtureRuleConfiguration(), database));
+    }
+    
+    @Test
+    void assertCheckInvalidConfigurationWithoutChecker() {
+        FixtureDatabaseRuleConfiguration ruleConfig = new FixtureDatabaseRuleConfiguration();
+        ruleConfig.setName("");
+        assertThrows(InvalidRuleConfigurationException.class, () -> DatabaseRuleConfigurationCheckEngine.check(ruleConfig, database));
     }
     
     @Test

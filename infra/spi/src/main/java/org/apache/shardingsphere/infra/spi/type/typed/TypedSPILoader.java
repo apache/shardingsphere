@@ -111,6 +111,23 @@ public final class TypedSPILoader {
     }
     
     /**
+     * Judge whether service exists.
+     *
+     * @param serviceInterface typed SPI service interface
+     * @param type type
+     * @param <T> SPI class type
+     * @return service exists or not
+     */
+    public static <T extends TypedSPI> boolean containsService(final Class<T> serviceInterface, final Object type) {
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
+            if (null == type ? each.isDefault() : matchesType(type, each)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
      * Check service.
      *
      * @param serviceInterface typed SPI service interface

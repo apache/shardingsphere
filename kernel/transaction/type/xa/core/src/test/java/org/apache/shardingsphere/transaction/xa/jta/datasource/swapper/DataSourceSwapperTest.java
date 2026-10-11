@@ -27,8 +27,8 @@ import org.junit.jupiter.api.Test;
 
 import javax.sql.XADataSource;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 
 class DataSourceSwapperTest {

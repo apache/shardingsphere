@@ -36,9 +36,7 @@ public final class InlineExpressionParserFactory {
     
     /**
      * ShardingSphere has never directly supported the `GROOVY` implementation of Row Value Expression SPI under GraalVM Native Image.
-     * Therefore, ShardingSphere JDBC Core will directly avoid compiling `Closure` related classes under GraalVM Native Image until a new solution emerges.
-     *
-     * @see groovy.lang.Closure
+     * Therefore, ShardingSphere JDBC Core will avoid compiling Groovy closure-related classes under GraalVM Native Image until a new solution emerges.
      */
     private static final String DEFAULT_TYPE_NAME = null == System.getProperty("org.graalvm.nativeimage.imagecode") ? "GROOVY" : "LITERAL";
     

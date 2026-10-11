@@ -50,17 +50,17 @@ import java.util.stream.Collectors;
  */
 public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
     
-    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema, is_nullable"
+    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema, is_nullable, is_identity"
             + " FROM information_schema.columns WHERE table_schema IN (%s)";
     
     private static final String TABLE_META_DATA_SQL_WITHOUT_TABLES = BASIC_TABLE_META_DATA_SQL + " ORDER BY ordinal_position";
     
     private static final String TABLE_META_DATA_SQL_WITH_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name IN (%s) ORDER BY ordinal_position";
     
-    private static final String FOREIGN_KEY_META_DATA_SQL = "SELECT tc.table_schema,tc.table_name,tc.constraint_name,pgo.relname refer_table_name "
-            + "FROM information_schema.table_constraints tc "
-            + "JOIN pg_constraint pgc ON tc.constraint_name = pgc.conname AND contype='f' "
-            + "JOIN pg_class pgo ON pgc.confrelid = pgo.oid WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_schema IN (%s)";
+    private static final String FOREIGN_KEY_META_DATA_SQL =
+            "SELECT tnsp.nspname AS table_schema, tbl.relname AS table_name, pgc.conname AS constraint_name, ref.relname AS refer_table_name"
+                    + " FROM pg_constraint pgc JOIN pg_class tbl ON tbl.oid = pgc.conrelid JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace"
+                    + " JOIN pg_class ref ON ref.oid = pgc.confrelid WHERE pgc.contype = 'f' AND tnsp.nspname IN (%s)";
     
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT tc.table_name, kc.column_name, kc.table_schema FROM information_schema.table_constraints tc"
             + " JOIN information_schema.key_column_usage kc ON kc.table_schema = tc.table_schema AND kc.table_name = tc.table_name AND kc.constraint_name = tc.constraint_name"
@@ -71,7 +71,9 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
     private static final String ADVANCE_INDEX_META_DATA_SQL =
             "SELECT idx.relname as index_name, insp.nspname as index_schema, tbl.relname as table_name, att.attname AS column_name, pgi.indisunique as is_unique"
                     + " FROM pg_index pgi JOIN pg_class idx ON idx.oid = pgi.indexrelid JOIN pg_namespace insp ON insp.oid = idx.relnamespace JOIN pg_class tbl ON tbl.oid = pgi.indrelid"
-                    + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = ANY(pgi.indkey) WHERE tnsp.nspname IN (%s)";
+                    + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace JOIN generate_subscripts(pgi.indkey, 1) AS index_position(position) ON TRUE"
+                    + " JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = pgi.indkey[index_position.position] WHERE tnsp.nspname IN (%s)"
+                    + " ORDER BY insp.nspname, idx.relname, index_position.position";
     
     private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_name FROM information_schema.role_table_grants";
     
@@ -213,7 +215,7 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
         String dataType = resultSet.getString("udt_name");
         boolean isPrimaryKey = primaryKeys.contains(schemaName + "," + tableName + "," + columnName);
         String columnDefault = resultSet.getString("column_default");
-        boolean generated = null != columnDefault && columnDefault.startsWith("nextval(");
+        boolean generated = "YES".equals(resultSet.getString("is_identity")) || null != columnDefault && columnDefault.startsWith("nextval(");
         // TODO user defined collation which deterministic is false
         boolean caseSensitive = true;
         boolean isNullable = "YES".equals(resultSet.getString("is_nullable"));

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.env.container.adapter;
 import org.apache.shardingsphere.test.e2e.env.container.E2EContainer;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 
 /**
  * Adapter container.
@@ -33,4 +34,20 @@ public interface AdapterContainer extends E2EContainer {
      * @return target data source
      */
     DataSource getTargetDataSource(String serverLists);
+    
+    /**
+     * Get target data source.
+     *
+     * @param serverLists server lists
+     * @param dataSourceName data source name
+     * @return target data source
+     */
+    DataSource getTargetDataSource(String serverLists, String dataSourceName);
+    
+    /**
+     * Get target data sources.
+     *
+     * @return target data sources
+     */
+    Collection<DataSource> getTargetDataSources();
 }

@@ -1172,4 +1172,14 @@
             <simple-table name="t_order" start-index="28" stop-index="34" />
         </from>
     </select>
+
+    <select sql-case-id="clickhouse_select_null_without_alias">
+        <projections start-index="7" stop-index="10">
+            <expression-projection text="NULL" start-index="7" stop-index="10">
+                <expr>
+                    <literal-expression value="null" start-index="7" stop-index="10" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

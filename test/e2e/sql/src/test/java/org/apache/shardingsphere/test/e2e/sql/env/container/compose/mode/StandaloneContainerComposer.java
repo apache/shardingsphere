@@ -35,6 +35,7 @@ import org.apache.shardingsphere.test.e2e.sql.env.container.compose.ContainerCom
 import org.apache.shardingsphere.test.e2e.sql.env.container.config.SQLE2EProxyContainerConfigurationFactory;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -70,7 +71,17 @@ public final class StandaloneContainerComposer implements ContainerComposer {
     
     @Override
     public DataSource getTargetDataSource() {
-        return adapterContainer.getTargetDataSource(null);
+        return getTargetDataSource(null);
+    }
+    
+    @Override
+    public DataSource getTargetDataSource(final String dataSourceName) {
+        return adapterContainer.getTargetDataSource(null, dataSourceName);
+    }
+    
+    @Override
+    public Collection<DataSource> getTargetDataSources() {
+        return adapterContainer.getTargetDataSources();
     }
     
     @Override

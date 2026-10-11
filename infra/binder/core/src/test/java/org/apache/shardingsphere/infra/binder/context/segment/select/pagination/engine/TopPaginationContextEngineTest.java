@@ -33,8 +33,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,6 +47,18 @@ class TopPaginationContextEngineTest {
     void assertCreatePaginationContextWhenRowNumberPredicateNotPresent() {
         TopProjectionSegment topProjectionSegment = new TopProjectionSegment(0, 10, null, "rowNumberAlias");
         PaginationContext paginationContext = paginationContextEngine.createPaginationContext(topProjectionSegment, Collections.emptyList(), Collections.emptyList());
+        assertFalse(paginationContext.getOffsetSegment().isPresent());
+        assertFalse(paginationContext.getRowCountSegment().isPresent());
+    }
+    
+    @Test
+    void assertCreatePaginationContextWhenRowNumberValueIsNull() {
+        String name = "rowNumberAlias";
+        ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(name));
+        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 3, null);
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, ">", null);
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(
+                new TopProjectionSegment(0, 10, null, name), Collections.singletonList(expression), Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }

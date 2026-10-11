@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.agent.plugin.core.advice;
 
-import org.apache.shardingsphere.agent.api.plugin.AgentPluginEnable;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.api.plugin.AgentPluginEnable;
 import org.apache.shardingsphere.agent.plugin.core.context.PluginContext;
 
 /**

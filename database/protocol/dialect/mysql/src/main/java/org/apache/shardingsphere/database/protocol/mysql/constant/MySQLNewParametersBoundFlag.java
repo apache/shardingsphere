@@ -19,7 +19,7 @@ package org.apache.shardingsphere.database.protocol.mysql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.mysql.exception.MySQLProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 
 /**
  * New parameters bound flag for MySQL.
@@ -39,7 +39,7 @@ public enum MySQLNewParametersBoundFlag {
      *
      * @param value value
      * @return new parameters bound flag
-     * @throws MySQLProtocolException MySQL protocol exception
+     * @throws DatabaseProtocolException database protocol exception
      */
     public static MySQLNewParametersBoundFlag valueOf(final int value) {
         for (MySQLNewParametersBoundFlag each : values()) {
@@ -47,6 +47,6 @@ public enum MySQLNewParametersBoundFlag {
                 return each;
             }
         }
-        throw new MySQLProtocolException("Can not find value `%s` in new parameters bound flag.", value);
+        throw new DatabaseProtocolException("Can not find value `%s` in new parameters bound flag.", value);
     }
 }

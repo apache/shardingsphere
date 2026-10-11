@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
 
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -37,6 +38,7 @@ import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -71,22 +73,30 @@ class FirebirdBlobInfoExecutorTest {
     
     @Test
     void assertExecuteWithReadBlob() {
-        FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3});
+        FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3}, false);
         Collection<DatabasePacket> actual = new FirebirdBlobInfoExecutor(packet, connectionSession).execute();
         assertThat(getBlobLength(actual), is(3));
     }
     
     @Test
     void assertExecuteWithPartiallyReadBlob() {
-        FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3});
+        FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3}, false);
         FirebirdBlobReadCache.getInstance().readSegment(CONNECTION_ID, BLOB_HANDLE, 1);
         Collection<DatabasePacket> actual = new FirebirdBlobInfoExecutor(packet, connectionSession).execute();
-        assertThat(getBlobLength(actual), is(2));
+        assertThat(getBlobLength(actual), is(3));
+    }
+    
+    @Test
+    void assertExecuteWithStreamBlob() {
+        FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3}, true);
+        when(packet.getInfoItems()).thenReturn(Collections.singletonList(FirebirdBlobInfoPacketType.TYPE));
+        Collection<DatabasePacket> actual = new FirebirdBlobInfoExecutor(packet, connectionSession).execute();
+        assertTrue(((FirebirdBlobInfoReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData()).isStreamBlob());
     }
     
     @Test
     void assertExecuteWithWriteBlob() {
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, 3L);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, 3L, false);
         FirebirdBlobWriteCache.getInstance().appendSegment(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3, 4});
         Collection<DatabasePacket> actual = new FirebirdBlobInfoExecutor(packet, connectionSession).execute();
         assertThat(getBlobLength(actual), is(4));

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.segment.table;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -30,7 +29,6 @@ import java.util.Collection;
 /**
  * Abstract table rule segment.
  */
-@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
 @Setter
@@ -40,7 +38,7 @@ public abstract class AbstractTableRuleSegment implements DistSQLSegment {
     
     private final Collection<String> dataSourceNodes;
     
-    private KeyGenerateStrategySegment keyGenerateStrategySegment;
+    private final KeyGenerateStrategySegment keyGenerateStrategySegment;
     
-    private AuditStrategySegment auditStrategySegment;
+    private final AuditStrategySegment auditStrategySegment;
 }

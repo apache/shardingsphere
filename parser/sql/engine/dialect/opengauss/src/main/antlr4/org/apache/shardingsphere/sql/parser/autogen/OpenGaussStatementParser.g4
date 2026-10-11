@@ -75,6 +75,7 @@ execute
     | createDatabase
     | createFunction
     | createProcedure
+    | createForeignTable
     | createServer
     | createTrigger
     | createView
@@ -89,6 +90,7 @@ execute
     | createTextSearch
     | dropDatabase
     | dropFunction
+    | dropForeignTable
     | dropProcedure
     | dropRule
     | dropServer

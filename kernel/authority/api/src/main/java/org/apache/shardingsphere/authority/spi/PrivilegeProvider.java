@@ -20,13 +20,11 @@ package org.apache.shardingsphere.authority.spi;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
  * Privilege provider.
  */
-@SingletonSPI
 public interface PrivilegeProvider extends TypedSPI {
     
     /**

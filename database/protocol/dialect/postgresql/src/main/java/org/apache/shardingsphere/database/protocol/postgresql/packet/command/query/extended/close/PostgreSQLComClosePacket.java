@@ -19,7 +19,7 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.postgresql.exception.PostgreSQLProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
@@ -64,7 +64,7 @@ public final class PostgreSQLComClosePacket extends PostgreSQLCommandPacket {
          *
          * @param type type char
          * @return type
-         * @throws PostgreSQLProtocolException PostgreSQL protocol exception
+         * @throws DatabaseProtocolException database protocol exception
          */
         public static Type valueOf(final char type) {
             for (Type each : values()) {
@@ -72,7 +72,7 @@ public final class PostgreSQLComClosePacket extends PostgreSQLCommandPacket {
                     return each;
                 }
             }
-            throw new PostgreSQLProtocolException("Close type must be 'S' or 'P'. Got '%c'.", type);
+            throw new DatabaseProtocolException("Close type must be 'S' or 'P'. Got '%c'.", type);
         }
     }
 }

@@ -59,7 +59,20 @@ public final class ExecutorContext {
     
     private final String currentSchemaName;
     
-    private final boolean preview;
-    
     private final String processId;
+    
+    public ExecutorContext(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                           final JDBCExecutorCallback<? extends ExecuteResult> queryCallback, final ShardingSphereStatistics statistics,
+                           final String currentDatabaseName, final String currentSchemaName, final String processId) {
+        this(prepareEngine, null, queryCallback, statistics, currentDatabaseName, currentSchemaName, processId);
+    }
+    
+    /**
+     * Judge whether is preview.
+     *
+     * @return true if is preview, false otherwise
+     */
+    public boolean isPreview() {
+        return null == jdbcExecutor;
+    }
 }

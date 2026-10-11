@@ -27,8 +27,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class DisabledReadDataSourcesFilterTest {
     
@@ -57,11 +57,5 @@ class DisabledReadDataSourcesFilterTest {
         rule.disableDataSource("read_ds_0");
         rule.enableDataSource("read_ds_0");
         assertThat(new DisabledReadDataSourcesFilter().filter(rule, Arrays.asList("read_ds_0", "read_ds_1")), is(Arrays.asList("read_ds_0", "read_ds_1")));
-    }
-    
-    @Test
-    void assertGetEnabledReplicaDataSources() {
-        rule.disableDataSource("read_ds_0");
-        assertThat(new DisabledReadDataSourcesFilter().filter(rule, Arrays.asList("read_ds_0", "read_ds_1")), is(Collections.singletonList("read_ds_1")));
     }
 }

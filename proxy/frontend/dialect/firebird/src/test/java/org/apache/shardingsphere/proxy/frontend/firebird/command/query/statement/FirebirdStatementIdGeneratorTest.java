@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.HashSet;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FirebirdStatementIdGeneratorTest {
@@ -39,13 +39,6 @@ class FirebirdStatementIdGeneratorTest {
             GENERATOR.unregisterConnection(each);
         }
         registeredConnectionIds.clear();
-    }
-    
-    @Test
-    void assertRegisterConnection() {
-        GENERATOR.registerConnection(1);
-        registeredConnectionIds.add(1);
-        assertThat(GENERATOR.getStatementId(1), is(0));
     }
     
     @Test

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
+import org.apache.shardingsphere.distsql.handler.util.ExportUtils;
 import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -28,8 +29,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

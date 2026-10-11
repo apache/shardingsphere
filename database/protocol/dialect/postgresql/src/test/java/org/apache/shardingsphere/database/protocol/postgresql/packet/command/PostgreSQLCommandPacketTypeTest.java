@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command;
 
-import org.apache.shardingsphere.database.protocol.postgresql.exception.PostgreSQLProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,7 +27,7 @@ class PostgreSQLCommandPacketTypeTest {
     
     @Test
     void assertValueOfUnknownCommandPacketType() {
-        assertThrows(PostgreSQLProtocolException.class, () -> PostgreSQLCommandPacketType.valueOf(-1));
+        assertThrows(DatabaseProtocolException.class, () -> PostgreSQLCommandPacketType.valueOf(-1));
     }
     
     @Test

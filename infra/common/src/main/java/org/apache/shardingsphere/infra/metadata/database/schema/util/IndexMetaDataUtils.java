@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -193,12 +192,14 @@ public final class IndexMetaDataUtils {
      *
      * @param database database
      * @param indexes indexes
-     * @param protocolType protocol type
      * @return table names
      */
-    public static Collection<QualifiedTable> getTableNames(final ShardingSphereDatabase database, final DatabaseType protocolType, final Collection<IndexSegment> indexes) {
+    public static Collection<QualifiedTable> getTableNames(final ShardingSphereDatabase database, final Collection<IndexSegment> indexes) {
+        return getTableNames(database, database.getDefaultSchemaName(), indexes);
+    }
+    
+    private static Collection<QualifiedTable> getTableNames(final ShardingSphereDatabase database, final String schemaName, final Collection<IndexSegment> indexes) {
         Collection<QualifiedTable> result = new LinkedList<>();
-        String schemaName = new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(database.getName());
         for (IndexSegment each : indexes) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
             findLogicTableNameFromMetaData(database.getSchema(actualSchemaName), each.getIndexName().getIdentifier())

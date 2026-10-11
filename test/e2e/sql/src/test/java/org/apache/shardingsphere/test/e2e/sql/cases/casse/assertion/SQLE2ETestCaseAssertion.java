@@ -42,6 +42,9 @@ public final class SQLE2ETestCaseAssertion {
     @XmlAttribute(name = "expected-data-source-name")
     private String expectedDataSourceName;
     
+    @XmlAttribute(name = "target-data-source-name")
+    private String targetDataSourceName;
+    
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     

@@ -1161,6 +1161,160 @@
         </combine>
     </select>
     
+    <select sql-case-id="select_union_with_order_by">
+        <projections start-index="7" stop-index="17">
+            <column-projection name="FINISH_DATE" start-index="7" stop-index="17" />
+        </projections>
+        <from>
+            <simple-table name="HIST" start-index="24" stop-index="27" />
+        </from>
+        <order-by>
+            <column-item name="FINISH_DATE" order-direction="DESC" start-index="73" stop-index="83" />
+        </order-by>
+        <combine combine-type="UNION" start-index="0" stop-index="88">
+            <left>
+                <projections start-index="7" stop-index="17">
+                    <column-projection name="FINISH_DATE" start-index="7" stop-index="17" />
+                </projections>
+                <from>
+                    <simple-table name="HIST" start-index="24" stop-index="27" />
+                </from>
+            </left>
+            <right>
+                <projections start-index="42" stop-index="52">
+                    <column-projection name="FINISH_DATE" start-index="42" stop-index="52" />
+                </projections>
+                <from>
+                    <simple-table name="CURR" start-index="59" stop-index="62" />
+                </from>
+            </right>
+        </combine>
+    </select>
+
+    <select sql-case-id="select_union_order_by_left_subquery_with_null">
+        <projections start-index="7" stop-index="16">
+            <column-projection name="ORDER_ID" start-index="7" stop-index="16">
+                <owner name="B" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
+        <from>
+            <subquery-table alias="B" start-index="23" stop-index="122">
+                <subquery start-index="23" stop-index="120">
+                    <select>
+                        <projections start-index="31" stop-index="40">
+                            <column-projection name="ORDER_ID" start-index="31" stop-index="40">
+                                <owner name="T" start-index="31" stop-index="31" />
+                            </column-projection>
+                        </projections>
+                        <from>
+                            <simple-table name="T_ORDER" alias="T" start-index="47" stop-index="55" />
+                        </from>
+                        <where start-index="57" stop-index="94">
+                            <expr>
+                                <between-expression start-index="63" stop-index="94">
+                                    <not>false</not>
+                                    <left>
+                                        <column name="ORDER_ID" start-index="63" stop-index="72">
+                                            <owner name="T" start-index="63" stop-index="63" />
+                                        </column>
+                                    </left>
+                                    <between-expr>
+                                        <literal-expression value="1000" start-index="82" stop-index="85" />
+                                    </between-expr>
+                                    <and-expr>
+                                        <literal-expression value="1001" start-index="91" stop-index="94" />
+                                    </and-expr>
+                                </between-expression>
+                            </expr>
+                        </where>
+                        <order-by>
+                            <column-item name="ORDER_ID" order-direction="DESC" start-index="105" stop-index="114">
+                                <owner name="T" start-index="105" stop-index="105" />
+                            </column-item>
+                        </order-by>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+        <order-by>
+            <column-item name="ORDER_ID" order-direction="DESC" start-index="199" stop-index="206" />
+        </order-by>
+        <combine combine-type="UNION" start-index="0" stop-index="211">
+            <left>
+                <projections start-index="7" stop-index="16">
+                    <column-projection name="ORDER_ID" start-index="7" stop-index="16">
+                        <owner name="B" start-index="7" stop-index="7" />
+                    </column-projection>
+                </projections>
+                <from>
+                    <subquery-table alias="B" start-index="23" stop-index="122">
+                        <subquery start-index="23" stop-index="120">
+                            <select>
+                                <projections start-index="31" stop-index="40">
+                                    <column-projection name="ORDER_ID" start-index="31" stop-index="40">
+                                        <owner name="T" start-index="31" stop-index="31" />
+                                    </column-projection>
+                                </projections>
+                                <from>
+                                    <simple-table name="T_ORDER" alias="T" start-index="47" stop-index="55" />
+                                </from>
+                                <where start-index="57" stop-index="94">
+                                    <expr>
+                                        <between-expression start-index="63" stop-index="94">
+                                            <not>false</not>
+                                            <left>
+                                                <column name="ORDER_ID" start-index="63" stop-index="72">
+                                                    <owner name="T" start-index="63" stop-index="63" />
+                                                </column>
+                                            </left>
+                                            <between-expr>
+                                                <literal-expression value="1000" start-index="82" stop-index="85" />
+                                            </between-expr>
+                                            <and-expr>
+                                                <literal-expression value="1001" start-index="91" stop-index="94" />
+                                            </and-expr>
+                                        </between-expression>
+                                    </expr>
+                                </where>
+                                <order-by>
+                                    <column-item name="ORDER_ID" order-direction="DESC" start-index="105" stop-index="114">
+                                        <owner name="T" start-index="105" stop-index="105" />
+                                    </column-item>
+                                </order-by>
+                            </select>
+                        </subquery>
+                    </subquery-table>
+                </from>
+            </left>
+            <right>
+                <projections start-index="137" stop-index="140">
+                    <expression-projection start-index="137" stop-index="140" />
+                </projections>
+                <from>
+                    <simple-table name="T_USER" alias="U" start-index="147" stop-index="154" />
+                </from>
+                <where start-index="156" stop-index="188">
+                    <expr>
+                        <between-expression start-index="162" stop-index="188">
+                            <not>false</not>
+                            <left>
+                                <column name="USER_ID" start-index="162" stop-index="170">
+                                    <owner name="U" start-index="162" stop-index="162" />
+                                </column>
+                            </left>
+                            <between-expr>
+                                <literal-expression value="10" start-index="180" stop-index="181" />
+                            </between-expr>
+                            <and-expr>
+                                <literal-expression value="12" start-index="187" stop-index="188" />
+                            </and-expr>
+                        </between-expression>
+                    </expr>
+                </where>
+            </right>
+        </combine>
+    </select>
+
     <select sql-case-id="select_union_case_when_order_by">
         <projections start-index="8" stop-index="166">
             <column-projection name="PRODUCT_ID" start-index="8" stop-index="17" />
@@ -1207,6 +1361,9 @@
         <from>
             <simple-table name="PRODUCTS" start-index="173" stop-index="180" />
         </from>
+        <order-by>
+            <column-item name="PRODUCT_ID" order-direction="ASC" start-index="555" stop-index="564" />
+        </order-by>
         <combine combine-type="UNION" start-index="0" stop-index="564">
             <left>
                 <projections start-index="8" stop-index="166">
@@ -1397,9 +1554,6 @@
                 <from>
                     <simple-table name="PRODUCTS" start-index="537" stop-index="544" />
                 </from>
-                <order-by>
-                    <column-item name="PRODUCT_ID" order-direction="ASC" start-index="555" stop-index="564" />
-                </order-by>
             </right>
         </combine>
     </select>
@@ -1493,6 +1647,9 @@
         <from>
             <simple-table name="INVENTORIES" start-index="23" stop-index="33" />
         </from>
+        <order-by>
+            <column-item name="PRODUCT_ID" order-direction="ASC" start-index="89" stop-index="98" />
+        </order-by>
         <combine combine-type="INTERSECT" start-index="0" stop-index="98">
             <left>
                 <projections start-index="7" stop-index="16">
@@ -1509,9 +1666,6 @@
                 <from>
                     <simple-table name="ORDER_ITEMS" start-index="68" stop-index="78" />
                 </from>
-                <order-by>
-                    <column-item name="PRODUCT_ID" order-direction="ASC" start-index="89" stop-index="98" />
-                </order-by>
             </right>
         </combine>
     </select>
@@ -1580,6 +1734,9 @@
         <from>
             <simple-table name="INVENTORIES" start-index="23" stop-index="33" />
         </from>
+        <order-by>
+            <column-item name="PRODUCT_ID" order-direction="ASC" start-index="85" stop-index="94" />
+        </order-by>
         <combine combine-type="MINUS" start-index="0" stop-index="94">
             <left>
                 <projections start-index="7" stop-index="16">
@@ -1596,9 +1753,6 @@
                 <from>
                     <simple-table name="ORDER_ITEMS" start-index="64" stop-index="74" />
                 </from>
-                <order-by>
-                    <column-item name="PRODUCT_ID" order-direction="ASC" start-index="85" stop-index="94" />
-                </order-by>
             </right>
         </combine>
     </select>

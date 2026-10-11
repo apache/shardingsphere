@@ -23,7 +23,7 @@ options {tokenVocab = ModeLexer;}
 
 createTable
     : CREATE createTableSpecification TABLE ifNotExists? tableName
-      (createDefinitionClause | (OF anyName (LP_ typedTableElementList RP_)?) | (PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec))
+      (createDefinitionClause | (OF anyName (LP_ typedTableElementList RP_)?) | (PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec))?
       inheritClause partitionSpec? tableAccessMethodClause? withOption? onCommitOption? tablespace?
       (AS select withData?)?
       (EXECUTE name executeParamClause withData?)?
@@ -1524,7 +1524,7 @@ ruleActionMulti
 
 createTrigger
     : CREATE TRIGGER name triggerActionTime triggerEvents ON qualifiedName triggerReferencing? triggerForSpec? triggerWhen? EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs? RP_
-    | CREATE CONSTRAINT TRIGGER (FROM qualifiedName)? constraintAttributeSpec FOR EACH ROW triggerWhen EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs RP_
+    | CREATE CONSTRAINT TRIGGER (FROM qualifiedName)? constraintAttributeSpec FOR EACH ROW triggerWhen EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs? RP_
     ;
 
 triggerEvents

@@ -35,7 +35,7 @@ public enum ShadowOperationType {
     DELETE,
     
     /**
-     * The shadow operation is update.
+     * Update shadow operation.
      */
     UPDATE,
     

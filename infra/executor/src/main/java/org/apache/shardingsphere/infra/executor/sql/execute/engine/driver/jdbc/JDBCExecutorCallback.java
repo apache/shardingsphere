@@ -93,13 +93,13 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
             processEngine.completeSQLUnitExecution(jdbcExecutionUnit, processId);
             return result;
         } catch (final SQLException ex) {
+            sqlExecutionHook.finishFailure(ex);
             if (!storageType.equals(protocolType)) {
                 Optional<T> saneResult = getSaneResult(sqlStatement, ex);
                 if (saneResult.isPresent()) {
                     return isTrunkThread ? saneResult.get() : null;
                 }
             }
-            sqlExecutionHook.finishFailure(ex);
             SQLExecutorExceptionHandler.handleException(ex);
             return null;
         }

@@ -78,6 +78,18 @@ public final class PostgreSQLRuntimeTestSupport {
     }
     
     /**
+     * Create runtime databases for a Dockerized MCP runtime that connects back to the host-mapped PostgreSQL port.
+     *
+     * @param container running container
+     * @param logicalDatabase logical database name
+     * @return runtime databases
+     */
+    public static Map<String, RuntimeDatabaseConfiguration> createDockerHostRuntimeDatabases(final GenericContainer<?> container, final String logicalDatabase) {
+        String jdbcUrl = String.format("jdbc:postgresql://host.docker.internal:%d/%s", container.getMappedPort(5432), DATABASE_NAME);
+        return Map.of(logicalDatabase, new RuntimeDatabaseConfiguration(jdbcUrl, USERNAME, PASSWORD, "org.postgresql.Driver"));
+    }
+    
+    /**
      * Initialize PostgreSQL schemas that exercise native schema metadata.
      *
      * @param container running container

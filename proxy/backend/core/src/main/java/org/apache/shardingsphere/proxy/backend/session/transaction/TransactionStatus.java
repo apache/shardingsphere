@@ -24,8 +24,8 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 /**
  * Transaction status.
  */
-@Setter
 @Getter
+@Setter
 public final class TransactionStatus {
     
     private volatile boolean inTransaction;

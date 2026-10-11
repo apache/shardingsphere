@@ -21,8 +21,8 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class CombineOperatorConverterTest {
     

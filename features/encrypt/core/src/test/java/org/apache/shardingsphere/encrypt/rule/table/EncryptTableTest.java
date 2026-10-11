@@ -23,6 +23,8 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfigurati
 import org.apache.shardingsphere.encrypt.enums.EncryptColumnItemType;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLogicColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +32,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -38,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class EncryptTableTest {
     
@@ -53,10 +57,19 @@ class EncryptTableTest {
     }
     
     private Map<String, EncryptAlgorithm> createEncryptors() {
-        Map<String, EncryptAlgorithm> result = new HashMap<>(3, 1F);
-        result.put("foo_algo", mock(EncryptAlgorithm.class));
-        result.put("foo_assist_query_algo", mock(EncryptAlgorithm.class));
-        result.put("foo_like_algo", mock(EncryptAlgorithm.class));
+        Map<String, EncryptAlgorithm> result = new HashMap<>(4, 1F);
+        result.put("foo_algo", mockEncryptAlgorithm());
+        result.put("foo_assist_query_algo", mockEncryptAlgorithm());
+        result.put("foo_like_algo", mockEncryptAlgorithm());
+        result.put("bar_algo", mockEncryptAlgorithm());
+        return result;
+    }
+    
+    private EncryptAlgorithm mockEncryptAlgorithm() {
+        EncryptAlgorithm result = mock(EncryptAlgorithm.class);
+        when(result.getMetaData()).thenReturn(new EncryptAlgorithmMetaData(true, true, true, String.class));
+        when(result.getEncoder()).thenReturn(Optional.empty());
+        when(result.toConfiguration()).thenReturn(new AlgorithmConfiguration("FIXTURE", new Properties()));
         return result;
     }
     

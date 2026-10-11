@@ -260,7 +260,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     
     private ASTNode createCompareSegment(final ClickHouseStatementParser.BooleanPrimaryContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
-        ExpressionSegment right = null != ctx.predicate() ? (ExpressionSegment) visit(ctx.predicate()) : (ExpressionSegment) visit(ctx.subquery());
+        ExpressionSegment right = null == ctx.predicate() ? (ExpressionSegment) visit(ctx.subquery()) : (ExpressionSegment) visit(ctx.predicate());
         String operator = null == ctx.SAFE_EQ_() ? ctx.comparisonOperator().getText() : ctx.SAFE_EQ_().getText();
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
@@ -433,9 +433,9 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     
     @Override
     public final ASTNode visitSpecialFunction(final ClickHouseStatementParser.SpecialFunctionContext ctx) {
-        return null != ctx.castFunction()
-                ? visit(ctx.castFunction())
-                : new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+        return null == ctx.castFunction()
+                ? new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx))
+                : visit(ctx.castFunction());
     }
     
     @Override

@@ -33,6 +33,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Outpu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.assignment.ValueReferenceSegmentAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.error.ErrorLoggingClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.hint.WithTableHintClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.DerivedInsertColumnsAssert;
@@ -42,7 +44,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ins
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.MultiTableConditionalIntoClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.MultiTableInsertIntoClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.OnDuplicateKeyColumnsAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.assignment.ValueReferenceSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.output.OutputClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.parameter.ParameterMarkerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.returning.ReturningClauseAssert;
@@ -53,8 +54,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -86,6 +87,7 @@ public final class InsertStatementAssert {
         assertMultiTableInsertIntoClause(assertContext, actual, expected);
         assertMultiTableConditionalIntoClause(assertContext, actual, expected);
         assertReturningClause(assertContext, actual, expected);
+        ErrorLoggingClauseAssert.assertIs(assertContext, actual.getErrorLogging(), expected.getErrorLoggingClause());
         assertInsertExecClause(assertContext, actual, expected);
         assertWithTableHintClause(assertContext, actual, expected);
         assertRowSetFunctionClause(assertContext, actual, expected);

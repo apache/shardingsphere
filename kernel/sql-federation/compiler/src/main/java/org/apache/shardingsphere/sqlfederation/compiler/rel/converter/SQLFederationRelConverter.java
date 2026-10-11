@@ -26,16 +26,29 @@ import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rel.type.RelDataTypeFamily;
 import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.schema.SchemaPlus;
+import org.apache.calcite.sql.SqlCall;
+import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperatorTable;
+import org.apache.calcite.sql.fun.SqlBetweenOperator;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.type.SqlTypeFamily;
+import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.util.SqlOperatorTables;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
+import org.apache.calcite.sql2rel.SqlRexContext;
+import org.apache.calcite.sql2rel.SqlRexConvertlet;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
+import org.apache.calcite.util.Util;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
@@ -43,7 +56,9 @@ import org.apache.shardingsphere.sqlfederation.compiler.metadata.catalog.SQLFede
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.view.ShardingSphereViewExpander;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.builder.SQLFederationPlannerBuilder;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.type.SQLFederationDataTypeFactory;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -86,7 +101,85 @@ public final class SQLFederationRelConverter {
                 : (rowType, queryString, schemaPath, viewPath) -> null;
         // TODO remove withRemoveSortInSubQuery when calcite can expand view which contains order by correctly
         Config converterConfig = SqlToRelConverter.config().withTrimUnusedFields(true).withRemoveSortInSubQuery(false);
-        return new SqlToRelConverter(expander, validator, catalogReader, cluster, StandardConvertletTable.INSTANCE, converterConfig);
+        return new SqlToRelConverter(expander, validator, catalogReader, cluster, SQLFederationRelConverter::getConvertlet, converterConfig);
+    }
+    
+    private static @Nullable SqlRexConvertlet getConvertlet(final SqlCall call) {
+        if (call.getKind().belongsTo(SqlKind.ORDER_COMPARISON)) {
+            return SQLFederationRelConverter::convertOrderComparison;
+        }
+        return call.getOperator() instanceof SqlBetweenOperator ? SQLFederationRelConverter::convertBetween : StandardConvertletTable.INSTANCE.get(call);
+    }
+    
+    private static RexNode convertOrderComparison(final SqlRexContext context, final SqlCall call) {
+        RexBuilder rexBuilder = context.getRexBuilder();
+        List<RexNode> operands = convertOperands(context, call);
+        return rexBuilder.makeCall(call.getParserPosition(), rexBuilder.deriveReturnType(call.getOperator(), operands), call.getOperator(), operands);
+    }
+    
+    private static RexNode convertBetween(final SqlRexContext context, final SqlCall call) {
+        List<RexNode> operands = convertOperands(context, call);
+        RexNode value = operands.get(SqlBetweenOperator.VALUE_OPERAND);
+        RexNode lower = operands.get(SqlBetweenOperator.LOWER_OPERAND);
+        RexNode upper = operands.get(SqlBetweenOperator.UPPER_OPERAND);
+        RexBuilder rexBuilder = context.getRexBuilder();
+        RexNode firstRange = rexBuilder.makeCall(call.getParserPosition(), SqlStdOperatorTable.AND,
+                rexBuilder.makeCall(call.getParserPosition(), SqlStdOperatorTable.GREATER_THAN_OR_EQUAL, value, lower),
+                rexBuilder.makeCall(call.getParserPosition(), SqlStdOperatorTable.LESS_THAN_OR_EQUAL, value, upper));
+        SqlBetweenOperator operator = (SqlBetweenOperator) call.getOperator();
+        RexNode result;
+        switch (operator.flag) {
+            case ASYMMETRIC:
+                result = firstRange;
+                break;
+            case SYMMETRIC:
+                RexNode secondRange = rexBuilder.makeCall(call.getParserPosition(), SqlStdOperatorTable.AND,
+                        rexBuilder.makeCall(call.getParserPosition(), SqlStdOperatorTable.GREATER_THAN_OR_EQUAL, value, upper),
+                        rexBuilder.makeCall(call.getParserPosition(), SqlStdOperatorTable.LESS_THAN_OR_EQUAL, value, lower));
+                result = rexBuilder.makeCall(call.getParserPosition(), SqlStdOperatorTable.OR, firstRange, secondRange);
+                break;
+            default:
+                throw Util.unexpected(operator.flag);
+        }
+        return operator.isNegated() ? rexBuilder.makeCall(call.getParserPosition(), SqlStdOperatorTable.NOT, result) : result;
+    }
+    
+    private static List<RexNode> convertOperands(final SqlRexContext context, final SqlCall call) {
+        RexBuilder rexBuilder = context.getRexBuilder();
+        List<RexNode> result = new ArrayList<>(call.operandCount());
+        for (SqlNode each : call.getOperandList()) {
+            result.add(context.convertExpression(each));
+        }
+        List<RelDataType> operandTypes = context.getValidator().getValidatedOperandTypes(call);
+        if (null != operandTypes) {
+            for (int i = 0; i < result.size(); i++) {
+                result.set(i, rexBuilder.ensureType(call.getParserPosition(), operandTypes.get(i), result.get(i), true));
+            }
+        }
+        RelDataType consistentType = getConsistentType(context, RexUtil.types(result));
+        if (null != consistentType) {
+            result.replaceAll(each -> rexBuilder.ensureType(call.getParserPosition(), consistentType, each, true));
+        }
+        return result;
+    }
+    
+    private static @Nullable RelDataType getConsistentType(final SqlRexContext context, final List<RelDataType> types) {
+        if (SqlTypeUtil.areSameFamily(types)) {
+            return null;
+        }
+        List<RelDataType> nonCharacterTypes = new ArrayList<>(types.size());
+        for (RelDataType each : types) {
+            if (SqlTypeFamily.CHARACTER != each.getFamily()) {
+                nonCharacterTypes.add(each);
+            }
+        }
+        if (nonCharacterTypes.size() < types.size()) {
+            RelDataTypeFamily family = nonCharacterTypes.get(0).getFamily();
+            if (SqlTypeFamily.INTEGER == family || SqlTypeFamily.NUMERIC == family) {
+                nonCharacterTypes.add(context.getTypeFactory().createSqlType(SqlTypeName.BIGINT));
+            }
+        }
+        return context.getTypeFactory().leastRestrictive(nonCharacterTypes);
     }
     
     private RelOptCluster createRelOptCluster(final RelDataTypeFactory typeFactory, final Convention convention) {

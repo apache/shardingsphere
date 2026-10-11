@@ -19,7 +19,14 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.calcite.sql.SqlCall;
+import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.util.SqlBasicVisitor;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
@@ -36,7 +43,9 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statem
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.MergeStatementConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.SelectStatementConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.statement.type.UpdateStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.DialectSQLFederationFunctionRegister;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -51,7 +60,9 @@ public final class SQLNodeConverterEngine {
      * @param sqlStatement SQL sqlStatement to be converted
      * @return sqlNode converted SQL node
      * @throws SQLFederationSQLNodeConvertException SQL federation SQL node convert exception
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
+    @HighFrequencyInvocation
     public static SqlNode convert(final SQLStatement sqlStatement) {
         Optional<SqlNode> result = Optional.empty();
         if (sqlStatement instanceof DMLStatement) {
@@ -59,7 +70,9 @@ public final class SQLNodeConverterEngine {
         } else if (sqlStatement instanceof DALStatement) {
             result = convert((DALStatement) sqlStatement);
         }
-        return result.orElseThrow(() -> new SQLFederationSQLNodeConvertException(sqlStatement));
+        SqlNode sqlNode = result.orElseThrow(() -> new SQLFederationSQLNodeConvertException(sqlStatement));
+        checkUnsupportedFunctions(sqlStatement, sqlNode);
+        return sqlNode;
     }
     
     private static Optional<SqlNode> convert(final DMLStatement sqlStatement) {
@@ -86,5 +99,29 @@ public final class SQLNodeConverterEngine {
             return Optional.of(new ExplainStatementConverter().convert((ExplainStatement) sqlStatement));
         }
         return Optional.empty();
+    }
+    
+    private static void checkUnsupportedFunctions(final SQLStatement sqlStatement, final SqlNode sqlNode) {
+        Optional<DialectSQLFederationFunctionRegister> functionRegister = DatabaseTypedSPILoader.findService(DialectSQLFederationFunctionRegister.class, sqlStatement.getDatabaseType());
+        if (!functionRegister.isPresent()) {
+            return;
+        }
+        Collection<String> unsupportedFunctionNames = functionRegister.get().getUnsupportedFunctionNames();
+        if (unsupportedFunctionNames.isEmpty()) {
+            return;
+        }
+        sqlNode.accept(new SqlBasicVisitor<Void>() {
+            
+            @Override
+            public Void visit(final SqlCall call) {
+                if (call.getOperator() instanceof SqlFunction) {
+                    for (String each : unsupportedFunctionNames) {
+                        ShardingSpherePreconditions.checkState(!each.equalsIgnoreCase(call.getOperator().getName()),
+                                () -> new UnsupportedSQLOperationException(String.format("%s %s function in SQL Federation", sqlStatement.getDatabaseType().getType(), each)));
+                    }
+                }
+                return super.visit(call);
+            }
+        });
     }
 }

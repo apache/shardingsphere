@@ -27,7 +27,6 @@ import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -58,7 +57,7 @@ class ShardingSphereTableTest {
         ShardingSphereColumn column1 = new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, false, true, false, false);
         ShardingSphereColumn column2 = new ShardingSphereColumn("foo_col", Types.VARCHAR, false, true, false, true, false, false);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(column1, column2), Collections.emptyList(), Collections.emptyList());
-        assertThat(table.getAllColumns(), hasSize(1));
+        assertThat(table.getAllColumns().size(), is(1));
         assertThat(table.getColumn("foo_col"), is(column1));
     }
     
@@ -68,7 +67,7 @@ class ShardingSphereTableTest {
         ShardingSphereColumn column2 = new ShardingSphereColumn("foo_col_2", Types.INTEGER, false, true, false, true, false, false);
         ShardingSphereTable shardingSphereTable = new ShardingSphereTable("foo_tbl", Arrays.asList(column1, column2), Collections.emptyList(), Collections.emptyList());
         assertThat(shardingSphereTable.getAllColumns(), hasItems(column1, column2));
-        assertThat(shardingSphereTable.getAllColumns(), hasSize(2));
+        assertThat(shardingSphereTable.getAllColumns().size(), is(2));
     }
     
     @Test
@@ -102,7 +101,7 @@ class ShardingSphereTableTest {
         ShardingSphereIndex index1 = new ShardingSphereIndex("foo_idx_1", Collections.emptyList(), false);
         ShardingSphereIndex index2 = new ShardingSphereIndex("foo_idx_2", Collections.emptyList(), false);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Arrays.asList(index1, index2), Collections.emptyList());
-        assertThat(table.getAllIndexes(), hasSize(2));
+        assertThat(table.getAllIndexes().size(), is(2));
         assertThat(table.getAllIndexes(), hasItems(index1, index2));
     }
     
@@ -126,7 +125,7 @@ class ShardingSphereTableTest {
         table.removeIndex("foo_idx_1");
         assertFalse(table.containsIndex("foo_idx_1"));
         table.removeIndex("invalid");
-        assertThat(table.getAllIndexes(), hasSize(1));
+        assertThat(table.getAllIndexes().size(), is(1));
         assertTrue(table.containsIndex("foo_idx_2"));
     }
     

@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
@@ -83,16 +84,22 @@ public final class TableMetaDataLoader {
     private static Optional<TableMetaData> loadTableMetaData(final DataSource dataSource, final String tableName,
                                                              final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
         try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(databaseType, dataSource.getConnection())) {
-            return isTableExist(connection, tableNamePattern)
-                    ? Optional.of(new TableMetaData(tableName, ColumnMetaDataLoader.load(
-                            connection, tableNamePattern, databaseType), IndexMetaDataLoader.load(connection, tableNamePattern), Collections.emptyList()))
-                    : Optional.empty();
+            Optional<TableType> tableType = loadTableType(connection, tableNamePattern);
+            if (!tableType.isPresent()) {
+                return Optional.empty();
+            }
+            return Optional.of(new TableMetaData(tableName, ColumnMetaDataLoader.load(connection, tableNamePattern, databaseType),
+                    IndexMetaDataLoader.load(connection, tableNamePattern), Collections.emptyList(), tableType.get()));
         }
     }
     
-    private static boolean isTableExist(final Connection connection, final String tableNamePattern) throws SQLException {
+    private static Optional<TableType> loadTableType(final Connection connection, final String tableNamePattern) throws SQLException {
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), tableNamePattern, null)) {
-            return resultSet.next();
+            if (!resultSet.next()) {
+                return Optional.empty();
+            }
+            String tableType = resultSet.getString("TABLE_TYPE");
+            return Optional.of(TableType.VIEW.name().equals(tableType) || "SYSTEM VIEW".equals(tableType) ? TableType.VIEW : TableType.TABLE);
         }
     }
 }

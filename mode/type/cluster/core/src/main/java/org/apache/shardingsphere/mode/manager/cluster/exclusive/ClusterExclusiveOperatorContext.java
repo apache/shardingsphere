@@ -21,10 +21,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveLockHandle;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorContext;
-import org.apache.shardingsphere.mode.retry.RetryExecutor;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.core.lock.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
+import org.apache.shardingsphere.mode.retry.RetryExecutor;
 
 import java.util.Collection;
 import java.util.Optional;

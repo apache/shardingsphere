@@ -23,8 +23,8 @@ import lombok.Getter;
 /**
  * HTTP transport configuration.
  */
-@Getter
 @AllArgsConstructor
+@Getter
 public final class HttpTransportConfiguration {
     
     private final String bindHost;

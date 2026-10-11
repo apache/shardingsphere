@@ -38,8 +38,8 @@ import javax.net.ssl.SSLException;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;

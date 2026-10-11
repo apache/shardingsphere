@@ -26,8 +26,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexSh
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigurationSwapper;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,12 +38,11 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Pipeline sharding columns extractor.
  */
-public final class PipelineShardingColumnsExtractor implements PipelineRequiredColumnsExtractor<YamlShardingRuleConfiguration> {
+public final class PipelineShardingColumnsExtractor implements PipelineRequiredColumnsExtractor<ShardingRuleConfiguration> {
     
     @Override
-    public Map<ShardingSphereIdentifier, Collection<String>> getTableAndRequiredColumnsMap(final YamlShardingRuleConfiguration yamlRuleConfig,
+    public Map<ShardingSphereIdentifier, Collection<String>> getTableAndRequiredColumnsMap(final ShardingRuleConfiguration ruleConfig,
                                                                                            final Collection<ShardingSphereIdentifier> logicTableNames) {
-        ShardingRuleConfiguration ruleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject(yamlRuleConfig);
         Set<String> defaultDatabaseShardingColumns = extractShardingColumns(ruleConfig.getDefaultDatabaseShardingStrategy());
         Set<String> defaultTableShardingColumns = extractShardingColumns(ruleConfig.getDefaultTableShardingStrategy());
         // TODO check is it need to be ConcurrentHashMap?
@@ -85,7 +82,7 @@ public final class PipelineShardingColumnsExtractor implements PipelineRequiredC
     }
     
     @Override
-    public Class<YamlShardingRuleConfiguration> getTypeClass() {
-        return YamlShardingRuleConfiguration.class;
+    public Class<ShardingRuleConfiguration> getTypeClass() {
+        return ShardingRuleConfiguration.class;
     }
 }

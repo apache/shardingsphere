@@ -154,7 +154,7 @@ class MySQLMetaDataLoaderTest {
         when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "doc", "geo", "t_year", "pg", "mpg", "pt", "mpt");
         when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "json", "geometry", "year", "polygon", "multipolygon", "point", "multipoint");
         when(result.getString("COLUMN_KEY")).thenReturn("PRI", "", "", "", "", "", "", "", "");
-        when(result.getString("EXTRA")).thenReturn("auto_increment", "INVISIBLE", "", "", "", "", "", "", "");
+        when(result.getString("EXTRA")).thenReturn("auto_increment INVISIBLE", "VIRTUAL GENERATED INVISIBLE", "", "", "", "", "", "", "");
         when(result.getString("COLLATION_NAME")).thenReturn("utf8", "utf8_general_ci", null, null, null, null, null, null, null);
         when(result.getString("COLUMN_TYPE")).thenReturn("int", "varchar", "json", "geometry", "year", "polygon", "multipolygon", "point", "multipoint");
         when(result.getString("IS_NULLABLE")).thenReturn("NO", "YES", "YES", "YES", "YES", "YES", "YES", "YES", "YES");
@@ -164,7 +164,7 @@ class MySQLMetaDataLoaderTest {
     private ResultSet mockSimpleIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
-        when(result.getString("INDEX_NAME")).thenReturn("id");
+        when(result.getString("INDEX_NAME")).thenReturn("PRIMARY");
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
         when(result.getString("COLUMN_NAME")).thenReturn("id");
         when(result.getString("NON_UNIQUE")).thenReturn("0");
@@ -205,7 +205,7 @@ class MySQLMetaDataLoaderTest {
         assertThat(actualTableMetaData.getName(), is("tbl"));
         assertThat(actualTableMetaData.getColumns().size(), is(9));
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, !expectedCompositeIndexExists, true, true, false, false, false));
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true));
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false, true, false, true));
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("geo", Types.BINARY, false, false, false, true, false, true));
@@ -232,7 +232,7 @@ class MySQLMetaDataLoaderTest {
     private void assertIndexMetaData(final Collection<IndexMetaData> actualIndexMetaData, final boolean expectedCompositeIndexExists) {
         assertThat(actualIndexMetaData.size(), is(1));
         IndexMetaData actualIndexMetaDataItem = actualIndexMetaData.iterator().next();
-        assertThat(actualIndexMetaDataItem.getName(), is(expectedCompositeIndexExists ? "idx_composite" : "id"));
+        assertThat(actualIndexMetaDataItem.getName(), is(expectedCompositeIndexExists ? "idx_composite" : "PRIMARY"));
         assertThat(actualIndexMetaDataItem.getColumns(), is(expectedCompositeIndexExists ? Arrays.asList("id", "name") : Collections.singletonList("id")));
         assertTrue(actualIndexMetaDataItem.isUnique());
     }

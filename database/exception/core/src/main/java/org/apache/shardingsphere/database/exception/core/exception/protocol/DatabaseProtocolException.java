@@ -22,11 +22,11 @@ import org.apache.shardingsphere.database.exception.core.exception.SQLDialectExc
 /**
  * Database protocol exception.
  */
-public abstract class DatabaseProtocolException extends SQLDialectException {
+public final class DatabaseProtocolException extends SQLDialectException {
     
     private static final long serialVersionUID = -6035033415978907492L;
     
-    protected DatabaseProtocolException(final String reason) {
-        super(reason);
+    public DatabaseProtocolException(final String reason, final Object... args) {
+        super(String.format(reason, args));
     }
 }

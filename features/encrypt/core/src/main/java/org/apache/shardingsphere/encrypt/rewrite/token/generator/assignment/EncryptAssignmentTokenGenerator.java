@@ -50,9 +50,9 @@ import java.util.Optional;
 /**
  * Assignment generator for encrypt.
  */
-@Slf4j
 @HighFrequencyInvocation
 @AllArgsConstructor
+@Slf4j
 public final class EncryptAssignmentTokenGenerator {
     
     private final EncryptRule rule;

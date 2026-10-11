@@ -28,6 +28,6 @@ public final class DuplicateColumnException extends MetaDataSQLException {
     private static final long serialVersionUID = -8930912306382133265L;
     
     public DuplicateColumnException(final String columnExpression) {
-        super(XOpenSQLState.DUPLICATE, 3, "Duplicate column name '%s'.", columnExpression);
+        super(XOpenSQLState.DUPLICATE, 13, "Duplicate column name '%s'.", columnExpression);
     }
 }

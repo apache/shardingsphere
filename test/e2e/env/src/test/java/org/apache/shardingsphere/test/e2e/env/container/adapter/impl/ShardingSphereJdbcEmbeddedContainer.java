@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.adapter.impl;
 
+import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -31,9 +32,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ShardingSphere JDBC embedded container.
@@ -43,7 +45,7 @@ public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedE2ECon
     
     private final StorageContainer storageContainer;
     
-    private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
+    private final Map<String, DataSource> targetDataSources = new ConcurrentHashMap<>();
     
     private final String configPath;
     
@@ -53,14 +55,21 @@ public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedE2ECon
     
     @Override
     public DataSource getTargetDataSource(final String serverLists) {
-        DataSource dataSource = targetDataSourceProvider.get();
-        if (null == dataSource) {
-            targetDataSourceProvider.set(createTargetDataSource());
-        }
-        return targetDataSourceProvider.get();
+        return getTargetDataSource(serverLists, configPath);
     }
     
-    private DataSource createTargetDataSource() {
+    @Override
+    public DataSource getTargetDataSource(final String serverLists, final String dataSourceName) {
+        String effectiveDataSourceName = Strings.isNullOrEmpty(dataSourceName) ? configPath : dataSourceName;
+        return targetDataSources.computeIfAbsent(effectiveDataSourceName, this::createTargetDataSource);
+    }
+    
+    @Override
+    public Collection<DataSource> getTargetDataSources() {
+        return targetDataSources.values();
+    }
+    
+    private DataSource createTargetDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         result.setJdbcUrl("jdbc:shardingsphere:absolutepath:" + processFile(configPath, storageContainer.getLinkReplacements()));

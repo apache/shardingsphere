@@ -54,6 +54,9 @@ public final class ShadowInsertStatementDataSourceMappingsRetriever extends Shad
             }
             Collection<Comparable<?>> columnValues = getColumnValues(sqlStatementContext.getInsertValueContexts(), columnIndex);
             columnIndex++;
+            if (columnValues.isEmpty()) {
+                continue;
+            }
             String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
             result.add(new ShadowColumnCondition(tableName, each, columnValues));
         }

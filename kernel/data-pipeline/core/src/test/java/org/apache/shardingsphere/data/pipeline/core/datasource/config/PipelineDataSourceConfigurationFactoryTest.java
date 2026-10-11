@@ -36,7 +36,8 @@ class PipelineDataSourceConfigurationFactoryTest {
     
     @Test
     void assertNewInstanceForShardingSpherePipelineDataSourceConfiguration() {
-        assertThat(PipelineDataSourceConfigurationFactory.newInstance(ShardingSpherePipelineDataSourceConfiguration.TYPE, "dataSources:\n" + "  foo_ds:\n" + "    url: jdbc:mock://127.0.0.1/foo_db"),
+        assertThat(PipelineDataSourceConfigurationFactory.newInstance(ShardingSpherePipelineDataSourceConfiguration.TYPE,
+                "dataSources:\n" + "  foo_ds:\n" + "    url: jdbc:mock://127.0.0.1/foo_db\n" + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource"),
                 isA(ShardingSpherePipelineDataSourceConfiguration.class));
     }
     

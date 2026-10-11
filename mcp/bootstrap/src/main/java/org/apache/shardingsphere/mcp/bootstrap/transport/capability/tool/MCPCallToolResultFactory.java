@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.json.schema.JsonSchemaValidator;
 import io.modelcontextprotocol.json.schema.JsonSchemaValidator.ValidationResponse;
 import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
-import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorPayload;
@@ -41,7 +42,7 @@ final class MCPCallToolResultFactory {
     
     private final McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
     
-    private final JsonSchemaValidator outputSchemaValidator = new DefaultJsonSchemaValidator();
+    private final JsonSchemaValidator outputSchemaValidator = new DefaultJsonSchemaValidator(((JacksonMcpJsonMapper) jsonMapper).getObjectMapper());
     
     CallToolResult create(final MCPToolDescriptor descriptor, final MCPSuccessPayload successPayload) {
         Map<String, Object> payload = successPayload.toPayload();

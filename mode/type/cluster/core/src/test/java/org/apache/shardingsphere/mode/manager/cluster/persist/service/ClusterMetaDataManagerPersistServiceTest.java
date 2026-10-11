@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -33,37 +31,45 @@ import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(TableRefreshUtils.class)
 class ClusterMetaDataManagerPersistServiceTest {
     
     private ClusterMetaDataManagerPersistService metaDataManagerPersistService;
@@ -89,9 +95,11 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertCreateDatabase() {
         metaDataManagerPersistService.createDatabase("foo_db");
-        verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase()).add("foo_db");
-        verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.CREATE);
-        verify(clusterDatabaseListenerPersistCoordinator).delete("foo_db");
+        DatabaseMetaDataPersistService databaseMetaDataPersistService = metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase();
+        InOrder actual = inOrder(databaseMetaDataPersistService, clusterDatabaseListenerPersistCoordinator);
+        actual.verify(databaseMetaDataPersistService).add("foo_db");
+        actual.verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.CREATE);
+        actual.verify(clusterDatabaseListenerPersistCoordinator).delete("foo_db");
     }
     
     @Test
@@ -106,9 +114,11 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertDropDatabase() {
         metaDataManagerPersistService.dropDatabase(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties())));
-        verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.DROP);
-        verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase()).drop("foo_db");
-        verify(clusterDatabaseListenerPersistCoordinator).delete("foo_db");
+        DatabaseMetaDataPersistService databaseMetaDataPersistService = metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase();
+        InOrder actual = inOrder(databaseMetaDataPersistService, clusterDatabaseListenerPersistCoordinator);
+        actual.verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.DROP);
+        actual.verify(databaseMetaDataPersistService).drop("foo_db");
+        actual.verify(clusterDatabaseListenerPersistCoordinator).delete("foo_db");
     }
     
     @Test
@@ -257,16 +267,43 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertCreateTable() {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        metaDataManagerPersistService.createTable(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties())), "foo_schema",
-                table);
-        verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.singleton(table));
+        when(table.getName()).thenReturn("foo_tbl");
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        RuleMetaData ruleMetaData = mock(RuleMetaData.class);
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        SingleRule singleRule = mock(SingleRule.class);
+        SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration();
+        when(ruleMetaData.getSingleRule(SingleRule.class)).thenReturn(singleRule);
+        when(singleRule.getConfiguration()).thenReturn(singleRuleConfig);
+        when(TableRefreshUtils.isSingleTable("foo_tbl", database)).thenReturn(true);
+        when(TableRefreshUtils.isNeedRefresh(ruleMetaData, "foo_schema", "foo_tbl")).thenReturn(true);
+        metaDataManagerPersistService.createTable(database, "foo_schema", table);
+        TableMetaDataPersistService tableMetaDataPersistService = metaDataPersistFacade.getDatabaseMetaDataFacade().getTable();
+        DatabaseRulePersistService databaseRulePersistService = metaDataPersistFacade.getDatabaseRuleService();
+        InOrder actual = inOrder(tableMetaDataPersistService, databaseRulePersistService);
+        actual.verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.singleton(table));
+        actual.verify(databaseRulePersistService).persist("foo_db", Collections.singleton(singleRuleConfig));
     }
     
     @Test
     void assertDropTables() {
-        metaDataManagerPersistService.dropTables(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(),
-                Collections.emptyList(), new ConfigurationProperties(new Properties())), "foo_schema", Collections.singleton("foo_tbl"));
-        verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getTable()).drop("foo_db", "foo_schema", "foo_tbl");
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        RuleMetaData ruleMetaData = mock(RuleMetaData.class);
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        SingleRule singleRule = mock(SingleRule.class);
+        SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration();
+        when(ruleMetaData.getSingleRule(SingleRule.class)).thenReturn(singleRule);
+        when(singleRule.getConfiguration()).thenReturn(singleRuleConfig);
+        when(TableRefreshUtils.isNeedRefresh(ruleMetaData, "foo_schema", Collections.singleton("foo_tbl"))).thenReturn(true);
+        when(TableRefreshUtils.isSingleTable("foo_tbl", database)).thenReturn(true);
+        metaDataManagerPersistService.dropTables(database, "foo_schema", Collections.singleton("foo_tbl"));
+        TableMetaDataPersistService tableMetaDataPersistService = metaDataPersistFacade.getDatabaseMetaDataFacade().getTable();
+        DatabaseRulePersistService databaseRulePersistService = metaDataPersistFacade.getDatabaseRuleService();
+        InOrder actual = inOrder(tableMetaDataPersistService, databaseRulePersistService);
+        actual.verify(tableMetaDataPersistService).drop("foo_db", "foo_schema", "foo_tbl");
+        actual.verify(databaseRulePersistService).persist("foo_db", Collections.singleton(singleRuleConfig));
     }
     
     private void mockReloadedMetaDataContext() {

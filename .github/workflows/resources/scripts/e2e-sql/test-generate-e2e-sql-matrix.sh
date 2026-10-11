@@ -91,7 +91,7 @@ assert_not_empty() {
 assert_all_scenarios() {
   local desc="$1" matrix_json="$2"
   local expected actual
-  expected='["db","db_tbl_sql_federation","dbtbl_with_readwrite_splitting","dbtbl_with_readwrite_splitting_and_encrypt","distsql_rdl","empty_rules","encrypt","encrypt_and_readwrite_splitting","encrypt_shadow","mask","mask_encrypt","mask_encrypt_sharding","mask_sharding","passthrough","readwrite_splitting","readwrite_splitting_and_shadow","shadow","sharding_and_encrypt","sharding_and_shadow","sharding_encrypt_shadow","tbl"]'
+  expected='["db","db_tbl_sql_federation","dbtbl_with_readwrite_splitting","dbtbl_with_readwrite_splitting_and_encrypt","distsql_rdl","distsql_rdl_empty","empty_rules","encrypt","encrypt_and_readwrite_splitting","encrypt_shadow","mask","mask_encrypt","mask_encrypt_sharding","mask_sharding","passthrough","readwrite_splitting","readwrite_splitting_and_shadow","shadow","sharding_and_encrypt","sharding_and_shadow","sharding_encrypt_shadow","tbl"]'
   actual=$(echo "$matrix_json" | jq -c '[.include[].scenario] | unique | sort')
   assert_eq "$desc" "$expected" "$actual"
 }
@@ -126,6 +126,17 @@ assert_extra_passthrough_job() {
   assert_eq "$desc" "1" "$count"
 }
 
+assert_distsql_bootstrap_job() {
+  local desc="$1" matrix_json="$2" expected_count="$3"
+  local count
+  count=$(echo "$matrix_json" | jq '[.include[] | select(
+    .adapter == "jdbc" and .mode == "Standalone" and .database == "H2" and
+    .scenario == "distsql_rdl_empty" and .["additional-options"] == ""
+  )] | length')
+  assert_eq "$desc: bootstrap job count" "$expected_count" "$count"
+  assert_eq "$desc: H2 is limited to bootstrap" "$expected_count" "$(echo "$matrix_json" | jq '[.include[] | select(.database == "H2")] | length')"
+}
+
 assert_all_field_eq() {
   local desc="$1" matrix_json="$2" field="$3" expected_val="$4"
   local violations
@@ -134,12 +145,12 @@ assert_all_field_eq() {
   assert_eq "$desc" "0" "$violations"
 }
 
-# Verify all three dimensions cover full range (2 adapters, 2 modes, 2 databases)
+# Verify all three dimensions cover the expected range
 assert_all_dimensions() {
-  local label="$1" matrix_json="$2"
+  local label="$1" matrix_json="$2" expected_database_count="${3:-2}"
   assert_eq "$label: has both adapters" "2" "$(echo "$matrix_json" | jq '[.include[].adapter] | unique | length')"
   assert_eq "$label: has both modes" "2" "$(echo "$matrix_json" | jq '[.include[].mode] | unique | length')"
-  assert_eq "$label: has both databases" "2" "$(echo "$matrix_json" | jq '[.include[].database] | unique | length')"
+  assert_eq "$label: has expected database count" "$expected_database_count" "$(echo "$matrix_json" | jq '[.include[].database] | unique | length')"
 }
 
 assert_less_than() {
@@ -178,7 +189,8 @@ assert_full_trigger() {
   assert_scenarios "$label: smoke-matrix uses default scenarios" "$smoke_matrix" '["db","tbl"]'
   local full_matrix
   full_matrix=$(get_output "$outputs" "full-matrix")
-  assert_all_scenarios "$label: full-matrix has all 21 scenarios" "$full_matrix"
+  assert_all_scenarios "$label: full-matrix has all 22 scenarios" "$full_matrix"
+  assert_distsql_bootstrap_job "$label: full-matrix" "$full_matrix" "1"
   assert_no_excludes "$label: full-matrix has no excluded combinations" "$full_matrix"
   assert_extra_passthrough_job "$label: full-matrix has extra passthrough job" "$full_matrix"
   assert_not_empty "$label: full-smoke-overlap-count exists" "$(get_output "$outputs" "full-smoke-overlap-count")"
@@ -264,6 +276,7 @@ echo "--- #8: adapter_proxy only ---"
 outputs=$(run_script "$(build_filters adapter_proxy=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_all_field_eq "#8: smoke all adapter=proxy" "$smoke" "adapter" "proxy"
+assert_distsql_bootstrap_job "#8: proxy-only full-matrix" "$(get_output "$outputs" "full-matrix")" "0"
 
 echo ""
 echo "--- #9: adapter_jdbc only ---"
@@ -294,6 +307,7 @@ echo "--- #13: mode_cluster only ---"
 outputs=$(run_script "$(build_filters mode_cluster=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_all_field_eq "#13: smoke all mode=Cluster" "$smoke" "mode" "Cluster"
+assert_distsql_bootstrap_job "#13: Cluster-only full-matrix" "$(get_output "$outputs" "full-matrix")" "0"
 
 echo ""
 echo "--- #14: mode_core only ---"
@@ -365,8 +379,10 @@ outputs=$(run_script "$(build_filters feature_distsql=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_scenarios "#20: distsql smoke scenarios" "$smoke" '["distsql_rdl"]'
 full=$(get_output "$outputs" "full-matrix")
-assert_scenarios "#20: distsql scenarios" "$full" '["distsql_rdl"]'
-assert_all_dimensions "#20" "$full"
+assert_scenarios "#20: distsql scenarios" "$full" '["distsql_rdl","distsql_rdl_empty"]'
+assert_all_dimensions "#20" "$full" "3"
+assert_distsql_bootstrap_job "#20: DistSQL full-matrix" "$full" "1"
+assert_distsql_bootstrap_job "#20: DistSQL smoke-matrix" "$smoke" "0"
 
 echo ""
 echo "--- #21: feature_sql_federation ---"
@@ -419,6 +435,19 @@ echo "--- #25: mixed features merge smoke scenarios ---"
 outputs=$(run_script "$(build_filters feature_sharding=true feature_encrypt=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_scenarios "#25: smoke scenarios are merged and deduplicated" "$smoke" '["db","encrypt","tbl"]'
+
+echo ""
+echo "--- #26: DistSQL bootstrap remains in Stage 2 ---"
+filters=$(build_filters feature_distsql=true)
+outputs=$(run_script "$filters" "pull_request" "cartesian")
+full=$(get_output "$outputs" "full-matrix")
+smoke=$(get_output "$outputs" "smoke-matrix")
+assert_distsql_bootstrap_job "#26: cartesian full-matrix" "$full" "1"
+output_file=$(mktemp)
+GITHUB_OUTPUT="$output_file" bash "$SCRIPT_DIR/generate-remaining-matrix.sh" "$filters" "$full" "$smoke"
+remaining=$(get_output "$(cat "$output_file")" "matrix")
+rm -f "$output_file"
+assert_distsql_bootstrap_job "#26: remaining-matrix" "$remaining" "1"
 
 # ============================================================
 # Summary

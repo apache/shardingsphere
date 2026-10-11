@@ -108,6 +108,9 @@ public final class RowNumberPaginationContextEngine {
         RowNumberValueSegment offset = null;
         RowNumberValueSegment rowCount = null;
         for (BinaryOperationExpression each : rowNumberPredicates) {
+            if (each.getRight() instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) each.getRight()).isNullLiteral()) {
+                continue;
+            }
             String operator = each.getOperator();
             switch (operator) {
                 case ">":
@@ -133,7 +136,7 @@ public final class RowNumberPaginationContextEngine {
         int startIndex = expression.getStartIndex();
         int stopIndex = expression.getStopIndex();
         if (expression instanceof LiteralExpressionSegment) {
-            return new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, Long.parseLong(((LiteralExpressionSegment) expression).getLiterals().toString()), boundOpened);
+            return new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, Long.parseLong(((LiteralExpressionSegment) expression).getLiterals().toString().trim()), boundOpened);
         }
         if (expression instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), boundOpened);

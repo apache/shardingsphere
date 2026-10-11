@@ -32,8 +32,8 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlRowStatisticsSwapperTest {
     
@@ -41,7 +41,7 @@ class YamlRowStatisticsSwapperTest {
     void assertSwapToYamlConfigurationWithNullRows() {
         YamlRowStatisticsSwapper swapper = new YamlRowStatisticsSwapper(Collections.emptyList());
         YamlRowStatistics actual = swapper.swapToYamlConfiguration(new RowStatistics("foo_unique_key", null));
-        assertThat(actual.getRows(), is(empty()));
+        assertTrue(actual.getRows().isEmpty());
         assertThat(actual.getUniqueKey(), is("foo_unique_key"));
     }
     
@@ -69,7 +69,7 @@ class YamlRowStatisticsSwapperTest {
         yamlConfig.setUniqueKey("foo_unique_key");
         yamlConfig.setRows(null);
         RowStatistics actual = new YamlRowStatisticsSwapper(Collections.emptyList()).swapToObject(yamlConfig);
-        assertThat(actual.getRows(), is(empty()));
+        assertTrue(actual.getRows().isEmpty());
         assertThat(actual.getUniqueKey(), is("foo_unique_key"));
     }
     

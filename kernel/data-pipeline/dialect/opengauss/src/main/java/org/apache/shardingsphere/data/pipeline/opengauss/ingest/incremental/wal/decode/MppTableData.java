@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.util.json.JsonConfiguration;
 /**
  * Mppdb decoding json related class.
  */
-@Setter
 @Getter
+@Setter
 public final class MppTableData implements JsonConfiguration {
     
     @JsonProperty("table_name")

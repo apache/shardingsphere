@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.facade;
 
 import org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingDistSQLStatementVisitor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingDistSQLLexer;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingDistSQLParser;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingDistSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;

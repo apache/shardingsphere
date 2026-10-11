@@ -1599,6 +1599,14 @@ DATAFILE
     : D A T A F I L E
     ;
 
+DATAFILECOPY
+    : D A T A F I L E C O P Y
+    ;
+
+BACKUPSET
+    : B A C K U P S E T
+    ;
+
 MANAGED
     : M A N A G E D
     ;
@@ -1677,6 +1685,18 @@ NOARCHIVELOG
 
 AVAILABILITY
     : A V A I L A B I L I T Y
+    ;
+
+AVAILABLE
+    : A V A I L A B L E
+    ;
+
+UNAVAILABLE
+    : U N A V A I L A B L E
+    ;
+
+TAG
+    : T A G
     ;
 
 PERFORMANCE
@@ -3774,6 +3794,38 @@ DELETEXML
 
 DELIMITED
     :D E L I M I T E D
+    ;
+
+NEWLINE
+    : N E W L I N E
+    ;
+
+VARIABLE
+    : V A R I A B L E
+    ;
+
+BIG
+    : B I G
+    ;
+
+LITTLE
+    : L I T T L E
+    ;
+
+ENDIAN
+    : E N D I A N
+    ;
+
+CHARACTERSET
+    : C H A R A C T E R S E T
+    ;
+
+PREPROCESSOR
+    : P R E P R O C E S S O R
+    ;
+
+LDRTRIM
+    : L D R T R I M
     ;
 
 DENSE_RANKM

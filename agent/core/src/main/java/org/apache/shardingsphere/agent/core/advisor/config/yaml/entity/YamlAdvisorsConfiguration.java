@@ -26,8 +26,8 @@ import java.util.LinkedList;
 /**
  * YAML advisors configuration.
  */
-@Setter
 @Getter
+@Setter
 public final class YamlAdvisorsConfiguration {
     
     private Collection<YamlAdvisorConfiguration> advisors = new LinkedList<>();

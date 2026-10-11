@@ -36,13 +36,12 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.tab
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.PropertyTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.BrokerLoadDataDescTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisBrokerLoadStatementTestCase;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -72,7 +71,7 @@ public final class DorisBrokerLoadStatementAssert {
     
     private static void assertLoadLabel(final SQLCaseAssertContext assertContext, final DorisBrokerLoadStatement actual, final DorisBrokerLoadStatementTestCase expected) {
         if (null != expected.getLoadLabel()) {
-            MatcherAssert.assertThat(assertContext.getText("Load label does not match: "), actual.getLoadLabel(), is(expected.getLoadLabel()));
+            assertThat(assertContext.getText("Load label does not match: "), actual.getLoadLabel(), is(expected.getLoadLabel()));
         }
     }
     
@@ -80,7 +79,7 @@ public final class DorisBrokerLoadStatementAssert {
         if (null != expected.getOwner()) {
             DatabaseSegment database = actual.getDatabase().orElse(null);
             assertNotNull(database, assertContext.getText("Database should not be null"));
-            MatcherAssert.assertThat(assertContext.getText("Database name does not match: "), database.getIdentifier().getValue(), is(expected.getOwner().getName()));
+            assertThat(assertContext.getText("Database name does not match: "), database.getIdentifier().getValue(), is(expected.getOwner().getName()));
             SQLSegmentAssert.assertIs(assertContext, database, expected.getOwner());
         }
     }
@@ -88,7 +87,7 @@ public final class DorisBrokerLoadStatementAssert {
     private static void assertDataDescs(final SQLCaseAssertContext assertContext, final DorisBrokerLoadStatement actual, final DorisBrokerLoadStatementTestCase expected) {
         if (!expected.getDataDescs().isEmpty()) {
             List<BrokerLoadDataDescSegment> actualDescs = new ArrayList<>(actual.getDataDescs());
-            MatcherAssert.assertThat(assertContext.getText("Data descs size does not match: "), actualDescs.size(), is(expected.getDataDescs().size()));
+            assertThat(assertContext.getText("Data descs size does not match: "), actualDescs.size(), is(expected.getDataDescs().size()));
             for (int i = 0; i < expected.getDataDescs().size(); i++) {
                 assertDataDesc(assertContext, actualDescs.get(i), expected.getDataDescs().get(i));
             }
@@ -118,24 +117,24 @@ public final class DorisBrokerLoadStatementAssert {
     
     private static void assertMergeType(final SQLCaseAssertContext assertContext, final BrokerLoadDataDescSegment actual, final BrokerLoadDataDescTestCase expected) {
         if (null != expected.getMergeType()) {
-            MatcherAssert.assertThat(assertContext.getText("Merge type does not match: "), actual.getMergeType().orElse(null), is(expected.getMergeType()));
+            assertThat(assertContext.getText("Merge type does not match: "), actual.getMergeType().orElse(null), is(expected.getMergeType()));
         }
     }
     
     private static void assertFilePaths(final SQLCaseAssertContext assertContext, final BrokerLoadDataDescSegment actual, final BrokerLoadDataDescTestCase expected) {
         if (null != expected.getFilePaths()) {
             List<String> expectedPaths = Arrays.asList(expected.getFilePaths().split(","));
-            MatcherAssert.assertThat(assertContext.getText("File paths size does not match: "), actual.getFilePaths().size(), is(expectedPaths.size()));
+            assertThat(assertContext.getText("File paths size does not match: "), actual.getFilePaths().size(), is(expectedPaths.size()));
             List<String> actualPaths = new ArrayList<>(actual.getFilePaths());
             for (int i = 0; i < expectedPaths.size(); i++) {
-                MatcherAssert.assertThat(assertContext.getText("File path does not match: "), actualPaths.get(i), is(expectedPaths.get(i).trim()));
+                assertThat(assertContext.getText("File path does not match: "), actualPaths.get(i), is(expectedPaths.get(i).trim()));
             }
         }
     }
     
     private static void assertNegative(final SQLCaseAssertContext assertContext, final BrokerLoadDataDescSegment actual, final BrokerLoadDataDescTestCase expected) {
         if (null != expected.getNegative()) {
-            MatcherAssert.assertThat(assertContext.getText("Negative does not match: "), actual.isNegative(), is(expected.getNegative()));
+            assertThat(assertContext.getText("Negative does not match: "), actual.isNegative(), is(expected.getNegative()));
         }
     }
     
@@ -147,7 +146,7 @@ public final class DorisBrokerLoadStatementAssert {
     
     private static void assertPartitions(final SQLCaseAssertContext assertContext, final BrokerLoadDataDescSegment actual, final BrokerLoadDataDescTestCase expected) {
         if (!expected.getPartitions().isEmpty()) {
-            MatcherAssert.assertThat(assertContext.getText("Partitions size does not match: "), actual.getPartitions().size(), is(expected.getPartitions().size()));
+            assertThat(assertContext.getText("Partitions size does not match: "), actual.getPartitions().size(), is(expected.getPartitions().size()));
             int count = 0;
             for (PartitionSegment each : actual.getPartitions()) {
                 PartitionAssert.assertIs(assertContext, each, expected.getPartitions().get(count));
@@ -158,32 +157,32 @@ public final class DorisBrokerLoadStatementAssert {
     
     private static void assertColumnSeparator(final SQLCaseAssertContext assertContext, final BrokerLoadDataDescSegment actual, final BrokerLoadDataDescTestCase expected) {
         if (null != expected.getColumnSeparator()) {
-            MatcherAssert.assertThat(assertContext.getText("Column separator does not match: "), actual.getColumnSeparator().orElse(null), is(expected.getColumnSeparator()));
+            assertThat(assertContext.getText("Column separator does not match: "), actual.getColumnSeparator().orElse(null), is(expected.getColumnSeparator()));
         }
     }
     
     private static void assertLineDelimiter(final SQLCaseAssertContext assertContext, final BrokerLoadDataDescSegment actual, final BrokerLoadDataDescTestCase expected) {
         if (null != expected.getLineDelimiter()) {
-            MatcherAssert.assertThat(assertContext.getText("Line delimiter does not match: "), actual.getLineDelimiter().orElse(null), is(expected.getLineDelimiter()));
+            assertThat(assertContext.getText("Line delimiter does not match: "), actual.getLineDelimiter().orElse(null), is(expected.getLineDelimiter()));
         }
     }
     
     private static void assertFormatType(final SQLCaseAssertContext assertContext, final BrokerLoadDataDescSegment actual, final BrokerLoadDataDescTestCase expected) {
         if (null != expected.getFormatType()) {
-            MatcherAssert.assertThat(assertContext.getText("Format type does not match: "), actual.getFormatType().orElse(null), is(expected.getFormatType()));
+            assertThat(assertContext.getText("Format type does not match: "), actual.getFormatType().orElse(null), is(expected.getFormatType()));
         }
     }
     
     private static void assertCompressType(final SQLCaseAssertContext assertContext, final BrokerLoadDataDescSegment actual, final BrokerLoadDataDescTestCase expected) {
         if (null != expected.getCompressType()) {
-            MatcherAssert.assertThat(assertContext.getText("Compress type does not match: "), actual.getCompressType().orElse(null), is(expected.getCompressType()));
+            assertThat(assertContext.getText("Compress type does not match: "), actual.getCompressType().orElse(null), is(expected.getCompressType()));
         }
     }
     
     private static void assertColumnList(final SQLCaseAssertContext assertContext, final BrokerLoadDataDescSegment actual, final BrokerLoadDataDescTestCase expected) {
         if (!expected.getColumnList().isEmpty()) {
             List<ColumnSegment> actualCols = new ArrayList<>(actual.getColumnList());
-            MatcherAssert.assertThat(assertContext.getText("Column list size does not match: "), actualCols.size(), is(expected.getColumnList().size()));
+            assertThat(assertContext.getText("Column list size does not match: "), actualCols.size(), is(expected.getColumnList().size()));
             for (int i = 0; i < expected.getColumnList().size(); i++) {
                 ColumnAssert.assertIs(assertContext, actualCols.get(i), expected.getColumnList().get(i));
             }
@@ -193,7 +192,7 @@ public final class DorisBrokerLoadStatementAssert {
     private static void assertColumnsFromPath(final SQLCaseAssertContext assertContext, final BrokerLoadDataDescSegment actual, final BrokerLoadDataDescTestCase expected) {
         if (!expected.getColumnsFromPath().isEmpty()) {
             List<ColumnSegment> actualCols = new ArrayList<>(actual.getColumnsFromPath());
-            MatcherAssert.assertThat(assertContext.getText("Columns from path size does not match: "), actualCols.size(), is(expected.getColumnsFromPath().size()));
+            assertThat(assertContext.getText("Columns from path size does not match: "), actualCols.size(), is(expected.getColumnsFromPath().size()));
             for (int i = 0; i < expected.getColumnsFromPath().size(); i++) {
                 ColumnAssert.assertIs(assertContext, actualCols.get(i), expected.getColumnsFromPath().get(i));
             }
@@ -203,7 +202,7 @@ public final class DorisBrokerLoadStatementAssert {
     private static void assertSetAssignments(final SQLCaseAssertContext assertContext, final BrokerLoadDataDescSegment actual, final BrokerLoadDataDescTestCase expected) {
         if (!expected.getSetAssignments().isEmpty()) {
             List<ColumnAssignmentSegment> actualAssignments = new ArrayList<>(actual.getSetAssignments());
-            MatcherAssert.assertThat(assertContext.getText("Set assignments size does not match: "), actualAssignments.size(), is(expected.getSetAssignments().size()));
+            assertThat(assertContext.getText("Set assignments size does not match: "), actualAssignments.size(), is(expected.getSetAssignments().size()));
             for (int i = 0; i < expected.getSetAssignments().size(); i++) {
                 AssignmentAssert.assertIs(assertContext, actualAssignments.get(i), expected.getSetAssignments().get(i));
             }
@@ -230,15 +229,15 @@ public final class DorisBrokerLoadStatementAssert {
     
     private static void assertOrderByColumn(final SQLCaseAssertContext assertContext, final BrokerLoadDataDescSegment actual, final BrokerLoadDataDescTestCase expected) {
         if (null != expected.getOrderByColumn()) {
-            MatcherAssert.assertThat(assertContext.getText("Order by column does not match: "), actual.getOrderByColumn().orElse(null), is(expected.getOrderByColumn()));
+            assertThat(assertContext.getText("Order by column does not match: "), actual.getOrderByColumn().orElse(null), is(expected.getOrderByColumn()));
         }
     }
     
     private static void assertDataProperties(final SQLCaseAssertContext assertContext, final BrokerLoadDataDescSegment actual, final BrokerLoadDataDescTestCase expected) {
         if (!expected.getDataProperties().isEmpty()) {
             assertNotNull(actual.getDataProperties().orElse(null), assertContext.getText("Data properties should not be null"));
-            MatcherAssert.assertThat(assertContext.getText("Data properties size does not match: "), actual.getDataProperties().get().getProperties().size(),
-                    CoreMatchers.is(expected.getDataProperties().size()));
+            assertThat(assertContext.getText("Data properties size does not match: "), actual.getDataProperties().get().getProperties().size(),
+                    is(expected.getDataProperties().size()));
             for (int i = 0; i < expected.getDataProperties().size(); i++) {
                 assertProperty(assertContext, actual.getDataProperties().get().getProperties().get(i), expected.getDataProperties().get(i));
             }
@@ -247,21 +246,21 @@ public final class DorisBrokerLoadStatementAssert {
     
     private static void assertBrokerType(final SQLCaseAssertContext assertContext, final DorisBrokerLoadStatement actual, final DorisBrokerLoadStatementTestCase expected) {
         if (null != expected.getBrokerType()) {
-            MatcherAssert.assertThat(assertContext.getText("Broker type does not match: "), actual.getBrokerType(), is(expected.getBrokerType()));
+            assertThat(assertContext.getText("Broker type does not match: "), actual.getBrokerType(), is(expected.getBrokerType()));
         }
     }
     
     private static void assertBrokerName(final SQLCaseAssertContext assertContext, final DorisBrokerLoadStatement actual, final DorisBrokerLoadStatementTestCase expected) {
         if (null != expected.getBrokerName()) {
-            MatcherAssert.assertThat(assertContext.getText("Broker name does not match: "), actual.getBrokerName().orElse(null), is(expected.getBrokerName()));
+            assertThat(assertContext.getText("Broker name does not match: "), actual.getBrokerName().orElse(null), is(expected.getBrokerName()));
         }
     }
     
     private static void assertBrokerProperties(final SQLCaseAssertContext assertContext, final DorisBrokerLoadStatement actual, final DorisBrokerLoadStatementTestCase expected) {
         if (actual.getBrokerProperties().isPresent() && !expected.getBrokerProperties().isEmpty()) {
             assertNotNull(actual.getBrokerProperties().get(), assertContext.getText("Broker properties should not be null"));
-            MatcherAssert.assertThat(assertContext.getText("Broker properties size does not match: "), actual.getBrokerProperties().get().getProperties().size(),
-                    CoreMatchers.is(expected.getBrokerProperties().size()));
+            assertThat(assertContext.getText("Broker properties size does not match: "), actual.getBrokerProperties().get().getProperties().size(),
+                    is(expected.getBrokerProperties().size()));
             for (int i = 0; i < expected.getBrokerProperties().size(); i++) {
                 assertProperty(assertContext, actual.getBrokerProperties().get().getProperties().get(i), expected.getBrokerProperties().get(i));
             }
@@ -271,8 +270,8 @@ public final class DorisBrokerLoadStatementAssert {
     private static void assertLoadProperties(final SQLCaseAssertContext assertContext, final DorisBrokerLoadStatement actual, final DorisBrokerLoadStatementTestCase expected) {
         if (actual.getLoadProperties().isPresent() && !expected.getLoadProperties().isEmpty()) {
             assertNotNull(actual.getLoadProperties().get(), assertContext.getText("Load properties should not be null"));
-            MatcherAssert.assertThat(assertContext.getText("Load properties size does not match: "), actual.getLoadProperties().get().getProperties().size(),
-                    CoreMatchers.is(expected.getLoadProperties().size()));
+            assertThat(assertContext.getText("Load properties size does not match: "), actual.getLoadProperties().get().getProperties().size(),
+                    is(expected.getLoadProperties().size()));
             for (int i = 0; i < expected.getLoadProperties().size(); i++) {
                 assertProperty(assertContext, actual.getLoadProperties().get().getProperties().get(i), expected.getLoadProperties().get(i));
             }
@@ -280,14 +279,14 @@ public final class DorisBrokerLoadStatementAssert {
     }
     
     private static void assertProperty(final SQLCaseAssertContext assertContext, final PropertySegment actual, final PropertyTestCase expected) {
-        MatcherAssert.assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), is(expected.getKey()));
-        MatcherAssert.assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), is(expected.getValue()));
+        assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), is(expected.getKey()));
+        assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), is(expected.getValue()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertComment(final SQLCaseAssertContext assertContext, final DorisBrokerLoadStatement actual, final DorisBrokerLoadStatementTestCase expected) {
         if (null != expected.getComment()) {
-            MatcherAssert.assertThat(assertContext.getText("Comment does not match: "), actual.getComment().orElse(null), is(expected.getComment()));
+            assertThat(assertContext.getText("Comment does not match: "), actual.getComment().orElse(null), is(expected.getComment()));
         }
     }
 }

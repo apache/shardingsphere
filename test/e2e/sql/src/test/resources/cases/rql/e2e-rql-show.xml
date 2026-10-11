@@ -17,8 +17,16 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="SHOW STORAGE UNITS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <test-case sql="SHOW STORAGE UNITS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting" adapters="proxy">
         <assertion expected-data-file="show_storage_units.xml" />
+    </test-case>
+
+    <test-case sql="SHOW STORAGE UNITS" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting" adapters="jdbc">
+        <assertion expected-data-file="show_storage_units.xml" />
+    </test-case>
+
+    <test-case sql="SHOW STORAGE UNITS" db-types="Hive" scenario-types="encrypt" adapters="jdbc">
+        <assertion expected-data-file="show_storage_units_jdbc.xml" />
     </test-case>
     
     <!--TODO Support dynamic input of scenario names-->

@@ -22,11 +22,13 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyticClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyticFunctionContext;
@@ -49,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTy
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DateTimeLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DatetimeExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DatetimeTypeSuffixContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DefaultStringContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprListContext;
@@ -171,6 +174,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataT
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -501,6 +505,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     @Override
     public final ASTNode visitColumnName(final ColumnNameContext ctx) {
+        if (isSystemDateTimeFunction(ctx)) {
+            return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.name().getText(), getOriginalText(ctx));
+        }
         if (SequenceFunction.valueFrom(ctx.name().getText()).isPresent()) {
             return createSequenceFunction(ctx);
         }
@@ -518,6 +525,13 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             result.setNestedObjectAttributes(ctx.nestedItem().stream().map(item -> (IdentifierValue) visit(item.identifier())).collect(Collectors.toList()));
         }
         return result;
+    }
+    
+    private boolean isSystemDateTimeFunction(final ColumnNameContext ctx) {
+        if (null != ctx.owner() || null != ctx.nestedItem() && !ctx.nestedItem().isEmpty()) {
+            return false;
+        }
+        return "SYSDATE".equalsIgnoreCase(ctx.name().getText()) || "SYSTIMESTAMP".equalsIgnoreCase(ctx.name().getText());
     }
     
     private FunctionSegment createSequenceFunction(final ColumnNameContext ctx) {
@@ -579,7 +593,8 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     @Override
     public final ASTNode visitConstraintName(final ConstraintNameContext ctx) {
-        return new ConstraintSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        IdentifierValue constraintName = 1 == ctx.identifier().size() ? (IdentifierValue) visit(ctx.identifier(0)) : new IdentifierValue(ctx.getText());
+        return new ConstraintSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), constraintName);
     }
     
     @Override
@@ -606,7 +621,12 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return visit(ctx.booleanPrimary());
         }
         if (null != ctx.LP_()) {
-            return visit(ctx.expr(0));
+            ASTNode result = visit(ctx.expr(0));
+            if (result instanceof ColumnSegment) {
+                ((ColumnSegment) result).setLeftParentheses(new ParenthesesSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex(), ctx.LP_().getSymbol().getText()));
+                ((ColumnSegment) result).setRightParentheses(new ParenthesesSegment(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), ctx.RP_().getSymbol().getText()));
+            }
+            return result;
         }
         if (null != ctx.andOperator()) {
             return createBinaryOperationExpression(ctx, ctx.andOperator().getText());
@@ -725,9 +745,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         ExpressionSegment right;
         if (null == ctx.subquery()) {
             if (null == ctx.LP_() || null == ctx.RP_()) {
-                StringLiteralsContext stringLiteralsContext = ctx.stringLiterals();
-                right = new LiteralExpressionSegment(stringLiteralsContext.start.getStartIndex(), stringLiteralsContext.stop.getStopIndex(),
-                        ((StringLiteralValue) visit(stringLiteralsContext)).getValue());
+                right = (ExpressionSegment) visit(ctx.bitExpr(1));
             } else {
                 ListExpression listExpression = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
                 for (ExprContext each : ctx.expr()) {
@@ -842,16 +860,20 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.privateExprOfDb()) {
             return visit(ctx.privateExprOfDb());
         }
-        if (null != ctx.LP_()) {
-            if (1 == ctx.expr().size()) {
-                return visit(ctx.expr(0));
-            } else {
-                ListExpression result = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
-                for (ExprContext each : ctx.expr()) {
-                    result.getItems().add((ExpressionSegment) visit(each));
-                }
-                return result;
+        if (null != ctx.LP_() && 1 == ctx.expr().size()) {
+            ASTNode result = visit(ctx.expr(0));
+            if (result instanceof ColumnSegment) {
+                ((ColumnSegment) result).setLeftParentheses(new ParenthesesSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex(), ctx.LP_().getSymbol().getText()));
+                ((ColumnSegment) result).setRightParentheses(new ParenthesesSegment(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), ctx.RP_().getSymbol().getText()));
             }
+            return result;
+        }
+        if (null != ctx.LP_()) {
+            ListExpression result = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
+            for (ExprContext each : ctx.expr()) {
+                result.getItems().add((ExpressionSegment) visit(each));
+            }
+            return result;
         }
         return visitRemainSimpleExpr(ctx, startIndex, stopIndex);
     }
@@ -1655,7 +1677,28 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.dataTypeLength());
             result.setDataLength(dataTypeLengthSegment);
         }
+        if (null != ctx.datetimeTypeSuffix()) {
+            appendDatetimeTypeSuffix(result, ctx.datetimeTypeSuffix());
+        }
         return result;
+    }
+    
+    private void appendDatetimeTypeSuffix(final DataTypeSegment dataType, final DatetimeTypeSuffixContext ctx) {
+        Collection<String> suffixKeywords = new LinkedList<>();
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            ParseTree child = ctx.getChild(i);
+            if (child instanceof TerminalNode && OracleStatementParser.LP_ != ((TerminalNode) child).getSymbol().getType()
+                    && OracleStatementParser.RP_ != ((TerminalNode) child).getSymbol().getType()) {
+                suffixKeywords.add(child.getText());
+            }
+        }
+        dataType.setDataTypeName(dataType.getDataTypeName() + " " + String.join(" ", suffixKeywords));
+        if (null == ctx.fractionalSecondPrecision()) {
+            return;
+        }
+        DataTypeLengthSegment dataLength = null == dataType.getDataLength() ? new DataTypeLengthSegment() : dataType.getDataLength();
+        dataLength.setScale(Integer.parseInt(ctx.fractionalSecondPrecision().getText()));
+        dataType.setDataLength(dataLength);
     }
     
     @Override

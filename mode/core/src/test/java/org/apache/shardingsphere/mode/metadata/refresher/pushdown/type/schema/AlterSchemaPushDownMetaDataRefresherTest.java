@@ -34,6 +34,7 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class AlterSchemaPushDownMetaDataRefresherTest {
     
@@ -58,8 +59,8 @@ class AlterSchemaPushDownMetaDataRefresherTest {
         AlterSchemaStatement sqlStatement = new AlterSchemaStatement(databaseType);
         sqlStatement.setSchemaName(new IdentifierValue("FOO_SCHEMA"));
         refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-        assertThat(persistService.getSourceSchemaName(), org.hamcrest.Matchers.nullValue());
-        assertThat(persistService.getRenamedSchemaName(), org.hamcrest.Matchers.nullValue());
+        assertNull(persistService.getSourceSchemaName());
+        assertNull(persistService.getRenamedSchemaName());
     }
     
     private ShardingSphereDatabase createDatabase() {

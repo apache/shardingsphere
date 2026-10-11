@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.props;
 
 import org.apache.shardingsphere.infra.props.exception.TypedPropertyValueException;
-import org.apache.shardingsphere.infra.props.fixture.enums.TypedPropertyEnumFixture;
 import org.apache.shardingsphere.infra.props.fixture.TypedPropertyKeyFixture;
+import org.apache.shardingsphere.infra.props.fixture.enums.TypedPropertyEnumFixture;
 import org.apache.shardingsphere.infra.props.fixture.typed.PropertiesTypedSPIFixture;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
@@ -29,8 +29,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;

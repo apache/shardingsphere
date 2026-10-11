@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
-
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.feature.mask.TestWorkflowSessionContext;
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
@@ -50,6 +48,7 @@ import org.mockito.AdditionalAnswers;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -65,8 +64,8 @@ import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.withSettings;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 class MaskWorkflowPlanningServiceTest {
     
@@ -110,7 +109,7 @@ class MaskWorkflowPlanningServiceTest {
     void assertPlanRejectsMissingLogicalColumn() {
         MCPMetadataQueryFacade metadataQueryFacade = createMetadataQueryFacade();
         when(metadataQueryFacade.querySchemas(any())).thenReturn(List.of(
-                new ShardingSphereSchema("public", mock(DatabaseType.class), List.of(new ShardingSphereTable("orders", List.of(), List.of(), List.of(), TableType.TABLE)), List.of())));
+                new ShardingSphereSchema("public", mock(DatabaseType.class), List.of(new ShardingSphereTable("orders", List.of(), List.of(), List.of())), List.of())));
         when(metadataQueryFacade.queryTableColumns(any(), any(), any())).thenReturn(List.of());
         WorkflowContextSnapshot actual = createService(mock(MaskRuleInspectionService.class), mock(MaskAlgorithmRecommendationService.class),
                 mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class))
@@ -301,11 +300,11 @@ class MaskWorkflowPlanningServiceTest {
     }
     
     private ShardingSphereTable createTableMetadata() {
-        return new ShardingSphereTable("orders", List.of(), List.of(), List.of(), TableType.TABLE);
+        return new ShardingSphereTable("orders", List.of(), List.of(), List.of());
     }
     
     private MCPColumnMetadata createColumnMetadata(final String columnName) {
-        return new MCPColumnMetadata("orders", columnName, 1, java.sql.Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
+        return new MCPColumnMetadata("orders", columnName, 1, Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
     }
     
     private MaskWorkflowPlanningService createService(final MaskRuleInspectionService ruleInspectionService,

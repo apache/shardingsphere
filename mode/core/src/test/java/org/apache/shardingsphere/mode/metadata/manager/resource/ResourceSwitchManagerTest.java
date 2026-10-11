@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
@@ -181,8 +180,8 @@ class ResourceSwitchManagerTest {
         ResourceMetaData resourceMetaData = createResourceMetaDataWithSingleUnit("ds_existing");
         Map<String, DataSourcePoolProperties> toBeRegistered = Collections.emptyMap();
         SwitchingResource actual = resourceSwitchManager.switchByRegisterStorageUnit(resourceMetaData, toBeRegistered, false);
-        assertThat(actual.getNewDataSources(), aMapWithSize(0));
-        assertThat(actual.getStaleDataSources(), aMapWithSize(0));
+        assertTrue(actual.getNewDataSources().isEmpty());
+        assertTrue(actual.getStaleDataSources().isEmpty());
         assertTrue(actual.getStaleStorageUnitNames().isEmpty());
         assertThat(actual.getMergedDataSourcePoolPropertiesMap(), hasKey("ds_existing"));
     }
@@ -206,7 +205,7 @@ class ResourceSwitchManagerTest {
     void assertSwitchByUnregisterStorageUnitWithEmptyInput() {
         ResourceMetaData resourceMetaData = createResourceMetaDataWithSingleUnit("ds_existing");
         SwitchingResource actual = resourceSwitchManager.switchByUnregisterStorageUnit(resourceMetaData, Collections.emptySet());
-        assertThat(actual.getStaleDataSources(), aMapWithSize(0));
+        assertTrue(actual.getStaleDataSources().isEmpty());
         assertTrue(actual.getStaleStorageUnitNames().isEmpty());
         assertThat(actual.getMergedDataSourcePoolPropertiesMap(), hasKey("ds_existing"));
     }
@@ -215,7 +214,7 @@ class ResourceSwitchManagerTest {
     void assertCreateByUnregisterStorageUnitWithEmptyInput() {
         ResourceMetaData resourceMetaData = createResourceMetaDataWithSingleUnit("ds_existing");
         SwitchingResource actual = resourceSwitchManager.createByUnregisterStorageUnit(resourceMetaData, Collections.emptySet());
-        assertThat(actual.getStaleDataSources(), aMapWithSize(0));
+        assertTrue(actual.getStaleDataSources().isEmpty());
         assertTrue(actual.getStaleStorageUnitNames().isEmpty());
         assertThat(actual.getMergedDataSourcePoolPropertiesMap(), hasKey("ds_existing"));
     }

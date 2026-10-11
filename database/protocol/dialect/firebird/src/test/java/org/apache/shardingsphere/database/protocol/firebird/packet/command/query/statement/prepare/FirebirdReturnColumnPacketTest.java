@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare;
 
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
@@ -94,8 +94,8 @@ class FirebirdReturnColumnPacketTest {
     @Test
     void assertWriteWithUnsupportedRequestedItem() {
         FirebirdReturnColumnPacket packet = createPacket(Collections.singletonList(FirebirdSQLInfoPacketType.SELECT), Types.INTEGER, null, false, null);
-        try (MockedConstruction<FirebirdProtocolException> ignored = mockConstruction(FirebirdProtocolException.class)) {
-            assertThrows(FirebirdProtocolException.class, () -> packet.write(payload));
+        try (MockedConstruction<DatabaseProtocolException> ignored = mockConstruction(DatabaseProtocolException.class)) {
+            assertThrows(DatabaseProtocolException.class, () -> packet.write(payload));
         }
     }
     

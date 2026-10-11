@@ -25,9 +25,7 @@ import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplitti
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateReadwriteSplittingActualDataSourceException;
-import org.apache.shardingsphere.readwritesplitting.exception.actual.MissingRequiredReadwriteSplittingActualDataSourceException;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.ReadwriteSplittingActualDataSourceNotFoundException;
-import org.apache.shardingsphere.readwritesplitting.exception.logic.MissingRequiredReadwriteSplittingDataSourceRuleNameException;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -62,11 +60,6 @@ public final class ReadwriteSplittingDataSourceRuleConfigurationChecker {
      * @param builtRules built rules
      */
     public void check(final Collection<String> builtWriteDataSourceNames, final Collection<String> builtReadDataSourceNames, final Collection<ShardingSphereRule> builtRules) {
-        ShardingSpherePreconditions.checkNotEmpty(config.getName(), () -> new MissingRequiredReadwriteSplittingDataSourceRuleNameException(databaseName));
-        ShardingSpherePreconditions.checkNotEmpty(config.getWriteDataSourceName(),
-                () -> new MissingRequiredReadwriteSplittingActualDataSourceException(ReadwriteSplittingDataSourceType.WRITE, exceptionIdentifier));
-        ShardingSpherePreconditions.checkNotEmpty(config.getReadDataSourceNames(),
-                () -> new MissingRequiredReadwriteSplittingActualDataSourceException(ReadwriteSplittingDataSourceType.READ, exceptionIdentifier));
         checkActualSourceNames(ReadwriteSplittingDataSourceType.WRITE, config.getWriteDataSourceName(), builtWriteDataSourceNames, builtRules);
         config.getReadDataSourceNames().forEach(each -> checkActualSourceNames(ReadwriteSplittingDataSourceType.READ, each, builtReadDataSourceNames, builtRules));
     }

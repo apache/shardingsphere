@@ -19,13 +19,14 @@ package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.typ
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.infra.exception.kernel.syntax.AmbiguousColumnEx
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -68,9 +70,16 @@ public final class ColumnSegmentBinder {
     private static final Set<SegmentType> COLUMN_ONLY_SEGMENT_TYPES = EnumSet.of(
             SegmentType.LOCK, SegmentType.SET_ASSIGNMENT_COLUMNS, SegmentType.COPY, SegmentType.INSERT_COLUMNS, SegmentType.DEFINITION_COLUMNS);
     
-    private static final Map<SegmentType, String> SEGMENT_TYPE_MESSAGES = Maps.of(SegmentType.PROJECTION, "field list", SegmentType.JOIN_ON, "on clause", SegmentType.JOIN_USING, "from clause",
-            SegmentType.PREDICATE, "where clause", SegmentType.HAVING, "having clause", SegmentType.ORDER_BY, "order clause", SegmentType.GROUP_BY, "group statement", SegmentType.INSERT_COLUMNS,
-            "field list");
+    private static final Map<SegmentType, String> SEGMENT_TYPE_MESSAGES = ImmutableMap.<SegmentType, String>builder()
+            .put(SegmentType.PROJECTION, "field list")
+            .put(SegmentType.JOIN_ON, "on clause")
+            .put(SegmentType.JOIN_USING, "from clause")
+            .put(SegmentType.PREDICATE, "where clause")
+            .put(SegmentType.HAVING, "having clause")
+            .put(SegmentType.ORDER_BY, "order clause")
+            .put(SegmentType.GROUP_BY, "group statement")
+            .put(SegmentType.INSERT_COLUMNS, "field list")
+            .build();
     
     private static final String UNKNOWN_SEGMENT_TYPE_MESSAGE = "unknown clause";
     
@@ -147,9 +156,20 @@ public final class ColumnSegmentBinder {
     }
     
     private static boolean isUnparenthesizedFunction(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext) {
-        return QuoteCharacter.NONE == segment.getIdentifier().getQuoteCharacter() && !COLUMN_ONLY_SEGMENT_TYPES.contains(parentSegmentType)
-                && new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType())
-                        .getDialectDatabaseMetaData().getFunctionOption().getUnparenthesizedFunctionNames().contains(segment.getIdentifier().getValue());
+        if (QuoteCharacter.NONE != segment.getIdentifier().getQuoteCharacter() || COLUMN_ONLY_SEGMENT_TYPES.contains(parentSegmentType)) {
+            return false;
+        }
+        DialectFunctionOption functionOption = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getFunctionOption();
+        return functionOption.getUnparenthesizedFunctionNames().contains(segment.getIdentifier().getValue()) || isUnparenthesizedQualifiedFunction(segment, functionOption);
+    }
+    
+    private static boolean isUnparenthesizedQualifiedFunction(final ColumnSegment segment, final DialectFunctionOption functionOption) {
+        if (!segment.getOwner().isPresent() || segment.getOwner().get().getOwner().isPresent()
+                || QuoteCharacter.NONE != segment.getOwner().get().getIdentifier().getQuoteCharacter()) {
+            return false;
+        }
+        return functionOption.getUnparenthesizedQualifiedFunctionNames()
+                .contains(segment.getOwner().get().getIdentifier().getValue() + "." + segment.getIdentifier().getValue());
     }
     
     private static OwnerSegment bindOwnerTableContext(final OwnerSegment owner, final ColumnSegment inputColumnSegment) {
@@ -202,6 +222,10 @@ public final class ColumnSegmentBinder {
     private static ColumnSegmentInfo getColumnSegmentInfo(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts,
                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
                                                           final SQLStatementBinderContext binderContext) {
+        Optional<ColumnSegment> valueVariableColumnSegment = findInputColumnSegmentByValueVariables(segment, parentSegmentType, binderContext.getSqlStatement().getVariableNames());
+        if (valueVariableColumnSegment.isPresent()) {
+            return new ColumnSegmentInfo(valueVariableColumnSegment.get(), TableSourceType.TEMPORARY_TABLE);
+        }
         ColumnSegmentInfo result = isModelProjectionColumn(segment, parentSegmentType, binderContext.getModelColumnNames())
                 ? new ColumnSegmentInfo(findInputColumnSegmentByModelColumns(segment, binderContext.getModelColumnNames()).orElse(null), TableSourceType.TEMPORARY_TABLE)
                 : getInputInfoFromTableBinderContexts(tableBinderContexts, segment, parentSegmentType);
@@ -223,6 +247,11 @@ public final class ColumnSegmentBinder {
             result = new ColumnSegmentInfo(findInputColumnSegmentByModelColumns(segment, binderContext.getModelColumnNames()).orElse(null), TableSourceType.TEMPORARY_TABLE);
         }
         return result;
+    }
+    
+    private static Optional<ColumnSegment> findInputColumnSegmentByValueVariables(final ColumnSegment segment, final SegmentType parentSegmentType,
+                                                                                  final Collection<String> variableNames) {
+        return SegmentType.VALUES == parentSegmentType && !segment.getOwner().isPresent() ? findInputColumnSegmentByVariables(segment, variableNames) : Optional.empty();
     }
     
     private static boolean isModelProjectionColumn(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<String> modelColumnNames) {
@@ -301,8 +330,18 @@ public final class ColumnSegmentBinder {
     }
     
     private static ColumnSegment createColumnSegment(final ProjectionSegment projectionSegment) {
-        return projectionSegment instanceof ColumnProjectionSegment ? ((ColumnProjectionSegment) projectionSegment).getColumn()
-                : new ColumnSegment(0, 0, new IdentifierValue(projectionSegment.getColumnLabel()));
+        if (projectionSegment instanceof ColumnProjectionSegment) {
+            return ((ColumnProjectionSegment) projectionSegment).getColumn();
+        }
+        if (projectionSegment instanceof ParameterMarkerExpressionSegment) {
+            ParameterMarkerExpressionSegment parameterMarker = (ParameterMarkerExpressionSegment) projectionSegment;
+            ColumnSegment result = new ColumnSegment(0, 0, parameterMarker.getAlias().orElseGet(() -> new IdentifierValue(parameterMarker.getColumnLabel())));
+            if (null != parameterMarker.getBoundInfo()) {
+                result.setColumnBoundInfo(parameterMarker.getBoundInfo());
+            }
+            return result;
+        }
+        return new ColumnSegment(0, 0, new IdentifierValue(projectionSegment.getColumnLabel()));
     }
     
     private static Optional<ColumnSegment> findInputColumnSegmentFromExternalTables(final ColumnSegment segment,
@@ -347,7 +386,8 @@ public final class ColumnSegmentBinder {
                 return true;
             }
             if (each instanceof SimpleTableSegmentBinderContext) {
-                return ((SimpleTableSegmentBinderContext) each).isContainsDBLink();
+                SimpleTableSegmentBinderContext binderContext = (SimpleTableSegmentBinderContext) each;
+                return binderContext.isContainsDBLink() || binderContext.isSkipColumnBind();
             }
         }
         for (TableSegmentBinderContext each : outerBinderContexts) {
@@ -355,7 +395,8 @@ public final class ColumnSegmentBinder {
                 return true;
             }
             if (each instanceof SimpleTableSegmentBinderContext) {
-                return ((SimpleTableSegmentBinderContext) each).isContainsDBLink();
+                SimpleTableSegmentBinderContext binderContext = (SimpleTableSegmentBinderContext) each;
+                return binderContext.isContainsDBLink() || binderContext.isSkipColumnBind();
             }
         }
         return false;

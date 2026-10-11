@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
@@ -24,14 +25,21 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.M
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@ExtendWith(LogCaptureExtension.class)
+@LogCaptureSettings(suppressOutput = true)
 class MCPTransportErrorFactoryTest {
     
     @Test
@@ -77,11 +85,13 @@ class MCPTransportErrorFactoryTest {
     }
     
     @Test
-    void assertCreateErrorWithUnexpectedError() {
-        McpError actual = MCPTransportErrorFactory.createError(new IllegalStateException("foo_message"));
+    void assertCreateErrorWithUnexpectedError(final LogCaptureAssertion logCaptureAssertion) {
+        IllegalStateException expectedException = new IllegalStateException("foo_message");
+        McpError actual = MCPTransportErrorFactory.createError(expectedException);
         assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INTERNAL_ERROR));
         assertThat(actual.getJsonRpcError().message(), is("Service is temporarily unavailable."));
         assertFalse(String.valueOf(actual.getJsonRpcError().data()).contains("foo_message"));
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @Test

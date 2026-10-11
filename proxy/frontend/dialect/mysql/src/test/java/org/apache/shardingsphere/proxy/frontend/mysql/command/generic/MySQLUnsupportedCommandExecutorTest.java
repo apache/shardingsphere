@@ -21,8 +21,8 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCom
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MySQLUnsupportedCommandExecutorTest {

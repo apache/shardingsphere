@@ -89,22 +89,21 @@ The scanner labels semantic or partly semantic rules as `semanticReviewRequired=
 
 ## Final coverage
 
-Run focused coverage again for the effective candidate. Use the module's configured JaCoCo check when present; otherwise run `test jacoco:report` and enforce target ratios with the bundled reporter:
+Run focused coverage again for the effective candidate. Use the module's configured JaCoCo check when present; otherwise run `test jacoco:report` and collect target ratios with the bundled reporter:
 
 ```bash
 python3 .codex/skills/gen-ut/scripts/collect_quality_baseline.py \
   --jacoco-xml-path <JacocoXmlPath> \
   --target-classes <ResolvedTargetClasses> \
-  --minimum-ratio <TargetRatioPercent> \
   --scope-baseline "$task_dir/scope-baseline.json" \
   <ResolvedTestFileSet>
 ```
 
-Missing target classes, CLASS counters, or LINE counters fail when `--minimum-ratio` is present. A branchless target satisfies BRANCH coverage with zero missed branches.
+When the user explicitly supplies a numeric target, add `--minimum-ratio <TargetRatioPercent>` to the reporter command. Without an explicit numeric target, decide completion from the requested-behavior and affected-SUT-owned-branch map while still reporting the available counters. Missing target classes, CLASS counters, or LINE counters fail when `--minimum-ratio` is present. A branchless target satisfies BRANCH coverage with zero missed branches.
 
 ## Repository completion gates
 
-After the last edit, run the exact Spotless and Checkstyle commands required by `AGENTS.md`, through the canonical output wrapper.
+After the last edit, run the applicable Spotless and Checkstyle commands required by the [code-implementation verification rules](../../code-implementation/references/verification.md), through the canonical output wrapper.
 Do not replace `spotless:apply` with `spotless:check`. Re-run invalidated checks after any later edit.
 
 Run the mechanical scan once after implementation stabilizes and once immediately before delivery. The second scan must execute; do not reuse its earlier result.

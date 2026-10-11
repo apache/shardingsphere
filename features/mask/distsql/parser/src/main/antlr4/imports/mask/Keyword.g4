@@ -135,10 +135,6 @@ GENERIC_TABLE_RANDOM_REPLACE
     : G E N E R I C UL_ T A B L E UL_ R A N D O M UL_ R E P L A C E
     ;
 
-ADDRESS_RANDOM_REPLACE
-    : A D D R E S S UL_ R A N D O M UL_ R E P L A C E
-    ;
-
 ALGORITHM
     : A L G O R I T H M
     ;

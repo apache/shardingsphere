@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.rule.column.item;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.algorithm.engine.EncryptAlgorithmEngine;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
@@ -28,13 +29,21 @@ import java.util.List;
 /**
  * Cipher column item.
  */
-@RequiredArgsConstructor
 @Getter
 public final class CipherColumnItem {
     
     private final String name;
     
     private final EncryptAlgorithm encryptor;
+    
+    @Getter(AccessLevel.NONE)
+    private final String encoder;
+    
+    public CipherColumnItem(final String name, final EncryptAlgorithm encryptor) {
+        this.name = name;
+        this.encryptor = encryptor;
+        encoder = EncryptAlgorithmEngine.findEncoder(encryptor).orElse(null);
+    }
     
     /**
      * Encrypt.
@@ -50,7 +59,7 @@ public final class CipherColumnItem {
         if (null == originalValue) {
             return null;
         }
-        return encryptor.encrypt(originalValue, new AlgorithmSQLContext(databaseName, schemaName, tableName, logicColumnName));
+        return EncryptAlgorithmEngine.encrypt(encryptor, originalValue, new AlgorithmSQLContext(databaseName, schemaName, tableName, logicColumnName), encoder, false);
     }
     
     /**
@@ -67,7 +76,7 @@ public final class CipherColumnItem {
         AlgorithmSQLContext algorithmSQLContext = new AlgorithmSQLContext(databaseName, schemaName, tableName, logicColumnName);
         List<Object> result = new LinkedList<>();
         for (Object each : originalValues) {
-            result.add(null == each ? null : encryptor.encrypt(each, algorithmSQLContext));
+            result.add(null == each ? null : EncryptAlgorithmEngine.encrypt(encryptor, each, algorithmSQLContext, encoder, false));
         }
         return result;
     }
@@ -86,6 +95,6 @@ public final class CipherColumnItem {
         if (null == cipherValue) {
             return null;
         }
-        return encryptor.decrypt(cipherValue, new AlgorithmSQLContext(databaseName, schemaName, tableName, logicColumnName));
+        return EncryptAlgorithmEngine.decrypt(encryptor, cipherValue, new AlgorithmSQLContext(databaseName, schemaName, tableName, logicColumnName), encoder);
     }
 }

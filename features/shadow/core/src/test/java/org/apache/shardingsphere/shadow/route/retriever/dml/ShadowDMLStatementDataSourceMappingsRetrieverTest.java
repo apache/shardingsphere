@@ -34,11 +34,13 @@ import org.apache.shardingsphere.shadow.route.retriever.dml.table.column.impl.Sh
 import org.apache.shardingsphere.shadow.route.retriever.dml.table.hint.ShadowTableHintDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
+import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -93,6 +95,30 @@ class ShadowDMLStatementDataSourceMappingsRetrieverTest {
         }
         Map<String, String> actual = retriever.retrieve(rule);
         assertThat(name, actual, is(expected));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertRetrieveWithInsertSelectStatement() {
+        ShadowDMLStatementDataSourceMappingsRetriever retriever =
+                new ShadowDMLStatementDataSourceMappingsRetriever(createQueryContext(createInsertSelectSqlStatementContext()), ShadowOperationType.INSERT);
+        ShadowRule rule = mock(ShadowRule.class);
+        when(rule.filterShadowTables(Collections.singleton("t_order"))).thenReturn(Collections.singleton("t_order"));
+        when(rule.getShadowColumnNames(ShadowOperationType.INSERT, "t_order")).thenReturn(Collections.singleton("foo_col"));
+        when(rule.getColumnShadowAlgorithms(ShadowOperationType.INSERT, "t_order", "foo_col")).thenReturn(Collections.singleton(mock(ColumnShadowAlgorithm.class)));
+        when(rule.getShadowDataSourceMappings("t_order")).thenReturn(Collections.singletonMap("foo_prod_ds", "foo_shadow_ds"));
+        Map<String, String> actual = retriever.retrieve(rule);
+        assertThat(actual, is(Collections.emptyMap()));
+    }
+    
+    private static SQLStatementContext createInsertSelectSqlStatementContext() {
+        InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getSqlStatement()).thenReturn(mock(InsertStatement.class));
+        when(result.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        when(result.getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_order"));
+        when(result.getInsertColumnNames()).thenReturn(Collections.singletonList("foo_col"));
+        when(result.getInsertValueContexts()).thenReturn(Collections.emptyList());
+        return result;
     }
     
     private QueryContext createQueryContext(final SQLStatementContext sqlStatementContext) {

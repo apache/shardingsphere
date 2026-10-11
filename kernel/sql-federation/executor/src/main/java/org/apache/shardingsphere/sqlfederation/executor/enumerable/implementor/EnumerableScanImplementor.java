@@ -151,7 +151,7 @@ public final class EnumerableScanImplementor implements ScanImplementor {
     private AbstractEnumerable<Object> createJDBCEnumerable(final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext executionContext) {
         return new AbstractEnumerable<Object>() {
             
-            @SneakyThrows
+            @SneakyThrows(SQLException.class)
             @Override
             public Enumerator<Object> enumerator() {
                 computeConnectionOffsets(executionContext);
@@ -159,8 +159,8 @@ public final class EnumerableScanImplementor implements ScanImplementor {
                 setParameters(executionGroupContext.getInputGroups());
                 ShardingSpherePreconditions.checkState(!ProcessRegistry.getInstance().get(executorContext.getProcessId()).isInterrupted(), SQLExecutionInterruptedException::new);
                 processEngine.executeSQL(executionGroupContext, queryContext);
-                List<QueryResult> queryResults =
-                        executorContext.getJdbcExecutor().execute(executionGroupContext, executorContext.getQueryCallback()).stream().map(QueryResult.class::cast).collect(Collectors.toList());
+                List<QueryResult> queryResults = executorContext.getJdbcExecutor().execute(
+                        executionGroupContext, executorContext.getQueryCallback()).stream().map(QueryResult.class::cast).collect(Collectors.toList());
                 MergeEngine mergeEngine = new MergeEngine(queryContext.getMetaData(), database, queryContext.getMetaData().getProps(), queryContext.getConnectionContext());
                 MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext);
                 Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
 import io.netty.buffer.Unpooled;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,7 +74,7 @@ class FirebirdBatchBlobSegmentsCommandPacketTest {
         when(payload.readBlobHandle()).thenReturn(11);
         when(payload.readInt4()).thenReturn(1);
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{1}));
-        assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchBlobSegmentsCommandPacket(payload));
+        assertThrows(DatabaseProtocolException.class, () -> new FirebirdBatchBlobSegmentsCommandPacket(payload));
     }
     
     @Test
@@ -82,7 +82,7 @@ class FirebirdBatchBlobSegmentsCommandPacketTest {
         when(payload.readBlobHandle()).thenReturn(11);
         when(payload.readInt4()).thenReturn(3);
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{3, 0, 1}));
-        assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchBlobSegmentsCommandPacket(payload));
+        assertThrows(DatabaseProtocolException.class, () -> new FirebirdBatchBlobSegmentsCommandPacket(payload));
     }
     
     @Test

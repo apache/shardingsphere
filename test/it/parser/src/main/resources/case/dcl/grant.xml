@@ -315,4 +315,7 @@
         <table name="t_order" start-index="27" stop-index="33" />
         <column name="order_id" start-index="14" stop-index="21" />
     </grant>
+    <grant sql-case-id="grant_global_spaced_wildcard" />
+
+    <grant sql-case-id="grant_database_spaced_wildcard" />
 </sql-parser-test-cases>

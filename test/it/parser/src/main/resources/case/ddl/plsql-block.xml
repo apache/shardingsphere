@@ -21,4 +21,26 @@
         <procedure-call name="simple_insert_data" />
         <procedure-call name="function_insert_data" />
     </plsql-block>
+
+    <plsql-block sql-case-id="plsql_block_execute_immediate_using_in_out_oracle" />
+
+    <plsql-block sql-case-id="plsql_block_open_cursor_arguments_oracle" />
+
+    <plsql-block sql-case-id="plsql_block_for_cursor_arguments_oracle" />
+
+    <plsql-block sql-case-id="plsql_block_record_constructor_positional_named_oracle" />
+
+    <plsql-block sql-case-id="plsql_block_record_constructor_named_oracle" />
+
+    <plsql-block sql-case-id="plsql_block_record_constructor_empty_oracle" />
+
+    <plsql-block sql-case-id="plsql_block_forall_insert_oracle" />
+
+    <plsql-block sql-case-id="plsql_block_forall_update_oracle" />
+
+    <plsql-block sql-case-id="plsql_block_forall_delete_oracle" />
+
+    <plsql-block sql-case-id="plsql_block_forall_merge_oracle" />
+
+    <plsql-block sql-case-id="plsql_block_forall_execute_immediate_save_exceptions_oracle" />
 </sql-parser-test-cases>

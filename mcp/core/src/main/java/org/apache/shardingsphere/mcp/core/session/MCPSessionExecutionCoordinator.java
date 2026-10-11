@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.core.session;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
-import java.util.function.Supplier;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 
 /**
  * MCP session execution coordinator.

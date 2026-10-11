@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -32,16 +33,16 @@ public final class MCPWorkflowCustomEncryptAlgorithmFixture implements EncryptAl
     
     private static final String PREFIX = "mcp_custom:";
     
-    private static final EncryptAlgorithmMetaData META_DATA = new EncryptAlgorithmMetaData(true, false, false);
+    private static final EncryptAlgorithmMetaData META_DATA = new EncryptAlgorithmMetaData(true, false, false, byte[].class);
     
     @Override
-    public Object encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
-        return PREFIX + Objects.toString(plainValue, "");
+    public byte[] encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
+        return (PREFIX + Objects.toString(plainValue, "")).getBytes(StandardCharsets.UTF_8);
     }
     
     @Override
     public Object decrypt(final Object cipherValue, final AlgorithmSQLContext algorithmSQLContext) {
-        String actualCipherValue = Objects.toString(cipherValue, "");
+        String actualCipherValue = new String((byte[]) cipherValue, StandardCharsets.UTF_8);
         return actualCipherValue.startsWith(PREFIX) ? actualCipherValue.substring(PREFIX.length()) : actualCipherValue;
     }
     

@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfigur
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -40,7 +42,8 @@ import java.util.stream.Collectors;
 public final class SingleRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
     @Getter
-    private Collection<String> tables = new LinkedList<>();
+    @NotNull
+    private Collection<@NotBlank String> tables = new LinkedList<>();
     
     private String defaultDataSource;
     

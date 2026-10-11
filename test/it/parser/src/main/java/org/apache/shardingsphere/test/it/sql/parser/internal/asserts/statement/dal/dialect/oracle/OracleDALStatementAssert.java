@@ -20,10 +20,19 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleChangeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleListStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleReportStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleSpoolStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.oracle.type.OracleChangeStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.oracle.type.OracleListStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.oracle.type.OracleReportStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.oracle.type.OracleSpoolStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.oracle.OracleChangeStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.oracle.OracleListStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.oracle.OracleReportStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.oracle.OracleSpoolStatementTestCase;
 
 /**
@@ -42,6 +51,15 @@ public final class OracleDALStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final DALStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof OracleSpoolStatement) {
             OracleSpoolStatementAssert.assertIs(assertContext, (OracleSpoolStatement) actual, (OracleSpoolStatementTestCase) expected);
+        }
+        if (actual instanceof OracleListStatement) {
+            OracleListStatementAssert.assertIs(assertContext, (OracleListStatement) actual, (OracleListStatementTestCase) expected);
+        }
+        if (actual instanceof OracleReportStatement) {
+            OracleReportStatementAssert.assertIs(assertContext, (OracleReportStatement) actual, (OracleReportStatementTestCase) expected);
+        }
+        if (actual instanceof OracleChangeStatement) {
+            OracleChangeStatementAssert.assertIs(assertContext, (OracleChangeStatement) actual, (OracleChangeStatementTestCase) expected);
         }
     }
 }

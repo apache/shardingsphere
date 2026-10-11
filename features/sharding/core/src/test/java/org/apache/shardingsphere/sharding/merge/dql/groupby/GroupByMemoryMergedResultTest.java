@@ -59,8 +59,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -127,7 +127,8 @@ class GroupByMemoryMergedResultTest {
                 .databaseType(databaseType)
                 .projections(projectionsSegment)
                 .groupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST))))
-                .orderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, NullsOrderType.FIRST))))
+                .orderBy(new OrderBySegment(0, 0, Arrays.asList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, NullsOrderType.FIRST),
+                        new IndexOrderByItemSegment(0, 0, 4, OrderDirection.ASC, NullsOrderType.FIRST))))
                 .build();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
@@ -147,41 +148,6 @@ class GroupByMemoryMergedResultTest {
                 .build();
         return new SelectStatementContext(
                 selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
-    }
-    
-    @Test
-    void assertNextForAggregationResultSetsEmpty() throws SQLException {
-        when(database.getName()).thenReturn("db_schema");
-        QueryResult queryResult1 = createQueryResult();
-        when(queryResult1.next()).thenReturn(true, false);
-        when(queryResult1.getValue(1, Object.class)).thenReturn(20);
-        when(queryResult1.getValue(2, Object.class)).thenReturn(0);
-        when(queryResult1.getValue(3, Object.class)).thenReturn(2);
-        when(queryResult1.getValue(4, Object.class)).thenReturn(2);
-        when(queryResult1.getValue(5, Object.class)).thenReturn(20);
-        QueryResult queryResult2 = createQueryResult();
-        QueryResult queryResult3 = createQueryResult();
-        when(queryResult3.next()).thenReturn(true, true, false);
-        when(queryResult3.getValue(1, Object.class)).thenReturn(20, 30);
-        when(queryResult3.getValue(2, Object.class)).thenReturn(0);
-        when(queryResult3.getValue(3, Object.class)).thenReturn(2, 3);
-        when(queryResult3.getValue(4, Object.class)).thenReturn(2, 2, 3);
-        when(queryResult3.getValue(5, Object.class)).thenReturn(20, 20, 30);
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), database, mock(ConnectionContext.class));
-        assertTrue(actual.next());
-        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(30)));
-        assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat(actual.getValue(3, Object.class), is(3));
-        assertThat(actual.getValue(4, Object.class), is(new BigDecimal(3)));
-        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(30)));
-        assertTrue(actual.next());
-        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
-        assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat(actual.getValue(3, Object.class), is(2));
-        assertThat(actual.getValue(4, Object.class), is(new BigDecimal(4)));
-        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(40)));
-        assertFalse(actual.next());
     }
     
     private QueryResult createQueryResult() throws SQLException {

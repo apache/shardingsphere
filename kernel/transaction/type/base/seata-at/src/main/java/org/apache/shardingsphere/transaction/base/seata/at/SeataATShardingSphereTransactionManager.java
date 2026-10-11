@@ -32,6 +32,7 @@ import org.apache.seata.tm.api.GlobalTransactionContext;
 import org.apache.seata.tm.api.GlobalTransactionRole;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionOptionReplayCallback;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.base.seata.at.exception.SeataATApplicationIDNotFoundException;
 import org.apache.shardingsphere.transaction.base.seata.at.exception.SeataATDisabledException;
@@ -93,9 +94,16 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     }
     
     @Override
-    public Connection getConnection(final String databaseName, final String dataSourceName) throws SQLException {
+    public Connection getConnection(final String databaseName, final String dataSourceName, final TransactionOptionReplayCallback transactionOptionReplayCallback) throws SQLException {
         checkSeataATEnabled();
-        return dataSourceMap.get(databaseName + "." + dataSourceName).getConnection();
+        Connection result = dataSourceMap.get(databaseName + "." + dataSourceName).getConnection();
+        try {
+            transactionOptionReplayCallback.replay(result);
+        } catch (final SQLException ex) {
+            result.close();
+            throw ex;
+        }
+        return result;
     }
     
     @Override

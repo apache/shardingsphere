@@ -32,8 +32,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -75,19 +75,19 @@ public abstract class BaseTransactionTestCase {
     }
     
     protected static void executeWithLog(final Connection connection, final String sql) throws SQLException {
-        log.info("Connection execute: {}.", sql);
+        log.debug("Connection execute: {}.", sql);
         connection.createStatement().execute(sql);
     }
     
     protected static int executeUpdateWithLog(final Connection connection, final String sql) throws SQLException {
-        log.info("Connection execute update: {}.", sql);
+        log.debug("Connection execute update: {}.", sql);
         try (Statement statement = connection.createStatement()) {
             return statement.executeUpdate(sql);
         }
     }
     
     protected static ResultSet executeQueryWithLog(final Connection connection, final String sql) throws SQLException {
-        log.info("Connection execute query: {}.", sql);
+        log.debug("Connection execute query: {}.", sql);
         return connection.createStatement().executeQuery(sql);
     }
     
@@ -106,7 +106,7 @@ public abstract class BaseTransactionTestCase {
     
     protected void executeSqlListWithLog(final Connection connection, final String... sqlList) throws SQLException {
         for (String each : sqlList) {
-            log.info("Connection execute: {}.", each);
+            log.debug("Connection execute: {}.", each);
             connection.createStatement().execute(each);
         }
     }
@@ -148,8 +148,8 @@ public abstract class BaseTransactionTestCase {
         return testCaseParam.getTransactionType();
     }
     
-    @Getter
     @RequiredArgsConstructor
+    @Getter
     public static final class TransactionTestCaseParameter {
         
         private final TransactionBaseE2EIT baseTransactionITCase;

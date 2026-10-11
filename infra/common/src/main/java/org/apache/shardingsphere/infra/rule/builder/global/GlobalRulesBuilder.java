@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -50,8 +51,10 @@ public final class GlobalRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildRules(final Collection<RuleConfiguration> globalRuleConfigs,
                                                             final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props) {
+        Map<RuleConfiguration, GlobalRuleBuilder> ruleBuilderMap = getRuleBuilderMap(globalRuleConfigs);
+        RuleConfigurationValidator.validate(ruleBuilderMap.keySet());
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : getRuleBuilderMap(globalRuleConfigs).entrySet()) {
+        for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : ruleBuilderMap.entrySet()) {
             result.add(entry.getValue().build(entry.getKey(), databases, props));
         }
         return result;
@@ -89,6 +92,7 @@ public final class GlobalRulesBuilder {
      */
     @SuppressWarnings("unchecked")
     public static Collection<ShardingSphereRule> buildSingleRules(final RuleConfiguration globalRuleConfig, final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props) {
+        RuleConfigurationValidator.validate(globalRuleConfig);
         return OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(globalRuleConfig)).entrySet()
                 .stream().map(each -> each.getValue().build(each.getKey(), databases, props)).collect(Collectors.toList());
     }

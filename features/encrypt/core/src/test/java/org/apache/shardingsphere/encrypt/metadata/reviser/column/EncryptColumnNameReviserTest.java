@@ -20,8 +20,8 @@ package org.apache.shardingsphere.encrypt.metadata.reviser.column;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

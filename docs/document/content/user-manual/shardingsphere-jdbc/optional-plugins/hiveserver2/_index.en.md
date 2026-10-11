@@ -52,12 +52,6 @@ The following is an example of a possible configuration,
         <groupId>io.github.linghengqian</groupId>
         <artifactId>hive-server2-jdbc-driver-thin</artifactId>
         <version>1.8.2</version>
-        <exclusions>
-            <exclusion>
-                <groupId>com.fasterxml.woodstox</groupId>
-                <artifactId>woodstox-core</artifactId>
-            </exclusion>
-        </exclusions>
     </dependency>
 </dependencies>
 ```

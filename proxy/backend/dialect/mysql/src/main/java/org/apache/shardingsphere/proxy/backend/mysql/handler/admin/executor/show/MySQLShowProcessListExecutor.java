@@ -76,7 +76,7 @@ public final class MySQLShowProcessListExecutor implements DatabaseAdminQueryExe
         if (null != sql && sql.length() > 100 && !sqlStatement.isFull()) {
             sql = sql.substring(0, 100);
         }
-        rowValues.add(null != sql ? sql : "");
+        rowValues.add(null == sql ? "" : sql);
         return new LocalDataQueryResultRow(rowValues.toArray());
     }
     

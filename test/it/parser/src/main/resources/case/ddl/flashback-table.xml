@@ -25,6 +25,10 @@
         <table name="employees_test" start-index="16" stop-index="29" />
     </flashback-table>
 
+    <flashback-table sql-case-id="flashback_table_to_timestamp_interval_oracle">
+        <table name="foo_table" start-index="16" stop-index="24" />
+    </flashback-table>
+
     <flashback-table sql-case-id="flashback_table_to_restore_point">
         <table name="sample" start-index="16" stop-index="21" />
     </flashback-table>

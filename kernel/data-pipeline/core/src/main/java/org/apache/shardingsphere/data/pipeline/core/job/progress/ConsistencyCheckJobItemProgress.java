@@ -65,5 +65,6 @@ public final class ConsistencyCheckJobItemProgress implements PipelineJobItemPro
         checkEndTimeMillis = context.getCheckEndTimeMillis();
         tableCheckRangePositions.addAll(context.getTableCheckRangePositions());
         sourceDatabaseType = context.getSourceDatabaseType();
+        status = context.getStatus();
     }
 }

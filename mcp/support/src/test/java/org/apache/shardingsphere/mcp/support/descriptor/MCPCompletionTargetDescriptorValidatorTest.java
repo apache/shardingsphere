@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class MCPCompletionTargetDescriptorValidatorTest {
     
     @Test
-    void assertValidate() {
+    void assertValidateWithUndeclaredContextArgument() {
         MCPPromptDescriptor prompt = new MCPPromptDescriptor("test_prompt", "Test Prompt", "Guide the model through a test prompt.",
                 List.of(new MCPPromptArgumentDescriptor("database", "Database", "Logical database.", false)), Map.of());
         MCPCompletionTargetDescriptor completion = new MCPCompletionTargetDescriptor("prompt", "test_prompt", List.of("database"), 50,
@@ -40,5 +40,15 @@ class MCPCompletionTargetDescriptorValidatorTest {
         IllegalStateException actual = assertThrows(IllegalStateException.class,
                 () -> MCPCompletionTargetDescriptorValidator.validate(List.of(completion), List.of(prompt), List.of()));
         assertThat(actual.getMessage(), is("Completion target `prompt:test_prompt` context argument `tenant` for `database` is not declared by the target."));
+    }
+    
+    @Test
+    void assertValidateWithDuplicateArguments() {
+        MCPPromptDescriptor prompt = new MCPPromptDescriptor("test_prompt", "Test Prompt", "Guide the model through a test prompt.",
+                List.of(new MCPPromptArgumentDescriptor("database", "Database", "Logical database.", false)), Map.of());
+        MCPCompletionTargetDescriptor completion = new MCPCompletionTargetDescriptor("prompt", "test_prompt", List.of("database", "database"), 50, Map.of());
+        IllegalStateException actual = assertThrows(IllegalStateException.class,
+                () -> MCPCompletionTargetDescriptorValidator.validate(List.of(completion), List.of(prompt), List.of()));
+        assertThat(actual.getMessage(), is("Completion target `prompt:test_prompt` must not contain duplicate arguments."));
     }
 }

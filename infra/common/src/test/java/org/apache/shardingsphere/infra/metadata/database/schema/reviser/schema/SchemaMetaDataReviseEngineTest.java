@@ -44,8 +44,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -99,8 +99,8 @@ class SchemaMetaDataReviseEngineTest {
         SchemaMetaData schemaMetaData = new SchemaMetaData("foo_schema", Collections.singleton(actualTableMetaData));
         ShardingSphereTable candidateTable = new ShardingSphereTable(
                 "logic_tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("logic_idx", Collections.singleton("foo_col"), true)), Collections.emptyList());
-        ShardingSphereSchema candidateSchema = new ShardingSphereSchema("foo_schema", mock(), Collections.singleton(candidateTable), Collections.emptyList());
-        ShardingSphereSchema ignoredCandidateSchema = new ShardingSphereSchema("bar_schema", mock(), Collections.singleton(candidateTable), Collections.emptyList());
+        final ShardingSphereSchema candidateSchema = new ShardingSphereSchema("foo_schema", mock(), Collections.singleton(candidateTable), Collections.emptyList());
+        final ShardingSphereSchema ignoredCandidateSchema = new ShardingSphereSchema("bar_schema", mock(), Collections.singleton(candidateTable), Collections.emptyList());
         FixtureGlobalRule rule = new FixtureGlobalRule();
         MetaDataReviseEntry<FixtureGlobalRule> reviseEntry = mock(MetaDataReviseEntry.class);
         IndexReviser<FixtureGlobalRule> indexReviser = mock(IndexReviser.class);

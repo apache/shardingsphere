@@ -46,8 +46,7 @@ class EncryptDQLResultDecoratorTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.emptyMap());
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        EncryptDQLResultDecorator decorator =
-                new EncryptDQLResultDecorator(database, mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
+        EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(database, mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
         MergedResult actual = decorator.decorate(mergedResult, mock());
         assertTrue(actual.next());
     }

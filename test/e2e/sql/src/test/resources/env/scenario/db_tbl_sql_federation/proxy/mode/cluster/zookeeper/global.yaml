@@ -40,7 +40,7 @@ sqlParser:
     maximumSize: 1024
     
 sqlFederation:
-  sqlFederationEnabled: true
+  providerType: CALCITE
   allQueryUseSQLFederation: true
   executionPlanCache:
     initialCapacity: 2000

@@ -50,8 +50,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -191,6 +191,7 @@ class ConsistencyCheckJobAPITest {
         assertThat(actual.getCheckFailedTableNames(), is(""));
         assertThat(actual.getIgnoredTableNames(), is(""));
         assertThat(actual.getInventoryFinishedPercentage(), is(50));
+        assertThat(actual.getStatus(), is(JobStatus.EXECUTE_INVENTORY_TASK));
         assertNotNull(actual.getCheckBeginTime());
         assertNull(actual.getCheckEndTime());
     }

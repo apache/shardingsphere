@@ -37,7 +37,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -117,7 +118,7 @@ class FirebirdConnectionResourceManagerTest {
         new FirebirdBlobBinaryProtocolValue().write(payload, expectedBlobContent);
         ArgumentCaptor<Long> blobIdCaptor = ArgumentCaptor.forClass(Long.class);
         verify(payload).writeInt8(blobIdCaptor.capture());
-        assertArrayEquals(expectedBlobContent, FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobIdCaptor.getValue()));
+        assertThat(FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobIdCaptor.getValue()), is(expectedBlobContent));
         FirebirdConnectionResourceManager.getInstance().unregisterConnection(CONNECTION_ID);
         InOrder inOrder = inOrder(statementIdGenerator, transactionIdGenerator, blobIdGenerator, blobHandleGenerator, blobWriteCache, blobReadCache,
                 connectionProtocolVersion, fetchStatementCache, batchStatementManager);

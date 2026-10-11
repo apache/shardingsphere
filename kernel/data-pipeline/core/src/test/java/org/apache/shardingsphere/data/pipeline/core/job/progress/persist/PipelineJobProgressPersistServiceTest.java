@@ -25,6 +25,9 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemM
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.AfterEach;
@@ -54,7 +57,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
+@ExtendWith({AutoMockExtension.class, LogCaptureExtension.class})
+@LogCaptureSettings(suppressOutput = true)
 @StaticMockSettings(PipelineJobRegistry.class)
 class PipelineJobProgressPersistServiceTest {
     
@@ -174,22 +178,36 @@ class PipelineJobProgressPersistServiceTest {
     }
     
     @Test
-    void assertPersistNowHandlesSubsequentExceptionLoggingBranches() {
-        String jobId = "foo_id_exception_follow";
-        int shardingItem = 1;
-        PipelineJobProgressPersistService.add(jobId, shardingItem);
-        PipelineJobProgressPersistContext persistContext = getJobProgressPersistMap().get(jobId).get(shardingItem);
-        persistContext.getUnhandledEventCount().set(-1L);
-        when(PipelineJobRegistry.getItemContext(jobId, shardingItem)).thenReturn(Optional.empty());
-        assertDoesNotThrow(() -> PipelineJobProgressPersistService.persistNow(jobId, shardingItem));
-        assertTrue(persistContext.getFirstExceptionLogged().get());
-        try (MockedStatic<ThreadLocalRandom> ignored = mockStatic(ThreadLocalRandom.class)) {
-            ThreadLocalRandom randomMock = mock(ThreadLocalRandom.class);
-            when(ThreadLocalRandom.current()).thenReturn(randomMock);
-            when(randomMock.nextInt(60)).thenReturn(5, 4);
-            assertDoesNotThrow(() -> PipelineJobProgressPersistService.persistNow(jobId, shardingItem));
-            assertDoesNotThrow(() -> PipelineJobProgressPersistService.persistNow(jobId, shardingItem));
-            verify(randomMock, times(2)).nextInt(60);
+    void assertPersistNowHandlesSubsequentExceptionLoggingBranches(final LogCaptureAssertion logCaptureAssertion) throws ClassNotFoundException {
+        synchronized (Class.forName(PipelineJobProgressPersistService.class.getName() + "$PersistJobContextRunnable")) {
+            String jobId = "foo_id_exception_follow";
+            int shardingItem = 1;
+            PipelineJobProgressPersistService.add(jobId, shardingItem);
+            PipelineJobProgressPersistContext persistContext = getJobProgressPersistMap().get(jobId).get(shardingItem);
+            try {
+                persistContext.getUnhandledEventCount().set(-1L);
+                when(PipelineJobRegistry.getItemContext(jobId, shardingItem)).thenReturn(Optional.empty());
+                assertDoesNotThrow(() -> PipelineJobProgressPersistService.persistNow(jobId, shardingItem));
+                logCaptureAssertion.assertErrorLog(actualException -> {
+                    assertThat(actualException.getClassName(), is(IllegalStateException.class.getName()));
+                    assertThat(actualException.getMessage(), is("Current unhandled event count must be greater than or equal to 0"));
+                });
+                assertTrue(persistContext.getFirstExceptionLogged().get());
+                try (MockedStatic<ThreadLocalRandom> ignored = mockStatic(ThreadLocalRandom.class)) {
+                    ThreadLocalRandom randomMock = mock(ThreadLocalRandom.class);
+                    when(ThreadLocalRandom.current()).thenReturn(randomMock);
+                    when(randomMock.nextInt(60)).thenReturn(5, 4);
+                    assertDoesNotThrow(() -> PipelineJobProgressPersistService.persistNow(jobId, shardingItem));
+                    logCaptureAssertion.assertErrorLog(actualException -> {
+                        assertThat(actualException.getClassName(), is(IllegalStateException.class.getName()));
+                        assertThat(actualException.getMessage(), is("Current unhandled event count must be greater than or equal to 0"));
+                    });
+                    assertDoesNotThrow(() -> PipelineJobProgressPersistService.persistNow(jobId, shardingItem));
+                    verify(randomMock, times(2)).nextInt(60);
+                }
+            } finally {
+                persistContext.getUnhandledEventCount().set(0L);
+            }
         }
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.merge.mysql.type;
 
-import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -37,14 +36,18 @@ import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -67,7 +70,7 @@ class MySQLShardingShowCreateTableMergedResultTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("foo_tbl", "ds.foo_tbl_${0..2}"));
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("bar_tbl", "ds.bar_tbl_${0..2}"));
-        return new ShardingRule(shardingRuleConfig, Maps.of("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+        return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     
     private ShardingSphereSchema createSchema() {
@@ -77,20 +80,26 @@ class MySQLShardingShowCreateTableMergedResultTest {
         return new ShardingSphereSchema("foo_db", mock(DatabaseType.class), tables, Collections.emptyList());
     }
     
+    private SQLStatementContext mockSQLStatementContext(final String... tableNames) {
+        SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getTablesContext().getTableNames()).thenReturn(Arrays.asList(tableNames));
+        return result;
+    }
+    
     @Test
     void assertNextForEmptyQueryResult() throws SQLException {
-        assertFalse(new MySQLShardingShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
+        assertFalse(new MySQLShardingShowCreateTableMergedResult(rule, mockSQLStatementContext("foo_tbl"), schema, Collections.emptyList()).next());
     }
     
     @Test
     void assertNextWithTableRule() throws SQLException {
-        assertTrue(new MySQLShardingShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithTableRule())).next());
+        assertTrue(new MySQLShardingShowCreateTableMergedResult(rule, mockSQLStatementContext("foo_tbl"), schema, Collections.singletonList(mockQueryResultWithTableRule())).next());
     }
     
     @Test
     void assertGetValueWithTableRule() throws SQLException {
         MySQLShardingShowCreateTableMergedResult actual = new MySQLShardingShowCreateTableMergedResult(
-                rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithTableRule()));
+                rule, mockSQLStatementContext("foo_tbl"), schema, Collections.singletonList(mockQueryResultWithTableRule()));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class), is("foo_tbl"));
         assertThat(actual.getValue(2, String.class), is("CREATE TABLE `foo_tbl` (\n"
@@ -124,7 +133,7 @@ class MySQLShardingShowCreateTableMergedResultTest {
     @Test
     void assertGetValueWithDollarSignInTableNames() throws SQLException {
         MySQLShardingShowCreateTableMergedResult actual = new MySQLShardingShowCreateTableMergedResult(
-                buildShardingRuleWithDollarSign(), mock(SQLStatementContext.class), createSchemaWithDollarSign(), Collections.singletonList(mockQueryResultWithDollarSign()));
+                buildShardingRuleWithDollarSign(), mockSQLStatementContext("foo$tbl"), createSchemaWithDollarSign(), Collections.singletonList(mockQueryResultWithDollarSign()));
         assertTrue(actual.next());
         assertThat(actual.getValue(2, String.class), is("CREATE TABLE `foo$tbl` (FOREIGN KEY (`bar_id`) REFERENCES `bar$tbl` (`bar_id`))"));
     }
@@ -161,9 +170,44 @@ class MySQLShardingShowCreateTableMergedResultTest {
     }
     
     @Test
+    void assertGetValueWithSameActualTableNameInDifferentStorageUnits() throws SQLException {
+        MySQLShardingShowCreateTableMergedResult actual = new MySQLShardingShowCreateTableMergedResult(buildShardingRuleWithSameActualTableName(),
+                mockSQLStatementContext("t_order1"), createSchemaWithSameActualTableName(), Collections.singletonList(mockQueryResultWithSameActualTableName()));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, String.class), is("t_order1"));
+        assertThat(actual.getValue(2, String.class), is("CREATE TABLE `t_order1` (`id` int(11) NOT NULL)"));
+    }
+    
+    private ShardingRule buildShardingRuleWithSameActualTableName() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order0", "ds_0.t_order"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order1", "ds_1.t_order"));
+        Map<String, DataSource> dataSources = new HashMap<>(2, 1F);
+        dataSources.put("ds_0", new MockedDataSource());
+        dataSources.put("ds_1", new MockedDataSource());
+        return new ShardingRule(shardingRuleConfig, dataSources, mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+    }
+    
+    private ShardingSphereSchema createSchemaWithSameActualTableName() {
+        Collection<ShardingSphereTable> tables = new LinkedList<>();
+        tables.add(new ShardingSphereTable("t_order0", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("t_order1", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        return new ShardingSphereSchema("foo_db", mock(DatabaseType.class), tables, Collections.emptyList());
+    }
+    
+    private QueryResult mockQueryResultWithSameActualTableName() throws SQLException {
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getColumnCount()).thenReturn(2);
+        when(result.next()).thenReturn(true, false);
+        when(result.getValue(1, Object.class)).thenReturn("t_order");
+        when(result.getValue(2, Object.class)).thenReturn("CREATE TABLE `t_order` (`id` int(11) NOT NULL)");
+        return result;
+    }
+    
+    @Test
     void assertGetValueWithoutTableRule() throws SQLException {
         MySQLShardingShowCreateTableMergedResult actual = new MySQLShardingShowCreateTableMergedResult(
-                mock(ShardingRule.class, RETURNS_DEEP_STUBS), mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithoutTableRule()));
+                mock(ShardingRule.class, RETURNS_DEEP_STUBS), mockSQLStatementContext("foo_tbl"), schema, Collections.singletonList(mockQueryResultWithoutTableRule()));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class), is("foo_tbl"));
         assertThat(actual.getValue(2, String.class), is("CREATE TABLE `foo_tbl` (\n"
@@ -180,7 +224,7 @@ class MySQLShardingShowCreateTableMergedResultTest {
     @Test
     void assertGetValueWithLegacyIndexName() throws SQLException {
         MySQLShardingShowCreateTableMergedResult actual = new MySQLShardingShowCreateTableMergedResult(
-                rule, mock(SQLStatementContext.class), createSchemaWithIndex(),
+                rule, mockSQLStatementContext("foo_tbl"), createSchemaWithIndex(),
                 Collections.singletonList(mockQueryResultWithIndex(IndexMetaDataUtils.getLegacyActualIndexName("foo_idx", "foo_tbl_0"))));
         assertTrue(actual.next());
         assertThat(actual.getValue(2, String.class), is("CREATE TABLE `foo_tbl` (\n"
@@ -192,7 +236,7 @@ class MySQLShardingShowCreateTableMergedResultTest {
     @Test
     void assertGetValueWithShortenedIndexName() throws SQLException {
         MySQLShardingShowCreateTableMergedResult actual = new MySQLShardingShowCreateTableMergedResult(
-                rule, mock(SQLStatementContext.class), createSchemaWithIndex(), Collections.singletonList(mockQueryResultWithIndex(IndexMetaDataUtils.getActualIndexName("foo_idx", "foo_tbl_0"))));
+                rule, mockSQLStatementContext("foo_tbl"), createSchemaWithIndex(), Collections.singletonList(mockQueryResultWithIndex(IndexMetaDataUtils.getActualIndexName("foo_idx", "foo_tbl_0"))));
         assertTrue(actual.next());
         assertThat(actual.getValue(2, String.class), is("CREATE TABLE `foo_tbl` (\n"
                 + "  `id` int(11) NOT NULL,\n"

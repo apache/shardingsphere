@@ -57,7 +57,7 @@ public final class LiteralExpressionConverter {
      * @return sql node
      */
     public static Optional<SqlNode> convert(final LiteralExpressionSegment segment, final RelDataType dataType) {
-        if (null == segment.getLiterals()) {
+        if (segment.isNullLiteral()) {
             return Optional.of(SqlLiteral.createNull(SqlParserPos.ZERO));
         }
         String literalValue = String.valueOf(segment.getLiterals());

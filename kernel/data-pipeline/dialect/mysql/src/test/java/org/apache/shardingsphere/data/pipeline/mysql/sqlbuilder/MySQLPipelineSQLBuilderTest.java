@@ -23,8 +23,12 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeho
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
@@ -35,8 +39,8 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -45,11 +49,14 @@ import static org.mockito.Mockito.when;
 
 class MySQLPipelineSQLBuilderTest {
     
-    private final DialectPipelineSQLBuilder sqlBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
+    private final DialectPipelineSQLBuilder sqlBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
     
     @Test
     void assertBuildInsertSQLOnDuplicateClause() {
-        Optional<String> actual = sqlBuilder.buildInsertOnDuplicateClause(createDataRecord());
+        Optional<String> actual = sqlBuilder.buildInsertOnDuplicateClause(createDataRecord(),
+                new PipelineSQLSegmentBuilder(databaseType, new DatabaseIdentifierContext(IdentifierCasePolicyResolver.resolveProtocol(databaseType))));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("ON DUPLICATE KEY UPDATE `id`=VALUES(`id`),`sc`=VALUES(`sc`),`c1`=VALUES(`c1`),`c2`=VALUES(`c2`),`c3`=VALUES(`c3`)"));
     }
@@ -62,6 +69,13 @@ class MySQLPipelineSQLBuilderTest {
         result.addColumn(new NormalColumn("c2", "", true, false));
         result.addColumn(new NormalColumn("c3", "", true, false));
         return result;
+    }
+    
+    @Test
+    void assertBuildInsertOnDuplicateClauseWithStorageColumnPolicy() {
+        PipelineSQLSegmentBuilder segmentBuilder = new PipelineSQLSegmentBuilder(databaseType, new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newUpperCasePolicySet()));
+        Optional<String> actual = sqlBuilder.buildInsertOnDuplicateClause(createDataRecord(), segmentBuilder);
+        assertThat(actual, is(Optional.of("ON DUPLICATE KEY UPDATE `ID`=VALUES(`ID`),`SC`=VALUES(`SC`),`C1`=VALUES(`C1`),`C2`=VALUES(`C2`),`C3`=VALUES(`C3`)")));
     }
     
     @Test

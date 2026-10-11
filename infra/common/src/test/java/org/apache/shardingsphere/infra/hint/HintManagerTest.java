@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -150,14 +150,6 @@ class HintManagerTest {
     
     @Test
     void assertSetWriteRouteOnly() {
-        try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.setWriteRouteOnly();
-            assertTrue(HintManager.isWriteRouteOnly());
-        }
-    }
-    
-    @Test
-    void assertIsWriteRouteOnly() {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setWriteRouteOnly();
             assertTrue(HintManager.isWriteRouteOnly());

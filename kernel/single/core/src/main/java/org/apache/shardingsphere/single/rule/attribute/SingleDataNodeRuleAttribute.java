@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttri
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map.Entry;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**

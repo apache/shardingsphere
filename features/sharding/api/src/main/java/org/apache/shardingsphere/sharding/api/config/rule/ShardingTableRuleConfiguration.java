@@ -20,24 +20,34 @@ package org.apache.shardingsphere.sharding.api.config.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.validator.ValidShardingTableRuleConfiguration;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 /**
  * Sharding table rule configuration.
  */
+@ValidShardingTableRuleConfiguration(groups = RuleConfigurationTypeValidationGroup.class)
 @RequiredArgsConstructor
 @Getter
 @Setter
 public final class ShardingTableRuleConfiguration {
     
+    @NotBlank
     private final String logicTable;
     
     private final String actualDataNodes;
     
+    @Valid
     private ShardingStrategyConfiguration databaseShardingStrategy;
     
+    @Valid
     private ShardingStrategyConfiguration tableShardingStrategy;
     
+    @Valid
     private ShardingAuditStrategyConfiguration auditStrategy;
 }

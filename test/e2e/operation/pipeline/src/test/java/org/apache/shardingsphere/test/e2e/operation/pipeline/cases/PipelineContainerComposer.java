@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.appender.JdbcUrlAppender;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
@@ -36,12 +37,15 @@ import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussData
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
@@ -173,7 +177,10 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     private String getOperationType(final PipelineJobType<?> jobType, final String status) {
-        return isSupportCommitRollback(jobType) ? (JobStatus.FINISHED.name().equals(status) ? "COMMIT" : "ROLLBACK") : "DROP";
+        if (isSupportCommitRollback(jobType)) {
+            return JobStatus.FINISHED.name().equals(status) ? "COMMIT" : "ROLLBACK";
+        }
+        return "DROP";
     }
     
     private boolean isSupportCommitRollback(final PipelineJobType<?> jobType) {
@@ -216,9 +223,10 @@ public final class PipelineContainerComposer implements AutoCloseable {
         if (Type.NATIVE != E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return;
         }
-        DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
+        DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(databaseType, sourceDataSource);
+        IdentifierScope identifierScope = ProxyDatabaseTypeUtils.isOracleBranch(databaseType) ? IdentifierScope.SCHEMA : IdentifierScope.DATABASE;
         for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
-            containerComposer.cleanUpDatabase(databaseTypeRegistry.formatIdentifierPattern(each));
+            containerComposer.cleanUpDatabase(identifierContext.normalizeStorage(identifierScope, new IdentifierValue(each)));
         }
     }
     
@@ -417,6 +425,23 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     /**
+     * Proxy execute one SQL with log.
+     *
+     * @param sql SQL
+     * @param sleepSeconds sleep seconds
+     * @throws SQLException SQL exception
+     */
+    public void proxyExecuteOneSQLWithLog(final String sql, final int sleepSeconds) throws SQLException {
+        log.info("proxy execute: {}", sql);
+        try (
+                Connection connection = proxyDataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+        Awaitility.await().timeout(Duration.ofMinutes(1L)).pollDelay(Math.max(sleepSeconds, 0L), TimeUnit.SECONDS).until(() -> true);
+    }
+    
+    /**
      * Query for list with log.
      *
      * @param sql SQL
@@ -502,16 +527,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @param sql SQL
      */
     public void assertRecordExists(final DataSource dataSource, final String sql) {
-        boolean recordExist = false;
-        for (int i = 0; i < 5; i++) {
-            List<Map<String, Object>> result = queryForListWithLog(dataSource, sql);
-            recordExist = !result.isEmpty();
-            if (recordExist) {
-                break;
-            }
-            sleepSeconds(2);
-        }
-        assertTrue(recordExist, "Record does not exist");
+        Awaitility.waitAtMost(30L, TimeUnit.SECONDS).pollDelay(0L, TimeUnit.SECONDS).pollInterval(2L, TimeUnit.SECONDS)
+                .until(() -> !queryForListWithLog(dataSource, sql).isEmpty());
     }
     
     /**

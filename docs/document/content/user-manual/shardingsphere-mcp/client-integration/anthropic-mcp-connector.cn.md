@@ -13,11 +13,11 @@ weight = 5
 
 ## 前置条件
 
-- 已按[快速开始](../../quick-start/)启动 HTTP MCP Server。
+- 已按[快速开始](/cn/user-manual/shardingsphere-mcp/quick-start/)启动 HTTP MCP Server。
 - 只暴露可被 Anthropic Messages API 访问且已受保护的远程 HTTPS endpoint。ShardingSphere-MCP 内置 HTTP Server 不提供认证或授权。
 - 远程平台接入时，应将 ShardingSphere-MCP 放在受信网关或反向代理后面，由外层组件提供 TLS 终止、身份认证、
   授权策略、网络访问控制和审计日志。
-  安全边界见[部署说明](../../deployment/)和[配置说明](../../configuration/)。
+  安全边界见[部署说明](/cn/user-manual/shardingsphere-mcp/deployment/)和[配置说明](/cn/user-manual/shardingsphere-mcp/configuration/)。
 - 该受保护的远程 endpoint 需要支持 `Streamable HTTP` 或 `SSE`。
 - 已准备 Anthropic API Key。
 - 当前 MCP Connector 版本要求携带 `anthropic-beta: mcp-client-2025-11-20` 请求头。
@@ -111,17 +111,17 @@ EOF
 - 当前平台侧只支持 tool calls，不提供完整 MCP 资源面接入。
 - 默认情况下 `mcp_toolset` 会启用远程 MCP Server 暴露的全部工具。对于只读助手或受控试用环境，建议显式禁用不需要的写入类工具。
 - 该功能当前要求 `anthropic-beta: mcp-client-2025-11-20` 请求头；如果官方更新 beta 版本，需要同步调整文档与调用配置。
-- 本页只说明 Anthropic 平台 API 接入方式。若希望在 Claude Code CLI 中接入，请参考 [Claude Code](../claude-code/)。
-- 具体可用任务和使用边界见[能力清单](../../capabilities/)。
+- 本页只说明 Anthropic 平台 API 接入方式。若希望在 Claude Code CLI 中接入，请参考 [Claude Code](/cn/user-manual/shardingsphere-mcp/client-integration/claude-code/)。
+- 具体可用任务和使用边界见[能力清单](/cn/user-manual/shardingsphere-mcp/capabilities/)。
 
 ## 参考资料
 
 ### 相关文档
 
-- [快速开始](../../quick-start/)
-- [能力清单](../../capabilities/)
-- [配置说明](../../configuration/)
-- [Claude Code](../claude-code/)
+- [快速开始](/cn/user-manual/shardingsphere-mcp/quick-start/)
+- [能力清单](/cn/user-manual/shardingsphere-mcp/capabilities/)
+- [配置说明](/cn/user-manual/shardingsphere-mcp/configuration/)
+- [Claude Code](/cn/user-manual/shardingsphere-mcp/client-integration/claude-code/)
 
 ### 官方参考
 

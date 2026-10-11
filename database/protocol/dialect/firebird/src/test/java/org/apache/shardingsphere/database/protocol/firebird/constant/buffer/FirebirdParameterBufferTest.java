@@ -19,8 +19,8 @@ package org.apache.shardingsphere.database.protocol.firebird.constant.buffer;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdValueFormat;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -31,8 +31,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -97,13 +97,40 @@ class FirebirdParameterBufferTest {
     }
     
     @Test
+    void assertParseTraditionalBufferWithSizedIntValues() {
+        when(intType.getFormat()).thenReturn(FirebirdValueFormat.SIZED_INT);
+        when(booleanType.getFormat()).thenReturn(FirebirdValueFormat.SIZED_INT);
+        ByteBuf buffer = Unpooled.buffer();
+        buffer.writeByte(1);
+        buffer.writeBytes(new byte[]{1, 1, 7});
+        buffer.writeBytes(new byte[]{2, 2, (byte) 0xD2, 0x04});
+        FirebirdParameterBuffer parameterBuffer = new FirebirdParameterBuffer(createValueOf(), version -> 1 == version);
+        parameterBuffer.parseBuffer(buffer);
+        assertThat(parameterBuffer.<Integer>getValue(intType), is(7));
+        assertThat(parameterBuffer.<Integer>getValue(booleanType), is(1234));
+    }
+    
+    @Test
+    void assertParseExtendedBufferWithSizedIntValue() {
+        when(intType.getFormat()).thenReturn(FirebirdValueFormat.SIZED_INT);
+        ByteBuf buffer = Unpooled.buffer();
+        buffer.writeByte(2);
+        buffer.writeByte(1);
+        buffer.writeIntLE(2);
+        buffer.writeBytes(new byte[]{(byte) 0xD2, 0x04});
+        FirebirdParameterBuffer parameterBuffer = new FirebirdParameterBuffer(createValueOf(), version -> 1 == version);
+        parameterBuffer.parseBuffer(buffer);
+        assertThat(parameterBuffer.<Integer>getValue(intType), is(1234));
+    }
+    
+    @Test
     void assertParseUnsupportedFormat() {
         when(unsupportedType.getFormat()).thenReturn(FirebirdValueFormat.BINARY);
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeByte(1);
         buffer.writeByte(4);
         FirebirdParameterBuffer parameterBuffer = new FirebirdParameterBuffer(createValueOf(), version -> version == 1);
-        assertThrows(FirebirdProtocolException.class, () -> parameterBuffer.parseBuffer(buffer));
+        assertThrows(DatabaseProtocolException.class, () -> parameterBuffer.parseBuffer(buffer));
     }
     
     private Function<Integer, FirebirdParameterBufferType> createValueOf() {

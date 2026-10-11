@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.authority.model;
 
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-
 /**
  * ShardingSphere privileges.
  */
@@ -30,6 +28,5 @@ public interface ShardingSpherePrivileges {
      * @param database database name
      * @return has privileges or not
      */
-    @HighFrequencyInvocation
     boolean hasPrivileges(String database);
 }

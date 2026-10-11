@@ -374,7 +374,7 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
         }
         if (null != ctx.windowSpecification().frameClause()) {
             result.setFrameClause(new CommonExpressionSegment(ctx.windowSpecification().frameClause().start.getStartIndex(), ctx.windowSpecification().frameClause().stop.getStopIndex(),
-                    ctx.windowSpecification().frameClause().getText()));
+                    getOriginalText(ctx.windowSpecification().frameClause())));
         }
         return result;
     }

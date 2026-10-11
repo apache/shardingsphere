@@ -17,7 +17,14 @@
 
 package org.apache.shardingsphere.infra.rule.builder.fixture;
 
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 
+import javax.validation.constraints.NotBlank;
+
 public final class FixtureGlobalRuleConfiguration implements GlobalRuleConfiguration {
+    
+    @Setter
+    @NotBlank(message = "is required")
+    private String name = "fixture";
 }

@@ -19,9 +19,12 @@ package org.apache.shardingsphere.test.infra.framework.extension.log;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.IThrowableProxy;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -58,5 +61,18 @@ public final class LogCaptureAssertion {
         } else {
             assertThat(loggingEvents.get(actualLogEventIndex).getMessage(), is(expectedMessage));
         }
+    }
+    
+    /**
+     * Assert that exactly one ERROR log exists and consume it only after the throwable assertion succeeds.
+     * A failed assertion leaves the log available for output during test cleanup.
+     *
+     * @param throwableAssertion assertion identifying the expected exception
+     */
+    public void assertErrorLog(final Consumer<IThrowableProxy> throwableAssertion) {
+        List<ILoggingEvent> actualErrors = loggingEvents.stream().filter(each -> Level.ERROR == each.getLevel()).collect(Collectors.toList());
+        assertThat(actualErrors.size(), is(1));
+        throwableAssertion.accept(actualErrors.get(0).getThrowableProxy());
+        loggingEvents.remove(actualErrors.get(0));
     }
 }

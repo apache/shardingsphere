@@ -125,8 +125,8 @@ runtimeDatabases:
 ## 连接目标选择
 
 只有当前发行包同时包含匹配的 ShardingSphere 数据库类型连接器和 JDBC 驱动时，`runtimeDatabases` 才能使用对应的可连接 JDBC URL。
-默认发行包包含 MySQL、PostgreSQL、Oracle、SQL Server 和 openGauss 数据库类型连接器，以及 MySQL、PostgreSQL 和 openGauss JDBC 驱动。
-Oracle、SQL Server 或其他未随包提供 JDBC 驱动的目标，需要把匹配的驱动 jar 放入 `plugins/`；只添加驱动并不能支持一个尚无数据库类型连接器的目标。
+默认发行包包含 MySQL、PostgreSQL、Oracle、SQL Server 和 openGauss 数据库类型连接器，以及 PostgreSQL 和 openGauss JDBC 驱动。
+MySQL、Oracle、SQL Server 或其他未随包提供 JDBC 驱动的目标，需要把匹配的驱动 jar 放入 `plugins/`；只添加驱动并不能支持一个尚无数据库类型连接器的目标。
 用户能看到的数据库对象和可执行的治理任务取决于连接目标。
 
 ### 连接 ShardingSphere-Proxy 逻辑库
@@ -144,7 +144,7 @@ Proxy 可见元数据可能不同于底层物理库的完整结构；涉及元�
 此时用户看到的是目标数据库自身元数据，不代表 ShardingSphere 规则状态。
 数据加密、数据脱敏等依赖 ShardingSphere 规则的任务不适用于数据库直连。
 
-不同连接目标支持的自然语言任务见[能力清单](../capabilities/)。
+不同连接目标支持的自然语言任务见[能力清单](/cn/user-manual/shardingsphere-mcp/capabilities/)。
 
 ## 插件目录
 

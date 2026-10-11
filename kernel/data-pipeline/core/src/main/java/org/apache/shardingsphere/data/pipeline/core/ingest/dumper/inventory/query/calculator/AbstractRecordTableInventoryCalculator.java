@@ -24,9 +24,10 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCanceli
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.InventoryColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.PipelineDatabaseResources;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.StreamingRangeType;
+import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.exact.IntegerPositionHandler;
 import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineInventoryCalculateSQLBuilder;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -52,11 +54,12 @@ import java.util.Optional;
  * @param <S> the type of result
  * @param <C> the type of record
  */
-@HighFrequencyInvocation
 @RequiredArgsConstructor
 public abstract class AbstractRecordTableInventoryCalculator<S, C> extends AbstractStreamingTableInventoryCalculator<S> {
     
     private static final int DEFAULT_STREAMING_CHUNK_COUNT = 100;
+    
+    private static final IntegerPositionHandler INTEGER_POSITION_HANDLER = new IntegerPositionHandler();
     
     private final int chunkSize;
     
@@ -68,6 +71,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
         this(chunkSize, DEFAULT_STREAMING_CHUNK_COUNT, streamingRangeType);
     }
     
+    @HighFrequencyInvocation
     @Override
     public Optional<S> calculateChunk(final TableInventoryCalculateParameter param) {
         List<C> records = calculateChunk0(param);
@@ -283,13 +287,13 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
                     () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Unique keys values range is null.")));
             int parameterIndex = 1;
             if (null != range.getLowerBound()) {
-                preparedStatement.setObject(parameterIndex++, range.getLowerBound());
+                setParameter(preparedStatement, parameterIndex++, range.getLowerBound());
             }
             if (null != range.getUpperBound()) {
-                preparedStatement.setObject(parameterIndex++, range.getUpperBound());
+                setParameter(preparedStatement, parameterIndex++, range.getUpperBound());
             }
             if (StreamingRangeType.SMALL == streamingRangeType) {
-                preparedStatement.setObject(parameterIndex, chunkSize * streamingChunkCount);
+                setParameter(preparedStatement, parameterIndex, chunkSize * streamingChunkCount);
             }
         } else if (queryType == QueryType.POINT_QUERY) {
             Collection<Object> uniqueKeysValues = param.getUniqueKeysValues();
@@ -297,18 +301,26 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
                     () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Unique keys values is null.")));
             int parameterIndex = 1;
             for (Object each : uniqueKeysValues) {
-                preparedStatement.setObject(parameterIndex++, each);
+                setParameter(preparedStatement, parameterIndex++, each);
             }
             if (!param.getShardingColumnsNames().isEmpty()) {
                 List<Object> shardingColumnsValues = param.getShardingColumnsValues();
                 ShardingSpherePreconditions.checkNotNull(shardingColumnsValues,
                         () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Sharding columns values is null when names not empty.")));
                 for (Object each : shardingColumnsValues) {
-                    preparedStatement.setObject(parameterIndex++, each);
+                    setParameter(preparedStatement, parameterIndex++, each);
                 }
             }
         } else {
             throw new UnsupportedOperationException("Query type: " + queryType);
+        }
+    }
+    
+    private void setParameter(final PreparedStatement preparedStatement, final int parameterIndex, final Object value) throws SQLException {
+        if (value instanceof BigInteger) {
+            INTEGER_POSITION_HANDLER.setPreparedStatementValue(preparedStatement, parameterIndex, (BigInteger) value);
+        } else {
+            preparedStatement.setObject(parameterIndex, value);
         }
     }
     

@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.gen
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedColumnDefinition;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -74,6 +74,12 @@ public final class ColumnDefinitionAssert {
             assertThat(assertContext.getText("Column definition agg type assertion error: "), actual.getAggType(), is(expected.getAggType()));
         } else {
             assertNull(actual.getAggType(), assertContext.getText("Column definition agg type should not exist."));
+        }
+        if (null != expected.getCharsetName()) {
+            assertThat(assertContext.getText("Column definition charset assertion error: "), actual.getCharsetName().orElse(""), is(expected.getCharsetName()));
+        }
+        if (null != expected.getCollateName()) {
+            assertThat(assertContext.getText("Column definition collation assertion error: "), actual.getCollateName().orElse(""), is(expected.getCollateName()));
         }
     }
     

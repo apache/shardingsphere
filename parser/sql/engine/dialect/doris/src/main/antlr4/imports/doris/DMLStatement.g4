@@ -154,7 +154,9 @@ queryPrimary
     ;
 
 querySpecification
-    : SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause? windowClause?
+    // DORIS CHANGED BEGIN
+    : SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause?
+    // DORIS CHANGED END
     ;
 
 call
@@ -321,7 +323,7 @@ loadXmlStatement
       (REPLACE | IGNORE)?
       INTO TABLE tableName
       (CHARACTER SET identifier)?
-      (ROWS IDENTIFIED BY LT_ string_ GT_)?
+      (ROWS IDENTIFIED BY string_)?
       ( IGNORE numberLiterals (LINES | ROWS) )?
       fieldOrVarSpec?
       (setAssignmentsClause)?
@@ -436,7 +438,7 @@ unqualifiedShorthand
     ;
 
 qualifiedShorthand
-    : (identifier DOT_)? identifier DOT_ASTERISK_
+    : (identifier DOT_)? identifier (DOT_ASTERISK_ | DOT_ ASTERISK_)
     ;
 
 fromClause
@@ -532,14 +534,6 @@ limitRowCount
 
 limitOffset
     : numberLiterals | parameterMarker
-    ;
-
-windowClause
-    : WINDOW windowItem (COMMA_ windowItem)*
-    ;
-
-windowItem
-    : identifier AS windowSpecification
     ;
 
 subquery

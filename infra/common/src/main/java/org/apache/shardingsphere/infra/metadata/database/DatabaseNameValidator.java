@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.database;
 
 import com.google.common.base.Preconditions;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

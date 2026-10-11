@@ -17,16 +17,24 @@
 
 package org.apache.shardingsphere.single.config;
 
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SingleRuleConfigurationTest {
@@ -51,5 +59,32 @@ class SingleRuleConfigurationTest {
         assertTrue(actual.contains("bar_tbl"));
         assertTrue(actual.contains("FOO_TBL"));
         assertTrue(actual.contains("BAR_tbl"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("validRuleConfigurationArguments")
+    void assertValidateValidRuleConfiguration(final String name, final SingleRuleConfiguration ruleConfig) {
+        assertDoesNotThrow(() -> RuleConfigurationValidator.validate(ruleConfig));
+    }
+    
+    private static Stream<Arguments> validRuleConfigurationArguments() {
+        return Stream.of(
+                Arguments.of("Empty tables", new SingleRuleConfiguration(Collections.emptyList(), null)),
+                Arguments.of("Single table", new SingleRuleConfiguration(Collections.singleton("foo_db.foo_tbl"), "foo_db")),
+                Arguments.of("Multiple tables", new SingleRuleConfiguration(Arrays.asList("foo_db.foo_tbl", "bar_db.bar_tbl"), null)));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidRuleConfigurationArguments")
+    void assertValidateInvalidRuleConfiguration(final String name, final SingleRuleConfiguration ruleConfig) {
+        assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+    }
+    
+    private static Stream<Arguments> invalidRuleConfigurationArguments() {
+        return Stream.of(
+                Arguments.of("Null tables", new SingleRuleConfiguration(null, null)),
+                Arguments.of("Null table", new SingleRuleConfiguration(Collections.singleton(null), null)),
+                Arguments.of("Empty table", new SingleRuleConfiguration(Collections.singleton(""), null)),
+                Arguments.of("Blank table", new SingleRuleConfiguration(Collections.singleton(" "), null)));
     }
 }

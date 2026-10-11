@@ -81,4 +81,12 @@ class WeightLoadBalanceAlgorithmTest {
         loadBalanceAlgorithm.getTargetName("ds", Arrays.asList("test_read_ds_1", "test_read_ds_1"));
         assertThat(loadBalanceAlgorithm.getTargetName("ds", Collections.singletonList("test_read_ds_1")), is("test_read_ds_1"));
     }
+    
+    @Test
+    void assertGetAvailableTargetNameWhenSameSizeTargetChanged() {
+        LoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(LoadBalanceAlgorithm.class,
+                "WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_0", "1"), new Property("test_read_ds_1", "1E-300"), new Property("test_read_ds_2", "1E300")));
+        loadBalanceAlgorithm.getTargetName("ds", Arrays.asList("test_read_ds_0", "test_read_ds_2"));
+        assertThat(loadBalanceAlgorithm.getTargetName("ds", Arrays.asList("test_read_ds_0", "test_read_ds_1")), is("test_read_ds_0"));
+    }
 }

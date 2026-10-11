@@ -23,10 +23,11 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -73,7 +74,7 @@ class SQLBuilderEngineTest {
     @Test
     void assertBuildSQLWithMultipleTokens() {
         SQLBuilderEngine sqlBuilderEngine = new SQLBuilderEngine("SELECT * FROM tbl WHERE col1=? AND col2=?",
-                java.util.Arrays.asList(new SQLTokenFixture(14, 17), new SQLTokenFixture(28, 31)));
+                Arrays.asList(new SQLTokenFixture(14, 17), new SQLTokenFixture(28, 31)));
         assertThat(sqlBuilderEngine.buildSQL(), is("SELECT * FROM XXXWHERE col1XXXND col2=?"));
     }
     

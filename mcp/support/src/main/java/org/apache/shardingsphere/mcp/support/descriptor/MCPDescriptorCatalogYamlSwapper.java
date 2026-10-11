@@ -26,11 +26,12 @@ import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceAnnotati
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPResourceAnnotations;
+import org.apache.shardingsphere.mcp.support.configuration.MCPConfigurationValidator;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPResourceNavigationDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolAnnotations;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolDescript
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolRuntimeDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPUriVariableDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlShardingSphereMCPResourceMetadata;
-import org.apache.shardingsphere.mcp.support.configuration.MCPConfigurationValidator;
 
 import java.util.Collection;
 import java.util.Collections;

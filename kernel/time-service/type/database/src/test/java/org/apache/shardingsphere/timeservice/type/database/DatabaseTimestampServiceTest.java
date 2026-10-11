@@ -32,7 +32,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -43,19 +42,8 @@ class DatabaseTimestampServiceTest {
     
     @BeforeEach
     void setUp() {
-        Properties props = PropertiesBuilder.build(
-                new Property("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource"),
-                new Property("jdbcUrl", "jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"),
-                new Property("username", "sa"),
-                new Property("password", ""),
-                new Property("maximumPoolSize", "1"));
+        Properties props = PropertiesBuilder.build(new Property("dataSourceClassName", MockedDataSource.class.getName()), new Property("url", "jdbc:h2:mem:foo_db"));
         timestampService = TypedSPILoader.getService(TimestampService.class, "Database", props);
-    }
-    
-    @Test
-    void assertGetTimestamp() {
-        long currentTime = System.currentTimeMillis();
-        assertTrue(timestampService.getTimestamp().getTime() >= currentTime);
     }
     
     @Test

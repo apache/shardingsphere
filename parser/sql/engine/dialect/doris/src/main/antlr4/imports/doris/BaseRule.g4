@@ -144,6 +144,9 @@ identifierKeywordsUnambiguous
     | ANN
     | ANY
     | ARRAY
+    // DORIS ADDED BEGIN
+    | ARRAY_LAST
+    // DORIS ADDED END
     | AT
     | ATTRIBUTE
     | AUTOEXTEND_SIZE
@@ -159,6 +162,7 @@ identifierKeywordsUnambiguous
     // DORIS ADDED END
     | BITMAP_UNION
     // DORIS ADDED BEGIN
+    | BITOR
     | BITXOR
     // DORIS ADDED END
     | BLOCK
@@ -250,6 +254,9 @@ identifierKeywordsUnambiguous
     | EXTENDED
     | EXTENT_SIZE
     // DORIS ADDED BEGIN
+    | EXTERNAL
+    // DORIS ADDED END
+    // DORIS ADDED BEGIN
     | EXTRACT_URL_PARAMETER
     // DORIS ADDED END
     | FAILED_LOGIN_ATTEMPTS
@@ -274,6 +281,7 @@ identifierKeywordsUnambiguous
     | GROUPS
     | HASH
     | HDFS
+    | HLL
     | HLL_UNION
     | HISTOGRAM
     | HISTORY
@@ -381,6 +389,7 @@ identifierKeywordsUnambiguous
     | NEXT
     | NGRAM_BF
     | NODEGROUP
+    | NOW
     | NOWAIT
     | NO_WAIT
     | NULLS
@@ -795,7 +804,7 @@ delimiterName
     ; 
 
 userIdentifierOrText
-    : textOrIdentifier (AT_ textOrIdentifier)?
+    : textOrIdentifier (AT_ (textOrIdentifier (DOT_ textOrIdentifier)*)?)?
     ;
 
 username
@@ -911,7 +920,7 @@ logName
     ;
 
 roleName
-    : roleIdentifierOrText (AT_ textOrIdentifier)?
+    : roleIdentifierOrText (AT_ textOrIdentifier (DOT_ textOrIdentifier)*)?
     ;
 
 roleIdentifierOrText
@@ -1045,6 +1054,9 @@ simpleExpr
     // DORIS ADDED BEGIN
     | lambdaExpression
     // DORIS ADDED END
+    // DORIS ADDED BEGIN
+    | columnRef LBT_ expr RBT_
+    // DORIS ADDED END
     ;
 
 arrayExpression
@@ -1091,7 +1103,11 @@ aggregationExpression
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? aggregationExpression? collateClause? separatorName? RP_ overClause?
+    // DORIS CHANGED BEGIN
+    : distinctWindowAggregationFunctionName LP_ distinct aggregationExpression? collateClause? separatorName? RP_ overClause
+    | aggregationFunctionName LP_ distinct aggregationExpression? collateClause? separatorName? RP_
+    | aggregationFunctionName LP_ all? aggregationExpression? collateClause? separatorName? RP_ overClause?
+    // DORIS CHANGED END
     ;
 
 // DORIS ADDED BEGIN
@@ -1117,7 +1133,7 @@ jsonTableColumns
 jsonTableColumn
     : name FOR ORDINALITY
     | name dataType PATH path (NULL | DEFAULT string_ | ERROR) ON (EMPTY | ERROR)
-    | name dataType EXISTS PATH string_ path
+    | name dataType EXISTS PATH path
     | NESTED PATH? path COLUMNS
     ;
 
@@ -1134,8 +1150,14 @@ aggregationFunctionName
     ;
 
 // DORIS ADDED BEGIN
+distinctWindowAggregationFunctionName
+    : COUNT | SUM | GROUP_CONCAT
+    ;
+// DORIS ADDED END
+
+// DORIS ADDED BEGIN
 bitwiseBinaryFunctionName
-    : BITXOR
+    : BITOR | BITXOR
     ;
 // DORIS ADDED END
 
@@ -1143,12 +1165,22 @@ distinct
     : DISTINCT
     ;
 
+// DORIS ADDED BEGIN
+all
+    : ALL
+    ;
+// DORIS ADDED END
+
 overClause
-    : OVER (windowSpecification | identifier)
+    // DORIS CHANGED BEGIN
+    : OVER windowSpecification
+    // DORIS CHANGED END
     ;
 
 windowSpecification
-    : LP_ identifier? (PARTITION BY expr (COMMA_ expr)*)? orderByClause? frameClause? RP_
+    // DORIS CHANGED BEGIN
+    : LP_ (PARTITION BY expr (COMMA_ expr)*)? orderByClause? frameClause? RP_
+    // DORIS CHANGED END
     ;
 
 frameClause
@@ -1224,7 +1256,9 @@ windowFunction
     ;
 
 windowingClause
-    : OVER (windowName=identifier | windowSpecification)
+    // DORIS CHANGED BEGIN
+    : OVER windowSpecification
+    // DORIS CHANGED END
     ;
 
 leadLagInfo
@@ -1266,7 +1300,7 @@ castType
     | castTypeName = JSON
     | castTypeName = REAL
     | castTypeName = DOUBLE PRECISION
-    | castTypeName = FLOAT precision?
+    | castTypeName = FLOAT (fieldLength | precision)?
     // DORIS ADDED BEGIN
     | castTypeName = STRING
     | castTypeName = INT
@@ -1332,7 +1366,7 @@ shorthandRegularFunction
 
 completeRegularFunction
     // DORIS CHANGED BEGIN
-    : regularFunctionName (LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_) indexAlias? overClause?
+    : regularFunctionName (LP_ (ALL expr | expr (COMMA_ expr)* | ASTERISK_)? RP_) indexAlias? overClause?
     // DORIS CHANGED END
     ;
 
@@ -1409,7 +1443,7 @@ orderByItem
     ;
 
 dataType
-    : dataTypeName = (INTEGER | INT | TINYINT | SMALLINT | MIDDLEINT | MEDIUMINT | BIGINT) fieldLength? fieldOptions?
+    : dataTypeName = (INTEGER | INT | INT1 | INT2 | INT3 | INT4 | INT8 | TINYINT | SMALLINT | MIDDLEINT | MEDIUMINT | BIGINT) fieldLength? fieldOptions?
     | (dataTypeName = REAL | dataTypeName = DOUBLE PRECISION?) precision? fieldOptions?
     | dataTypeName = (FLOAT | DECIMAL | DEC | NUMERIC | FIXED) (fieldLength | precision)? fieldOptions?
     | dataTypeName = BIT fieldLength?
@@ -1421,7 +1455,10 @@ dataType
     | (dataTypeName = NCHAR | dataTypeName = NATIONAL_CHAR) fieldLength? BINARY?
     | dataTypeName = (SIGNED | SIGNED_INT | SIGNED_INTEGER)
     | dataTypeName = BINARY fieldLength?
-    | (dataTypeName = CHAR_VARYING | dataTypeName = CHARACTER_VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
+    // DORIS CHANGED BEGIN
+    | (dataTypeName = CHAR_VARYING | dataTypeName = CHARACTER_VARYING) fieldLength charsetWithOptBinary?
+    | dataTypeName = VARCHAR fieldLength? charsetWithOptBinary?
+    // DORIS CHANGED END
     | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL_CHAR_VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
     | dataTypeName = VARBINARY fieldLength?
     | dataTypeName = YEAR fieldLength? fieldOptions?
@@ -1434,11 +1471,11 @@ dataType
     | dataTypeName = BLOB fieldLength?
     | dataTypeName = (MEDIUMBLOB | LONGBLOB)
     | dataTypeName = LONG VARBINARY
-    | dataTypeName = (LONG_CHAR_VARYING | LONG_VARCHAR)? charsetWithOptBinary?
+    | dataTypeName = (LONG_CHAR_VARYING | LONG_VARCHAR) charsetWithOptBinary?
     | dataTypeName = TINYTEXT charsetWithOptBinary?
     | dataTypeName = TEXT fieldLength? charsetWithOptBinary?
     | dataTypeName = MEDIUMTEXT charsetWithOptBinary?
-    | dataTypeName = LONGTEXT charsetWithOptBinary?
+    | dataTypeName = (LONG | LONGTEXT) charsetWithOptBinary?
     | dataTypeName = ENUM stringList charsetWithOptBinary?
     | dataTypeName = SET stringList charsetWithOptBinary?
     | dataTypeName = (SERIAL | JSON | GEOMETRY | GEOMCOLLECTION | GEOMETRYCOLLECTION | POINT | MULTIPOINT | LINESTRING | MULTILINESTRING | POLYGON | MULTIPOLYGON)
@@ -1452,6 +1489,9 @@ dataType
     // DORIS ADDED END
     // DORIS ADDED BEGIN
     | dataTypeName = BITMAP
+    // DORIS ADDED END
+    // DORIS ADDED BEGIN
+    | dataTypeName = HLL
     // DORIS ADDED END
     ;
 
@@ -1517,7 +1557,7 @@ defaultCharset
     ;
 
 now
-    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP) (LP_ NUMBER_? RP_)?
+    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW) (LP_ NUMBER_? RP_)?
     ;
 
 columnFormat

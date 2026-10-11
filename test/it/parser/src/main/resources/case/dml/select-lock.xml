@@ -345,4 +345,30 @@
             </right>
         </combine>
     </select>
+    <select sql-case-id="select_lock_with_order_by_after_for_update_oracle" parameters="1">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="39">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="39">
+                    <left>
+                        <column name="order_id" start-index="28" stop-index="35" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="39" stop-index="39" />
+                        <parameter-marker-expression parameter-index="0" start-index="39" stop-index="39" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <lock start-index="41" stop-index="57" />
+        <order-by start-index="59" stop-index="80">
+            <column-item name="order_id" order-direction="DESC" start-index="68" stop-index="75" />
+        </order-by>
+    </select>
 </sql-parser-test-cases>

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.SQLCases;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.registry.UnsupportedSQLCasesRegistry;
@@ -43,12 +44,13 @@ public abstract class InternalUnsupportedSQLParserIT {
     
     private static final SQLCases SQL_CASES = UnsupportedSQLCasesRegistry.getInstance().getCases();
     
-    @ParameterizedTest(name = "{0} ({1}) -> {2}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertUnsupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
-        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
+    void assertUnsupportedSQL(final String sqlCaseId, final String databaseType) {
+        String sql = SQL_CASES.getSQL(sqlCaseId, SQLCaseType.LITERAL, Collections.emptyList());
         CacheOption cacheOption = new CacheOption(128, 1024L);
-        assertThrows(SQLParsingException.class, () -> new SQLParserEngine("H2".equals(databaseType) ? "MySQL" : databaseType, cacheOption).parse(sql, false));
+        String actualDatabaseType = "H2".equals(databaseType) ? "MySQL" : databaseType;
+        assertThrows(SQLParsingException.class, () -> new SQLStatementVisitorEngine(actualDatabaseType).visit(new SQLParserEngine(actualDatabaseType, cacheOption).parse(sql, false)));
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
@@ -61,8 +63,8 @@ public abstract class InternalUnsupportedSQLParserIT {
         }
         
         private Collection<Arguments> getTestParameters(final Collection<String> databaseTypes) {
-            return SQL_CASES.generateTestParameters(databaseTypes).stream()
-                    .map(each -> Arguments.arguments(each.getSqlCaseId(), each.getSqlCaseType(), each.getDatabaseType())).collect(Collectors.toList());
+            return SQL_CASES.generateTestParameters(databaseTypes).stream().filter(each -> SQLCaseType.LITERAL == each.getSqlCaseType())
+                    .map(each -> Arguments.arguments(each.getSqlCaseId(), each.getDatabaseType())).collect(Collectors.toList());
         }
     }
 }

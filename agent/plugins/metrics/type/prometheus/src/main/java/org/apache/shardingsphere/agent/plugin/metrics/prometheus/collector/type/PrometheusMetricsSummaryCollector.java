@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
 import io.prometheus.client.Summary;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.SummaryMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 
 /**
  * Metrics summary collector of Prometheus.

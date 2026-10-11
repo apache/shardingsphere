@@ -29,10 +29,12 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedViewColumn;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.view.CreateViewStatementTestCase;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Create view statement assert.
@@ -65,6 +67,13 @@ public final class CreateViewStatementAssert {
             ExpectedViewColumn expectedColumn = expected.getColumns().get(count);
             IdentifierValueAssert.assertIs(assertContext, each.getColumn().getIdentifier(), expectedColumn, "View column");
             SQLSegmentAssert.assertIs(assertContext, each, expectedColumn);
+            if (null != expectedColumn.getComment()) {
+                assertTrue(each.getComment().isPresent(), assertContext.getText(String.format("View column `%s` should have comment", expectedColumn.getName())));
+                assertThat(assertContext.getText(String.format("View column `%s` comment assertion error: ", expectedColumn.getName())),
+                        each.getComment().get(), is(expectedColumn.getComment()));
+            } else {
+                assertFalse(each.getComment().isPresent(), assertContext.getText(String.format("View column `%s` should not have comment", expectedColumn.getName())));
+            }
             count++;
         }
     }

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.database.exception.mysql.mapper;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.TooManyConnectionsException;
-import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.exception.core.exception.data.InsertColumnsAndValuesMismatchedException;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.column.ColumnNotFoundException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseDropNotExistsException;
@@ -57,9 +57,9 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
     @Override
     public SQLException convert(final SQLDialectException sqlDialectException) {
         if (sqlDialectException instanceof UnknownDatabaseException) {
-            return null != ((UnknownDatabaseException) sqlDialectException).getDatabaseName()
-                    ? toSQLException(MySQLVendorError.ER_BAD_DB_ERROR, ((UnknownDatabaseException) sqlDialectException).getDatabaseName())
-                    : toSQLException(MySQLVendorError.ER_NO_DB_ERROR);
+            return null == ((UnknownDatabaseException) sqlDialectException).getDatabaseName()
+                    ? toSQLException(MySQLVendorError.ER_NO_DB_ERROR)
+                    : toSQLException(MySQLVendorError.ER_BAD_DB_ERROR, ((UnknownDatabaseException) sqlDialectException).getDatabaseName());
         }
         if (sqlDialectException instanceof NoDatabaseSelectedException) {
             return toSQLException(MySQLVendorError.ER_NO_DB_ERROR);

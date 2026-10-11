@@ -48,5 +48,5 @@ tableRule
     ;
 
 databaseName
-    : IDENTIFIER_
+    : identifier
     ;

@@ -21,9 +21,9 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
@@ -137,11 +137,11 @@ public abstract class SQLRewriterIT {
     private Collection<SQLRewriteUnit> createSQLRewriteUnits(final SQLRewriteResult sqlRewriteResult) {
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singleton(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit())
-                : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
+                : ((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits().values();
     }
     
-    private RewriteScenarioContext getCachedRewriteScenarioContext(final SQLRewriteEngineTestParameters testParams, final DatabaseType databaseType,
-                                                                   final SQLStatement sqlStatement) throws IOException, SQLException {
+    private RewriteScenarioContext getCachedRewriteScenarioContext(final SQLRewriteEngineTestParameters testParams,
+                                                                   final DatabaseType databaseType, final SQLStatement sqlStatement) throws IOException, SQLException {
         String cacheKey = getRewriteScenarioCacheKey(testParams, sqlStatement);
         RewriteScenarioContext result = REWRITE_SCENARIO_CONTEXT_CACHE.get(cacheKey);
         if (null != result) {
@@ -184,7 +184,7 @@ public abstract class SQLRewriterIT {
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.emptyMap(), createStorageUnits(databaseConfig, databaseType));
         String databaseName = null == rootConfig.getDatabaseName() ? DefaultDatabase.LOGIC_NAME : rootConfig.getDatabaseName();
-        String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
+        String schemaName = DefaultSchemaNameResolver.resolveProtocol(databaseType, databaseName);
         Collection<ShardingSphereRule> rules = createDatabaseRules(databaseConfig, schemaName, sqlStatement, databaseType);
         ConfigurationProperties props = createConfigurationProperties(rootConfig);
         RuleMetaData ruleMetaData = new RuleMetaData(rules);

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqltranslator.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
 
 import java.util.Properties;
 
@@ -30,6 +31,7 @@ import java.util.Properties;
 @Getter
 public final class SQLTranslatorRuleConfiguration implements GlobalRuleConfiguration {
     
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.sqltranslator.spi.SQLTranslator")
     private final String type;
     
     private final Properties props;

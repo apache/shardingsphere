@@ -22,16 +22,15 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Objects;
-import java.util.stream.Stream;
-
 import javax.xml.XMLConstants;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * JDBC repository SQL Loader.
@@ -79,7 +78,9 @@ public final class JDBCRepositorySQLLoader {
         XMLInputFactory result = XMLInputFactory.newFactory();
         result.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         result.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
-        result.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        if (result.isPropertySupported(XMLConstants.ACCESS_EXTERNAL_DTD)) {
+            result.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        }
         result.setXMLResolver((publicId, systemId, baseUri, namespace) -> {
             throw new XMLStreamException("External XML resources are not allowed.");
         });

@@ -72,7 +72,7 @@ public final class InsertStatementBindingContext implements SQLStatementContext 
     }
     
     private List<InsertValueContext> getInsertValueContexts(final List<Object> params, final AtomicInteger paramsOffset, final List<List<ExpressionSegment>> valueExpressions) {
-        List<InsertValueContext> result = new LinkedList<>();
+        List<InsertValueContext> result = new ArrayList<>(valueExpressions.size());
         for (Collection<ExpressionSegment> each : valueExpressions) {
             InsertValueContext insertValueContext = new InsertValueContext(each, params, paramsOffset.get());
             result.add(insertValueContext);

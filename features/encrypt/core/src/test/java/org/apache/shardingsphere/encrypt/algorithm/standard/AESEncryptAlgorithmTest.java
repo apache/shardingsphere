@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.standard;
 
+import org.apache.shardingsphere.encrypt.algorithm.engine.EncryptAlgorithmEngine;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
@@ -26,8 +27,8 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 
@@ -37,12 +38,19 @@ class AESEncryptAlgorithmTest {
     
     @BeforeEach
     void setUp() {
-        encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1")));
+        encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "sha-1")));
     }
     
     @Test
     void assertEncrypt() {
-        assertThat(encryptAlgorithm.encrypt("test", mock(AlgorithmSQLContext.class)), is("dSpPiyENQGDUXMKFMJPGWA=="));
+        assertThat(encrypt(encryptAlgorithm, "test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
+    }
+    
+    @Test
+    void assertEncryptWithHexEncoder() {
+        EncryptAlgorithm encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, "AES",
+                PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1"), new Property("aes-encoder", "hex")));
+        assertThat(encrypt(encryptAlgorithm, "test"), is("752A4F8B210D4060D45CC2853093C658"));
     }
     
     @Test
@@ -52,7 +60,14 @@ class AESEncryptAlgorithmTest {
     
     @Test
     void assertDecrypt() {
-        assertThat(encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==", mock(AlgorithmSQLContext.class)), is("test"));
+        assertThat(decrypt(encryptAlgorithm, "dSpPiyENQGDUXMKFMJPGWA=="), is("test"));
+    }
+    
+    @Test
+    void assertDecryptWithHexEncoder() {
+        EncryptAlgorithm encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, "AES",
+                PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1"), new Property("aes-encoder", "HEX")));
+        assertThat(decrypt(encryptAlgorithm, "752A4F8B210D4060D45CC2853093C658"), is("test"));
     }
     
     @Test
@@ -62,5 +77,21 @@ class AESEncryptAlgorithmTest {
         assertThat(actual.getProps().size(), is(2));
         assertThat(actual.getProps().getProperty("aes-key-value"), is("test"));
         assertThat(actual.getProps().getProperty("digest-algorithm-name"), is("SHA-1"));
+    }
+    
+    @Test
+    void assertToConfigurationWithEncoder() {
+        EncryptAlgorithm encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, "AES",
+                PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1"), new Property("aes-encoder", "BASE64")));
+        AlgorithmConfiguration actual = encryptAlgorithm.toConfiguration();
+        assertThat(actual.getProps().getProperty("aes-encoder"), is("BASE64"));
+    }
+    
+    private Object encrypt(final EncryptAlgorithm encryptAlgorithm, final Object plainValue) {
+        return EncryptAlgorithmEngine.encrypt(encryptAlgorithm, plainValue, mock(AlgorithmSQLContext.class), EncryptAlgorithmEngine.findEncoder(encryptAlgorithm).orElse(null), false);
+    }
+    
+    private Object decrypt(final EncryptAlgorithm encryptAlgorithm, final Object cipherValue) {
+        return EncryptAlgorithmEngine.decrypt(encryptAlgorithm, cipherValue, mock(AlgorithmSQLContext.class), EncryptAlgorithmEngine.findEncoder(encryptAlgorithm).orElse(null));
     }
 }

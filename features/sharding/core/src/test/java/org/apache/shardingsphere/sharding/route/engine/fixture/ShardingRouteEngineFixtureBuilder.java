@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sharding.route.engine.fixture;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -197,7 +197,8 @@ public final class ShardingRouteEngineFixtureBuilder {
                 "t_order_item_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_item_${user_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put("t_user_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_user_${user_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put("core_hint_fixture", new AlgorithmConfiguration("CORE.HINT.FIXTURE", new Properties()));
-        return new ShardingRule(shardingRuleConfig, Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource(), "main", new MockedDataSource()), mock(ComputeNodeInstanceContext.class),
+        return new ShardingRule(shardingRuleConfig, ImmutableMap.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource(), "main", new MockedDataSource()),
+                mock(ComputeNodeInstanceContext.class),
                 Collections.emptyList());
     }
     
@@ -299,7 +300,7 @@ public final class ShardingRouteEngineFixtureBuilder {
     }
     
     private static Map<String, DataSource> createDataSources() {
-        return Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource());
+        return ImmutableMap.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource());
     }
     
     /**

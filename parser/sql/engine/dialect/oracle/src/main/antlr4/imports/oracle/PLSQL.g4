@@ -115,6 +115,21 @@ packageInitialization
     : BEGIN plsqlStatements (EXCEPTION exceptionHandler+)?
     ;
 
+createTypeBody
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? TYPE BODY plsqlTypeBodySource
+    ;
+
+plsqlTypeBodySource
+    : typeName (IS | AS) typeBodyElement+ END typeName? SEMI_?
+    ;
+
+typeBodyElement
+    : (MEMBER | STATIC)? FUNCTION function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? returnDateType (IS | AS) declareSection? body
+    | (MEMBER | STATIC)? PROCEDURE procedureName (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? (IS | AS) declareSection? body
+    | (FINAL | INSTANTIABLE)? CONSTRUCTOR FUNCTION function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? RETURN SELF AS RESULT (IS | AS) declareSection? body
+    | (MAP | ORDER) MEMBER FUNCTION function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? returnDateType (IS | AS) declareSection? body
+    ;
+
 plsqlProcedureSource
     : (schemaName DOT_)? procedureName (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? sharingClause?
     ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body)
@@ -154,7 +169,8 @@ plsqlStatements
 
 statement
     : {isNotPlsqlBlockTerminator()}? (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_ (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_) *)?
-        (assignStatement
+        (plsqlBlock
+        | assignStatement
         | basicLoopStatement
         | caseStatement
         | closeStatement
@@ -174,7 +190,6 @@ statement
         | openStatement
         | openForStatement
         | pipeRowStatement
-        | plsqlBlock
         | raiseStatement
         | returnStatement
         | selectIntoStatement
@@ -250,7 +265,7 @@ continueStatement
 
 cursorForLoopStatement
     : FOR record IN
-    (cursor (LP_ actualCursorParameter (COMMA_? actualCursorParameter)* RP_)?
+    (cursor (LP_ actualCursorParameter (COMMA_ actualCursorParameter)* RP_)?
     | LP_ select RP_
     )
     LOOP plsqlStatements END LOOP label? SEMI_
@@ -352,7 +367,7 @@ cursorIterationControl
     ;
 
 dynamicSql
-    : EXECUTE IMMEDIATE dynamicSqlStmt (USING IN? (bindArgument COMMA_?)* )?
+    : EXECUTE IMMEDIATE dynamicSqlStmt (USING IN? bindArgument (COMMA_ bindArgument)*)?
     ;
 
 cursorObject
@@ -360,7 +375,7 @@ cursorObject
     ;
 
 forallStatement
-    : FORALL index=name IN boundsClause (SAVE EXCEPTIONS)? dmlStatement SEMI_
+    : FORALL index=name IN boundsClause (SAVE EXCEPTIONS)? dmlStatement
     ;
 
 boundsClause
@@ -378,7 +393,8 @@ upperBound
     ;
 
 dmlStatement
-    : insert | update | delete | merge | dynamicSqlStmt
+    : (insert | update | delete | merge) SEMI_
+    | executeImmediateStatement
     ;
 
 dynamicSqlStmt
@@ -403,7 +419,7 @@ nullStatement
     ;
 
 openStatement
-    : OPEN cursor (LP_ actualCursorParameter (COMMA_? actualCursorParameter)* RP_)? SEMI_
+    : OPEN cursor (LP_ actualCursorParameter (COMMA_ actualCursorParameter)* RP_)? SEMI_
     ;
 
 cursor
@@ -431,7 +447,7 @@ cursorVariable
     ;
 
 plsqlUsingClause
-    : USING (IN | OUT | IN OUT)? bindArgument (COMMA_? (IN | OUT | IN OUT)? bindArgument)*
+    : USING (IN | OUT | IN OUT)? bindArgument (COMMA_ (IN | OUT | IN OUT)? bindArgument)*
     ;
 
 bindArgument
@@ -463,7 +479,7 @@ returnStatement
     ;
 
 selectIntoStatement
-    : SELECT (DISTINCT | UNIQUE | ALL)? selectList (selectIntoClause | bulkCollectIntoClause) FROM fromClauseList whereClause? hierarchicalQueryClause? groupByClause? modelClause? windowClause? orderByClause? rowLimitingClause? SEMI_
+    : SELECT (DISTINCT | UNIQUE | ALL)? selectList (selectIntoClause | bulkCollectIntoClause) FROM fromClauseList whereClause? hierarchicalQueryClause? groupByClause? havingClause? modelClause? windowClause? orderByClause? rowLimitingClause? SEMI_
     ;
 
 selectIntoClause
@@ -566,11 +582,16 @@ itemDeclaration
 collectionVariableDecl
     : variableName
       (
-      typeName (ASSIGNMENT_OPERATOR_ (qualifiedExpression | functionCall | variableName))?
-      | typeName (ASSIGNMENT_OPERATOR_  (collectionConstructor | variableName))?
+      collectionTypeName (ASSIGNMENT_OPERATOR_ (qualifiedExpression | functionCall | variableName))?
+      | collectionTypeName (ASSIGNMENT_OPERATOR_  (collectionConstructor | variableName))?
       | typeName MOD_ TYPE
       )
       SEMI_
+    ;
+
+collectionTypeName
+    : typeName
+    | schemaName DOT_ owner DOT_ name
     ;
 
 qualifiedExpression
@@ -578,7 +599,7 @@ qualifiedExpression
     ;
 
 aggregate
-    : positionalChoiceList? explicitChoiceList?
+    : (positionalChoiceList (COMMA_ explicitChoiceList)? | explicitChoiceList)?
     ;
 
 explicitChoiceList
@@ -751,7 +772,7 @@ referencingItem
     ;
 
 triggerEditionClause
-    : (FORWARD | REVERSE) CROSSEDITION
+    : (FORWARD | REVERSE)? CROSSEDITION
     ;
 
 triggerOrderingClause

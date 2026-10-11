@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
@@ -28,17 +28,17 @@ import java.util.Map;
 /**
  * Pipeline required columns extractor.
  * 
- * @param <T> type of YAML rule configuration
+ * @param <T> type of rule configuration
  */
 @SingletonSPI
-public interface PipelineRequiredColumnsExtractor<T extends YamlRuleConfiguration> extends OrderedSPI<T> {
+public interface PipelineRequiredColumnsExtractor<T extends RuleConfiguration> extends OrderedSPI<T> {
     
     /**
      * Get table and required columns map.
      *
-     * @param yamlRuleConfig YAML rule configuration
+     * @param ruleConfig rule configuration
      * @param logicTableNames logic table names
      * @return table and required columns map
      */
-    Map<ShardingSphereIdentifier, Collection<String>> getTableAndRequiredColumnsMap(T yamlRuleConfig, Collection<ShardingSphereIdentifier> logicTableNames);
+    Map<ShardingSphereIdentifier, Collection<String>> getTableAndRequiredColumnsMap(T ruleConfig, Collection<ShardingSphereIdentifier> logicTableNames);
 }

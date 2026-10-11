@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_type_body_with_member_functions_oracle" value="CREATE OR REPLACE TYPE BODY data_typ1 IS MEMBER FUNCTION prod (invent NUMBER) RETURN NUMBER IS BEGIN RETURN (year + invent); END; MEMBER FUNCTION qtr(der_qtr DATE) RETURN CHAR IS BEGIN IF (der_qtr &lt; TO_DATE('01-APR', 'DD-MON')) THEN RETURN 'FIRST'; ELSIF (der_qtr &lt; TO_DATE('01-JUL', 'DD-MON')) THEN RETURN 'SECOND'; ELSIF (der_qtr &lt; TO_DATE('01-OCT', 'DD-MON')) THEN RETURN 'THIRD'; ELSE RETURN 'FOURTH'; END IF; END; END;" db-types="Oracle" />
+    <sql-case id="create_type_body_with_map_member_and_procedure_oracle" value="CREATE OR REPLACE TYPE BODY rational AS MAP MEMBER FUNCTION convert RETURN REAL IS BEGIN RETURN num / den; END convert; MEMBER PROCEDURE normalize IS g INTEGER; BEGIN g := gcd(num, den); num := num / g; den := den / g; END normalize; END;" db-types="Oracle" />
+    <sql-case id="create_type_body_with_constructor_member_and_static_oracle" value="CREATE OR REPLACE TYPE BODY rectangle AS CONSTRUCTOR FUNCTION rectangle(len NUMBER, wid NUMBER) RETURN SELF AS RESULT IS BEGIN length := len; width := wid; RETURN; END; MEMBER FUNCTION get_length RETURN NUMBER IS BEGIN RETURN length; END; STATIC FUNCTION new_square(side NUMBER) RETURN rectangle IS result rectangle := rectangle(side, side); BEGIN RETURN result; END; END;" db-types="Oracle" />
+    <sql-case id="create_type_body_with_order_member_oracle" value="CREATE OR REPLACE TYPE BODY point AS ORDER MEMBER FUNCTION match(p NUMBER) RETURN NUMBER IS BEGIN IF id = p THEN RETURN 0; ELSE RETURN 1; END IF; END; END;" db-types="Oracle" />
+</sql-cases>

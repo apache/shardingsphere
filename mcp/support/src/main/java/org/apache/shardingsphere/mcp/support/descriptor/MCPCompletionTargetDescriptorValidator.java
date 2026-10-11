@@ -55,6 +55,8 @@ public final class MCPCompletionTargetDescriptorValidator {
         Map<String, MCPResourceDescriptor> resourceDescriptors = resources.stream().collect(Collectors.toMap(MCPResourceDescriptor::getUriTemplate, each -> each));
         Map<String, MCPCompletionTargetDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         for (MCPCompletionTargetDescriptor each : descriptors) {
+            ShardingSpherePreconditions.checkState(each.getArguments().size() == new HashSet<>(each.getArguments()).size(), () -> new IllegalStateException(
+                    String.format("Completion target `%s:%s` must not contain duplicate arguments.", each.getReferenceType(), each.getReference())));
             validateCompletionReference(each, promptNames, resourceDescriptors.keySet());
             validatePromptCompletionArguments(each, promptArguments);
             validateResourceCompletionArguments(each, resourceDescriptors);

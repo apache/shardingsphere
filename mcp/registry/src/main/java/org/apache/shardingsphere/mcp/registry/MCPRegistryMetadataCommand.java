@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.registry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 
 import java.io.IOException;
 import java.net.URI;

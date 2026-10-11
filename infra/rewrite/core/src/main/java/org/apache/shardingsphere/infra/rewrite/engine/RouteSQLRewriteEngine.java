@@ -141,7 +141,7 @@ public final class RouteSQLRewriteEngine {
         Collection<String> sql = new LinkedList<>();
         List<Object> params = new LinkedList<>();
         boolean containsDollarMarker = sqlRewriteContext.getSqlStatementContext() instanceof SelectStatementContext
-                && ((SelectStatementContext) (sqlRewriteContext.getSqlStatementContext())).isContainsDollarParameterMarker();
+                && ((SelectStatementContext) sqlRewriteContext.getSqlStatementContext()).isContainsDollarParameterMarker();
         for (RouteUnit each : routeUnits) {
             sql.add(SQLUtils.trimSemicolon(new SQLBuilderEngine(sqlRewriteContext, each).buildSQL()));
             if (containsDollarMarker && !params.isEmpty()) {

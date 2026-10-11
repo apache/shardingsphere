@@ -39,7 +39,7 @@ alterStatement
 
 createTable
     // DORIS CHANGED BEGIN
-    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? duplicatekeyClause? commentClause? partitionClause? distributedbyClause? propertiesClause? duplicateAsQueryExpression? startTransaction? | createLikeClause)
+    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? duplicatekeyClause? commentClause? partitionClause? distributedbyClause? rollupClause? propertiesClause? duplicateAsQueryExpression? startTransaction? | createLikeClause)
     // DORIS CHANGED END
     ;
 
@@ -53,7 +53,11 @@ commentClause
     ;
 
 distributedbyClause
-    : DISTRIBUTED BY HASH (LP_ columnName RP_) BUCKETS NUMBER_
+    : DISTRIBUTED BY (HASH LP_ columnNames RP_ | RANDOM) (BUCKETS (NUMBER_ | AUTO))?
+    ;
+
+rollupClause
+    : ROLLUP LP_ rollupItem (COMMA_ rollupItem)* RP_
     ;
 
 modifyDistributionClause
@@ -85,7 +89,9 @@ partitionClause
 partitionTypeDef
     : LINEAR? KEY partitionKeyAlgorithm? LP_ columnNames? RP_
     | LINEAR? HASH LP_ bitExpr RP_
-    | (RANGE | LIST) (LP_ bitExpr RP_ | COLUMNS LP_ columnNames RP_ )
+    // DORIS CHANGED BEGIN
+    | (RANGE | LIST) (LP_ bitExpr (COMMA_ bitExpr)* RP_ | COLUMNS LP_ columnNames RP_ )
+    // DORIS CHANGED END
     ;
 
 subPartitions
@@ -161,7 +167,7 @@ alterOrderList
     ;
 
 rollupItem
-    : rollupName=identifier LP_ columnNames RP_ (FROM fromIndexName=indexName)? propertiesClause?
+    : rollupName=identifier LP_ rollupColumns=columnNames RP_ (DUPLICATE KEY LP_ duplicateKeyColumns=columnNames RP_)? (FROM fromIndexName=indexName)? propertiesClause?
     ;
 
 rollupNameItem
@@ -312,7 +318,7 @@ truncateTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification? INDEX ifNotExists? indexName ON tableName keyListWithExpression (indexTypeClause | dorisIndexTypeClause)? propertiesClause? commentClause? algorithmOptionAndLockOption?
+    : CREATE createIndexSpecification? INDEX ifNotExists? indexName ON tableName keyListWithExpression (dorisIndexTypeClause | indexTypeClause)? propertiesClause? commentClause? algorithmOptionAndLockOption?
     ;
 
 dorisIndexTypeClause
@@ -403,7 +409,7 @@ createFunction
       (WITH PARAMETER LP_ identifier (COMMA_ identifier)* RP_ AS expr)?
       (PROPERTIES LP_ properties RP_)?
     | CREATE ownerStatement?
-      FUNCTION functionName LP_ (identifier dataType)? (COMMA_ identifier dataType)* RP_
+      FUNCTION ifNotExists? functionName LP_ (identifier dataType)? (COMMA_ identifier dataType)* RP_
       RETURNS dataType
       routineOption*
       routineBody
@@ -472,7 +478,9 @@ createView
       (ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE))?
       ownerStatement?
       (SQL SECURITY (DEFINER | INVOKER))?
-      VIEW viewName (LP_ columnNames RP_)?
+      // DORIS CHANGED BEGIN
+      VIEW ifNotExists? viewName (LP_ (columnNames | viewColumnDefinitions) RP_)? commentClause?
+      // DORIS CHANGED END
       AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
@@ -504,6 +512,18 @@ refreshTrigger
 // DORIS ADDED BEGIN
 refreshSchedule
     : EVERY intervalValue (STARTS timestampValue)?
+    ;
+// DORIS ADDED END
+
+// DORIS ADDED BEGIN
+refreshMaterializedView
+    : REFRESH MATERIALIZED VIEW name (partitionSpec | refreshMethod)
+    ;
+// DORIS ADDED END
+
+// DORIS ADDED BEGIN
+partitionSpec
+    : PARTITIONS LP_ identifierList RP_
     ;
 // DORIS ADDED END
 
@@ -597,7 +617,7 @@ dropLogfileGroup
     ;
 
 createTrigger
-    :  CREATE ownerStatement? TRIGGER triggerName triggerTime triggerEvent ON tableName FOR EACH ROW triggerOrder? routineBody
+    :  CREATE ownerStatement? TRIGGER ifNotExists? triggerName triggerTime triggerEvent ON tableName FOR EACH ROW triggerOrder? routineBody
     ;
 
 dropTrigger
@@ -672,7 +692,9 @@ referenceOption
     ;
 
 indexType
-    : BTREE | RTREE | HASH
+    // DORIS CHANGED BEGIN
+    : BTREE | RTREE | HASH | INVERTED
+    // DORIS CHANGED END
     ;
 
 indexTypeClause
@@ -738,7 +760,7 @@ createTableOption
     | option = (CHECKSUM | TABLE_CHECKSUM) EQ_? NUMBER_
     | option = DELAY_KEY_WRITE EQ_? NUMBER_
     | option = ROW_FORMAT EQ_? format = (DEFAULT | DYNAMIC | FIXED | COMPRESSED | REDUNDANT | COMPACT)
-    | option = UNION EQ_? LP_ tableList RP_
+    | option = UNION EQ_? LP_ tableList? RP_
     | defaultCharset
     | defaultCollation
     | option = INSERT_METHOD EQ_? method = (NO| FIRST| LAST)
@@ -775,7 +797,7 @@ place
 
 partitionDefinitions
     // DORIS CHANGED BEGIN
-    : LP_ partitionDefinitionItem (COMMA_ partitionDefinitionItem)* RP_
+    : LP_ (partitionDefinitionItem (COMMA_ partitionDefinitionItem)*)? RP_
     // DORIS CHANGED END
     ;
 
@@ -815,6 +837,7 @@ partitionDefinitionOption
     | MAX_ROWS EQ_? NUMBER_
     | MIN_ROWS EQ_? NUMBER_
     | TABLESPACE EQ_? identifier
+    | NODEGROUP EQ_? numberLiterals
     ;
 
 subpartitionDefinition
@@ -875,10 +898,30 @@ compoundStatement
     ;
 
 validStatement
-    : (createTable | alterTable | dropTable | dropDatabase | truncateTable
-    | insert | replace | update | delete | select | call
-    | createView | prepare | executeStmt | commit | deallocate
-    | setVariable | beginStatement | declareStatement | flowControlStatement | cursorStatement | conditionHandlingStatement) SEMI_?
+    : (createTable
+    | alterTable
+    | dropTable
+    | dropDatabase
+    | truncateTable
+    | insert
+    | replace
+    | update
+    | delete
+    | select
+    | call
+    | createView
+    | prepare
+    | executeStmt
+    | commit
+    | deallocate
+    | setVariable
+    | beginStatement
+    | declareStatement
+    | flowControlStatement
+    | cursorStatement
+    | conditionHandlingStatement
+    | flush
+    | kill) SEMI_?
     ;
 
 beginStatement

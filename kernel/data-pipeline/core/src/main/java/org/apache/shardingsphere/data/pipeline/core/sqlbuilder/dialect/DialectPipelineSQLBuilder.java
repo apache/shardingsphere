@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
@@ -46,9 +47,10 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
      * Build on duplicate clause of insert SQL.
      *
      * @param dataRecord data record
+     * @param sqlSegmentBuilder SQL endpoint identifier builder
      * @return built SQL clause
      */
-    default Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord) {
+    default Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord, final PipelineSQLSegmentBuilder sqlSegmentBuilder) {
         return Optional.empty();
     }
     

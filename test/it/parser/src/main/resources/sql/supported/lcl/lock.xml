@@ -47,4 +47,5 @@
     <sql-case id="lock_table_share_update_exclusive_nowait" value="LOCK TABLE lock_tbl1 IN SHARE UPDATE EXCLUSIVE MODE NOWAIT;" db-types="PostgreSQL" />
     <sql-case id="lock_table_share_update_exclusive" value="LOCK TABLE lock_tbl1 IN SHARE UPDATE EXCLUSIVE MODE;" db-types="PostgreSQL" />
     <sql-case id="lock_hs1" value="LOCK hs1;" db-types="PostgreSQL" />
+    <sql-case id="lock_table_partition_for_share_mode" value="LOCK TABLE interval_sales PARTITION FOR (TO_DATE('01-JUN-2007','dd-MON-yyyy')) IN SHARE MODE" db-types="Oracle" />
 </sql-cases>

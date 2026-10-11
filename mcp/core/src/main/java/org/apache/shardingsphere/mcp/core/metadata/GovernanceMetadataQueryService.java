@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.metadata;
 
-import org.apache.shardingsphere.infra.util.json.JsonException;
 import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.json.JsonException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 

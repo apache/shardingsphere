@@ -72,7 +72,7 @@ public final class FirebirdPrepareStatementReturnPacket extends FirebirdPacket {
     
     static void writeString(final FirebirdInfoPacketType code, final String value, final FirebirdPacketPayload payload) {
         payload.writeInt1(code.getCode());
-        byte[] valueBytes = null != value ? value.getBytes(payload.getCharset()) : new byte[0];
+        byte[] valueBytes = null == value ? new byte[0] : value.getBytes(payload.getCharset());
         payload.writeInt2LE(valueBytes.length);
         payload.writeBytes(valueBytes);
     }

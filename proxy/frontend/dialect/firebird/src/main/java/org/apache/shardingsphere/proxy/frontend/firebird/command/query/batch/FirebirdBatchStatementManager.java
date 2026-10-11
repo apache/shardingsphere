@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.List;
 
@@ -100,16 +101,14 @@ public final class FirebirdBatchStatementManager {
      */
     public void appendBatchMessage(final int connectionId, final FirebirdBatchMessageCommandPacket packet) {
         FirebirdBatchStatement batchStatement = getBatchStatement(connectionId, packet.getStatementHandle());
-        if (null == batchStatement) {
-            throw new InvalidBatchHandleException(packet.getStatementHandle());
-        }
-        if (batchStatement.getAccumulatedSize() + packet.getDataLength() > batchStatement.getBufferSize()) {
-            throw new BatchTooBigException(packet.getStatementHandle(), batchStatement.getAccumulatedSize(), packet.getDataLength(), batchStatement.getBufferSize());
-        }
+        ShardingSpherePreconditions.checkNotNull(batchStatement, () -> new InvalidBatchHandleException(packet.getStatementHandle()));
+        int dataLength = packet.getDataLength();
+        ShardingSpherePreconditions.checkState(batchStatement.getAccumulatedSize() + dataLength <= batchStatement.getBufferSize(),
+                () -> new BatchTooBigException(packet.getStatementHandle(), batchStatement.getAccumulatedSize(), dataLength, batchStatement.getBufferSize()));
         for (List<Object> each : packet.readParameterValues(batchStatement.getColumnDescriptors())) {
             batchStatement.addParameterValues(each);
         }
-        batchStatement.addSize(packet.getDataLength());
+        batchStatement.addSize(dataLength);
     }
     
     /**

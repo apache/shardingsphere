@@ -156,7 +156,9 @@ public final class ShardingTableRuleStatementChecker {
         checkKeyGenerators(databaseName, rules, currentRuleConfig);
         checkAuditors(rules);
         checkAutoTableRule(rules.stream().filter(AutoTableRuleSegment.class::isInstance).map(AutoTableRuleSegment.class::cast).collect(Collectors.toList()));
-        checkTableRule(rules.stream().filter(TableRuleSegment.class::isInstance).map(TableRuleSegment.class::cast).collect(Collectors.toList()));
+        Collection<TableRuleSegment> tableRules = rules.stream().filter(TableRuleSegment.class::isInstance).map(TableRuleSegment.class::cast).collect(Collectors.toList());
+        checkTableRule(tableRules);
+        checkDataNodeSchemas(tableRules);
         if (!isCreated) {
             checkBindingTableRules(rules, currentRuleConfig);
         }
@@ -207,7 +209,11 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static boolean isValidDataNode(final String dataNodeStr) {
-        return dataNodeStr.contains(DELIMITER) && 2 == Splitter.on(DELIMITER).omitEmptyStrings().splitToList(dataNodeStr).size();
+        if (!dataNodeStr.contains(DELIMITER)) {
+            return false;
+        }
+        int segmentsSize = Splitter.on(DELIMITER).omitEmptyStrings().splitToList(dataNodeStr).size();
+        return 2 == segmentsSize || 3 == segmentsSize;
     }
     
     private static Map<String, ShardingTable> createShardingTables(final ShardingRuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
@@ -506,6 +512,25 @@ public final class ShardingTableRuleStatementChecker {
             result.add(isValidDataNode(each) ? new DataNode(each).getTableName() : each);
         }
         return result;
+    }
+    
+    private static void checkDataNodeSchemas(final Collection<TableRuleSegment> tableRules) {
+        for (TableRuleSegment each : tableRules) {
+            checkDataNodeSchemas(each.getLogicTable(), ShardingTableRuleStatementConverter.getActualDataNodes(each));
+        }
+    }
+    
+    private static void checkDataNodeSchemas(final String logicTable, final Collection<DataNode> actualDataNodes) {
+        Map<String, String> schemaNamesByDataSource = new HashMap<>(actualDataNodes.size(), 1F);
+        for (DataNode each : actualDataNodes) {
+            if (null == each.getSchemaName()) {
+                continue;
+            }
+            String configuredSchemaName = schemaNamesByDataSource.putIfAbsent(each.getDataSourceName(), each.getSchemaName());
+            ShardingSpherePreconditions.checkState(null == configuredSchemaName || configuredSchemaName.equalsIgnoreCase(each.getSchemaName()),
+                    () -> new InvalidRuleConfigurationException("sharding table", Collections.singleton(logicTable),
+                            Collections.singleton(String.format("Multiple schemas are configured for storage unit '%s'.", each.getDataSourceName()))));
+        }
     }
     
     private static void checkBindingTableRules(final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) {

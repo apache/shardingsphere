@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.netty;
 
+import ch.qos.logback.classic.spi.IThrowableProxy;
 import com.google.common.hash.Hashing;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -31,6 +32,8 @@ import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCExceptionWrapper;
+import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCLoginFailedException;
+import org.apache.shardingsphere.data.pipeline.cdc.exception.EmptyCDCLoginRequestBodyException;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.handler.CDCBackendHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
@@ -45,6 +48,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StopStreamin
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
@@ -53,7 +57,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.databa
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.PipelineSQLException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -61,6 +65,9 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.protocol.FrontDatabaseProtocolTypeFactory;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,24 +85,25 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
+@ExtendWith({AutoMockExtension.class, LogCaptureExtension.class})
+@LogCaptureSettings(suppressOutput = true)
 @StaticMockSettings({ProxyContext.class, FrontDatabaseProtocolTypeFactory.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class CDCChannelInboundHandlerTest {
@@ -149,6 +157,7 @@ class CDCChannelInboundHandlerTest {
         assertNull(channel.attr(CONNECTION_CONTEXT_KEY).get());
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertChannelInactiveWithConnectionContextWithoutJob() {
         Attribute<CDCConnectionContext> attribute = mock(Attribute.class);
@@ -161,27 +170,37 @@ class CDCChannelInboundHandlerTest {
     }
     
     @Test
-    void assertExceptionCaughtWithWrapperClosesChannel() {
+    void assertExceptionCaughtWithWrapperClosesChannel(final LogCaptureAssertion logCaptureAssertion) {
         ChannelHandlerContext context = mock(ChannelHandlerContext.class, RETURNS_DEEP_STUBS);
         ChannelFuture channelFuture = mock(ChannelFuture.class);
         when(context.writeAndFlush(any())).thenReturn(channelFuture);
         handler.exceptionCaught(context, new CDCExceptionWrapper("request-id", new PipelineInvalidParameterException("invalid")));
         verify(context).writeAndFlush(argThat(argument -> "request-id".equals(((CDCResponse) argument).getRequestId())));
         verify(channelFuture).addListener(ChannelFutureListener.CLOSE);
+        assertExpectedError(logCaptureAssertion, new PipelineInvalidParameterException("invalid"));
+    }
+    
+    private void assertExpectedError(final LogCaptureAssertion logCaptureAssertion, final Throwable expectedException) {
+        logCaptureAssertion.assertErrorLog(actualException -> {
+            IThrowableProxy actualCause = CDCExceptionWrapper.class.getName().equals(actualException.getClassName()) ? actualException.getCause() : actualException;
+            assertThat(actualCause.getClassName(), is(expectedException.getClass().getName()));
+            assertThat(actualCause.getMessage(), is(expectedException.getMessage()));
+        });
     }
     
     @Test
-    void assertExceptionCaughtWithNonWrapperException() {
+    void assertExceptionCaughtWithNonWrapperException(final LogCaptureAssertion logCaptureAssertion) {
         ChannelHandlerContext context = mock(ChannelHandlerContext.class, RETURNS_DEEP_STUBS);
         ChannelFuture channelFuture = mock(ChannelFuture.class);
         when(context.channel().attr(CONNECTION_CONTEXT_KEY).get()).thenReturn(new CDCConnectionContext(user));
         when(context.writeAndFlush(any())).thenReturn(channelFuture);
         handler.exceptionCaught(context, new RuntimeException("error"));
         verify(channelFuture, never()).addListener(ChannelFutureListener.CLOSE);
+        assertExpectedError(logCaptureAssertion, new RuntimeException("error"));
     }
     
     @Test
-    void assertLoginRequestFailed() {
+    void assertLoginRequestFailed(final LogCaptureAssertion logCaptureAssertion) {
         CDCRequest request = CDCRequest.newBuilder().setType(Type.LOGIN).setLoginRequestBody(LoginRequestBody.newBuilder()
                 .setBasicBody(BasicBody.newBuilder().setUsername("root2").build()).build()).build();
         channel.writeInbound(request);
@@ -191,10 +210,11 @@ class CDCChannelInboundHandlerTest {
         assertThat(loginResult.getStatus(), is(Status.FAILED));
         assertThat(loginResult.getErrorCode(), is(XOpenSQLState.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT.getValue()));
         assertFalse(channel.isOpen());
+        assertExpectedError(logCaptureAssertion, new CDCLoginFailedException());
     }
     
     @Test
-    void assertIllegalLoginRequest() {
+    void assertIllegalLoginRequest(final LogCaptureAssertion logCaptureAssertion) {
         CDCRequest request = CDCRequest.newBuilder().setType(Type.LOGIN).setVersion(1).setRequestId("test").build();
         channel.writeInbound(request);
         CDCResponse greeting = channel.readOutbound();
@@ -203,10 +223,11 @@ class CDCChannelInboundHandlerTest {
         assertThat(loginResult.getStatus(), is(Status.FAILED));
         assertThat(loginResult.getErrorCode(), is(XOpenSQLState.NOT_FOUND.getValue()));
         assertFalse(channel.isOpen());
+        assertExpectedError(logCaptureAssertion, new EmptyCDCLoginRequestBodyException());
     }
     
     @Test
-    void assertLoginRequestBodyWithoutBasicBody() {
+    void assertLoginRequestBodyWithoutBasicBody(final LogCaptureAssertion logCaptureAssertion) {
         channel.writeInbound(CDCRequest.newBuilder().setType(Type.LOGIN).setRequestId("login-without-basic-body")
                 .setLoginRequestBody(LoginRequestBody.newBuilder().setType(LoginRequestBody.LoginType.BASIC).build()).build());
         CDCResponse greeting = channel.readOutbound();
@@ -215,6 +236,7 @@ class CDCChannelInboundHandlerTest {
         assertThat(loginResult.getStatus(), is(Status.FAILED));
         assertThat(loginResult.getErrorCode(), is(XOpenSQLState.NOT_FOUND.getValue()));
         assertFalse(channel.isOpen());
+        assertExpectedError(logCaptureAssertion, new EmptyCDCLoginRequestBodyException());
     }
     
     @Test
@@ -243,6 +265,7 @@ class CDCChannelInboundHandlerTest {
         assertThat(channel.attr(CONNECTION_CONTEXT_KEY).get().getCurrentUser().getGrantee().getUsername(), is("root"));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertLoginWithNonInetSocketAddress() {
         Channel channelMock = mock(Channel.class, RETURNS_DEEP_STUBS);
@@ -266,6 +289,7 @@ class CDCChannelInboundHandlerTest {
         verify(attribute).set(any(CDCConnectionContext.class));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertLoginUsesInetSocketAddressHost() {
         Channel channelMock = mock(Channel.class, RETURNS_DEEP_STUBS);
@@ -285,41 +309,45 @@ class CDCChannelInboundHandlerTest {
     }
     
     @Test
-    void assertStreamDataRequestBodyMissing() {
+    void assertStreamDataRequestBodyMissing(final LogCaptureAssertion logCaptureAssertion) {
         CDCRequest request = CDCRequest.newBuilder().setType(Type.STREAM_DATA).setRequestId("stream-request").build();
         CDCResponse response = writeRequestWithContext(request);
         assertThat(response.getStatus(), is(Status.FAILED));
         assertThat(response.getErrorCode(), is(XOpenSQLState.INVALID_PARAMETER_VALUE.getValue()));
+        assertExpectedError(logCaptureAssertion, new PipelineInvalidParameterException("Stream data request body is empty"));
     }
     
     @Test
-    void assertStreamDataRequestDatabaseMissing() {
+    void assertStreamDataRequestDatabaseMissing(final LogCaptureAssertion logCaptureAssertion) {
         CDCRequest request = createStreamDataRequest("");
         CDCResponse response = writeRequestWithContext(request);
         assertThat(response.getStatus(), is(Status.FAILED));
         assertThat(response.getErrorCode(), is(XOpenSQLState.INVALID_PARAMETER_VALUE.getValue()));
+        assertExpectedError(logCaptureAssertion, new PipelineInvalidParameterException("Database is empty"));
     }
     
     @Test
-    void assertStreamDataRequestSourceSchemaTableMissing() {
+    void assertStreamDataRequestSourceSchemaTableMissing(final LogCaptureAssertion logCaptureAssertion) {
         StreamDataRequestBody body = StreamDataRequestBody.newBuilder().setDatabase("logic_db").build();
         CDCRequest request = CDCRequest.newBuilder().setType(Type.STREAM_DATA).setRequestId("stream-request").setStreamDataRequestBody(body).build();
         CDCResponse response = writeRequestWithContext(request);
         assertThat(response.getStatus(), is(Status.FAILED));
         assertThat(response.getErrorCode(), is(XOpenSQLState.INVALID_PARAMETER_VALUE.getValue()));
+        assertExpectedError(logCaptureAssertion, new PipelineInvalidParameterException("Source schema table is empty"));
     }
     
     @Test
-    void assertStreamDataRequestMissingAuthorityRule() {
+    void assertStreamDataRequestMissingAuthorityRule(final LogCaptureAssertion logCaptureAssertion) {
         mockProxyContext(new RuleMetaData(Collections.emptyList()));
         CDCRequest request = createStreamDataRequest("logic_db");
         CDCResponse response = writeRequestWithContext(request);
         SQLException expectedException = SQLExceptionTransformEngine.toSQLException(new MissingRequiredRuleException("authority"), FrontDatabaseProtocolTypeFactory.getDatabaseType());
         assertThat(response.getErrorCode(), is(expectedException.getSQLState()));
+        assertExpectedError(logCaptureAssertion, new MissingRequiredRuleException("authority"));
     }
     
     @Test
-    void assertStreamDataRequestPrivilegesNotFound() {
+    void assertStreamDataRequestPrivilegesNotFound(final LogCaptureAssertion logCaptureAssertion) {
         when(authorityRule.findPrivileges(any())).thenReturn(Optional.empty());
         CDCRequest request = createStreamDataRequest("logic_db");
         CDCResponse response = writeRequestWithContext(request);
@@ -327,15 +355,17 @@ class CDCChannelInboundHandlerTest {
         SQLException expectedException = SQLExceptionTransformEngine.toSQLException(new AccessDeniedException(grantee.getUsername(), grantee.getHostname(), false),
                 FrontDatabaseProtocolTypeFactory.getDatabaseType());
         assertThat(response.getErrorCode(), is(expectedException.getSQLState()));
+        assertExpectedError(logCaptureAssertion, new AccessDeniedException(user.getGrantee().getUsername(), user.getGrantee().getHostname(), false));
     }
     
     @Test
-    void assertStreamDataRequestPrivilegesWithoutDatabasePermission() {
+    void assertStreamDataRequestPrivilegesWithoutDatabasePermission(final LogCaptureAssertion logCaptureAssertion) {
         when(privileges.hasPrivileges("logic_db")).thenReturn(false);
         CDCRequest request = createStreamDataRequest("logic_db");
         CDCResponse response = writeRequestWithContext(request);
         SQLException expectedException = SQLExceptionTransformEngine.toSQLException(new UnknownDatabaseException("logic_db"), FrontDatabaseProtocolTypeFactory.getDatabaseType());
         assertThat(response.getErrorCode(), is(expectedException.getSQLState()));
+        assertExpectedError(logCaptureAssertion, new UnknownDatabaseException("logic_db"));
     }
     
     private CDCRequest createStreamDataRequest(final String database) {
@@ -345,16 +375,29 @@ class CDCChannelInboundHandlerTest {
     }
     
     @Test
-    void assertStreamDataRequestWrapsPipelineSQLException() {
-        CDCConnectionContext connectionContext = new CDCConnectionContext(user);
-        channel.attr(CONNECTION_CONTEXT_KEY).set(connectionContext);
-        StreamDataRequestBody.Builder bodyBuilder = StreamDataRequestBody.newBuilder().setDatabase("logic_db");
-        bodyBuilder.addSourceSchemaTable(StreamDataRequestBody.SchemaTable.newBuilder().setSchema("schema").setTable("table").build());
-        CDCRequest request = CDCRequest.newBuilder().setType(Type.STREAM_DATA).setRequestId("stream-request").setStreamDataRequestBody(bodyBuilder.build()).build();
-        when(backendHandler.streamData(any(), any(), any(), any())).thenThrow(mock(PipelineSQLException.class));
-        ChannelHandlerContext context = channel.pipeline().context(handler);
-        assertThrows(CDCExceptionWrapper.class, () -> handler.channelRead(context, request));
-        assertThat(channel.attr(CONNECTION_CONTEXT_KEY).get(), is(connectionContext));
+    void assertStreamDataRequestWithSchemaNotFoundException(final LogCaptureAssertion logCaptureAssertion) {
+        channel.attr(CONNECTION_CONTEXT_KEY).set(new CDCConnectionContext(user));
+        CDCRequest request = createStreamDataRequest("logic_db");
+        when(backendHandler.streamData(any(), any(), any(), any())).thenThrow(new SchemaNotFoundException("foo_schema"));
+        channel.writeInbound(request);
+        CDCResponse response = readResponseSkippingGreeting();
+        assertThat(response.getStatus(), is(Status.FAILED));
+        assertThat(response.getRequestId(), is("stream-request"));
+        assertThat(response.getErrorCode(), is(XOpenSQLState.NOT_FOUND.getValue()));
+        assertExpectedError(logCaptureAssertion, new SchemaNotFoundException("foo_schema"));
+    }
+    
+    @Test
+    void assertStreamDataRequestWithInvalidParameterException(final LogCaptureAssertion logCaptureAssertion) {
+        channel.attr(CONNECTION_CONTEXT_KEY).set(new CDCConnectionContext(user));
+        CDCRequest request = createStreamDataRequest("logic_db");
+        when(backendHandler.streamData(any(), any(), any(), any())).thenThrow(new PipelineInvalidParameterException("invalid job configuration"));
+        channel.writeInbound(request);
+        CDCResponse response = readResponseSkippingGreeting();
+        assertThat(response.getStatus(), is(Status.FAILED));
+        assertThat(response.getRequestId(), is("stream-request"));
+        assertThat(response.getErrorCode(), is(XOpenSQLState.INVALID_PARAMETER_VALUE.getValue()));
+        assertExpectedError(logCaptureAssertion, new PipelineInvalidParameterException("invalid job configuration"));
     }
     
     @Test
@@ -372,20 +415,22 @@ class CDCChannelInboundHandlerTest {
     }
     
     @Test
-    void assertAckStreamingRequestBodyMissing() {
+    void assertAckStreamingRequestBodyMissing(final LogCaptureAssertion logCaptureAssertion) {
         CDCRequest request = CDCRequest.newBuilder().setType(Type.ACK_STREAMING).setRequestId("ack-request").build();
         CDCResponse response = writeRequestWithContext(request);
         assertThat(response.getStatus(), is(Status.FAILED));
         assertThat(response.getErrorCode(), is(XOpenSQLState.INVALID_PARAMETER_VALUE.getValue()));
+        assertExpectedError(logCaptureAssertion, new PipelineInvalidParameterException("Ack request body is empty"));
     }
     
     @Test
-    void assertAckStreamingRequestAckIdMissing() {
+    void assertAckStreamingRequestAckIdMissing(final LogCaptureAssertion logCaptureAssertion) {
         AckStreamingRequestBody.Builder bodyBuilder = AckStreamingRequestBody.newBuilder();
         bodyBuilder.setAckId("");
         CDCResponse response = writeRequestWithContext(CDCRequest.newBuilder().setType(Type.ACK_STREAMING).setRequestId("ack-request").setAckStreamingRequestBody(bodyBuilder.build()).build());
         assertThat(response.getStatus(), is(Status.FAILED));
         assertThat(response.getErrorCode(), is(XOpenSQLState.INVALID_PARAMETER_VALUE.getValue()));
+        assertExpectedError(logCaptureAssertion, new PipelineInvalidParameterException("Ack request is empty"));
     }
     
     @Test
@@ -400,20 +445,22 @@ class CDCChannelInboundHandlerTest {
     }
     
     @Test
-    void assertStartStreamingRequestBodyMissing() {
+    void assertStartStreamingRequestBodyMissing(final LogCaptureAssertion logCaptureAssertion) {
         CDCRequest request = CDCRequest.newBuilder().setType(Type.START_STREAMING).setRequestId("start-request").build();
         CDCResponse response = writeRequestWithContext(request);
         assertThat(response.getStatus(), is(Status.FAILED));
         assertThat(response.getErrorCode(), is(XOpenSQLState.INVALID_PARAMETER_VALUE.getValue()));
+        assertExpectedError(logCaptureAssertion, new PipelineInvalidParameterException("Start streaming request body is empty"));
     }
     
     @Test
-    void assertStartStreamingRequestIdMissing() {
+    void assertStartStreamingRequestIdMissing(final LogCaptureAssertion logCaptureAssertion) {
         StartStreamingRequestBody.Builder bodyBuilder = StartStreamingRequestBody.newBuilder();
         bodyBuilder.setStreamingId("");
         CDCResponse response = writeRequestWithContext(CDCRequest.newBuilder().setType(Type.START_STREAMING).setRequestId("start-request").setStartStreamingRequestBody(bodyBuilder.build()).build());
         assertThat(response.getStatus(), is(Status.FAILED));
         assertThat(response.getErrorCode(), is(XOpenSQLState.INVALID_PARAMETER_VALUE.getValue()));
+        assertExpectedError(logCaptureAssertion, new PipelineInvalidParameterException("Streaming id is empty"));
     }
     
     @Test
@@ -427,6 +474,21 @@ class CDCChannelInboundHandlerTest {
         CDCResponse response = readResponseSkippingGreeting();
         verify(backendHandler).startStreaming("job-1", connectionContext, channel);
         assertThat(response.getStatus(), is(Status.SUCCEED));
+    }
+    
+    @Test
+    void assertStartStreamingRequestWithInvalidParameterException(final LogCaptureAssertion logCaptureAssertion) {
+        channel.attr(CONNECTION_CONTEXT_KEY).set(new CDCConnectionContext(user));
+        when(backendHandler.getDatabaseNameByJobId("job-1")).thenReturn("logic_db");
+        doThrow(new PipelineInvalidParameterException("invalid job configuration")).when(backendHandler).startStreaming(any(), any(), any());
+        StartStreamingRequestBody body = StartStreamingRequestBody.newBuilder().setStreamingId("job-1").build();
+        CDCRequest request = CDCRequest.newBuilder().setType(Type.START_STREAMING).setRequestId("start-request").setStartStreamingRequestBody(body).build();
+        channel.writeInbound(request);
+        CDCResponse response = readResponseSkippingGreeting();
+        assertThat(response.getStatus(), is(Status.FAILED));
+        assertThat(response.getRequestId(), is("start-request"));
+        assertThat(response.getErrorCode(), is(XOpenSQLState.INVALID_PARAMETER_VALUE.getValue()));
+        assertExpectedError(logCaptureAssertion, new PipelineInvalidParameterException("invalid job configuration"));
     }
     
     @Test
@@ -445,6 +507,20 @@ class CDCChannelInboundHandlerTest {
     }
     
     @Test
+    void assertStopStreamingRequestForDifferentJob() {
+        CDCConnectionContext connectionContext = new CDCConnectionContext(user);
+        connectionContext.setJobId("job-1");
+        channel.attr(CONNECTION_CONTEXT_KEY).set(connectionContext);
+        when(backendHandler.getDatabaseNameByJobId("job-2")).thenReturn("logic_db");
+        StopStreamingRequestBody requestBody = StopStreamingRequestBody.newBuilder().setStreamingId("job-2").build();
+        channel.writeInbound(CDCRequest.newBuilder().setType(Type.STOP_STREAMING).setRequestId("stop-request").setStopStreamingRequestBody(requestBody).build());
+        CDCResponse response = readResponseSkippingGreeting();
+        verify(backendHandler).stopStreaming("job-2", channel.id());
+        assertThat(connectionContext.getJobId(), is("job-1"));
+        assertThat(response.getStatus(), is(Status.SUCCEED));
+    }
+    
+    @Test
     void assertDropStreamingRequestSucceed() {
         CDCConnectionContext connectionContext = new CDCConnectionContext(user);
         connectionContext.setJobId("job-1");
@@ -457,6 +533,36 @@ class CDCChannelInboundHandlerTest {
         verify(backendHandler).dropStreaming("job-1");
         assertNull(connectionContext.getJobId());
         assertThat(response.getStatus(), is(Status.SUCCEED));
+    }
+    
+    @Test
+    void assertDropStreamingRequestForDifferentJob() {
+        CDCConnectionContext connectionContext = new CDCConnectionContext(user);
+        connectionContext.setJobId("job-1");
+        channel.attr(CONNECTION_CONTEXT_KEY).set(connectionContext);
+        when(backendHandler.getDatabaseNameByJobId("job-2")).thenReturn("logic_db");
+        DropStreamingRequestBody requestBody = DropStreamingRequestBody.newBuilder().setStreamingId("job-2").build();
+        channel.writeInbound(CDCRequest.newBuilder().setType(Type.DROP_STREAMING).setRequestId("drop-request").setDropStreamingRequestBody(requestBody).build());
+        CDCResponse response = readResponseSkippingGreeting();
+        verify(backendHandler).dropStreaming("job-2");
+        assertThat(connectionContext.getJobId(), is("job-1"));
+        assertThat(response.getStatus(), is(Status.SUCCEED));
+    }
+    
+    @Test
+    void assertDropStreamingRequestFailed(final LogCaptureAssertion logCaptureAssertion) {
+        CDCConnectionContext connectionContext = new CDCConnectionContext(user);
+        connectionContext.setJobId("job-1");
+        channel.attr(CONNECTION_CONTEXT_KEY).set(connectionContext);
+        when(backendHandler.getDatabaseNameByJobId("job-1")).thenReturn("logic_db");
+        doThrow(new PipelineInternalException("failed")).when(backendHandler).dropStreaming("job-1");
+        DropStreamingRequestBody requestBody = DropStreamingRequestBody.newBuilder().setStreamingId("job-1").build();
+        channel.writeInbound(CDCRequest.newBuilder().setType(Type.DROP_STREAMING).setRequestId("drop-request").setDropStreamingRequestBody(requestBody).build());
+        CDCResponse response = readResponseSkippingGreeting();
+        assertThat(response.getStatus(), is(Status.FAILED));
+        assertThat(response.getRequestId(), is("drop-request"));
+        assertThat(connectionContext.getJobId(), is("job-1"));
+        assertExpectedError(logCaptureAssertion, new PipelineInternalException("failed"));
     }
     
     @Test

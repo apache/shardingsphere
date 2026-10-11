@@ -31,8 +31,8 @@ import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;

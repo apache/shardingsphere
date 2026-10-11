@@ -56,4 +56,5 @@
     <sql-case id="clickhouse_select_interval_plus" value="SELECT order_time + INTERVAL 1 DAY AS next_day FROM t_order" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_sum_distinct_expr" value="SELECT SUM(DISTINCT amount + 1) FROM t_order" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_cast_literal" value="SELECT CAST(1 AS INT8) FROM t_order" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_null_without_alias" value="SELECT NULL" db-types="ClickHouse" />
 </sql-cases>

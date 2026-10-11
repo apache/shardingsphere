@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sql.parser.engine.fixture;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.atn.ATN;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 
 public final class ParserFixture extends Parser implements SQLParser {
     

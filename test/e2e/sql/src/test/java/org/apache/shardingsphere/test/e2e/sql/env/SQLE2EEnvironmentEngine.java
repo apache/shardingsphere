@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.sql.env;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
@@ -61,6 +62,16 @@ public final class SQLE2EEnvironmentEngine {
         targetDataSource = CONTAINER_COMPOSER_REGISTRY.getTargetDataSource(key);
         expectedDataSourceMap = containerComposer.getExpectedDataSourceMap();
         executeLogicDatabaseInitSQLFileOnlyOnce(key, scenario, databaseType);
+    }
+    
+    /**
+     * Get target data source.
+     *
+     * @param dataSourceName data source name
+     * @return target data source
+     */
+    public DataSource getTargetDataSource(final String dataSourceName) {
+        return Strings.isNullOrEmpty(dataSourceName) ? targetDataSource : containerComposer.getTargetDataSource(dataSourceName);
     }
     
     private void executeLogicDatabaseInitSQLFileOnlyOnce(final String key, final String scenario, final DatabaseType databaseType) {

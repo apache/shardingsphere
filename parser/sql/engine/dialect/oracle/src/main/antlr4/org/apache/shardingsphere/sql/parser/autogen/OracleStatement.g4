@@ -153,6 +153,7 @@ execute
     | dropCluster
     | systemAction
     | alterType
+    | createTypeBody
     | createType
     | createCluster
     | createJava
@@ -163,8 +164,13 @@ execute
     | createTrigger
     | show
     | spool
+    | set
+    | list
+    | report
+    | change
     | createOperator
     | createIndexType
+    | createSchema
     | createOutline
     ) SEMI_? SLASH_? EOF
     ;

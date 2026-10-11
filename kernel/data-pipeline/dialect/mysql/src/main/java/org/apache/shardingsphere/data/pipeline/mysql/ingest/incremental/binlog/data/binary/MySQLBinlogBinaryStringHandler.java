@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.data.binary;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -30,7 +31,7 @@ import java.nio.charset.Charset;
 /**
  * MySQL binlog binary string handler.
  */
-@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLBinlogBinaryStringHandler {
     
     /**

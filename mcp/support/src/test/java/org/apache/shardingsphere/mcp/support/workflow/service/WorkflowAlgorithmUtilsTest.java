@@ -37,7 +37,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 class WorkflowAlgorithmUtilsTest {
     
@@ -153,12 +159,14 @@ class WorkflowAlgorithmUtilsTest {
     
     @Test
     void assertSecretReferenceOnlyRequiresTypeAvailability() {
+        TypedSPIFixture fixture = spy(new TypedSPIFixture());
         try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
                 MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
-            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(TypedSPIFixture.class)).thenReturn(List.of(new TypedSPIFixture()));
+            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(TypedSPIFixture.class)).thenReturn(List.of(fixture));
             assertTrue(WorkflowAlgorithmUtils.isAlgorithmServiceAvailable(TypedSPIFixture.class, "fixture", Map.of("secret-key", "secret_reference:primary.secret-key")));
-            typedSPILoader.verifyNoInteractions();
+            typedSPILoader.verify(() -> TypedSPILoader.checkService(eq(TypedSPIFixture.class), eq("fixture"), any()), never());
+            verify(fixture, never()).init(any());
         }
     }
     

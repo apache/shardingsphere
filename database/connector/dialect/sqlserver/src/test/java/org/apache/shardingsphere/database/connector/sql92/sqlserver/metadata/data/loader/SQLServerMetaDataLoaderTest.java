@@ -57,32 +57,37 @@ class SQLServerMetaDataLoaderTest {
     
     private static final String LOAD_COLUMN_META_DATA_WITH_TABLES_HIGH_VERSION = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
             + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY, col.is_nullable AS IS_NULLABLE, is_hidden AS IS_HIDDEN,"
-            + " (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
-            + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
+            + " CASE WHEN EXISTS (SELECT 1 FROM sys.index_columns ic INNER JOIN sys.indexes ind ON ic.object_id = ind.object_id"
+            + " AND ic.index_id = ind.index_id WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id AND ind.is_primary_key = 1)"
+            + " THEN 1 ELSE 0 END AS IS_PRIMARY_KEY"
             + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id"
-            + " WHERE obj.name IN ('tbl') ORDER BY col.column_id";
+            + " WHERE obj.schema_id = SCHEMA_ID() AND obj.name IN ('tbl') ORDER BY col.column_id";
     
     private static final String LOAD_COLUMN_META_DATA_WITH_TABLES_LOW_VERSION = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
             + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY, col.is_nullable AS IS_NULLABLE,"
-            + "  (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
-            + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
+            + "  CASE WHEN EXISTS (SELECT 1 FROM sys.index_columns ic INNER JOIN sys.indexes ind ON ic.object_id = ind.object_id"
+            + " AND ic.index_id = ind.index_id WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id AND ind.is_primary_key = 1)"
+            + " THEN 1 ELSE 0 END AS IS_PRIMARY_KEY"
             + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id"
-            + " WHERE obj.name IN ('tbl') ORDER BY col.column_id";
+            + " WHERE obj.schema_id = SCHEMA_ID() AND obj.name IN ('tbl') ORDER BY col.column_id";
     
     private static final String LOAD_INDEX_META_DATA = "SELECT idx.name AS INDEX_NAME, obj.name AS TABLE_NAME, col.name AS COLUMN_NAME,"
             + " idx.is_unique AS IS_UNIQUE FROM sys.indexes idx"
-            + " LEFT JOIN sys.objects obj ON idx.object_id = obj.object_id"
-            + " LEFT JOIN sys.columns col ON obj.object_id = col.object_id"
-            + " WHERE idx.index_id NOT IN (0, 255) AND obj.name IN ('tbl') ORDER BY idx.index_id";
+            + " INNER JOIN sys.objects obj ON idx.object_id = obj.object_id"
+            + " INNER JOIN sys.index_columns ic ON idx.object_id = ic.object_id AND idx.index_id = ic.index_id"
+            + " INNER JOIN sys.columns col ON ic.object_id = col.object_id AND ic.column_id = col.column_id"
+            + " WHERE idx.index_id NOT IN (0, 255) AND obj.schema_id = SCHEMA_ID() AND obj.name IN ('tbl') ORDER BY idx.index_id, ic.index_column_id";
     
     private static final String LOAD_COLUMN_META_DATA_WITH_VIEW = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
             + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY, col.is_nullable AS IS_NULLABLE,"
-            + "  (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
-            + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
+            + "  CASE WHEN EXISTS (SELECT 1 FROM sys.index_columns ic INNER JOIN sys.indexes ind ON ic.object_id = ind.object_id"
+            + " AND ic.index_id = ind.index_id WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id AND ind.is_primary_key = 1)"
+            + " THEN 1 ELSE 0 END AS IS_PRIMARY_KEY"
             + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id"
-            + " WHERE obj.name IN ('tbl','tbl_view') ORDER BY col.column_id";
+            + " WHERE obj.schema_id = SCHEMA_ID() AND obj.name IN ('tbl','tbl_view') ORDER BY col.column_id";
     
-    private static final String LOAD_VIEW_META_DATA = "SELECT name AS TABLE_NAME FROM sys.objects WHERE type = 'V' AND name IN ('tbl_view','tbl')";
+    private static final String LOAD_VIEW_META_DATA =
+            "SELECT obj.name AS TABLE_NAME FROM sys.objects obj WHERE obj.type = 'V' AND obj.schema_id = SCHEMA_ID() AND obj.name IN ('tbl_view','tbl')";
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
     
