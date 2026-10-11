@@ -29,12 +29,12 @@ import java.sql.SQLException;
  * Pagination decorator merged result builder for Firebird.
  */
 public final class FirebirdPaginationDecoratorMergedResultBuilder implements PaginationDecoratorMergedResultBuilder {
-
+    
     @Override
     public DecoratorMergedResult build(final MergedResult mergedResult, final PaginationContext paginationContext) throws SQLException {
         return new LimitDecoratorMergedResult(mergedResult, paginationContext);
     }
-
+    
     @Override
     public String getDatabaseType() {
         return "Firebird";

@@ -35,8 +35,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
+import java.io.InputStream;
+import java.io.Reader;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,9 +51,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class FirebirdPaginationDecoratorMergedResultBuilderTest {
-
+    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
-
+    
     @Test
     void assertBuildWithLimitValueSegment() throws SQLException {
         FirebirdPaginationDecoratorMergedResultBuilder builder = new FirebirdPaginationDecoratorMergedResultBuilder();
@@ -59,7 +62,7 @@ class FirebirdPaginationDecoratorMergedResultBuilderTest {
         DecoratorMergedResult actual = builder.build(new StubMergedResult(), paginationContext);
         assertThat(actual, isA(LimitDecoratorMergedResult.class));
     }
-
+    
     @Test
     void assertDecorateFinalResultsAcrossShards() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
@@ -78,40 +81,40 @@ class FirebirdPaginationDecoratorMergedResultBuilderTest {
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
-
+    
     private QueryResult mockQueryResult() throws SQLException {
         QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
         when(result.next()).thenReturn(true, true, false);
         return result;
     }
-
+    
     private static final class StubMergedResult implements MergedResult {
-
+        
         @Override
         public boolean next() {
             return false;
         }
-
+        
         @Override
         public Object getValue(final int columnIndex, final Class<?> type) {
             return null;
         }
-
+        
         @Override
-        public java.io.InputStream getInputStream(final int columnIndex, final String type) {
+        public InputStream getInputStream(final int columnIndex, final String type) {
             return null;
         }
-
+        
         @Override
-        public java.io.Reader getCharacterStream(final int columnIndex) {
+        public Reader getCharacterStream(final int columnIndex) {
             return null;
         }
-
+        
         @Override
-        public Object getCalendarValue(final int columnIndex, final Class<?> type, final java.util.Calendar calendar) {
+        public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
             return null;
         }
-
+        
         @Override
         public boolean wasNull() {
             return false;
