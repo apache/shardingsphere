@@ -39,13 +39,14 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: e2e-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 env:
+  MAVEN_ARGS: -B -ntp -fae -e
   MAVEN_OPTS: -Dhttp.keepAlive=false
   MAVEN_REPOSITORY_DIR: ../.e2e-maven/repository
 
@@ -64,7 +65,7 @@ jobs:
       proxy-artifact-id: ${{ steps.upload-proxy-image.outputs.artifact-id }}
       jdbc-artifact-id: ${{ steps.upload-jdbc-image.outputs.artifact-id }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - id: setup-build-environment
         uses: ./.github/actions/setup-build-environment
         with:
@@ -87,7 +88,7 @@ jobs:
           image: apache/shardingsphere-jdbc-agent-test
       - name: Build Project
         if: steps.prepare-proxy-image.outputs.cache-hit != 'true' || steps.prepare-jdbc-image.outputs.cache-hit != 'true'
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -B clean install -DskipTests -Prelease,default-dep
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" clean install -DskipTests -Prelease,default-dep
       - name: Build Proxy E2E Image
         if: steps.prepare-proxy-image.outputs.cache-hit != 'true'
         shell: bash
@@ -164,7 +165,7 @@ jobs:
             feature: tracing
             plugin: jaeger
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
         with:
           maven-repository-dir: ${{ env.MAVEN_REPOSITORY_DIR }}
@@ -187,6 +188,6 @@ jobs:
           artifact-id: ${{ needs.build-e2e-image.outputs.jdbc-artifact-id }}
           restore-maven-repository: 'false'
       - name: Build Project
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -B clean install -am -pl test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }} -DskipTests
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" clean install -am -pl test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }} -DskipTests
       - name: Run E2E Test
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -nsu -B install -f test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }}/pom.xml -De2e.run.type=DOCKER -De2e.env.adapter=${{ matrix.adapter }} -De2e.env.plugin=${{ matrix.plugin }} -Dproxy.image="${{ steps.download-proxy-image.outputs.image }}" -Djdbc.project.image="${{ steps.download-jdbc-image.outputs.image }}"
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -nsu install -f test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }}/pom.xml -De2e.run.type=DOCKER -De2e.env.adapter=${{ matrix.adapter }} -De2e.env.plugin=${{ matrix.plugin }} -Dproxy.image="${{ steps.download-proxy-image.outputs.image }}" -Djdbc.project.image="${{ steps.download-jdbc-image.outputs.image }}"

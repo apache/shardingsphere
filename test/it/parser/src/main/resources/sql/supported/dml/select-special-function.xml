@@ -374,6 +374,7 @@
     <sql-case id="select_bitcount_doris" value="SELECT BITCOUNT(7)" db-types="Doris" />
     <sql-case id="select_bitnot_doris" value="SELECT BITNOT(1)" db-types="Doris" />
     <sql-case id="select_bitmap_or_count_doris" value="SELECT BITMAP_OR_COUNT(BITMAP_FROM_STRING('1,2,3'), BITMAP_EMPTY())" db-types="Doris" />
+<<<<<<< HEAD
 
     <sql-case id="select_postgresql_interval_year_month" value="SELECT INTERVAL '1' YEAR TO MONTH" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="select_postgresql_interval_second_precision" value="SELECT INTERVAL(3) '1.123' SECOND(2)" db-types="PostgreSQL" case-types="literal" />
@@ -434,4 +435,22 @@
     <sql-case id="select_postgresql_json_table_string_paths" value="SELECT * FROM JSON_TABLE('{}', '$' COLUMNS (foo_id int PATH U&amp;'$!002Eid' UESCAPE '!', NESTED $p$$.items$p$ COLUMNS (foo_item text PATH '$')))" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="select_postgresql_json_qualified_and_quoted_functions" value="SELECT foo.json_arrayagg(?, ?), &quot;json_arrayagg&quot;(?, ?)" db-types="PostgreSQL" case-types="placeholder" />
     <sql-case id="select_postgresql_json_object_legacy_arrays" value="SELECT JSON_OBJECT('{foo, bar}'), JSON_OBJECT('{foo}', '{bar}')" db-types="PostgreSQL" case-types="literal" />
+=======
+    <sql-case id="timestampadd_sql_tsi_unit" value="SELECT TIMESTAMPADD(SQL_TSI_SECOND, 1, order_date) FROM t_order" db-types="MySQL" />
+    <sql-case id="timestampdiff_sql_tsi_unit" value="SELECT TIMESTAMPDIFF(SQL_TSI_MINUTE, start_time, end_time) FROM t_order" db-types="MySQL" />
+    <sql-case id="select_cast_float_precision" value="SELECT CAST(1 AS FLOAT(24))" db-types="MySQL,Doris" />
+
+    <sql-case id="select_variance_all" value="SELECT VARIANCE(ALL 1)" db-types="MySQL,Doris" />
+
+    <sql-case id="select_trailing_decimal" value="SELECT 8." db-types="MySQL,Doris" />
+
+    <sql-case id="select_spaced_qualified_shorthand" value="SELECT t . * FROM t" db-types="MySQL,Doris" />
+
+    <sql-case id="select_json_table_exists_path" value="SELECT * FROM JSON_TABLE('[]', '$[*]' COLUMNS (id FOR ORDINALITY, p INT EXISTS PATH '$.a')) AS t" db-types="MySQL" />
+
+    <sql-case id="select_qualified_digit_identifier" value="SELECT event.1a20 FROM event" db-types="MySQL,Doris" />
+    <sql-case id="select_leading_decimal_alias" value="SELECT .0$p, .1a20, .2_" db-types="MySQL,Doris" />
+    <sql-case id="select_qualified_scientific_identifier" value="SELECT event.1e1a20 FROM event" db-types="MySQL,Doris" />
+    <sql-case id="select_leading_scientific_alias" value="SELECT .1e1a20" db-types="MySQL,Doris" />
+>>>>>>> apache/master
 </sql-cases>

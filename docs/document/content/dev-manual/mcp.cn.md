@@ -6,7 +6,7 @@ chapter = true
 +++
 
 本章面向希望扩展 ShardingSphere-MCP 的开发者。
-用户安装和使用请查看[用户手册](../../user-manual/shardingsphere-mcp/)，协议表面请查看[技术参考](../../reference/mcp/)。
+用户安装和使用请查看[用户手册](/cn/user-manual/shardingsphere-mcp/)，协议表面请查看[技术参考](/cn/reference/mcp/)。
 
 ## 模块结构
 

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -46,6 +47,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
@@ -62,15 +65,22 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedConstruction;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -314,6 +324,70 @@ class ShardingDQLResultMergerTest {
                 selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
         assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class)), isA(GroupByStreamMergedResult.class));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertMergeDistinctRowWithNullValuesArguments")
+    void assertMergeDistinctRowWithNullValues(final String name, final String databaseTypeName, final Collection<Object> firstShardValues, final Collection<Object> secondShardValues,
+                                              final List<Object> expectedValues) throws SQLException {
+        ColumnProjectionSegment projection = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("col1")));
+        assertThat(getMergedDistinctRowValues(databaseTypeName, projection, firstShardValues, secondShardValues), is(expectedValues));
+    }
+    
+    private List<Object> getMergedDistinctRowValues(final String databaseTypeName, final ProjectionSegment projection, final Collection<Object> firstShardValues,
+                                                    final Collection<Object> secondShardValues) throws SQLException {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, databaseTypeName);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.setDistinctRow(true);
+        projectionsSegment.getProjections().add(projection);
+        SelectStatement selectStatement = withProjections(buildSelectStatement(databaseType), projectionsSegment);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
+        MergedResult mergedResult = new ShardingDQLResultMerger(databaseType).merge(Arrays.asList(createSingleColumnQueryResult(firstShardValues), createSingleColumnQueryResult(secondShardValues)),
+                selectStatementContext, createDialectDatabase(databaseType), mock(ConnectionContext.class));
+        List<Object> result = new LinkedList<>();
+        while (mergedResult.next()) {
+            result.add(mergedResult.getValue(1, Object.class));
+        }
+        return result;
+    }
+    
+    private QueryResult createSingleColumnQueryResult(final Collection<Object> values) throws SQLException {
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getColumnCount()).thenReturn(1);
+        when(result.getMetaData().getColumnLabel(1)).thenReturn("col1");
+        Iterator<Object> iterator = values.iterator();
+        AtomicReference<Object> currentValue = new AtomicReference<>();
+        when(result.next()).thenAnswer(invocation -> {
+            if (!iterator.hasNext()) {
+                return false;
+            }
+            currentValue.set(iterator.next());
+            return true;
+        });
+        when(result.getValue(1, Object.class)).thenAnswer(invocation -> currentValue.get());
+        return result;
+    }
+    
+    private ShardingSphereDatabase createDialectDatabase(final DatabaseType databaseType) {
+        String schemaName = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema().orElse("foo_db");
+        ShardingSphereSchema schema = new ShardingSphereSchema(schemaName, databaseType, Collections.singleton(createTable()), Collections.emptyList());
+        return new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singleton(schema), new ConfigurationProperties(new Properties()));
+    }
+    
+    private static Stream<Arguments> assertMergeDistinctRowWithNullValuesArguments() {
+        return Stream.of(
+                Arguments.of("MySQL sorts NULL values first", "MySQL", Arrays.asList(null, 5), Arrays.asList(null, 10), Arrays.asList(null, 5, 10)),
+                Arguments.of("ClickHouse sorts NULL values last", "ClickHouse", Arrays.asList(5, null), Arrays.asList(10, null), Arrays.asList(5, 10, null)),
+                Arguments.of("Presto sorts NULL values last", "Presto", Arrays.asList(5, null), Arrays.asList(10, null), Arrays.asList(5, 10, null)));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertMergeDistinctRowWithNullValuesArguments")
+    void assertMergeDistinctExpressionWithNullValues(final String name, final String databaseTypeName, final Collection<Object> firstShardValues, final Collection<Object> secondShardValues,
+                                                     final List<Object> expectedValues) throws SQLException {
+        ExpressionProjectionSegment projection = new ExpressionProjectionSegment(0, 0, "col1 + 1");
+        assertThat(getMergedDistinctRowValues(databaseTypeName, projection, firstShardValues, secondShardValues), is(expectedValues));
     }
     
     @Test

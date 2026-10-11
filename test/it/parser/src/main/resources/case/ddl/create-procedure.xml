@@ -367,4 +367,5 @@
         <valid-statement type="UpdateStatement" />
         <valid-statement type="RollbackStatement" />
     </create-procedure>
+    <create-procedure sql-case-id="create_procedure_flush_kill" />
 </sql-parser-test-cases>

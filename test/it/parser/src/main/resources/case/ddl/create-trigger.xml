@@ -106,4 +106,5 @@
         <trigger-name name="t_merge_constraint" start-index="26" stop-index="43" />
         <table name="t_merge_target" start-index="61" stop-index="74" />
     </create-trigger>
+    <create-trigger sql-case-id="create_trigger_if_not_exists_mysql" />
 </sql-parser-test-cases>

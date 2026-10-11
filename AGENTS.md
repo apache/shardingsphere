@@ -23,7 +23,7 @@ Before changing this guide, a canonical policy source, or its harness, read `.co
 ## Response Style
 
 - Restrain the urge to elaborate: complete all required task actions and keep required evidence, risks, verification results, and output formats while limiting the reply's length.
-- Analyze the issue thoroughly, lead with the conclusion, and give the shortest complete answer in plain language; expand only when the user requests a detailed explanation or asks a specific follow-up.
+- Analyze the issue thoroughly, lead with the conclusion, and give the shortest complete answer in plain language; match detail to the question and context.
 - For details, lead with the answer, then `---`; otherwise omit it.
 
 ## Authority and Safety
@@ -58,6 +58,10 @@ For Docker cleanup, distinguish reproducible images from containers, volumes, an
 Evaluate premises that affect correctness, scope, compatibility, safety, or cost. Separate evidence from inference; report contradictory or insufficient evidence and the smallest alternative before acting.
 
 Before editing, record the goal, boundary, acceptance criteria, and required verification. Inspect only the owners, consumers, contracts, tests, configuration, registrations, precedent, and instructions needed to make the change. For non-trivial work, plan only the ordered steps needed to control dependencies and verification.
+
+Before choosing a solution or drafting content, read the relevant context and establish the current responsibilities.
+For existing artifacts, prefer applicable capabilities and patterns, adding only what the task requires.
+Keep changes at the abstraction and detail appropriate to their surroundings.
 
 ### Strict Scope and Task-Delta Gate
 

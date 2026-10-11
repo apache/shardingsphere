@@ -186,6 +186,8 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 
 - Complete behavior-cluster mapping and risk triage for every authoritative file, including churn-only files.
 - Finish all three discovery lenses and classify every candidate.
+- Before accepting a behavior conclusion, identify the premises whose failure would change that conclusion and verify them against current behavior and the strongest applicable counter-evidence.
+- When such a premise remains unverified and admissible evidence is available, continue the review instead of treating the absence of a proven blocker as evidence for acceptance.
 - Complete the Mandatory Style Verification Gate against the latest effective candidate for every public PR or PR-backed local candidate.
 - Leave no unresolved gap that could change the blocker set and require a latest-candidate convergence pass with zero new independent candidates.
 - Use `scripts/build_review_inventory.py --format json` when local refs are available; its Markdown is only a bounded summary.

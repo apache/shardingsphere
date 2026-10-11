@@ -46,7 +46,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -110,8 +109,9 @@ class FirebirdFreeStatementCommandExecutorTest {
         when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.CLOSE);
         new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
         verify(connectionSession, never()).invalidatePreparedStatementCache(any());
+        verify(registry, never()).removePreparedStatement(STATEMENT_ID);
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
-        assertNotNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
     }
     
     @ParameterizedTest(name = "{0}")

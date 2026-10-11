@@ -5,7 +5,7 @@ chapter = true
 +++
 
 ShardingSphere-MCP extends domain capabilities through feature plugins.
-When a feature plugin needs a multi-step governance change, it uses the [Rule Change Flow](plugin-workflow/) for requirement confirmation, preview, apply, and validation.
+When a feature plugin needs a multi-step governance change, it uses the [Rule Change Flow](/en/user-manual/shardingsphere-mcp/features/plugin-workflow/) for requirement confirmation, preview, apply, and validation.
 
 The packaged distribution includes these official MCP feature plugins:
 
