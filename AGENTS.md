@@ -65,10 +65,10 @@ Keep changes at the abstraction and detail appropriate to their surroundings.
 
 ### Strict Scope and Task-Delta Gate
 
-1. An active task is one independent, verifiable objective including its corrections and follow-ups. Start a new baseline only after completion and an explicit independent objective; when ambiguous, stay read-only and confirm.
+1. An active task is one independent, verifiable objective including its corrections and follow-ups. Start a new baseline only after completion and an explicit independent objective; when ambiguous, stay read-only and confirm. At each turn's start and before renewed analysis, planning, or decisions, check the original request and task record; stop goal or scope drift.
 2. Derive acceptance criteria only from requested outcomes, proven direct prerequisites, and focused regression protection. Do not add cleanup, generalization, consistency work, adjacent fixes, or optional improvements.
-3. Before a file-changing tool, record original status and relevant diffs, infer the smallest owning paths, and freeze `file -> allowed intent -> unmet criterion`. A named module or path is the maximum boundary, and an allowed file does not authorize unrelated hunks.
-4. Keep the baseline and boundary through follow-ups, reviews, failures, and verification. Expand only with exact additional path and intent authorization, append without rebaselining, and keep other scope read-only.
+3. Before a file-changing tool, record original status and relevant diffs, infer the smallest owning paths, and freeze `file -> allowed intent -> unmet criterion`. A named module or path is the maximum boundary, and an allowed file does not authorize unrelated hunks. Check each write against its recorded file, intent, and criterion.
+4. Keep the baseline and boundary through follow-ups, reviews, failures, and verification. Expand only with exact additional path and intent authorization, append without rebaselining, and keep other scope read-only. Recover missing or conflicting records read-only; if unrecoverable, stay read-only and confirm missing constraints. Retain the record across context reduction; summaries cannot authorize expansion.
 5. Inspect every path and hunk after each coherent edit batch. Inspect immediately after a formatter, generator, bulk replacement, or any action whose write set is not exact. Before an outside-boundary edit, report its evidence, minimum scope, affected contracts, and consequence of declining it.
 6. Preserve pre-existing and unattributed changes; do not overwrite, format, remove, roll back, or claim them, and do not infer ownership from baseline absence.
 7. After the last write, audit the delta against the original baseline and remove only safely separable unnecessary task changes.
