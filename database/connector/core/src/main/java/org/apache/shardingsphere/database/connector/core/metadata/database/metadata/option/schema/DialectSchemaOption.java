@@ -73,6 +73,15 @@ public interface DialectSchemaOption {
     }
     
     /**
+     * Judge whether federated queries on system schema tables are executed on storage units instead of reading in-memory system table data.
+     *
+     * @return system schema queried from storage or not
+     */
+    default boolean isSystemSchemaQueriedFromStorage() {
+        return false;
+    }
+    
+    /**
      * Get schema semantics.
      *
      * @return schema semantics

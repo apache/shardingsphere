@@ -540,7 +540,7 @@ public final class SimpleTableSegmentBinder {
         if (externalTableBinderContext.isPresent()) {
             return externalTableBinderContext;
         }
-        if (null != schema && schema.containsTable(tableName)) {
+        if (null != schema && schema.containsTable(tableName) && !isDBLinkSystemTable(segment, schema, binderContext)) {
             return createSimpleTableSegmentBinderContextWithMetaData(segment, schema, databaseName, schemaName, binderContext, tableName);
         }
         if (binderContext.getSqlStatement() instanceof CreateTableStatement) {
@@ -570,6 +570,11 @@ public final class SimpleTableSegmentBinder {
             result.setFromWithSegment(true);
         }
         return Optional.of(result);
+    }
+    
+    private static boolean isDBLinkSystemTable(final SimpleTableSegment segment, final ShardingSphereSchema schema, final SQLStatementBinderContext binderContext) {
+        return segment.getDbLink().isPresent()
+                && SystemSchemaManager.isSystemTable(binderContext.getSqlStatement().getDatabaseType().getType(), schema.getName(), segment.getTableName().getIdentifier().getValue());
     }
     
     private static Collection<ProjectionSegment> createProjectionSegments(final CreateTableStatement sqlStatement, final IdentifierValue databaseName,

@@ -399,7 +399,6 @@ class SimpleTableSegmentBinderTest {
     
     private DialectSchemaOption mockSchemaOption(final boolean systemSchemaPreferred) {
         DialectSchemaOption result = mock(DialectSchemaOption.class);
-        when(result.getDefaultSchema()).thenReturn(Optional.empty());
         when(result.isSystemSchemaPreferredOverCurrentSchema()).thenReturn(systemSchemaPreferred);
         return result;
     }

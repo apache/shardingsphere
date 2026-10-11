@@ -44,6 +44,7 @@ import java.util.Properties;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SQLBinderITSettings("Oracle")
@@ -167,6 +168,12 @@ class OracleBinderIT extends SQLBinderIT {
         String sql = "DELETE FROM ALL_TABLES@REMOTE_LINK WHERE USER_COL = 1";
         DeleteStatement actual = (DeleteStatement) bindSQLStatement("Oracle", sql, new ConfigurationProperties(new Properties()));
         assertRemoteTableBound((SimpleTableSegment) actual.getTable());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"UPDATE ALL_TABLES@REMOTE_LINK SET USER_COL = 1", "INSERT INTO ALL_TABLES@REMOTE_LINK (USER_COL) VALUES (1)", "DELETE FROM ALL_TABLES@REMOTE_LINK WHERE USER_COL = 1"})
+    void assertBindDBLinkTableSharingDictionaryViewNameInSystemDatabase(final String sql) {
+        assertDoesNotThrow(() -> bindSQLStatement("Oracle", sql, new ConfigurationProperties(new Properties()), "SYS"));
     }
     
     private void assertRemoteTableBound(final SimpleTableSegment actual) {

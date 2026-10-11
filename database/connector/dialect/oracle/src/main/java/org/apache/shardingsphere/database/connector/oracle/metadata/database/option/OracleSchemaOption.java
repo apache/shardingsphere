@@ -67,6 +67,11 @@ public final class OracleSchemaOption implements DialectSchemaOption {
     }
     
     @Override
+    public boolean isSystemSchemaQueriedFromStorage() {
+        return true;
+    }
+    
+    @Override
     public DialectSchemaSemantics getSchemaSemantics() {
         return delegate.getSchemaSemantics();
     }

@@ -75,6 +75,11 @@ class DefaultSchemaOptionTest {
     }
     
     @Test
+    void assertIsSystemSchemaQueriedFromStorage() {
+        assertFalse(new DefaultSchemaOption(true, "foo_schema", DialectSchemaSemantics.NATIVE_SCHEMA).isSystemSchemaQueriedFromStorage());
+    }
+    
+    @Test
     void assertIsSchemaAvailable() {
         assertTrue(new DefaultSchemaOption(true, "foo_schema", DialectSchemaSemantics.NATIVE_SCHEMA).isSchemaAvailable());
     }
