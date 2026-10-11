@@ -2996,3 +2996,63 @@ forbidden_summary_terms = ["Review Result: Mergeable", "Feedback Mode: Needs Dis
 policy_binding_profile = "review-pr"
 policy_assertions = [{source = "review-pr", statements = ["When the behavior is accepted but the patch adds unsupported generalization, public surface, parallel models, or abstractions without a real stable boundary, treat the excess as a finding candidate under the implementation rules; patch size or novelty alone is not evidence of overdesign.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable.", "If at least one candidate passes the Finding Proof Gate, use `Not Mergeable` with `Feedback Mode: Change Request`.", "`Not Mergeable`: `### Result` with exactly one bold `Review Result: Not Mergeable` line, one `Feedback Mode`, a bold `Blocking Issues: N` line, and a concise reason; `### Blocking Issues`; `### Coverage`."]}, {source = "implementation-rules", statements = ["Second, within the preserved architecture or an explicitly authorized architecture change, use the smallest clear implementation, prioritize local readability over line count, and minimize conceptual surface.", "A new abstraction must own production behavior, state, or a contract that existing types cannot express and must represent a real, stable variation or boundary."]}]
 critical = true
+
+[[cases]]
+id = "java_invocation_context_review"
+group = "review-pr invocation context"
+description = "Checks annotation applicability against three supported workloads and independently assesses an earlier review."
+phase = "review-pr applicability analysis"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "Answer this self-contained read-only applicability question using only the supplied facts and bound rules; do not inspect files, run checks, edit anything, or give an overall PR verdict. A: the complete supported call graph reaches a private metadata helper only after occasional CREATE TABLE, ALTER TABLE, or explicit metadata-maintenance requests; normal data requests never reach it, and its bounded work does not repeat with normal data throughput. Its existing small Stream pipeline is correct, and no independent correctness or cost issue is established. An earlier Formal Review marked A high-frequency solely because each DDL calls it, requested a Stream-to-loop rewrite and a TPS benchmark to classify it, and returned Mergeable after tests passed. B: a supported public JDBC metadata API performs normal continuous per-request metadata queries as application throughput grows; each query calls its internal helper, although external application callers are absent from the repository. C: a Pipeline entry method is invoked once, then continuously processes data units and invokes its private helper for each unit under the supported normal workload. Classify the helper in each fixture, decide whether A's requested Stream rewrite and classification benchmark are justified, and assess the earlier verdict as evidence. Report exactly one assignment for each marker: A, B, and C use high-frequency, low-frequency, or uncertain; A.stream uses keep, replace, or uncertain; A.tps uses required, not-required, or uncertain; prior-verdict uses evidence or not-evidence. Write each assignment as marker=value, then explain the actual workload and call-path evidence for every fixture and the necessity of A's requested changes."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A=low-frequency", "B=high-frequency", "C=high-frequency", "A.stream=keep", "A.tps=not-required", "prior-verdict=not-evidence"]
+forbidden_summary_terms = ["A=high-frequency", "A=uncertain", "B=low-frequency", "B=uncertain", "C=low-frequency", "C=uncertain", "A.stream=replace", "A.stream=uncertain", "A.tps=required", "A.tps=uncertain", "prior-verdict=evidence"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "code-of-conduct", statements = ["Code is high-frequency when its work repeats as throughput grows under a supported normal workload, including SQL execution, metadata queries, transaction operations, or Pipeline data-unit processing. A method need not run for every SQL request; repeated work inside a method invoked only once also counts.", "Judge external APIs by supported normal per-request use and internal helpers by actual call paths. Missing repository callers, a construction or closing role, and theoretical repeatability are not conclusive on their own; leave the result uncertain when evidence is insufficient.", "Annotate a class, method or constructor at the smallest accurate scope that covers the high-frequency behavior."]}, {source = "coding-standards", statements = ["Before adding or validating `HighFrequencyInvocation`, apply the `CODE_OF_CONDUCT.md` definition by identifying the supported normal workload and verifying that the target's work repeats as that workload's throughput grows.", "Invocation after each DDL or explicit metadata refresh request proves reachability, not high frequency by itself.", "Leave applicability uncertain when normal-workload evidence is insufficient; do not add the annotation or rewrite Streams solely from reachability or theoretical repeatability.", "Do not require a TPS benchmark solely to classify these paths."]}, {source = "review-pr", statements = ["Never use a previous Formal Review result as evidence or as a conclusion to match.", "`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable."]}]
+critical = true
+
+[[cases]]
+id = "metadata_identity_input_review"
+group = "review-pr metadata identity"
+description = "Calculates candidate and contract missing-identity sets from two raw metadata fixtures."
+phase = "review-pr identity provenance analysis"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "Answer this self-contained read-only code-analysis question using only the supplied synthetic contract and algorithm; do not inspect files, run checks, edit anything, or give an overall PR verdict. Inventory nodes and raw loader results carry physical identities (storageUnit, schema, table), compared exactly as triples. The warning contract reports inventory identities absent from raw loader metadata before translation or revision; it does not prove physical table absence or repair metadata. The real inventory node is (unit, archive, foo), and the connection's default schema is public. The candidate constructs expected identities with identity(node.storageUnit, defaultSchema, node.table), then computes candidate_missing = expected identities minus raw loaded identities. P: the raw loader returns only (unit, archive, foo). Q: the raw loader returns only (unit, public, foo). For each fixture calculate both candidate_missing and contract_missing, assess whether the candidate satisfies the warning contract, and identify the smallest necessary correction if one is needed. Report exactly one assignment per marker: P.current, P.contract, Q.current, and Q.contract. Format each set as [] or [storageUnit.schema.table] without internal spaces, using marker=value. Then explain the origin of the compared schema, the warning consequences in both fixtures, and the minimum change required by the contract."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["P.current=[unit.public.foo]", "P.contract=[]", "Q.current=[]", "Q.contract=[unit.archive.foo]"]
+forbidden_summary_terms = ["P.current=[]", "P.current=[unit.archive.foo]", "P.contract=[unit.public.foo]", "P.contract=[unit.archive.foo]", "Q.current=[unit.public.foo]", "Q.current=[unit.archive.foo]", "Q.contract=[]", "Q.contract=[unit.public.foo]"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Counter-evidence`: check the strongest evidence that could disprove the finding, especially author or maintainer replies and version-specific facts.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable."]}]
+critical = true
+
+[[cases]]
+id = "review_acceptance_evidence_status"
+group = "review-pr acceptance evidence"
+description = "Distinguishes an unverified decisive acceptance premise from a completed evidence check."
+phase = "review-pr completion gate"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "Answer this self-contained read-only policy question using only the supplied review states and bound rules; do not inspect files, run checks, edit anything, or produce a Formal Review report. For each independent state, decide the next review disposition. A: no blocking finding has been proven, and current-candidate tests and applicable style checks pass. Acceptance of the changed behavior depends on a decisive premise about a helper's input contract, inferred only from its name. The implementation, caller setup, consuming path, and relevant contrary scenario are available through admissible local evidence but have not been inspected; no evidence yet disproves the premise. B: the same decisive premise has been verified against the current implementation, caller setup, input contract, and consuming path, and the strongest applicable contrary scenario has been checked. Authoritative scope and accepted requirements are established, all other review and Completion Gates are complete, and no blocking finding or outcome-sensitive gap remains. Report exactly one assignment for each marker A and B, choosing from continue-review, mergeable, review-incomplete, change-request, or needs-discussion, using marker=value. Then explain which evidence supports each disposition and the smallest necessary next step, if any."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A=continue-review", "B=mergeable"]
+forbidden_summary_terms = ["A=mergeable", "A=review-incomplete", "A=change-request", "A=needs-discussion", "B=continue-review", "B=review-incomplete", "B=change-request", "B=needs-discussion"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["Before accepting a behavior conclusion, identify the premises whose failure would change that conclusion and verify them against current behavior and the strongest applicable counter-evidence.", "When such a premise remains unverified and admissible evidence is available, continue the review instead of treating the absence of a proven blocker as evidence for acceptance.", "Classify a gap as incomplete only when a specific outcome-sensitive decisive fact remains unavailable after every admissible evidence route has been attempted; if relevant local or public evidence exists or another allowed route remains, continue the review and classify the candidate.", "Otherwise use `Mergeable` for the selected focus."]}]
+critical = true
