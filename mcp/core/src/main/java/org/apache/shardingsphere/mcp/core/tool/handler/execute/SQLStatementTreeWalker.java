@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.datetime.DatetimeExpression;
@@ -232,7 +234,10 @@ final class SQLStatementTreeWalker {
     }
     
     private void walkWith(final WithSegment with) {
-        with.getCommonTableExpressions().forEach(each -> walk(each.getSubquery().getSelect()));
+        with.getCommonTableExpressions().forEach(each -> {
+            ShardingSpherePreconditions.checkState(null == each.getDataModification(), MCPUnsupportedSQLStatementException::new);
+            walk(each.getSubquery().getSelect());
+        });
     }
     
     private void walkCombine(final CombineSegment combine) {
