@@ -28,7 +28,7 @@
     </logger>
     
     <appender name="MetaDataLoaderTestAppender" class="ch.qos.logback.core.read.ListAppender" />
-    <logger name="org.apache.shardingsphere.database.connector.core.metadata.data.loader" level="warn" additivity="false">
+    <logger name="org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader" level="warn" additivity="false">
         <appender-ref ref="MetaDataLoaderTestAppender" />
     </logger>
     
