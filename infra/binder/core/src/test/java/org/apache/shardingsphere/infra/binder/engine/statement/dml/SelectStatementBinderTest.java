@@ -505,11 +505,10 @@ class SelectStatementBinderTest {
                 .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("product_tree")))).build();
         SelectStatement withSelectStatement = SelectStatement.builder().databaseType(databaseType).projections(anchorProjections)
                 .combine(new CombineSegment(0, 0, new SubquerySegment(0, 0, anchorSelect, ""), CombineType.UNION_ALL, new SubquerySegment(0, 0, recursiveSelect, ""))).build();
-        WithSegment withSegment = new WithSegment(0, 0, new LinkedList<>(Collections.singleton(createCommonTableExpression("product_tree", withSelectStatement))), true);
+        WithSegment withSegment = new WithSegment(0, 0, Collections.singleton(createCommonTableExpression("product_tree", withSelectStatement)), true);
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).with(withSegment).projections(createOrderProjections())
                 .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("product_tree")))).build();
-        SelectStatement actual = new SelectStatementBinder().bind(selectStatement,
-                new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
         CommonTableExpressionSegment actualCommonTableExpression = actual.getWith().get().getCommonTableExpressions().iterator().next();
         SelectStatement actualRecursiveSelect = actualCommonTableExpression.getSubquery().getSelect().getCombine().get().getRight().getSelect();
         ColumnSegment actualRecursiveUserIdColumn = ((ColumnProjectionSegment) actualRecursiveSelect.getProjections().getProjections().iterator().next()).getColumn();
