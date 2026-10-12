@@ -230,9 +230,9 @@ class FirebirdPrepareStatementCommandExecutorTest {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("foo_db");
         doReturn(new RuleMetaData(Collections.singleton(rule))).when(database).getRuleMetaData();
         FirebirdBlobInfoRegistry.refreshTable("foo_db", "foo_tbl_0", Collections.singletonMap("id", 7));
-        FirebirdReturnColumnPacket columnPacket = describeSingleColumn("SELECT id FROM foo_tbl");
+        FirebirdReturnColumnPacket actualColumnPacket = describeSingleColumn("SELECT id FROM foo_tbl");
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class, RETURNS_DEEP_STUBS);
-        columnPacket.write(payload);
+        actualColumnPacket.write(payload);
         verify(payload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
         verify(payload).writeInt4LE(7);
     }
