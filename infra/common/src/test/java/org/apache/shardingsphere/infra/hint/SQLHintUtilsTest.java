@@ -58,10 +58,22 @@ class SQLHintUtilsTest {
         assertThat(SQLHintUtils.extractHint(sql).getHintShardingDatabaseValue("t_order"), is(expectedValues));
     }
     
+    @Test
+    void assertExtractHintWithShardingDatabaseValueWhenTableNameContainsAlias() {
+        assertThat(SQLHintUtils.extractHint("/* SHARDINGSPHERE_HINT: t_shardingDatabaseValue.SHARDING_DATABASE_VALUE=1 */").getHintShardingDatabaseValue("t_shardingDatabaseValue"),
+                is(Collections.<Comparable<?>>singletonList(new BigInteger("1"))));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("extractHintShardingTableValueArguments")
     void assertExtractHintWithShardingTableValue(final String name, final String sql, final Collection<Comparable<?>> expectedValues) {
         assertThat(SQLHintUtils.extractHint(sql).getHintShardingTableValue("t_order"), is(expectedValues));
+    }
+    
+    @Test
+    void assertExtractHintWithShardingTableValueWhenTableNameContainsAlias() {
+        assertThat(SQLHintUtils.extractHint("/* SHARDINGSPHERE_HINT: t_shardingTableValue.SHARDING_TABLE_VALUE=1 */").getHintShardingTableValue("t_shardingTableValue"),
+                is(Collections.<Comparable<?>>singletonList(new BigInteger("1"))));
     }
     
     @ParameterizedTest(name = "{0}")

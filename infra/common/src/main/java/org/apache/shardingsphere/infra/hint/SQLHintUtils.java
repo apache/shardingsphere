@@ -135,7 +135,8 @@ public final class SQLHintUtils {
     }
     
     private static String getShardingValueKey(final String hintPropKey, final SQLHintPropertiesKey sqlHintPropsKey) {
-        return hintPropKey.replace(sqlHintPropsKey.getAlias(), sqlHintPropsKey.getKey()).toUpperCase();
+        int propertyNameIndex = hintPropKey.lastIndexOf('.') + 1;
+        return (hintPropKey.substring(0, propertyNameIndex) + hintPropKey.substring(propertyNameIndex).replace(sqlHintPropsKey.getAlias(), sqlHintPropsKey.getKey())).toUpperCase();
     }
     
     private static String getHintValue(final Map<String, String> hintKeyValues, final SQLHintPropertiesKey sqlHintPropsKey) {
