@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -34,20 +35,26 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -205,6 +212,41 @@ class SubqueryExtractorTest {
         projections.getProjections().add(expressionProjectionSegment);
         assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, true).size(), is(1));
         assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, false).size(), is(1));
+    }
+    
+    @Test
+    void assertExtractSubquerySegmentsInDataModifyingCTE() {
+        CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("foo_cte")), null, mock(UpdateStatement.class));
+        WithSegment withSegment = new WithSegment(0, 0, Collections.singletonList(commonTableExpression), false);
+        SelectStatement selectStatement = mockSelectStatement();
+        when(selectStatement.getWith()).thenReturn(Optional.of(withSegment));
+        assertTrue(SubqueryExtractor.extractSubquerySegments(selectStatement, true).isEmpty());
+    }
+    
+    @Test
+    void assertExtractSubquerySegmentsInCTEWithRecursion() {
+        SubquerySegment nestedSubquery = new SubquerySegment(0, 0, mockSelectStatement(), "");
+        SelectStatement commonTableSelect = mockSelectStatement();
+        when(commonTableSelect.getFrom()).thenReturn(Optional.of(new SubqueryTableSegment(0, 0, nestedSubquery)));
+        SubquerySegment commonTableSubquery = new SubquerySegment(0, 0, commonTableSelect, "");
+        CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("foo_cte")), commonTableSubquery, null);
+        WithSegment withSegment = new WithSegment(0, 0, Collections.singletonList(commonTableExpression), false);
+        SelectStatement selectStatement = mockSelectStatement();
+        when(selectStatement.getWith()).thenReturn(Optional.of(withSegment));
+        assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, true), is(Arrays.asList(commonTableSubquery, nestedSubquery)));
+    }
+    
+    @Test
+    void assertExtractSubquerySegmentsInCTEWithoutRecursion() {
+        SubquerySegment nestedSubquery = new SubquerySegment(0, 0, mockSelectStatement(), "");
+        SelectStatement commonTableSelect = mockSelectStatement();
+        when(commonTableSelect.getFrom()).thenReturn(Optional.of(new SubqueryTableSegment(0, 0, nestedSubquery)));
+        SubquerySegment commonTableSubquery = new SubquerySegment(0, 0, commonTableSelect, "");
+        CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("foo_cte")), commonTableSubquery, null);
+        WithSegment withSegment = new WithSegment(0, 0, Collections.singletonList(commonTableExpression), false);
+        SelectStatement selectStatement = mockSelectStatement();
+        when(selectStatement.getWith()).thenReturn(Optional.of(withSegment));
+        assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, false), is(Collections.singletonList(commonTableSubquery)));
     }
     
     private SelectStatement mockSelectStatement() {

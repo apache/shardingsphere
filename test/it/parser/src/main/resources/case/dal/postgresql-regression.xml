@@ -48,6 +48,8 @@
         </merge>
         <table name="foo" start-index="33" stop-index="35" />
         <table name="bar" start-index="43" stop-index="45" />
+        <table name="foo" start-index="50" stop-index="52" />
+        <table name="bar" start-index="59" stop-index="61" />
     </explain>
     <explain sql-case-id="explain_create_table_as_postgresql">
         <create-table>

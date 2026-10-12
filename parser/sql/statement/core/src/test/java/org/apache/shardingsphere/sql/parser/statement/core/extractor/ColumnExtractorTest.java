@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -157,6 +158,9 @@ class ColumnExtractorTest {
                 Arguments.of("BetweenExpressionWithNonColumnOperands", createBetweenExpressionWithMixedOperands(),
                         Arrays.asList("foo_between_function_column", "foo_between_binary_left", "bar_between_binary_right")),
                 Arguments.of("ListExpressionWithColumns", createListExpression(), Arrays.asList("foo_list_left", "bar_list_right")),
+                Arguments.of("TypeCastColumn", new TypeCastExpression(0, 0, "", createColumnSegment("foo_cast_column"), "text"), Collections.singletonList("foo_cast_column")),
+                Arguments.of("BinaryOperationWithTypeCastOperand", new BinaryOperationExpression(0, 0, new TypeCastExpression(0, 0, "", createColumnSegment("foo_cast_left"), "integer"),
+                        createColumnSegment("bar_cast_right"), "+", ""), Arrays.asList("bar_cast_right", "foo_cast_left")),
                 Arguments.of("AggregationProjectionWithFunctionParameters", createAggregationProjectionExpression(),
                         Arrays.asList("foo_agg_direct", "foo_agg_func_direct", "foo_agg_func_binary_left", "bar_agg_func_binary_right")),
                 Arguments.of("AggregationProjectionWithWindow", createAggregationProjectionWithWindow(),
@@ -164,6 +168,7 @@ class ColumnExtractorTest {
                                 "foo_agg_window_order_column", "foo_agg_window_order_expr_left", "bar_agg_window_order_expr_right", "foo_agg_window_frame_column")),
                 Arguments.of("FunctionSegmentWithNestedBinary", createFunctionWithColumnAndBinaryParameter(),
                         Arrays.asList("foo_function_direct", "foo_function_binary_left", "bar_function_binary_right")),
+                Arguments.of("FunctionSegmentWithTypeCastParameters", createFunctionWithTypeCastParameters(), Collections.singletonList("foo_cast_column")),
                 Arguments.of("FunctionSegmentWithWindow", createFunctionWithWindow(),
                         Arrays.asList("foo_function_param", "foo_window_partition", "bar_window_partition_func",
                                 "foo_window_order_column", "foo_window_order_expr_left", "bar_window_order_expr_right", "foo_window_frame_column")),
@@ -171,6 +176,13 @@ class ColumnExtractorTest {
                         Arrays.asList("foo_xml_element_param", "bar_xml_element_attr")),
                 Arguments.of("XmlSerializeFunction", createXmlSerializeFunctionSegment("foo_xml_serialize_param", "bar_xml_serialize_attr"),
                         Arrays.asList("foo_xml_serialize_param", "bar_xml_serialize_attr")));
+    }
+    
+    private static FunctionSegment createFunctionWithTypeCastParameters() {
+        FunctionSegment result = new FunctionSegment(0, 0, "FUNC", "func");
+        result.getParameters().add(new TypeCastExpression(0, 0, "", new TypeCastExpression(0, 0, "", createColumnSegment("foo_cast_column"), "integer"), "text"));
+        result.getParameters().add(new TypeCastExpression(0, 0, "", new LiteralExpressionSegment(0, 0, 1), "integer"));
+        return result;
     }
     
     private static Collection<WhereSegment> createWhereSegments() {

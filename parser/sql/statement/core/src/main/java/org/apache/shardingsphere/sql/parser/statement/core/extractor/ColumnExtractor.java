@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InEx
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
@@ -123,6 +124,10 @@ public final class ColumnExtractor {
         }
         if (expression instanceof UnaryOperationExpression) {
             extract(((UnaryOperationExpression) expression).getExpression(), result);
+            return;
+        }
+        if (expression instanceof TypeCastExpression) {
+            extract(((TypeCastExpression) expression).getExpression(), result);
             return;
         }
         if (expression instanceof CollateExpression) {

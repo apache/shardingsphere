@@ -100,6 +100,9 @@ public final class SubqueryExtractor {
     
     private static void extractSubquerySegmentsFromCTEs(final List<SubquerySegment> result, final Collection<CommonTableExpressionSegment> withSegment, final boolean needRecursive) {
         for (CommonTableExpressionSegment each : withSegment) {
+            if (null != each.getDataModification()) {
+                continue;
+            }
             SubquerySegment subquery = each.getSubquery();
             subquery.setSelect(subquery.getSelect().withSubqueryType(SubqueryType.WITH));
             result.add(subquery);

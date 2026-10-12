@@ -95,42 +95,124 @@ public final class TableExtractor {
      * @param selectStatement select statement
      */
     public void extractTablesFromSelect(final SelectStatement selectStatement) {
+        TableSegment from = selectStatement.getFrom().orElse(null);
+        extractTablesFromSelect(selectStatement, from, containsUsingAlias(from) ? new TableScope(null, tableContext) : null);
+    }
+    
+    private void extractTablesFromSelect(final SelectStatement selectStatement, final TableSegment from, final TableScope tableScope) {
         if (selectStatement.getCombine().isPresent()) {
             CombineSegment combineSegment = selectStatement.getCombine().get();
-            extractTablesFromSelect(combineSegment.getLeft().getSelect());
-            extractTablesFromSelect(combineSegment.getRight().getSelect());
+            extractTablesFromNestedStatement(combineSegment.getLeft().getSelect(), tableScope);
+            extractTablesFromNestedStatement(combineSegment.getRight().getSelect(), tableScope);
         }
-        if (selectStatement.getFrom().isPresent() && !selectStatement.getCombine().isPresent()) {
-            extractTablesFromTableSegment(selectStatement.getFrom().get());
+        if (null != from && !selectStatement.getCombine().isPresent()) {
+            extractTablesFromTableSegment(from, tableScope);
         }
-        selectStatement.getWhere().ifPresent(optional -> extractTablesFromExpression(optional.getExpr()));
+        if (selectStatement.getWhere().isPresent()) {
+            extractTablesFromExpression(selectStatement.getWhere().get().getExpr(), tableScope);
+        }
         if (null != selectStatement.getProjections() && !selectStatement.getCombine().isPresent()) {
-            extractTablesFromProjections(selectStatement.getProjections());
+            extractTablesFromProjections(selectStatement.getProjections(), tableScope);
         }
-        selectStatement.getGroupBy().ifPresent(optional -> extractTablesFromOrderByItems(optional.getGroupByItems()));
-        selectStatement.getOrderBy().ifPresent(optional -> extractTablesFromOrderByItems(optional.getOrderByItems()));
-        selectStatement.getHaving().ifPresent(optional -> extractTablesFromExpression(optional.getExpr()));
-        selectStatement.getWith().ifPresent(optional -> extractTablesFromCTEs(optional.getCommonTableExpressions()));
+        if (selectStatement.getGroupBy().isPresent()) {
+            extractTablesFromOrderByItems(selectStatement.getGroupBy().get().getGroupByItems(), tableScope);
+        }
+        if (selectStatement.getOrderBy().isPresent()) {
+            extractTablesFromOrderByItems(selectStatement.getOrderBy().get().getOrderByItems(), tableScope);
+        }
+        if (selectStatement.getHaving().isPresent()) {
+            extractTablesFromExpression(selectStatement.getHaving().get().getExpr(), tableScope);
+        }
+        if (selectStatement.getWith().isPresent()) {
+            extractTablesFromCTEs(selectStatement.getWith().get().getCommonTableExpressions(), tableScope);
+        }
         selectStatement.getLock().ifPresent(this::extractTablesFromLock);
     }
     
-    private void extractTablesFromCTEs(final Collection<CommonTableExpressionSegment> commonTableExpressionSegments) {
-        for (CommonTableExpressionSegment each : commonTableExpressionSegments) {
-            if (each.getStatement() instanceof MergeStatement) {
-                extractTablesFromMerge((MergeStatement) each.getStatement());
-            } else {
-                extractTablesFromSQLStatement(each.getStatement());
-            }
+    /**
+     * Use the flat table context when no USING alias needs a scope.
+     *
+     * @param sqlStatement statement whose table scope is inspected
+     * @return scope for USING aliases, or null to use the flat table context
+     */
+    private TableScope createTableScope(final SQLStatement sqlStatement) {
+        if (!containsUsingAlias(sqlStatement)) {
+            return null;
+        }
+        return new TableScope(null, tableContext);
+    }
+    
+    private boolean containsUsingAlias(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            SelectStatement selectStatement = (SelectStatement) sqlStatement;
+            return containsUsingAlias(selectStatement.getFrom().orElse(null));
+        }
+        if (sqlStatement instanceof UpdateStatement) {
+            UpdateStatement updateStatement = (UpdateStatement) sqlStatement;
+            return containsUsingAlias(updateStatement.getTable()) || updateStatement.getFrom().isPresent() && containsUsingAlias(updateStatement.getFrom().get());
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            return containsUsingAlias(((DeleteStatement) sqlStatement).getTable());
+        }
+        if (sqlStatement instanceof InsertStatement) {
+            InsertStatement insertStatement = (InsertStatement) sqlStatement;
+            return insertStatement.getInsertSelect().isPresent() && containsUsingAlias(insertStatement.getInsertSelect().get().getSelect());
+        }
+        if (sqlStatement instanceof MergeStatement) {
+            MergeStatement mergeStatement = (MergeStatement) sqlStatement;
+            return containsUsingAlias(mergeStatement.getTarget()) || containsUsingAlias(mergeStatement.getSource());
+        }
+        return false;
+    }
+    
+    private boolean containsUsingAlias(final TableSegment tableSegment) {
+        if (!(tableSegment instanceof JoinTableSegment)) {
+            return false;
+        }
+        JoinTableSegment joinTableSegment = (JoinTableSegment) tableSegment;
+        return joinTableSegment.getUsingAliasSegment().isPresent() || containsUsingAlias(joinTableSegment.getLeft()) || containsUsingAlias(joinTableSegment.getRight());
+    }
+    
+    private void extractTablesFromNestedStatement(final SQLStatement sqlStatement, final TableScope tableScope) {
+        if (sqlStatement instanceof SelectStatement) {
+            SelectStatement selectStatement = (SelectStatement) sqlStatement;
+            TableSegment from = selectStatement.getFrom().orElse(null);
+            extractTablesFromSelect(selectStatement, from, createNestedTableScope(tableScope, null != tableScope || containsUsingAlias(from)));
+            return;
+        }
+        TableScope nestedScope = createNestedTableScope(tableScope, null != tableScope || containsUsingAlias(sqlStatement));
+        if (sqlStatement instanceof MergeStatement) {
+            extractTablesFromMerge((MergeStatement) sqlStatement, nestedScope);
+        } else if (sqlStatement instanceof InsertStatement) {
+            extractTablesFromInsert((InsertStatement) sqlStatement, nestedScope);
+        } else if (sqlStatement instanceof UpdateStatement) {
+            extractTablesFromUpdate((UpdateStatement) sqlStatement, nestedScope);
+        } else if (sqlStatement instanceof DeleteStatement) {
+            extractTablesFromDelete((DeleteStatement) sqlStatement, nestedScope);
         }
     }
     
-    private void extractTablesFromTableSegment(final TableSegment tableSegment) {
+    private TableScope createNestedTableScope(final TableScope tableScope, final boolean scopeRequired) {
+        if (!scopeRequired) {
+            return null;
+        }
+        TableScope parentScope = null == tableScope ? new TableScope(null, tableContext) : tableScope;
+        return new TableScope(parentScope, null);
+    }
+    
+    private void extractTablesFromCTEs(final Collection<CommonTableExpressionSegment> commonTableExpressionSegments, final TableScope tableScope) {
+        for (CommonTableExpressionSegment each : commonTableExpressionSegments) {
+            extractTablesFromNestedStatement(each.getStatement(), tableScope);
+        }
+    }
+    
+    private void extractTablesFromTableSegment(final TableSegment tableSegment, final TableScope tableScope) {
         if (tableSegment instanceof SimpleTableSegment) {
-            tableContext.add(tableSegment);
+            addTableContext(tableSegment, tableScope);
             rewriteTables.add((SimpleTableSegment) tableSegment);
         }
         if (tableSegment instanceof SubqueryTableSegment) {
-            tableContext.add(tableSegment);
+            addTableContext(tableSegment, tableScope);
             TableExtractor tableExtractor = new TableExtractor();
             tableExtractor.extractTablesFromSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
             rewriteTables.addAll(tableExtractor.rewriteTables);
@@ -138,110 +220,128 @@ public final class TableExtractor {
         }
         if (tableSegment instanceof JoinTableSegment) {
             joinTables.add((JoinTableSegment) tableSegment);
-            extractTablesFromJoinTableSegment((JoinTableSegment) tableSegment);
+            extractTablesFromJoinTableSegment((JoinTableSegment) tableSegment, tableScope);
         }
         if (tableSegment instanceof DeleteMultiTableSegment) {
             DeleteMultiTableSegment deleteMultiTableSegment = (DeleteMultiTableSegment) tableSegment;
             rewriteTables.addAll(deleteMultiTableSegment.getActualDeleteTables());
-            extractTablesFromTableSegment(deleteMultiTableSegment.getRelationTable());
+            extractTablesFromTableSegment(deleteMultiTableSegment.getRelationTable(), tableScope);
         }
         if (tableSegment instanceof FunctionTableSegment) {
-            tableContext.add(tableSegment);
-            extractTablesFromExpression(((FunctionTableSegment) tableSegment).getTableFunction());
+            addTableContext(tableSegment, tableScope);
+            extractTablesFromExpression(((FunctionTableSegment) tableSegment).getTableFunction(), tableScope);
         }
     }
     
-    private void extractTablesFromJoinTableSegment(final JoinTableSegment tableSegment) {
-        extractTablesFromTableSegment(tableSegment.getLeft());
-        extractTablesFromTableSegment(tableSegment.getRight());
-        extractTablesFromExpression(tableSegment.getCondition());
+    private void addTableContext(final TableSegment tableSegment, final TableScope tableScope) {
+        if (!(tableSegment instanceof JoinTableSegment) || null == tableScope.parent) {
+            tableContext.add(tableSegment);
+        }
+        if (null != tableScope) {
+            tableScope.tables.add(tableSegment);
+        }
     }
     
-    private void extractTablesFromExpression(final ExpressionSegment expressionSegment) {
+    private void extractTablesFromJoinTableSegment(final JoinTableSegment tableSegment, final TableScope tableScope) {
+        if (tableSegment.getUsingAliasSegment().isPresent()) {
+            addTableContext(tableSegment, tableScope);
+        }
+        extractTablesFromTableSegment(tableSegment.getLeft(), tableScope);
+        extractTablesFromTableSegment(tableSegment.getRight(), tableScope);
+        extractTablesFromExpression(tableSegment.getCondition(), tableScope);
+    }
+    
+    private void extractTablesFromExpression(final ExpressionSegment expressionSegment, final TableScope tableScope) {
         if (expressionSegment instanceof ColumnSegment) {
-            extractTablesFromColumnSegments(Collections.singleton((ColumnSegment) expressionSegment));
+            extractTablesFromColumnSegments(Collections.singleton((ColumnSegment) expressionSegment), tableScope);
         }
         if (expressionSegment instanceof ListExpression) {
-            ((ListExpression) expressionSegment).getItems().forEach(this::extractTablesFromExpression);
+            extractTablesFromExpressions(((ListExpression) expressionSegment).getItems(), tableScope);
         }
         if (expressionSegment instanceof CommonExpressionSegment) {
-            ((CommonExpressionSegment) expressionSegment).getChildren().forEach(this::extractTablesFromExpression);
+            extractTablesFromExpressions(((CommonExpressionSegment) expressionSegment).getChildren(), tableScope);
         }
         if (expressionSegment instanceof ExistsSubqueryExpression) {
-            extractTablesFromSelect(((ExistsSubqueryExpression) expressionSegment).getSubquery().getSelect());
+            extractTablesFromNestedStatement(((ExistsSubqueryExpression) expressionSegment).getSubquery().getSelect(), tableScope);
         }
         if (expressionSegment instanceof BetweenExpression) {
-            extractTablesFromExpression(((BetweenExpression) expressionSegment).getLeft());
-            extractTablesFromExpression(((BetweenExpression) expressionSegment).getBetweenExpr());
-            extractTablesFromExpression(((BetweenExpression) expressionSegment).getAndExpr());
+            extractTablesFromExpression(((BetweenExpression) expressionSegment).getLeft(), tableScope);
+            extractTablesFromExpression(((BetweenExpression) expressionSegment).getBetweenExpr(), tableScope);
+            extractTablesFromExpression(((BetweenExpression) expressionSegment).getAndExpr(), tableScope);
         }
         if (expressionSegment instanceof InExpression) {
-            extractTablesFromExpression(((InExpression) expressionSegment).getLeft());
-            extractTablesFromExpression(((InExpression) expressionSegment).getRight());
+            extractTablesFromExpression(((InExpression) expressionSegment).getLeft(), tableScope);
+            extractTablesFromExpression(((InExpression) expressionSegment).getRight(), tableScope);
         }
         if (expressionSegment instanceof SubqueryExpressionSegment) {
-            extractTablesFromSelect(((SubqueryExpressionSegment) expressionSegment).getSubquery().getSelect());
+            extractTablesFromNestedStatement(((SubqueryExpressionSegment) expressionSegment).getSubquery().getSelect(), tableScope);
         }
         if (expressionSegment instanceof SubquerySegment) {
-            extractTablesFromSelect(((SubquerySegment) expressionSegment).getSelect());
+            extractTablesFromNestedStatement(((SubquerySegment) expressionSegment).getSelect(), tableScope);
         }
         if (expressionSegment instanceof BinaryOperationExpression) {
-            extractTablesFromExpression(((BinaryOperationExpression) expressionSegment).getLeft());
-            extractTablesFromExpression(((BinaryOperationExpression) expressionSegment).getRight());
+            extractTablesFromExpression(((BinaryOperationExpression) expressionSegment).getLeft(), tableScope);
+            extractTablesFromExpression(((BinaryOperationExpression) expressionSegment).getRight(), tableScope);
         }
         if (expressionSegment instanceof MatchAgainstExpression) {
-            ((MatchAgainstExpression) expressionSegment).getColumns().forEach(this::extractTablesFromExpression);
-            extractTablesFromExpression(((MatchAgainstExpression) expressionSegment).getExpr());
+            extractTablesFromExpressions(((MatchAgainstExpression) expressionSegment).getColumns(), tableScope);
+            extractTablesFromExpression(((MatchAgainstExpression) expressionSegment).getExpr(), tableScope);
         }
         if (expressionSegment instanceof FunctionSegment) {
-            ((FunctionSegment) expressionSegment).getParameters().forEach(this::extractTablesFromExpression);
+            extractTablesFromExpressions(((FunctionSegment) expressionSegment).getParameters(), tableScope);
         }
         if (expressionSegment instanceof CaseWhenExpression) {
-            extractTablesFromCaseWhenExpression((CaseWhenExpression) expressionSegment);
+            extractTablesFromCaseWhenExpression((CaseWhenExpression) expressionSegment, tableScope);
         }
         if (expressionSegment instanceof CollateExpression) {
-            extractTablesFromExpression(((CollateExpression) expressionSegment).getCollateName());
+            extractTablesFromExpression(((CollateExpression) expressionSegment).getCollateName(), tableScope);
         }
         if (expressionSegment instanceof DatetimeExpression) {
-            extractTablesFromExpression(((DatetimeExpression) expressionSegment).getLeft());
-            extractTablesFromExpression(((DatetimeExpression) expressionSegment).getRight());
+            extractTablesFromExpression(((DatetimeExpression) expressionSegment).getLeft(), tableScope);
+            extractTablesFromExpression(((DatetimeExpression) expressionSegment).getRight(), tableScope);
         }
         if (expressionSegment instanceof NotExpression) {
-            extractTablesFromExpression(((NotExpression) expressionSegment).getExpression());
+            extractTablesFromExpression(((NotExpression) expressionSegment).getExpression(), tableScope);
         }
         if (expressionSegment instanceof TypeCastExpression) {
-            extractTablesFromExpression(((TypeCastExpression) expressionSegment).getExpression());
+            extractTablesFromExpression(((TypeCastExpression) expressionSegment).getExpression(), tableScope);
         }
         if (expressionSegment instanceof QuantifySubqueryExpression) {
-            extractTablesFromExpression(((QuantifySubqueryExpression) expressionSegment).getSubquery());
+            extractTablesFromExpression(((QuantifySubqueryExpression) expressionSegment).getSubquery(), tableScope);
         }
     }
     
-    private void extractTablesFromCaseWhenExpression(final CaseWhenExpression expressionSegment) {
-        extractTablesFromExpression(expressionSegment.getCaseExpr());
-        expressionSegment.getWhenExprs().forEach(this::extractTablesFromExpression);
-        expressionSegment.getThenExprs().forEach(this::extractTablesFromExpression);
-        extractTablesFromExpression(expressionSegment.getElseExpr());
+    private void extractTablesFromExpressions(final Collection<? extends ExpressionSegment> expressionSegments, final TableScope tableScope) {
+        for (ExpressionSegment each : expressionSegments) {
+            extractTablesFromExpression(each, tableScope);
+        }
     }
     
-    private void extractTablesFromProjections(final ProjectionsSegment projections) {
+    private void extractTablesFromCaseWhenExpression(final CaseWhenExpression expressionSegment, final TableScope tableScope) {
+        extractTablesFromExpression(expressionSegment.getCaseExpr(), tableScope);
+        extractTablesFromExpressions(expressionSegment.getWhenExprs(), tableScope);
+        extractTablesFromExpressions(expressionSegment.getThenExprs(), tableScope);
+        extractTablesFromExpression(expressionSegment.getElseExpr(), tableScope);
+    }
+    
+    private void extractTablesFromProjections(final ProjectionsSegment projections, final TableScope tableScope) {
         for (ProjectionSegment each : projections.getProjections()) {
             if (each instanceof SubqueryProjectionSegment) {
-                extractTablesFromSelect(((SubqueryProjectionSegment) each).getSubquery().getSelect());
+                extractTablesFromNestedStatement(((SubqueryProjectionSegment) each).getSubquery().getSelect(), tableScope);
             } else if (each instanceof OwnerAvailable) {
-                if (((OwnerAvailable) each).getOwner().isPresent() && needRewrite(((OwnerAvailable) each).getOwner().get())) {
+                if (((OwnerAvailable) each).getOwner().isPresent() && needRewrite(((OwnerAvailable) each).getOwner().get(), tableScope)) {
                     OwnerSegment ownerSegment = ((OwnerAvailable) each).getOwner().get();
                     rewriteTables.add(createSimpleTableSegment(ownerSegment));
                 }
             } else if (each instanceof ColumnProjectionSegment) {
-                if (((ColumnProjectionSegment) each).getColumn().getOwner().isPresent() && needRewrite(((ColumnProjectionSegment) each).getColumn().getOwner().get())) {
+                if (((ColumnProjectionSegment) each).getColumn().getOwner().isPresent() && needRewrite(((ColumnProjectionSegment) each).getColumn().getOwner().get(), tableScope)) {
                     OwnerSegment ownerSegment = ((ColumnProjectionSegment) each).getColumn().getOwner().get();
                     rewriteTables.add(createSimpleTableSegment(ownerSegment));
                 }
             } else if (each instanceof AggregationProjectionSegment) {
-                ((AggregationProjectionSegment) each).getParameters().forEach(this::extractTablesFromExpression);
+                extractTablesFromExpressions(((AggregationProjectionSegment) each).getParameters(), tableScope);
             } else if (each instanceof ExpressionProjectionSegment) {
-                extractTablesFromExpression(((ExpressionProjectionSegment) each).getExpr());
+                extractTablesFromExpression(((ExpressionProjectionSegment) each).getExpr(), tableScope);
             }
         }
     }
@@ -254,11 +354,11 @@ public final class TableExtractor {
         return result;
     }
     
-    private void extractTablesFromOrderByItems(final Collection<OrderByItemSegment> orderByItems) {
+    private void extractTablesFromOrderByItems(final Collection<OrderByItemSegment> orderByItems, final TableScope tableScope) {
         for (OrderByItemSegment each : orderByItems) {
             if (each instanceof ColumnOrderByItemSegment) {
                 Optional<OwnerSegment> owner = ((ColumnOrderByItemSegment) each).getColumn().getOwner();
-                if (owner.isPresent() && needRewrite(owner.get())) {
+                if (owner.isPresent() && needRewrite(owner.get(), tableScope)) {
                     TableNameSegment tableNameSegment = new TableNameSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier());
                     owner.get().getTableBoundInfo().ifPresent(tableNameSegment::setTableBoundInfo);
                     rewriteTables.add(new SimpleTableSegment(tableNameSegment));
@@ -277,9 +377,13 @@ public final class TableExtractor {
      * @param deleteStatement delete statement
      */
     public void extractTablesFromDelete(final DeleteStatement deleteStatement) {
-        extractTablesFromTableSegment(deleteStatement.getTable());
+        extractTablesFromDelete(deleteStatement, createTableScope(deleteStatement));
+    }
+    
+    private void extractTablesFromDelete(final DeleteStatement deleteStatement, final TableScope tableScope) {
+        extractTablesFromTableSegment(deleteStatement.getTable(), tableScope);
         if (deleteStatement.getWhere().isPresent()) {
-            extractTablesFromExpression(deleteStatement.getWhere().get().getExpr());
+            extractTablesFromExpression(deleteStatement.getWhere().get().getExpr(), tableScope);
         }
     }
     
@@ -289,25 +393,36 @@ public final class TableExtractor {
      * @param insertStatement insert statement
      */
     public void extractTablesFromInsert(final InsertStatement insertStatement) {
-        insertStatement.getTable().ifPresent(this::extractTablesFromTableSegment);
+        extractTablesFromInsert(insertStatement, createTableScope(insertStatement));
+    }
+    
+    private void extractTablesFromInsert(final InsertStatement insertStatement, final TableScope tableScope) {
+        if (insertStatement.getTable().isPresent()) {
+            extractTablesFromTableSegment(insertStatement.getTable().get(), tableScope);
+        }
         if (!insertStatement.getColumns().isEmpty()) {
             for (ColumnSegment each : insertStatement.getColumns()) {
-                extractTablesFromExpression(each);
+                extractTablesFromExpression(each, tableScope);
             }
         }
-        insertStatement.getOnDuplicateKeyColumns().ifPresent(optional -> extractTablesFromAssignmentItems(optional.getColumns()));
+        if (insertStatement.getOnDuplicateKeyColumns().isPresent()) {
+            extractTablesFromAssignmentItems(insertStatement.getOnDuplicateKeyColumns().get().getColumns(), tableScope);
+        }
         if (insertStatement.getInsertSelect().isPresent()) {
-            extractTablesFromSelect(insertStatement.getInsertSelect().get().getSelect());
+            SelectStatement selectStatement = insertStatement.getInsertSelect().get().getSelect();
+            extractTablesFromSelect(selectStatement, selectStatement.getFrom().orElse(null), tableScope);
         }
     }
     
-    private void extractTablesFromAssignmentItems(final Collection<ColumnAssignmentSegment> assignmentItems) {
-        assignmentItems.forEach(each -> extractTablesFromColumnSegments(each.getColumns()));
+    private void extractTablesFromAssignmentItems(final Collection<ColumnAssignmentSegment> assignmentItems, final TableScope tableScope) {
+        for (ColumnAssignmentSegment each : assignmentItems) {
+            extractTablesFromColumnSegments(each.getColumns(), tableScope);
+        }
     }
     
-    private void extractTablesFromColumnSegments(final Collection<ColumnSegment> columnSegments) {
+    private void extractTablesFromColumnSegments(final Collection<ColumnSegment> columnSegments, final TableScope tableScope) {
         for (ColumnSegment each : columnSegments) {
-            if (each.getOwner().isPresent() && needRewrite(each.getOwner().get())) {
+            if (each.getOwner().isPresent() && needRewrite(each.getOwner().get(), tableScope)) {
                 OwnerSegment ownerSegment = each.getOwner().get();
                 TableNameSegment tableSegment = new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier());
                 ownerSegment.getTableBoundInfo().ifPresent(tableSegment::setTableBoundInfo);
@@ -322,13 +437,21 @@ public final class TableExtractor {
      * @param updateStatement update statement.
      */
     public void extractTablesFromUpdate(final UpdateStatement updateStatement) {
+        extractTablesFromUpdate(updateStatement, createTableScope(updateStatement));
+    }
+    
+    private void extractTablesFromUpdate(final UpdateStatement updateStatement, final TableScope tableScope) {
         if (!updateStatement.isTargetTableIsFromAlias()) {
-            extractTablesFromTableSegment(updateStatement.getTable());
+            extractTablesFromTableSegment(updateStatement.getTable(), tableScope);
         }
-        updateStatement.getFrom().ifPresent(this::extractTablesFromTableSegment);
-        updateStatement.getSetAssignment().getAssignments().forEach(each -> extractTablesFromExpression(each.getColumns().get(0)));
+        if (updateStatement.getFrom().isPresent()) {
+            extractTablesFromTableSegment(updateStatement.getFrom().get(), tableScope);
+        }
+        for (ColumnAssignmentSegment each : updateStatement.getSetAssignment().getAssignments()) {
+            extractTablesFromExpression(each.getColumns().get(0), tableScope);
+        }
         if (updateStatement.getWhere().isPresent()) {
-            extractTablesFromExpression(updateStatement.getWhere().get().getExpr());
+            extractTablesFromExpression(updateStatement.getWhere().get().getExpr(), tableScope);
         }
     }
     
@@ -338,8 +461,15 @@ public final class TableExtractor {
      * @param mergeStatement merge statement
      */
     public void extractTablesFromMerge(final MergeStatement mergeStatement) {
-        extractTablesFromTableSegment(mergeStatement.getTarget());
-        extractTablesFromTableSegment(mergeStatement.getSource());
+        extractTablesFromMerge(mergeStatement, createTableScope(mergeStatement));
+    }
+    
+    private void extractTablesFromMerge(final MergeStatement mergeStatement, final TableScope tableScope) {
+        extractTablesFromTableSegment(mergeStatement.getTarget(), tableScope);
+        extractTablesFromTableSegment(mergeStatement.getSource(), tableScope);
+        if (null != mergeStatement.getExpression()) {
+            extractTablesFromExpression(mergeStatement.getExpression().getExpr(), tableScope);
+        }
     }
     
     /**
@@ -349,12 +479,50 @@ public final class TableExtractor {
      * @return boolean
      */
     public boolean needRewrite(final OwnerSegment owner) {
+        String ownerName = owner.getIdentifier().getValue();
         for (TableSegment each : tableContext) {
-            if (owner.getIdentifier().getValue().equalsIgnoreCase(each.getAliasName().orElse(null))) {
+            if (isAlias(ownerName, each)) {
                 return false;
             }
         }
         return true;
+    }
+    
+    private boolean needRewrite(final OwnerSegment owner, final TableScope tableScope) {
+        return null == tableScope || null == tableScope.parent ? needRewrite(owner) : needRewriteFromLocalTableContext(owner.getIdentifier().getValue(), tableScope);
+    }
+    
+    private boolean needRewriteFromLocalTableContext(final String ownerName, final TableScope scope) {
+        for (TableSegment each : scope.tables) {
+            if (isAlias(ownerName, each)) {
+                return false;
+            }
+        }
+        for (TableSegment each : scope.tables) {
+            if (each instanceof SimpleTableSegment && !each.getAliasName().isPresent()
+                    && ownerName.equalsIgnoreCase(((SimpleTableSegment) each).getTableName().getIdentifier().getValue())) {
+                return true;
+            }
+        }
+        if (null != scope.parent) {
+            return needRewriteFromLocalTableContext(ownerName, scope.parent);
+        }
+        int inheritedTableIndex = 0;
+        for (TableSegment each : scope.inheritedTables) {
+            if (inheritedTableIndex++ == scope.inheritedTableCount) {
+                break;
+            }
+            if (isAlias(ownerName, each)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isAlias(final String ownerName, final TableSegment tableSegment) {
+        return ownerName.equalsIgnoreCase(tableSegment.getAliasName().orElse(null))
+                || tableSegment instanceof JoinTableSegment && ownerName.equalsIgnoreCase(
+                        ((JoinTableSegment) tableSegment).getUsingAliasSegment().map(optional -> optional.getIdentifier().getValue()).orElse(null));
     }
     
     /**
@@ -427,17 +595,17 @@ public final class TableExtractor {
         } else if (sqlStatement instanceof DeleteStatement) {
             extractTablesFromDelete((DeleteStatement) sqlStatement);
         } else if (sqlStatement instanceof CreateTableStatement) {
-            extractTablesFromTableSegment(((CreateTableStatement) sqlStatement).getTable());
+            extractTablesFromTableSegment(((CreateTableStatement) sqlStatement).getTable(), null);
         } else if (sqlStatement instanceof AlterTableStatement) {
-            extractTablesFromTableSegment(((AlterTableStatement) sqlStatement).getTable());
+            extractTablesFromTableSegment(((AlterTableStatement) sqlStatement).getTable(), null);
         } else if (sqlStatement instanceof CommentStatement) {
-            extractTablesFromTableSegment(((CommentStatement) sqlStatement).getTable());
+            extractTablesFromTableSegment(((CommentStatement) sqlStatement).getTable(), null);
         } else if (sqlStatement instanceof CreateViewStatement) {
             extractTablesFromCreateViewStatement((CreateViewStatement) sqlStatement);
         } else if (sqlStatement instanceof CreateIndexStatement) {
-            extractTablesFromTableSegment(((CreateIndexStatement) sqlStatement).getTable());
-        } else if (sqlStatement instanceof DropIndexStatement) {
-            ((DropIndexStatement) sqlStatement).getSimpleTable().ifPresent(this::extractTablesFromTableSegment);
+            extractTablesFromTableSegment(((CreateIndexStatement) sqlStatement).getTable(), null);
+        } else if (sqlStatement instanceof DropIndexStatement && ((DropIndexStatement) sqlStatement).getSimpleTable().isPresent()) {
+            extractTablesFromTableSegment(((DropIndexStatement) sqlStatement).getSimpleTable().get(), null);
         }
     }
     
@@ -450,5 +618,22 @@ public final class TableExtractor {
         tableContext.add(createViewStatement.getView());
         rewriteTables.add(createViewStatement.getView());
         extractTablesFromSelect(createViewStatement.getSelect());
+    }
+    
+    private static final class TableScope {
+        
+        private final TableScope parent;
+        
+        private final Collection<TableSegment> inheritedTables;
+        
+        private final int inheritedTableCount;
+        
+        private final Collection<TableSegment> tables = new LinkedList<>();
+        
+        private TableScope(final TableScope parent, final Collection<TableSegment> inheritedTables) {
+            this.parent = parent;
+            this.inheritedTables = inheritedTables;
+            inheritedTableCount = null == inheritedTables ? 0 : inheritedTables.size();
+        }
     }
 }

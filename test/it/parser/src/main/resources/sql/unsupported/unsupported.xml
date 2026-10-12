@@ -387,7 +387,7 @@
     <sql-case id="unsupported_postgresql_json_array_empty_null_clause" value="SELECT JSON_ARRAY(NULL ON NULL)" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="unsupported_postgresql_json_object_empty_unique_clause" value="SELECT JSON_OBJECT(WITH UNIQUE KEYS)" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="unsupported_postgresql_json_table_numeric_column_path" value="SELECT * FROM JSON_TABLE('{}', '$' COLUMNS (foo_id int PATH 1))" db-types="PostgreSQL" case-types="literal" />
-    <sql-case id="unsupported_postgresql_json_table_parameter_nested_path" value="SELECT * FROM JSON_TABLE('{}', '$' COLUMNS (NESTED ? COLUMNS (foo_id int)))" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="unsupported_postgresql_json_table_parameter_nested_path" value="SELECT * FROM JSON_TABLE('{}', '$' COLUMNS (NESTED ? COLUMNS (foo_id int)))" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="unsupported_postgresql_json_arrayagg_extra_argument" value="SELECT JSON_ARRAYAGG(1, 2)" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="unsupported_postgresql_json_objectagg_comma_arguments" value="SELECT JSON_OBJECTAGG(1, 2)" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="unsupported_postgresql_json_scalar_extra_argument" value="SELECT JSON_SCALAR(1, 2)" db-types="PostgreSQL" case-types="literal" />

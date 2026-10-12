@@ -63,6 +63,8 @@
     <sql-case id="create_index_zero_argument_function_postgresql" value="CREATE INDEX foo_idx ON foo (foo_func())" db-types="PostgreSQL" />
     <sql-case id="create_index_coalesce_postgresql" value="CREATE INDEX foo_idx ON foo (coalesce(id, 0))" db-types="PostgreSQL" />
     <sql-case id="create_index_function_column_postgresql" value="CREATE INDEX foo_idx ON foo (lower(name))" db-types="PostgreSQL" />
+    <sql-case id="create_index_cast_postgresql" value="CREATE INDEX foo_idx ON foo (CAST(a AS text))" db-types="PostgreSQL" />
+    <sql-case id="create_index_nested_cast_postgresql" value="CREATE INDEX foo_idx ON foo (CAST(a + CAST(b AS integer) AS text))" db-types="PostgreSQL" />
     <sql-case id="prepare_merge_postgresql" value="PREPARE foo_prepare AS MERGE INTO foo USING bar ON foo.id = bar.id WHEN MATCHED THEN DO NOTHING" db-types="PostgreSQL" />
     <sql-case id="create_table_as_select_columns_parameter_postgresql" value="CREATE TABLE foo (id, name) AS SELECT id, name FROM bar WHERE id = ?" db-types="PostgreSQL" case-types="placeholder" />
     <sql-case id="create_table_as_values_columns_postgresql" value="CREATE TABLE foo (id) AS VALUES (1)" db-types="PostgreSQL" />

@@ -184,6 +184,21 @@
         <index name="foo_idx" start-index="13" stop-index="19" />
         <column name="name" start-index="35" stop-index="38" />
     </create-index>
+    <create-index sql-case-id="create_index_cast_postgresql">
+        <table>
+            <simple-table name="foo" start-index="24" stop-index="26" />
+        </table>
+        <index name="foo_idx" start-index="13" stop-index="19" />
+        <column name="a" start-index="34" stop-index="34" />
+    </create-index>
+    <create-index sql-case-id="create_index_nested_cast_postgresql">
+        <table>
+            <simple-table name="foo" start-index="24" stop-index="26" />
+        </table>
+        <index name="foo_idx" start-index="13" stop-index="19" />
+        <column name="a" start-index="34" stop-index="34" />
+        <column name="b" start-index="43" stop-index="43" />
+    </create-index>
     <prepared sql-case-id="prepare_merge_postgresql">
         <merge>
             <target>
