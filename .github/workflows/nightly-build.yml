@@ -36,7 +36,7 @@ permissions:
 
 env:
   MAVEN_ARGS: -B -ntp -fae -e
-  MAVEN_OPTS: -Dhttp.keepAlive=false -DskipITs -DskipTests
+  MAVEN_OPTS: -Dhttp.keepAlive=false
   HUB: ghcr.io/apache/shardingsphere
   PROXY: ghcr.io/apache/shardingsphere-proxy
   PROXY_NATIVE: ghcr.io/apache/shardingsphere-proxy-native
