@@ -38,6 +38,11 @@ public final class HiveConnectionPropertiesParser implements ConnectionPropertie
         return HiveJdbcUrlParser.parse(url);
     }
     
+    @Override
+    public String getDatabaseType() {
+        return "Hive";
+    }
+    
     private static final class HiveJdbcUrlParser {
         
         @SneakyThrows({ZooKeeperHiveClientException.class, JdbcUriParseException.class, SQLException.class})
@@ -53,10 +58,5 @@ public final class HiveConnectionPropertiesParser implements ConnectionPropertie
             queryProps.putAll(params.getHiveVars());
             return new ConnectionProperties(params.getHost(), params.getPort(), params.getDbName(), null, queryProps);
         }
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "Hive";
     }
 }
