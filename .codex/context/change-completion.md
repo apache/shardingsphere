@@ -31,6 +31,9 @@ For every authorized code-writing task, including a restoration or rollback that
 7. A scope expansion, missing authority, unresolved architecture choice, high-risk action, `Review Incomplete`, or `Needs Discussion` result keeps the task incomplete. Yield to the user only for the exact decision, authority, or unavailable evidence needed to continue; do not claim successful completion or provide commit artifacts while the task remains incomplete.
 8. After a code-writing task completes, provide a commit message and manual Git commands without being asked; this never authorizes Git mutation. Propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks, list a required `git add -- <new-task-paths>` first for untracked task files, and never execute a Git write without exact current-task authorization.
 
+Every Formal Review in this loop, including the first review and each rerun after a fix, must execute the complete `$review-pr` workflow over the entire current task-owned candidate from the original task baseline and its affected behavior and contracts.
+Defensive-code audits, known-fix rechecks, passing checks, and ledger validation provide evidence but cannot replace that review.
+
 When the delta audit, required current-state checks, and applicable review pass and no later write or new evidence invalidates them, the loop is complete. Do not repeat an unchanged check, audit, or review.
 
 If a report or verdict is disproved, fix the highest-leverage rule, schema, validator, prompt, or regression case before correcting the artifact, unless the user explicitly requests a one-off correction.

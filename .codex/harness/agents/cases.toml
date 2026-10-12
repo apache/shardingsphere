@@ -2868,6 +2868,46 @@ policy_assertions = [{source = "change-completion", statements = ["When Formal R
 critical = true
 
 [[cases]]
+id = "bounded_audit_does_not_complete_full_candidate_review"
+group = "coding / regular"
+description = "Requires full-candidate review when a bounded audit has been presented as a complete passing report."
+phase = "ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "An authorized standalone task changes Foo.java and Bar.java. Current checks have passed. A defensive-code audit inspected only Foo.java, and its summary was expanded into a fenced Review Result: Mergeable report with Result, Evidence, and Coverage sections. Bar.java and the interaction between the changes were never assessed. Perform the next policy-required review step and name both candidate files and the review scope. Do not edit, invent defects, propose commit artifacts, or change Git."
+decision = "proceed"
+required_actions = ["run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "run_pre_handoff_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_bounded_adversarial_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["Foo.java", "Bar.java"]
+required_summary_term_groups = [["Formal Review", "Formal Code Correctness Review"], ["complete candidate", "full candidate", "entire candidate", "full scope", "full-candidate", "all affected behavior and contracts"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "change-completion", statements = ["Every Formal Review in this loop, including the first review and each rerun after a fix, must execute the complete `$review-pr` workflow over the entire current task-owned candidate from the original task baseline and its affected behavior and contracts.", "Defensive-code audits, known-fix rechecks, passing checks, and ledger validation provide evidence but cannot replace that review."]}]
+critical = true
+
+[[cases]]
+id = "repair_review_rebuilds_full_candidate_coverage"
+group = "operations"
+description = "Requires fresh full-candidate assessment after a repair instead of inheriting old review completion."
+phase = "review convergence loop"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "The current standalone candidate changes Foo.java, Bar.java, and FooTest.java relative to the original task baseline. An in-scope fix just corrected a known finding in Foo.java, and all applicable verification results are current. Previous reviewed-file statuses and discovery passes were copied into a newly initialized ledger; only the latest fix and closed findings were inspected. The copied ledger passes structural validation and records zero new findings, but no fresh full-candidate assessment has run. Continue the current Formal Review without editing, repeating valid checks, proposing commit artifacts, changing Git, or inventing defects. Name every candidate file and explain the required coverage for this round."
+decision = "proceed"
+required_actions = ["run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "run_pre_handoff_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["Foo.java", "Bar.java", "FooTest.java"]
+required_summary_term_groups = [["complete candidate", "full candidate", "entire candidate", "full scope", "full-candidate"], ["fresh", "pending", "rebuild", "reset"]]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["Start every Formal Review round with fresh coverage of the complete effective candidate and its affected behavior and contracts, preserving the original task baseline and attributed scope.", "Reuse only facts and verification results whose current-candidate validity is established; do not inherit reviewed-file statuses, discovery passes, proof conclusions, or convergence results.", "Discover candidates across the complete scope through three lenses: root cause and behavior; blast radius and contracts; tests, runtime, and operations.", "Run a convergence pass across the complete candidate and its affected behavior and contracts, including the latest delta.", "Initialize a new ledger for each round that requires one, from the full current inventory with pending file statuses and no inherited review passes."]}]
+critical = true
+
+[[cases]]
 id = "final_review_and_git_artifacts_are_separate"
 group = "operations"
 description = "Automatically includes the complete passing Formal Review with task-file commit artifacts in the final handoff."
