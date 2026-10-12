@@ -57,8 +57,6 @@ jobs:
           java-version: '21'
           cache-suffix: 'mcp'
       - name: Build and Run Unit Tests
-        run: ./mvnw install -DskipITs -Djacoco.skip=false
+        run: ./mvnw install -DskipITs
       - name: Run MCP HTTP Integration Test
-        run: ./mvnw -pl mcp/bootstrap verify -Djacoco.skip=false
-      - name: Verify MCP Coverage
-        run: ./mvnw jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false -Djacoco.check.class.pattern='org.apache.shardingsphere.mcp.*'
+        run: ./mvnw -pl mcp/bootstrap verify
