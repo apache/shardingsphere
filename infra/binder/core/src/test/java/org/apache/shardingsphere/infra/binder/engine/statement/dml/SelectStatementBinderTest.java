@@ -37,8 +37,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -327,6 +329,33 @@ class SelectStatementBinderTest {
         BinaryOperationExpression actualSubqueryWhere = (BinaryOperationExpression) actualSubquerySelect.getWhere().get().getExpr();
         assertThat(actualSubqueryProjection.getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
         assertThat(((ColumnSegment) actualSubqueryWhere.getLeft()).getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
+    @Test
+    void assertBindWithQuantifySubqueryReferencingShadowedOuterAlias() {
+        ColumnSegment quantifyColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
+        quantifyColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("x")));
+        ProjectionsSegment quantifyProjections = new ProjectionsSegment(0, 0);
+        quantifyProjections.getProjections().add(new ColumnProjectionSegment(quantifyColumn));
+        quantifyProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))));
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(quantifyProjections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).build();
+        BinaryOperationExpression existsWhereExpression = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("user_id")),
+                new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, quantifySelect, ""), "ALL"), "=", "user_id = ALL (SELECT x.user_id, status FROM t_user)");
+        ProjectionsSegment existsProjections = new ProjectionsSegment(0, 0);
+        existsProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        SelectStatement existsSelect = SelectStatement.builder().databaseType(databaseType).projections(existsProjections).from(createAliasedSimpleTableSegment("t_user", "x"))
+                .where(new WhereSegment(0, 0, existsWhereExpression)).build();
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections).from(createAliasedSimpleTableSegment("t_order", "x"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, existsSelect, "")))).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        SelectStatement actualExistsSelect = ((ExistsSubqueryExpression) actual.getWhere().get().getExpr()).getSubquery().getSelect();
+        QuantifySubqueryExpression actualQuantifyExpression = (QuantifySubqueryExpression) ((BinaryOperationExpression) actualExistsSelect.getWhere().get().getExpr()).getRight();
+        List<ProjectionSegment> actualQuantifyProjections = new ArrayList<>(actualQuantifyExpression.getSubquery().getSelect().getProjections().getProjections());
+        assertThat(((ColumnProjectionSegment) actualQuantifyProjections.get(0)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+        assertThat(((ColumnProjectionSegment) actualQuantifyProjections.get(1)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
     }
     
     @Test
