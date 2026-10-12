@@ -115,6 +115,25 @@ class ColumnSegmentBinderTest {
     }
     
     @Test
+    void assertBindWithOwnerFromShadowedOuterTable() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
+        ColumnSegment boundOrderUserIdColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
+        boundOrderUserIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
+                new IdentifierValue("t_order"), new IdentifierValue("user_id"), TableSourceType.PHYSICAL_TABLE));
+        outerTableBinderContexts.put(CaseInsensitiveString.of("x"),
+                new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderUserIdColumn)), TableSourceType.PHYSICAL_TABLE));
+        ColumnSegment boundUserUserIdColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
+        boundUserUserIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
+                new IdentifierValue("t_user"), new IdentifierValue("user_id"), TableSourceType.PHYSICAL_TABLE));
+        outerTableBinderContexts.put(CaseInsensitiveString.of("x"),
+                new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundUserUserIdColumn)), TableSourceType.PHYSICAL_TABLE));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
+        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("x")));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, createBinderContext(), LinkedHashMultimap.create(), outerTableBinderContexts);
+        assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
+    @Test
     void assertBindParameterMarkerProjectionFromExternalTable() {
         IdentifierValue sourceTableName = new IdentifierValue("\"Source\"");
         IdentifierValue sourceColumnName = new IdentifierValue("\"NewEmail\"");

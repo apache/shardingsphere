@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.typ
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -206,7 +207,7 @@ public final class ColumnSegmentBinder {
             return tableBinderContexts.get(caseInsensitiveOwner);
         }
         if (outerTableBinderContexts.containsKey(caseInsensitiveOwner)) {
-            return outerTableBinderContexts.get(caseInsensitiveOwner);
+            return Collections.singleton(Iterables.getLast(outerTableBinderContexts.get(caseInsensitiveOwner)));
         }
         if (externalTableBinderContexts.containsKey(caseInsensitiveOwner)) {
             return externalTableBinderContexts.get(caseInsensitiveOwner);
