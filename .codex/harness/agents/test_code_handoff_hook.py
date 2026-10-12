@@ -25,6 +25,7 @@ import subprocess
 import tempfile
 import tomllib
 import unittest
+from unittest.mock import patch
 
 HOOK_SPEC = importlib.util.spec_from_file_location("code_handoff_hook", Path(__file__).with_name("code_handoff_hook.py"))
 if HOOK_SPEC is None or HOOK_SPEC.loader is None:
@@ -42,8 +43,10 @@ class CodeHandoffHookTest(unittest.TestCase):
             code_handoff_hook.process_event(self._post_tool_event("*** Update File: src/main/Foo.java"), state_directory)
             actual = code_handoff_hook.process_event(self._stop_event("Implementation complete."), state_directory)
             self.assertEqual("block", actual["decision"])
-            self.assertIn("$review-pr Formal Review", actual["reason"])
-            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff()), state_directory))
+            self.assertIn("Task Status: Completed", actual["reason"])
+            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(
+                "Task Status: Completed\nEvidence: Focused tests passed; bounded self-review found no issue.",
+            ), state_directory))
             self.assertEqual([], list(state_directory.iterdir()))
 
     def test_prose_patch_does_not_require_code_handoff(self) -> None:
@@ -61,61 +64,97 @@ class CodeHandoffHookTest(unittest.TestCase):
             actual = code_handoff_hook.process_event(self._stop_event("Documentation updated."), state_directory)
             self.assertEqual("block", actual["decision"])
 
-    def test_bounded_review_summary_is_rejected(self) -> None:
+    def test_bounded_formal_review_summary_is_accepted(self) -> None:
         actual = code_handoff_hook.validate_handoff(
-            "Review Result: Mergeable\nBlocking Issues: 0\nRequired Changes: None.\n"
-            "Review Recommendations: No changes recommended.\nCommit Message: Fix metadata"
+            "Task Status: Completed\nReview Result: Mergeable\n"
+            "Evidence: Focused tests passed; Formal Review covered the original baseline and task delta."
         )
-        self.assertEqual([
-            "exactly one fenced markdown Formal Review", "Commit Message",
-            "git commit --dry-run --only", "git commit --only",
-        ], actual)
+        self.assertEqual([], actual)
 
-    def test_passing_formal_review_requires_evidence_and_commit_message(self) -> None:
+    def test_passing_formal_review_requires_evidence(self) -> None:
         actual = code_handoff_hook.validate_handoff(self._mergeable_handoff(
             evidence="", commit_message="",
         ))
-        self.assertEqual(["### Evidence", "Commit Message"], actual)
+        self.assertEqual(["Evidence"], actual)
 
-    def test_passing_formal_review_requires_bold_result(self) -> None:
+    def test_legacy_formal_review_accepts_unfenced_unbold_report(self) -> None:
         actual = code_handoff_hook.validate_handoff(
-            self._mergeable_handoff().replace("**Review Result: Mergeable**", "Review Result: Mergeable"),
+            self._mergeable_handoff().replace("**Review Result: Mergeable**", "Review Result: Mergeable")
+            .replace("```markdown\n", "").replace("```text\n", "").replace("```bash\n", "").replace("```", ""),
         )
-        self.assertIn("exactly one bold allowed Review Result", actual)
+        self.assertEqual([], actual)
 
-    def test_commit_message_requires_separate_text_block(self) -> None:
-        actual = code_handoff_hook.validate_handoff(
-            self._mergeable_handoff().replace("```text\n", "").removesuffix("```").rstrip(),
-        )
-        self.assertEqual(["Commit Message"], actual)
-
-    def test_passing_formal_review_requires_manual_git_commands(self) -> None:
+    def test_legacy_formal_review_accepts_no_git_artifacts(self) -> None:
         handoff = self._mergeable_handoff()
-        actual = code_handoff_hook.validate_handoff(handoff[:handoff.rfind("```bash")])
-        self.assertEqual(["git commit --dry-run --only", "git commit --only"], actual)
+        actual = code_handoff_hook.validate_handoff(handoff[:handoff.index("```text")])
+        self.assertEqual([], actual)
 
-    def test_manual_git_commands_must_start_command_lines(self) -> None:
-        actual = code_handoff_hook.validate_handoff(
-            self._mergeable_handoff().replace("git commit", "Run git commit"),
+    def test_legacy_formal_review_accepts_triple_emphasis(self) -> None:
+        for result_line in ("***Review Result: Mergeable***", "- ***Review Result: Mergeable***", "* ***Review Result: Mergeable***"):
+            with self.subTest(result_line=result_line):
+                actual = code_handoff_hook.validate_handoff(
+                    self._mergeable_handoff().replace("**Review Result: Mergeable**", result_line),
+                )
+                self.assertEqual([], actual)
+
+    def test_invalid_or_ambiguous_status_and_verdict_keep_pending(self) -> None:
+        invalid_fields = (
+            "Task Status: Completed", "Task Status: Awaiting User", "Task Status:", "Task Status: Done",
+            "Review Result:", "Review Result: Passed", "### Review Result: Unknown",
+            "Review Result: Mergeable\nReview Result: Mergeable",
+            "Review Result: Mergeable\n**Review Result: Not Mergeable**",
+            "***Review Result: Not Mergeable***", "***Review Result: Review Incomplete***",
+            "***Review Result: Passed***", "***Review Result:***", "Review Result: Mergeable*",
+            "Review Result: Mergeable**", "***Task Status: Done***", "***Task Status:***",
+            "***Task Status: Awaiting User***", "### ***Task Status: Completed***",
+            "***Review Result: Mergeable***\n***Review Result: Mergeable***",
+            "Review Result: Mergeable\n***Review Result: Not Mergeable***",
         )
-        self.assertEqual(["git commit --dry-run --only", "git commit --only"], actual)
+        for field in invalid_fields:
+            with self.subTest(field=field), tempfile.TemporaryDirectory() as directory:
+                state_directory = Path(directory)
+                code_handoff_hook.process_event(self._post_tool_event("*** Update File: Foo.java"), state_directory)
+                message = f"Task Status: Completed\nEvidence: Focused tests passed.\n{field}"
+                actual = code_handoff_hook.process_event(self._stop_event(message), state_directory)
+                self.assertEqual("block", actual["decision"])
+                self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
 
     def test_non_passing_review_blocks_successful_handoff(self) -> None:
-        actual = code_handoff_hook.validate_handoff(self._incomplete_handoff(awaiting_user=False))
-        self.assertIn("exactly one bold allowed Review Result", actual)
+        for result in ("Not Mergeable", "Review Incomplete"):
+            with self.subTest(result=result):
+                actual = code_handoff_hook.validate_handoff(
+                    f"Task Status: Completed\nReview Result: {result}\nEvidence: A required check failed.",
+                )
+                self.assertIn("exactly one allowed Review Result when declared", actual)
 
-    def test_not_mergeable_pause_requires_formal_result_fields(self) -> None:
-        actual = code_handoff_hook.validate_paused_handoff(
-            self._not_mergeable_handoff(blocking_issues="Blocking Issues: 1"),
-        )
-        self.assertIn("positive bold Blocking Issues count", actual)
+    def test_non_passing_review_without_user_wait_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            state_directory = Path(directory)
+            code_handoff_hook.process_event(self._post_tool_event("*** Update File: Foo.java"), state_directory)
+            actual = code_handoff_hook.process_event(self._stop_event(
+                self._incomplete_handoff(awaiting_user=False),
+            ), state_directory)
+            self.assertEqual("block", actual["decision"])
+            self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
 
-    def test_user_blocked_handoff_requires_separate_text_block(self) -> None:
-        actual = code_handoff_hook.validate_paused_handoff(
-            self._incomplete_handoff(awaiting_user=True).replace("```text\n", "").removesuffix("```").rstrip(),
+    def test_user_blocked_handoff_requires_evidence_action_and_no_commit_message(self) -> None:
+        handoff = (
+            "Task Status: Awaiting User\nEvidence: The additional path is outside current authority.\n"
+            "Required User Action: Authorize the exact additional path."
         )
-        self.assertIn("Task Status: Awaiting User", actual)
-        self.assertIn("Required User Action", actual)
+        invalid_messages = (
+            handoff.replace("Evidence: The additional path is outside current authority.\n", ""),
+            handoff.replace("Required User Action: Authorize the exact additional path.", "Required User Action:"),
+            handoff.replace("Required User Action: Authorize the exact additional path.", "Required User Action: ```"),
+            handoff.replace("Required User Action: Authorize the exact additional path.", "Required User Action: ```markdown"),
+            handoff.replace("Required User Action: Authorize the exact additional path.", "Required User Action: ~~~"),
+            handoff.replace("Required User Action: Authorize the exact additional path.", "**Required User Action:** ```"),
+            handoff + "\nCommit Message: Complete implementation", handoff + "\nCommit Message:",
+            handoff + "\nTask Status: Completed", handoff + "\nReview Result: Unknown",
+        )
+        for message in invalid_messages:
+            with self.subTest(message=message):
+                self.assertTrue(code_handoff_hook.validate_paused_handoff(message))
 
     def test_user_blocked_handoff_yields_without_clearing_pending_marker(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -130,7 +169,94 @@ class CodeHandoffHookTest(unittest.TestCase):
             self.assertEqual({}, actual)
             self.assertEqual([], list(state_directory.iterdir()))
 
-    def test_later_code_write_requires_a_new_passing_formal_review(self) -> None:
+    def test_user_wait_takes_priority_over_every_declared_review_result(self) -> None:
+        for result in (None, "Mergeable", "Not Mergeable", "Review Incomplete"):
+            with self.subTest(result=result), tempfile.TemporaryDirectory() as directory:
+                state_directory = Path(directory)
+                code_handoff_hook.process_event(self._post_tool_event("*** Update File: Foo.java"), state_directory)
+                message = (
+                    "Task Status: Awaiting User\nEvidence: Publishing needs the user's authorization.\n"
+                    "Required User Action: Authorize publishing the reviewed candidate."
+                )
+                if result is not None:
+                    message += f"\nReview Result: {result}"
+                self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(message), state_directory))
+                self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
+
+    def test_emphasized_user_wait_keeps_pending_with_passing_review(self) -> None:
+        status_lines = (
+            "***Task Status: Awaiting User***", "- ***Task Status: Awaiting User***",
+            "* ***Task Status: Awaiting User***", "### ***Task Status: Awaiting User***",
+            "- ### ***Task Status: Awaiting User***",
+        )
+        for status_line in status_lines:
+            with self.subTest(status_line=status_line), tempfile.TemporaryDirectory() as directory:
+                state_directory = Path(directory)
+                code_handoff_hook.process_event(self._post_tool_event("*** Update File: Foo.java"), state_directory)
+                message = (
+                    f"{status_line}\nReview Result: Mergeable\n"
+                    "***Evidence: Verification and Formal Review passed; publishing needs authority.***\n"
+                    "***Required User Action: Authorize publishing the reviewed candidate.***"
+                )
+                self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(message), state_directory))
+                self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
+
+    def test_emphasized_commit_message_blocks_user_wait(self) -> None:
+        commit_lines = (
+            "***Commit Message: Publish reviewed candidate***", "### ***Commit Message: Publish reviewed candidate***",
+            "- ### ***Commit Message: Publish reviewed candidate***", "***Commit Message:***",
+            "**Commit Message:** Publish reviewed candidate", "- ### **Commit Message:** Publish reviewed candidate",
+        )
+        for commit_line in commit_lines:
+            with self.subTest(commit_line=commit_line), tempfile.TemporaryDirectory() as directory:
+                state_directory = Path(directory)
+                code_handoff_hook.process_event(self._post_tool_event("*** Update File: Foo.java"), state_directory)
+                message = (
+                    "Task Status: Awaiting User\nEvidence: Publishing needs the user's authority.\n"
+                    f"Required User Action: Authorize publishing the reviewed candidate.\n{commit_line}"
+                )
+                actual = code_handoff_hook.process_event(self._stop_event(message), state_directory)
+                self.assertEqual("block", actual["decision"])
+                self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
+
+    def test_label_emphasis_user_wait_keeps_pending_with_passing_review(self) -> None:
+        for status_line in ("**Task Status:** Awaiting User", "- ### **Task Status:** Awaiting User"):
+            with self.subTest(status_line=status_line), tempfile.TemporaryDirectory() as directory:
+                state_directory = Path(directory)
+                code_handoff_hook.process_event(self._post_tool_event("*** Update File: Foo.java"), state_directory)
+                message = (
+                    f"{status_line}\nReview Result: Mergeable\n"
+                    "Evidence: Verification and Formal Review passed; publishing needs authority.\n"
+                    "Required User Action: Authorize publishing the reviewed candidate."
+                )
+                self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(message), state_directory))
+                self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
+
+    def test_handoff_without_completed_status_or_legacy_passing_result_is_rejected(self) -> None:
+        invalid_messages = (
+            None, "", "Evidence: Focused tests passed.", "Task Status: Completed",
+            "Task Status: Completed\n### Evidence\n```",
+            "```markdown\nReview Result: Mergeable\n### Evidence\n```",
+            "Task Status: Completed\nEvidence: ```", "Task Status: Completed\nEvidence: ```markdown",
+            "Task Status: Completed\nEvidence: ~~~", "Task Status: Completed\n### Evidence\n~~~",
+            "Task Status: Completed\n**Evidence:** ```", "Task Status: Completed\n**Evidence:** ~~~",
+            "Task Status: Completed\n### Evidence\n~~~markdown\n~~~",
+        )
+        for message in invalid_messages:
+            with self.subTest(message=message), tempfile.TemporaryDirectory() as directory:
+                state_directory = Path(directory)
+                code_handoff_hook.process_event(self._post_tool_event("*** Update File: Foo.java"), state_directory)
+                event = self._stop_event("")
+                event["last_assistant_message"] = message
+                actual = code_handoff_hook.process_event(event, state_directory)
+                self.assertEqual("block", actual["decision"])
+
+    def test_no_pending_write_requires_no_handoff(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            actual = code_handoff_hook.process_event(self._stop_event("Read-only analysis complete."), Path(directory))
+            self.assertEqual({}, actual)
+
+    def test_later_code_write_requires_a_new_completed_handoff(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             state_directory = Path(directory)
             code_handoff_hook.process_event(self._post_tool_event("*** Update File: src/main/Foo.java"), state_directory)
@@ -141,7 +267,7 @@ class CodeHandoffHookTest(unittest.TestCase):
             actual = code_handoff_hook.process_event(self._stop_event("A follow-up edit is complete."), state_directory)
             self.assertEqual("block", actual["decision"])
 
-    def test_shell_code_change_requires_formal_review(self) -> None:
+    def test_shell_code_change_requires_completed_handoff(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as state:
             repository_path = self._initialize_repository(Path(repository), "Foo.java")
             state_directory = Path(state)
@@ -153,7 +279,7 @@ class CodeHandoffHookTest(unittest.TestCase):
             actual = code_handoff_hook.process_event(self._stop_event("Implementation complete."), state_directory)
             self.assertEqual("block", actual["decision"])
 
-    def test_read_only_shell_command_does_not_require_formal_review(self) -> None:
+    def test_read_only_shell_command_does_not_require_code_handoff(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as state:
             repository_path = self._initialize_repository(Path(repository), "Foo.java")
             state_directory = Path(state)
@@ -164,7 +290,7 @@ class CodeHandoffHookTest(unittest.TestCase):
             self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("Inspection complete."), state_directory))
             self.assertEqual([], list(state_directory.iterdir()))
 
-    def test_shell_prose_change_does_not_require_formal_review(self) -> None:
+    def test_shell_prose_change_does_not_require_code_handoff(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as state:
             repository_path = self._initialize_repository(Path(repository), "README.md")
             state_directory = Path(state)
@@ -175,6 +301,89 @@ class CodeHandoffHookTest(unittest.TestCase):
             code_handoff_hook.process_event(event, state_directory)
             self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("Documentation updated."), state_directory))
             self.assertEqual([], list(state_directory.iterdir()))
+
+    def test_shell_workdir_selects_the_repository_that_changes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            parent = Path(directory)
+            original = parent / "original"
+            target = parent / "target"
+            self._initialize_repository(original, "Foo.java")
+            self._initialize_repository(target, "Bar.java")
+            for workdir in (str(target), "../target"):
+                with self.subTest(workdir=workdir), tempfile.TemporaryDirectory() as state:
+                    state_directory = Path(state)
+                    event = self._shell_event("PreToolUse", original)
+                    event["tool_input"] = {"cmd": "ignored", "workdir": workdir}
+                    code_handoff_hook.process_event(event, state_directory)
+                    (target / "Bar.java").write_text(f"Changed in {workdir}.\n", encoding="utf-8")
+                    event["hook_event_name"] = "PostToolUse"
+                    code_handoff_hook.process_event(event, state_directory)
+                    actual = code_handoff_hook.process_event(self._stop_event("Implementation complete."), state_directory)
+                    self.assertEqual("block", actual["decision"])
+
+    def test_read_only_shell_with_another_workdir_requires_no_handoff(self) -> None:
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as state:
+            parent = Path(directory)
+            original = self._initialize_repository(parent / "original", "Foo.java")
+            target = self._initialize_repository(parent / "target", "Bar.java")
+            state_directory = Path(state)
+            event = self._shell_event("PreToolUse", original)
+            event["tool_input"] = {"cmd": "ignored", "workdir": str(target)}
+            code_handoff_hook.process_event(event, state_directory)
+            event["hook_event_name"] = "PostToolUse"
+            code_handoff_hook.process_event(event, state_directory)
+            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("Inspection complete."), state_directory))
+            self.assertEqual([], list(state_directory.iterdir()))
+
+    def test_shell_workdir_preserves_repository_root_trailing_space(self) -> None:
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as state:
+            parent = Path(directory)
+            original = self._initialize_repository(parent / "owner", "Foo.java")
+            target = self._initialize_repository(parent / "owner ", "Bar.java")
+            state_directory = Path(state)
+            event = self._shell_event("PreToolUse", original)
+            event["tool_input"] = {"cmd": "ignored", "workdir": str(target)}
+            code_handoff_hook.process_event(event, state_directory)
+            (target / "Bar.java").write_text("Changed implementation.\n", encoding="utf-8")
+            event["hook_event_name"] = "PostToolUse"
+            code_handoff_hook.process_event(event, state_directory)
+            actual = code_handoff_hook.process_event(self._stop_event("Implementation complete."), state_directory)
+            self.assertEqual("block", actual["decision"])
+            self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
+
+    def test_shell_workdir_defaults_to_event_or_process_cwd(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = self._initialize_repository(Path(directory), "Foo.java")
+            inputs = ((True, None), (True, ""), (True, 7), (False, None), (False, "."))
+            for index, (has_cwd, workdir) in enumerate(inputs):
+                with self.subTest(has_cwd=has_cwd, workdir=workdir), tempfile.TemporaryDirectory() as state:
+                    state_directory = Path(state)
+                    event = self._shell_event("PreToolUse", repository)
+                    if not has_cwd:
+                        event.pop("cwd")
+                    event["tool_input"] = {"cmd": "ignored"} if workdir is None else {"cmd": "ignored", "workdir": workdir}
+                    with patch.object(code_handoff_hook.os, "getcwd", return_value=str(repository)):
+                        code_handoff_hook.process_event(event, state_directory)
+                        (repository / "Foo.java").write_text(f"Changed {index}.\n", encoding="utf-8")
+                        event["hook_event_name"] = "PostToolUse"
+                        code_handoff_hook.process_event(event, state_directory)
+                    actual = code_handoff_hook.process_event(self._stop_event("Implementation complete."), state_directory)
+                    self.assertEqual("block", actual["decision"])
+
+    def test_invalid_declared_workdir_does_not_fall_back_to_another_repository(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as outside:
+            original = self._initialize_repository(Path(repository), "Foo.java")
+            for workdir in ("missing-directory", outside):
+                with self.subTest(workdir=workdir), tempfile.TemporaryDirectory() as state:
+                    state_directory = Path(state)
+                    event = self._shell_event("PreToolUse", original)
+                    event["tool_input"] = {"cmd": "ignored", "workdir": workdir}
+                    code_handoff_hook.process_event(event, state_directory)
+                    event["hook_event_name"] = "PostToolUse"
+                    code_handoff_hook.process_event(event, state_directory)
+                    actual = code_handoff_hook.process_event(self._stop_event("Inspection complete."), state_directory)
+                    self.assertEqual("block", actual["decision"])
+                    self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
 
     def test_project_config_registers_code_handoff_hooks(self) -> None:
         config_path = Path(__file__).parents[2] / "config.toml"
@@ -255,7 +464,8 @@ class CodeHandoffHookTest(unittest.TestCase):
             "- Authorization for the exact additional path.\n\n"
             "### Coverage\n\n"
             "Standalone local candidate; known task files were inspected.\n"
-            "```"
+            "```\n\n"
+            "Evidence: The current task delta is known; additional path authorization is unavailable."
         )
         if awaiting_user:
             handoff += (
@@ -265,26 +475,6 @@ class CodeHandoffHookTest(unittest.TestCase):
                 "```"
             )
         return handoff
-
-    @staticmethod
-    def _not_mergeable_handoff(blocking_issues: str) -> str:
-        return (
-            "```markdown\n"
-            "### Result\n\n"
-            "**Review Result: Not Mergeable**\n\n"
-            "Feedback Mode: Change Request\n\n"
-            f"{blocking_issues}\n\n"
-            "A confirmed issue must be fixed.\n\n"
-            "### Blocking Issues\n\n"
-            "- The candidate does not satisfy its contract.\n\n"
-            "### Coverage\n\n"
-            "Standalone local candidate; original baseline and task delta were reviewed.\n"
-            "```\n\n"
-            "```text\n"
-            "Task Status: Awaiting User\n"
-            "Required User Action: Authorize the required scope.\n"
-            "```"
-        )
 
 
 if __name__ == "__main__":

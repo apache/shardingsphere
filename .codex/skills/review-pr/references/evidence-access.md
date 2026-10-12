@@ -73,9 +73,8 @@ For Formal Review targeting an existing PR, including review of a local candidat
   `/pulls/{number}/files` when both are available.
 - Treat a mismatch or stale head as an incomplete scope, not as a PR blocker.
 
-For Formal Review of a local candidate, apply the authorized local delta only after
-establishing that public context. Treat local implementation narratives and
-previous Formal Review results as neither evidence nor conclusions to match.
+For Formal Review of a PR-backed local candidate, apply the authorized local delta only after establishing that public context.
+Treat local implementation narratives and previous Formal Review results as neither evidence nor conclusions to match.
 When an explicit local requirement extends the public PR scope, record it
 separately rather than presenting it as public evidence.
 
@@ -93,7 +92,9 @@ Use this section to satisfy the Mandatory Style Verification Gate independently 
 - Prefer a local commit that exactly equals the latest public PR head, an accurate PR-backed local candidate, or a temporary read-only snapshot materialized from the exact public head.
 - For a PR-backed local candidate, verify that it contains the latest public head and only the authorized local delta used by the Formal Review.
 - Do not produce passing evidence from a stale checkout, a base-only workspace, or a workspace containing unattributed changes that can affect the checks.
-- Record the effective candidate SHA before each command and invalidate both Checkstyle and Spotless results when the public head or authorized local delta changes.
+- Record the effective current candidate, including the latest public head and its authorized local delta, before using style evidence.
+- Invalidate only the checked files or scopes whose source, effective configuration, tool identity and inputs or applicable coverage changed.
+- Reuse earlier passing results only after proving all those inputs and the complete applicable coverage are unchanged for that accurate current candidate.
 - If the latest public head is unavailable locally, do not fetch, checkout, switch, merge, reset, or perform another Git write without exact user authorization.
 - Use an allowed read-only temporary snapshot route when it can materialize the exact head; return `Review Incomplete` when every allowed route fails to produce an accurate candidate.
 
@@ -119,7 +120,8 @@ Use this section to satisfy the Mandatory Style Verification Gate independently 
 
 Record the effective candidate SHA, authoritative applicable-file inventory, verification scope, Maven module set, exact commands, exit codes, covered PR-impact files, decisive failure paths, and every not-applicable determination with its repository-configuration basis.
 Keep raw high-volume output in the local log required by the repository command-execution rules and expose only a sanitized summary.
-Passing GitHub Actions, required checks, commit statuses, PR comments, or results from an older candidate neither satisfy nor waive this local evidence requirement.
+Passing GitHub Actions, required checks, commit statuses or PR comments neither satisfy nor waive this local evidence requirement.
+An earlier local result is usable only with the complete current-candidate and unchanged-input coverage proof above.
 
 ## CI and Actions
 

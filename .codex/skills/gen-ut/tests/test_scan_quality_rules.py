@@ -22,6 +22,7 @@ import tempfile
 import unittest
 from dataclasses import asdict
 from pathlib import Path
+from unittest.mock import patch
 
 
 SCRIPTS_DIR = Path(__file__).resolve().parents[1] / "scripts"
@@ -70,6 +71,56 @@ class ScanQualityRulesTest(unittest.TestCase):
         self.assertEqual([], rules.check_r15_d(Path("TargetTest.java"), source, method_bodies))
         reviews = rules.find_unresolved_method_sources(Path("TargetTest.java"), source, method_bodies)
         self.assertEqual(1, len(reviews))
+
+    def test_nested_type_declarations_require_manual_review(self):
+        path = Path("module/src/test/java/foo/TargetTest.java")
+        fixtures = (
+            (
+                "nested-test-group",
+                "final int value",
+                "target.run(value)",
+                "@Nested\n    final class FooGroup { @Test void assertClose() { target.close(); } }",
+                "+    final class FooGroup {",
+                "module/src/test/java/foo/TargetTest.java: final class FooGroup {",
+            ),
+            (
+                "scenario-carrier",
+                "final FooCase value",
+                "target.run(value.input())",
+                "private record FooCase(int input, int expected) {}",
+                "+    private record FooCase(int input, int expected) {}",
+                "module/src/test/java/foo/TargetTest.java: private record FooCase(int input, int expected) {}",
+            ),
+        )
+        for name, parameter, invocation, declaration, added_line, expected_review in fixtures:
+            with self.subTest(name=name):
+                source = (
+                    'class TargetTest {\n    @ParameterizedTest(name = "{0}")\n'
+                    '    @MethodSource("FooCases#values")\n'
+                    f'    void assertRun(final String name, {parameter}) {{ {invocation}; }}\n'
+                    f'    {declaration}\n}}'
+                )
+                context = rules.FileScanContext(
+                    path=path, source=source, method_bodies={}, method_blocks={}, candidates=[],
+                    target_type_name="Target", target_public_methods={"run"}, added_lines=[added_line],
+                )
+                with patch.object(rules, "create_file_scan_context", return_value=context), patch.object(rules, "check_scope_baseline", return_value=[]):
+                    actual = rules.collect_scan_result([path], Path("foo_scope_baseline.json"))
+                self.assertEqual("manual", actual["rules"]["R15-G"]["mode"])
+                self.assertEqual([], actual["rules"]["R15-G"]["violations"])
+                self.assertEqual([expected_review], actual["reviews"]["R15-G"])
+                self.assertEqual([], rules.failed_rule_names(actual))
+
+    def test_nested_type_review_applicability(self):
+        source = "class TargetTest { @ParameterizedTest void assertRun() {} private class FooGroup {} }"
+        fixtures = (
+            ("unchanged-declaration", source, []),
+            ("no-parameterized-test", source.replace("@ParameterizedTest", "@Test"), ["+    private class FooGroup {}"]),
+            ("top-level-declaration", source, ["+class TargetTest {", "+    class TargetTest {"]),
+        )
+        for name, candidate_source, added_lines in fixtures:
+            with self.subTest(name=name):
+                self.assertEqual([], rules.check_r15_g(Path("TargetTest.java"), candidate_source, added_lines))
 
     def test_ordinary_get_type_is_not_metadata_accessor_violation(self):
         source = """
