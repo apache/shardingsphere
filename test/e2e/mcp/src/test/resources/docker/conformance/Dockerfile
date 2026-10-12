@@ -15,23 +15,12 @@
 # limitations under the License.
 #
 
-name: 'Upload Source Snapshot'
-description: 'Create and upload source snapshot to avoid repeated checkout'
+FROM node:22.23.3-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
 
-runs:
-  using: composite
-  steps:
-    - name: Logs
-      shell: bash
-      run: |
-        echo "runner.temp=${{ runner.temp }}"
-        echo "RUNNER_TEMP=$RUNNER_TEMP"
-    - name: Create Source Snapshot
-      shell: bash
-      run: git archive --format=tar.gz --output="$RUNNER_TEMP/source-snapshot.tar.gz" HEAD -- . ':(exclude)docs'
-    - name: Upload Source Snapshot
-      uses: actions/upload-artifact@v6
-      with:
-        name: source-snapshot
-        path: ${{ runner.temp }}/source-snapshot.tar.gz
-        retention-days: 3
+WORKDIR /opt/mcp-conformance
+
+COPY package.json package-lock.json tsconfig.json LICENSE ./
+COPY src ./src
+RUN npm ci --ignore-scripts && npm run build
+
+ENTRYPOINT ["node", "/opt/mcp-conformance/dist/index.js"]

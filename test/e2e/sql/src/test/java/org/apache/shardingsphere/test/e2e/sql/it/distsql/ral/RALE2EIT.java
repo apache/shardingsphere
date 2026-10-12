@@ -77,11 +77,26 @@ class RALE2EIT implements SQLE2EIT {
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecute(final AssertionTestParameter testParam) throws SQLException, IOException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
-        init(context);
+        Throwable primaryException = null;
         try {
+            init(context);
             assertExecute(context, testParam);
+            // CHECKSTYLE:OFF
+        } catch (final SQLException | IOException | RuntimeException | AssertionError ex) {
+            // CHECKSTYLE:ON
+            primaryException = ex;
+            throw ex;
         } finally {
-            tearDown(context);
+            try {
+                tearDown(context);
+                // CHECKSTYLE:OFF
+            } catch (final SQLException | RuntimeException ex) {
+                // CHECKSTYLE:ON
+                if (null == primaryException) {
+                    throw ex;
+                }
+                primaryException.addSuppressed(ex);
+            }
         }
     }
     

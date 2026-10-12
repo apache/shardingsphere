@@ -212,4 +212,5 @@
             <sql-statement start-index="184" stop-index="359" statement-class-simple-name="SelectStatement" />
         </sql-statements>
     </create-function>
+    <create-function sql-case-id="create_function_if_not_exists_mysql" />
 </sql-parser-test-cases>

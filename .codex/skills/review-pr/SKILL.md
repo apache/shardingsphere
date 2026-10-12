@@ -166,6 +166,9 @@ Triage functional boundaries, ownership and shared contracts, compatibility and 
 
 Apply this workflow to the canonical review basis without letting output mode or a previous result influence the assessment:
 
+Start every Formal Review round with fresh coverage of the complete effective candidate and its affected behavior and contracts, preserving the original task baseline and attributed scope.
+Reuse only facts and verification results whose current-candidate validity is established; do not inherit reviewed-file statuses, discovery passes, proof conclusions, or convergence results.
+
 1. Complete `Repository Code Policy References`, then establish the authoritative effective-candidate scope and applicable requirements.
 2. Complete the Problem and Project Commitment Gate and establish the accepted behavior boundary.
 3. Confirm the selected review focus and admissible evidence.
@@ -175,7 +178,8 @@ Apply this workflow to the canonical review basis without letting output mode or
    private and classify every candidate before publication.
 7. Complete the Mandatory Style Verification Gate for a public PR or PR-backed local candidate.
 8. Consolidate findings by independent fix boundary and identify any gap that could change the blocker set.
-9. Review the latest delta and run a full-scope convergence pass. If it finds a new independent candidate, return to step 6; otherwise freeze the assessment after the Completion Gate.
+9. Run a convergence pass across the complete candidate and its affected behavior and contracts, including the latest delta.
+   If it finds a new independent candidate, return to step 6; otherwise freeze the assessment after the Completion Gate.
 
 If an outcome-sensitive decisive fact passes the Review Incomplete Proof Gate, return the mode-appropriate incomplete result.
 Otherwise continue the review or request a split; do not produce a complete verdict from a partial review.
@@ -186,10 +190,13 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 
 - Complete behavior-cluster mapping and risk triage for every authoritative file, including churn-only files.
 - Finish all three discovery lenses and classify every candidate.
+- Before accepting a behavior conclusion, identify the premises whose failure would change that conclusion and verify them against current behavior and the strongest applicable counter-evidence.
+- When such a premise remains unverified and admissible evidence is available, continue the review instead of treating the absence of a proven blocker as evidence for acceptance.
 - Complete the Mandatory Style Verification Gate against the latest effective candidate for every public PR or PR-backed local candidate.
 - Leave no unresolved gap that could change the blocker set and require a latest-candidate convergence pass with zero new independent candidates.
 - Use `scripts/build_review_inventory.py --format json` when local refs are available; its Markdown is only a bounded summary.
 - Use `scripts/review_ledger.py` for multi-file, high-risk, or omission-prone review; it accounts for review state but does not judge correctness.
+- Initialize a new ledger for each round that requires one, from the full current inventory with pending file statuses and no inherited review passes.
 - For a standalone local candidate with index or working-tree changes, provide the same exact task-path file to both scripts with `--candidate-files <path>`. The scripts resolve those paths from the computed merge-base through the working tree, include matching untracked files, and fail when a listed path is unchanged.
 - Mutate one ledger sequentially; do not run ledger commands concurrently.
 - Keep ledger data private and remove only the exact current-review ledger.

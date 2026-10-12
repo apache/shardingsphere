@@ -38,6 +38,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
@@ -146,6 +147,11 @@ class FirebirdDialectExceptionMapperTest {
     @Test
     void assertConvertWithInvalidSegstrId() {
         assertSQLException(mapper.convert(new InvalidSegstrIdException(99L)), FirebirdVendorError.INVALID_SEGSTR_ID);
+    }
+    
+    @Test
+    void assertConvertWithInvalidSegstrType() {
+        assertSQLException(mapper.convert(new InvalidSegstrTypeException(42)), FirebirdVendorError.INVALID_SEGSTR_TYPE);
     }
     
     @Test

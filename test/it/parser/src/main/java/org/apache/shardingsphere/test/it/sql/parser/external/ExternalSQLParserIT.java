@@ -84,7 +84,7 @@ public abstract class ExternalSQLParserIT {
             URI resultURI = URI.create(settings.resultURL());
             ExternalTestParameterLoadTemplate loadTemplate = settings.template().getConstructor().newInstance();
             ExternalTestParameterLoader loader = new ExternalTestParameterLoader(loadStrategy, loadTemplate);
-            return loader.load(sqlCaseURI, resultURI, settings.value(), settings.reportType());
+            return loader.load(sqlCaseURI, resultURI, settings.value(), settings.reportType(), settings.caseRegex());
         }
     }
 }

@@ -23,7 +23,7 @@ Before changing this guide, a canonical policy source, or its harness, read `.co
 ## Response Style
 
 - Restrain the urge to elaborate: complete all required task actions and keep required evidence, risks, verification results, and output formats while limiting the reply's length.
-- Analyze the issue thoroughly, lead with the conclusion, and give the shortest complete answer in plain language; expand only when the user requests a detailed explanation or asks a specific follow-up.
+- Analyze the issue thoroughly, lead with the conclusion, and give the shortest complete answer in plain language; match detail to the question and context.
 - For details, lead with the answer, then `---`; otherwise omit it.
 
 ## Authority and Safety
@@ -59,12 +59,16 @@ Evaluate premises that affect correctness, scope, compatibility, safety, or cost
 
 Before editing, record the goal, boundary, acceptance criteria, and required verification. Inspect only the owners, consumers, contracts, tests, configuration, registrations, precedent, and instructions needed to make the change. For non-trivial work, plan only the ordered steps needed to control dependencies and verification.
 
+Before choosing a solution or drafting content, read the relevant context and establish the current responsibilities.
+For existing artifacts, prefer applicable capabilities and patterns, adding only what the task requires.
+Keep changes at the abstraction and detail appropriate to their surroundings.
+
 ### Strict Scope and Task-Delta Gate
 
-1. An active task is one independent, verifiable objective including its corrections and follow-ups. Start a new baseline only after completion and an explicit independent objective; when ambiguous, stay read-only and confirm.
+1. An active task is one independent, verifiable objective including its corrections and follow-ups. Start a new baseline only after completion and an explicit independent objective; when ambiguous, stay read-only and confirm. At each turn's start and before renewed analysis, planning, or decisions, check the original request and task record; stop goal or scope drift.
 2. Derive acceptance criteria only from requested outcomes, proven direct prerequisites, and focused regression protection. Do not add cleanup, generalization, consistency work, adjacent fixes, or optional improvements.
-3. Before a file-changing tool, record original status and relevant diffs, infer the smallest owning paths, and freeze `file -> allowed intent -> unmet criterion`. A named module or path is the maximum boundary, and an allowed file does not authorize unrelated hunks.
-4. Keep the baseline and boundary through follow-ups, reviews, failures, and verification. Expand only with exact additional path and intent authorization, append without rebaselining, and keep other scope read-only.
+3. Before a file-changing tool, record original status and relevant diffs, infer the smallest owning paths, and freeze `file -> allowed intent -> unmet criterion`. A named module or path is the maximum boundary, and an allowed file does not authorize unrelated hunks. Check each write against its recorded file, intent, and criterion.
+4. Keep the baseline and boundary through follow-ups, reviews, failures, and verification. Expand only with exact additional path and intent authorization, append without rebaselining, and keep other scope read-only. Recover missing or conflicting records read-only; if unrecoverable, stay read-only and confirm missing constraints. Retain the record across context reduction; summaries cannot authorize expansion.
 5. Inspect every path and hunk after each coherent edit batch. Inspect immediately after a formatter, generator, bulk replacement, or any action whose write set is not exact. Before an outside-boundary edit, report its evidence, minimum scope, affected contracts, and consequence of declining it.
 6. Preserve pre-existing and unattributed changes; do not overwrite, format, remove, roll back, or claim them, and do not infer ownership from baseline absence.
 7. After the last write, audit the delta against the original baseline and remove only safely separable unnecessary task changes.
@@ -119,14 +123,4 @@ Preserve supported behavior outside the exact authorized change. Load the full n
 - Do not send API keys, passwords, connection strings, or unrelated private source code to Jev.
 - Deterministic rules and simple arithmetic do not need Jev.
 
-### Jev Usage Report
-
-At the end of each task, report the following:
-
-- Whether the skill was used and what guidance it provided.
-- Whether Jev MCP was called; if not, state the decisive routing reason, not an unchecked condition such as quota or balance.
-- The number of Jev MCP calls, the judgments handled, and the role each call played.
-- Whether Jev changed task routing, prioritization, conclusions, or the execution plan.
-- Whether Jev actually reduced token usage or improved processing speed or efficiency.
-- Report specific token savings or time changes only when measured data is available; otherwise write "cannot be measured accurately" and do not guess.
-- Report problems caused by Jev; write "none found" when no problems were found.
+Do not include routine Jev usage feedback in task reports unless the user explicitly requests it.
