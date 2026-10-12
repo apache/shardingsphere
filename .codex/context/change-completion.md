@@ -48,6 +48,9 @@ For every authorized code-writing task, including a restoration or rollback that
    Include `git add -- <new-task-paths>` first only when requested manual instructions need to add untracked task files.
    Never execute a Git write without exact current-task authorization.
 
+Every Formal Review in this loop, including the first review and each rerun after a fix, must execute the complete `$review-pr` workflow over the entire current task-owned candidate from the original task baseline and its affected behavior and contracts.
+Defensive-code audits, known-fix rechecks, passing checks, and ledger validation provide evidence but cannot replace that review.
+
 When the delta audit, required current-state checks, and applicable review pass and no later write or new evidence invalidates them, the loop is complete. Do not repeat an unchanged check, audit, or review.
 
 If a report or verdict is disproved, correct it first and identify the evidence that changed the conclusion.

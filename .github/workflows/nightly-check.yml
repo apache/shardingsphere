@@ -170,6 +170,8 @@ jobs:
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
+    outputs:
+      report-outcome: ${{ steps.upload-jacoco-report.outcome }}
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
@@ -186,12 +188,15 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ${{ github.workspace }}/target/mergeReport/jacoco.xml
       - uses: actions/upload-artifact@v6
+        id: upload-jacoco-report
         with:
           name: jacoco-report
           path: ${{ github.workspace }}/target/mergeReport/jacoco
+      - name: Verify MCP Coverage
+        run: ./mvnw -f mcp/pom.xml jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false -Djacoco.check.class.pattern='org.apache.shardingsphere.mcp.*'
 
   check-and-report-sonarcloud:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ !cancelled() && github.repository == 'apache/shardingsphere' && needs.check-and-report-jacoco.outputs.report-outcome == 'success' }}
     name: Schedule - SonarCloud report
     needs:
       - global-environment

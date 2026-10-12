@@ -1909,6 +1909,35 @@ class RunTest(unittest.TestCase):
                 self.assertFalse(any(failure.startswith("summary lacks required terms=") for failure in failures), failures)
                 self.assertTrue(any(failure.startswith("summary contains forbidden terms=") for failure in failures), failures)
 
+    def test_grade_accepts_equivalent_sneaky_throws_annotations(self) -> None:
+        case = run.load_cases(["java_sneaky_throws_uses_actual_exception_types"])[0]
+        for annotation in ("@SneakyThrows(IOException.class)", "`@SneakyThrows(IOException.class)`"):
+            with self.subTest(annotation=annotation):
+                summary = (
+                    f"Use {annotation} on read. Preserve @SneakyThrows(Exception.class) on invoke, "
+                    "@SneakyThrows(Throwable.class) on advice, and throws SQLException without @SneakyThrows on parse. "
+                    "Then rerun affected checks and Formal Review."
+                )
+                actual = {"results": [self._create_case_result(case, summary)]}
+                result = run.grade([case], actual)[0]
+                self.assertTrue(result["passed"], result["failures"])
+
+    def test_grade_rejects_sneaky_throws_action_contract_violations(self) -> None:
+        case = run.load_cases(["java_sneaky_throws_uses_actual_exception_types"])[0]
+        summary = (
+            "Use @SneakyThrows(IOException.class) on read. Preserve @SneakyThrows(Exception.class) on invoke, "
+            "@SneakyThrows(Throwable.class) on advice, and throws SQLException without @SneakyThrows on parse."
+        )
+        for actions in (
+                [action for action in case["required_actions"] if action != "run_pre_handoff_review"],
+                [*case["required_actions"], "keep_manual_throw"]):
+            with self.subTest(actions=actions):
+                actual_result = self._create_case_result(case, summary)
+                actual_result["actions"] = actions
+                result = run.grade([case], {"results": [actual_result]})[0]
+                self.assertFalse(result["passed"], result)
+                self.assertTrue(any("actions=" in failure for failure in result["failures"]), result["failures"])
+
     def test_grade_accepts_unambiguous_defensive_guard_removal(self) -> None:
         case = run.load_cases(["speculative_defensive_guard_is_removed"])[0]
         actual = {"results": [self._create_case_result(case, "defense=remove;fallback_test=remove")]}

@@ -1626,14 +1626,14 @@ phase = "coding-standards final check and ordinary completion loop"
 ordinary_loop = true
 profile = "code-write"
 semantic_policy_assertions = true
-prompt = "Continue an authorized in-scope Java implementation whose final exception check found four methods. `read` uses `@SneakyThrows(Exception.class)` although its only checked exception is `IOException`. `invoke` uses `@SneakyThrows(Exception.class)` because it calls an API whose verified contract declares `Exception`, and its method contract intentionally omits a `throws` clause. `advice` uses `@SneakyThrows(Throwable.class)` because it catches and rethrows a value statically typed as `Throwable`. `parse` declares `throws SQLException` and does not use `@SneakyThrows`. Replace only the overly broad annotation on `read`, preserve the other three methods, name the exact resulting annotation or `throws` form for all four methods in the summary, rerun affected checks and Formal Review, and do not edit unrelated code or hand off yet."
+prompt = "Continue an authorized in-scope Java implementation whose final exception check found four methods. `read` uses `@SneakyThrows(Exception.class)` although its only checked exception is `IOException`. `invoke` uses `@SneakyThrows(Exception.class)` because it calls an API whose verified contract declares `Exception`, and its method contract intentionally omits a `throws` clause. `advice` uses `@SneakyThrows(Throwable.class)` because it catches and rethrows a value statically typed as `Throwable`. `parse` declares `throws SQLException` and does not use `@SneakyThrows`. This decision concerns only the annotation correction and preserving existing method forms; no manual `throw` or precondition audit is requested. Replace only the overly broad annotation on `read`, preserve the other three methods, name the exact resulting annotation or `throws` form for all four methods in the summary, rerun affected checks and Formal Review, and do not edit unrelated code or hand off yet."
 decision = "proceed"
 required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
 allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
 forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = ["pre_handoff_review_required"]
 required_summary_terms = ["read", "IOException.class", "invoke", "Exception.class", "advice", "Throwable.class", "parse", "throws SQLException"]
-required_summary_term_groups = [["change", "replace", "narrow", "use `@SneakyThrows(IOException.class)`"], ["preserve", "keep", "retain"]]
+required_summary_term_groups = [["change", "replace", "narrow", "use `@SneakyThrows(IOException.class)`", "use @SneakyThrows(IOException.class)"], ["preserve", "keep", "retain"]]
 policy_binding_profile = "code-write"
 policy_assertions = [{source = "coding-standards", statements = ["Before adding or changing a Java method annotated with `lombok.SneakyThrows` or changing the checked-exception behavior of such a method, read the [Java exception handling rules](references/rules/java-exceptions.md) through EOF and add each applicable rule to the checklist.", "For Java, explicitly verify every applicable Java exception handling rule against each added or modified `lombok.SneakyThrows` annotation and the method bodies, invoked signatures, rethrown values, and contracts needed to resolve its exception types."]}, {source = "java-exceptions", statements = ["Do not require `lombok.SneakyThrows`; code that handles or declares its checked exceptions without the annotation is compliant with these rules.", "When using `lombok.SneakyThrows`, specify the narrowest stable checked exception type or types that cover the checked exceptions intentionally propagated without a `throws` clause.", "Use `Exception.class` only when the method body explicitly throws `Exception` or calls an API whose applicable checked-exception contract is `Exception`, and the current method intentionally omits `throws Exception` from its signature.", "Do not use `Exception.class` when the method's checked exceptions can be expressed with more specific stable types.", "Use `Throwable.class` only when the method body actually rethrows a value statically typed as `Throwable` and preserving that propagation is required; do not use it as a catch-all for unresolved exceptions."]}]
 critical = true
@@ -2876,6 +2876,46 @@ required_summary_terms = ["Spotless", "Checkstyle"]
 required_summary_term_groups = [["Formal Review", "review"], ["Mergeable", "passing"]]
 policy_binding_profile = "code-write"
 policy_assertions = [{source = "code-verification", statements = ["Capture high-volume output according to `.codex/context/token-efficiency.md`; report commands, exit codes, and decisive log excerpts instead of dumping raw logs.", "Any later edit invalidates only the Spotless, Checkstyle, or RAT evidence whose governed files or configuration changed; rerun those checks before the applicable review."]}, {source = "change-completion", statements = ["When either review route identifies a safe in-scope required finding, fix it, rerun only invalidated audits and checks, and repeat the selected review.", "Retain the selected Formal Review route through its finding-fix loop.", "Continue until the selected review passes; a Formal Review must return `Review Result: Mergeable`."]}]
+critical = true
+
+[[cases]]
+id = "bounded_audit_does_not_complete_full_candidate_review"
+group = "coding / regular"
+description = "Requires full-candidate review when a bounded audit has been presented as a complete passing report."
+phase = "ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "An authorized standalone task changes Foo.java and Bar.java. Current checks have passed. A defensive-code audit inspected only Foo.java, and its summary was expanded into a fenced Review Result: Mergeable report with Result, Evidence, and Coverage sections. Bar.java and the interaction between the changes were never assessed. Perform the next policy-required review step and name both candidate files and the review scope. Do not edit, invent defects, propose commit artifacts, or change Git."
+decision = "proceed"
+required_actions = ["run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "run_pre_handoff_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_bounded_adversarial_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["Foo.java", "Bar.java"]
+required_summary_term_groups = [["Formal Review", "Formal Code Correctness Review"], ["complete candidate", "full candidate", "entire candidate", "full scope", "full-candidate", "all affected behavior and contracts"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "change-completion", statements = ["Every Formal Review in this loop, including the first review and each rerun after a fix, must execute the complete `$review-pr` workflow over the entire current task-owned candidate from the original task baseline and its affected behavior and contracts.", "Defensive-code audits, known-fix rechecks, passing checks, and ledger validation provide evidence but cannot replace that review."]}]
+critical = true
+
+[[cases]]
+id = "repair_review_rebuilds_full_candidate_coverage"
+group = "operations"
+description = "Requires fresh full-candidate assessment after a repair instead of inheriting old review completion."
+phase = "review convergence loop"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "The current standalone candidate changes Foo.java, Bar.java, and FooTest.java relative to the original task baseline. An in-scope fix just corrected a known finding in Foo.java, and all applicable verification results are current. Previous reviewed-file statuses and discovery passes were copied into a newly initialized ledger; only the latest fix and closed findings were inspected. The copied ledger passes structural validation and records zero new findings, but no fresh full-candidate assessment has run. Continue the current Formal Review without editing, repeating valid checks, proposing commit artifacts, changing Git, or inventing defects. Name every candidate file and explain the required coverage for this round."
+decision = "proceed"
+required_actions = ["run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "run_pre_handoff_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["Foo.java", "Bar.java", "FooTest.java"]
+required_summary_term_groups = [["complete candidate", "full candidate", "entire candidate", "full scope", "full-candidate"], ["fresh", "pending", "rebuild", "reset"]]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["Start every Formal Review round with fresh coverage of the complete effective candidate and its affected behavior and contracts, preserving the original task baseline and attributed scope.", "Reuse only facts and verification results whose current-candidate validity is established; do not inherit reviewed-file statuses, discovery passes, proof conclusions, or convergence results.", "Discover candidates across the complete scope through three lenses: root cause and behavior; blast radius and contracts; tests, runtime, and operations.", "Run a convergence pass across the complete candidate and its affected behavior and contracts, including the latest delta.", "Initialize a new ledger for each round that requires one, from the full current inventory with pending file statuses and no inherited review passes."]}]
 critical = true
 
 [[cases]]
