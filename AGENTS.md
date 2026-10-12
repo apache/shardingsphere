@@ -85,7 +85,11 @@ Do not add over 10,000 physical production and test source lines in one active t
 
 ## Specialized Workflows
 
-Use `$analyze-issue` for issue diagnosis and maintainer replies, `$gen-ut` with `code-implementation` for unit-test generation or coverage, and `$review-pr` for PR correctness, mergeability, CI, or a triggered Formal Review. Complete reviews or recommendations use Formal Review with `### Result`, one `Review Result`, `### Evidence`, and `### Coverage`; Coverage identifies local-only changes. Standalone review is read-only. A missing required specialized Skill uses an equivalent manual checklist; do not install or create one for the task. Optional Skills never waive gates or expand authority or scope.
+Use `$analyze-issue` for issue diagnosis and maintainer replies, `$gen-ut` with `code-implementation` for unit-test generation or coverage, and `$review-pr` for explicit code or PR reviews, mergeability, CI, or a triggered Formal Review.
+Ordinary implementation completion self-review follows the Change Completion Gate.
+Standalone review is read-only.
+A missing required specialized Skill uses an equivalent manual checklist; do not install or create one for the task.
+Optional Skills never waive gates or expand authority or scope.
 
 ## Change Completion Gate
 

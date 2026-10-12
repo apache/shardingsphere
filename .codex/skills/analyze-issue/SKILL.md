@@ -70,8 +70,12 @@ When an analysis conclusion, issue classification, or recommended label is chall
 Use only the following sources:
 - Apache ShardingSphere official documentation.
 - Apache ShardingSphere official repository code and tests.
+- Official database or driver documentation, specifications, source code, tests and release notes applicable to the reported version and mode.
 - Target GitHub issue content (body, comments, and linked PRs in the same repository).
 - Same-repository GitHub issues/PRs needed to verify a duplicate, prior fix, explicit project-responsibility decision, or accepted behavior boundary.
+
+Use database or driver sources only to establish that component's facts; they do not establish ShardingSphere support, project responsibility or acceptance of a new project commitment.
+Evidence from another version requires explicit proof that the cited behavior applies to the reported version and mode.
 
 Do not use blogs, third-party tutorials, or forum posts as evidence.
 
@@ -296,7 +300,9 @@ Default to maintainer replies shaped by the issue type:
 - Name affected module(s), key class(es), compatibility scope, and required test scope.
 - Invite a PR with code and tests if appropriate.
 - Recommend `type: bug` plus module/database labels.
-- Do not provide temporary workarounds.
+- Provide a temporary workaround only when allowed-source evidence verifies its applicability to the reported version, mode and trigger, its compatibility with the affected contracts, and its material side effects.
+- Explain its limitations and temporary status without replacing the root-cause conclusion, Bug classification or required fix.
+- Omit unverified or incompatible workarounds and any workaround with unknown material side effects.
 
 4. Duplicate
 - State that the issue is covered by the earlier fixing PR or original tracked issue.

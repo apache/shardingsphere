@@ -18,7 +18,7 @@ public or user-authorized repository evidence. Select one output mode:
 - `Formal Review Mode`: return one formal result for a public PR review, authorized local-candidate review, code-readiness judgment, mergeability decision, or CI review.
 - `PR Discussion Reply Mode`: return a copy-ready committer reply only when the user explicitly requests a review-thread response, author or maintainer objection reply, or challenged-finding reply. Do not add a formal verdict unless requested.
 
-Use Formal Review Mode for every complete code review result or recommendation, including pre-handoff review of a local candidate.
+Use Formal Review Mode for every explicit code or PR review and every Formal Review required by the repository completion route.
 Identify a local candidate and its local-only delta in `### Coverage`; do not create a separate local-preflight result format or describe local-only work as the public PR state.
 
 ## Review Focus
@@ -102,7 +102,10 @@ When a decisive acceptance or ownership fact is unavailable after every admissib
 
 Read [evidence-access.md](references/evidence-access.md) and complete its GitHub Access Preflight before any GitHub request. It owns public-read selection, current-head identity, authoritative file scope, local-style evidence, failure attribution, CI, external behavior, and evidence hygiene. Apply its Local Style Verification Evidence to every public-PR or PR-backed local-candidate Formal Review.
 
-For formal reviews, establish the latest head and base, authoritative files and requirements, relevant public discussion, and any authorized local delta. For discussion replies, establish the complete current thread and affected paths; obtain the full file list when scope or readiness is disputed. Earlier findings do not prove current-head readiness.
+For public-PR or PR-backed local-candidate formal reviews, establish the latest public head and base, authoritative files and requirements, relevant public discussion, and any authorized local delta.
+Standalone candidates follow `Local Candidate Scope`.
+For discussion replies, establish the complete current thread and affected paths; obtain the full file list when scope or readiness is disputed.
+Earlier findings do not prove current-head readiness.
 
 Treat AI-assistance disclosure only as an explicit mergeability or policy-compliance concern. Apply `AI_POLICY.md` only when public evidence establishes material AI assistance; never infer it from code, prose, metadata, or a classifier.
 
@@ -114,11 +117,13 @@ This gate is local candidate verification rather than a GitHub CI query, so ever
 1. Derive the applicable PR-impact files and their owning Maven modules from the authoritative changed-file list for the effective candidate.
 2. Treat production and test Java files as applicable to both Checkstyle and Spotless unless repository configuration proves that a check does not govern a file.
 3. Run both checks against the latest public PR head or an accurate PR-backed local candidate that contains the latest public head and only its authorized local delta.
-4. Invalidate all prior Checkstyle and Spotless evidence immediately when the public PR head or authorized local delta changes.
+4. Invalidate Checkstyle and Spotless evidence only where checked files, effective configuration, tool identity and inputs or applicable coverage changed.
+   Existing runs satisfy step 3 only after proof that the current accurate candidate contains the latest public head and that checked files, effective configuration, tool identity and inputs, and the complete applicable scope are unchanged.
 5. Use a whole-repository check, complete affected-module checks, or an exact-file check only when the command output and file inventory prove that the selected scope covers every applicable PR-impact file.
 6. Expand verification to the complete rule impact, normally the whole repository, when the PR changes global Checkstyle or Spotless configuration, a parent POM, or another cross-module style rule.
 7. Treat an exit code of zero as passing evidence only when the output also proves that every applicable PR-impact file was selected; a successful command that matched no intended file is not evidence.
-8. Do not use passing CI, required checks, commit statuses, a PR comment summary, or evidence from an older candidate to satisfy or waive this gate.
+8. Do not use passing CI, required checks, commit statuses or a PR comment summary to satisfy or waive this gate.
+   An older local result counts only when the unchanged-input and current-candidate coverage proof above is complete.
 9. Do not run `spotless:apply` or another file-modifying formatter during review.
 
 Map the gate result before applying the remaining Formal Decision Contract.
@@ -238,7 +243,9 @@ Read [review-corrections.md](references/review-corrections.md) for previous feed
 
 ## Output Contract
 
-Every standalone result returned by this Skill must be exactly one fenced `markdown` block with no prose before or after it. When the repository completion loop invokes Formal Review, this fenced block remains the complete review artifact, but the outer workflow may append only the separately fenced non-review handoff artifacts required by `.codex/context/change-completion.md` outside it. The first non-empty line of the review artifact must be ```` ```markdown ```` and its last non-empty line must be ```` ``` ````.
+Return the selected mode's complete result without requiring an outer Markdown fence or bold labels.
+Use a copy-ready fenced block when the user requests one.
+The outer completion workflow adds its required task status and evidence without repeating the complete review report.
 
 Use the user's language for formal results. Draft GitHub-facing discussion
 replies in English unless the user requests another language. Use stable labels,
@@ -251,17 +258,9 @@ logs, or emojis.
 
 Use this format for both public-PR and local-candidate reviews.
 
-- `Mergeable`: `### Result` with exactly one bold
-  `Review Result: Mergeable` line and a concise reason; `### Evidence`;
-  `### Coverage`.
-- `Not Mergeable`: `### Result` with exactly one bold
-  `Review Result: Not Mergeable` line, one `Feedback Mode`, a bold
-  `Blocking Issues: N` line, and a concise reason; `### Blocking Issues`;
-  `### Coverage`.
-- `Review Incomplete`: `### Result` with exactly one bold
-  `Review Result: Review Incomplete` line and a concise reason;
-  `### Confirmed Issues` when any are already proven; `### Verified Facts`;
-  `### Required Evidence`; `### Coverage`.
+- `Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`.
+- `Not Mergeable`: `### Result` with exactly one `Review Result: Not Mergeable` line, one `Feedback Mode`, a `Blocking Issues: N` line, and a concise reason; `### Blocking Issues`; `### Coverage`.
+- `Review Incomplete`: `### Result` with exactly one `Review Result: Review Incomplete` line and a concise reason; `### Confirmed Issues` when any are already proven; `### Verified Facts`; `### Required Evidence`; `### Coverage`.
 
 For each blocking issue include:
 
@@ -279,9 +278,9 @@ In Code Correctness Review, state that the result is code-scope only and CI was 
 
 ### PR Discussion Reply
 
-Return only the copy-ready reply in the fenced Markdown block. State whether the
-finding is retained, withdrawn, or needs clarification, then give the public
-evidence and minimum next action. Do not force a formal verdict.
+Return only the copy-ready reply.
+State whether the finding is retained, withdrawn, or needs clarification, then give the public evidence and minimum next action.
+Do not force a formal verdict.
 
 ### Correction
 
