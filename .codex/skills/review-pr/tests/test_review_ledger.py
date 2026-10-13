@@ -230,6 +230,118 @@ class ReviewLedgerTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "outside the private review ledger root"):
                 ledger.ensure_safe_ledger_file(outside_file)
 
+    def test_file_alias_read_and_write_use_canonical_ledger(self):
+        actual = self.create_valid_ledger()
+        outside = self.private_root / "outside"
+        outside.mkdir()
+        alias = outside / "alias.json"
+        alias.symlink_to(self.ledger_file)
+        actual["review_revision"] += 1
+        ledger.write_ledger(alias, actual)
+        self.assertTrue(alias.is_symlink())
+        self.assertFalse(alias.with_suffix(".tmp").exists())
+        self.assertEqual(actual, ledger.read_ledger(alias))
+        self.assertEqual(actual, ledger.read_ledger(self.ledger_file))
+
+    def test_cleanup_file_alias_preserves_external_and_sibling_directories(self):
+        actual = self.create_valid_ledger()
+        sibling = ledger.create_ledger_dir(self.repo, "sibling", self.base_sha) / ledger.LEDGER_FILE_NAME
+        ledger.write_ledger(sibling, actual)
+        sibling_content = sibling.read_bytes()
+        outside = self.private_root / "outside"
+        outside.mkdir()
+        marker = outside / "keep.txt"
+        marker.write_text("Unrelated external resource.\n", encoding="utf-8")
+        alias = outside / "alias.json"
+        alias.symlink_to(self.ledger_file)
+        with redirect_stdout(StringIO()):
+            self.assertEqual(0, ledger.cmd_cleanup(Namespace(ledger=str(alias))))
+        self.assertFalse(self.ledger_file.parent.exists())
+        self.assertTrue(alias.is_symlink())
+        self.assertEqual("Unrelated external resource.\n", marker.read_text(encoding="utf-8"))
+        self.assertEqual(sibling_content, sibling.read_bytes())
+
+    def test_cleanup_rejects_ledger_outside_private_root(self):
+        actual = self.create_valid_ledger()
+        outside = self.private_root / "outside"
+        outside.mkdir()
+        outside_file = outside / ledger.LEDGER_FILE_NAME
+        outside_file.write_text(json.dumps(actual), encoding="utf-8")
+        content = outside_file.read_bytes()
+        with self.assertRaisesRegex(RuntimeError, "outside the private review ledger root"):
+            ledger.cmd_cleanup(Namespace(ledger=str(outside_file)))
+        self.assertEqual(content, outside_file.read_bytes())
+        self.assertTrue(self.ledger_file.exists())
+
+    def test_cleanup_rejects_unowned_directory_contents(self):
+        self.create_valid_ledger()
+        unknown = self.ledger_file.parent / "coverage.json"
+        unknown.write_text("Unattributed temporary input.\n", encoding="utf-8")
+        content = self.ledger_file.read_bytes()
+        with self.assertRaisesRegex(RuntimeError, "unowned resources; cleanup refused"):
+            ledger.cmd_cleanup(Namespace(ledger=str(self.ledger_file)))
+        self.assertEqual(content, self.ledger_file.read_bytes())
+        self.assertEqual("Unattributed temporary input.\n", unknown.read_text(encoding="utf-8"))
+
+    def test_cleanup_preserves_invalid_ledger(self):
+        self.create_valid_ledger()
+        self.ledger_file.write_text("{}", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "Unsupported or invalid review coverage ledger"):
+            ledger.cmd_cleanup(Namespace(ledger=str(self.ledger_file)))
+        self.assertEqual("{}", self.ledger_file.read_text(encoding="utf-8"))
+
+    def test_cleanup_failure_is_reported(self):
+        self.create_valid_ledger()
+        content = self.ledger_file.read_bytes()
+        output, error = StringIO(), StringIO()
+        arguments = ["review_ledger.py", "cleanup", "--ledger", str(self.ledger_file)]
+        with patch.object(sys, "argv", arguments), patch.object(Path, "unlink", side_effect=PermissionError("cleanup denied")), \
+                redirect_stdout(output), redirect_stderr(error):
+            self.assertEqual(1, ledger.main())
+        self.assertEqual("", output.getvalue())
+        self.assertEqual("error: cleanup denied\n", error.getvalue())
+        self.assertEqual(content, self.ledger_file.read_bytes())
+
+    def test_init_write_failure_removes_only_new_directory(self):
+        self.create_valid_ledger()
+        sibling = self.ledger_file
+        content = sibling.read_bytes()
+        failure = OSError("initial write failed")
+
+        def fail_write(ledger_file, _):
+            ledger_file.with_suffix(".tmp").write_text("Partial initial write.\n", encoding="utf-8")
+            raise failure
+
+        with patch.object(ledger, "write_ledger", side_effect=fail_write), self.assertRaises(OSError) as caught:
+            self.initialize_ledger()
+        self.assertIs(failure, caught.exception)
+        self.assertEqual([sibling.parent], list(ledger.ledger_root().iterdir()))
+        self.assertEqual(content, sibling.read_bytes())
+
+    def test_init_cleanup_failure_preserves_original_error_and_reports_residuals(self):
+        failure = OSError("initial write failed")
+
+        def fail_write(ledger_file, _):
+            ledger_file.with_suffix(".tmp").write_text("Partial initial write.\n", encoding="utf-8")
+            raise failure
+
+        error = StringIO()
+        with patch.object(ledger, "write_ledger", side_effect=fail_write), patch.object(Path, "unlink", side_effect=PermissionError("cleanup denied")), \
+                redirect_stderr(error), self.assertRaises(OSError) as caught:
+            self.initialize_ledger()
+        self.assertIs(failure, caught.exception)
+        directories = list(ledger.ledger_root().iterdir())
+        self.assertEqual(1, len(directories))
+        self.assertEqual("Partial initial write.\n", (directories[0] / "ledger.tmp").read_text(encoding="utf-8"))
+        self.assertEqual(f"error: Initialization cleanup failed; current-review resources may remain at {directories[0]}: cleanup denied\n", error.getvalue())
+
+    def test_init_write_failure_before_output_removes_new_directory(self):
+        failure = PermissionError("initial write denied")
+        with patch.object(ledger, "write_ledger", side_effect=failure), self.assertRaises(PermissionError) as caught:
+            self.initialize_ledger()
+        self.assertIs(failure, caught.exception)
+        self.assertEqual([], list(ledger.ledger_root().iterdir()))
+
     def test_old_ledger_version_requires_new_review(self):
         actual = self.create_valid_ledger()
         actual["version"] = 3

@@ -26,7 +26,6 @@ import hashlib
 import json
 import os
 import re
-import shutil
 import stat
 import subprocess
 import sys
@@ -81,11 +80,12 @@ def resolve_ledger_file(value: str | Path) -> Path:
     return result / LEDGER_FILE_NAME if result.is_dir() else result
 
 
-def ensure_safe_ledger_file(ledger_file: Path) -> None:
+def ensure_safe_ledger_file(ledger_file: Path) -> Path:
     root = ledger_root().resolve()
     target = ledger_file.resolve()
     if LEDGER_FILE_NAME != target.name or root != target.parent.parent:
         raise RuntimeError(f"Ledger is outside the private review ledger root: {target}")
+    return target
 
 
 def validate_schema(ledger: object) -> None:
@@ -163,15 +163,14 @@ def validate_schema(ledger: object) -> None:
 
 
 def read_ledger(value: str | Path) -> dict[str, Any]:
-    ledger_file = resolve_ledger_file(value)
-    ensure_safe_ledger_file(ledger_file)
+    ledger_file = ensure_safe_ledger_file(resolve_ledger_file(value))
     ledger = json.loads(ledger_file.read_text(encoding="utf-8"))
     validate_schema(ledger)
     return ledger
 
 
 def write_ledger(ledger_file: Path, ledger: dict[str, Any]) -> None:
-    ensure_safe_ledger_file(ledger_file)
+    ledger_file = ensure_safe_ledger_file(ledger_file)
     ledger["updated_at"] = int(time.time())
     temporary_file = ledger_file.with_suffix(".tmp")
     temporary_file.write_text(json.dumps(ledger, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -487,7 +486,14 @@ def cmd_init(args: argparse.Namespace) -> int:
         "findings": [],
         "passes": [],
     }
-    write_ledger(ledger_file, ledger)
+    try:
+        write_ledger(ledger_file, ledger)
+    except (OSError, RuntimeError):
+        try:
+            remove_ledger_dir(ledger_file)
+        except (OSError, RuntimeError) as ex:
+            print(f"error: Initialization cleanup failed; current-review resources may remain at {ledger_dir}: {ex}", file=sys.stderr)
+        raise
     print(f"ledger={ledger_file}")
     print(f"files={len(changed_files)}")
     return 0
@@ -751,12 +757,22 @@ def cmd_status(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_cleanup(args: argparse.Namespace) -> int:
-    ledger_file = resolve_ledger_file(args.ledger)
-    read_ledger(ledger_file)
+def remove_ledger_dir(ledger_file: Path) -> None:
+    ledger_file = ensure_safe_ledger_file(ledger_file)
     ledger_dir = ledger_file.parent
-    ensure_safe_ledger_file(ledger_file)
-    shutil.rmtree(ledger_dir)
+    entries = list(ledger_dir.iterdir())
+    owned_names = {LEDGER_FILE_NAME, ledger_file.with_suffix(".tmp").name}
+    if any(each.name not in owned_names or each.is_symlink() or not each.is_file() for each in entries):
+        raise RuntimeError("Ledger directory contains unowned resources; cleanup refused")
+    for entry in entries:
+        entry.unlink()
+    ledger_dir.rmdir()
+
+
+def cmd_cleanup(args: argparse.Namespace) -> int:
+    ledger_file = ensure_safe_ledger_file(resolve_ledger_file(args.ledger))
+    read_ledger(ledger_file)
+    remove_ledger_dir(ledger_file)
     print("removed=1")
     return 0
 
