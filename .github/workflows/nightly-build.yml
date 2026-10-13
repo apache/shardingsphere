@@ -57,15 +57,14 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
       - name: Build Project
-        run: |
-          ./mvnw clean install -Prelease,default-dep
+        run: ./mvnw clean install -Prelease,default-dep
       - name: Upload Proxy Tarball Artifact
         uses: actions/upload-artifact@v6
         with:
           name: proxy-tarball-${{ github.run_id }}
           path: distribution/proxy/target/apache-shardingsphere-*.tar.gz
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 2
 
   build-proxy-image:
     if: github.repository == 'apache/shardingsphere'
@@ -115,16 +114,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push dynamic linked Docker Image by x64 or arm64
-        run: |
-          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }} "-DskipTests" clean package
+        run: ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }} "-DskipTests" clean package
       - name: Push mostly static linked Docker Image by x64
         if: matrix.os == 'ubuntu-latest'
-        run: |
-          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }}-mostly "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-DskipTests" clean package
+        run: ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }}-mostly "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-DskipTests" clean package
       - name: Push fully static linked Docker Image by x64
         if: matrix.os == 'ubuntu-latest'
-        run: |
-          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }}-static "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-DskipTests" clean package
+        run: ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }}-static "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-DskipTests" clean package
 
   build-agent-image:
     if: github.repository == 'apache/shardingsphere'
@@ -146,8 +142,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Docker Image
-        run: |
-          ./mvnw -am -pl distribution/agent -Prelease,default-dep,docker.buildx.push -T1C -DskipTests -Dagent.image.repository=${{ env.AGENT }} -Dagent.image.tag=${{ github.run_id }} clean package
+        run: ./mvnw -am -pl distribution/agent -Prelease,default-dep,docker.buildx.push -T1C -DskipTests -Dagent.image.repository=${{ env.AGENT }} -Dagent.image.tag=${{ github.run_id }} clean package
 
   build-cache:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
@@ -238,4 +233,4 @@ jobs:
           name: example-${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}--${{ github.run_id }}
           path: examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 2
