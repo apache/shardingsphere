@@ -79,10 +79,16 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.In
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinQualContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JsonAggregateFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JsonExistsErrorClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JsonFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JsonNullClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JsonPassingClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JsonReturningClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JsonTableColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JsonTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JsonTablePathContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JsonValueEmptyClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JsonValueErrorClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.MergeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.MergeMatchedThenClauseContext;
@@ -404,8 +410,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.cExpr()) {
             return visit(ctx.cExpr());
         }
-        Optional<ASTNode> result = createAExprSegment(ctx);
-        return result.isPresent() ? result.get() : createCommonExpressionSegment(ctx);
+        return createAExprSegment(ctx).orElseGet(() -> createCommonExpressionSegment(ctx));
     }
     
     private Optional<ASTNode> createAExprSegment(final AExprContext ctx) {
@@ -435,11 +440,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             String operator = null == ctx.qualOp() ? ctx.TILDE_().getText() : ctx.qualOp().getText();
             return Optional.of(new UnaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.aExpr(0)), operator, getOriginalText(ctx)));
         }
-        Optional<String> binaryOperator = findBinaryOperator(ctx);
-        if (binaryOperator.isPresent()) {
-            return Optional.of(createBinaryOperationSegment(ctx, binaryOperator.get()));
-        }
-        return Optional.empty();
+        return findBinaryOperator(ctx).map(optional -> createBinaryOperationSegment(ctx, optional));
     }
     
     private BinaryOperationExpression createQuantifiedPatternMatchingOperationSegment(final AExprContext ctx) {
@@ -736,6 +737,14 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                 SelectStatement statement = (SelectStatement) visit(select);
                 statement.addParameterMarkers(getParameterMarkerSegments());
                 params.add(new SubqueryExpressionSegment(new SubquerySegment(select.start.getStartIndex(), select.stop.getStopIndex(), statement, getOriginalText(select))));
+            } else if (parseTree instanceof JsonFunctionContext && (child instanceof TypeNameContext || child instanceof JsonValueEmptyClauseContext || child instanceof JsonValueErrorClauseContext
+                    || child instanceof JsonExistsErrorClauseContext || child instanceof JsonPassingClauseContext || child instanceof JsonNullClauseContext
+                    || child instanceof JsonReturningClauseContext)) {
+                ParserRuleContext parameter = (ParserRuleContext) child;
+                params.add(new CommonExpressionSegment(parameter.start.getStartIndex(), parameter.stop.getStopIndex(), getOriginalText(parameter), Collections.emptyList()));
+                if (!(child instanceof TypeNameContext)) {
+                    collectFunctionParameters(child, params, expandOpaque);
+                }
             } else if (!(child instanceof TypeNameContext)) {
                 collectFunctionParameters(child, params, expandOpaque);
             }

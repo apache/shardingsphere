@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowE
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ValuesExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
@@ -340,6 +341,8 @@ final class SQLStatementTreeWalker {
         expressionConsumer.accept(expression);
         if (expression instanceof FunctionSegment) {
             walkFunction((FunctionSegment) expression);
+        } else if (expression instanceof CommonExpressionSegment) {
+            ((CommonExpressionSegment) expression).getChildren().forEach(this::walkExpression);
         } else if (expression instanceof AggregationProjectionSegment) {
             AggregationProjectionSegment aggregation = (AggregationProjectionSegment) expression;
             aggregation.getParameters().forEach(this::walkExpression);
