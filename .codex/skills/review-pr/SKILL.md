@@ -280,8 +280,8 @@ Read [review-corrections.md](references/review-corrections.md) for previous feed
 
 ## Output Contract
 
-Return the selected mode's complete result without requiring an outer Markdown fence or bold labels.
-Use a copy-ready fenced block when the user requests one.
+Return every review output as one complete copy-ready Markdown report in a fenced block labelled `markdown`, in both output modes and every review round.
+Keep the selected mode's complete result inside that block, including corrections, findings, evidence, and coverage, without requiring a separate user request.
 The outer completion workflow adds its required task status and evidence without repeating the complete review report.
 
 Use the user's language for formal results. Draft GitHub-facing discussion
