@@ -104,6 +104,17 @@ class MySQLDatetime2BinlogProtocolValueTest {
         assertThat(readFully(2, 0x99, 0xae, 0xde, 0xa0, 0x00, 0x2d), is("2023-00-15 10:00:00.450000"));
     }
     
+    private Object readFully(final int fractionalSecondsPrecision, final int... bytes) {
+        ByteBuf buffer = Unpooled.buffer(bytes.length);
+        for (int each : bytes) {
+            buffer.writeByte(each);
+        }
+        columnDef.setColumnMeta(fractionalSecondsPrecision);
+        Object result = protocolValue.read(columnDef, new MySQLPacketPayload(buffer, StandardCharsets.UTF_8));
+        assertThat(buffer.readableBytes(), is(0));
+        return result;
+    }
+    
     @Test
     void assertReadWithZeroDayAndTwoByteFraction() {
         assertThat(readFully(4, 0x99, 0xb0, 0x00, 0xa0, 0x00, 0x04, 0xd2), is("2023-05-00 10:00:00.123400"));
@@ -162,16 +173,5 @@ class MySQLDatetime2BinlogProtocolValueTest {
                 Arguments.of("one_byte_zero", 1, new int[]{0xfe, 0xf3, 0xff, 0x7e, 0xfb, 0x00}, null, null, LocalDateTime.of(9999, 12, 31, 23, 59, 59)),
                 Arguments.of("two_bytes_999ms", 3, new int[]{0xfe, 0xf3, 0xff, 0x7e, 0xfb}, 9990, null, LocalDateTime.of(9999, 12, 31, 23, 59, 59, 999_000_000)),
                 Arguments.of("three_bytes_999990us", 5, new int[]{0xfe, 0xf3, 0xff, 0x7e, 0xfb}, null, 999990, LocalDateTime.of(9999, 12, 31, 23, 59, 59, 999_990_000)));
-    }
-    
-    private Object readFully(final int fractionalSecondsPrecision, final int... bytes) {
-        ByteBuf buffer = Unpooled.buffer(bytes.length);
-        for (int each : bytes) {
-            buffer.writeByte(each);
-        }
-        columnDef.setColumnMeta(fractionalSecondsPrecision);
-        Object result = protocolValue.read(columnDef, new MySQLPacketPayload(buffer, StandardCharsets.UTF_8));
-        assertThat(buffer.readableBytes(), is(0));
-        return result;
     }
 }
