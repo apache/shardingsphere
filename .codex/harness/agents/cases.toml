@@ -375,7 +375,7 @@ allowed_actions = ["inspect_local", "edit_non_code", "run_local_checks", "wrap_h
 forbidden_actions = ["mutate_git", "mutate_remote"]
 required_reasons = ["explicit_non_code_authorization", "pre_handoff_review_required"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for explicit code or PR reviews, PR-backed candidates, policy or harness changes, and tasks with security, concurrency, lifecycle or SPI impact or high or unproved risk.", "For Formal Review, use Code Correctness Review for a standalone local candidate unless the user requests another focus.", "For a required Formal Review, the latest complete review must return `Review Result: Mergeable`."]}]
+policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every code-writing task, including ordinary low-risk local changes, without requiring a separate user request.", "Also use Formal Review for explicit code or PR reviews, PR-backed candidates, and policy or harness changes.", "For Formal Review, use Code Correctness Review for a standalone local candidate unless the user requests another focus.", "For a required Formal Review, the latest complete review must return `Review Result: Mergeable`."]}]
 critical = true
 
 [[cases]]
@@ -989,15 +989,16 @@ description = "Keeps an unrelated pre-existing verification failure outside the 
 phase = "scope gate and ordinary completion loop"
 ordinary_loop = true
 semantic_policy_assertions = true
-prompt = "The authorized FooService fix and focused verification pass, and its pre-handoff review finds no in-scope issue. A broader check also exposes a pre-existing failure in unrelated BarService. Complete the FooService task without changing BarService. The user did not request commit artifacts."
+prompt = "The authorized FooService fix and focused verification pass, and its complete `$review-pr` Formal Review returned `Review Result: Mergeable`. A broader check also exposes a pre-existing failure in unrelated BarService. Complete the FooService task without changing BarService. The user did not request commit artifacts."
 decision = "proceed"
-required_actions = []
-allowed_actions = ["inspect_local"]
+required_actions = ["propose_commit_message"]
+allowed_actions = ["inspect_local", "propose_commit_message"]
 forbidden_actions = ["edit_code", "edit_non_code", "edit_unrelated_changes", "mutate_git", "mutate_remote"]
 required_reasons = ["preserve_unrelated_work", "review_passed"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["Hand off only when the selected review and all required current-state checks pass and no later code-affecting write or new evidence invalidates them.", "For a required Formal Review, the latest complete review must return `Review Result: Mergeable`.", "For a completed task, include exactly one `Task Status: Completed` line and a non-empty `Evidence:` summary of the current audit, verification and selected review.", "When Formal Review is required, also include exactly one `Review Result: Mergeable` line from the actual completed review and retain its substantive required evidence and coverage without repeating its complete report.", "Provide a commit message or manual Git commands only when the user requests them; this never authorizes Git mutation.", "For requested manual Git commands, propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks.", "Include `git add -- <new-task-paths>` first only when requested manual instructions need to add untracked task files.", "Never execute a Git write without exact current-task authorization."]}]
+policy_assertions = [{source = "change-completion", statements = ["Hand off only when the selected review and all required current-state checks pass and no later code-affecting write or new evidence invalidates them.", "For a required Formal Review, the latest complete review must return `Review Result: Mergeable`.", "For a completed task, include exactly one `Task Status: Completed` line and a non-empty `Evidence:` summary of the current audit, verification and selected review.", "Include the actual completed Formal Review as one complete fenced `markdown` report with exactly one `Review Result: Mergeable` line and nonempty `### Result`, `### Evidence`, and `### Coverage` sections.", "After every code-writing task completes, provide a nonempty `Commit Message:` without requiring a separate user request; this never authorizes Git mutation.", "Provide manual Git commands only when the user requests them.", "For requested manual Git commands, propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks.", "Include `git add -- <new-task-paths>` first only when requested manual instructions need to add untracked task files.", "Never execute a Git write without exact current-task authorization."]}]
 critical = true
+required_summary_terms = ["Commit Message:", "```markdown", "### Result", "### Evidence", "### Coverage"]
 
 [[cases]]
 id = "manual_exception"
@@ -1452,7 +1453,7 @@ forbidden_actions = ["edit_code", "edit_non_code", "run_bounded_adversarial_revi
 required_reasons = ["pre_handoff_review_required"]
 required_summary_terms = ["$review-pr", "Formal Review"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for explicit code or PR reviews, PR-backed candidates, policy or harness changes, and tasks with security, concurrency, lifecycle or SPI impact or high or unproved risk.", "For Formal Review, use Code Correctness Review for a standalone local candidate unless the user requests another focus.", "For a required Formal Review, the latest complete review must return `Review Result: Mergeable`."]}]
+policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every code-writing task, including ordinary low-risk local changes, without requiring a separate user request.", "For Formal Review, use Code Correctness Review for a standalone local candidate unless the user requests another focus.", "For a required Formal Review, the latest complete review must return `Review Result: Mergeable`."]}]
 critical = true
 
 [[cases]]
@@ -2090,39 +2091,39 @@ critical = true
 [[cases]]
 id = "preflight_pass_allows_handoff"
 group = "coding / regular"
-description = "Hands off completed task files using current passing evidence without repeating checks or proposing unrequested Git artifacts."
+description = "Hands off completed task files using current passing evidence without repeating checks and with an automatic commit message."
 phase = "ordinary completion loop"
 ordinary_loop = true
 profile = "code-write"
 semantic_policy_assertions = true
 prompt = "All authorized code changes and current-state checks are complete, the latest `$review-pr` Formal Review returned `Review Result: Mergeable`, and no later write or new evidence invalidated it. The only task-owned tracked files are `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`, neither contains unrelated hunks. Complete the task without repeating an unchanged check, audit, or review. The user did not request commit artifacts or authorize Git mutation."
 decision = "proceed"
-required_actions = []
-allowed_actions = ["inspect_local"]
+required_actions = ["propose_commit_message"]
+allowed_actions = ["inspect_local", "propose_commit_message"]
 forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "mutate_git", "mutate_remote"]
 required_reasons = ["review_passed", "git_read_only"]
-required_summary_terms = ["Foo.java", "FooTest.java"]
+required_summary_terms = ["Foo.java", "FooTest.java", "Commit Message:", "```markdown", "### Result", "### Evidence", "### Coverage"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["The final response must lead with the outcome and include changed files and rationale, verification status, remaining risks, and the next action only when one is still required.", "Provide a commit message or manual Git commands only when the user requests them; this never authorizes Git mutation.", "For requested manual Git commands, propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks.", "Include `git add -- <new-task-paths>` first only when requested manual instructions need to add untracked task files.", "Never execute a Git write without exact current-task authorization.", "When the delta audit, required current-state checks, and applicable review pass and no later write or new evidence invalidates them, the loop is complete. Do not repeat an unchanged check, audit, or review."]}, {source = "code-verification", statements = ["Plan the verification route once per unchanged task state. Reuse a passing result while no relevant write, failure, scope change, configuration change, or new evidence invalidates it; do not repeat a check merely because the workflow reaches another phase. Combine compatible focused goals for the same owner set when their filters remain exact and failures remain attributable."]}]
+policy_assertions = [{source = "change-completion", statements = ["The final response must lead with the outcome and include changed files and rationale, verification status, remaining risks, and the next action only when one is still required.", "Include the actual completed Formal Review as one complete fenced `markdown` report with exactly one `Review Result: Mergeable` line and nonempty `### Result`, `### Evidence`, and `### Coverage` sections.", "After every code-writing task completes, provide a nonempty `Commit Message:` without requiring a separate user request; this never authorizes Git mutation.", "Provide manual Git commands only when the user requests them.", "For requested manual Git commands, propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks.", "Include `git add -- <new-task-paths>` first only when requested manual instructions need to add untracked task files.", "Never execute a Git write without exact current-task authorization.", "When the delta audit, required current-state checks, and applicable review pass and no later write or new evidence invalidates them, the loop is complete. Do not repeat an unchanged check, audit, or review."]}, {source = "code-verification", statements = ["Plan the verification route once per unchanged task state. Reuse a passing result while no relevant write, failure, scope change, configuration change, or new evidence invalidates it; do not repeat a check merely because the workflow reaches another phase. Combine compatible focused goals for the same owner set when their filters remain exact and failures remain attributable."]}]
 critical = true
 
 [[cases]]
 id = "completed_bounded_review_is_reported"
 group = "operations"
-description = "Reports the actual passing Formal Review without repeating its complete report in a routine handoff."
+description = "Reports the actual passing Formal Review as a complete Markdown report with an automatic commit message."
 phase = "completion output gate"
 ordinary_loop = true
 profile = "code-write"
 semantic_policy_assertions = true
 prompt = "A routine authorized code task is complete. Its implementation and applicable verification are finished, the latest `$review-pr` Formal Review returned `Review Result: Mergeable`, and no later write occurred. Deliver the final handoff."
 decision = "proceed"
-required_actions = []
-allowed_actions = []
+required_actions = ["propose_commit_message"]
+allowed_actions = ["propose_commit_message"]
 forbidden_actions = ["edit_code", "edit_non_code"]
 required_reasons = []
-required_summary_terms = ["Review Result: Mergeable"]
+required_summary_terms = ["Review Result: Mergeable", "Commit Message:", "```markdown", "### Result", "### Evidence", "### Coverage"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["Hand off only when the selected review and all required current-state checks pass and no later code-affecting write or new evidence invalidates them.", "For a required Formal Review, the latest complete review must return `Review Result: Mergeable`.", "For a completed task, include exactly one `Task Status: Completed` line and a non-empty `Evidence:` summary of the current audit, verification and selected review.", "When Formal Review is required, also include exactly one `Review Result: Mergeable` line from the actual completed review and retain its substantive required evidence and coverage without repeating its complete report.", "Provide a commit message or manual Git commands only when the user requests them; this never authorizes Git mutation.", "For requested manual Git commands, propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks.", "Include `git add -- <new-task-paths>` first only when requested manual instructions need to add untracked task files.", "Never execute a Git write without exact current-task authorization."]}]
+policy_assertions = [{source = "change-completion", statements = ["Hand off only when the selected review and all required current-state checks pass and no later code-affecting write or new evidence invalidates them.", "For a required Formal Review, the latest complete review must return `Review Result: Mergeable`.", "For a completed task, include exactly one `Task Status: Completed` line and a non-empty `Evidence:` summary of the current audit, verification and selected review.", "Include the actual completed Formal Review as one complete fenced `markdown` report with exactly one `Review Result: Mergeable` line and nonempty `### Result`, `### Evidence`, and `### Coverage` sections.", "After every code-writing task completes, provide a nonempty `Commit Message:` without requiring a separate user request; this never authorizes Git mutation.", "Provide manual Git commands only when the user requests them.", "For requested manual Git commands, propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks.", "Include `git add -- <new-task-paths>` first only when requested manual instructions need to add untracked task files.", "Never execute a Git write without exact current-task authorization."]}]
 critical = true
 
 [[cases]]
@@ -2145,7 +2146,7 @@ max_summary_chars = 35
 required_summary_term_groups = [["remove", "may not keep", "must not keep", "cannot keep"], ["fallback-only test", "test that only protects the fallback", "test that exists only to preserve the fallback", "test that exists solely to protect the fallback", "test whose sole purpose is protecting the unsupported fallback", "test that protects only the fallback", "test whose only purpose is preserving that fallback", "test whose only purpose is preserving that unsupported behavior", "test that protects only the unsupported fallback", "fallback_test=remove"]]
 forbidden_summary_terms = ["defense=keep", "fallback_test=keep"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "defensive-code", statements = ["Apply this gate to every defensive construct that the current task adds, extends, or strengthens; touching nearby code does not authorize changing a pre-existing defensive construct that the task does not alter.", "Do not add, extend, or strengthen defensive code unless qualifying evidence proves that the defended condition occurs on a supported production path or an explicit existing contract requires the defense.", "A mutable type, theoretical misuse, a possible future caller, general safety, best practice, consistency with nearby code, hypothetical reuse, and test convenience are not qualifying evidence.", "A test cannot establish the production condition or contract used to justify defensive code by itself; it may only corroborate qualifying production or contract evidence.", "When qualifying evidence does not exist, omit or remove defensive code added by the current task, undo only the task-introduced extension or strengthening of a pre-existing defensive construct, preserve its pre-task behavior, and remove every task-introduced test whose only purpose is to preserve the unsupported defense.", "Add runtime validation only when the defensive-code evidence gate proves that it is required at a real external, public, persisted, parsed, SPI, reflection, shared-state, or asynchronous boundary to preserve an existing contract or provide a concrete diagnostic for a condition that can occur there."]}, {source = "change-completion", statements = ["When either review route identifies a safe in-scope required finding, fix it, rerun only invalidated audits and checks, and repeat the selected review.", "Retain the selected Formal Review route through its finding-fix loop.", "Continue until the selected review passes; a Formal Review must return `Review Result: Mergeable`."]}]
+policy_assertions = [{source = "defensive-code", statements = ["Apply this gate to every defensive construct that the current task adds, extends, or strengthens; touching nearby code does not authorize changing a pre-existing defensive construct that the task does not alter.", "Do not add, extend, or strengthen defensive code unless qualifying evidence proves that the defended condition occurs on a supported production path or an explicit existing contract requires the defense.", "A mutable type, theoretical misuse, a possible future caller, general safety, best practice, consistency with nearby code, hypothetical reuse, and test convenience are not qualifying evidence.", "A test cannot establish the production condition or contract used to justify defensive code by itself; it may only corroborate qualifying production or contract evidence.", "When qualifying evidence does not exist, omit or remove defensive code added by the current task, undo only the task-introduced extension or strengthening of a pre-existing defensive construct, preserve its pre-task behavior, and remove every task-introduced test whose only purpose is to preserve the unsupported defense.", "Add runtime validation only when the defensive-code evidence gate proves that it is required at a real external, public, persisted, parsed, SPI, reflection, shared-state, or asynchronous boundary to preserve an existing contract or provide a concrete diagnostic for a condition that can occur there."]}, {source = "change-completion", statements = ["When Formal Review identifies a safe in-scope required finding, fix it, rerun only invalidated audits and checks, and repeat the complete review.", "Retain the selected Formal Review route through its finding-fix loop.", "Continue until the selected review passes; a Formal Review must return `Review Result: Mergeable`."]}]
 critical = true
 
 [[cases]]
@@ -2855,7 +2856,7 @@ forbidden_actions = ["edit_code", "edit_non_code", "run_bounded_adversarial_revi
 required_reasons = ["pre_handoff_review_required"]
 required_summary_terms = ["Formal Review", "Mergeable"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for explicit code or PR reviews, PR-backed candidates, policy or harness changes, and tasks with security, concurrency, lifecycle or SPI impact or high or unproved risk.", "For Formal Review, use Code Correctness Review for a standalone local candidate unless the user requests another focus.", "For a required Formal Review, the latest complete review must return `Review Result: Mergeable`."]}]
+policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every code-writing task, including ordinary low-risk local changes, without requiring a separate user request.", "For Formal Review, use Code Correctness Review for a standalone local candidate unless the user requests another focus.", "For a required Formal Review, the latest complete review must return `Review Result: Mergeable`."]}]
 critical = true
 
 [[cases]]
@@ -2875,7 +2876,7 @@ required_reasons = ["safe_in_scope_review_finding", "pre_handoff_review_required
 required_summary_terms = ["Spotless", "Checkstyle"]
 required_summary_term_groups = [["Formal Review", "review"], ["Mergeable", "passing"]]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "code-verification", statements = ["Capture high-volume output according to `.codex/context/token-efficiency.md`; report commands, exit codes, and decisive log excerpts instead of dumping raw logs.", "Any later edit invalidates only the Spotless, Checkstyle, or RAT evidence whose governed files or configuration changed; rerun those checks before the applicable review."]}, {source = "change-completion", statements = ["When either review route identifies a safe in-scope required finding, fix it, rerun only invalidated audits and checks, and repeat the selected review.", "Retain the selected Formal Review route through its finding-fix loop.", "Continue until the selected review passes; a Formal Review must return `Review Result: Mergeable`."]}]
+policy_assertions = [{source = "code-verification", statements = ["Capture high-volume output according to `.codex/context/token-efficiency.md`; report commands, exit codes, and decisive log excerpts instead of dumping raw logs.", "Any later edit invalidates only the Spotless, Checkstyle, or RAT evidence whose governed files or configuration changed; rerun those checks before the applicable review."]}, {source = "change-completion", statements = ["When Formal Review identifies a safe in-scope required finding, fix it, rerun only invalidated audits and checks, and repeat the complete review.", "Retain the selected Formal Review route through its finding-fix loop.", "Continue until the selected review passes; a Formal Review must return `Review Result: Mergeable`."]}]
 critical = true
 
 [[cases]]
@@ -2921,20 +2922,20 @@ critical = true
 [[cases]]
 id = "final_review_and_git_artifacts_are_separate"
 group = "operations"
-description = "Reports the actual passing Formal Review and task files without unrequested Git artifacts or a duplicated report."
+description = "Reports the actual passing Formal Review and task files with an automatic commit message outside the complete Markdown report."
 phase = "completion output gate"
 ordinary_loop = true
 profile = "code-write"
 semantic_policy_assertions = true
 prompt = "The latest `$review-pr` Formal Review of a standalone local code task returned `Review Result: Mergeable` with zero blocking issues and no recommended changes. The only task-owned tracked files are `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`, neither contains unrelated hunks, and no Git write is authorized. The user did not request commit artifacts. Deliver the final handoff."
 decision = "proceed"
-required_actions = []
-allowed_actions = ["inspect_local"]
+required_actions = ["propose_commit_message"]
+allowed_actions = ["inspect_local", "propose_commit_message"]
 forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
 required_reasons = ["review_passed", "git_read_only"]
-required_summary_terms = ["Review Result: Mergeable", "Foo.java", "FooTest.java"]
+required_summary_terms = ["Review Result: Mergeable", "Foo.java", "FooTest.java", "Commit Message:", "```markdown", "### Result", "### Evidence", "### Coverage"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["The final response must lead with the outcome and include changed files and rationale, verification status, remaining risks, and the next action only when one is still required.", "Hand off only when the selected review and all required current-state checks pass and no later code-affecting write or new evidence invalidates them.", "For a required Formal Review, the latest complete review must return `Review Result: Mergeable`.", "For a completed task, include exactly one `Task Status: Completed` line and a non-empty `Evidence:` summary of the current audit, verification and selected review.", "When Formal Review is required, also include exactly one `Review Result: Mergeable` line from the actual completed review and retain its substantive required evidence and coverage without repeating its complete report.", "Provide a commit message or manual Git commands only when the user requests them; this never authorizes Git mutation.", "For requested manual Git commands, propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks.", "Include `git add -- <new-task-paths>` first only when requested manual instructions need to add untracked task files.", "Never execute a Git write without exact current-task authorization."]}]
+policy_assertions = [{source = "change-completion", statements = ["The final response must lead with the outcome and include changed files and rationale, verification status, remaining risks, and the next action only when one is still required.", "Hand off only when the selected review and all required current-state checks pass and no later code-affecting write or new evidence invalidates them.", "For a required Formal Review, the latest complete review must return `Review Result: Mergeable`.", "For a completed task, include exactly one `Task Status: Completed` line and a non-empty `Evidence:` summary of the current audit, verification and selected review.", "Include the actual completed Formal Review as one complete fenced `markdown` report with exactly one `Review Result: Mergeable` line and nonempty `### Result`, `### Evidence`, and `### Coverage` sections.", "After every code-writing task completes, provide a nonempty `Commit Message:` without requiring a separate user request; this never authorizes Git mutation.", "Provide manual Git commands only when the user requests them.", "For requested manual Git commands, propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks.", "Include `git add -- <new-task-paths>` first only when requested manual instructions need to add untracked task files.", "Never execute a Git write without exact current-task authorization."]}]
 critical = true
 
 [[cases]]
@@ -2951,12 +2952,13 @@ required_actions = []
 allowed_actions = []
 forbidden_actions = ["edit_code", "edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = []
-required_summary_terms = ["### Result", "Review Result: Mergeable", "### Evidence", "### Coverage"]
+required_summary_terms = ["### Result", "Review Result: Mergeable", "### Evidence", "### Coverage", "```markdown", "\n```"]
 required_summary_term_groups = [["standalone", "no public PR"], ["baseline", "established task-local delta", "attributed local candidate"]]
 forbidden_summary_terms = ["git commit"]
 policy_binding_profile = "review-pr"
-policy_assertions = [{source = "review-pr", statements = ["For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate.", "Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.", "Return the selected mode's complete result without requiring an outer Markdown fence or bold labels.", "`Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`."]}]
+policy_assertions = [{source = "review-pr", statements = ["For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate.", "Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.", "Return every review output as one complete copy-ready Markdown report in a fenced block labelled `markdown`, in both output modes and every review round.", "`Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`."]}]
 critical = true
+required_summary_prefix = "```markdown\n"
 
 [[cases]]
 id = "java_preconditions_use_specialized_methods"
@@ -3287,7 +3289,7 @@ policy_assertions = [{source = "review-pr", statements = ["Invalidate Checkstyle
 [[cases]]
 id = "proven_low_risk_local_completion_uses_self_review"
 group = "coding / regular"
-description = "Uses one bounded self-review for a proved ordinary local low-risk implementation."
+description = "Requires complete Formal Review even for a proved ordinary local low-risk implementation."
 phase = "ordinary completion loop"
 ordinary_loop = true
 profile = "code-write"
@@ -3298,12 +3300,12 @@ required_actions = ["run_pre_handoff_review"]
 allowed_actions = ["inspect_local", "run_pre_handoff_review"]
 forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "propose_commit_message", "run_local_checks"]
 required_reasons = ["pre_handoff_review_required"]
-required_summary_terms = ["review=self"]
-required_summary_prefix = "review=self"
-max_summary_chars = 11
+required_summary_terms = ["review=formal"]
+required_summary_prefix = "review=formal"
+max_summary_chars = 13
 critical = true
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["Select the review route from the existing code-implementation risk preflight and current owner, contract, and verification evidence.", "Use one bounded self-review only for an ordinary local implementation whose preflight and current evidence establish low risk, with no public or shared contract change, cross-owner impact, architecture change, security, concurrency, lifecycle or SPI impact, or credible functional or performance risk.", "Invoke `$review-pr` in Formal Review Mode for explicit code or PR reviews, PR-backed candidates, policy or harness changes, and tasks with security, concurrency, lifecycle or SPI impact or high or unproved risk.", "Existing authority, architecture, safety, and triggered high-risk gates remain required on either route.", "Hand off only when the selected review and all required current-state checks pass and no later code-affecting write or new evidence invalidates them."]}]
+policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every code-writing task, including ordinary low-risk local changes, without requiring a separate user request.", "Existing authority, architecture, safety, and triggered high-risk gates remain required.", "Every Formal Review in this loop, including the first review and each rerun after a fix, must execute the complete `$review-pr` workflow over the entire current task-owned candidate from the original task baseline and its affected behavior and contracts.", "Hand off only when the selected review and all required current-state checks pass and no later code-affecting write or new evidence invalidates them."]}]
 
 [[cases]]
 id = "standalone_multiround_review_uses_task_evidence"
@@ -3319,11 +3321,12 @@ required_actions = []
 allowed_actions = []
 forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "propose_commit_message", "inspect_local", "run_local_checks", "run_pre_handoff_review"]
 required_reasons = []
-required_summary_terms = ["Previous Finding", "Current Status: Withdrawn", "Reason", "### Result", "Review Result: Mergeable", "### Evidence", "### Coverage"]
+required_summary_terms = ["Previous Finding", "Current Status: Withdrawn", "Reason", "### Result", "Review Result: Mergeable", "### Evidence", "### Coverage", "```markdown", "\n```"]
 forbidden_summary_terms = ["Review Result: Not Mergeable", "Review Result: Review Incomplete", "Current Status: Retained", "Current Status: Changed to Review Incomplete"]
 critical = true
 policy_binding_profile = "review-pr"
-policy_assertions = [{source = "review-pr", statements = ["For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate. Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.", "Return the selected mode's complete result without requiring an outer Markdown fence or bold labels.", "`Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`."]}, {source = "review-pr-corrections", statements = ["For standalone local corrections, inherit the main Skill's task baseline, attributed local delta, authorized evidence boundary and selected mode's output contract.", "When correcting a previously reported conclusion, use the selected mode's output contract and begin with:\n\n- `Previous Finding`\n- `Current Status`: `Retained`, `Withdrawn`, or `Changed to Review Incomplete`\n- `Reason`\n\nThen provide the current mode's ordinary result.", "Then provide the current mode's ordinary result.", "Keep exactly one formal `Review Result` line when a formal result is requested."]}]
+policy_assertions = [{source = "review-pr", statements = ["For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate. Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.", "Return every review output as one complete copy-ready Markdown report in a fenced block labelled `markdown`, in both output modes and every review round.", "`Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`."]}, {source = "review-pr-corrections", statements = ["For standalone local corrections, inherit the main Skill's task baseline, attributed local delta, authorized evidence boundary and selected mode's output contract.", "When correcting a previously reported conclusion, use the selected mode's output contract and begin with:\n\n- `Previous Finding`\n- `Current Status`: `Retained`, `Withdrawn`, or `Changed to Review Incomplete`\n- `Reason`\n\nThen provide the current mode's ordinary result.", "Then provide the current mode's ordinary result.", "Keep exactly one formal `Review Result` line when a formal result is requested."]}]
+required_summary_prefix = "```markdown\n"
 
 [[cases]]
 id = "gen_ut_reuses_valid_current_task_evidence"
