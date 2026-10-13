@@ -47,9 +47,9 @@ jobs:
     name: Import Global Environment
     uses: ./.github/workflows/reusable-global-environment.yml
 
-  upload-to-nightlies:
+  build-and-upload-proxy-tarball:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    name: Upload to Nightly Builds
+    name: Build and Upload Proxy Tarball
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
@@ -66,9 +66,9 @@ jobs:
           if-no-files-found: error
           retention-days: 2
 
-  build-proxy-image:
+  build-and-push-proxy-image:
     if: github.repository == 'apache/shardingsphere'
-    name: Build Proxy Image
+    name: Build and Push Proxy Image
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     permissions:
@@ -91,9 +91,9 @@ jobs:
       - name: Push Docker Image
         run: ./mvnw -am -pl distribution/proxy -Prelease,default-dep,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.run_id }} clean install
 
-  build-proxy-native-image:
+  build-and-push-proxy-native-image:
     if: github.repository == 'apache/shardingsphere'
-    name: Build Proxy Native Image
+    name: Build and Push Proxy Native Image
     needs: global-environment
     timeout-minutes: 90
     permissions:
@@ -122,9 +122,9 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }}-static "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-DskipTests" clean package
 
-  build-agent-image:
+  build-and-push-agent-image:
     if: github.repository == 'apache/shardingsphere'
-    name: Build Agent Image
+    name: Build and Push Agent Image
     needs: global-environment
     timeout-minutes: 90
     permissions:
@@ -144,9 +144,9 @@ jobs:
       - name: Push Docker Image
         run: ./mvnw -am -pl distribution/agent -Prelease,default-dep,docker.buildx.push -T1C -DskipTests -Dagent.image.repository=${{ env.AGENT }} -Dagent.image.tag=${{ github.run_id }} clean package
 
-  build-cache:
+  build-project:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    name: Build Project Cache
+    name: Build Project
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 15
@@ -159,7 +159,7 @@ jobs:
   generate-and-test-examples:
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    needs: [ build-cache, global-environment ]
+    needs: [ build-project, global-environment ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 90
     strategy:
