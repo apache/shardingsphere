@@ -21,24 +21,28 @@
 from __future__ import annotations
 
 import argparse
+import difflib
+import hashlib
 import json
 import os
 import re
 import shutil
+import stat
+import subprocess
 import sys
 import tempfile
 import time
 from collections import Counter
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
 
 from review_common import (
-    categorize, compare_github_files, final_paths, get_repo_root, parse_name_status, resolve_candidate_changes, run_git,
+    categorize, compare_github_files, get_repo_root, parse_name_status, resolve_candidate_changes, run_git,
 )
 
 
 LEDGER_KIND = "review-pr-coverage-ledger"
-LEDGER_VERSION = 3
+LEDGER_VERSION = 4
 LEDGER_FILE_NAME = "ledger.json"
 FILE_STATUSES = frozenset({"pending", "reviewed", "churn-only", "test-only-reviewed", "not-applicable", "blocked"})
 FINAL_FILE_STATUSES = FILE_STATUSES - {"pending"}
@@ -46,6 +50,8 @@ SUBSTANTIVE_FILE_STATUSES = frozenset({"reviewed", "test-only-reviewed"})
 EXPLAINED_FILE_STATUSES = frozenset({"churn-only", "not-applicable"})
 FINDING_STATUSES = frozenset({"candidate", "confirmed", "withdrawn", "review-incomplete-gap", "non-blocking", "out-of-scope"})
 PASS_FOCUSES = ("root-cause", "blast-radius", "tests-runtime", "convergence")
+REVIEW_FOCUSES = ("Code Correctness Review", "Mergeability Review", "CI Review")
+SOURCE_ROLES = frozenset({"rule", "requirement", "evidence"})
 
 
 def ledger_root() -> Path:
@@ -93,21 +99,38 @@ def validate_schema(ledger: object) -> None:
         "findings": list,
         "passes": list,
         "review_revision": int,
+        "basis": dict,
     }
     if any(not isinstance(ledger.get(key), expected_type) for key, expected_type in required_types.items()):
         raise RuntimeError("Malformed review coverage ledger")
     if not isinstance(ledger["scope"].get("github_files", {}), dict):
         raise RuntimeError("Malformed review coverage ledger scope")
+    scope_types = {"repo_root": str, "base_sha": str, "head_sha": str, "merge_base": str, "head_ref": str, "changed_file_count": int,
+                   "candidate_files": dict, "review_basis_file": str}
+    if any(not isinstance(ledger["scope"].get(key), value) for key, value in scope_types.items()):
+        raise RuntimeError("Malformed review coverage ledger scope")
+    basis_types = {"focus": str, "baseline": dict, "delta": list, "sources": list}
+    if any(not isinstance(ledger["basis"].get(key), value) for key, value in basis_types.items()):
+        raise RuntimeError("Malformed review coverage ledger basis")
+    candidate_files = ledger["scope"]["candidate_files"]
+    if not isinstance(candidate_files.get("provided"), bool) or not isinstance(candidate_files.get("path"), str):
+        raise RuntimeError("Malformed review coverage ledger candidate scope")
+    if any(not has_text(ledger["basis"]["baseline"].get(key)) for key in ("commit", "tree")):
+        raise RuntimeError("Malformed review coverage ledger original baseline")
+    for entry in ledger["basis"]["delta"]:
+        if not isinstance(entry, dict) or not has_text(entry.get("path")) or any(not isinstance(entry.get(key), dict) for key in ("base", "candidate")):
+            raise RuntimeError("Malformed review coverage ledger delta")
     entry_schemas = (
         ("file", ledger["files"], {
             "path": str, "status": str, "clusters": list, "risk_axes": list, "findings": list,
+            "base": dict, "candidate": dict, "blocks": list, "coverage": list,
         }),
         ("finding", ledger["findings"], {
             "id": str, "status": str, "origin": str, "fix_boundary": str, "evidence": list, "full_path": list,
-            "counter_evidence": list, "necessity": str, "scope_proof": str, "files": list, "reason": str,
+            "counter_evidence": list, "necessity": str, "scope_proof": str, "files": list, "reason": str, "anchors": list,
         }),
         ("pass", ledger["passes"], {
-            "focus": str, "new_findings": int, "review_revision": int,
+            "focus": str, "new_findings": int, "review_revision": int, "basis_fingerprint": str,
         }),
     )
     for entry_name, entries, schema in entry_schemas:
@@ -120,6 +143,23 @@ def validate_schema(ledger: object) -> None:
         for entry in entries:
             if any(not all(isinstance(value, str) for value in entry[field]) for field in fields):
                 raise RuntimeError("Malformed review coverage ledger list entry")
+    for entry in ledger["files"]:
+        if "old_path" not in entry or entry["old_path"] is not None and not isinstance(entry["old_path"], str):
+            raise RuntimeError("Malformed review coverage ledger file entry")
+        for block in entry["blocks"]:
+            fields = {"id": str, "kind": str, "base_path": str, "candidate_path": str,
+                      "base_start": int, "base_count": int, "candidate_start": int, "candidate_count": int}
+            if not isinstance(block, dict) or any(not isinstance(block.get(key), value) for key, value in fields.items()):
+                raise RuntimeError("Malformed review coverage ledger block")
+        for coverage in entry["coverage"]:
+            validate_coverage_shape(coverage, captured=True)
+    for finding in ledger["findings"]:
+        for anchor in finding["anchors"]:
+            validate_anchor_shape(anchor, captured=True)
+    for source in ledger["basis"]["sources"]:
+        validate_source_shape(source)
+        if any(not has_text(source.get(key)) for key in ("mode", "sha256")):
+            raise RuntimeError("Malformed review coverage ledger source snapshot")
 
 
 def read_ledger(value: str | Path) -> dict[str, Any]:
@@ -162,6 +202,238 @@ def has_text_entries(values: Iterable[object]) -> bool:
     return bool(entries) and all(has_text(each) for each in entries)
 
 
+def digest(value: Any) -> str:
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+def validate_source_shape(source: Any) -> None:
+    if not isinstance(source, dict) or any(not has_text(source.get(key)) for key in ("role", "origin", "path")) or source["role"] not in SOURCE_ROLES:
+        raise RuntimeError("Review basis sources require role, origin, and a readable material path")
+
+
+def validate_anchor_shape(anchor: Any, captured: bool = False) -> None:
+    if not isinstance(anchor, dict) or anchor.get("side") not in {"base", "candidate", "source"} or not has_text(anchor.get("path")):
+        raise RuntimeError("Source anchors require side and path")
+    if "source" == anchor["side"] and not has_text(anchor.get("origin")):
+        raise RuntimeError("Source anchors require an explicit declared origin")
+    if ("start_line" in anchor) != ("end_line" in anchor):
+        raise RuntimeError("Source anchors require both line bounds or neither")
+    for key in ("start_line", "end_line"):
+        if key in anchor and type(anchor[key]) is not int:
+            raise RuntimeError("Source anchor line bounds must be integers")
+    if captured and any(not has_text(anchor.get(key)) for key in ("sha256", "mode", "range_sha256")):
+        raise RuntimeError("Captured source anchors require content fingerprints")
+    if captured and any(key not in anchor for key in ("start_line", "end_line")):
+        raise RuntimeError("Captured source anchors require normalized line bounds")
+
+
+def validate_coverage_shape(coverage: Any, captured: bool = False) -> None:
+    if not isinstance(coverage, dict) or any(not has_text(coverage.get(key)) for key in ("block", "behavior", "counter_evidence")):
+        raise RuntimeError("Block coverage requires block, behavior, and counter-evidence")
+    if any(not isinstance(coverage.get(key), list) or not has_text_entries(coverage[key]) for key in ("risk_axes", "requirements")):
+        raise RuntimeError("Block coverage requires risk axes and applicable requirement origins")
+    if not isinstance(coverage.get("anchors"), list) or not coverage["anchors"]:
+        raise RuntimeError("Block coverage requires real source anchors")
+    for anchor in coverage["anchors"]:
+        validate_anchor_shape(anchor, captured=captured)
+
+
+def read_object(repo_root: Path, scope: dict[str, Any], side: str, path: str) -> tuple[dict[str, Any], bytes | None]:
+    if "source" != side and (PurePosixPath(path).is_absolute() or ".." in PurePosixPath(path).parts or "." == path):
+        raise RuntimeError(f"Invalid repository-relative source anchor path: {path}")
+    if "base" == side or "candidate" == side and not scope["candidate_files"]["provided"]:
+        ref = scope["merge_base"] if "base" == side else scope["head_ref"]
+        process = subprocess.run(["git", "ls-tree", "-z", ref, "--", path], cwd=repo_root, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                 env={**os.environ, "GIT_LITERAL_PATHSPECS": "1"}, check=False)
+        if process.returncode:
+            raise RuntimeError(f"Cannot read {side} object: {path}")
+        objects = [each.split(b"\t", 1) for each in process.stdout.split(b"\0") if each]
+        entry = next((value for metadata, value in objects if value.decode() == path), None)
+        if entry is None:
+            return {"mode": None, "sha256": None}, None
+        metadata = next(metadata for metadata, value in objects if value == entry).decode().split()
+        mode, object_type, object_id = metadata
+        if "tree" == object_type:
+            return {"mode": None, "sha256": None}, None
+        if "commit" == object_type:
+            content = object_id.encode()
+        else:
+            blob = subprocess.run(["git", "cat-file", "blob", object_id], cwd=repo_root, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+            if blob.returncode:
+                raise RuntimeError(f"Cannot read {side} object bytes: {path}")
+            content = blob.stdout
+    else:
+        source_path = Path(path) if Path(path).is_absolute() else repo_root / path
+        try:
+            metadata = source_path.stat() if "source" == side else source_path.lstat()
+        except (FileNotFoundError, NotADirectoryError):
+            return {"mode": None, "sha256": None}, None
+        if stat.S_ISLNK(metadata.st_mode):
+            mode, content = "120000", os.fsencode(os.readlink(source_path))
+        elif stat.S_ISDIR(metadata.st_mode) and "candidate" == side:
+            index = subprocess.run(["git", "ls-files", "--stage", "-z", "--", path], cwd=repo_root, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                   env={**os.environ, "GIT_LITERAL_PATHSPECS": "1"}, check=False)
+            if index.returncode:
+                raise RuntimeError(f"Cannot determine candidate Git type: {path}")
+            entries = [each.split(b"\t", 1) for each in index.stdout.split(b"\0") if each]
+            if not any(value.decode() == path and metadata.split()[0] == b"160000" for metadata, value in entries):
+                return {"mode": None, "sha256": None}, None
+            if get_repo_root(source_path).resolve() != source_path.resolve():
+                raise RuntimeError(f"Gitlink checkout must have its own repository: {path}")
+            if run_git(["status", "--porcelain", "--untracked-files=no"], source_path).strip():
+                raise RuntimeError(f"Gitlink checkout has staged or unstaged tracked changes: {path}")
+            mode, content = "160000", run_git(["rev-parse", "HEAD"], source_path).strip().encode()
+        else:
+            mode = "100755" if metadata.st_mode & stat.S_IXUSR else "100644"
+            content = source_path.read_bytes()
+    return {"mode": mode, "sha256": hashlib.sha256(content).hexdigest()}, content
+
+
+def changed_blocks(path: str, base_path: str, base: dict[str, Any], candidate: dict[str, Any], old: bytes | None, new: bytes | None) -> list[dict[str, Any]]:
+    result = []
+    try:
+        old_lines, new_lines = (old or b"").decode("utf-8").splitlines(keepends=True), (new or b"").decode("utf-8").splitlines(keepends=True)
+        opaque = b"\0" in (old or b"") or b"\0" in (new or b"") or base["mode"] in {"120000", "160000"} or candidate["mode"] in {"120000", "160000"}
+    except UnicodeDecodeError:
+        old_lines, new_lines, opaque = [], [], True
+    if old != new and opaque:
+        result.append({"kind": "binary", "base_start": 0, "base_count": 0, "candidate_start": 0, "candidate_count": 0})
+    elif old != new:
+        for tag, old_start, old_end, new_start, new_end in difflib.SequenceMatcher(None, old_lines, new_lines).get_opcodes():
+            if "equal" != tag:
+                result.append({"kind": "text", "base_start": old_start + 1, "base_count": old_end - old_start,
+                               "candidate_start": new_start + 1, "candidate_count": new_end - new_start})
+    if base_path != path:
+        result.append({"kind": "rename", "base_start": 0, "base_count": 0, "candidate_start": 0, "candidate_count": 0})
+    if base["mode"] and candidate["mode"] and base["mode"] != candidate["mode"]:
+        result.append({"kind": "mode", "base_start": 0, "base_count": 0, "candidate_start": 0, "candidate_count": 0})
+    if not result and base != candidate:
+        result.append({"kind": "object", "base_start": 0, "base_count": 0, "candidate_start": 0, "candidate_count": 0})
+    for block in result:
+        block.update({"base_path": base_path, "candidate_path": path})
+        block["id"] = digest({**block, "base": base, "candidate": candidate})
+    return result
+
+
+def capture_basis(scope: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    repo_root = Path(scope["repo_root"])
+    configuration = json.loads(Path(scope["review_basis_file"]).read_text(encoding="utf-8"))
+    if not isinstance(configuration, dict) or configuration.get("focus") not in REVIEW_FOCUSES or not isinstance(configuration.get("sources"), list):
+        raise RuntimeError("Review basis requires a supported focus and declared sources")
+    sources = []
+    for source in configuration["sources"]:
+        validate_source_shape(source)
+        snapshot, content = read_object(repo_root, scope, "source", source["path"])
+        if content is None:
+            raise RuntimeError(f"Review basis source is unavailable: {source['origin']}")
+        sources.append({**source, **snapshot})
+    if not any(each["role"] in {"rule", "requirement"} for each in sources) or len(sources) != len({each["origin"] for each in sources}):
+        raise RuntimeError("Review basis requires unambiguous applicable rule or requirement sources")
+    candidate_files = scope["candidate_files"]
+    changes = resolve_candidate_changes(repo_root, scope["merge_base"], candidate_files["path"]) if candidate_files["provided"] else parse_name_status(
+        run_git(["diff", "--name-status", f"{scope['merge_base']}..{scope['head_ref']}"], repo_root))
+    files = []
+    paths = sorted({path for change in changes for path in (change.old_path or change.path, change.path)})
+    objects = {(side, path): read_object(repo_root, scope, side, path) for path in paths for side in ("base", "candidate")}
+    for change in changes:
+        base_path = change.old_path or change.path
+        base, old = objects[("base", base_path)]
+        candidate, new = objects[("candidate", change.path)]
+        files.append({"path": change.path, "old_path": change.old_path, "git_status": change.status, "base": base, "candidate": candidate,
+                      "blocks": changed_blocks(change.path, base_path, base, candidate, old, new)})
+    delta = [{"path": path, "base": objects[("base", path)][0], "candidate": objects[("candidate", path)][0]} for path in paths]
+    return {"focus": configuration["focus"], "baseline": {"commit": scope["merge_base"], "tree": run_git(["rev-parse", f"{scope['merge_base']}^{{tree}}"], repo_root).strip()},
+            "sources": sources, "delta": delta}, files
+
+
+def capture_anchor(anchor: dict[str, Any], ledger: dict[str, Any]) -> dict[str, Any]:
+    if "source" == anchor["side"]:
+        source = next((each for each in ledger["basis"]["sources"] if each["origin"] == anchor["origin"] and each["path"] == anchor["path"]), None)
+        if source is None:
+            raise RuntimeError("Source anchor does not match a declared material and origin")
+    snapshot, content = read_object(Path(ledger["scope"]["repo_root"]), ledger["scope"], anchor["side"], anchor["path"])
+    if content is None:
+        raise RuntimeError(f"Source anchor is unavailable: {anchor['side']}:{anchor['path']}")
+    start, end = anchor.get("start_line", 0), anchor.get("end_line", 0)
+    if start or end:
+        try:
+            lines = content.decode("utf-8").splitlines(keepends=True)
+        except UnicodeDecodeError as ex:
+            raise RuntimeError("Line anchors require UTF-8 text; use a whole-object anchor for binary evidence") from ex
+        if start < 1 or end < start or end > len(lines):
+            raise RuntimeError("Source anchor line range is outside the actual source")
+        selected = "".join(lines[start - 1:end]).encode("utf-8")
+    else:
+        selected = content
+    return {**anchor, **snapshot, "start_line": start, "end_line": end, "range_sha256": hashlib.sha256(selected).hexdigest()}
+
+
+def anchor_covers_block(anchor: dict[str, Any], block: dict[str, Any]) -> bool:
+    side = anchor["side"]
+    if side not in {"base", "candidate"} or anchor["path"] != block[f"{side}_path"]:
+        return False
+    if "text" != block["kind"]:
+        return not anchor["start_line"] and not anchor["end_line"]
+    count, start = block[f"{side}_count"], block[f"{side}_start"]
+    return count > 0 and anchor["start_line"] > 0 and anchor["start_line"] <= start + count - 1 and anchor["end_line"] >= start
+
+
+def coverage_errors(entry: dict[str, Any], requirement_origins: set[str]) -> list[str]:
+    errors = []
+    block_ids = {each["id"] for each in entry["blocks"]}
+    covered_blocks = {each["block"] for each in entry["coverage"]}
+    if covered_blocks - block_ids:
+        errors.append(f"{entry['path']} has unknown changed-block coverage")
+    if entry["status"] in SUBSTANTIVE_FILE_STATUSES and block_ids - covered_blocks:
+        errors.append(f"{entry['path']} has uncovered changed blocks: {len(block_ids - covered_blocks)}")
+    for coverage in entry["coverage"]:
+        if set(coverage["requirements"]) - requirement_origins:
+            errors.append(f"{entry['path']} block coverage references unknown applicable requirement origins")
+        block = next((each for each in entry["blocks"] if each["id"] == coverage["block"]), None)
+        if block is not None and not any(anchor_covers_block(each, block) for each in coverage["anchors"]):
+            errors.append(f"{entry['path']} block coverage has no anchor at the actual change")
+    return errors
+
+
+def all_anchors(ledger: dict[str, Any]) -> Iterable[dict[str, Any]]:
+    for entry in ledger["files"]:
+        for coverage in entry["coverage"]:
+            yield from coverage["anchors"]
+    for finding in ledger["findings"]:
+        yield from finding["anchors"]
+
+
+def basis_fingerprint(ledger: dict[str, Any]) -> str:
+    basis = ledger["basis"]
+    scope_paths = {each["path"] for each in basis["delta"]}
+    evidence = {(each["side"], each["path"], each["mode"], each["sha256"]) for each in all_anchors(ledger)
+                if "source" != each["side"] and each["path"] not in scope_paths}
+    return digest({"focus": basis["focus"], "baseline": basis["baseline"]["tree"], "delta": basis["delta"],
+                   "sources": sorted((each["role"], each["origin"], each["mode"], each["sha256"]) for each in basis["sources"]),
+                   "evidence": sorted(evidence)})
+
+
+def validate_current_basis(ledger: dict[str, Any]) -> list[str]:
+    current, files = capture_basis(ledger["scope"])
+    errors = []
+    if current != ledger["basis"]:
+        errors.append("Effective candidate, original baseline, focus, or declared review sources changed; initialize a new ledger")
+    snapshots = [{key: each[key] for key in ("path", "old_path", "base", "candidate", "blocks")} for each in ledger["files"]]
+    actual = [{key: each[key] for key in ("path", "old_path", "base", "candidate", "blocks")} for each in files]
+    if snapshots != actual or ledger["scope"]["changed_file_count"] != len(files):
+        errors.append("Ledger files, changed-file count, or changed blocks do not match the effective candidate")
+    if ledger["scope"].get("github_files_file"):
+        comparison = compare_github_files((each["path"] for each in files), ledger["scope"]["github_files_file"])
+        if comparison != ledger["scope"]["github_files"]:
+            errors.append("Authoritative GitHub file material changed or no longer matches the ledger")
+    if errors:
+        return errors
+    for anchor in all_anchors(ledger):
+        if capture_anchor(anchor, ledger) != anchor:
+            errors.append(f"Source anchor is stale: {anchor['side']}:{anchor['path']}")
+    return errors
+
+
 def sync_file_findings(ledger: dict[str, Any]) -> None:
     for each in ledger["files"]:
         each["findings"] = []
@@ -176,8 +448,21 @@ def cmd_init(args: argparse.Namespace) -> int:
     head_sha = run_git(["rev-parse", args.head_ref], repo_root).strip()
     merge_base = run_git(["merge-base", args.base_ref, args.head_ref], repo_root).strip()
     candidate_files = getattr(args, "candidate_files", None)
-    changed_files = resolve_candidate_changes(repo_root, merge_base, candidate_files) if candidate_files else parse_name_status(
-        run_git(["diff", "--name-status", f"{merge_base}..{args.head_ref}"], repo_root))
+    scope = {
+        "repo": repo_root.name,
+        "repo_root": str(repo_root),
+        "pr": args.pr,
+        "base_ref": args.base_ref,
+        "base_sha": base_sha,
+        "head_ref": args.head_ref,
+        "head_sha": head_sha,
+        "merge_base": merge_base,
+        "candidate_files": {"provided": bool(candidate_files), "path": str(Path(candidate_files).resolve()) if candidate_files else ""},
+        "review_basis_file": str(Path(args.review_basis).resolve()),
+        "github_files_file": str(Path(args.github_files).resolve()) if args.github_files else "",
+    }
+    basis, changed_files = capture_basis(scope)
+    scope.update({"changed_file_count": len(changed_files), "github_files": compare_github_files((each["path"] for each in changed_files), args.github_files)})
     ledger_dir = create_ledger_dir(repo_root, args.pr, head_sha)
     ledger_file = ledger_dir / LEDGER_FILE_NAME
     now = int(time.time())
@@ -187,27 +472,16 @@ def cmd_init(args: argparse.Namespace) -> int:
         "created_at": now,
         "updated_at": now,
         "review_revision": 0,
-        "scope": {
-            "repo": repo_root.name,
-            "pr": args.pr,
-            "base_ref": args.base_ref,
-            "base_sha": base_sha,
-            "head_ref": args.head_ref,
-            "head_sha": head_sha,
-            "merge_base": merge_base,
-            "changed_file_count": len(changed_files),
-            "candidate_files": {"provided": bool(candidate_files)},
-            "github_files": compare_github_files(final_paths(changed_files), args.github_files),
-        },
+        "scope": scope,
+        "basis": basis,
         "files": [{
-            "path": each.path,
-            "git_status": each.status,
-            "old_path": each.old_path,
-            "category": categorize(each.path),
+            **each,
+            "category": categorize(each["path"]),
             "status": "pending",
             "clusters": [],
             "risk_axes": [],
             "findings": [],
+            "coverage": [],
             "reason": "",
         } for each in changed_files],
         "findings": [],
@@ -222,11 +496,25 @@ def cmd_init(args: argparse.Namespace) -> int:
 def cmd_mark_file(args: argparse.Namespace) -> int:
     ledger_file = resolve_ledger_file(args.ledger)
     ledger = read_ledger(ledger_file)
+    errors = validate_current_basis(ledger)
+    if errors:
+        raise RuntimeError("; ".join(errors))
     entry = find_file_entry(ledger, args.path)
+    if args.coverage:
+        coverage = json.loads(Path(args.coverage).read_text(encoding="utf-8"))
+        if not isinstance(coverage, list):
+            raise RuntimeError("File coverage material must be a list of reviewed blocks")
+        for block_review in coverage:
+            validate_coverage_shape(block_review)
+            block_review["anchors"] = [capture_anchor(each, ledger) for each in block_review["anchors"]]
+        entry["coverage"] = coverage
     entry["status"] = args.status
     unique_extend(entry["clusters"], args.cluster or [])
     unique_extend(entry["risk_axes"], args.risk_axis or [])
     entry["reason"] = args.reason or ""
+    errors = coverage_errors(entry, {each["origin"] for each in ledger["basis"]["sources"] if each["role"] in {"rule", "requirement"}})
+    if errors:
+        raise RuntimeError("; ".join(errors))
     ledger["review_revision"] += 1
     write_ledger(ledger_file, ledger)
     print(f"marked={args.path} status={args.status}")
@@ -236,6 +524,14 @@ def cmd_mark_file(args: argparse.Namespace) -> int:
 def cmd_add_finding(args: argparse.Namespace) -> int:
     ledger_file = resolve_ledger_file(args.ledger)
     ledger = read_ledger(ledger_file)
+    errors = validate_current_basis(ledger)
+    if errors:
+        raise RuntimeError("; ".join(errors))
+    anchors = json.loads(Path(args.anchors).read_text(encoding="utf-8")) if args.anchors else []
+    if not isinstance(anchors, list):
+        raise RuntimeError("Finding anchors material must be a list")
+    for anchor in anchors:
+        validate_anchor_shape(anchor)
     finding = {
         "id": args.id,
         "status": args.status,
@@ -248,6 +544,7 @@ def cmd_add_finding(args: argparse.Namespace) -> int:
         "scope_proof": args.scope_proof or "",
         "files": args.file or [],
         "reason": args.reason or "",
+        "anchors": [capture_anchor(each, ledger) for each in anchors],
     }
     existing = next((each for each in ledger["findings"] if args.id == each["id"]), None)
     if existing:
@@ -264,6 +561,9 @@ def cmd_add_finding(args: argparse.Namespace) -> int:
 def cmd_add_pass(args: argparse.Namespace) -> int:
     ledger_file = resolve_ledger_file(args.ledger)
     ledger = read_ledger(ledger_file)
+    errors = validate_current_basis(ledger)
+    if errors:
+        raise RuntimeError("; ".join(errors))
     if 0 > args.new_findings:
         raise RuntimeError("New finding count must not be negative")
     ledger["passes"].append({
@@ -272,6 +572,7 @@ def cmd_add_pass(args: argparse.Namespace) -> int:
         "review_revision": ledger["review_revision"],
         "finding_count": len(ledger["findings"]),
         "created_at": int(time.time()),
+        "basis_fingerprint": basis_fingerprint(ledger),
     })
     write_ledger(ledger_file, ledger)
     print(f"pass={args.focus} new_findings={args.new_findings}")
@@ -280,7 +581,14 @@ def cmd_add_pass(args: argparse.Namespace) -> int:
 
 def validate_ledger(ledger: dict[str, Any], incomplete_result: bool = False) -> list[str]:
     validate_schema(ledger)
-    result: list[str] = []
+    return _validate_ledger(ledger, incomplete_result)
+
+
+def _validate_ledger(ledger: dict[str, Any], incomplete_result: bool = False) -> list[str]:
+    result = validate_current_basis(ledger)
+    requirement_origins = {each["origin"] for each in ledger["basis"]["sources"] if each["role"] in {"rule", "requirement"}}
+    for entry in ledger["files"]:
+        result.extend(coverage_errors(entry, requirement_origins))
     github_files = ledger["scope"].get("github_files", {})
     if github_files.get("provided") and not github_files.get("matched"):
         result.append("GitHub file list does not match local triple-dot scope")
@@ -347,6 +655,8 @@ def validate_ledger(ledger: dict[str, Any], incomplete_result: bool = False) -> 
         if unknown_files:
             result.append(f"{each['id']} references files outside scope: {', '.join(unknown_files)}")
         if "confirmed" == each["status"]:
+            if not each["anchors"]:
+                result.append(f"{each['id']} confirmed finding is missing real source anchors")
             if not has_text(each["origin"]):
                 result.append(f"{each['id']} confirmed finding is missing origin")
             if not has_text(each["fix_boundary"]):
@@ -368,6 +678,8 @@ def validate_ledger(ledger: dict[str, Any], incomplete_result: bool = False) -> 
                 missing_fact = "the unavailable fact" if incomplete_result else "a reason"
                 result.append(f"{each['id']} incomplete gap is missing {missing_fact}")
             if incomplete_result:
+                if not each["anchors"]:
+                    result.append(f"{each['id']} incomplete gap is missing real unavailability-proof anchors")
                 if not has_text(each["origin"]):
                     result.append(f"{each['id']} incomplete gap is missing the fact source")
                 if not has_text_entries(each["evidence"]):
@@ -384,7 +696,8 @@ def validate_ledger(ledger: dict[str, Any], incomplete_result: bool = False) -> 
                     result.append(f"{each['id']} incomplete gap is missing affected scope files")
             else:
                 result.append(f"{each['id']} requires a Review Incomplete result")
-    pass_foci = {each.get("focus") for each in ledger["passes"]}
+    current_fingerprint = basis_fingerprint(ledger)
+    pass_foci = {each.get("focus") for each in ledger["passes"] if each["basis_fingerprint"] == current_fingerprint}
     missing_passes = [each for each in PASS_FOCUSES if each not in pass_foci]
     if missing_passes:
         result.append(f"Required review passes missing: {', '.join(missing_passes)}")
@@ -396,28 +709,30 @@ def validate_ledger(ledger: dict[str, Any], incomplete_result: bool = False) -> 
             result.append("Latest convergence pass did not finish with zero new findings")
         if ledger["review_revision"] != final_pass.get("review_revision"):
             result.append("Latest convergence pass predates a file or finding change")
+        if current_fingerprint != final_pass["basis_fingerprint"]:
+            result.append("Latest convergence pass uses a different review basis")
     return result
 
 
 def cmd_validate(args: argparse.Namespace) -> int:
     ledger = read_ledger(args.ledger)
-    errors = validate_ledger(ledger)
+    errors = _validate_ledger(ledger)
     if errors:
         for each in errors:
             print(f"ERROR: {each}")
         return 1
-    print("OK")
+    print("OK: mechanical coverage and evidence are current; correctness requires Formal Review")
     return 0
 
 
 def cmd_validate_incomplete(args: argparse.Namespace) -> int:
     ledger = read_ledger(args.ledger)
-    errors = validate_ledger(ledger, incomplete_result=True)
+    errors = _validate_ledger(ledger, incomplete_result=True)
     if errors:
         for each in errors:
             print(f"ERROR: {each}")
         return 1
-    print("OK")
+    print("OK: mechanical incomplete-evidence record is current; classification requires Formal Review")
     return 0
 
 
@@ -430,6 +745,9 @@ def cmd_status(args: argparse.Namespace) -> int:
     print(f"findings={dict(sorted(finding_counts.items()))}")
     print(f"passes={dict(sorted(pass_counts.items()))}")
     print(f"review_revision={ledger['review_revision']}")
+    print(f"basis_fingerprint={basis_fingerprint(ledger)}")
+    for entry in ledger["files"]:
+        print(f"blocks={entry['path']} " + ",".join(each["id"] for each in entry["blocks"]))
     return 0
 
 
@@ -453,6 +771,7 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("--head-ref", required=True, help="PR head ref")
     init.add_argument("--github-files", help="File containing GitHub changed paths")
     init.add_argument("--candidate-files", help="Exact repository-relative local candidate paths, one per line")
+    init.add_argument("--review-basis", required=True, help="JSON focus and rule/requirement/evidence sources with role, origin, and material path")
     init.set_defaults(func=cmd_init)
     mark_file = subparsers.add_parser("mark-file", help="Set one authoritative file's coverage state")
     mark_file.add_argument("--ledger", required=True, help="Ledger file or directory")
@@ -461,6 +780,7 @@ def build_parser() -> argparse.ArgumentParser:
     mark_file.add_argument("--cluster", action="append", help="Behavior cluster containing this file")
     mark_file.add_argument("--risk-axis", action="append", help="Risk axis covered for this file")
     mark_file.add_argument("--reason", help="Reason for a non-substantive file classification")
+    mark_file.add_argument("--coverage", help="JSON changed-block coverage with behavior, risk axes, requirements, counter-evidence, and source anchors")
     mark_file.set_defaults(func=cmd_mark_file)
     finding = subparsers.add_parser("add-finding", help="Add or update one finding classification")
     finding.add_argument("--ledger", required=True, help="Ledger file or directory")
@@ -475,6 +795,7 @@ def build_parser() -> argparse.ArgumentParser:
     finding.add_argument("--scope-proof", help="Why the PR owns the finding")
     finding.add_argument("--file", action="append", help="Repository-relative scope file")
     finding.add_argument("--reason", help="Reason for an incomplete or non-blocking classification")
+    finding.add_argument("--anchors", help="JSON real source anchors supporting this finding or unavailable-evidence proof")
     finding.set_defaults(func=cmd_add_finding)
     review_pass = subparsers.add_parser("add-pass", help="Record a required review pass")
     review_pass.add_argument("--ledger", required=True, help="Ledger file or directory")
