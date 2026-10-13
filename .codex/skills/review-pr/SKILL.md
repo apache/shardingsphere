@@ -44,6 +44,9 @@ Resolve one review basis before discovery: the effective candidate, applicable r
 confirmed findings consolidated by fix boundary, needs-discussion conditions,
 incomplete-evidence gaps, and Completion Gate state.
 
+Record each applicable requirement's source, content version, scope and valid exceptions in readable basis source material; a task-only requirement applies only to its authorized task candidate and must not become a universal repository or public-PR rule.
+Keep effective content and delta identity separate from Git revision lineage so equal local and public candidates retain one code-correctness basis.
+
 Output mode must not affect candidate discovery, proof, classification,
 coverage, or convergence. Never use a previous Formal Review result as
 evidence or as a conclusion to match. Treat previous public findings only as
@@ -174,6 +177,8 @@ Apply this workflow to the canonical review basis without letting output mode or
 Start every Formal Review round with fresh coverage of the complete effective candidate and its affected behavior and contracts, preserving the original task baseline and attributed scope.
 Reuse only facts and verification results whose current-candidate validity is established; do not inherit reviewed-file statuses, discovery passes, proof conclusions, or convergence results.
 
+For a proven previous-review miss, contradictory assessments on an unchanged basis, a triggered high-risk review criterion, or an explicit user request for independent review, obtain an independent read-only assessment through this workflow and the Completion Gate using the current basis and complete effective candidate without the previous verdict or an expected finding count.
+
 1. Complete `Repository Code Policy References`, then establish the authoritative effective-candidate scope and applicable requirements.
 2. Complete the Problem and Project Commitment Gate and establish the accepted behavior boundary.
 3. Confirm the selected review focus and admissible evidence.
@@ -202,9 +207,32 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 - Use `scripts/build_review_inventory.py --format json` when local refs are available; its Markdown is only a bounded summary.
 - Use `scripts/review_ledger.py` for multi-file, high-risk, or omission-prone review; it accounts for review state but does not judge correctness.
 - Initialize a new ledger for each round that requires one, from the full current inventory with pending file statuses and no inherited review passes.
+- Initialize with `--review-basis <JSON>` containing the selected focus and readable sources identified by role and origin, so the ledger binds their actual content versions to the effective candidate, original baseline and authoritative files.
+- Record each substantive changed block's behavior, applicable risk axes and requirement origins, strongest counter-evidence and current source anchors with `mark-file --coverage <JSON>`, and attach finding anchors with `add-finding --anchors <JSON>`.
+- Rebuild ledgers with an older schema or stale inputs without inheriting their completion state.
+- Validate the current basis and coverage before selecting a result; a passing ledger proves mechanical coverage and evidence freshness, while the reviewer must still establish semantic proof under the existing gates.
 - For a standalone local candidate with index or working-tree changes, provide the same exact task-path file to both scripts with `--candidate-files <path>`. The scripts resolve those paths from the computed merge-base through the working tree, include matching untracked files, and fail when a listed path is unchanged.
 - Mutate one ledger sequentially; do not run ledger commands concurrently.
 - Keep ledger data private and remove only the exact current-review ledger.
+
+Use these JSON shapes in local files passed to the arguments, replacing the example values with current evidence and block IDs from the initialized ledger:
+Sources use `rule`, `requirement` or `evidence` roles; `--anchors` takes an anchor-array file shaped like `anchors` below.
+
+```json
+{"focus": "Code Correctness Review", "sources": [{"role": "rule", "origin": "CODE_OF_CONDUCT.md", "path": "CODE_OF_CONDUCT.md"}]}
+```
+
+```json
+[
+  {
+    "block": "<block ID>", "behavior": "<verified behavior>", "risk_axes": ["contracts"],
+    "requirements": ["CODE_OF_CONDUCT.md"], "counter_evidence": "<contrary scenario checked and result>",
+    "anchors": [{"side": "candidate", "path": "<changed repository-relative path>", "start_line": 1, "end_line": 2}]
+  }
+]
+```
+
+Use `base` for original content and `candidate` for effective content; text blocks need an anchor overlapping their changed lines, whole-object binary, mode or rename changes omit the line bounds, and `source` anchors require the declared source's matching origin and path.
 
 If the gate cannot pass because a gap satisfies the Review Incomplete Proof Gate, return `Review Incomplete` in Formal Review and state the incomplete evidence without a formal verdict in a discussion reply.
 When confirmed blockers coexist with a proven gap that could hide more blockers, list them as confirmed partial facts but do not present them as the complete change-request set.
