@@ -3494,6 +3494,48 @@ policy_binding_profile = "analyze-issue"
 policy_assertions = [{source = "analyze-issue", statements = ["Provide a temporary workaround only when allowed-source evidence verifies its applicability to the reported version, mode and trigger, its compatibility with the affected contracts, and its material side effects.", "Explain its limitations and temporary status without replacing the root-cause conclusion, Bug classification or required fix.", "Omit unverified or incompatible workarounds and any workaround with unknown material side effects."]}]
 
 [[cases]]
+id = "issue_reply_code_fence_mode"
+group = "issue-analysis output mode"
+description = "Keeps a default reply with code fences free of detailed-report requirements while preserving action and two-part bridge checks."
+phase = "read-only output assessment"
+ordinary_loop = false
+profile = "analyze-issue"
+semantic_policy_assertions = true
+prompt = "Assess the final-output checks for three synthetic issue outputs. CODE_REPLY: the selected mode is Maintainer Reply Only; the output reference was loaded solely for a multiline code example. The reply addresses the known author, uses community maintainer language, states the classification in the first paragraph, gives an official-source reason supported by the internal evidence ledger, and provides a concrete next action with appropriate labels. All applicable formatting and delivery rules are satisfied, including safely closed inner and outer fences. It contains no detailed-analysis headings or visible evidence IDs. MISSING_ACTION: the same default reply satisfies all those requirements except that it gives no next action. TWO_PART_MISSING_BRIDGE: the user explicitly requested both a maintainer reply and Reference Analysis; the reply and the four-section analysis satisfy all other applicable requirements, but the exact bridge sentence is absent. Evidence inspection is complete. Classify each output as complete or incomplete only; do not draft a reply, fetch sources, run tools or change anything. Make the entire summary the selected assignments in this exact field order and format: [CODE_REPLY]=<complete|incomplete>; [MISSING_ACTION]=<complete|incomplete>; [TWO_PART_MISSING_BRIDGE]=<complete|incomplete>. Separate assignments with a semicolon and one space, and add no explanation, quotes, extra text or whitespace."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "run_local_checks", "run_pre_handoff_review", "expand_frozen_boundary", "propose_commit_message"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["[CODE_REPLY]=complete", "[MISSING_ACTION]=incomplete", "[TWO_PART_MISSING_BRIDGE]=incomplete"]
+required_summary_prefix = "[CODE_REPLY]=complete; [MISSING_ACTION]=incomplete; [TWO_PART_MISSING_BRIDGE]=incomplete"
+max_summary_chars = 88
+critical = true
+policy_binding_profile = "analyze-issue"
+policy_assertions = [{source = "analyze-issue", statements = ["Before final output, verify only the checks applicable to the selected output mode.", "Reading the output reference for a reusable template or multi-line code fence handling does not change the selected output mode.", "Maintainer Reply Only requires neither Reference Analysis sections nor visible evidence IDs.", "The reply gives a clear next action, including a label/close recommendation or PR expectation when appropriate.", "In two-part mode, verify that the reply comes first and the exact bridge sentence defined in the output reference appears before Reference Analysis.", "If any applicable check fails, mark the analysis and output as incomplete."]}, {source = "analyze-issue-output", statements = ["Apply these requirements only to the Reference Analysis portion of the selected output mode.", "If the body contains an inner fence, use more backticks for the outer fence than for every inner fence.", "Verify that all fences close and that the copyable body begins and ends inside the outer fence."]}]
+
+[[cases]]
+id = "issue_reference_analysis_only_mode"
+group = "issue-analysis output mode"
+description = "Allows Reference Analysis Only without a reply or bridge and still rejects missing conclusion fields or unsupported inferences."
+phase = "read-only output assessment"
+ordinary_loop = false
+profile = "analyze-issue"
+semantic_policy_assertions = true
+prompt = "Assess the final-output checks for three synthetic Reference Analysis Only outputs explicitly requested by the user. COMPLETE_ANALYSIS: a Question analysis has the required four sections, every selected-shape conclusion field, correct labels, concrete official citations, evidence IDs for every conclusion, and observations supporting every inference. It satisfies all applicable language, formatting and delivery requirements. It has no maintainer reply, author greeting or two-part bridge sentence. MISSING_FIELD: the same analysis omits the required Next Action field from Problem Conclusion. UNSUPPORTED_INFERENCE: the same complete analysis instead includes an inference that has no supporting observation. Evidence inspection is complete. Classify each output as complete or incomplete only; do not draft a reply, fetch sources, run tools or change anything. Make the entire summary the selected assignments in this exact field order and format: [COMPLETE_ANALYSIS]=<complete|incomplete>; [MISSING_FIELD]=<complete|incomplete>; [UNSUPPORTED_INFERENCE]=<complete|incomplete>. Separate assignments with a semicolon and one space, and add no explanation, quotes, extra text or whitespace."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "run_local_checks", "run_pre_handoff_review", "expand_frozen_boundary", "propose_commit_message"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["[COMPLETE_ANALYSIS]=complete", "[MISSING_FIELD]=incomplete", "[UNSUPPORTED_INFERENCE]=incomplete"]
+required_summary_prefix = "[COMPLETE_ANALYSIS]=complete; [MISSING_FIELD]=incomplete; [UNSUPPORTED_INFERENCE]=incomplete"
+max_summary_chars = 92
+critical = true
+policy_binding_profile = "analyze-issue"
+policy_assertions = [{source = "analyze-issue", statements = ["Before final output, verify only the checks applicable to the selected output mode.", "Reference Analysis Only requires neither a maintainer reply nor the two-part bridge sentence.", "If any applicable check fails, mark the analysis and output as incomplete."]}, {source = "analyze-issue-output", statements = ["Apply these requirements only to the Reference Analysis portion of the selected output mode.", "Every conclusion cites at least one `OBS-*` or `INF-*` evidence ID, and every `INF-*` derives from one or more observations.", "`Problem Conclusion` includes all fields required by the selected shape."]}]
+
+[[cases]]
 id = "gen_ut_preserves_completion_blockers"
 group = "unit-test policy"
 description = "Keeps scope, unresolved review and stale coverage blocking final UT acceptance."

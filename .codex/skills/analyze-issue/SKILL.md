@@ -352,15 +352,6 @@ In the maintainer reply portion:
 - Do not generalize an exact existing behavior or special case into a wider database, dialect, topology, module, API, or SPI commitment without direct acceptance evidence.
 - For questions, invite broader community participation when it can help the issue author or improve documentation.
 
-Before final output, run this self-check:
-- **Role Check:** The reply reads like a ShardingSphere maintainer answering in the issue thread.
-- **Audience Check:** The reply addresses the issue author directly when the author is known.
-- **Decision Check:** The first paragraph states the supportability/classification decision.
-- **Reason Check:** The explanation is grounded in official docs, repository code/tests, or issue content.
-- **Traceability Check:** The reply is supported by the internal evidence ledger;
-  explicit two-part output includes the bridge sentence and Reference Analysis.
-- **Action Check:** The reply gives a clear next action, label recommendation, close recommendation, or PR expectation.
-
 ## Missing Information Handling
 
 If evidence is insufficient, do not guess. Explicitly list missing details and request them, for example:
@@ -404,23 +395,32 @@ details in a public issue reply. Direct the reporter to the responsible disclosu
 process in `docs/community/content/security/_index.en.md` and keep the public reply
 limited to that safe next action.
 
-## Lightweight Lint Recommendation
+## Final Output Check
 
-For Maintainer Reply output, verify:
-- The reply addresses the issue author or community directly.
-- The first paragraph contains the decision.
+Before final output, verify only the checks applicable to the selected output mode.
+Reading the output reference for a reusable template or multi-line code fence handling does not change the selected output mode.
+Maintainer Reply Only requires neither Reference Analysis sections nor visible evidence IDs.
+Reference Analysis Only requires neither a maintainer reply nor the two-part bridge sentence.
+
+For modes containing a maintainer reply, verify:
+- The reply reads like a ShardingSphere maintainer answering in the issue thread.
+- The reply addresses the issue author directly when known, or the community otherwise.
+- The first paragraph states the supportability/classification decision.
+- The explanation is grounded in official docs, repository code/tests, or issue content and supported by the internal evidence ledger.
 - The maintainer reply does not contain detailed report headings.
-- The reply includes a next action and label/close recommendation when appropriate.
+- The reply gives a clear next action, including a label/close recommendation or PR expectation when appropriate.
 - For questions, the reply invites community participation when appropriate.
 
-For explicit Reference Analysis output, also verify:
-- The bridge sentence appears before Reference Analysis in two-part mode.
-- Required detailed sections exist.
-- Required conclusion fields exist.
-- Evidence IDs are present and referenced.
+For modes containing Reference Analysis, verify:
+- The required four- or five-section shape and conclusion fields follow Reference Analysis Requirements in [output-contract.md](references/output-contract.md).
+- Evidence IDs are present and referenced as required by that reference.
+- Citations follow Documentation and Code Citation Rules.
 - Label format and type-label consistency are valid.
 
-If lint fails, mark analysis as incomplete.
+In two-part mode, verify that the reply comes first and the exact bridge sentence defined in the output reference appears before Reference Analysis.
+When the output reference is loaded, verify its applicable formatting and Codex Chat Delivery requirements.
+A local checker or CI step may enforce the required sections, conclusion fields, evidence references, and type-label consistency.
+If any applicable check fails, mark the analysis and output as incomplete.
 
 ## Prohibited Content
 
