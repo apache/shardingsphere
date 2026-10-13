@@ -176,8 +176,11 @@ Apply this workflow to the canonical review basis without letting output mode or
 
 Start every Formal Review round with fresh coverage of the complete effective candidate and its affected behavior and contracts, preserving the original task baseline and attributed scope.
 Reuse only facts and verification results whose current-candidate validity is established; do not inherit reviewed-file statuses, discovery passes, proof conclusions, or convergence results.
+Before repeating evidence acquisition, consult the current ledger's sources, block coverage, candidate findings and verification material, and reuse facts only while their supporting inputs and applicable coverage remain valid.
+All three discovery lenses may share the same current source material, but each must still cover the complete candidate and sharing material does not replace the convergence pass.
 
 For a proven previous-review miss, contradictory assessments on an unchanged basis, a triggered high-risk review criterion, or an explicit user request for independent review, obtain an independent read-only assessment through this workflow and the Completion Gate using the current basis and complete effective candidate without the previous verdict or an expected finding count.
+Give the independent reviewer the current requirements and their provenance, complete candidate inventory and relevant raw evidence rather than the author's full session history.
 
 1. Complete `Repository Code Policy References`, then establish the authoritative effective-candidate scope and applicable requirements.
 2. Complete the Problem and Project Commitment Gate and establish the accepted behavior boundary.
@@ -207,13 +210,19 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 - Use `scripts/build_review_inventory.py --format json` when local refs are available; its Markdown is only a bounded summary.
 - Use `scripts/review_ledger.py` for multi-file, high-risk, or omission-prone review; it accounts for review state but does not judge correctness.
 - Initialize a new ledger for each round that requires one, from the full current inventory with pending file statuses and no inherited review passes.
+- Use the existing private system temporary directory and record the exact ledger path returned by initialization for this review.
 - Initialize with `--review-basis <JSON>` containing the selected focus and readable sources identified by role and origin, so the ledger binds their actual content versions to the effective candidate, original baseline and authoritative files.
 - Record each substantive changed block's behavior, applicable risk axes and requirement origins, strongest counter-evidence and current source anchors with `mark-file --coverage <JSON>`, and attach finding anchors with `add-finding --anchors <JSON>`.
+- Record partial coverage with pending files and keep unproved findings as candidates; recording evidence does not establish a completed review.
 - Rebuild ledgers with an older schema or stale inputs without inheriting their completion state.
 - Validate the current basis and coverage before selecting a result; a passing ledger proves mechanical coverage and evidence freshness, while the reviewer must still establish semantic proof under the existing gates.
 - For a standalone local candidate with index or working-tree changes, provide the same exact task-path file to both scripts with `--candidate-files <path>`. The scripts resolve those paths from the computed merge-base through the working tree, include matching untracked files, and fail when a listed path is unchanged.
 - Mutate one ledger sequentially; do not run ledger commands concurrently.
 - Keep ledger data private and remove only the exact current-review ledger.
+- Before returning a completed review result, form a self-contained report and automatically run `scripts/review_ledger.py cleanup --ledger <recorded-ledger>` for the recorded current-review instance, including Mergeable, Not Mergeable and Review Incomplete results.
+- Before cleaning the ledger, remove only temporary input materials created and explicitly recorded for this review, preserving declared sources owned by the repository, the user or another review.
+- On a handled failure or cancellation, attempt the same cleanup for resources whose ownership is established, preserve the original failure and report any cleanup failure or remaining resources.
+- Keep the report independent of temporary files and report cleanup failures without changing the review assessment.
 
 Use these JSON shapes in local files passed to the arguments, replacing the example values with current evidence and block IDs from the initialized ledger:
 Sources use `rule`, `requirement` or `evidence` roles; `--anchors` takes an anchor-array file shaped like `anchors` below.
