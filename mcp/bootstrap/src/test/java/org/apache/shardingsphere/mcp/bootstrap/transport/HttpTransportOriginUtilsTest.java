@@ -17,25 +17,28 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 class HttpTransportOriginUtilsTest {
     
-    @Test
-    void assertNormalizeOrigin() {
-        assertThat(HttpTransportOriginUtils.normalizeOrigin("HTTPS://Gateway.Example.Test:8443"), is("https://gateway.example.test:8443"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertNormalizeOriginArguments")
+    void assertNormalizeOrigin(final String name, final String origin, final String expected) {
+        assertThat(HttpTransportOriginUtils.normalizeOrigin(origin), is(expected));
     }
     
-    @Test
-    void assertNormalizeOriginWithIpv6Origin() {
-        assertThat(HttpTransportOriginUtils.normalizeOrigin("http://[::1]:8080"), is("http://[::1]:8080"));
-    }
-    
-    @Test
-    void assertNormalizeOriginWithMalformedOrigin() {
-        assertThat(HttpTransportOriginUtils.normalizeOrigin("://bad-origin"), is(""));
+    private static Stream<Arguments> assertNormalizeOriginArguments() {
+        return Stream.of(
+                Arguments.of("HTTPS host normalization", "HTTPS://Gateway.Example.Test:8443", "https://gateway.example.test:8443"),
+                Arguments.of("IPv6 origin", "http://[::1]:8080", "http://[::1]:8080"),
+                Arguments.of("malformed origin", "://bad-origin", ""),
+                Arguments.of("unsupported scheme", "ftp://foo.example.test", ""));
     }
 }

@@ -75,6 +75,17 @@ import static org.mockito.Mockito.when;
 class MCPCompletionServiceTest {
     
     @Test
+    void assertCompleteWithoutSupportingHandler() {
+        MCPCompletionService completionService = createCompletionService(createRuntimeContext(mock(WorkflowSessionContext.class)), List.of());
+        MCPCompletionResult actual = completionService.complete("session-1", createDescriptor("foo_prompt", "value", 50), "value", "", Map.of());
+        assertTrue(actual.getValues().isEmpty());
+        assertThat(actual.getTotal(), is(0));
+        assertFalse(actual.hasMore());
+        assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("no_candidates"));
+        assertThat(actual.getMeta().get(MCPShardingSphereMetadataKeys.CANDIDATE_COUNT), is(0));
+    }
+    
+    @Test
     void assertCompleteDatabaseValues() {
         MCPCompletionResult actual = complete(mock(WorkflowSessionContext.class), createDescriptor("inspect_metadata", "database", 1), "database", "", new LinkedHashMap<>());
         assertThat(actual.getValues(), is(List.of("logic_db")));
