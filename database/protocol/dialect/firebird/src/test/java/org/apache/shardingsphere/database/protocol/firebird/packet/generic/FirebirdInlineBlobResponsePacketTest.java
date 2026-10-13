@@ -37,7 +37,7 @@ class FirebirdInlineBlobResponsePacketTest {
     
     @Test
     void assertWrite() {
-        FirebirdPacket blobInfo = new FirebirdBlobInfoReturnPacket(Collections.singletonList(FirebirdBlobInfoPacketType.TOTAL_LENGTH), 11);
+        FirebirdPacket blobInfo = new FirebirdBlobInfoReturnPacket(Collections.singletonList(FirebirdBlobInfoPacketType.TOTAL_LENGTH), 11, false);
         FirebirdPacket blobData = new FirebirdGetBlobSegmentResponsePacket(new byte[]{1, 2, 3, 4, 5});
         assertWriteBytes(7, 9L, blobInfo, blobData, new byte[]{0, 0, 0, 114, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 8, 6, 4, 0, 11, 0, 0, 0, 1, 0, 0, 0, 7, 5, 0, 1, 2, 3, 4, 5, 0});
     }
