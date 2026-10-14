@@ -46,6 +46,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -190,6 +191,26 @@ class ConvertYamlConfigurationExecutorTest {
                         "PASSWORD='12345678',",
                         "PROPERTIES('minPoolSize'='1','connectionTimeoutMilliseconds'='30000','maxLifetimeMilliseconds'='1800000',"
                                 + "'idleTimeoutMilliseconds'='60000','maxPoolSize'='50')",
+                        ");")),
+                Arguments.of("without-max-pool-size", createYamlConfigWithoutMaxPoolSize(), toExpectedRow(
+                        "CREATE DATABASE without_max_pool_size_db;",
+                        "USE without_max_pool_size_db;",
+                        "",
+                        "REGISTER STORAGE UNIT ds_0 (",
+                        "URL='jdbc:mysql://127.0.0.1:3306/demo_convert_ds_0?useSSL=false',",
+                        "USER='root',",
+                        "PASSWORD='12345678',",
+                        "PROPERTIES('minPoolSize'='1','connectionTimeoutMilliseconds'='30000')",
+                        ");")),
+                Arguments.of("custom-pool-props-only", createYamlConfigWithCustomPoolPropsOnly(), toExpectedRow(
+                        "CREATE DATABASE custom_pool_props_only_db;",
+                        "USE custom_pool_props_only_db;",
+                        "",
+                        "REGISTER STORAGE UNIT ds_0 (",
+                        "URL='jdbc:mysql://127.0.0.1:3306/demo_convert_ds_0?useSSL=false',",
+                        "USER='root',",
+                        "PASSWORD='12345678',",
+                        "PROPERTIES('foo1'='bar_1')",
                         ");")));
     }
     
@@ -219,6 +240,37 @@ class ConvertYamlConfigurationExecutorTest {
         result.setMaxLifetimeMilliseconds(1800000L);
         result.setMaxPoolSize(50);
         result.setMinPoolSize(1);
+        return result;
+    }
+    
+    private static YamlDatabaseConfiguration createYamlConfigWithoutMaxPoolSize() {
+        YamlDataSourceConfiguration dataSourceConfig = createConnectionOnlyDataSourceConfig();
+        dataSourceConfig.setConnectionTimeoutMilliseconds(30000L);
+        dataSourceConfig.setMinPoolSize(1);
+        return createYamlConfig("without_max_pool_size_db", dataSourceConfig);
+    }
+    
+    private static YamlDatabaseConfiguration createYamlConfigWithCustomPoolPropsOnly() {
+        YamlDataSourceConfiguration dataSourceConfig = createConnectionOnlyDataSourceConfig();
+        Properties customPoolProps = new Properties();
+        customPoolProps.setProperty("foo_1", "bar_1");
+        dataSourceConfig.setCustomPoolProps(customPoolProps);
+        return createYamlConfig("custom_pool_props_only_db", dataSourceConfig);
+    }
+    
+    private static YamlDatabaseConfiguration createYamlConfig(final String databaseName, final YamlDataSourceConfiguration dataSourceConfig) {
+        YamlDatabaseConfiguration result = new YamlDatabaseConfiguration();
+        result.setDatabaseName(databaseName);
+        result.setDataSources(Collections.singletonMap("ds_0", dataSourceConfig));
+        result.setRules(null);
+        return result;
+    }
+    
+    private static YamlDataSourceConfiguration createConnectionOnlyDataSourceConfig() {
+        YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
+        result.setUrl("jdbc:mysql://127.0.0.1:3306/demo_convert_ds_0?useSSL=false");
+        result.setUsername("root");
+        result.setPassword("12345678");
         return result;
     }
     
