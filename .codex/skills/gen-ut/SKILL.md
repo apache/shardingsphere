@@ -106,18 +106,21 @@ When unreachable production code blocks coverage, report the class, path, exact 
 Use exactly one state:
 
 - `R10-INPUT_BLOCKED`: target classes or test modules cannot be resolved.
-- `R10-A`: scope is clean; focused tests execute at least one test; declared target coverage is met for every target and inner class;
-  repository formatting/checkstyle gates pass; both final rule scans pass; semantic reviews and `R8` decisions are complete.
+- `R10-A`: scope is clean; focused tests execute at least one test for the effective candidate; declared target coverage is met for every target and inner class; repository formatting/checkstyle gates pass; the full mechanical scan has no blocking violations under `R11`; semantic reviews and `R8` decisions are complete.
 - `R10-B`: production dead code blocks the target and `R9` evidence is complete.
-- `R10-C`: an out-of-scope failure is evidenced under `R11`.
+- `R10-C`: a blocking out-of-scope failure is evidenced under `R11`.
 - `R10-D`: work remains; continue instead of claiming completion.
 
 Priority is `INPUT_BLOCKED > B > C > A > D`. By default, cover the requested behavior and every affected SUT-owned branch. Apply a numeric CLASS, LINE, or BRANCH target only when the user states it; an explicit 100% target remains mandatory.
 
 ### R11: Failures
 
-Fix in-scope failures and rerun the focused test plus mechanical rule scan. For out-of-scope failures, record command, exit code,
-decisive lines, and blocking file/line, then request direction. Retry transient dependency or network failures at most twice.
+Fix task-introduced or currently relevant in-scope failures and rerun the checks they invalidate.
+Treat a mechanical diagnostic as nonblocking only when the pre-edit baseline proves that it already existed, remains unchanged, and is unrelated to the requested behavior, contracts, coverage target, and verification validity.
+Retain its command, nonzero exit code, diagnostic, and baseline evidence; do not describe the full scan as passing.
+Missing baseline evidence, new or strengthened violations, and relevant historical diagnostics remain blocking.
+For an out-of-scope failure that blocks a required check, record command, exit code, decisive lines, and blocking file/line, then request direction.
+Retry transient dependency or network failures at most twice.
 Minimal repair checks never replace final gates.
 
 ### R12: Existing full coverage
@@ -136,8 +139,7 @@ Mark `R4=N/A (triggered by R12)` and retain the coverage command and report path
 ### R14: Boolean assertions
 
 Use `assertTrue`/`assertFalse` for literal or constant expectations and `assertThat(actual, is(expected))` for variable expectations.
-Do not use boolean `assertEquals`, boolean literals inside Hamcrest `is`, or control flow whose only purpose is selecting
-`assertTrue` versus `assertFalse`. Run the mechanical scan after implementation stabilizes and again immediately before delivery.
+Do not use boolean `assertEquals`, boolean literals inside Hamcrest `is`, or control flow whose only purpose is selecting `assertTrue` versus `assertFalse`.
 
 ### R15: Delivery gates
 
@@ -149,6 +151,7 @@ Do not use boolean `assertEquals`, boolean literals inside Hamcrest `is`, or con
 - `R15-E`: the first parameter is exactly `final String name`.
 - `R15-F`: parameterized bodies contain no `switch`.
 - `R15-G`: parameterized test changes add no nested transport type.
+  Inspect each new nested-type candidate's purpose; a confirmed non-transport type is permitted, a transport type is prohibited, and unresolved purpose keeps the task at `R10-D`.
 - `R15-H`: boolean assertions obey `R14` without assertion-dispatch control flow.
 - `R15-I`: parameterized signatures and provider rows contain no `Consumer`; inspect external providers manually.
 - `R15-J`: helpers and providers do not invoke target public methods. Treat scanner results as partial evidence and inspect unresolved ownership manually.
@@ -162,12 +165,13 @@ Do not use boolean `assertEquals`, boolean literals inside Hamcrest `is`, or con
 5. Decide `R12`; otherwise record the SUT/collaborator ownership boundary and `R4` branch map.
 6. Review scanner candidates against every `R8` condition and record candidate-level decisions.
 7. Check `R9`, then implement the smallest tests allowed by `R2-R7`.
-8. After each coherent edit, run the lightweight precheck, focused test, and mechanical scan.
-9. Apply `R13`, re-run coverage, and inspect semantic `R15-A/B/D/I/J` obligations.
-10. Run final coverage, repository formatting/checkstyle gates, and the two required mechanical scans.
-11. Recheck scope against the baseline and decide `R10` twice before delivery.
+8. After each coherent edit, use the lightweight precheck for repair feedback and run invalidated focused tests.
+9. Apply `R13` and inspect semantic `R15-A/B/D/G/I/J` obligations.
+10. Complete missing or invalidated final coverage, repository formatting/checkstyle, and full mechanical checks under the [verification commands](references/verification.md).
+11. Confirm final scope against the baseline and decide `R10` once from current evidence before delivery.
 
-Do not reuse a prior task's test or coverage result. Final coverage must execute tests for the effective candidate.
+Do not reuse a prior task's test or coverage result.
+Final coverage must include executed tests for the effective candidate; use the verification commands to determine whether current evidence remains valid.
 
 ## Output
 

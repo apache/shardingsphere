@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -69,6 +71,22 @@ class ShadowRuleConfigurationTest {
         result.setTables(tables);
         result.setShadowAlgorithms(shadowAlgorithms);
         return result;
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("algorithmTypeArguments")
+    void assertValidateAlgorithmType(final String name, final String type, final String expectedMessage) {
+        ShadowRuleConfiguration ruleConfig = createRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
+                Collections.singletonMap("foo_shadow_algorithm", new AlgorithmConfiguration(type, new Properties())));
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'ShadowRuleConfiguration' rule, error message is: " + expectedMessage));
+    }
+    
+    private static Stream<Arguments> algorithmTypeArguments() {
+        return Stream.of(
+                Arguments.of("Null shadow algorithm type before SPI", null, "Property `shadowAlgorithms[foo_shadow_algorithm].type` Type is required."),
+                Arguments.of("Empty shadow algorithm type before SPI", "", "Property `shadowAlgorithms[foo_shadow_algorithm].type` Type is required."),
+                Arguments.of("Whitespace shadow algorithm type reaches SPI", " ", "Property `shadowAlgorithms` does not match an available SPI implementation."));
     }
     
     @ParameterizedTest(name = "{0}")

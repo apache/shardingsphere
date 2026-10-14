@@ -51,23 +51,28 @@ docker build --platform "$(docker version --format '{{.Server.Os}}/{{.Server.Arc
 
 ## LLM Runtime
 
-The MCP LLM lane uses a local Docker image to host an OpenAI-compatible endpoint.
-Before building, inspect Docker usage:
+Install Docker Model Runner following the [official Docker instructions](https://docs.docker.com/ai/model-runner/get-started/).
+For Docker Desktop, enable host TCP access:
 
 ```bash
-docker system df
+docker desktop enable model-runner --tcp 12434
 ```
 
-Check host architecture selection without downloading the model:
+For Docker Engine, install and start the CPU runner:
 
 ```bash
-sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh --dry-run
+MODEL_RUNNER_CONTROLLER_VERSION=v1.2.8@sha256:5bdc2bac71c1b70453f7dec5b527031bc6d8d99b8d1b2a10a8bcca073ae257a3 \
+MODEL_RUNNER_CONTROLLER_VARIANT=cpu docker model install-runner --gpu none
 ```
 
-Build the local runtime image:
+Pull, configure, and start the model:
 
 ```bash
-sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh
+docker model pull ai/qwen3.5:9b-q4_K_XL
+docker model configure --context-size 8192 ai/qwen3.5:9b-q4_K_XL -- \
+  --jinja --reasoning-budget 0 --reasoning-format deepseek --chat-template-kwargs '{"enable_thinking":false}' \
+  --parallel 1 -b 256 -ub 128 --cache-ram 0 --no-cache-prompt
+docker model run --detach ai/qwen3.5:9b-q4_K_XL
 ```
 
 ## Run MCP Functionality E2E
@@ -106,10 +111,10 @@ The packaged server runs with its loopback HTTP configuration so the DNS rebindi
 For local debugging only, connect to an already running OpenAI-compatible endpoint:
 
 ```bash
-./mvnw -pl test/e2e/mcp verify -Pe2e.mcp.llm -De2e.run.type=DOCKER -Dit.test=LLMHttpE2EIT -Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:8080/v1
+./mvnw -pl test/e2e/mcp verify -Pe2e.mcp.llm -De2e.run.type=DOCKER -Dit.test=LLMHttpE2EIT -Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:12434/engines/v1
 ```
 
-External debug endpoints cannot be used as score-closing evidence.
+External debug endpoints are only for local debugging; formal `LLMHttpE2EIT` scenarios require Docker and a prepared Docker Model Runner.
 
 ## Artifacts
 
@@ -119,7 +124,7 @@ MCP LLM E2E artifacts are written under:
 test/e2e/mcp/target/llm-e2e/
 ```
 
-Each scenario records the question, actual answer, raw model response, MCP interaction trace, live tool definitions, runtime evidence, and assertion report. Artifact writing redacts secret-shaped values, and the test fails if an unredacted secret pattern or the known model API key is present.
+Each scenario records the question, actual answer, raw model response, MCP interaction trace, live tool definitions, and assertion report. Artifact writing redacts secret-shaped values, and the test fails if an unredacted secret pattern or the known model API key is present.
 
 GitHub Actions entry points:
 

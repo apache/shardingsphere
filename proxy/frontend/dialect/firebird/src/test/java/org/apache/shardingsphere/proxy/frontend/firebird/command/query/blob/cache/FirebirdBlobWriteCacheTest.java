@@ -64,7 +64,7 @@ class FirebirdBlobWriteCacheTest {
     
     @Test
     void assertRegisterBlobCreatesMappingsWhenConnectionMissing() {
-        CACHE.registerBlob(2, 3, 4L, 1);
+        CACHE.registerBlob(2, 3, 4L, 1, false);
         OptionalLong actualBlobId = CACHE.getBlobId(2, 3);
         assertTrue(actualBlobId.isPresent());
         assertThat(actualBlobId.getAsLong(), is(4L));
@@ -84,7 +84,7 @@ class FirebirdBlobWriteCacheTest {
         CACHE.registerConnection(connectionId);
         boolean actualClosedWhenMissing = CACHE.isClosed(connectionId, blobId);
         assertFalse(actualClosedWhenMissing);
-        CACHE.registerBlob(connectionId, blobHandle, blobId, 1);
+        CACHE.registerBlob(connectionId, blobHandle, blobId, 1, false);
         OptionalInt actualSizeAfterAppend = CACHE.appendSegment(connectionId, blobHandle, new byte[]{1, 2, 3});
         assertTrue(actualSizeAfterAppend.isPresent());
         assertThat(actualSizeAfterAppend.getAsInt(), is(3));
@@ -104,7 +104,7 @@ class FirebirdBlobWriteCacheTest {
     
     @Test
     void assertGetBlobDataAfterClose() {
-        CACHE.registerBlob(1, 11, 21L, 31);
+        CACHE.registerBlob(1, 11, 21L, 31, false);
         CACHE.appendSegment(1, 11, new byte[]{1, 2});
         CACHE.appendSegment(1, 11, new byte[]{3});
         CACHE.closeWrite(1, 11);
@@ -115,7 +115,7 @@ class FirebirdBlobWriteCacheTest {
     
     @Test
     void assertReuseBlobData() {
-        CACHE.registerBlob(1, 11, 21L, 31);
+        CACHE.registerBlob(1, 11, 21L, 31, false);
         CACHE.appendSegment(1, 11, new byte[]{1, 2, 3});
         CACHE.closeWrite(1, 11);
         byte[] actual = CACHE.useBlobData(1, 21L, 31).get();
@@ -125,20 +125,20 @@ class FirebirdBlobWriteCacheTest {
     
     @Test
     void assertUseBlobDataOfOtherTransaction() {
-        CACHE.registerBlob(1, 11, 21L, 31);
+        CACHE.registerBlob(1, 11, 21L, 31, false);
         CACHE.closeWrite(1, 11);
         assertFalse(CACHE.useBlobData(1, 21L, 32).isPresent());
     }
     
     @Test
     void assertUseBlobDataBeforeClose() {
-        CACHE.registerBlob(1, 11, 21L, 31);
+        CACHE.registerBlob(1, 11, 21L, 31, false);
         assertFalse(CACHE.useBlobData(1, 21L, 31).isPresent());
     }
     
     @Test
     void assertUseBlobDataReleasedByGarbageCollector() {
-        CACHE.registerBlob(1, 11, 21L, 31);
+        CACHE.registerBlob(1, 11, 21L, 31, false);
         CACHE.appendSegment(1, 11, new byte[]{1, 2, 3});
         CACHE.closeWrite(1, 11);
         CACHE.useBlobData(1, 21L, 31);
@@ -158,9 +158,9 @@ class FirebirdBlobWriteCacheTest {
         long oldBlobId = 9L;
         long expectedBlobId = 10L;
         CACHE.registerConnection(connectionId);
-        CACHE.registerBlob(connectionId, blobHandle, oldBlobId, 1);
+        CACHE.registerBlob(connectionId, blobHandle, oldBlobId, 1, false);
         CACHE.closeWrite(connectionId, blobHandle);
-        CACHE.registerBlob(connectionId, blobHandle, expectedBlobId, 1);
+        CACHE.registerBlob(connectionId, blobHandle, expectedBlobId, 1, false);
         CACHE.removeWrite(connectionId, oldBlobId);
         OptionalLong actualBlobId = CACHE.getBlobId(connectionId, blobHandle);
         assertTrue(actualBlobId.isPresent());

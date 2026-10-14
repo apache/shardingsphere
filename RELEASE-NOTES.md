@@ -9,7 +9,9 @@
 ### New Features
 
 1. MCP: Add standalone ShardingSphere-MCP Server - [#38541](https://github.com/apache/shardingsphere/pull/38541)
+1. JDBC: Support executing DistSQL - [#37761](https://github.com/apache/shardingsphere/issues/37761)
 1. Transaction: Add optional module for Jakarta Transactions impl of Jakarta EE 9 Spec - [#26041](https://github.com/apache/shardingsphere/issues/26041)
+1. Proxy: Support `op_seek_blob` operation for stream BLOBs in Firebird - [#39984](https://github.com/apache/shardingsphere/pull/39984)
 
 ### CVE
 
@@ -22,6 +24,7 @@
 1. Infra: Fix invalid target selection after counter overflow in `RoundRobinLoadBalanceAlgorithm` - [#39340](https://github.com/apache/shardingsphere/pull/39340)
 1. Infra: Reject incomplete WEIGHT load balancer properties during rule configuration validation - [#39378](https://github.com/apache/shardingsphere/pull/39378)
 1. Infra: Fix stale weights in WEIGHT load balancer after same-size read data source changes - [#39995](https://github.com/apache/shardingsphere/pull/39995)
+1. Infra: Fix false table existence check failures for quoted schema names in `SupportedSQLCheckEngine` - [#40069](https://github.com/apache/shardingsphere/pull/40069)
 1. SQL Parser: Preserve unary NOT as NotExpression for scalar-subquery table extraction in PostgreSQL - [#38187](https://github.com/apache/shardingsphere/pull/38187)
 1. SQL Parser: Fix wrong parameter index parse in MySQL, Doris - [#38624](https://github.com/apache/shardingsphere/pull/38624)
 1. SQL Parser: Fix reversed parameter marker order for openGauss `LIMIT offset, row-count` - [#39242](https://github.com/apache/shardingsphere/pull/39242)
@@ -45,6 +48,7 @@
 1. SQL Binder: Fix wrong bind info when order by refer column from with temporary table - [#38353](https://github.com/apache/shardingsphere/pull/38353)
 1. SQL Binder: Fix wrong column label case for PostgreSQL and openGauss function projections - [#39393](https://github.com/apache/shardingsphere/pull/39393)
 1. SQL Binder: Bind PostgreSQL SYSTEM_USER as a niladic function instead of a column - [#39385](https://github.com/apache/shardingsphere/pull/39385)
+1. SQL Binder: Preserve RETURNING clause when binding UPDATE and DELETE statements - [#40070](https://github.com/apache/shardingsphere/pull/40070)
 1. Metadata: Fix MySQL metadata loading fallback when JDBC catalog is null for named tables - [#38855](https://github.com/apache/shardingsphere/pull/38855)
 1. Metadata: Fix Oracle metadata version comparison skipping identity and collation columns on 18c and later - [#39104](https://github.com/apache/shardingsphere/pull/39104)
 1. Metadata: Fix wrong logic table metadata when config same actual table name in different storage unit - [#39157](https://github.com/apache/shardingsphere/pull/39157)
@@ -107,6 +111,7 @@
 1. Sharding: Fix NULL ordering when merging ORDER BY results for ClickHouse and Presto - [#40014](https://github.com/apache/shardingsphere/issues/40014)
 1. Sharding: Rewrite generated ORDER BY column owners to actual table names - [#39866](https://github.com/apache/shardingsphere/pull/39866)
 1. Sharding: Reject sharding auto table configured with none sharding strategy - [#39869](https://github.com/apache/shardingsphere/pull/39869)
+1. Sharding: Fix IN predicates with an expression item routing only to the shards of the other items - [#40128](https://github.com/apache/shardingsphere/issues/40128)
 1. Readwrite-splitting: Evaluate inline expressions in data source names of rule configuration checker - [#39374](https://github.com/apache/shardingsphere/pull/39374)
 1. SQL Federation: Fix SQL Federation pagination binding for long LIMIT parameters - [#39237](https://github.com/apache/shardingsphere/pull/39237)
 1. Broadcast: Fix case-sensitive table name lookup in broadcast data node rule attribute - [#39153](https://github.com/apache/shardingsphere/pull/39153)
@@ -114,9 +119,11 @@
 1. Shadow: Apply default shadow algorithm to shadow tables when swapping YAML rule configuration - [#39749](https://github.com/apache/shardingsphere/pull/39749)
 1. Shadow: Fix INSERT SELECT statement being routed to shadow data source - [#39751](https://github.com/apache/shardingsphere/pull/39751)
 1. Sharding: Fix logic table lookup for MySQL SHOW CREATE TABLE and SHOW INDEX - [#39856](https://github.com/apache/shardingsphere/pull/39856)
+1. Sharding: Fix duplicate rows in cross-shard SELECT DISTINCT when NULLs sort first by default - [#40001](https://github.com/apache/shardingsphere/issues/40001)
 
 ### Enhancements
 
+1. SQL Parser: Support additional MySQL CREATE TABLE, CREATE FUNCTION, CREATE TRIGGER, INSTALL COMPONENT, LOAD XML, GET DIAGNOSTICS and SELECT syntax
 1. Metadata: Support view table type in openGauss meta data loader - [#39097](https://github.com/apache/shardingsphere/pull/39097)
 1. Build: Support compiling and using ShardingSphere under OpenJDK 26 - [#38625](https://github.com/apache/shardingsphere/issues/38625)
 1. SQL Parser: Support Hive OPTIMIZE Statement about iceberg statement parse - [#38877](https://github.com/apache/shardingsphere/pull/38877)

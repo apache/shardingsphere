@@ -42,6 +42,9 @@ public final class FirebirdBlobWrite {
     @Getter
     private final int transactionId;
     
+    @Getter
+    private final boolean streamBlob;
+    
     private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     
     private byte[] content;

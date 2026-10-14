@@ -52,6 +52,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidClumpletStructureException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.MalformedStringException;
@@ -146,6 +147,9 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof CannotUpdateOldBlobException) {
             return toSQLException(FirebirdVendorError.CANNOT_UPDATE_OLD_BLOB);
+        }
+        if (sqlDialectException instanceof InvalidSegstrTypeException) {
+            return toSQLException(FirebirdVendorError.INVALID_SEGSTR_TYPE);
         }
         if (sqlDialectException instanceof UnsupportedBlobFilterException) {
             return toSQLException(FirebirdVendorError.UNSUPPORTED_BLOB_FILTER);

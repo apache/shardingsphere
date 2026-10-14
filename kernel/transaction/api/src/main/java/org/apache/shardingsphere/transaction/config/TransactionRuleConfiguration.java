@@ -31,10 +31,10 @@ import java.util.Properties;
 /**
  * Transaction rule configuration.
  */
-@ValidTransactionProviderType(groups = RuleConfigurationTypeValidationGroup.class)
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
+@ValidTransactionProviderType(groups = RuleConfigurationTypeValidationGroup.class)
 public final class TransactionRuleConfiguration implements GlobalRuleConfiguration {
     
     @NotBlank

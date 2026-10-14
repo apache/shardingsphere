@@ -1590,6 +1590,9 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "reset")
     private final List<MySQLResetStatementTestCase> resetTestCases = new LinkedList<>();
     
+    @XmlElement(name = "common-statement")
+    private final List<CommonSQLStatementTestCase> commonStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "reset-persist")
     private final List<MySQLResetPersistStatementTestCase> resetPersistTestCases = new LinkedList<>();
     

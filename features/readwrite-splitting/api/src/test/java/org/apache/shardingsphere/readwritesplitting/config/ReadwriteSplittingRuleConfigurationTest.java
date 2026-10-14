@@ -61,6 +61,22 @@ class ReadwriteSplittingRuleConfigurationTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("algorithmTypeArguments")
+    void assertValidateAlgorithmType(final String name, final String type, final String expectedMessage) {
+        ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.emptyList(),
+                Collections.singletonMap("foo_load_balancer", new AlgorithmConfiguration(type, new Properties())));
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'ReadwriteSplittingRuleConfiguration' rule, error message is: " + expectedMessage));
+    }
+    
+    private static Stream<Arguments> algorithmTypeArguments() {
+        return Stream.of(
+                Arguments.of("Null load balancer type before SPI", null, "Property `loadBalancers[foo_load_balancer].type` Type is required."),
+                Arguments.of("Empty load balancer type before SPI", "", "Property `loadBalancers[foo_load_balancer].type` Type is required."),
+                Arguments.of("Whitespace load balancer type reaches SPI", " ", "Property `loadBalancers` does not match an available SPI implementation."));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("invalidRuleConfigurationArguments")
     void assertValidateInvalidRuleConfiguration(final String name, final ReadwriteSplittingRuleConfiguration ruleConfig) {
         assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));

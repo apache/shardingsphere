@@ -84,4 +84,12 @@ class FirebirdCreateBlobCommandExecutorTest {
         FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, 1);
         assertTrue(FirebirdBlobWriteCache.getInstance().useBlobData(CONNECTION_ID, 1L, TRANSACTION_ID).isPresent());
     }
+    
+    @Test
+    void assertExecuteWithStreamBlob() {
+        when(packet.isStreamBlob()).thenReturn(true);
+        FirebirdCreateBlobCommandExecutor executor = new FirebirdCreateBlobCommandExecutor(packet, connectionSession);
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) executor.execute().iterator().next();
+        assertTrue(FirebirdBlobWriteCache.getInstance().isStreamBlob(CONNECTION_ID, actual.getId()));
+    }
 }

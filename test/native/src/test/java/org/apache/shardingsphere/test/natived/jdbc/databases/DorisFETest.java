@@ -96,7 +96,7 @@ class DorisFETest {
         Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
             try (Connection connection = DriverManager.getConnection(jdbcUrlPrefix, "root", null)) {
                 assertTrue(connection.createStatement().executeQuery("SELECT `host`, `join`, `alive` FROM frontends()").next());
-                assertTrue(connection.createStatement().executeQuery("SELECT `host`, `alive` FROM backends()").next());
+                assertTrue(connection.createStatement().executeQuery("SELECT `host`, `alive` FROM backends() WHERE `alive` = true AND `TotalCapacity` > 0").next());
             }
             return true;
         });

@@ -33,12 +33,18 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,6 +59,38 @@ class HiveConnectionPropertiesParserTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Hive");
     
     private final ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType);
+    
+    @Test
+    void assertLoadWithoutHiveJdbcDriver() throws IOException, ReflectiveOperationException {
+        String[] classPathEntries = System.getProperty("surefire.test.class.path", System.getProperty("java.class.path")).split(File.pathSeparator);
+        URL[] classPathUrls = new URL[classPathEntries.length];
+        for (int i = 0; i < classPathEntries.length; i++) {
+            classPathUrls[i] = new File(classPathEntries[i]).toURI().toURL();
+        }
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        try (URLClassLoader classLoader = new URLClassLoader(classPathUrls, ClassLoader.getSystemClassLoader().getParent()) {
+            
+            @Override
+            protected Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
+                if (name.startsWith("org.apache.hive.jdbc.")) {
+                    throw new ClassNotFoundException(name);
+                }
+                return super.loadClass(name, resolve);
+            }
+        }) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+            assertThrows(ClassNotFoundException.class, () -> classLoader.loadClass("org.apache.hive.jdbc.Utils"));
+            Class<?> databaseTypeClass = classLoader.loadClass(DatabaseType.class.getName());
+            Class<?> parserClass = classLoader.loadClass(ConnectionPropertiesParser.class.getName());
+            Method getServiceMethod = classLoader.loadClass(TypedSPILoader.class.getName()).getMethod("getService", Class.class, Object.class);
+            Object hiveDatabaseType = getServiceMethod.invoke(null, databaseTypeClass, "Hive");
+            Object actual = getServiceMethod.invoke(null, parserClass, hiveDatabaseType);
+            assertThat(actual.getClass().getName(), is(HiveConnectionPropertiesParser.class.getName()));
+            assertThat(actual.getClass().getClassLoader(), sameInstance(classLoader));
+        } finally {
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
+        }
+    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("parseSuccessArguments")

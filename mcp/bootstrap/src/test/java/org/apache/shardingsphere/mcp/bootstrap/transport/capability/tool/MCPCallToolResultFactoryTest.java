@@ -60,6 +60,7 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloa
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -142,6 +143,40 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         assertThat(((Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).getFirst()).get("reason"), is(
                 "The side-effecting statement already executed and returned truncated rows; do not replay it automatically. "
                         + "Use a separate read-only query if more data is needed."));
+    }
+    
+    @Test
+    void assertCreateWithPreEpochOffsetDateTime() {
+        OffsetDateTime expectedDate = OffsetDateTime.parse("1969-12-31T23:59:59.500Z");
+        SQLExecutionColumnDefinition column = new SQLExecutionColumnDefinition("foo_observed_at", "TIMESTAMP_WITH_TIMEZONE", "TIMESTAMP WITH TIME ZONE", false);
+        MCPSuccessPayload response = SQLExecutionPayload.query(SQLExecutionResult.resultSet(SupportedMCPStatement.QUERY, "SELECT",
+                List.of(column), List.of(List.of(expectedDate)), false, 1, 0, "SELECT foo_observed_at FROM foo_table"));
+        MCPToolDescriptor descriptor = ToolDefinitionRegistry.getToolDefinition(CoreToolNames.EXECUTE_QUERY).getDescriptor();
+        CallToolResult actual = new MCPCallToolResultFactory().create(descriptor, response);
+        assertFalse(actual.isError(), () -> String.valueOf(actual.content()));
+        Map<String, Object> actualPayload = getStructuredContent(actual);
+        assertThat(actualPayload.get("rows"), is(List.of(List.of(expectedDate))));
+        assertThat(actualPayload.get("row_objects"), is(List.of(Map.of("foo_observed_at", expectedDate))));
+        Map<String, Object> actualTextPayload = getTextContentPayload(actual);
+        assertThat(actualTextPayload.get("rows"), is(List.of(List.of(-0.5D))));
+        assertThat(actualTextPayload.get("row_objects"), is(List.of(Map.of("foo_observed_at", -0.5D))));
+    }
+    
+    @Test
+    void assertCreateWithPostEpochOffsetDateTime() {
+        OffsetDateTime expectedDate = OffsetDateTime.parse("1970-01-01T00:00:00.500Z");
+        SQLExecutionColumnDefinition column = new SQLExecutionColumnDefinition("foo_observed_at", "TIMESTAMP_WITH_TIMEZONE", "TIMESTAMP WITH TIME ZONE", false);
+        MCPSuccessPayload response = SQLExecutionPayload.query(SQLExecutionResult.resultSet(SupportedMCPStatement.QUERY, "SELECT",
+                List.of(column), List.of(List.of(expectedDate)), false, 1, 0, "SELECT foo_observed_at FROM foo_table"));
+        MCPToolDescriptor descriptor = ToolDefinitionRegistry.getToolDefinition(CoreToolNames.EXECUTE_QUERY).getDescriptor();
+        CallToolResult actual = new MCPCallToolResultFactory().create(descriptor, response);
+        assertFalse(actual.isError(), () -> String.valueOf(actual.content()));
+        Map<String, Object> actualPayload = getStructuredContent(actual);
+        assertThat(actualPayload.get("rows"), is(List.of(List.of(expectedDate))));
+        assertThat(actualPayload.get("row_objects"), is(List.of(Map.of("foo_observed_at", expectedDate))));
+        Map<String, Object> actualTextPayload = getTextContentPayload(actual);
+        assertThat(actualTextPayload.get("rows"), is(List.of(List.of(0.5D))));
+        assertThat(actualTextPayload.get("row_objects"), is(List.of(Map.of("foo_observed_at", 0.5D))));
     }
     
     @Test

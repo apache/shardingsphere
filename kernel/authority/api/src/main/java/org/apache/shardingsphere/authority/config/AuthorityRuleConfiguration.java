@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -41,10 +42,12 @@ public final class AuthorityRuleConfiguration implements GlobalRuleConfiguration
     private final Collection<@NotNull UserConfiguration> users;
     
     @NotNull
-    @SPITypeExists(spiClassName = "org.apache.shardingsphere.authority.spi.PrivilegeProvider")
+    @Valid
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.authority.spi.PrivilegeProvider", groups = RuleConfigurationTypeValidationGroup.class)
     private final AlgorithmConfiguration privilegeProvider;
     
     @NotNull
+    @Valid
     private final Map<@NotBlank String, @NotNull AlgorithmConfiguration> authenticators;
     
     private final String defaultAuthenticator;

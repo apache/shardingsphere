@@ -29,6 +29,7 @@
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
         <dockerfile.skip.build>true</dockerfile.skip.build>
+        <docker.image.name>apache/shardingsphere-proxy-test:latest</docker.image.name>
     </properties>
     
     <dependencies>
@@ -321,9 +322,7 @@
                                         <argument>APP_NAME=${project.build.finalName}</argument>
                                         <argument>.</argument>
                                         <argument>-t</argument>
-                                        <argument>apache/shardingsphere-proxy-test:${project.version}</argument>
-                                        <argument>-t</argument>
-                                        <argument>apache/shardingsphere-proxy-test:latest</argument>
+                                        <argument>${docker.image.name}</argument>
                                     </arguments>
                                 </configuration>
                             </execution>

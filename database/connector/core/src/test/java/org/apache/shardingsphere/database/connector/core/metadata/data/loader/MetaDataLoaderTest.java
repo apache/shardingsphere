@@ -17,14 +17,23 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.data.loader;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.classic.spi.ThrowableProxy;
+import ch.qos.logback.core.read.ListAppender;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Constructor;
@@ -34,6 +43,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +51,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,7 +62,23 @@ import static org.mockito.Mockito.when;
 
 class MetaDataLoaderTest {
     
+    private static List<LoggingEvent> appenderList;
+    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @BeforeAll
+    static void setupLogger() {
+        Logger log = (Logger) LoggerFactory.getLogger(MetaDataLoader.class);
+        ListAppender<LoggingEvent> appender = (ListAppender) log.getAppender("MetaDataLoaderTestAppender");
+        appenderList = appender.list;
+    }
+    
+    @BeforeEach
+    @AfterEach
+    void clearAppenderList() {
+        appenderList.clear();
+    }
     
     @Test
     void assertLoadWithDialectLoader() throws Exception {
@@ -73,11 +100,18 @@ class MetaDataLoaderTest {
         MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.emptyList(), "dialect_sql_exception", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
         DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
         when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
-        when(dialectMetaDataLoader.load(any(MetaDataLoaderMaterial.class))).thenThrow(SQLException.class);
+        SQLException expectedException = new SQLException();
+        when(dialectMetaDataLoader.load(any(MetaDataLoaderMaterial.class))).thenThrow(expectedException);
         try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
             Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(material));
             assertThat(actual.size(), is(1));
             assertTrue(actual.get("foo_db").getTables().isEmpty());
+            assertThat(appenderList.size(), is(1));
+            LoggingEvent actualEvent = appenderList.get(0);
+            assertThat(actualEvent.getLevel(), is(Level.WARN));
+            assertThat(actualEvent.getFormattedMessage(), is(databaseType + " Dialect load schema meta data error, load by default."));
+            assertThat(actualEvent.getThrowableProxy(), isA(ThrowableProxy.class));
+            assertThat(((ThrowableProxy) actualEvent.getThrowableProxy()).getThrowable(), sameInstance(expectedException));
         }
     }
     
@@ -96,6 +130,7 @@ class MetaDataLoaderTest {
         Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(material));
         assertThat(actual.size(), is(1));
         assertTrue(actual.get("foo_db").getTables().isEmpty());
+        assertTrue(appenderList.isEmpty());
     }
     
     @Test

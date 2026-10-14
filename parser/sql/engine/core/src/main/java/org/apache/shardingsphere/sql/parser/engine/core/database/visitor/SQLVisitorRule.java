@@ -903,7 +903,9 @@ public enum SQLVisitorRule {
     
     REFRESH("Refresh", SQLStatementType.DAL),
     
-    OPEN("Open", SQLStatementType.DDL);
+    OPEN("Open", SQLStatementType.DDL),
+    
+    GET_DIAGNOSTICS("GetDiagnosticsStatement", SQLStatementType.DAL);
     
     private final String name;
     

@@ -80,7 +80,7 @@ RULE_MESSAGES = {
     "R15-D": "each @ParameterizedTest must have >= 3 Arguments rows from @MethodSource",
     "R15-E": "each @ParameterizedTest method must declare first parameter as `final String name`",
     "R15-F": "@ParameterizedTest method body must not contain switch",
-    "R15-G": "parameterized tests must not introduce nested helper type declarations",
+    "R15-G": "added type declarations require nested scenario-transport review",
     "R15-H": "do not dispatch boolean assertions by control flow to choose assertTrue/assertFalse",
     "R15-I": "parameterized tests must not use Consumer in signatures or @MethodSource argument rows",
     "R15-J": "helper and provider target invocations require semantic ownership review",
@@ -89,6 +89,7 @@ RULE_MODES = {
     "R15-A": "manual",
     "R15-B": "manual",
     "R15-D": "hybrid",
+    "R15-G": "manual",
     "R15-I": "hybrid",
     "R15-J": "hybrid",
 }
@@ -824,7 +825,6 @@ def file_rule_violations(context: FileScanContext) -> dict[str, list[str]]:
     violations["R15-D"].extend(check_r15_d(context.path, context.source, context.method_bodies))
     violations["R15-E"].extend(check_r15_e(context.path, context.source))
     violations["R15-F"].extend(check_r15_f(context.path, context.source))
-    violations["R15-G"].extend(check_r15_g(context.path, context.source, context.added_lines))
     violations["R15-H"].extend(check_r15_h(context.path, context.source))
     violations["R15-I"].extend(check_r15_i(context.path, context.source, context.method_bodies))
     violations["R15-J"].extend(check_r15_j(context))
@@ -875,6 +875,7 @@ def collect_scan_result(paths: list[Path], scope_baseline_path: Path | None) -> 
             "R15-A": [str(context.path) for context in contexts if not context.target_public_methods],
             "R15-B": [each for context in contexts for each in find_metadata_accessor_test_candidates(context.path, context.source)],
             "R15-D": unresolved_sources,
+            "R15-G": [each for context in contexts for each in check_r15_g(context.path, context.source, context.added_lines)],
             "R15-I": unresolved_sources,
             "R15-J": [str(context.path) for context in contexts if not context.target_public_methods],
         },

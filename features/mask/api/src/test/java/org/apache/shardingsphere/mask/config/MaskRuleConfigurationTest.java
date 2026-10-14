@@ -74,6 +74,21 @@ class MaskRuleConfigurationTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("algorithmTypeArguments")
+    void assertValidateAlgorithmType(final String name, final String type, final String expectedMessage) {
+        MaskRuleConfiguration ruleConfig = new MaskRuleConfiguration(Collections.emptyList(), Collections.singletonMap("foo_mask", new AlgorithmConfiguration(type, new Properties())));
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'MaskRuleConfiguration' rule, error message is: " + expectedMessage));
+    }
+    
+    private static Stream<Arguments> algorithmTypeArguments() {
+        return Stream.of(
+                Arguments.of("Null mask algorithm type before SPI", null, "Property `maskAlgorithms[foo_mask].type` Type is required."),
+                Arguments.of("Empty mask algorithm type before SPI", "", "Property `maskAlgorithms[foo_mask].type` Type is required."),
+                Arguments.of("Whitespace mask algorithm type reaches SPI", " ", "Property `maskAlgorithms` does not match an available SPI implementation."));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("invalidRuleConfigurationArguments")
     void assertValidateInvalidRuleConfiguration(final String name, final MaskRuleConfiguration ruleConfig) {
         assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
