@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.database.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 
 import java.util.ArrayList;
@@ -38,12 +37,13 @@ public final class FirebirdBinaryRowBuilder {
      * Build binary row.
      *
      * @param row query response row
+     * @param parameterTypes column types
      * @return binary row
      */
-    public static BinaryRow build(final QueryResponseRow row) {
+    public static BinaryRow build(final QueryResponseRow row, final List<FirebirdBinaryColumnType> parameterTypes) {
         List<BinaryCell> result = new ArrayList<>(row.getCells().size());
-        for (QueryResponseCell each : row.getCells()) {
-            result.add(new BinaryCell(FirebirdBinaryColumnType.valueOfJDBCType(each.getJdbcType()), each.getData()));
+        for (int i = 0; i < row.getCells().size(); i++) {
+            result.add(new BinaryCell(parameterTypes.get(i), row.getCells().get(i).getData()));
         }
         return new BinaryRow(result);
     }
