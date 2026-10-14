@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchBlobStreamCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
@@ -37,6 +38,7 @@ public final class FirebirdBatchBlobStreamCommandExecutor implements CommandExec
     
     private final ConnectionSession connectionSession;
     
+    @HighFrequencyInvocation
     @Override
     public Collection<DatabasePacket> execute() {
         FirebirdBatchStatementManager.getInstance().appendBlobStream(connectionSession.getConnectionId(), packet);

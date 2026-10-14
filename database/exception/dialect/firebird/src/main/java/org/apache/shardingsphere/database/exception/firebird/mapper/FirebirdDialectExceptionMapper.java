@@ -269,12 +269,13 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
     }
     
     private SQLException toParameterConversionException(final SQLException conversionError) {
-        Collection<StatusVectorEntry> statusVector = new ArrayList<>();
+        Collection<StatusVectorEntry> conversionStatusVector = conversionError instanceof FirebirdException
+                ? ((FirebirdException) conversionError).getStatusVector()
+                : Collections.singletonList(new StatusVectorEntry(conversionError.getErrorCode(), Collections.emptyList()));
+        Collection<StatusVectorEntry> statusVector = new ArrayList<>(conversionStatusVector.size() + 2);
         statusVector.add(DYNAMIC_SQL_ERROR);
         statusVector.add(PARAMETER_CONVERSION_SQL_ERROR_CODE);
-        statusVector.addAll(conversionError instanceof FirebirdException
-                ? ((FirebirdException) conversionError).getStatusVector()
-                : Collections.singletonList(new StatusVectorEntry(conversionError.getErrorCode(), Collections.emptyList())));
+        statusVector.addAll(conversionStatusVector);
         return new FirebirdException(conversionError.getMessage(), conversionError.getSQLState(), conversionError.getErrorCode(), statusVector);
     }
     

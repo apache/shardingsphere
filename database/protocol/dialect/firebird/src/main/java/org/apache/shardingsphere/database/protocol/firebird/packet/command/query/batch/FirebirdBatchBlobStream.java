@@ -27,7 +27,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBpbVersionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidClumpletStructureException;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.firebirdsql.gds.ISCConstants;
 
 import java.util.Arrays;
 
@@ -42,6 +44,7 @@ import java.util.Arrays;
  * <p>As Firebird does, the stream is read with unsigned 32-bit lengths and is rejected only when it cannot be decoded,
  * because Firebird checks the BLOBs restored from the stream when executing the batch.</p>
  */
+@HighFrequencyInvocation
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
 public final class FirebirdBatchBlobStream {
@@ -54,13 +57,11 @@ public final class FirebirdBatchBlobStream {
     
     static final int SEGMENT_LENGTH_SIZE = 2;
     
-    private static final int BPB_VERSION1 = 1;
-    
-    private static final int BPB_TYPE = 3;
-    
-    private static final int BPB_TYPE_STREAM = 1;
-    
     private static final int MAX_BPB_INTEGER_LENGTH = 4;
+    
+    private static final int WIRE_SEGMENT_LENGTH_SIZE = 4;
+    
+    private static final byte[] NO_BPB = new byte[0];
     
     private static final Handler SKIPPING_HANDLER = new Handler() {
         
@@ -91,7 +92,7 @@ public final class FirebirdBatchBlobStream {
     
     private int segmentRemaining;
     
-    private byte[] bpb = new byte[0];
+    private byte[] bpb = NO_BPB;
     
     /**
      * Copy stream state.
@@ -118,15 +119,16 @@ public final class FirebirdBatchBlobStream {
     /**
      * Skip one stream portion of {@code op_batch_blob_stream}.
      *
+     * <p>The tail of a BLOB header which the client sends with the next packet is not skipped.</p>
+     *
      * @param data packet data starting at the stream portion
      * @param length declared length of the stream portion
-     * @return length of the stream portion accepted by Firebird
-     * @throws IndexOutOfBoundsException when packet data is incomplete
+     * @return whether the packet data holds the whole stream portion; if not, the stream state and the reader index of the data are undefined
      * @throws DatabaseProtocolException when stream portion is invalid
      * @throws InvalidClumpletStructureException when BLOB parameter buffer of stream portion has invalid structure
      * @throws InvalidBpbVersionException when BLOB parameter buffer of stream portion has wrong version
      */
-    long skip(final ByteBuf data, final long length) {
+    boolean skip(final ByteBuf data, final long length) {
         return read(data, length, SKIPPING_HANDLER);
     }
     
@@ -146,11 +148,12 @@ public final class FirebirdBatchBlobStream {
      */
     byte[] read(final ByteBuf data, final long length) {
         ByteBuf result = Unpooled.buffer((int) length);
-        read(data, length, new RestoringHandler(result));
+        ShardingSpherePreconditions.checkState(read(data, length, new RestoringHandler(result)),
+                () -> new IndexOutOfBoundsException(String.format("Batch BLOB stream portion of %d bytes is incomplete, only %d bytes are readable", length, data.readableBytes())));
         return ByteBufUtil.getBytes(result);
     }
     
-    private long read(final ByteBuf data, final long length, final Handler handler) {
+    private boolean read(final ByteBuf data, final long length, final Handler handler) {
         ShardingSpherePreconditions.checkState(0L == length % ALIGNMENT, () -> new DatabaseProtocolException("Invalid batch BLOB stream length %d", length));
         long remains = length;
         while (remains > 0L) {
@@ -163,14 +166,22 @@ public final class FirebirdBatchBlobStream {
                     continue;
                 }
                 if (remains < HEADER_LENGTH) {
-                    return length - remains;
+                    return true;
+                }
+                if (data.readableBytes() < HEADER_LENGTH) {
+                    return false;
                 }
                 readHeader(data, handler);
                 remains -= HEADER_LENGTH;
                 continue;
             }
             if (bpbRemaining > 0L) {
-                remains -= readBpb(data, remains, handler);
+                long bpbLength = Math.min(bpbRemaining, remains);
+                if (data.readableBytes() < bpbLength) {
+                    return false;
+                }
+                readBpb(data, (int) bpbLength, handler);
+                remains -= bpbLength;
                 continue;
             }
             if (segmented && 0 == segmentRemaining) {
@@ -181,18 +192,21 @@ public final class FirebirdBatchBlobStream {
                     blobRemaining -= padding;
                     continue;
                 }
+                if (data.readableBytes() < WIRE_SEGMENT_LENGTH_SIZE) {
+                    return false;
+                }
                 readSegmentHeader(data, handler);
                 remains -= SEGMENT_LENGTH_SIZE;
                 continue;
             }
-            remains -= readData(data, remains, handler);
+            long dataLength = Math.min(segmented ? segmentRemaining : blobRemaining, remains);
+            if (data.readableBytes() < dataLength) {
+                return false;
+            }
+            readData(data, (int) dataLength, handler);
+            remains -= dataLength;
         }
-        return length;
-    }
-    
-    static int getPadding(final long position, final int alignment) {
-        int remainder = (int) (position % alignment);
-        return 0 == remainder ? 0 : alignment - remainder;
+        return true;
     }
     
     private void readHeader(final ByteBuf data, final Handler handler) {
@@ -202,26 +216,25 @@ public final class FirebirdBatchBlobStream {
         blobRemaining = blobLength;
         bpbRemaining = bpbLength;
         segmentRemaining = 0;
-        bpb = new byte[0];
+        bpb = NO_BPB;
         if (0L == bpbLength) {
             segmented = defaultSegmented;
         }
         handler.onBlobHeader(batchBlobId, blobLength, bpbLength);
     }
     
-    private int readBpb(final ByteBuf data, final long remains, final Handler handler) {
-        ByteBuf chunk = data.readSlice(getReadableLength(data, Math.min(bpbRemaining, remains)));
+    private void readBpb(final ByteBuf data, final int length, final Handler handler) {
+        ByteBuf chunk = data.readSlice(length);
         int receivedLength = bpb.length;
-        bpb = Arrays.copyOf(bpb, receivedLength + chunk.readableBytes());
-        chunk.getBytes(chunk.readerIndex(), bpb, receivedLength, chunk.readableBytes());
-        bpbRemaining -= chunk.readableBytes();
-        blobRemaining = Integer.toUnsignedLong((int) (blobRemaining - chunk.readableBytes()));
+        bpb = Arrays.copyOf(bpb, receivedLength + length);
+        chunk.getBytes(chunk.readerIndex(), bpb, receivedLength, length);
+        bpbRemaining -= length;
+        blobRemaining = Integer.toUnsignedLong((int) (blobRemaining - length));
         if (0L == bpbRemaining) {
             segmented = isSegmented(bpb);
-            bpb = new byte[0];
+            bpb = NO_BPB;
         }
         handler.onBytes(chunk);
-        return chunk.readableBytes();
     }
     
     private void readSegmentHeader(final ByteBuf data, final Handler handler) {
@@ -233,31 +246,28 @@ public final class FirebirdBatchBlobStream {
         handler.onSegment(segmentLength);
     }
     
-    private int readData(final ByteBuf data, final long remains, final Handler handler) {
-        int result = getReadableLength(data, Math.min(segmented ? segmentRemaining : blobRemaining, remains));
-        handler.onBytes(data.readSlice(result));
-        blobRemaining -= result;
+    private void readData(final ByteBuf data, final int length, final Handler handler) {
+        handler.onBytes(data.readSlice(length));
+        blobRemaining -= length;
         if (segmented) {
-            segmentRemaining -= result;
+            segmentRemaining -= length;
         }
-        return result;
     }
     
-    private int getReadableLength(final ByteBuf data, final long length) {
-        ShardingSpherePreconditions.checkState(length <= data.readableBytes(),
-                () -> new IndexOutOfBoundsException(String.format("Batch BLOB stream needs %d bytes, but only %d bytes are readable", length, data.readableBytes())));
-        return (int) length;
+    static int getPadding(final long position, final int alignment) {
+        int remainder = (int) (position % alignment);
+        return 0 == remainder ? 0 : alignment - remainder;
     }
     
     static boolean isSegmented(final byte[] bpb) {
         ShardingSpherePreconditions.checkState(bpb.length > 0, () -> new InvalidClumpletStructureException("empty buffer", 0));
-        ShardingSpherePreconditions.checkState(BPB_VERSION1 == bpb[0], () -> new InvalidBpbVersionException(bpb[0] & 0xFF, BPB_VERSION1));
+        ShardingSpherePreconditions.checkState(ISCConstants.isc_bpb_version1 == bpb[0], () -> new InvalidBpbVersionException(bpb[0] & 0xFF, ISCConstants.isc_bpb_version1));
         int index = 1;
         while (index < bpb.length) {
             int valueLength = getClumpletValueLength(bpb, index);
-            if (BPB_TYPE == bpb[index]) {
+            if (ISCConstants.isc_bpb_type == bpb[index]) {
                 ShardingSpherePreconditions.checkState(valueLength <= MAX_BPB_INTEGER_LENGTH, () -> new InvalidClumpletStructureException("length of integer exceeds 4 bytes", valueLength));
-                return 0 == valueLength || 0 == (bpb[index + 2] & BPB_TYPE_STREAM);
+                return 0 == valueLength || 0 == (bpb[index + 2] & ISCConstants.isc_bpb_type_stream);
             }
             index += 2 + valueLength;
         }
@@ -283,6 +293,7 @@ public final class FirebirdBatchBlobStream {
         void onBytes(ByteBuf data);
     }
     
+    @HighFrequencyInvocation
     @RequiredArgsConstructor
     private static final class RestoringHandler implements Handler {
         

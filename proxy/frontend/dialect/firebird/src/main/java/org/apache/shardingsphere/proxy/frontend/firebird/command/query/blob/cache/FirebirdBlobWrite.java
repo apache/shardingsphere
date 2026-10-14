@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cac
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.ref.SoftReference;
@@ -98,6 +99,7 @@ public final class FirebirdBlobWrite {
     /**
      * Mark this closed BLOB write as used by a statement and keep its data only softly reachable.
      */
+    @HighFrequencyInvocation
     void markUsed() {
         if (null != content) {
             usedContent = new SoftReference<>(content);

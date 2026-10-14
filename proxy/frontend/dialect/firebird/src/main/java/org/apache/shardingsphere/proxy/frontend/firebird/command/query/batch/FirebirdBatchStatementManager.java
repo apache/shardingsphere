@@ -41,6 +41,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSetBpbCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStreamBlob;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBlobParameterBufferUtils;
 
@@ -137,6 +138,7 @@ public final class FirebirdBatchStatementManager {
      * @throws InvalidBatchHandleException if batch statement does not exist
      * @throws InvalidBatchBlobPolicyException if BLOB policy of batch does not allow BLOB stream
      */
+    @HighFrequencyInvocation
     void appendBlobStream(final int connectionId, final FirebirdBatchBlobStreamCommandPacket packet) {
         FirebirdBatchStatement batchStatement = getBatchStatement(connectionId, packet.getStatementHandle());
         ShardingSpherePreconditions.checkNotNull(batchStatement, () -> new InvalidBatchHandleException(packet.getStatementHandle()));
@@ -176,6 +178,7 @@ public final class FirebirdBatchStatementManager {
      * @throws UnsupportedBlobFilterException if a BLOB parameter buffer requires an unsupported BLOB filter conversion
      * @throws TransliterationFailedException if BLOB data cannot be transliterated as its BLOB parameter buffer requires
      */
+    @HighFrequencyInvocation
     void registerStreamBlobs(final FirebirdBatchStatement batchStatement, final int connectionCharsetId) {
         for (FirebirdBatchStreamBlob each : batchStatement.readStreamBlobs()) {
             byte[] data = each.getData().toByteArray();

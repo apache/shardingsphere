@@ -30,7 +30,9 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdParseBatchBlrTest {
     
@@ -53,6 +55,18 @@ class FirebirdParseBatchBlrTest {
         assertThat(actual.getNetLength(), is(28));
     }
     
+    @Test
+    void assertParseBlob2Field() {
+        ByteBuf blr = createBlr(BlrConstants.blr_version5, field(BlrConstants.blr_blob2, 0, 0, 0, 0), 2);
+        assertTrue(FirebirdParseBatchBlr.parse(blr, blr.readableBytes()).getFields().get(0).isBatchBlobId());
+    }
+    
+    @Test
+    void assertParseQuadField() {
+        ByteBuf blr = createBlr(BlrConstants.blr_version5, field(BlrConstants.blr_quad, 0), 2);
+        assertFalse(FirebirdParseBatchBlr.parse(blr, blr.readableBytes()).getFields().get(0).isBatchBlobId());
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("validSingleFieldArguments")
     void assertParseSingleField(final String name, final int version, final byte[] fieldBlr, final FirebirdBinaryColumnType expectedType,
@@ -61,7 +75,6 @@ class FirebirdParseBatchBlrTest {
         FirebirdParseBatchBlr actual = FirebirdParseBatchBlr.parse(blr, blr.readableBytes());
         assertThat(actual.getFields().size(), is(1));
         assertDescriptor(actual.getFields().get(0), expectedType, expectedLength, expectedScale, 0);
-        assertThat(actual.getFields().get(0).isBatchBlobId(), is(BlrConstants.blr_blob2 == fieldBlr[0]));
         assertThat(actual.getMessageLength(), is(expectedMessageLength));
         assertThat(actual.getNetLength(), is(expectedNetLength));
     }

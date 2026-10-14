@@ -50,7 +50,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdBlobParameterConverterTest {
     
@@ -63,9 +65,15 @@ class FirebirdBlobParameterConverterTest {
     private static final Charset WIN1251_CHARSET = Charset.forName("windows-1251");
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("readOnMoveArguments")
-    void assertIsReadOnMove(final String name, final FirebirdBatchColumnDescriptor field, final FirebirdReturnColumnPacket parameter, final int connectionCharsetId, final boolean expected) {
-        assertThat(new FirebirdBlobParameterConverter(connectionCharsetId).isReadOnMove(field, parameter), is(expected));
+    @MethodSource("conversionArguments")
+    void assertIsReadOnMoveWithConversion(final String name, final FirebirdBatchColumnDescriptor field, final FirebirdReturnColumnPacket parameter) {
+        assertTrue(new FirebirdBlobParameterConverter(UTF8).isReadOnMove(field, parameter));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("blobIdMoveArguments")
+    void assertIsReadOnMoveWithBlobIdMove(final String name, final FirebirdBatchColumnDescriptor field, final FirebirdReturnColumnPacket parameter, final int connectionCharsetId) {
+        assertFalse(new FirebirdBlobParameterConverter(connectionCharsetId).isReadOnMove(field, parameter));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -129,15 +137,19 @@ class FirebirdBlobParameterConverterTest {
         assertThat(((ConversionErrorException) actual.getConversionError()).getValue(), is(expectedValue));
     }
     
-    private static Stream<Arguments> readOnMoveArguments() {
+    private static Stream<Arguments> conversionArguments() {
         return Stream.of(
-                Arguments.of("other_type", createField(0, NONE), createParameter(Types.VARCHAR, 20), UTF8, true),
-                Arguments.of("text_blob_in_other_charset", createField(1, WIN1251), createBlobParameter(1), UTF8, true),
-                Arguments.of("text_blob_in_connection_charset", createField(1, UTF8), createBlobParameter(1), UTF8, false),
-                Arguments.of("text_blob_in_dynamic_charset", createField(1, 127), createBlobParameter(1), UTF8, false),
-                Arguments.of("text_blob_without_connection_charset", createField(1, WIN1251), createBlobParameter(1), NONE, false),
-                Arguments.of("untyped_blob", createField(0, NONE), createBlobParameter(1), UTF8, false),
-                Arguments.of("binary_blob_parameter", createField(1, WIN1251), createBlobParameter(0), UTF8, false));
+                Arguments.of("other_type", createField(0, NONE), createParameter(Types.VARCHAR, 20)),
+                Arguments.of("text_blob_in_other_charset", createField(1, WIN1251), createBlobParameter(1)));
+    }
+    
+    private static Stream<Arguments> blobIdMoveArguments() {
+        return Stream.of(
+                Arguments.of("text_blob_in_connection_charset", createField(1, UTF8), createBlobParameter(1), UTF8),
+                Arguments.of("text_blob_in_dynamic_charset", createField(1, 127), createBlobParameter(1), UTF8),
+                Arguments.of("text_blob_without_connection_charset", createField(1, WIN1251), createBlobParameter(1), NONE),
+                Arguments.of("untyped_blob", createField(0, NONE), createBlobParameter(1), UTF8),
+                Arguments.of("binary_blob_parameter", createField(1, WIN1251), createBlobParameter(0), UTF8));
     }
     
     private static Stream<Arguments> textBlobArguments() {
@@ -156,6 +168,10 @@ class FirebirdBlobParameterConverterTest {
                 Arguments.of("empty", createField(1, UTF8), new byte[0], 20, ""),
                 Arguments.of("untyped_blob_text_filter", createField(0, NONE), new byte[]{'a', '\n', 'b', (byte) 0xC3, (byte) 0xA9, 0x01, '\t', 0x7F, 'z'}, 20, "ab...\t.z"),
                 Arguments.of("quad", createQuadField(), "quad".getBytes(StandardCharsets.US_ASCII), 20, "quad"));
+    }
+    
+    private static FirebirdBatchColumnDescriptor createQuadField() {
+        return parseField(Unpooled.buffer().writeByte(BlrConstants.blr_quad).writeByte(0));
     }
     
     private static Stream<Arguments> integerArguments() {
@@ -205,10 +221,6 @@ class FirebirdBlobParameterConverterTest {
     
     private static FirebirdBatchColumnDescriptor createField(final int subType, final int charsetId) {
         return parseField(Unpooled.buffer().writeByte(BlrConstants.blr_blob2).writeShortLE(subType).writeShortLE(charsetId));
-    }
-    
-    private static FirebirdBatchColumnDescriptor createQuadField() {
-        return parseField(Unpooled.buffer().writeByte(BlrConstants.blr_quad).writeByte(0));
     }
     
     private static FirebirdBatchColumnDescriptor parseField(final ByteBuf fieldBlr) {

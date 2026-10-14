@@ -228,7 +228,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
-    void assertDescribeBindStoresParameterColumns() throws Exception {
+    void assertDescribeBind() throws Exception {
         when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id, content) VALUES (?, ?)");
         when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
         when(packet.getCurrentItem()).thenReturn(

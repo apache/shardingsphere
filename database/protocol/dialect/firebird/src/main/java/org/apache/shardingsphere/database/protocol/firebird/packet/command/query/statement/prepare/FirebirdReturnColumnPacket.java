@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Firebird return column packet.
@@ -49,19 +50,38 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
     
     private final String owner;
     
-    @Getter
     private final Integer columnLength;
     
     private final boolean blobColumn;
     
-    @Getter
     private final Integer blobSubType;
+    
+    /**
+     * Find column length.
+     *
+     * @return column length, or empty if the column has no known length
+     */
+    @HighFrequencyInvocation
+    public Optional<Integer> findColumnLength() {
+        return Optional.ofNullable(columnLength);
+    }
+    
+    /**
+     * Find BLOB sub type.
+     *
+     * @return BLOB sub type, or empty if the column is not a BLOB column with a known sub type
+     */
+    @HighFrequencyInvocation
+    public Optional<Integer> findBlobSubType() {
+        return Optional.ofNullable(blobSubType);
+    }
     
     /**
      * Get column type.
      *
      * @return column type
      */
+    @HighFrequencyInvocation
     public FirebirdBinaryColumnType getColumnType() {
         return blobColumn ? FirebirdBinaryColumnType.BLOB : FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType());
     }

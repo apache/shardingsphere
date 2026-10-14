@@ -37,6 +37,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -68,6 +69,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         return readableBytes >= MESSAGE_TYPE_LENGTH;
     }
     
+    @HighFrequencyInvocation
     @Override
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         try {
@@ -213,7 +215,9 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         } catch (final SQLDialectException ex) {
             throw new InvalidBlobStreamException(ex);
         }
-        batchBlobStreams.put(statementHandle, blobStream);
+        if (result >= 0) {
+            batchBlobStreams.put(statementHandle, blobStream);
+        }
         return result;
     }
     

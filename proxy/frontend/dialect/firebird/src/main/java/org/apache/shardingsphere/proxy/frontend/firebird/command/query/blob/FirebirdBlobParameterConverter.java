@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BlobFilterNotFoundException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BlobTruncationException;
@@ -30,9 +29,8 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdReturnColumnPacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.firebirdsql.encodings.EncodingDefinition;
-import org.firebirdsql.encodings.EncodingFactory;
 import org.firebirdsql.gds.ISCConstants;
 
 import java.io.ByteArrayOutputStream;
@@ -42,6 +40,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -54,20 +54,29 @@ import java.util.Optional;
  * Integer parameters get the value converted as Firebird converts it; other types get the ASCII text, because the proxy does not describe their scale.
  * An error of the move is reported as {@link ParameterConversionException}.</p>
  */
-@RequiredArgsConstructor
+@HighFrequencyInvocation
 public final class FirebirdBlobParameterConverter {
     
     private static final int MAX_STRING_LENGTH = 65535;
     
     private static final int CHARSET_ASCII = 2;
     
-    private static final int MAX_INTERNAL_FILTER_SUB_TYPE = 9;
-    
-    private static final int BLOB_SUB_TYPE_RANGES = 4;
-    
     private static final int EXPONENT_LIMIT = 3276;
     
+    private static final String UNMAPPABLE_REPLACEMENT = String.valueOf(Character.MIN_VALUE);
+    
     private final int connectionCharsetId;
+    
+    private final Optional<Charset> connectionCharset;
+    
+    private final Map<Charset, CharsetDecoder> wellFormedDecoders = new HashMap<>(2, 1F);
+    
+    private final Map<Charset, CharsetDecoder> replacingDecoders = new HashMap<>(2, 1F);
+    
+    public FirebirdBlobParameterConverter(final int connectionCharsetId) {
+        this.connectionCharsetId = connectionCharsetId;
+        connectionCharset = FirebirdBlobParameterBufferUtils.findJavaCharset(connectionCharsetId);
+    }
     
     /**
      * Judge whether Firebird reads the BLOB while it moves the message to the parameter.
@@ -83,24 +92,7 @@ public final class FirebirdBlobParameterConverter {
         if (FirebirdBinaryColumnType.BLOB != parameter.getColumnType()) {
             return true;
         }
-        return findTextBlobCharset(field, parameter).isPresent() && findJavaCharset(connectionCharsetId).isPresent() && getActualCharset(field.getScale()) != connectionCharsetId;
-    }
-    
-    private Optional<Charset> findTextBlobCharset(final FirebirdBatchColumnDescriptor field, final FirebirdReturnColumnPacket parameter) {
-        boolean textBlobMove = ISCConstants.BLOB_SUB_TYPE_TEXT == field.getSubType() && null != parameter.getBlobSubType() && ISCConstants.BLOB_SUB_TYPE_TEXT == parameter.getBlobSubType();
-        return textBlobMove ? findJavaCharset(getActualCharset(field.getScale())) : Optional.empty();
-    }
-    
-    private Optional<Charset> findJavaCharset(final int charsetId) {
-        if (ISCConstants.CS_NONE == charsetId || ISCConstants.CS_BINARY == charsetId || ISCConstants.CS_dynamic == charsetId) {
-            return Optional.empty();
-        }
-        EncodingDefinition encodingDefinition = EncodingFactory.getPlatformDefault().getEncodingDefinitionByCharacterSetId(charsetId);
-        return null == encodingDefinition || encodingDefinition.isInformationOnly() ? Optional.empty() : Optional.of(encodingDefinition.getJavaCharset());
-    }
-    
-    private int getActualCharset(final int charsetId) {
-        return ISCConstants.CS_dynamic == charsetId ? connectionCharsetId : charsetId;
+        return findTextBlobCharset(field, parameter).isPresent() && connectionCharset.isPresent() && getFieldCharsetId(field) != connectionCharsetId;
     }
     
     /**
@@ -127,85 +119,33 @@ public final class FirebirdBlobParameterConverter {
             return fieldCharset.isPresent() ? toTextBlob(content, field, fieldCharset.get()) : content;
         }
         if (isText(type)) {
-            return toText(content, field, parameter.getColumnLength());
+            return toText(content, field, parameter);
         }
         String result = new String(readText(content, field, CHARSET_ASCII), StandardCharsets.ISO_8859_1);
         return isInteger(type) ? toInteger(result, type) : result;
     }
     
     private String toTextBlob(final byte[] content, final FirebirdBatchColumnDescriptor field, final Charset fieldCharset) {
-        Optional<Charset> connectionCharset = findJavaCharset(connectionCharsetId);
         return connectionCharset.isPresent() ? decode(filter(content, field, connectionCharsetId), connectionCharset.get(), false) : decode(content, fieldCharset, false);
-    }
-    
-    private byte[] filter(final byte[] content, final FirebirdBatchColumnDescriptor field, final int charsetId) {
-        int subType = field.getSubType();
-        if (ISCConstants.BLOB_SUB_TYPE_TEXT == subType) {
-            return FirebirdBlobParameterBufferUtils.createTransliterator(createTextBpb(field.getScale(), charsetId), connectionCharsetId).map(each -> each.put(content)).orElse(content);
-        }
-        if (ISCConstants.CS_BINARY == charsetId) {
-            return content;
-        }
-        if (ISCConstants.BLOB_SUB_TYPE_BINARY == subType) {
-            return filterText(content);
-        }
-        throw subType > 0 && subType <= MAX_INTERNAL_FILTER_SUB_TYPE && BLOB_SUB_TYPE_RANGES != subType
-                ? new UnsupportedBlobFilterException()
-                : new BlobFilterNotFoundException(subType, ISCConstants.BLOB_SUB_TYPE_TEXT);
-    }
-    
-    private byte[] createTextBpb(final int sourceCharsetId, final int targetCharsetId) {
-        return new byte[]{(byte) ISCConstants.isc_bpb_version1, (byte) ISCConstants.isc_bpb_source_type, 1, (byte) ISCConstants.BLOB_SUB_TYPE_TEXT, (byte) ISCConstants.isc_bpb_source_interp, 1,
-                (byte) sourceCharsetId, (byte) ISCConstants.isc_bpb_target_type, 1, (byte) ISCConstants.BLOB_SUB_TYPE_TEXT, (byte) ISCConstants.isc_bpb_target_interp, 1, (byte) targetCharsetId};
-    }
-    
-    private byte[] filterText(final byte[] content) {
-        ByteArrayOutputStream result = new ByteArrayOutputStream(content.length);
-        for (byte each : content) {
-            if ('\n' != each) {
-                result.write(isPrintable(each) ? each : '.');
-            }
-        }
-        return result.toByteArray();
-    }
-    
-    private boolean isPrintable(final byte value) {
-        return value >= '\b' && value <= '\r' || value >= ' ' && value < Byte.MAX_VALUE;
     }
     
     private boolean isText(final FirebirdBinaryColumnType type) {
         return FirebirdBinaryColumnType.TEXT == type || FirebirdBinaryColumnType.VARYING == type || FirebirdBinaryColumnType.LEGACY_TEXT == type || FirebirdBinaryColumnType.LEGACY_VARYING == type;
     }
     
-    private Object toText(final byte[] content, final FirebirdBatchColumnDescriptor field, final Integer length) {
-        Optional<Charset> connectionCharset = findJavaCharset(connectionCharsetId);
+    private Object toText(final byte[] content, final FirebirdBatchColumnDescriptor field, final FirebirdReturnColumnPacket parameter) {
         byte[] text = readText(content, field, connectionCharset.isPresent() ? connectionCharsetId : ISCConstants.CS_NONE);
         Optional<Charset> textCharset = connectionCharset.isPresent() ? connectionCharset : findFieldCharset(field);
         if (!textCharset.isPresent()) {
             return text;
         }
         String result = decode(text, textCharset.get(), true);
-        return null == length ? result : truncate(result, length);
+        Optional<Integer> length = parameter.findColumnLength();
+        return length.isPresent() ? truncate(result, length.get()) : result;
     }
     
     private Optional<Charset> findFieldCharset(final FirebirdBatchColumnDescriptor field) {
-        return ISCConstants.BLOB_SUB_TYPE_TEXT == field.getSubType() ? findJavaCharset(getActualCharset(field.getScale())) : Optional.empty();
-    }
-    
-    private byte[] readText(final byte[] content, final FirebirdBatchColumnDescriptor field, final int charsetId) {
-        byte[] result = filter(content, field, charsetId);
-        ShardingSpherePreconditions.checkState(result.length <= MAX_STRING_LENGTH, BlobTruncationException::new);
-        return result;
-    }
-    
-    private String decode(final byte[] text, final Charset charset, final boolean wellFormed) {
-        CharsetDecoder decoder = charset.newDecoder().onMalformedInput(wellFormed ? CodingErrorAction.REPORT : CodingErrorAction.REPLACE)
-                .onUnmappableCharacter(CodingErrorAction.REPLACE).replaceWith(String.valueOf(Character.MIN_VALUE));
-        try {
-            return decoder.decode(ByteBuffer.wrap(text)).toString();
-        } catch (final CharacterCodingException ex) {
-            throw new MalformedStringException();
-        }
+        return ISCConstants.BLOB_SUB_TYPE_TEXT == field.getSubType() ? FirebirdBlobParameterBufferUtils.findJavaCharset(getFieldCharsetId(field)) : Optional.empty();
     }
     
     private String truncate(final String text, final int length) {
@@ -377,5 +317,65 @@ public final class FirebirdBlobParameterConverter {
             result *= 10;
         }
         return result;
+    }
+    
+    private Optional<Charset> findTextBlobCharset(final FirebirdBatchColumnDescriptor field, final FirebirdReturnColumnPacket parameter) {
+        Optional<Integer> parameterSubType = parameter.findBlobSubType();
+        boolean textBlobMove = ISCConstants.BLOB_SUB_TYPE_TEXT == field.getSubType() && parameterSubType.isPresent() && ISCConstants.BLOB_SUB_TYPE_TEXT == parameterSubType.get();
+        return textBlobMove ? FirebirdBlobParameterBufferUtils.findJavaCharset(getFieldCharsetId(field)) : Optional.empty();
+    }
+    
+    private int getFieldCharsetId(final FirebirdBatchColumnDescriptor field) {
+        return FirebirdBlobParameterBufferUtils.getActualCharset(field.getScale(), connectionCharsetId);
+    }
+    
+    private byte[] readText(final byte[] content, final FirebirdBatchColumnDescriptor field, final int charsetId) {
+        byte[] result = filter(content, field, charsetId);
+        ShardingSpherePreconditions.checkState(result.length <= MAX_STRING_LENGTH, BlobTruncationException::new);
+        return result;
+    }
+    
+    private byte[] filter(final byte[] content, final FirebirdBatchColumnDescriptor field, final int charsetId) {
+        int subType = field.getSubType();
+        if (ISCConstants.BLOB_SUB_TYPE_TEXT == subType) {
+            Optional<FirebirdBlobTransliterator> transliterator = FirebirdBlobParameterBufferUtils.createTextTransliterator(field.getScale(), charsetId, connectionCharsetId);
+            return transliterator.isPresent() ? transliterator.get().put(content) : content;
+        }
+        if (ISCConstants.CS_BINARY == charsetId) {
+            return content;
+        }
+        if (ISCConstants.BLOB_SUB_TYPE_BINARY == subType) {
+            return filterText(content);
+        }
+        throw FirebirdBlobParameterBufferUtils.hasInternalTextFilter(subType) ? new UnsupportedBlobFilterException() : new BlobFilterNotFoundException(subType, ISCConstants.BLOB_SUB_TYPE_TEXT);
+    }
+    
+    private byte[] filterText(final byte[] content) {
+        ByteArrayOutputStream result = new ByteArrayOutputStream(content.length);
+        for (byte each : content) {
+            if ('\n' != each) {
+                result.write(isPrintable(each) ? each : '.');
+            }
+        }
+        return result.toByteArray();
+    }
+    
+    private boolean isPrintable(final byte value) {
+        return value >= '\b' && value <= '\r' || value >= ' ' && value < Byte.MAX_VALUE;
+    }
+    
+    private String decode(final byte[] text, final Charset charset, final boolean wellFormed) {
+        CharsetDecoder decoder = wellFormed
+                ? wellFormedDecoders.computeIfAbsent(charset, each -> createDecoder(each, CodingErrorAction.REPORT))
+                : replacingDecoders.computeIfAbsent(charset, each -> createDecoder(each, CodingErrorAction.REPLACE));
+        try {
+            return decoder.reset().decode(ByteBuffer.wrap(text)).toString();
+        } catch (final CharacterCodingException ex) {
+            throw new MalformedStringException();
+        }
+    }
+    
+    private CharsetDecoder createDecoder(final Charset charset, final CodingErrorAction malformedInputAction) {
+        return charset.newDecoder().onMalformedInput(malformedInputAction).onUnmappableCharacter(CodingErrorAction.REPLACE).replaceWith(UNMAPPABLE_REPLACEMENT);
     }
 }

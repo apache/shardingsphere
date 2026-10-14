@@ -54,8 +54,9 @@ import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -99,10 +100,18 @@ class FirebirdFrontendEngineTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideHandleExceptionParameters")
-    void assertHandleException(final String testName, final boolean inTransaction, final boolean exceptionOccur, final Exception exception, final boolean expectedExceptionOccur) {
-        ConnectionContext connectionContext = mockConnectionSession(inTransaction, exceptionOccur);
+    void assertHandleException(final String testName, final boolean exceptionOccur, final Exception exception) {
+        ConnectionContext connectionContext = mockConnectionSession(true, exceptionOccur);
         engine.handleException(connectionSession, exception);
-        assertThat(connectionContext.getTransactionContext().isExceptionOccur(), is(expectedExceptionOccur));
+        assertTrue(connectionContext.getTransactionContext().isExceptionOccur());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideIgnoredExceptionParameters")
+    void assertHandleIgnoredException(final String testName, final boolean inTransaction, final Exception exception) {
+        ConnectionContext connectionContext = mockConnectionSession(inTransaction, false);
+        engine.handleException(connectionSession, exception);
+        assertFalse(connectionContext.getTransactionContext().isExceptionOccur());
     }
     
     private ConnectionContext mockConnectionSession(final boolean inTransaction, final boolean exceptionOccur) {
@@ -118,20 +127,22 @@ class FirebirdFrontendEngineTest {
     }
     
     private static Stream<Arguments> provideHandleExceptionParameters() {
+        return Stream.of(Arguments.of("mark when in transaction", false, new Exception("error")), Arguments.of("keep marked when already occurred", true, new Exception("error")));
+    }
+    
+    private static Stream<Arguments> provideIgnoredExceptionParameters() {
         return Stream.of(
-                Arguments.of("mark when in transaction", true, false, new Exception("error"), true),
-                Arguments.of("skip when in transaction exception", true, false, new InTransactionException(), false),
-                Arguments.of("skip when batch blob continuation bpb exception", true, false, new BatchBlobContinuationBpbException(4L), false),
-                Arguments.of("skip when batch bpb too big exception", true, false, new BatchBpbTooBigException(8L, 4L), false),
-                Arguments.of("skip when batch segment exceeds blob exception", true, false, new BatchSegmentExceedsBlobException(50, 10), false),
-                Arguments.of("skip when batch segment too big exception", true, false, new BatchSegmentTooBigException(50, 10), false),
-                Arguments.of("skip when batch small data exception", true, false, new BatchSmallDataException("BLOB"), false),
-                Arguments.of("skip when blob filter not found exception", true, false, new BlobFilterNotFoundException(0, 2), false),
-                Arguments.of("skip when invalid bpb version exception", true, false, new InvalidBpbVersionException(2, 1), false),
-                Arguments.of("skip when parameter conversion exception", true, false, new ParameterConversionException(new StringTruncationException(20, 32)), false),
-                Arguments.of("skip when transliteration failed exception", true, false, new TransliterationFailedException(), false),
-                Arguments.of("skip when unknown batch blob id exception", true, false, new UnknownBatchBlobIdException(1L), false),
-                Arguments.of("skip when not in transaction", false, false, new Exception("error"), false),
-                Arguments.of("keep marked when already occurred", true, true, new Exception("error"), true));
+                Arguments.of("skip when in transaction exception", true, new InTransactionException()),
+                Arguments.of("skip when batch blob continuation bpb exception", true, new BatchBlobContinuationBpbException(4L)),
+                Arguments.of("skip when batch bpb too big exception", true, new BatchBpbTooBigException(8L, 4L)),
+                Arguments.of("skip when batch segment exceeds blob exception", true, new BatchSegmentExceedsBlobException(50, 10)),
+                Arguments.of("skip when batch segment too big exception", true, new BatchSegmentTooBigException(50, 10)),
+                Arguments.of("skip when batch small data exception", true, new BatchSmallDataException("BLOB")),
+                Arguments.of("skip when blob filter not found exception", true, new BlobFilterNotFoundException(0, 2)),
+                Arguments.of("skip when invalid bpb version exception", true, new InvalidBpbVersionException(2, 1)),
+                Arguments.of("skip when parameter conversion exception", true, new ParameterConversionException(new StringTruncationException(20, 32))),
+                Arguments.of("skip when transliteration failed exception", true, new TransliterationFailedException()),
+                Arguments.of("skip when unknown batch blob id exception", true, new UnknownBatchBlobIdException(1L)),
+                Arguments.of("skip when not in transaction", false, new Exception("error")));
     }
 }

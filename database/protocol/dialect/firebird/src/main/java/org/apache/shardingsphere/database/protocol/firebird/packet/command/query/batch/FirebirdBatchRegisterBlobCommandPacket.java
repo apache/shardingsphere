@@ -20,10 +20,12 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 /**
  * Register an existing BLOB under a batch BLOB identifier.
  */
+@HighFrequencyInvocation
 @Getter
 public final class FirebirdBatchRegisterBlobCommandPacket extends FirebirdCommandPacket {
     

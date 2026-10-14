@@ -24,12 +24,16 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidClumpletStructureException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 /**
  * Firebird batch BLOB stream command packet.
  */
+@HighFrequencyInvocation
 @Getter
 public final class FirebirdBatchBlobStreamCommandPacket extends FirebirdCommandPacket {
+    
+    private static final int HEADER_LENGTH = 12;
     
     private final int statementHandle;
     
@@ -54,17 +58,19 @@ public final class FirebirdBatchBlobStreamCommandPacket extends FirebirdCommandP
      * <p>The declared stream length differs from the length of the packet, so the stream is read with the BLOB stream state left by the previous packets.</p>
      *
      * @param payload Firebird packet payload
-     * @param blobStream BLOB stream state of the batch, advanced to the end of the packet
-     * @return length of packet
-     * @throws IndexOutOfBoundsException when packet is incomplete
+     * @param blobStream BLOB stream state of the batch, advanced to the end of the packet if the packet is complete
+     * @return length of packet, or -1 if the packet is incomplete
      * @throws DatabaseProtocolException when stream portion is invalid
      * @throws InvalidClumpletStructureException when BLOB parameter buffer of stream portion has invalid structure
      * @throws InvalidBpbVersionException when BLOB parameter buffer of stream portion has wrong version
      */
     public static int getLength(final FirebirdPacketPayload payload, final FirebirdBatchBlobStream blobStream) {
-        int startReaderIndex = payload.getByteBuf().readerIndex();
+        ByteBuf data = payload.getByteBuf();
+        if (data.readableBytes() < HEADER_LENGTH) {
+            return -1;
+        }
+        int startReaderIndex = data.readerIndex();
         payload.skipReserved(8);
-        blobStream.skip(payload.getByteBuf(), payload.readInt4Unsigned());
-        return payload.getByteBuf().readerIndex() - startReaderIndex;
+        return blobStream.skip(data, payload.readInt4Unsigned()) ? data.readerIndex() - startReaderIndex : -1;
     }
 }

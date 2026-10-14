@@ -557,7 +557,7 @@ class FirebirdPacketCodecEngineTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidBlobStreamArguments")
-    void assertDecodeInvalidBlobStreamClosesChannelWithoutResponse(final String name, final ByteBuf blobStream) {
+    void assertDecodeWithInvalidBlobStream(final String name, final ByteBuf blobStream) {
         EmbeddedChannel channel = new EmbeddedChannel(new PacketCodec(new FirebirdPacketCodecEngine()));
         channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
         channel.writeInbound(blobStream);
@@ -574,16 +574,16 @@ class FirebirdPacketCodecEngineTest {
     }
     
     @Test
-    void assertDecodeInvalidSetBpbWritesErrorResponseAndClosesChannel() {
+    void assertDecodeWithInvalidSetBpb() {
         EmbeddedChannel channel = new EmbeddedChannel(new PacketCodec(new FirebirdPacketCodecEngine()));
         channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
         channel.writeInbound(Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_SET_BPB.getValue()).writeInt(BATCH_STATEMENT_HANDLE).writeInt(0));
         channel.runPendingTasks();
         assertNull(channel.readInbound());
-        ByteBuf encodedError = channel.readOutbound();
-        assertThat(encodedError.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
+        ByteBuf actual = channel.readOutbound();
+        assertThat(actual.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
         assertFalse(channel.isOpen());
-        encodedError.release();
+        actual.release();
     }
     
     private static ByteBuf buildBlobStream(final int length, final ByteBuf data) {

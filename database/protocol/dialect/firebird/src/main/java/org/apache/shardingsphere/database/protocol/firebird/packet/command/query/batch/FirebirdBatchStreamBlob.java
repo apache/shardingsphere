@@ -20,12 +20,14 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.io.ByteArrayOutputStream;
 
 /**
  * BLOB read from the BLOB buffer of a Firebird batch.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
 public final class FirebirdBatchStreamBlob {
