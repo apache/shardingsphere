@@ -21,6 +21,11 @@
 
 Apply this gate to every analysis or change that classifies code, dependencies, configuration, resources, test support, or another repository artifact as unused or removable.
 
+For a parameter of a private method or private constructor, or a private code helper, that was introduced by the current task and is proven absent from its original baseline, complete local production, test, build and registration consumer evidence may replace history and external-evidence checks only when it also proves that no public, dynamic, generated, packaging, runtime or external contract requires the artifact.
+This exception does not cover dependencies, registrations or whole-file removal.
+Record that proof and apply the remaining classification, verification, scope and deletion-authority requirements.
+For pre-existing artifacts or unresolved indirect or external use, apply the complete gate below.
+
 1. After a current-task edit removes or replaces a production call, behavior owner, registration, loading path, or package path, inspect the affected symbols for remaining production consumers. If only test consumers remain or no production consumer is found, apply every requirement in this gate. Compilation, passing tests, coverage, and a wrapper's dedicated test do not establish production use.
 2. Distinguish absence of direct references from complete unused evidence. A single text or regex search, or a production-only search, proves at most that no direct reference was found and cannot justify a removal recommendation.
 3. Inspect semantic and indirect consumers appropriate to the artifact, including method overrides, reflection, generated code, registrations, SPI and `ServiceLoader`, JDBC driver discovery, Maven scopes, profiles, plugins and transitive dependencies, build/test/runtime classpaths, test JARs, packaging and distributions, tests, E2E, and external consumers.

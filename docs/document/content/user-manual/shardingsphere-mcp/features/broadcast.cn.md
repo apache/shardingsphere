@@ -26,7 +26,7 @@ weight = 4
 - 广播表规划不需要算法推荐或算法属性要求。
 - 执行前先预览 workflow，执行后校验 Proxy 可见规则状态。
 
-规则变更的通用审查流程见[规则变更流程](../plugin-workflow/)。
+规则变更的通用审查流程见[规则变更流程](/cn/user-manual/shardingsphere-mcp/features/plugin-workflow/)。
 
 ## 限制
 

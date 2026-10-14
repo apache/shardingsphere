@@ -17,10 +17,20 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.standard;
 
+import lombok.Getter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.user.ExpectedUser;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Create user statement test case.
  */
+@Getter
 public final class CreateUserStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "user")
+    private final List<ExpectedUser> users = new LinkedList<>();
 }

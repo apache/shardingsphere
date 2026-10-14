@@ -378,7 +378,7 @@
                 
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-sharding-core</artifactId>
+                    <artifactId>shardingsphere-sharding-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -391,31 +391,31 @@
                 
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-broadcast-core</artifactId>
+                    <artifactId>shardingsphere-broadcast-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-readwrite-splitting-core</artifactId>
+                    <artifactId>shardingsphere-readwrite-splitting-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-shadow-core</artifactId>
+                    <artifactId>shardingsphere-shadow-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-encrypt-core</artifactId>
+                    <artifactId>shardingsphere-encrypt-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-mask-core</artifactId>
+                    <artifactId>shardingsphere-mask-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -610,7 +610,7 @@
                 
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-sharding-core</artifactId>
+                    <artifactId>shardingsphere-sharding-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -623,31 +623,31 @@
                 
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-broadcast-core</artifactId>
+                    <artifactId>shardingsphere-broadcast-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-readwrite-splitting-core</artifactId>
+                    <artifactId>shardingsphere-readwrite-splitting-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-shadow-core</artifactId>
+                    <artifactId>shardingsphere-shadow-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-encrypt-core</artifactId>
+                    <artifactId>shardingsphere-encrypt-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-mask-core</artifactId>
+                    <artifactId>shardingsphere-mask-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -923,7 +923,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-sharding-core</artifactId>
+                    <artifactId>shardingsphere-sharding-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -934,7 +934,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-sharding-core</artifactId>
+                    <artifactId>shardingsphere-sharding-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -952,7 +952,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-broadcast-core</artifactId>
+                    <artifactId>shardingsphere-broadcast-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -963,7 +963,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-readwrite-splitting-core</artifactId>
+                    <artifactId>shardingsphere-readwrite-splitting-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -974,7 +974,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-shadow-core</artifactId>
+                    <artifactId>shardingsphere-shadow-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -985,7 +985,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-encrypt-core</artifactId>
+                    <artifactId>shardingsphere-encrypt-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -996,7 +996,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-mask-core</artifactId>
+                    <artifactId>shardingsphere-mask-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>

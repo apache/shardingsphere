@@ -33,24 +33,30 @@ import java.util.Properties;
  */
 public final class HiveConnectionPropertiesParser implements ConnectionPropertiesParser {
     
-    @SneakyThrows({ZooKeeperHiveClientException.class, JdbcUriParseException.class, SQLException.class})
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
-        JdbcConnectionParams params = Utils.parseURL(url, new Properties());
-        if (null == params.getHost() && 0 == params.getPort()) {
-            throw new RuntimeException("HiveServer2 in embedded mode has been deprecated by Apache Hive, "
-                    + "See https://issues.apache.org/jira/browse/HIVE-28418 . "
-                    + "Users should start local HiveServer2 through Docker Image https://hub.docker.com/r/apache/hive .");
-        }
-        Properties queryProps = new Properties();
-        queryProps.putAll(params.getSessionVars());
-        queryProps.putAll(params.getHiveConfs());
-        queryProps.putAll(params.getHiveVars());
-        return new ConnectionProperties(params.getHost(), params.getPort(), params.getDbName(), null, queryProps);
+        return HiveJdbcUrlParser.parse(url);
     }
     
     @Override
     public String getDatabaseType() {
         return "Hive";
+    }
+    
+    private static final class HiveJdbcUrlParser {
+        
+        @SneakyThrows({ZooKeeperHiveClientException.class, JdbcUriParseException.class, SQLException.class})
+        private static ConnectionProperties parse(final String url) {
+            JdbcConnectionParams params = Utils.parseURL(url, new Properties());
+            if (null == params.getHost() && 0 == params.getPort()) {
+                throw new RuntimeException("HiveServer2 in embedded mode has been deprecated by Apache Hive, See https://issues.apache.org/jira/browse/HIVE-28418 . "
+                        + "Users should start local HiveServer2 through Docker Image https://hub.docker.com/r/apache/hive .");
+            }
+            Properties queryProps = new Properties();
+            queryProps.putAll(params.getSessionVars());
+            queryProps.putAll(params.getHiveConfs());
+            queryProps.putAll(params.getHiveVars());
+            return new ConnectionProperties(params.getHost(), params.getPort(), params.getDbName(), null, queryProps);
+        }
     }
 }

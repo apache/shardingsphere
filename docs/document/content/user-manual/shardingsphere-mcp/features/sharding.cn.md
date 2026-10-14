@@ -29,7 +29,7 @@ weight = 7
 - 执行 workflow 前，确认返回的 `plan_id`、`resources_to_read`、`next_actions` 和 `distsql_artifacts`。
 - 执行前先预览 workflow，执行后校验 Proxy 可见规则状态。
 
-规则变更的通用审查流程见[规则变更流程](../plugin-workflow/)。
+规则变更的通用审查流程见[规则变更流程](/cn/user-manual/shardingsphere-mcp/features/plugin-workflow/)。
 
 ## 限制
 

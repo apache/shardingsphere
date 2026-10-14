@@ -97,7 +97,13 @@ build_matrix() {
      else []
      end) as $extra_job |
 
-    {include: ($base_jobs + $extra_job)}
+    (if $include_extra_job and ($adapters | index("jdbc")) != null and
+       ($modes | index("Standalone")) != null and ($scenarios | index("distsql_rdl")) != null
+     then [{adapter:"jdbc", mode:"Standalone", database:"H2", scenario:"distsql_rdl_empty", "additional-options":""}]
+     else []
+     end) as $distsql_bootstrap_job |
+
+    {include: ($base_jobs + $extra_job + $distsql_bootstrap_job)}
     '
 }
 

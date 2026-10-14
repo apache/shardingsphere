@@ -19,17 +19,18 @@ name: Nightly - Check
 
 on:
   schedule:
-    - cron: '0 23 * * 1-5' # Once a day between Monday and Friday. UTC time
+    - cron: '0 17 * * *' # Daily at 01:00 Asia/Shanghai (17:00 UTC).
   workflow_dispatch:
 
 concurrency:
-  group: nightly-check-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 env:
+  MAVEN_ARGS: -B -ntp -fae -e
   MAVEN_OPTS: -Dhttp.keepAlive=false
 
 jobs:
@@ -44,10 +45,8 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
-        with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Run SpotBugs
         run: ./mvnw clean install spotbugs:check -Pcheck -T1C
 
@@ -56,14 +55,15 @@ jobs:
     name: Check - Dead Links
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - run: sudo npm install -g markdown-link-check@3.10.0
       - name: Check dead link
         run: |
           IGNORED_PATH_LIST=("./docs/document/themes" "./docs/community/content/powered-by" "./docs/blog/content/material" "./docs/blog/themes" "./docs/community/themes")
           ignore_current_file=false
+          result=0
 
           for file in $(find . -name "*.md"); do
             for ignored_path in ${IGNORED_PATH_LIST[@]}
@@ -78,8 +78,9 @@ jobs:
             continue
           fi
           echo "Checking $file"
-          markdown-link-check -c .github/workflows/resources/linkcheck/markdown-link-check.json -q "$file"
+          markdown-link-check -c .github/workflows/resources/linkcheck/markdown-link-check.json -q "$file" || result=1
           done
+          exit "$result"
 
   check-codeql:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
@@ -92,17 +93,15 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
-        with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: java
       - name: Install Project
         run: |
-          ./mvnw clean install -DskipTests -B -ntp -T1C
+          ./mvnw clean install -DskipTests -T1C
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
@@ -139,10 +138,8 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
-        with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Run Dependency Convergence Check
         run: |
           sed -i '/<requireMavenVersion>/i \                                    <dependencyConvergence/>' pom.xml
@@ -155,10 +152,8 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
-        with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Run OWASP Check
         # https://nvd.nist.gov/developers/request-an-api-key
         run: ./mvnw clean dependency-check:aggregate -DnvdApiKey=${{ secrets.NIST_NVD_API_KEY }}
@@ -171,21 +166,54 @@ jobs:
 
   check-and-report-jacoco:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    name: Check - Jacoco
+    name: Schedule - Jacoco report
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
-    timeout-minutes: 80
+    timeout-minutes: 60
+    outputs:
+      report-outcome: ${{ steps.upload-jacoco-report.outcome }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
       - name: Install Project
         run: ./mvnw clean install -DskipTests -T1C
       - name: Build with maven and execute jacoco aggregation script
         run: |
-          ./mvnw -V -B -ntp verify -Djacoco.skip=false -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
+          ./mvnw -V verify -Djacoco.skip=false -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
           chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh &&
           ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
+      - name: Upload coverage reports to codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ${{ github.workspace }}/target/mergeReport/jacoco.xml
       - uses: actions/upload-artifact@v6
+        id: upload-jacoco-report
         with:
           name: jacoco-report
           path: ${{ github.workspace }}/target/mergeReport/jacoco
+      - name: Verify MCP Coverage
+        run: ./mvnw -f mcp/pom.xml jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false -Djacoco.check.class.pattern='org.apache.shardingsphere.mcp.*'
+
+  check-and-report-sonarcloud:
+    if: ${{ !cancelled() && github.repository == 'apache/shardingsphere' && needs.check-and-report-jacoco.outputs.report-outcome == 'success' }}
+    name: Schedule - SonarCloud report
+    needs:
+      - global-environment
+      - check-and-report-jacoco
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/setup-build-environment
+      - uses: actions/cache@v5.0.1
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Analyze with SonarCloud
+        env:
+          MAVEN_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+        run: ./mvnw clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=apache_shardingsphere -DskipTests

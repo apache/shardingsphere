@@ -115,7 +115,7 @@ class ShardingRuleConfigurationTest {
     void assertValidateMalformedDataNodes() {
         ShardingRuleConfiguration ruleConfig = createRuleConfiguration(new ShardingTableRuleConfiguration("foo_tbl", "malformed"));
         RuleConfigurationValidationException actual = assertThrows(RuleConfigurationValidationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
-        assertThat(actual.getMessage(), is("Can not validate 'ShardingRuleConfiguration' rule configuration.\n"
+        assertThat(actual.getMessage(), is("Can not validate 'ShardingRuleConfiguration' rule configuration." + System.lineSeparator()
                 + "More details: javax.validation.ValidationException: org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException: "
                 + "Invalid format for actual data node 'malformed'."));
         assertThat(actual.getCause(), isA(ValidationException.class));

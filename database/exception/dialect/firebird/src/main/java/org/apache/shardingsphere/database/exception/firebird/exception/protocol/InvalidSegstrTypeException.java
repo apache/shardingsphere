@@ -15,10 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.context;
+package org.apache.shardingsphere.database.exception.firebird.exception.protocol;
+
+import lombok.Getter;
+import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 
 /**
- * Route stage context.
+ * Invalid BLOB type exception for Firebird.
  */
-public interface RouteStageContext {
+@Getter
+public final class InvalidSegstrTypeException extends SQLDialectException {
+    
+    private static final long serialVersionUID = -8377291875421953215L;
+    
+    private final int blobHandle;
+    
+    public InvalidSegstrTypeException(final int blobHandle) {
+        super(String.format("Invalid BLOB type for operation on BLOB with handle: %d", blobHandle));
+        this.blobHandle = blobHandle;
+    }
 }
