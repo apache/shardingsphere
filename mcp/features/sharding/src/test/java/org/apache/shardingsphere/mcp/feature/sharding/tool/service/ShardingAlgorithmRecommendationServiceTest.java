@@ -26,6 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,7 @@ class ShardingAlgorithmRecommendationServiceTest {
                                                     final List<String> expectedIssueCodes) {
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setKeyGeneratorType(keyGeneratorType);
-        List<WorkflowIssue> issues = new LinkedList<>();
+        List<WorkflowIssue> issues = new ArrayList<>(expectedIssueCodes.size());
         List<AlgorithmCandidate> actual = service.recommend(request, algorithms, keyGenerators, includeSharding, true, issues);
         assertThat(actual.stream().map(AlgorithmCandidate::getAlgorithmType).toList(), is(expectedTypes));
         assertThat(issues.stream().map(WorkflowIssue::getCode).toList(), is(expectedIssueCodes));

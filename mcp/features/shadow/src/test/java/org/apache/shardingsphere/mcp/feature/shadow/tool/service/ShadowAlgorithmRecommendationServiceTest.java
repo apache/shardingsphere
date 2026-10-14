@@ -49,7 +49,7 @@ class ShadowAlgorithmRecommendationServiceTest {
         assertThat(actual.getFirst().getRecommendationReason(), is(expectedReason));
     }
     
-    static Stream<Arguments> assertRecommendAlgorithmCases() {
+    private static Stream<Arguments> assertRecommendAlgorithmCases() {
         return Stream.of(
                 Arguments.of("specified algorithm", "value_match", List.of(Map.of("type", "VALUE_MATCH")), "VALUE_MATCH", "User specified shadow algorithm."),
                 Arguments.of("default algorithm", "", List.of(Map.of("type", "VALUE_MATCH"), Map.of("type", "SQL_HINT")), "SQL_HINT",

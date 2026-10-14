@@ -50,7 +50,7 @@ class ReadwriteSplittingAlgorithmRecommendationServiceTest {
         assertThat(actual.getFirst().getRecommendationReason(), is(expectedReason));
     }
     
-    static Stream<Arguments> assertRecommendAlgorithmCases() {
+    private static Stream<Arguments> assertRecommendAlgorithmCases() {
         return Stream.of(
                 Arguments.of("specified algorithm", "round_robin", List.of(Map.of("type", "ROUND_ROBIN")), "ROUND_ROBIN", "User specified load-balance algorithm."),
                 Arguments.of("default algorithm", "", List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN")), "ROUND_ROBIN",

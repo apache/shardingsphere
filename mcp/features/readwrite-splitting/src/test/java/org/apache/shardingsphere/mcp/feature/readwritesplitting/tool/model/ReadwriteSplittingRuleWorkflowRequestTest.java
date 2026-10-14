@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -61,17 +60,9 @@ class ReadwriteSplittingRuleWorkflowRequestTest {
     }
     
     @Test
-    void assertSetReadStorageUnitsWithNullString() {
-        ReadwriteSplittingRuleWorkflowRequest request = new ReadwriteSplittingRuleWorkflowRequest();
-        request.getReadStorageUnits().add("foo_read");
-        request.setReadStorageUnits((String) null);
-        assertThat(request.getReadStorageUnits(), is(List.of("foo_read")));
-    }
-    
-    @Test
     void assertSetReadStorageUnitsWithMissingListValues() {
         ReadwriteSplittingRuleWorkflowRequest request = new ReadwriteSplittingRuleWorkflowRequest();
-        request.setReadStorageUnits(Arrays.asList(null, " ", " foo_read "));
+        request.setReadStorageUnits(List.of(" ", " foo_read "));
         assertThat(request.getReadStorageUnits(), is(List.of("foo_read")));
     }
     

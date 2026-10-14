@@ -41,6 +41,10 @@ class MCPToolOutputSchemaValidatorTest {
         assertThat(actual.getMessage(), is(expectedMessage));
     }
     
+    private MCPToolDescriptor createDescriptor(final Map<String, Object> outputSchema) {
+        return new MCPToolDescriptor("database_gateway_test_tool", "Test Tool", "Run a test tool.", Map.of(), outputSchema, MCPToolAnnotations.builder().build(), Map.of());
+    }
+    
     private static Collection<Arguments> invalidOutputSchemas() {
         return List.of(
                 Arguments.of("wrong schema type", Map.of("type", "array"), "Tool `database_gateway_test_tool` outputSchema must be an object."),
@@ -89,10 +93,6 @@ class MCPToolOutputSchemaValidatorTest {
     
     private static Map<String, Object> createNextActionsSchema(final Map<String, Object> props) {
         return Map.of("type", "array", "description", "Next steps.", "items", Map.of("type", "object", "properties", props));
-    }
-    
-    private MCPToolDescriptor createDescriptor(final Map<String, Object> outputSchema) {
-        return new MCPToolDescriptor("database_gateway_test_tool", "Test Tool", "Run a test tool.", Map.of(), outputSchema, MCPToolAnnotations.builder().build(), Map.of());
     }
     
     @Test

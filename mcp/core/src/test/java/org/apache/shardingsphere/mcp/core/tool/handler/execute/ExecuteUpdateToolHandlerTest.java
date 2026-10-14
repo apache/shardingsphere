@@ -77,7 +77,7 @@ class ExecuteUpdateToolHandlerTest {
         }
     }
     
-    static Stream<Arguments> previewSideEffectCases() {
+    private static Stream<Arguments> previewSideEffectCases() {
         return Stream.of(
                 Arguments.of("privilege metadata", "GRANT SELECT ON foo_table TO foo_user", SupportedMCPStatement.DCL, "GRANT", "", "dcl", "privilege-metadata"),
                 Arguments.of("transaction state", "BEGIN", SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "", "transaction_control", "transaction-state"),

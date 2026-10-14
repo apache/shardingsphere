@@ -173,7 +173,7 @@ import static org.mockito.Mockito.when;
 class MCPSQLExecutionFacadeTest {
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource({"parsedNamespaceStatements", "parsedExpressionStatements", "parsedXmlStatements"})
+    @MethodSource({"parsedNamespaceStatements", "parsedExpressionStatements", "parsedXMLStatements"})
     void assertExecuteWithParsedCrossSchemaObjects(final String name, final String databaseType, final String sql, final SQLStatement statement, final String expectedObject) {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
@@ -239,27 +239,22 @@ class MCPSQLExecutionFacadeTest {
         return result;
     }
     
+    private static SelectStatement selectExpression(final DatabaseType databaseType, final ExpressionSegment expression) {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ExpressionProjectionSegment(0, 0, expression.getText(), expression));
+        return SelectStatement.builder().databaseType(databaseType).projections(projections).build();
+    }
+    
+    private static FunctionSegment createForeignFunction() {
+        FunctionSegment result = new FunctionSegment(0, 0, "foo_read", "other_db.foo_read()");
+        result.setOwner(new OwnerSegment(0, 0, new IdentifierValue("other_db")));
+        return result;
+    }
+    
     private static ProjectionsSegment starProjection() {
         ProjectionsSegment result = new ProjectionsSegment(0, 0);
         result.getProjections().add(new ShorthandProjectionSegment(0, 0));
         return result;
-    }
-    
-    @Test
-    void assertExecuteWithMissingStatementVisitor() {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
-        MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
-        MCPDatabaseCapability capability = mock(MCPDatabaseCapability.class);
-        when(capability.getDatabaseType()).thenReturn("MySQL");
-        when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
-        mockSessionLock(coordinator);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), mock(MCPJdbcStatementExecutor.class));
-        try (MockedStatic<DatabaseTypedSPILoader> mocked = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
-            mocked.when(() -> DatabaseTypedSPILoader.findService(SQLStatementVisitorFacade.class, databaseType)).thenReturn(Optional.empty());
-            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> facade.execute(createExecutionRequest("SELECT 1")));
-            assertThat(actual.getMessage(), is("SQL parser is not available for database type `MySQL`."));
-        }
     }
     
     private static Stream<Arguments> parsedExpressionStatements() {
@@ -284,8 +279,7 @@ class MCPSQLExecutionFacadeTest {
         RowExpression comparisonRow = new RowExpression(0, 0, "(1, 1)");
         comparisonRow.getItems().addAll(List.of(literal, literal));
         FunctionSegment datetimeFunction = new FunctionSegment(0, 0, "COALESCE", "COALESCE(other_db.foo_read() AT TIME ZONE 'UTC', NULL)");
-        datetimeFunction.getParameters().add(new DatetimeExpression(0, 0, function,
-                new ExpressionProjectionSegment(0, 0, "'UTC'", new LiteralExpressionSegment(0, 0, "UTC")), "AT TIME ZONE"));
+        datetimeFunction.getParameters().add(new DatetimeExpression(0, 0, function, new ExpressionProjectionSegment(0, 0, "'UTC'", new LiteralExpressionSegment(0, 0, "UTC")), "AT TIME ZONE"));
         datetimeFunction.getParameters().add(new LiteralExpressionSegment(0, 0, null));
         ValuesExpression values = new ValuesExpression(0, 0);
         values.getRowConstructorList().add(new InsertValuesSegment(0, 0, List.of(function)));
@@ -330,19 +324,7 @@ class MCPSQLExecutionFacadeTest {
                         "other_db.foo_read"));
     }
     
-    private static FunctionSegment createForeignFunction() {
-        FunctionSegment result = new FunctionSegment(0, 0, "foo_read", "other_db.foo_read()");
-        result.setOwner(new OwnerSegment(0, 0, new IdentifierValue("other_db")));
-        return result;
-    }
-    
-    private static SelectStatement selectExpression(final DatabaseType databaseType, final ExpressionSegment expression) {
-        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
-        projections.getProjections().add(new ExpressionProjectionSegment(0, 0, expression.getText(), expression));
-        return SelectStatement.builder().databaseType(databaseType).projections(projections).build();
-    }
-    
-    private static Stream<Arguments> parsedXmlStatements() {
+    private static Stream<Arguments> parsedXMLStatements() {
         DatabaseType oracle = TypedSPILoader.getService(DatabaseType.class, "Oracle");
         FunctionSegment function = createForeignFunction();
         LiteralExpressionSegment literal = new LiteralExpressionSegment(0, 0, "foo");
@@ -386,7 +368,7 @@ class MCPSQLExecutionFacadeTest {
         try (
                 MockedConstruction<ShardingSphereSQLParserEngine> ignored = mockConstruction(ShardingSphereSQLParserEngine.class,
                         (mock, context) -> when(mock.parse(anyString(), eq(false))).thenReturn(statement))) {
-            assertThat(facade.execute(request), is(expectedResult));
+            assertThat(facade.execute(request), sameInstance(expectedResult));
             ArgumentCaptor<ClassificationResult> actual = ArgumentCaptor.forClass(ClassificationResult.class);
             verify(statementExecutor).execute(eq(request), actual.capture(), eq(capability));
             assertThat(actual.getValue().getReferencedObjects().stream().map(SQLStatementObjectName::getObjectName).collect(Collectors.toSet()), hasItems(expectedObjects.toArray(new String[0])));
@@ -445,6 +427,16 @@ class MCPSQLExecutionFacadeTest {
                         SelectStatement.builder().databaseType(oracle).projections(interval).build(), Set.of("logic_db.foo_interval_left", "logic_db.foo_interval_right")));
     }
     
+    private static FunctionSegment createCurrentFunction(final String name) {
+        FunctionSegment result = new FunctionSegment(0, 0, name, "logic_db." + name + "()");
+        result.setOwner(new OwnerSegment(0, 0, new IdentifierValue("logic_db")));
+        return result;
+    }
+    
+    private static OrderBySegment expressionOrder(final ExpressionSegment expression) {
+        return new OrderBySegment(0, 0, List.of(new ExpressionOrderByItemSegment(0, 0, expression.getText(), OrderDirection.ASC, NullsOrderType.FIRST, expression)));
+    }
+    
     private static Stream<Arguments> parsedDMLClauses() {
         DatabaseType mysql = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         DatabaseType postgresql = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
@@ -460,8 +452,7 @@ class MCPSQLExecutionFacadeTest {
         exec.getExpressionSegments().add(new LiteralExpressionSegment(0, 0, 1));
         InsertStatement insertExec = InsertStatement.builder().databaseType(sqlserver).table(table).exec(exec).output(output("foo_output")).build();
         MultiTableInsertIntoSegment multi = new MultiTableInsertIntoSegment(0, 0);
-        multi.getInsertStatements().add(InsertStatement.builder().databaseType(oracle).table(table)
-                .values(List.of(new InsertValuesSegment(0, 0, List.of(createCurrentFunction("foo_all"))))).build());
+        multi.getInsertStatements().add(InsertStatement.builder().databaseType(oracle).table(table).values(List.of(new InsertValuesSegment(0, 0, List.of(createCurrentFunction("foo_all"))))).build());
         MultiTableConditionalIntoSegment conditional = new MultiTableConditionalIntoSegment(0, 0);
         conditional.getWhenThenSegments().add(new MultiTableConditionalIntoWhenThenSegment(0, 0, createCurrentFunction("foo_when"), new MultiTableConditionalIntoThenSegment(0, 0,
                 List.of(InsertStatement.builder().databaseType(oracle).table(table).values(List.of(new InsertValuesSegment(0, 0, List.of(createCurrentFunction("foo_then"))))).build()))));
@@ -502,6 +493,22 @@ class MCPSQLExecutionFacadeTest {
                         Set.of("logic_db.foo_orders", "logic_db.foo_returning")),
                 Arguments.of("delete output", "SQLServer", "DELETE FROM logic_db.foo_orders OUTPUT logic_db.foo_output()",
                         DeleteStatement.builder().databaseType(sqlserver).table(table).output(output("foo_output")).build(), Set.of("logic_db.foo_orders", "logic_db.foo_output")));
+    }
+    
+    private static SetAssignmentSegment assignment(final String functionName) {
+        return new SetAssignmentSegment(0, 0, List.of(new ColumnAssignmentSegment(0, 0, List.of(new ColumnSegment(0, 0, new IdentifierValue("foo_value"))), createCurrentFunction(functionName))));
+    }
+    
+    private static ProjectionsSegment expressionProjection(final ExpressionSegment expression) {
+        ProjectionsSegment result = new ProjectionsSegment(0, 0);
+        result.getProjections().add(new ExpressionProjectionSegment(0, 0, expression.getText(), expression));
+        return result;
+    }
+    
+    private static OutputSegment output(final String functionName) {
+        OutputSegment result = new OutputSegment(0, 0);
+        result.setOutputColumns(expressionProjection(createCurrentFunction(functionName)));
+        return result;
     }
     
     private static Stream<Arguments> parsedMergeClauses() {
@@ -552,30 +559,21 @@ class MCPSQLExecutionFacadeTest {
                         Set.of("logic_db.foo_orders", "logic_db.foo_where", "logic_db.foo_group", "logic_db.foo_having", "logic_db.foo_order")));
     }
     
-    private static SetAssignmentSegment assignment(final String functionName) {
-        return new SetAssignmentSegment(0, 0, List.of(new ColumnAssignmentSegment(0, 0, List.of(new ColumnSegment(0, 0, new IdentifierValue("foo_value"))), createCurrentFunction(functionName))));
-    }
-    
-    private static ProjectionsSegment expressionProjection(final ExpressionSegment expression) {
-        ProjectionsSegment result = new ProjectionsSegment(0, 0);
-        result.getProjections().add(new ExpressionProjectionSegment(0, 0, expression.getText(), expression));
-        return result;
-    }
-    
-    private static OutputSegment output(final String functionName) {
-        OutputSegment result = new OutputSegment(0, 0);
-        result.setOutputColumns(expressionProjection(createCurrentFunction(functionName)));
-        return result;
-    }
-    
-    private static FunctionSegment createCurrentFunction(final String name) {
-        FunctionSegment result = new FunctionSegment(0, 0, name, "logic_db." + name + "()");
-        result.setOwner(new OwnerSegment(0, 0, new IdentifierValue("logic_db")));
-        return result;
-    }
-    
-    private static OrderBySegment expressionOrder(final ExpressionSegment expression) {
-        return new OrderBySegment(0, 0, List.of(new ExpressionOrderByItemSegment(0, 0, expression.getText(), OrderDirection.ASC, NullsOrderType.FIRST, expression)));
+    @Test
+    void assertExecuteWithMissingStatementVisitor() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
+        MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
+        MCPDatabaseCapability capability = mock(MCPDatabaseCapability.class);
+        when(capability.getDatabaseType()).thenReturn("MySQL");
+        when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
+        mockSessionLock(coordinator);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), mock(MCPJdbcStatementExecutor.class));
+        try (MockedStatic<DatabaseTypedSPILoader> mocked = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
+            mocked.when(() -> DatabaseTypedSPILoader.findService(SQLStatementVisitorFacade.class, databaseType)).thenReturn(Optional.empty());
+            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> facade.execute(createExecutionRequest("SELECT 1")));
+            assertThat(actual.getMessage(), is("SQL parser is not available for database type `MySQL`."));
+        }
     }
     
     @ParameterizedTest(name = "{0}")
@@ -689,7 +687,7 @@ class MCPSQLExecutionFacadeTest {
         try (
                 MockedConstruction<ShardingSphereSQLParserEngine> ignored = mockConstruction(ShardingSphereSQLParserEngine.class,
                         (mock, context) -> when(mock.parse(anyString(), eq(false))).thenReturn(statement))) {
-            assertThat(facade.execute(request), is(expectedResult));
+            assertThat(facade.execute(request), sameInstance(expectedResult));
             ArgumentCaptor<ClassificationResult> actual = ArgumentCaptor.forClass(ClassificationResult.class);
             verify(statementExecutor).execute(eq(request), actual.capture(), eq(capability));
             assertThat(actual.getValue().getStatementClass(), is(SupportedMCPStatement.QUERY));
@@ -714,7 +712,8 @@ class MCPSQLExecutionFacadeTest {
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         mockSessionLock(coordinator);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), statementExecutor);
+        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "", List.of(), false);
+        MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, mock(MCPJdbcTransactionStatementExecutor.class), statementExecutor, createMCPStatementAnalyzer(classification));
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> facade.executeExplain(createExecutionRequest(sql), "SELECT 1"));
         assertThat(actual.getMessage(), is("explain_sql must start with EXPLAIN."));
         verifyNoInteractions(statementExecutor);

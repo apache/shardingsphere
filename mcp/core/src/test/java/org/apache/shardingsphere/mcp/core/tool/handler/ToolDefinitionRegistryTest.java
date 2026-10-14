@@ -49,15 +49,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -79,7 +81,7 @@ class ToolDefinitionRegistryTest {
     @MethodSource("registrationFailureCases")
     @SuppressWarnings("unchecked")
     void assertGetSupportedToolDescriptorsWithInvalidRegistration(final String name, final Collection<String> toolNames, final String expectedMessage) {
-        Collection<MCPToolHandler<?>> handlers = new LinkedList<>();
+        Collection<MCPToolHandler<?>> handlers = new ArrayList<>(toolNames.size());
         for (String each : toolNames) {
             MCPToolHandler<MCPFeatureRequestContext> handler = mock(MCPToolHandler.class);
             when(handler.getToolName()).thenReturn(each);
@@ -94,12 +96,12 @@ class ToolDefinitionRegistryTest {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(handlerProvider));
             Class<?> registryClass = assertDoesNotThrow(() -> Class.forName(ToolDefinitionRegistry.class.getName(), false, createIsolatedToolDefinitionRegistryClassLoader()));
             InvocationTargetException actual = assertThrows(InvocationTargetException.class, () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedToolDescriptors"), null));
-            assertThat(actual.getCause().getClass(), is(ExceptionInInitializerError.class));
+            assertThat(actual.getCause(), isA(ExceptionInInitializerError.class));
             assertThat(actual.getCause().getCause().getMessage(), is(String.format(expectedMessage, handlers.iterator().next().getClass().getName())));
         }
     }
     
-    static Stream<Arguments> registrationFailureCases() {
+    private static Stream<Arguments> registrationFailureCases() {
         return Stream.of(
                 Arguments.of("empty tool name", List.of(""), "Tool name is required for `%1$s`."),
                 Arguments.of("duplicate tool name", List.of("database_gateway_search_metadata", "database_gateway_search_metadata"),
@@ -122,11 +124,11 @@ class ToolDefinitionRegistryTest {
         MCPSuccessPayload expected = mock(MCPSuccessPayload.class);
         when(handler.handle(context, args)).thenReturn(expected);
         MCPSuccessPayload actual = ToolDefinitionRegistry.dispatch(context, new MCPToolDefinition(descriptor, handler), args);
-        assertThat(actual, is(expected));
+        assertThat(actual, sameInstance(expected));
         verify(handler).handle(context, args);
     }
     
-    static Stream<Arguments> validArgumentCases() {
+    private static Stream<Arguments> validArgumentCases() {
         return Stream.of(
                 Arguments.of("byte integer", Map.of("type", "integer"), (byte) 1),
                 Arguments.of("short integer", Map.of("type", "integer"), (short) 2),
@@ -152,7 +154,7 @@ class ToolDefinitionRegistryTest {
         assertThat(actual.getMaximumValue(), is(10));
     }
     
-    static Stream<Arguments> integerRangeCases() {
+    private static Stream<Arguments> integerRangeCases() {
         return Stream.of(
                 Arguments.of("below minimum", Map.of("type", "integer", "minimum", 0, "maximum", 10), -1, 0),
                 Arguments.of("above maximum", Map.of("type", "integer", "minimum", 0, "maximum", 10), BigInteger.valueOf(Long.MAX_VALUE), 10),
@@ -172,7 +174,7 @@ class ToolDefinitionRegistryTest {
         assertTrue(actual.getSuggestedArguments().isEmpty());
     }
     
-    static Stream<Arguments> requiredNestedArgumentCases() {
+    private static Stream<Arguments> requiredNestedArgumentCases() {
         return Stream.of(
                 Arguments.of("array item", Map.of("type", "array", "items", Map.of("type", "integer")), List.of("foo_text"), "foo_value[0]"),
                 Arguments.of("object in array", Map.of("type", "array", "items", Map.of("type", "object", "properties", Map.of("foo_key", Map.of("type", "boolean")))),
@@ -192,7 +194,7 @@ class ToolDefinitionRegistryTest {
         assertThat(actual.getSuggestedArguments(), is(expectedSuggestion));
     }
     
-    static Stream<Arguments> safeExecutionModeCases() {
+    private static Stream<Arguments> safeExecutionModeCases() {
         return Stream.of(
                 Arguments.of("manual review", Map.of("type", "string", "enum", List.of("execute", "manual-only")), Map.of("execution_mode", "manual-only")),
                 Arguments.of("first declared mode", Map.of("type", "string", "enum", List.of("execute")), Map.of("execution_mode", "execute")),

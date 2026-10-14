@@ -91,7 +91,7 @@ class MCPErrorConverterTest {
         assertThat(actualNextAction.get("required_inputs"), is(List.of("foo_field")));
     }
     
-    static Stream<Arguments> argumentContractRecoveryCases() {
+    private static Stream<Arguments> argumentContractRecoveryCases() {
         return Stream.of(
                 Arguments.of("unknown argument", "unknown_argument", "", "foo_field is not a supported argument for foo_tool.",
                         "Remove arguments that are not declared by the tool inputSchema before retrying."),
@@ -114,7 +114,7 @@ class MCPErrorConverterTest {
         assertThat(Objects.toString(actualNextAction.get("resource_uri"), ""), is(expectedResource));
     }
     
-    static Stream<Arguments> missingArgumentRecoveryCases() {
+    private static Stream<Arguments> missingArgumentRecoveryCases() {
         return Stream.of(
                 Arguments.of("workflow identifier", "plan_id", "shardingsphere://capabilities", "resource_read"),
                 Arguments.of("SQL text", "sql", "", "ask_user"),

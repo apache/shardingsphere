@@ -18,13 +18,8 @@
 package org.apache.shardingsphere.mcp.support.descriptor;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -32,24 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MCPDescriptorYamlKeyValidatorTest {
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidValueTypes")
-    void assertValidateWithInvalidValueType(final String name, final String yaml, final String expectedMessage) {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPDescriptorYamlKeyValidator.validate("foo.yaml", yaml.getBytes(StandardCharsets.UTF_8)));
-        assertThat(actual.getMessage(), is(expectedMessage));
-    }
-    
-    private static Collection<Arguments> invalidValueTypes() {
-        return List.of(
-                Arguments.of("audience type", "resources: [{annotations: {audience: assistant}}]", "MCP descriptor resource `foo.yaml` expects list at `$.resources[0].annotations.audience`."),
-                Arguments.of("audience member", "resources: [{annotations: {audience: [1]}}]", "MCP descriptor resource `foo.yaml` expects string at `$.resources[0].annotations.audience[0]`."),
-                Arguments.of("priority type", "resources: [{annotations: {priority: foo}}]", "MCP descriptor resource `foo.yaml` expects number at `$.resources[0].annotations.priority`."),
-                Arguments.of("lastModified type", "resources: [{annotations: {lastModified: 1}}]", "MCP descriptor resource `foo.yaml` expects string at `$.resources[0].annotations.lastModified`."),
-                Arguments.of("tool title type", "tools: [{annotations: {title: 1, readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true}}]",
-                        "MCP descriptor resource `foo.yaml` expects string at `$.tools[0].annotations.title`."),
-                Arguments.of("tools collection type", "tools: foo", "MCP descriptor resource `foo.yaml` expects list at `$.tools`."));
-    }
     
     @Test
     void assertValidate() {

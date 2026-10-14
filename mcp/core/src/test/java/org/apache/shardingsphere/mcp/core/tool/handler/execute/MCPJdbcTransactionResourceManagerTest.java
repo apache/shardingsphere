@@ -69,7 +69,7 @@ class MCPJdbcTransactionResourceManagerTest {
         verify(connection).close();
     }
     
-    static Stream<Arguments> commitCleanupFailureCases() {
+    private static Stream<Arguments> commitCleanupFailureCases() {
         return Stream.of(
                 Arguments.of("reset failure", true, false, "reset failed", 0),
                 Arguments.of("close failure", false, true, "close failed", 0),

@@ -46,6 +46,14 @@ class WorkflowLifecycleUtilsTest {
                 Arguments.of("create operation", createSnapshot("create"), false));
     }
     
+    private static WorkflowContextSnapshot createSnapshot(final String operationType) {
+        WorkflowContextSnapshot result = new WorkflowContextSnapshot();
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        clarifiedIntent.setOperationType(operationType);
+        result.setClarifiedIntent(clarifiedIntent);
+        return result;
+    }
+    
     @Test
     void assertIsNotOwnedBySessionWithBlankSnapshotSession() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -71,13 +79,5 @@ class WorkflowLifecycleUtilsTest {
     @Test
     void assertResolveCurrentStepWithoutInteractionPlan() {
         assertThat(WorkflowLifecycleUtils.resolveCurrentStep(new WorkflowContextSnapshot()), is(""));
-    }
-    
-    private static WorkflowContextSnapshot createSnapshot(final String operationType) {
-        WorkflowContextSnapshot result = new WorkflowContextSnapshot();
-        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        clarifiedIntent.setOperationType(operationType);
-        result.setClarifiedIntent(clarifiedIntent);
-        return result;
     }
 }

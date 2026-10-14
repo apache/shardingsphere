@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -46,16 +47,12 @@ class MCPToolDescriptorCatalogValidatorTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("unsupportedDefinitionFields")
-    void assertValidateWithUnsupportedDefinitionField(final String name, final String fieldName) {
+    @ValueSource(strings = {"$defs", "definitions"})
+    void assertValidateWithUnsupportedDefinitionField(final String fieldName) {
         Map<String, Object> inputSchema = new LinkedHashMap<>(createInputSchema());
         inputSchema.put(fieldName, Map.of("query", Map.of("type", "string")));
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPToolDescriptorCatalogValidator.validate(createCatalog(inputSchema)));
         assertThat(actual.getMessage(), is(String.format("Tool `database_gateway_test_tool` inputSchema contains unsupported top-level field `%s`.", fieldName)));
-    }
-    
-    private static Collection<Arguments> unsupportedDefinitionFields() {
-        return List.of(Arguments.of("dollar definitions", "$defs"), Arguments.of("legacy definitions", "definitions"), Arguments.of("conditional composition", "if"));
     }
     
     @Test

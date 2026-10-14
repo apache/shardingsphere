@@ -67,7 +67,7 @@ class CoreHandlerProviderTest {
         }
     }
     
-    static Stream<Arguments> metadataResourceCases() {
+    private static Stream<Arguments> metadataResourceCases() {
         return Stream.of(
                 Arguments.of("databases", "shardingsphere://databases", "shardingsphere://databases", "database", List.of("logic_db", "runtime_db", "warehouse")),
                 Arguments.of("database", "shardingsphere://databases/{database}", "shardingsphere://databases/logic_db", "database", List.of("logic_db")),
@@ -113,7 +113,7 @@ class CoreHandlerProviderTest {
         verify(queryFacade).query("foo_db", sql);
     }
     
-    static Stream<Arguments> governanceResourceCases() {
+    private static Stream<Arguments> governanceResourceCases() {
         return Stream.of(
                 Arguments.of("storage units", "shardingsphere://databases/{database}/storage-units", "shardingsphere://databases/foo_db/storage-units",
                         "SHOW STORAGE UNITS FROM foo_db", Map.of("name", "foo_ds")),

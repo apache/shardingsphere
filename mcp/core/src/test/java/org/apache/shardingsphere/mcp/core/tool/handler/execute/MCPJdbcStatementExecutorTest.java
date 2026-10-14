@@ -52,6 +52,7 @@ import java.sql.SQLTimeoutException;
 import java.sql.SQLTransientConnectionException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -84,21 +86,22 @@ class MCPJdbcStatementExecutorTest {
         MCPTransactionStateException actual = assertThrows(MCPTransactionStateException.class,
                 () -> executor.execute(request, classification, createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
         assertThat(actual.getMessage(), is(cause.getMessage()));
-        assertThat(actual.getCause(), is(cause));
+        assertThat(actual.getCause(), sameInstance(cause));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("readOnlyFailureCases")
     void assertExecuteReadOnlyWithFailure(final String name, final boolean executionFailure, final boolean rollbackFailure, final boolean autoCommitFailure, final boolean readOnlyFailure,
-                                          final String expectedMessage, final List<String> expectedSuppressed) throws SQLException {
+                                          final String expectedMessage, final Collection<String> expectedSuppressed) throws SQLException {
         Statement statement = mock(Statement.class);
-        when(statement.execute("SELECT 1")).thenReturn(true);
-        ResultSet resultSet = createResultSet(createColumns(), List.of(List.of(1, "foo_status")));
-        when(statement.getResultSet()).thenReturn(resultSet);
         Connection connection = createStatementConnection(statement);
         when(connection.getAutoCommit()).thenReturn(true);
         if (executionFailure) {
             when(statement.execute("SELECT 1")).thenThrow(new SQLException("execution failed"));
+        } else {
+            when(statement.execute("SELECT 1")).thenReturn(true);
+            ResultSet resultSet = createResultSet(createColumns(), List.of(List.of(1, "foo_status")));
+            when(statement.getResultSet()).thenReturn(resultSet);
         }
         if (rollbackFailure) {
             doThrow(new SQLException("rollback failed")).when(connection).rollback();
@@ -124,7 +127,7 @@ class MCPJdbcStatementExecutorTest {
         verify(connection).close();
     }
     
-    static Stream<Arguments> readOnlyFailureCases() {
+    private static Stream<Arguments> readOnlyFailureCases() {
         return Stream.of(
                 Arguments.of("execution failure", true, false, false, false, "execution failed", List.of()),
                 Arguments.of("rollback failure", false, true, false, false, "rollback failed", List.of()),

@@ -180,7 +180,7 @@ class MCPJdbcDatabaseProfileLoaderTest {
     }
     
     @Test
-    void assertLoadDataSourceWithNonSqlConnectionFailure() throws SQLException {
+    void assertLoadDataSourceWithNonSQLConnectionFailure() throws SQLException {
         IllegalStateException expectedCause = new IllegalStateException("foo_invalid_config");
         RuntimeDatabaseConnectionException expected = RuntimeDatabaseConnectionException.invalidConfiguration("logic_db", expectedCause);
         Connection connection = mock(Connection.class);

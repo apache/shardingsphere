@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolDescriptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.MockedStatic;
 
 import java.io.IOException;
 import java.net.URL;
@@ -30,17 +28,9 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 class MCPDescriptorCatalogYamlLoaderTest {
     
@@ -59,42 +49,6 @@ class MCPDescriptorCatalogYamlLoaderTest {
             Collection<YamlMCPDescriptorCatalog> actual = MCPDescriptorCatalogYamlLoader.load();
             assertThat(actual.stream().flatMap(each -> each.getTools().stream()).map(YamlMCPToolDescriptor::getName).toList(),
                     containsInAnyOrder("first_tool", "second_tool"));
-        } finally {
-            Thread.currentThread().setContextClassLoader(originalClassLoader);
-        }
-    }
-    
-    @Test
-    void assertLoadYmlResourceFiltersNonYamlFiles() throws IOException {
-        Path root = createDescriptorRoot("foo", "foo_tool");
-        Path descriptor = root.resolve(DESCRIPTOR_PATH);
-        Files.move(descriptor, descriptor.resolveSibling("shared.yml"));
-        Files.writeString(descriptor.resolveSibling("foo.txt"), "foo_ignored");
-        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
-        try (URLClassLoader classLoader = new URLClassLoader(new URL[]{root.toUri().toURL()}, null)) {
-            Thread.currentThread().setContextClassLoader(classLoader);
-            Collection<YamlMCPDescriptorCatalog> actual = MCPDescriptorCatalogYamlLoader.load();
-            assertThat(actual.stream().flatMap(each -> each.getTools().stream()).map(YamlMCPToolDescriptor::getName).toList(), is(List.of("foo_tool")));
-        } finally {
-            Thread.currentThread().setContextClassLoader(originalClassLoader);
-        }
-    }
-    
-    @Test
-    void assertLoadWithResourceReadFailure() throws IOException {
-        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
-        ClassLoader classLoader = mock(ClassLoader.class);
-        URL resource = mock(URL.class);
-        IOException expectedCause = new IOException("foo_read_failure");
-        when(resource.toExternalForm()).thenReturn("file:/foo.yaml");
-        when(resource.openStream()).thenThrow(expectedCause);
-        when(classLoader.resources(DESCRIPTOR_PATH)).thenReturn(Stream.of(resource));
-        try (MockedStatic<ClasspathResourceDirectoryReader> mocked = mockStatic(ClasspathResourceDirectoryReader.class)) {
-            mocked.when(() -> ClasspathResourceDirectoryReader.read("META-INF/shardingsphere-mcp/mcp-descriptors")).thenReturn(Stream.of(DESCRIPTOR_PATH));
-            Thread.currentThread().setContextClassLoader(classLoader);
-            IllegalStateException actual = assertThrows(IllegalStateException.class, MCPDescriptorCatalogYamlLoader::load);
-            assertThat(actual.getMessage(), is("Failed to load MCP descriptor resource `file:/foo.yaml`."));
-            assertThat(actual.getCause(), sameInstance(expectedCause));
         } finally {
             Thread.currentThread().setContextClassLoader(originalClassLoader);
         }

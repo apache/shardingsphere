@@ -45,7 +45,7 @@ class GovernanceMetadataQueryServiceTest {
         assertThat(actual, is(List.of(Map.of("name", "foo_ds", "other_attributes", expected))));
     }
     
-    static Stream<Arguments> storageUnitAttributeCases() {
+    private static Stream<Arguments> storageUnitAttributeCases() {
         return Stream.of(
                 Arguments.of("nested collections", List.of(Map.of("PASSWORD", "foo_password"), List.of(Map.of("pool", 8))), List.of(Map.of("PASSWORD", "******"), List.of(Map.of("pool", 8)))),
                 Arguments.of("JSON array", "[{\"secret\":\"foo_secret\"},7]", List.of(Map.of("secret", "******"), 7)),

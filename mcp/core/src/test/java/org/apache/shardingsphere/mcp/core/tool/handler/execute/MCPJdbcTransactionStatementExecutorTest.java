@@ -67,7 +67,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         verify(sessionManager, never()).getTransactionResourceManager();
     }
     
-    static Stream<Arguments> unsupportedTransactionCases() {
+    private static Stream<Arguments> unsupportedTransactionCases() {
         return Stream.of(
                 Arguments.of("begin", SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "Transaction control is not supported."),
                 Arguments.of("commit", SupportedMCPStatement.TRANSACTION_CONTROL, "COMMIT", "Transaction control is not supported."),
