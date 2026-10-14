@@ -419,6 +419,7 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
                     break;
                 default:
                     clientStatement = true;
+                    seek(offset + variable.length());
                     return;
             }
             normalizedSQL.append(input.getText(Interval.of(variableEnd < 0 ? start : variableEnd, offset - 1))).append(replacement);
