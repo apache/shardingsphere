@@ -181,6 +181,12 @@ class FirebirdPacketPayloadTest {
     }
     
     @Test
+    void assertWritePadding() {
+        new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).writePadding(5);
+        verify(byteBuf).writeBytes(new byte[3]);
+    }
+    
+    @Test
     void assertGetPadding() {
         assertThat(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).getPadding(5), is(3));
     }

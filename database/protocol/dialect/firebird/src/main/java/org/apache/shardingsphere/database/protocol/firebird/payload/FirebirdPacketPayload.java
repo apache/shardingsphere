@@ -260,6 +260,15 @@ public final class FirebirdPacketPayload implements PacketPayload {
     }
     
     /**
+     * Write padding to byte buffers.
+     *
+     * @param length length of byte array that needs padding
+     */
+    public void writePadding(final int length) {
+        byteBuf.writeBytes(new byte[getPadding(length)]);
+    }
+    
+    /**
      * Get padding from byte buffers.
      *
      * @param length length of byte array that may have padding

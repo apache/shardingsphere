@@ -51,7 +51,7 @@ public final class FirebirdAcceptDataPacket extends FirebirdPacket {
             payload.writeBytes(salt);
             payload.writeInt2LE(publicKey.length());
             payload.writeBytes(publicKey.getBytes(StandardCharsets.US_ASCII));
-            payload.writeBytes(new byte[(4 - length) & 3]);
+            payload.writePadding(length);
         } else {
             payload.writeInt4(0);
         }
