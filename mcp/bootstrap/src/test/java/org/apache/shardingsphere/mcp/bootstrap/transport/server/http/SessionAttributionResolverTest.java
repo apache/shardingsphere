@@ -62,6 +62,19 @@ class SessionAttributionResolverTest {
         assertSessionIdentity(new SessionAttributionResolver(null).resolve(Map.of(), "session-1"), "", "", Map.of());
     }
     
+    @Test
+    void assertResolveFromRequestWithoutSubject() {
+        SessionAttributionResolver resolver = new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-"));
+        MCPSessionIdentity actual = resolver.resolve(mock(HttpServletRequest.class), "session-1");
+        assertSessionIdentity(actual, "", "", Map.of());
+    }
+    
+    @Test
+    void assertGetSummary() {
+        SessionAttributionResolver resolver = new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-"));
+        assertThat(resolver.getSummary(), is("trusted-header:X-Test-Subject"));
+    }
+    
     private void assertSessionIdentity(final MCPSessionIdentity actual, final String subject, final String source, final Map<String, String> attributes) {
         assertThat(actual.getSessionId(), is("session-1"));
         assertThat(actual.getSubject(), is(subject));
