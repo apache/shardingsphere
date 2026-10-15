@@ -115,6 +115,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -159,7 +160,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     }
     
     @SuppressWarnings("unchecked")
-    private InsertColumnsSegment createInsertColumns(final ParserRuleContext ctx, final ColumnNamesContext columnNames) {
+    private InsertColumnsSegment createInsertColumns(final ParserRuleContext ctx, @Nullable final ColumnNamesContext columnNames) {
         if (null == columnNames) {
             return new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }

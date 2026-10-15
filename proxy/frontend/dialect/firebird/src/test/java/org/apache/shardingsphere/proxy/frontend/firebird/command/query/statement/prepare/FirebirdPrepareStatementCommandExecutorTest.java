@@ -249,34 +249,6 @@ class FirebirdPrepareStatementCommandExecutorTest {
         verify(payload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
     }
     
-    @Test
-    void assertDescribeInsertSelectParameters() throws Exception {
-        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) SELECT id FROM foo_tbl WHERE id = ?");
-        when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
-        when(packet.getCurrentItem()).thenReturn(
-                FirebirdSQLInfoPacketType.STMT_TYPE,
-                FirebirdSQLInfoPacketType.BIND,
-                FirebirdSQLInfoPacketType.TYPE,
-                FirebirdSQLInfoPacketType.TYPE,
-                FirebirdSQLInfoPacketType.DESCRIBE_END,
-                FirebirdSQLInfoPacketType.DESCRIBE_END);
-        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
-        FirebirdPrepareStatementReturnPacket returnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
-        assertThat(returnPacket.getType(), is(FirebirdSQLInfoReturnValue.INSERT));
-        assertThat(returnPacket.getDescribeBind().size(), is(1));
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class, RETURNS_DEEP_STUBS);
-        returnPacket.getDescribeBind().get(0).write(payload);
-        verify(payload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
-    }
-    
-    @Test
-    void assertExecuteInsertSelectWithReturning() throws Exception {
-        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) SELECT id FROM foo_tbl RETURNING id");
-        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
-        FirebirdPrepareStatementReturnPacket returnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
-        assertThat(returnPacket.getType(), is(FirebirdSQLInfoReturnValue.SELECT));
-    }
-    
     private FirebirdReturnColumnPacket describeSingleColumn(final String sql) throws Exception {
         when(packet.getSQL()).thenReturn(sql);
         when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
@@ -295,6 +267,34 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPrepareStatementReturnPacket returnPacket = (FirebirdPrepareStatementReturnPacket) responsePacket.getData();
         assertThat(returnPacket.getDescribeSelect().size(), is(1));
         return returnPacket.getDescribeSelect().get(0);
+    }
+    
+    @Test
+    void assertDescribeInsertSelectParameters() throws Exception {
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) SELECT id FROM foo_tbl WHERE id = ?");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.BIND,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        FirebirdPrepareStatementReturnPacket actual = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
+        assertThat(actual.getType(), is(FirebirdSQLInfoReturnValue.INSERT));
+        assertThat(actual.getDescribeBind().size(), is(1));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class, RETURNS_DEEP_STUBS);
+        actual.getDescribeBind().get(0).write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+    }
+    
+    @Test
+    void assertExecuteInsertSelectWithReturning() throws Exception {
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) SELECT id FROM foo_tbl RETURNING id");
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        FirebirdPrepareStatementReturnPacket actual = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
+        assertThat(actual.getType(), is(FirebirdSQLInfoReturnValue.SELECT));
     }
     
     @Test
