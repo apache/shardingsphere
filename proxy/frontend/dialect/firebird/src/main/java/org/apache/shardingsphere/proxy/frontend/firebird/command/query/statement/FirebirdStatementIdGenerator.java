@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.Collection;
 import java.util.Map;
@@ -85,6 +86,7 @@ public final class FirebirdStatementIdGenerator {
      * @param statementId statement ID
      * @return whether statement ID is allocated and not released
      */
+    @HighFrequencyInvocation
     public boolean isAllocated(final int connectionId, final int statementId) {
         Collection<Integer> statementIds = allocatedStatementIds.get(connectionId);
         return null != statementIds && statementIds.contains(statementId);
@@ -96,6 +98,7 @@ public final class FirebirdStatementIdGenerator {
      * @param connectionId connection ID
      * @param statementId statement ID
      */
+    @HighFrequencyInvocation
     public void releaseStatementId(final int connectionId, final int statementId) {
         Collection<Integer> statementIds = allocatedStatementIds.get(connectionId);
         if (null != statementIds) {

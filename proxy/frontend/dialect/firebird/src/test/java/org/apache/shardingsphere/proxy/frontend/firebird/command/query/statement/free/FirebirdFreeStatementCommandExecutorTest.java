@@ -47,11 +47,11 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -131,19 +131,24 @@ class FirebirdFreeStatementCommandExecutorTest {
         verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(STATEMENT_ID));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("statementHandleStates")
-    void assertExecuteKeepsOrReleasesStatementHandle(final String scenario, final int option, final boolean expectedAllocated) throws Exception {
-        when(packet.getOption()).thenReturn(option);
+    @Test
+    void assertExecuteWithDropStatementHandle() throws Exception {
+        when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.DROP);
         new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
-        assertThat(FirebirdStatementIdGenerator.getInstance().isAllocated(CONNECTION_ID, STATEMENT_ID), is(expectedAllocated));
+        assertFalse(FirebirdStatementIdGenerator.getInstance().isAllocated(CONNECTION_ID, STATEMENT_ID));
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("statementHandleStates")
-    void assertExecuteWithNotAllocatedStatement(final String scenario, final int option, final boolean expectedAllocated) {
-        when(packet.getStatementId()).thenReturn(STATEMENT_ID + 1);
+    @MethodSource("keptStatementHandleOptions")
+    void assertExecuteWithKeptStatementHandle(final String scenario, final int option) throws Exception {
         when(packet.getOption()).thenReturn(option);
+        new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
+        assertTrue(FirebirdStatementIdGenerator.getInstance().isAllocated(CONNECTION_ID, STATEMENT_ID));
+    }
+    
+    @Test
+    void assertExecuteWithNotAllocatedStatement() {
+        when(packet.getStatementId()).thenReturn(STATEMENT_ID + 1);
         InvalidStatementStateException actual = assertThrows(InvalidStatementStateException.class, new FirebirdFreeStatementCommandExecutor(packet, connectionSession)::execute);
         assertFalse(actual.isAllocated());
         verify(registry, never()).removePreparedStatement(STATEMENT_ID + 1);
@@ -155,11 +160,8 @@ class FirebirdFreeStatementCommandExecutorTest {
         assertThrows(DatabaseProtocolException.class, new FirebirdFreeStatementCommandExecutor(packet, connectionSession)::execute);
     }
     
-    private static Stream<Arguments> statementHandleStates() {
-        return Stream.of(
-                Arguments.of("drop", FirebirdFreeStatementPacket.DROP, false),
-                Arguments.of("unprepare", FirebirdFreeStatementPacket.UNPREPARE, true),
-                Arguments.of("close", FirebirdFreeStatementPacket.CLOSE, true));
+    private static Stream<Arguments> keptStatementHandleOptions() {
+        return Stream.of(Arguments.of("unprepare", FirebirdFreeStatementPacket.UNPREPARE), Arguments.of("close", FirebirdFreeStatementPacket.CLOSE));
     }
     
     private static Stream<Arguments> preparedStatementFreeOptions() {
