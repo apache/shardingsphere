@@ -30,6 +30,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdReturnColumnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
@@ -399,7 +400,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         BinaryOperationExpression binary = (BinaryOperationExpression) expr;
         if (binary.getRight() instanceof ListExpression) {
-            processPatternExpr(binary.getLeft(), (ListExpression) binary.getRight(), affectedColumns);
+            processPatternExpression(binary.getLeft(), (ListExpression) binary.getRight(), affectedColumns);
             return false;
         }
         processExpr(binary.getLeft(), affectedColumns);
@@ -410,12 +411,14 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return false;
     }
     
-    private void processPatternExpr(final ExpressionSegment value, final ListExpression pattern, final Collection<ColumnSegment> affectedColumns) {
+    @HighFrequencyInvocation
+    private void processPatternExpression(final ExpressionSegment value, final ListExpression pattern, final Collection<ColumnSegment> affectedColumns) {
+        ExpressionSegment patternValue = pattern.getItems().iterator().next();
         ColumnSegment typeColumn = null;
         if (value instanceof ColumnSegment) {
             typeColumn = (ColumnSegment) value;
-        } else if (pattern.getItems().get(0) instanceof ColumnSegment) {
-            typeColumn = (ColumnSegment) pattern.getItems().get(0);
+        } else if (patternValue instanceof ColumnSegment) {
+            typeColumn = (ColumnSegment) patternValue;
         }
         if (null == typeColumn) {
             return;
