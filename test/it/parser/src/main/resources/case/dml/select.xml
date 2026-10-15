@@ -13510,7 +13510,7 @@
             </expr>
         </where>
     </select>
-    
+
     <select sql-case-id="select_where_backslash_literal_firebird">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
@@ -13532,7 +13532,7 @@
             </expr>
         </where>
     </select>
-    
+
     <select sql-case-id="select_where_and_like_firebird">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
