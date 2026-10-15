@@ -4765,7 +4765,7 @@
             </value>
         </values>
     </insert>
-    
+
     <insert sql-case-id="insert_string_literal_with_collate_firebird">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="37">
@@ -4783,7 +4783,7 @@
             </value>
         </values>
     </insert>
-    
+
     <insert sql-case-id="insert_hexadecimal_literal_with_introducer_firebird">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="37">
@@ -4801,7 +4801,7 @@
             </value>
         </values>
     </insert>
-    
+
     <insert sql-case-id="insert_with_geom_collection_function">
         <table name="t1" start-index="12" stop-index="13" />
         <columns start-index="14" stop-index="14" />
