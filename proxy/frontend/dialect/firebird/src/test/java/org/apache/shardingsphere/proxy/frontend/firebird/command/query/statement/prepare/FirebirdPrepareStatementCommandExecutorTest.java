@@ -288,16 +288,16 @@ class FirebirdPrepareStatementCommandExecutorTest {
                 FirebirdSQLInfoPacketType.DESCRIBE_END);
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
-        FirebirdPrepareStatementReturnPacket returnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
-        assertThat(returnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
         FirebirdPacketPayload stringPayload = mock(FirebirdPacketPayload.class);
         when(stringPayload.getCharset()).thenReturn(StandardCharsets.UTF_8);
-        returnPacket.getDescribeSelect().get(0).write(stringPayload);
+        actualReturnPacket.getDescribeSelect().get(0).write(stringPayload);
         verify(stringPayload, times(2)).writeBytes("CONSTANT".getBytes(StandardCharsets.UTF_8));
         verify(stringPayload).writeInt4LE(4);
         FirebirdPacketPayload numberPayload = mock(FirebirdPacketPayload.class);
         when(numberPayload.getCharset()).thenReturn(StandardCharsets.UTF_8);
-        returnPacket.getDescribeSelect().get(1).write(numberPayload);
+        actualReturnPacket.getDescribeSelect().get(1).write(numberPayload);
         verify(numberPayload).writeBytes("CONSTANT".getBytes(StandardCharsets.UTF_8));
         verify(numberPayload).writeBytes("one".getBytes(StandardCharsets.UTF_8));
     }
