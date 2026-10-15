@@ -56,15 +56,12 @@ class FirebirdMetaDataLoaderTest {
     @Test
     void assertLoadRefreshesSizeRegistryWithSystemTables() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
-        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("TEST_TABLE"), "logic_ds", dataSource, databaseType, "schema");
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.emptyList(), "logic_ds", dataSource, databaseType, "schema");
         Map<String, Integer> systemTableSizes = Collections.singletonMap("RDB$RELATION_NAME", 63);
         try (
-                MockedStatic<TableMetaDataLoader> ignoredTableLoader = mockStatic(TableMetaDataLoader.class);
                 MockedStatic<FirebirdNonFixedLengthColumnSizeRegistry> sizeRegistryMocked = mockStatic(FirebirdNonFixedLengthColumnSizeRegistry.class);
-                MockedStatic<FirebirdBlobInfoRegistry> ignoredBlobRegistry = mockStatic(FirebirdBlobInfoRegistry.class);
                 MockedConstruction<FirebirdNonFixedLengthColumnSizeLoader> ignoredSizeLoader = mockConstruction(FirebirdNonFixedLengthColumnSizeLoader.class,
-                        (mock, context) -> when(mock.loadSystemTables()).thenReturn(Collections.singletonMap("RDB$RELATIONS", systemTableSizes)));
-                MockedConstruction<FirebirdBlobColumnLoader> ignoredBlobLoader = mockConstruction(FirebirdBlobColumnLoader.class)) {
+                        (mock, context) -> when(mock.loadSystemTables()).thenReturn(Collections.singletonMap("RDB$RELATIONS", systemTableSizes)))) {
             dialectMetaDataLoader.load(material);
             sizeRegistryMocked.verify(() -> FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("schema", "RDB$RELATIONS", systemTableSizes));
         }

@@ -121,7 +121,6 @@ class FirebirdNonFixedLengthColumnSizeLoaderTest {
         when(resultSet.getString("TABLE_NAME")).thenReturn("RDB$RELATIONS", "RDB$DATABASE");
         when(resultSet.getString("COLUMN_NAME")).thenReturn("RDB$RELATION_NAME", "rdb$character_set_name");
         when(resultSet.getInt("CHAR_LEN")).thenReturn(63, 0);
-        when(resultSet.wasNull()).thenReturn(false, true);
         when(resultSet.getInt("FIELD_LENGTH")).thenReturn(31);
         MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.emptyList(), "logic_ds", dataSource, databaseType, "schema");
         Map<String, Map<String, Integer>> actual = new FirebirdNonFixedLengthColumnSizeLoader(material).loadSystemTables();

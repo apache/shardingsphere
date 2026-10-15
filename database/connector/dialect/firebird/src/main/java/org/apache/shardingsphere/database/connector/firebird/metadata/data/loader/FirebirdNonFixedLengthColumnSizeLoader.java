@@ -59,21 +59,6 @@ final class FirebirdNonFixedLengthColumnSizeLoader {
         return result;
     }
     
-    Map<String, Map<String, Integer>> loadSystemTables() throws SQLException {
-        Map<String, Map<String, Integer>> result = new HashMap<>();
-        try (
-                MetaDataLoaderConnection connection = new MetaDataLoaderConnection(material.getStorageType(), material.getDataSource().getConnection());
-                PreparedStatement preparedStatement = connection.prepareStatement(SELECT_SYSTEM_TABLE_COLUMN_SIZES_SQL);
-                ResultSet resultSet = preparedStatement.executeQuery()) {
-            while (resultSet.next()) {
-                int characterLength = resultSet.getInt("CHAR_LEN");
-                int columnSize = resultSet.wasNull() || characterLength <= 0 ? resultSet.getInt("FIELD_LENGTH") : characterLength;
-                result.computeIfAbsent(resultSet.getString("TABLE_NAME"), key -> new HashMap<>()).put(resultSet.getString("COLUMN_NAME").toUpperCase(Locale.ENGLISH), columnSize);
-            }
-        }
-        return result;
-    }
-    
     private Map<String, Integer> loadTableColumnSizes(final MetaDataLoaderConnection connection, final String formattedTableName) throws SQLException {
         Map<String, Integer> result = new HashMap<>();
         loadColumnSizesFromMetaData(connection, formattedTableName, result);
@@ -118,5 +103,20 @@ final class FirebirdNonFixedLengthColumnSizeLoader {
             default:
                 return false;
         }
+    }
+    
+    Map<String, Map<String, Integer>> loadSystemTables() throws SQLException {
+        Map<String, Map<String, Integer>> result = new HashMap<>();
+        try (
+                MetaDataLoaderConnection connection = new MetaDataLoaderConnection(material.getStorageType(), material.getDataSource().getConnection());
+                PreparedStatement preparedStatement = connection.prepareStatement(SELECT_SYSTEM_TABLE_COLUMN_SIZES_SQL);
+                ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                int characterLength = resultSet.getInt("CHAR_LEN");
+                int columnSize = resultSet.wasNull() || characterLength <= 0 ? resultSet.getInt("FIELD_LENGTH") : characterLength;
+                result.computeIfAbsent(resultSet.getString("TABLE_NAME"), key -> new HashMap<>()).put(resultSet.getString("COLUMN_NAME").toUpperCase(Locale.ENGLISH), columnSize);
+            }
+        }
+        return result;
     }
 }

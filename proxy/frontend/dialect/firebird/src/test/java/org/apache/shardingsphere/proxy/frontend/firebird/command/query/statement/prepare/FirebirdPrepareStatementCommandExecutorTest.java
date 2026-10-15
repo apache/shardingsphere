@@ -205,10 +205,10 @@ class FirebirdPrepareStatementCommandExecutorTest {
                 FirebirdSQLInfoPacketType.DESCRIBE_END,
                 FirebirdSQLInfoPacketType.DESCRIBE_END);
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
-        FirebirdPrepareStatementReturnPacket returnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
-        assertThat(returnPacket.getDescribeBind().size(), is(1));
+        FirebirdPrepareStatementReturnPacket actual = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
+        assertThat(actual.getDescribeBind().size(), is(1));
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        returnPacket.getDescribeBind().iterator().next().write(payload);
+        actual.getDescribeBind().iterator().next().write(payload);
         verify(payload).writeInt4LE(FirebirdBinaryColumnType.SHORT.getValue() + 1);
     }
     
