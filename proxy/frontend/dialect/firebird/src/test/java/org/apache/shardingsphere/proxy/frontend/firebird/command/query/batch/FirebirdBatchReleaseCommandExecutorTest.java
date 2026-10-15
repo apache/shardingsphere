@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.DefaultAttributeMap;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
@@ -36,8 +37,8 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
-import org.apache.shardingsphere.proxy.frontend.firebird.FirebirdFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -112,7 +113,7 @@ class FirebirdBatchReleaseCommandExecutorTest {
     void assertExecuteWhenBatchNotFoundInTransaction() throws SQLException {
         ConnectionSession transactionSession = createConnectionSessionInTransaction();
         int transactionHandle = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
-        FirebirdFrontendEngine engine = new FirebirdFrontendEngine();
+        DatabaseProtocolFrontendEngine engine = DatabaseTypedSPILoader.getService(DatabaseProtocolFrontendEngine.class, TypedSPILoader.getService(DatabaseType.class, "Firebird"));
         new CommandExecutorTask(engine, transactionSession, channelHandlerContext, Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_RLS.getValue()).writeInt(STATEMENT_ID)).run();
         new CommandExecutorTask(engine, transactionSession, channelHandlerContext, Unpooled.buffer().writeInt(FirebirdCommandPacketType.COMMIT.getValue()).writeInt(transactionHandle)).run();
         FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
