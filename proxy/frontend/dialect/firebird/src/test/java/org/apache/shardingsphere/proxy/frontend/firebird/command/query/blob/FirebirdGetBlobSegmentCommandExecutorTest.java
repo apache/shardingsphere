@@ -102,7 +102,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWithReadBlobExpectsEof() {
+    void assertExecuteWithoutBlobContent() {
         FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
