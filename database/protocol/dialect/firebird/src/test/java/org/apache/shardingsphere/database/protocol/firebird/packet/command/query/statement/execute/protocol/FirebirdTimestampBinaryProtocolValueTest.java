@@ -57,7 +57,7 @@ class FirebirdTimestampBinaryProtocolValueTest {
     }
     
     @Test
-    void assertWriteWithTimestampKeepsFractionsOfMillisecond() {
+    void assertWriteWithSubMillisecondTimestamp() {
         LocalDateTime dateTime = LocalDateTime.of(2024, 2, 29, 23, 59, 59, 999_900_000);
         new FirebirdTimestampBinaryProtocolValue().write(payload, Timestamp.valueOf(dateTime));
         verify(payload).writeInt4(FirebirdDateTimeUtils.getEncodedDate(dateTime));

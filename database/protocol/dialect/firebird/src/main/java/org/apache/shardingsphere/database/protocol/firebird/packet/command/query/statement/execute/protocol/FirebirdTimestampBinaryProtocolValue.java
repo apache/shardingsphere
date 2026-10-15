@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.util.FirebirdDateTimeUtils;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -41,6 +42,7 @@ public final class FirebirdTimestampBinaryProtocolValue implements FirebirdBinar
         payload.writeInt4(new FirebirdDateTimeUtils(localDateTime).getEncodedTime());
     }
     
+    @HighFrequencyInvocation
     private LocalDateTime toLocalDateTime(final Object value) {
         if (value instanceof LocalDateTime) {
             return (LocalDateTime) value;
