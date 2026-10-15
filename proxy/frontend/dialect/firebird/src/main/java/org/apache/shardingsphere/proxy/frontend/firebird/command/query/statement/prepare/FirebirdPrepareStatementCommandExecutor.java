@@ -30,6 +30,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdReturnColumnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
@@ -51,6 +52,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -95,6 +97,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalInt;
 
 /**
@@ -489,17 +492,29 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         if (null == table || null == column) {
             return false;
         }
-        if (FirebirdBlobInfoRegistry.isBlobColumn(connectionSession.getCurrentDatabaseName(), table.getName(), column.getName())) {
+        if (null != table.getName() && FirebirdBlobInfoRegistry.isBlobColumn(connectionSession.getCurrentDatabaseName(), getActualTableName(table.getName()), column.getName())) {
             return true;
         }
         return Types.BLOB == column.getDataType();
+    }
+    
+    @HighFrequencyInvocation
+    private String getActualTableName(final String logicTableName) {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(connectionSession.getCurrentDatabaseName());
+        for (DataNodeRuleAttribute each : database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
+            Optional<String> actualTableName = each.findFirstActualTable(logicTableName);
+            if (actualTableName.isPresent()) {
+                return actualTableName.get();
+            }
+        }
+        return logicTableName;
     }
     
     private Integer resolveBlobSubtype(final ShardingSphereTable table, final ShardingSphereColumn column, final boolean blobColumn) {
         if (!blobColumn) {
             return null;
         }
-        OptionalInt subtype = FirebirdBlobInfoRegistry.findBlobSubtype(connectionSession.getCurrentDatabaseName(), table.getName(), column.getName());
+        OptionalInt subtype = FirebirdBlobInfoRegistry.findBlobSubtype(connectionSession.getCurrentDatabaseName(), getActualTableName(table.getName()), column.getName());
         return subtype.isPresent() ? subtype.getAsInt() : null;
     }
     
