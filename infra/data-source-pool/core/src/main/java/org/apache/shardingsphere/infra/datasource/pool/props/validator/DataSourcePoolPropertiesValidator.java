@@ -67,7 +67,7 @@ public final class DataSourcePoolPropertiesValidator {
     private static void validateProperties(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
         try {
             TypedSPILoader.findService(DataSourcePoolPropertiesContentValidator.class, props.getPoolClassName()).ifPresent(optional -> optional.validate(props));
-        } catch (final IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException | IllegalStateException ex) {
             throw new InvalidDataSourcePoolPropertiesException(dataSourceName, ex.getMessage());
         }
     }

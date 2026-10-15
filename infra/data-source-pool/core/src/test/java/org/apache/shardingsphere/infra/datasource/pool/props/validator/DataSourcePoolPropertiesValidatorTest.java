@@ -98,6 +98,18 @@ class DataSourcePoolPropertiesValidatorTest {
     }
     
     @Test
+    void assertValidateWithIllegalStateContentProperties() {
+        DataSourcePoolPropertiesContentValidator validator = mock(DataSourcePoolPropertiesContentValidator.class);
+        DataSourcePoolProperties dataSourcePoolProperties = new DataSourcePoolProperties(HikariDataSource.class.getName(), createHikariDataSourceProperties(MOCKED_URL));
+        doThrow(new IllegalStateException("mock illegal state properties")).when(validator).validate(dataSourcePoolProperties);
+        try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS)) {
+            typedSPILoader.when(() -> TypedSPILoader.findService(DataSourcePoolPropertiesContentValidator.class, HikariDataSource.class.getName())).thenReturn(Optional.of(validator));
+            assertInvalidDataSource(DataSourcePoolPropertiesValidator.validate(
+                    Collections.singletonMap("foo_ds", dataSourcePoolProperties), Collections.emptySet()), "Invalid data source `foo_ds`, error message is: mock illegal state properties");
+        }
+    }
+    
+    @Test
     void assertValidateWithCreateFailure() {
         Map<String, Object> props = createMockedDataSourceProperties();
         props.put("connectionTimeout", "invalid");
