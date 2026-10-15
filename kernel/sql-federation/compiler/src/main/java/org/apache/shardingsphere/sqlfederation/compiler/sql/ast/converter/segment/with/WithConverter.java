@@ -59,6 +59,8 @@ public final class WithConverter {
         SqlNodeList result = new SqlNodeList(SqlParserPos.ZERO);
         for (CommonTableExpressionSegment each : commonTableExpressionSegments) {
             ShardingSpherePreconditions.checkState(null == each.getDataModification(), () -> new UnsupportedSQLOperationException("Data-modifying common table expressions in SQL Federation"));
+            ShardingSpherePreconditions.checkState(each.getSearchColumns().isEmpty() && each.getCycleColumns().isEmpty(),
+                    () -> new UnsupportedSQLOperationException("SEARCH or CYCLE clauses in SQL Federation"));
             SqlIdentifier name = new SqlIdentifier(each.getAliasName().orElse(""), SqlParserPos.ZERO);
             SqlNodeList columns = each.getColumns().isEmpty() ? null : convertColumns(each.getColumns());
             result.add(new SqlWithItem(SqlParserPos.ZERO, name, columns, new SelectStatementConverter().convert(each.getSubquery().getSelect()), SqlLiteral.createBoolean(false, SqlParserPos.ZERO)));

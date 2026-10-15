@@ -31,6 +31,8 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
@@ -74,7 +76,13 @@ public final class EncryptAssignmentTokenGenerator {
         String schemaName = tablesContext.getSchemaName().orElseGet(database::getDefaultSchemaName);
         QuoteCharacter quoteCharacter = databaseTypeRegistry.getDialectDatabaseMetaData().getQuoteCharacter();
         for (ColumnAssignmentSegment each : setAssignmentSegment.getAssignments()) {
+            ExpressionSegment value = each.getValue();
             ColumnSegment assignedColumn = getAssignedColumn(each);
+            if (each.getColumns().size() > 1 || null != assignedColumn.getNestedObjectAttributes() && !assignedColumn.getNestedObjectAttributes().isEmpty()
+                    || null != value && !(value instanceof ParameterMarkerExpressionSegment) && !(value instanceof LiteralExpressionSegment)) {
+                checkUnsupportedAssignment(each);
+                continue;
+            }
             findEncryptTable(assignedColumn).ifPresent(encryptTable -> {
                 String columnName = assignedColumn.getIdentifier().getValue();
                 if (encryptTable.isEncryptColumn(columnName)) {
@@ -83,6 +91,13 @@ public final class EncryptAssignmentTokenGenerator {
             });
         }
         return result;
+    }
+    
+    private void checkUnsupportedAssignment(final ColumnAssignmentSegment assignment) {
+        for (ColumnSegment each : assignment.getColumns()) {
+            ShardingSpherePreconditions.checkState(!findEncryptTable(each).map(optional -> optional.isEncryptColumn(each.getIdentifier().getValue())).orElse(false),
+                    () -> new UnsupportedSQLOperationException("Encrypted assignments with multiple columns, nested fields or unsupported expressions"));
+        }
     }
     
     private Collection<SQLToken> generateAssignmentSQLTokens(final String schemaName, final String tableName, final EncryptColumn encryptColumn,

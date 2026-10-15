@@ -64,7 +64,7 @@ class LimitPaginationContextEngineTest {
         limitSegment.setImplicitRowCount(true);
         UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class,
                 () -> paginationContextEngine.createPaginationContext(limitSegment, Collections.emptyList()));
-        assertThat(actualException.getMessage(), is("Unsupported SQL operation: Implicit FETCH row count without OFFSET."));
+        assertThat(actualException.getMessage(), is("Unsupported SQL operation: Implicit FETCH row count."));
     }
     
     @Test
@@ -72,7 +72,15 @@ class LimitPaginationContextEngineTest {
         NumberLiteralLimitValueSegment offset = new NumberLiteralLimitValueSegment(0, 10, 2L);
         LimitSegment limitSegment = new LimitSegment(0, 20, offset, null);
         limitSegment.setImplicitRowCount(true);
-        PaginationContext actual = paginationContextEngine.createPaginationContext(limitSegment, Collections.emptyList());
+        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class,
+                () -> paginationContextEngine.createPaginationContext(limitSegment, Collections.emptyList()));
+        assertThat(actualException.getMessage(), is("Unsupported SQL operation: Implicit FETCH row count."));
+    }
+    
+    @Test
+    void assertCreatePaginationContextWithOffsetOnly() {
+        NumberLiteralLimitValueSegment offset = new NumberLiteralLimitValueSegment(0, 10, 2L);
+        PaginationContext actual = paginationContextEngine.createPaginationContext(new LimitSegment(0, 20, offset, null), Collections.emptyList());
         assertThat(actual.getOffsetSegment().orElseThrow(AssertionError::new), sameInstance(offset));
         assertFalse(actual.getRowCountSegment().isPresent());
     }

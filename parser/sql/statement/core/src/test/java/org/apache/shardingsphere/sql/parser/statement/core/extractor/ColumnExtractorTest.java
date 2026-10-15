@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InEx
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -70,6 +71,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,6 +79,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.Mockito.mock;
 
 class ColumnExtractorTest {
@@ -98,6 +101,29 @@ class ColumnExtractorTest {
     @MethodSource("provideExpressions")
     void assertExtract(final String name, final ExpressionSegment expression, final List<String> expectedColumnNames) {
         assertThat(toColumnNames(ColumnExtractor.extract(expression)), is(expectedColumnNames));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideCommonExpressions")
+    void assertExtractFromCommonExpression(final String name, final CommonExpressionSegment expression, final List<ColumnSegment> expected) {
+        Collection<ColumnSegment> actual = ColumnExtractor.extract(expression);
+        assertThat(actual.size(), is(expected.size()));
+        Iterator<ColumnSegment> actualIterator = actual.iterator();
+        for (int index = 0; index < expected.size(); index++) {
+            assertThat(actualIterator.next(), sameInstance(expected.get(index)));
+        }
+    }
+    
+    private static Stream<Arguments> provideCommonExpressions() {
+        ColumnSegment first = createColumnSegment("foo_indexed");
+        ColumnSegment second = createColumnSegment("bar_indexed");
+        CommonExpressionSegment direct = new CommonExpressionSegment(0, 0, "(foo_indexed)[1]", Collections.singleton(first));
+        CommonExpressionSegment inner = new CommonExpressionSegment(0, 0, "bar_indexed || foo_indexed", Arrays.asList(second, first));
+        CommonExpressionSegment nested = new CommonExpressionSegment(0, 0, "(foo_indexed || (bar_indexed || foo_indexed))[1]", Arrays.asList(first, inner));
+        return Stream.of(
+                Arguments.of("Empty common expression", new CommonExpressionSegment(0, 0, "legacy", Collections.emptyList()), Collections.emptyList()),
+                Arguments.of("Common column", direct, Collections.singletonList(first)),
+                Arguments.of("Nested common order and deduplication", nested, Arrays.asList(first, second)));
     }
     
     private static Stream<Arguments> provideSelectStatements() {

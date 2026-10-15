@@ -419,7 +419,6 @@
     <sql-case id="select_postgresql_xml_table_namespaces" value="SELECT * FROM XMLTABLE(XMLNAMESPACES('urn:foo' AS foo_namespace), '/foo:root' PASSING BY VALUE ? BY REF COLUMNS foo_value text PATH '.') AS foo" db-types="PostgreSQL" case-types="placeholder" />
     <sql-case id="select_postgresql_rows_from_functions" value="SELECT * FROM ROWS FROM (foo_values(?), generate_series(1, ?) AS (foo_number int)) WITH ORDINALITY AS foo" db-types="PostgreSQL" case-types="placeholder" />
 
-    <sql-case id="select_postgresql_json_arrayagg_filter_window" value="SELECT JSON_ARRAYAGG(?) FILTER (WHERE ?) OVER ()" db-types="PostgreSQL" case-types="placeholder" />
     <sql-case id="select_postgresql_json_value_returning_typmod" value="SELECT JSON_VALUE(?, '$' RETURNING numeric(10,2))" db-types="PostgreSQL" case-types="placeholder" />
     <sql-case id="select_postgresql_json_table_typmod_nested" value="SELECT * FROM JSON_TABLE(?, '$' COLUMNS (NESTED '$.items' COLUMNS (foo_value numeric(10,2) PATH '$'))) AS foo" db-types="PostgreSQL" case-types="placeholder" />
     <sql-case id="select_postgresql_rows_from_partial_column_aliases" value="SELECT * FROM ROWS FROM (foo_values(?) AS (foo_old int, foo_tail text)) AS foo(foo_new)" db-types="PostgreSQL" case-types="placeholder" />
@@ -430,7 +429,6 @@
     <sql-case id="select_postgresql_json_array_subquery_format_returning" value="SELECT JSON_ARRAY(SELECT foo_json FROM t_order WHERE id = ? FORMAT JSON RETURNING jsonb)" db-types="PostgreSQL" case-types="placeholder" />
     <sql-case id="select_postgresql_json_object_empty_returning" value="SELECT JSON_OBJECT(RETURNING jsonb)" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="select_postgresql_json_array_empty_without_returning" value="SELECT JSON_ARRAY()" db-types="PostgreSQL" case-types="literal" />
-    <sql-case id="select_postgresql_json_arrayagg_filter_without_window" value="SELECT JSON_ARRAYAGG(?) FILTER (WHERE ?)" db-types="PostgreSQL" case-types="placeholder" />
     <sql-case id="select_postgresql_json_table_string_paths" value="SELECT * FROM JSON_TABLE('{}', '$' COLUMNS (foo_id int PATH U&amp;'$!002Eid' UESCAPE '!', NESTED $p$$.items$p$ COLUMNS (foo_item text PATH '$')))" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="select_postgresql_json_qualified_and_quoted_functions" value="SELECT foo.json_arrayagg(?, ?), &quot;json_arrayagg&quot;(?, ?)" db-types="PostgreSQL" case-types="placeholder" />
     <sql-case id="select_postgresql_json_object_legacy_arrays" value="SELECT JSON_OBJECT('{foo, bar}'), JSON_OBJECT('{foo}', '{bar}')" db-types="PostgreSQL" case-types="literal" />

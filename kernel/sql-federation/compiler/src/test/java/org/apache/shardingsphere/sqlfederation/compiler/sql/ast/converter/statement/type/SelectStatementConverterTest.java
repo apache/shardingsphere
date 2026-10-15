@@ -120,7 +120,7 @@ class SelectStatementConverterTest {
         limit.setImplicitRowCount(true);
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(createProjectionsSegment()).limit(limit).build();
         UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class, () -> new SelectStatementConverter().convert(selectStatement));
-        assertThat(actualException.getMessage(), is("Unsupported SQL operation: Implicit FETCH row count without OFFSET in SQL Federation."));
+        assertThat(actualException.getMessage(), is("Unsupported SQL operation: Implicit FETCH row count in SQL Federation."));
     }
     
     @Test
@@ -128,8 +128,16 @@ class SelectStatementConverterTest {
         LimitSegment limit = new LimitSegment(0, 20, new NumberLiteralLimitValueSegment(0, 10, 2L), null);
         limit.setImplicitRowCount(true);
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(createProjectionsSegment()).limit(limit).build();
+        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class, () -> new SelectStatementConverter().convert(selectStatement));
+        assertThat(actualException.getMessage(), is("Unsupported SQL operation: Implicit FETCH row count in SQL Federation."));
+    }
+    
+    @Test
+    void assertConvertOffsetWithoutRowCount() {
+        LimitSegment limit = new LimitSegment(0, 20, new NumberLiteralLimitValueSegment(0, 10, 2L), null);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(createProjectionsSegment()).limit(limit).build();
         SqlOrderBy actual = (SqlOrderBy) new SelectStatementConverter().convert(selectStatement);
-        assertThat(actual.offset, isA(SqlNode.class));
+        assertThat(actual.offset.toString(), is("2"));
         assertNull(actual.fetch);
     }
     

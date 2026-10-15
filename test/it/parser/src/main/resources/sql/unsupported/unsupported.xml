@@ -392,4 +392,7 @@
     <sql-case id="unsupported_postgresql_json_objectagg_comma_arguments" value="SELECT JSON_OBJECTAGG(1, 2)" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="unsupported_postgresql_json_scalar_extra_argument" value="SELECT JSON_SCALAR(1, 2)" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="unsupported_postgresql_json_exists_missing_path" value="SELECT JSON_EXISTS('{}')" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="update_indirection_parameters_postgresql_regression" value="UPDATE foo SET items[?] = ?, span[?:?] = ?" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_json_arrayagg_filter_window" value="SELECT JSON_ARRAYAGG(?) FILTER (WHERE ?) OVER ()" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_json_arrayagg_filter_without_window" value="SELECT JSON_ARRAYAGG(?) FILTER (WHERE ?)" db-types="PostgreSQL" case-types="literal" />
 </sql-cases>

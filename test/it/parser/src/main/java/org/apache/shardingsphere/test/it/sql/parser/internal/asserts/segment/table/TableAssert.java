@@ -218,30 +218,6 @@ public final class TableAssert {
     }
     
     /**
-     * Assert join table.
-     *
-     * @param assertContext assert context
-     * @param actual actual JoinTableSegment
-     * @param expected expected ExpectedJoinTable
-     */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final JoinTableSegment actual, final ExpectedJoinTable expected) {
-        assertIs(assertContext, actual.getLeft(), expected.getLeft());
-        assertIs(assertContext, actual.getRight(), expected.getRight());
-        ExpressionAssert.assertExpression(assertContext, actual.getCondition(), expected.getOnCondition());
-        assertJoinType(assertContext, actual.getJoinType(), expected.getJoinType());
-        assertThat(assertContext.getText("Natural should be the same."), actual.isNatural(), is(expected.isNatural()));
-        assertThat(assertContext.getText("Column size assertion error: "), actual.getUsing().size(), is(expected.getUsingColumns().size()));
-        int count = 0;
-        for (ExpectedColumn each : expected.getUsingColumns()) {
-            ColumnAssert.assertIs(assertContext, actual.getUsing().get(count), each);
-            count++;
-        }
-        assertUsingAlias(assertContext, actual, expected);
-        assertColumns(assertContext, actual.getLeftQueryPartitionListSegments(), expected.getLeftQueryPartitionColumns(), "Left query partition");
-        assertColumns(assertContext, actual.getRightQueryPartitionListSegments(), expected.getRightQueryPartitionColumns(), "Right query partition");
-    }
-    
-    /**
      * Assert actual table segments is correct with expected tables.
      *
      * @param assertContext assert context
@@ -270,6 +246,30 @@ public final class TableAssert {
         for (int i = 0; i < actualTables.size(); i++) {
             assertIs(assertContext, actualTables.get(i), expectedTables.get(i));
         }
+    }
+    
+    /**
+     * Assert join table.
+     *
+     * @param assertContext assert context
+     * @param actual actual JoinTableSegment
+     * @param expected expected ExpectedJoinTable
+     */
+    public static void assertIs(final SQLCaseAssertContext assertContext, final JoinTableSegment actual, final ExpectedJoinTable expected) {
+        assertIs(assertContext, actual.getLeft(), expected.getLeft());
+        assertIs(assertContext, actual.getRight(), expected.getRight());
+        ExpressionAssert.assertExpression(assertContext, actual.getCondition(), expected.getOnCondition());
+        assertJoinType(assertContext, actual.getJoinType(), expected.getJoinType());
+        assertThat(assertContext.getText("Natural should be the same."), actual.isNatural(), is(expected.isNatural()));
+        assertThat(assertContext.getText("Column size assertion error: "), actual.getUsing().size(), is(expected.getUsingColumns().size()));
+        int count = 0;
+        for (ExpectedColumn each : expected.getUsingColumns()) {
+            ColumnAssert.assertIs(assertContext, actual.getUsing().get(count), each);
+            count++;
+        }
+        assertUsingAlias(assertContext, actual, expected);
+        assertColumns(assertContext, actual.getLeftQueryPartitionListSegments(), expected.getLeftQueryPartitionColumns(), "Left query partition");
+        assertColumns(assertContext, actual.getRightQueryPartitionListSegments(), expected.getRightQueryPartitionColumns(), "Right query partition");
     }
     
     private static void assertUsingAlias(final SQLCaseAssertContext assertContext, final JoinTableSegment actual, final ExpectedJoinTable expected) {

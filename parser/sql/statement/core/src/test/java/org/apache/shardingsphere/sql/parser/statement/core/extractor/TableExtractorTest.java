@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -91,6 +92,48 @@ import static org.mockito.Mockito.when;
 class TableExtractorTest {
     
     private final TableExtractor tableExtractor = new TableExtractor();
+    
+    @Test
+    void assertExtractUnaryExpressionTableOwner() {
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(30, 38, new IdentifierValue("foo_table")));
+        ColumnSegment column = new ColumnSegment(14, 15, new IdentifierValue("id"));
+        column.setOwner(new OwnerSegment(4, 12, new IdentifierValue("foo_table")));
+        ProjectionsSegment projections = new ProjectionsSegment(0, 15);
+        projections.getProjections().add(new ExpressionProjectionSegment(3, 15, "~foo_table.id", new UnaryOperationExpression(3, 15, column, "~", "~foo_table.id")));
+        tableExtractor.extractTablesFromSelect(SelectStatement.builder().projections(projections).from(table).build());
+        assertThat(tableExtractor.getRewriteTables().size(), is(2));
+        Iterator<SimpleTableSegment> actualTables = tableExtractor.getRewriteTables().iterator();
+        assertThat(actualTables.next(), is(table));
+        SimpleTableSegment actualOwner = actualTables.next();
+        assertThat(actualOwner.getStartIndex(), is(4));
+        assertThat(actualOwner.getStopIndex(), is(12));
+        assertThat(actualOwner.getTableName().getIdentifier().getValue(), is("foo_table"));
+    }
+    
+    @Test
+    void assertExtractUnaryExpressionTableAlias() {
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(30, 38, new IdentifierValue("foo_table")));
+        table.setAlias(new AliasSegment(40, 40, new IdentifierValue("f")));
+        ColumnSegment column = new ColumnSegment(6, 7, new IdentifierValue("id"));
+        column.setOwner(new OwnerSegment(4, 4, new IdentifierValue("f")));
+        ProjectionsSegment projections = new ProjectionsSegment(0, 7);
+        projections.getProjections().add(new ExpressionProjectionSegment(3, 7, "~f.id", new UnaryOperationExpression(3, 7, column, "~", "~f.id")));
+        tableExtractor.extractTablesFromSelect(SelectStatement.builder().projections(projections).from(table).build());
+        assertThat(tableExtractor.getRewriteTables(), contains(table));
+    }
+    
+    @Test
+    void assertExtractNestedUnarySubqueryTables() {
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(30, 39, new IdentifierValue("foo_nested")));
+        SelectStatement subquery = SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).from(table).build();
+        SubqueryExpressionSegment subqueryExpression = new SubqueryExpressionSegment(new SubquerySegment(5, 40, subquery, "SELECT id FROM foo_nested"));
+        UnaryOperationExpression inner = new UnaryOperationExpression(4, 41, subqueryExpression, "~", "~(SELECT id FROM foo_nested)");
+        UnaryOperationExpression expression = new UnaryOperationExpression(3, 41, inner, "~", "~~(SELECT id FROM foo_nested)");
+        ProjectionsSegment projections = new ProjectionsSegment(0, 41);
+        projections.getProjections().add(new ExpressionProjectionSegment(3, 41, expression.getText(), expression));
+        tableExtractor.extractTablesFromSelect(SelectStatement.builder().projections(projections).build());
+        assertThat(tableExtractor.getRewriteTables(), contains(table));
+    }
     
     @Test
     void assertExtractCommonExpressionTableOrder() {

@@ -118,6 +118,28 @@ class WithConverterTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("getSearchOrCycleArguments")
+    void assertConvertWithSearchOrCycle(final String name, final boolean search, final boolean cycle) {
+        CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(0, 40, new AliasSegment(0, 6, new IdentifierValue("foo_cte")),
+                new SubquerySegment(8, 20, mock(SelectStatement.class), ""), null);
+        ColumnSegment column = new ColumnSegment(12, 21, new IdentifierValue("foo_column"));
+        if (search) {
+            commonTableExpression.getSearchColumns().add(column);
+        }
+        if (cycle) {
+            commonTableExpression.getCycleColumns().add(column);
+        }
+        commonTableExpression.getColumns().add(new ColumnSegment(30, 39, new IdentifierValue("foo_generated")));
+        WithSegment withSegment = new WithSegment(0, 40, Collections.singletonList(commonTableExpression));
+        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class, () -> WithConverter.convert(withSegment, mock(SqlNode.class)));
+        assertThat(actualException.getMessage(), is("Unsupported SQL operation: SEARCH or CYCLE clauses in SQL Federation."));
+    }
+    
+    private static Stream<Arguments> getSearchOrCycleArguments() {
+        return Stream.of(Arguments.of("SEARCH", true, false), Arguments.of("CYCLE", false, true), Arguments.of("SEARCH and CYCLE", true, true));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("getDataModificationArguments")
     void assertConvertWithDataModification(final String name, final DMLStatement dataModification) {
         CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(0, 20, new AliasSegment(0, 6, new IdentifierValue("foo_cte")), null, dataModification);

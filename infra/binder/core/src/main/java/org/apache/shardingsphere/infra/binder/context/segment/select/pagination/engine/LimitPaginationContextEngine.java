@@ -39,8 +39,7 @@ public final class LimitPaginationContextEngine {
      */
     public PaginationContext createPaginationContext(final LimitSegment limitSegment, final List<Object> params) {
         PaginationValueSegment offset = limitSegment.getOffset().orElse(null);
-        ShardingSpherePreconditions.checkState(!limitSegment.isImplicitRowCount() || null != offset,
-                () -> new UnsupportedSQLOperationException("Implicit FETCH row count without OFFSET"));
+        ShardingSpherePreconditions.checkState(!limitSegment.isImplicitRowCount(), () -> new UnsupportedSQLOperationException("Implicit FETCH row count"));
         return new PaginationContext(offset, limitSegment.getRowCount().orElse(null), params);
     }
 }

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotE
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -128,6 +129,10 @@ public final class ColumnExtractor {
         }
         if (expression instanceof TypeCastExpression) {
             extract(((TypeCastExpression) expression).getExpression(), result);
+            return;
+        }
+        if (expression instanceof CommonExpressionSegment) {
+            ((CommonExpressionSegment) expression).getChildren().forEach(each -> extract(each, result));
             return;
         }
         if (expression instanceof CollateExpression) {

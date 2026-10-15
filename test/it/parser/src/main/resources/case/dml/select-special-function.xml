@@ -7778,23 +7778,6 @@
         </from>
     </select>
 
-    <select sql-case-id="select_postgresql_json_arrayagg_filter_window" parameters="1,2">
-        <projections start-index="7" stop-index="47">
-            <expression-projection start-index="7" stop-index="47" text="JSON_ARRAYAGG(?) FILTER (WHERE ?) OVER ()">
-                <expr>
-                    <function start-index="7" stop-index="47" text="JSON_ARRAYAGG(?) FILTER (WHERE ?) OVER ()" function-name="JSON_ARRAYAGG">
-                        <parameter>
-                            <parameter-marker-expression start-index="21" stop-index="21" parameter-index="0" />
-                        </parameter>
-                        <parameter>
-                            <parameter-marker-expression start-index="38" stop-index="38" parameter-index="1" />
-                        </parameter>
-                        <window-item start-index="46" stop-index="47" />
-                    </function>
-                </expr>
-            </expression-projection>
-        </projections>
-    </select>
 
     <select sql-case-id="select_postgresql_json_value_returning_typmod" parameters="1">
         <projections start-index="7" stop-index="48">
@@ -7987,22 +7970,6 @@
             <expression-projection start-index="7" stop-index="18" text="JSON_ARRAY()">
                 <expr>
                     <function start-index="7" stop-index="18" text="JSON_ARRAY()" function-name="JSON_ARRAY" />
-                </expr>
-            </expression-projection>
-        </projections>
-    </select>
-    <select sql-case-id="select_postgresql_json_arrayagg_filter_without_window" parameters="1, 2">
-        <projections start-index="7" stop-index="39">
-            <expression-projection start-index="7" stop-index="39" text="JSON_ARRAYAGG(?) FILTER (WHERE ?)">
-                <expr>
-                    <function start-index="7" stop-index="39" text="JSON_ARRAYAGG(?) FILTER (WHERE ?)" function-name="JSON_ARRAYAGG">
-                        <parameter>
-                            <parameter-marker-expression start-index="21" stop-index="21" parameter-index="0" />
-                        </parameter>
-                        <parameter>
-                            <parameter-marker-expression start-index="38" stop-index="38" parameter-index="1" />
-                        </parameter>
-                    </function>
                 </expr>
             </expression-projection>
         </projections>

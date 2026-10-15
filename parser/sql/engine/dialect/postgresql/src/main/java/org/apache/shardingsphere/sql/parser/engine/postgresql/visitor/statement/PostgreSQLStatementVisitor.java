@@ -27,6 +27,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AexprConstContext;
@@ -151,6 +152,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Xm
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.XmlTableColumnOptionElContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.XmlTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBaseVisitor;
+import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
@@ -255,9 +257,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker
 
 import javax.annotation.Nullable;
 import java.math.BigInteger;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -448,7 +453,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         ExpressionSegment expression;
         if (null != ctx.selectWithParens()) {
             SelectWithParensContext select = ctx.selectWithParens();
-            expression = new SubqueryExpressionSegment(new SubquerySegment(select.start.getStartIndex(), select.stop.getStopIndex(), (SelectStatement) visit(select), getOriginalText(select)));
+            expression = new SubqueryExpressionSegment(new SubquerySegment(select.start.getStartIndex(), select.stop.getStopIndex(), createSubquerySelectStatement(select), getOriginalText(select)));
         } else {
             expression = (ExpressionSegment) visit(ctx.aExpr(1));
         }
@@ -456,6 +461,19 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         right.getItems().add(expression);
         String operator = getOriginalText(ctx.subqueryOp()).toUpperCase() + " " + ctx.subType().getText().toUpperCase();
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, getOriginalText(ctx));
+    }
+    
+    private SelectStatement createSubquerySelectStatement(final ParserRuleContext ctx) {
+        int previousMarkerCount = parameterMarkerSegments.size();
+        SelectStatement result = (SelectStatement) visit(ctx);
+        int markerCount = parameterMarkerSegments.size() - previousMarkerCount;
+        Deque<ParameterMarkerSegment> markers = new ArrayDeque<>(markerCount);
+        Iterator<ParameterMarkerSegment> iterator = ((Deque<ParameterMarkerSegment>) parameterMarkerSegments).descendingIterator();
+        for (int i = markerCount; i > 0; i--) {
+            markers.addFirst(iterator.next());
+        }
+        result.addParameterMarkers(markers);
+        return result;
     }
     
     private Optional<String> findBinaryOperator(final AExprContext ctx) {
@@ -610,7 +628,8 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     private ExpressionSegment createSubqueryExpressionSegment(final CExprContext ctx) {
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectWithParens().getStart().getStartIndex(),
-                ctx.selectWithParens().getStop().getStopIndex(), (SelectStatement) visit(ctx.selectWithParens()), getOriginalText(ctx.selectWithParens()));
+                ctx.selectWithParens().getStop().getStopIndex(),
+                (SelectStatement) visit(ctx.selectWithParens()), getOriginalText(ctx.selectWithParens()));
         if (null != ctx.EXISTS()) {
             subquerySegment.setSelect(subquerySegment.getSelect().withSubqueryType(SubqueryType.EXISTS));
             return new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
@@ -636,18 +655,8 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.functionExprCommonSubexpr()) {
             return visit(ctx.functionExprCommonSubexpr());
         }
+        ShardingSpherePreconditions.checkState(null == ctx.filterClause(), () -> new SQLParsingException("FILTER clauses are not supported"));
         ASTNode result = visit(null == ctx.jsonAggregateFunction() ? ctx.funcApplication() : ctx.jsonAggregateFunction());
-        if (null != ctx.filterClause()) {
-            ExpressionSegment filter = (ExpressionSegment) visit(ctx.filterClause().aExpr());
-            if (result instanceof FunctionSegment) {
-                ((FunctionSegment) result).getParameters().add(filter);
-            } else {
-                ((AggregationProjectionSegment) result).getParameters().add(filter);
-            }
-        }
-        if (null != ctx.jsonAggregateFunction() && null != ctx.filterClause() && null == ctx.overClause()) {
-            return createFunctionSegment(ctx, (FunctionSegment) result, null);
-        }
         return null == ctx.overClause() ? result : appendWindow(ctx, result);
     }
     
@@ -734,8 +743,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                 }
             } else if (child instanceof SelectNoParensContext) {
                 SelectNoParensContext select = (SelectNoParensContext) child;
-                SelectStatement statement = (SelectStatement) visit(select);
-                statement.addParameterMarkers(getParameterMarkerSegments());
+                SelectStatement statement = createSubquerySelectStatement(select);
                 params.add(new SubqueryExpressionSegment(new SubquerySegment(select.start.getStartIndex(), select.stop.getStopIndex(), statement, getOriginalText(select))));
             } else if (parseTree instanceof JsonFunctionContext && (child instanceof TypeNameContext || child instanceof JsonValueEmptyClauseContext || child instanceof JsonValueErrorClauseContext
                     || child instanceof JsonExistsErrorClauseContext || child instanceof JsonPassingClauseContext || child instanceof JsonNullClauseContext
@@ -843,15 +851,6 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return SQLUtils.createLiteralExpression(value, ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
-    private StringLiteralValue createStringLiteralValue(final String literal, final boolean unicode, final UescapeContext uescape) {
-        String text = concatenateStringLiterals(literal);
-        if (unicode) {
-            char escape = null == uescape ? '\\' : getUnicodeEscapeCharacter(uescape.STRING_().getText());
-            text = "'" + decodeUnicode(text.substring(1, text.length() - 1), escape) + "'";
-        }
-        return new StringLiteralValue(text);
-    }
-    
     private NumberLiteralValue createNumberLiteralValue(final String text) {
         String value = text.replace("_", "");
         int startIndex = value.startsWith("-") || value.startsWith("+") ? 1 : 0;
@@ -868,6 +867,15 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         }
         BigInteger number = new BigInteger(value.substring(startIndex + 2), radix);
         return new NumberLiteralValue((value.startsWith("-") ? number.negate() : number).toString());
+    }
+    
+    private StringLiteralValue createStringLiteralValue(final String literal, final boolean unicode, final UescapeContext uescape) {
+        String text = concatenateStringLiterals(literal);
+        if (unicode) {
+            char escape = null == uescape ? '\\' : getUnicodeEscapeCharacter(uescape.STRING_().getText());
+            text = "'" + decodeUnicode(text.substring(1, text.length() - 1), escape) + "'";
+        }
+        return new StringLiteralValue(text);
     }
     
     private String concatenateStringLiterals(final String text) {
@@ -1303,8 +1311,28 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitSetTarget(final SetTargetContext ctx) {
-        visitIndirectionExpressions(ctx.optIndirection());
-        return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText()));
+        List<IdentifierValue> fieldAttributes = getSetTargetFieldAttributes(ctx.optIndirection());
+        ColumnSegment result = new ColumnSegment(ctx.colId().start.getStartIndex(), fieldAttributes.isEmpty() ? ctx.colId().stop.getStopIndex() : ctx.stop.getStopIndex(),
+                createIdentifierValue(ctx.colId().getText()));
+        if (!fieldAttributes.isEmpty()) {
+            result.setNestedObjectAttributes(fieldAttributes);
+        }
+        return result;
+    }
+    
+    private List<IdentifierValue> getSetTargetFieldAttributes(final OptIndirectionContext ctx) {
+        if (null == ctx.indirectionEl()) {
+            return Collections.emptyList();
+        }
+        List<IdentifierValue> result = new LinkedList<>();
+        OptIndirectionContext current = ctx;
+        while (null != current.indirectionEl()) {
+            AttrNameContext attrName = current.indirectionEl().attrName();
+            ShardingSpherePreconditions.checkNotNull(attrName, () -> new SQLParsingException("Only field indirection is supported in assignment targets"));
+            result.add(0, createIdentifierValue(attrName.getText()));
+            current = current.optIndirection();
+        }
+        return result;
     }
     
     @Override
@@ -1325,11 +1353,11 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                 .with(with)
                 .table(tableSegment)
                 .setAssignment((SetAssignmentSegment) visit(ctx.setClauseList()));
-        if (null != ctx.whereOrCurrentClause()) {
-            result.where((WhereSegment) visit(ctx.whereOrCurrentClause()));
-        }
         if (null != ctx.fromClause()) {
             result.from((TableSegment) visit(ctx.fromClause()));
+        }
+        if (null != ctx.whereOrCurrentClause()) {
+            result.where((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
         if (null != ctx.returningClause()) {
             result.returning((ReturningSegment) visit(ctx.returningClause()));
@@ -1797,13 +1825,74 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return result;
     }
     
-    private void applyTableFunctionColumnAliases(final Collection<ColumnSegment> columns, final NameListContext aliases) {
-        List<ColumnSegment> result = generateUsingColumn(aliases);
-        if (result.size() < columns.size()) {
-            result.addAll(new ArrayList<>(columns).subList(result.size(), columns.size()));
+    private SimpleTableSegment getSimpleTableSegment(final TableReferenceContext ctx) {
+        SimpleTableSegment result = (SimpleTableSegment) visit(ctx.relationExpr().qualifiedName());
+        if (null != ctx.aliasClause()) {
+            result.setAlias((AliasSegment) visit(ctx.aliasClause()));
         }
-        columns.clear();
-        columns.addAll(result);
+        return result;
+    }
+    
+    private SubqueryTableSegment getSubqueryTableSegment(final TableReferenceContext ctx) {
+        SelectStatement select = (SelectStatement) visit(ctx.selectWithParens());
+        SubquerySegment subquery = new SubquerySegment(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex(), select, getOriginalText(ctx.selectWithParens()));
+        AliasSegment alias = null == ctx.aliasClause() ? null : (AliasSegment) visit(ctx.aliasClause());
+        SubqueryTableSegment result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquery);
+        result.setAlias(alias);
+        return result;
+    }
+    
+    private ASTNode getJoinTableSegment(final TableReferenceContext ctx) {
+        JoinTableSegment result = new JoinTableSegment();
+        result.setLeft((TableSegment) visit(ctx.tableReference()));
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        visitJoinedTable(ctx.joinedTable(), result);
+        if (null != ctx.aliasClause()) {
+            result.setAlias((AliasSegment) visit(ctx.aliasClause()));
+        }
+        return result;
+    }
+    
+    private FunctionTableSegment getFunctionTableSegment(final TableReferenceContext ctx) {
+        ExpressionSegment expression;
+        Collection<ColumnSegment> columns = new LinkedList<>();
+        if (null != ctx.functionTable().functionExprWindowless()) {
+            expression = (ExpressionSegment) visit(ctx.functionTable().functionExprWindowless());
+        } else {
+            FunctionSegment function = new FunctionSegment(ctx.functionTable().start.getStartIndex(), ctx.functionTable().stop.getStopIndex(), "ROWS FROM", getOriginalText(ctx.functionTable()));
+            for (RowsFromItemContext each : ctx.functionTable().rowsFromList().rowsFromItem()) {
+                function.getParameters().add((ExpressionSegment) visit(each.functionExprWindowless()));
+                if (null != each.columnDefList()) {
+                    columns.addAll(createTableFunctionColumns(each.columnDefList().tableFuncElementList().tableFuncElement()));
+                }
+            }
+            expression = function;
+        }
+        FunctionTableSegment result = new FunctionTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), expression);
+        result.getColumns().addAll(columns);
+        if (null != ctx.funcAliasClause() && null != ctx.funcAliasClause().aliasClause()) {
+            AliasClauseContext aliasClause = ctx.funcAliasClause().aliasClause();
+            result.setAlias((AliasSegment) visit(aliasClause));
+            if (null != aliasClause.nameList()) {
+                applyTableFunctionColumnAliases(result.getColumns(), aliasClause.nameList());
+            }
+        } else if (null != ctx.funcAliasClause()) {
+            if (null != ctx.funcAliasClause().colId()) {
+                ColIdContext alias = ctx.funcAliasClause().colId();
+                result.setAlias(new AliasSegment(alias.start.getStartIndex(), alias.stop.getStopIndex(), createIdentifierValue(alias.getText())));
+            }
+            result.getColumns().addAll(createTableFunctionColumns(ctx.funcAliasClause().tableFuncElementList().tableFuncElement()));
+        }
+        return result;
+    }
+    
+    private Collection<ColumnSegment> createTableFunctionColumns(final Collection<TableFuncElementContext> contexts) {
+        Collection<ColumnSegment> result = new LinkedList<>();
+        for (TableFuncElementContext each : contexts) {
+            result.add(createColumnSegment(each.colId()));
+        }
+        return result;
     }
     
     private void collectJsonTableColumns(final Collection<JsonTableColumnContext> contexts, final Collection<ColumnSegment> columns) {
@@ -1814,6 +1903,15 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                 collectJsonTableColumns(each.jsonTableColumn(), columns);
             }
         }
+    }
+    
+    private void applyTableFunctionColumnAliases(final Collection<ColumnSegment> columns, final NameListContext aliases) {
+        List<ColumnSegment> result = generateUsingColumn(aliases);
+        if (result.size() < columns.size()) {
+            result.addAll(new ArrayList<>(columns).subList(result.size(), columns.size()));
+        }
+        columns.clear();
+        columns.addAll(result);
     }
     
     @Override
@@ -1885,76 +1983,6 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         }
         return new XmlTableColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), createIdentifierValue(ctx.colId().getText()).getValue(),
                 null == ctx.typeName() ? null : getOriginalText(ctx.typeName()), path, defaultExpr, getOriginalText(ctx));
-    }
-    
-    private SimpleTableSegment getSimpleTableSegment(final TableReferenceContext ctx) {
-        SimpleTableSegment result = (SimpleTableSegment) visit(ctx.relationExpr().qualifiedName());
-        if (null != ctx.aliasClause()) {
-            result.setAlias((AliasSegment) visit(ctx.aliasClause()));
-        }
-        return result;
-    }
-    
-    private SubqueryTableSegment getSubqueryTableSegment(final TableReferenceContext ctx) {
-        SelectStatement select = (SelectStatement) visit(ctx.selectWithParens());
-        SubquerySegment subquery = new SubquerySegment(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex(), select, getOriginalText(ctx.selectWithParens()));
-        AliasSegment alias = null == ctx.aliasClause() ? null : (AliasSegment) visit(ctx.aliasClause());
-        SubqueryTableSegment result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquery);
-        result.setAlias(alias);
-        return result;
-    }
-    
-    private ASTNode getJoinTableSegment(final TableReferenceContext ctx) {
-        JoinTableSegment result = new JoinTableSegment();
-        result.setLeft((TableSegment) visit(ctx.tableReference()));
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        visitJoinedTable(ctx.joinedTable(), result);
-        if (null != ctx.aliasClause()) {
-            result.setAlias((AliasSegment) visit(ctx.aliasClause()));
-        }
-        return result;
-    }
-    
-    private FunctionTableSegment getFunctionTableSegment(final TableReferenceContext ctx) {
-        ExpressionSegment expression;
-        Collection<ColumnSegment> columns = new LinkedList<>();
-        if (null != ctx.functionTable().functionExprWindowless()) {
-            expression = (ExpressionSegment) visit(ctx.functionTable().functionExprWindowless());
-        } else {
-            FunctionSegment function = new FunctionSegment(ctx.functionTable().start.getStartIndex(), ctx.functionTable().stop.getStopIndex(), "ROWS FROM", getOriginalText(ctx.functionTable()));
-            for (RowsFromItemContext each : ctx.functionTable().rowsFromList().rowsFromItem()) {
-                function.getParameters().add((ExpressionSegment) visit(each.functionExprWindowless()));
-                if (null != each.columnDefList()) {
-                    columns.addAll(createTableFunctionColumns(each.columnDefList().tableFuncElementList().tableFuncElement()));
-                }
-            }
-            expression = function;
-        }
-        FunctionTableSegment result = new FunctionTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), expression);
-        result.getColumns().addAll(columns);
-        if (null != ctx.funcAliasClause() && null != ctx.funcAliasClause().aliasClause()) {
-            AliasClauseContext aliasClause = ctx.funcAliasClause().aliasClause();
-            result.setAlias((AliasSegment) visit(aliasClause));
-            if (null != aliasClause.nameList()) {
-                applyTableFunctionColumnAliases(result.getColumns(), aliasClause.nameList());
-            }
-        } else if (null != ctx.funcAliasClause()) {
-            if (null != ctx.funcAliasClause().colId()) {
-                ColIdContext alias = ctx.funcAliasClause().colId();
-                result.setAlias(new AliasSegment(alias.start.getStartIndex(), alias.stop.getStopIndex(), createIdentifierValue(alias.getText())));
-            }
-            result.getColumns().addAll(createTableFunctionColumns(ctx.funcAliasClause().tableFuncElementList().tableFuncElement()));
-        }
-        return result;
-    }
-    
-    private Collection<ColumnSegment> createTableFunctionColumns(final Collection<TableFuncElementContext> contexts) {
-        Collection<ColumnSegment> result = new LinkedList<>();
-        for (TableFuncElementContext each : contexts) {
-            result.add(createColumnSegment(each.colId()));
-        }
-        return result;
     }
     
     @Override
@@ -2223,6 +2251,6 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitSignedIconst(final SignedIconstContext ctx) {
-        return new NumberLiteralValue(ctx.getText());
+        return new NumberLiteralValue(ctx.getText().replace("_", ""));
     }
 }

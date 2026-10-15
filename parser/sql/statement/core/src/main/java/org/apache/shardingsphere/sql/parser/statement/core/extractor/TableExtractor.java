@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.List
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -261,6 +262,9 @@ public final class TableExtractor {
         if (expressionSegment instanceof CommonExpressionSegment) {
             extractTablesFromExpressions(((CommonExpressionSegment) expressionSegment).getChildren(), tableScope);
         }
+        if (expressionSegment instanceof UnaryOperationExpression) {
+            extractTablesFromExpression(((UnaryOperationExpression) expressionSegment).getExpression(), tableScope);
+        }
         if (expressionSegment instanceof ExistsSubqueryExpression) {
             extractTablesFromNestedStatement(((ExistsSubqueryExpression) expressionSegment).getSubquery().getSelect(), tableScope);
         }
@@ -289,6 +293,9 @@ public final class TableExtractor {
         }
         if (expressionSegment instanceof FunctionSegment) {
             extractTablesFromExpressions(((FunctionSegment) expressionSegment).getParameters(), tableScope);
+        }
+        if (expressionSegment instanceof AggregationProjectionSegment) {
+            extractTablesFromExpressions(((AggregationProjectionSegment) expressionSegment).getParameters(), tableScope);
         }
         if (expressionSegment instanceof CaseWhenExpression) {
             extractTablesFromCaseWhenExpression((CaseWhenExpression) expressionSegment, tableScope);
@@ -499,8 +506,7 @@ public final class TableExtractor {
             }
         }
         for (TableSegment each : scope.tables) {
-            if (each instanceof SimpleTableSegment && !each.getAliasName().isPresent()
-                    && ownerName.equalsIgnoreCase(((SimpleTableSegment) each).getTableName().getIdentifier().getValue())) {
+            if (each instanceof SimpleTableSegment && !each.getAliasName().isPresent() && ownerName.equalsIgnoreCase(((SimpleTableSegment) each).getTableName().getIdentifier().getValue())) {
                 return true;
             }
         }
