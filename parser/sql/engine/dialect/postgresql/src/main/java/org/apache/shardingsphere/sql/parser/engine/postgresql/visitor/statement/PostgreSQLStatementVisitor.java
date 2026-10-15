@@ -639,13 +639,13 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitCaseExpr(final CaseExprContext ctx) {
+        ExpressionSegment caseExpr = null == ctx.caseArg() ? null : (ExpressionSegment) visit(ctx.caseArg().aExpr());
         Collection<ExpressionSegment> whenExprs = new LinkedList<>();
         Collection<ExpressionSegment> thenExprs = new LinkedList<>();
         for (WhenClauseContext each : ctx.whenClauseList().whenClause()) {
             whenExprs.add((ExpressionSegment) visit(each.aExpr(0)));
             thenExprs.add((ExpressionSegment) visit(each.aExpr(1)));
         }
-        ExpressionSegment caseExpr = null == ctx.caseArg() ? null : (ExpressionSegment) visit(ctx.caseArg().aExpr());
         ExpressionSegment elseExpr = null == ctx.caseDefault() ? null : (ExpressionSegment) visit(ctx.caseDefault().aExpr());
         return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr, getOriginalText(ctx));
     }

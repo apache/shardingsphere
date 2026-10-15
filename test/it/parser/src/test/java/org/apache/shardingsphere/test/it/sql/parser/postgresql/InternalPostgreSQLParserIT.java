@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -148,7 +149,8 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     private static Stream<Arguments> getQuantifiedPatternSubqueryCases() {
         return Stream.of(
                 Arguments.of("like any", "INSERT INTO foo_table(foo_before, foo_match, foo_after) VALUES (?, ? LIKE ANY (SELECT ?), ?)", Arrays.asList(0, 1, 2, 3), Collections.singletonList(2)),
-                Arguments.of("not like all", "INSERT INTO foo_table(foo_before, foo_match, foo_after) VALUES (?, ? NOT LIKE ALL (SELECT ?), ?)", Arrays.asList(0, 1, 2, 3), Collections.singletonList(2)),
+                Arguments.of("not like all", "INSERT INTO foo_table(foo_before, foo_match, foo_after) VALUES (?, ? NOT LIKE ALL (SELECT ?), ?)", Arrays.asList(0, 1, 2, 3),
+                        Collections.singletonList(2)),
                 Arguments.of("ilike any ordered markers", "INSERT INTO foo_table(foo_before, foo_match, foo_after) VALUES (?, ? ILIKE ANY (SELECT ? UNION ALL SELECT ?), ?)",
                         Arrays.asList(0, 1, 2, 3, 4), Arrays.asList(2, 3)));
     }
@@ -200,11 +202,34 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     
     private static Stream<Arguments> getCaseJsonArraySubqueryCases() {
         return Stream.of(
-                Arguments.of("case json array marker", "INSERT INTO foo_table(foo_case, foo_after) VALUES (CASE (JSON_ARRAY(SELECT ?)::text) WHEN ? THEN ? ELSE ? END, ?)", Collections.singletonList(2)),
+                Arguments.of("case json array marker", "INSERT INTO foo_table(foo_case, foo_after) VALUES (CASE (JSON_ARRAY(SELECT ?)::text) WHEN ? THEN ? ELSE ? END, ?)",
+                        Collections.singletonList(0)),
                 Arguments.of("case json array ordered markers", "INSERT INTO foo_table(foo_case, foo_after) VALUES (CASE (JSON_ARRAY(SELECT ? UNION ALL SELECT ?)::text) WHEN ? THEN ? ELSE ? END, ?)",
-                        Arrays.asList(2, 3)),
+                        Arrays.asList(0, 1)),
                 Arguments.of("case json array without markers", "INSERT INTO foo_table(foo_case, foo_after) VALUES (CASE (JSON_ARRAY(SELECT 1)::text) WHEN ? THEN ? ELSE ? END, ?)",
                         Collections.emptyList()));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getCaseParameterMarkerCases")
+    void assertCaseParameterMarkers(final String name, final String sql, final Collection<String> expectedParams) {
+        InsertStatement actual = (InsertStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        assertThat(actual.getParameterMarkers().stream().sorted(Comparator.comparingInt(ParameterMarkerSegment::getStartIndex))
+                .map(each -> each.getStartIndex() + ":" + each.getParameterIndex()).collect(Collectors.toList()), is(expectedParams));
+        assertThat(ExpressionExtractor.getParameterMarkerExpressions(actual.getValues().iterator().next().getValues()).stream().sorted(Comparator.comparingInt(ParameterMarkerSegment::getStartIndex))
+                .map(each -> each.getStartIndex() + ":" + each.getParameterIndex()).collect(Collectors.toList()), is(expectedParams));
+    }
+    
+    private static Stream<Arguments> getCaseParameterMarkerCases() {
+        return Stream.of(
+                Arguments.of("prefix and multiple branches", "INSERT INTO foo_table VALUES (?, CASE ? WHEN ? THEN ? WHEN ? THEN ? ELSE ? END, ?)",
+                        Arrays.asList("30:0", "38:1", "45:2", "52:3", "59:4", "66:5", "73:6", "80:7")),
+                Arguments.of("searched case", "INSERT INTO foo_table VALUES (CASE WHEN ? THEN ? ELSE ? END)", Arrays.asList("40:0", "47:1", "54:2")),
+                Arguments.of("nested case", "INSERT INTO foo_table VALUES (CASE ? WHEN ? THEN CASE ? WHEN ? THEN ? ELSE ? END ELSE ? END)",
+                        Arrays.asList("35:0", "42:1", "54:2", "61:3", "68:4", "75:5", "86:6")),
+                Arguments.of("explicit dollar indices", "INSERT INTO foo_table VALUES (CASE $3 WHEN $1 THEN $5 ELSE $2 END, $4)", Arrays.asList("35:2", "43:0", "51:4", "59:1", "67:3")),
+                Arguments.of("prefix and json subquery", "INSERT INTO foo_table VALUES (?, CASE (JSON_ARRAY(SELECT ? UNION ALL SELECT ?)::text) WHEN ? THEN ? ELSE ? END, ?)",
+                        Arrays.asList("30:0", "57:1", "76:2", "91:3", "98:4", "105:5", "112:6")));
     }
     
     @ParameterizedTest(name = "{0}")
