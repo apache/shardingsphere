@@ -54,7 +54,6 @@ class FirebirdSQLResponsePacketTest {
     void assertWriteWithRow() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.writerIndex()).thenReturn(0);
-        when(byteBuf.writeZero(1)).thenReturn(byteBuf);
         BinaryRow row = new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.LONG, 5)));
         try (MockedStatic<FirebirdBinaryProtocolValueFactory> mocked = mockStatic(FirebirdBinaryProtocolValueFactory.class)) {
             mocked.when(() -> FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.LONG)).thenReturn(protocolValue);

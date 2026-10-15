@@ -85,7 +85,6 @@ class FirebirdFetchResponsePacketTest {
     void assertWriteWithNonNullCellData() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.writerIndex()).thenReturn(0);
-        when(byteBuf.writeZero(1)).thenReturn(byteBuf);
         BinaryRow row = new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.LONG, 123)));
         try (MockedStatic<FirebirdBinaryProtocolValueFactory> mocked = mockStatic(FirebirdBinaryProtocolValueFactory.class)) {
             mocked.when(() -> FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.LONG)).thenReturn(protocolValue);
@@ -115,7 +114,6 @@ class FirebirdFetchResponsePacketTest {
     void assertWriteWithNullCellData() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.writerIndex()).thenReturn(0);
-        when(byteBuf.writeZero(1)).thenReturn(byteBuf);
         when(byteBuf.getByte(0)).thenReturn((byte) 0);
         FirebirdFetchResponsePacket.getFetchRowPacket(new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.LONG, null)))).write(payload);
         verify(payload).writeInt4(FirebirdCommandPacketType.FETCH_RESPONSE.getValue());
