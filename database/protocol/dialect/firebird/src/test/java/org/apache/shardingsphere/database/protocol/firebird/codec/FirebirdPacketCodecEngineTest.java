@@ -555,6 +555,19 @@ class FirebirdPacketCodecEngineTest {
         assertThat(((ByteBuf) out.get(2)).readableBytes(), is(28));
     }
     
+    @Test
+    void assertDecodeWithInvalidSetBpb() {
+        EmbeddedChannel channel = new EmbeddedChannel(new PacketCodec(new FirebirdPacketCodecEngine()));
+        channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
+        channel.writeInbound(Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_SET_BPB.getValue()).writeInt(BATCH_STATEMENT_HANDLE).writeInt(0));
+        channel.runPendingTasks();
+        assertNull(channel.readInbound());
+        ByteBuf actual = channel.readOutbound();
+        assertThat(actual.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
+        assertFalse(channel.isOpen());
+        actual.release();
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidBlobStreamArguments")
     void assertDecodeWithInvalidBlobStream(final String name, final ByteBuf blobStream) {
@@ -571,19 +584,6 @@ class FirebirdPacketCodecEngineTest {
         return Stream.of(
                 Arguments.of("unaligned_length", buildBlobStream(6, Unpooled.buffer().writeZero(8))),
                 Arguments.of("wrong_bpb_version", buildBlobStream(24, buildBlobHeader(1L, 4, 4).writeBytes(new byte[]{2, 3, 1, 1}).writeZero(4))));
-    }
-    
-    @Test
-    void assertDecodeWithInvalidSetBpb() {
-        EmbeddedChannel channel = new EmbeddedChannel(new PacketCodec(new FirebirdPacketCodecEngine()));
-        channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
-        channel.writeInbound(Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_SET_BPB.getValue()).writeInt(BATCH_STATEMENT_HANDLE).writeInt(0));
-        channel.runPendingTasks();
-        assertNull(channel.readInbound());
-        ByteBuf actual = channel.readOutbound();
-        assertThat(actual.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
-        assertFalse(channel.isOpen());
-        actual.release();
     }
     
     private static ByteBuf buildBlobStream(final int length, final ByteBuf data) {

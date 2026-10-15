@@ -95,6 +95,16 @@ public final class FirebirdBlobParameterConverter {
         return findTextBlobCharset(field, parameter).isPresent() && connectionCharset.isPresent() && getFieldCharsetId(field) != connectionCharsetId;
     }
     
+    private Optional<Charset> findTextBlobCharset(final FirebirdBatchColumnDescriptor field, final FirebirdReturnColumnPacket parameter) {
+        Optional<Integer> parameterSubType = parameter.findBlobSubType();
+        boolean textBlobMove = ISCConstants.BLOB_SUB_TYPE_TEXT == field.getSubType() && parameterSubType.isPresent() && ISCConstants.BLOB_SUB_TYPE_TEXT == parameterSubType.get();
+        return textBlobMove ? FirebirdBlobParameterBufferUtils.findJavaCharset(getFieldCharsetId(field)) : Optional.empty();
+    }
+    
+    private int getFieldCharsetId(final FirebirdBatchColumnDescriptor field) {
+        return FirebirdBlobParameterBufferUtils.getActualCharset(field.getScale(), connectionCharsetId);
+    }
+    
     /**
      * Convert BLOB value of message to parameter value.
      *
@@ -317,16 +327,6 @@ public final class FirebirdBlobParameterConverter {
             result *= 10;
         }
         return result;
-    }
-    
-    private Optional<Charset> findTextBlobCharset(final FirebirdBatchColumnDescriptor field, final FirebirdReturnColumnPacket parameter) {
-        Optional<Integer> parameterSubType = parameter.findBlobSubType();
-        boolean textBlobMove = ISCConstants.BLOB_SUB_TYPE_TEXT == field.getSubType() && parameterSubType.isPresent() && ISCConstants.BLOB_SUB_TYPE_TEXT == parameterSubType.get();
-        return textBlobMove ? FirebirdBlobParameterBufferUtils.findJavaCharset(getFieldCharsetId(field)) : Optional.empty();
-    }
-    
-    private int getFieldCharsetId(final FirebirdBatchColumnDescriptor field) {
-        return FirebirdBlobParameterBufferUtils.getActualCharset(field.getScale(), connectionCharsetId);
     }
     
     private byte[] readText(final byte[] content, final FirebirdBatchColumnDescriptor field, final int charsetId) {

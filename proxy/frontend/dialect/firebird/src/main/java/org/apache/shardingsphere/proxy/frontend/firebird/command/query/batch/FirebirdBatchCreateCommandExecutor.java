@@ -96,8 +96,6 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
     @Getter
     private static final class BatchParameters {
         
-        private final int version;
-        
         private final long bufferSize;
         
         private final boolean recordCounts;
@@ -108,7 +106,7 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         
         static BatchParameters parse(final ByteBuf batchParametersBuffer) {
             if (null == batchParametersBuffer || !batchParametersBuffer.isReadable()) {
-                return new BatchParameters(BATCH_VERSION_1, DEFAULT_BUFFER_SIZE, false, false, false);
+                return new BatchParameters(DEFAULT_BUFFER_SIZE, false, false, false);
             }
             ByteBuf reader = batchParametersBuffer.duplicate();
             int version = reader.readUnsignedByte();
@@ -137,7 +135,7 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
                     reader.skipBytes(valueLength);
                 }
             }
-            return new BatchParameters(version, bufferSize, recordCounts, multiError, blobStreamAllowed);
+            return new BatchParameters(bufferSize, recordCounts, multiError, blobStreamAllowed);
         }
         
         private static long getBufferSize(final int requestedBufferSize) {

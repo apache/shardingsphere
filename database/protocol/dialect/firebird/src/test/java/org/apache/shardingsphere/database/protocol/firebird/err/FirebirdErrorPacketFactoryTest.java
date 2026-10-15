@@ -81,6 +81,13 @@ class FirebirdErrorPacketFactoryTest {
     }
     
     @Test
+    void assertNewInstanceWithNonFirebirdErrorCode() {
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(new SQLException("Invalid error", "HY000", 123));
+        assertThat(actual.getErrorCode(), is(335544382));
+        assertThat(actual.getErrorMessage(), is("Invalid error"));
+    }
+    
+    @Test
     void assertNewInstanceWithUnknownBatchBlobIdException() {
         assertThat(writeStatusVector(new UnknownBatchBlobIdException(99L)),
                 is("00000001140000f9" + "0000000114000074" + "00000004ffffff98" + "000000011400036d" + "0000000200000004303a3633" + "00000000"));
@@ -90,13 +97,6 @@ class FirebirdErrorPacketFactoryTest {
     void assertNewInstanceWithBatchBpbTooBigException() {
         assertThat(writeStatusVector(new BatchBpbTooBigException(8L, 4L)),
                 is("00000001140000f9" + "0000000114000074" + "00000004ffffff98" + "0000000114000367" + "000000011400036a" + "0000000400000008" + "0000000400000004" + "00000000"));
-    }
-    
-    @Test
-    void assertNewInstanceWithNonFirebirdErrorCode() {
-        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(new SQLException("Invalid error", "HY000", 123));
-        assertThat(actual.getErrorCode(), is(335544382));
-        assertThat(actual.getErrorMessage(), is("Invalid error"));
     }
     
     private String writeStatusVector(final Exception cause) {

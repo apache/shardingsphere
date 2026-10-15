@@ -45,6 +45,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdS
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBlobParameterConverter;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
+import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -204,7 +205,7 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
         return result;
     }
     
-    private boolean isBlobValue(final FirebirdBatchColumnDescriptor columnDescriptor, final Object value) {
+    private boolean isBlobValue(final FirebirdBatchColumnDescriptor columnDescriptor, @Nullable final Object value) {
         return FirebirdBinaryColumnType.BLOB == columnDescriptor.getType() && (value instanceof Long || value instanceof byte[]);
     }
     

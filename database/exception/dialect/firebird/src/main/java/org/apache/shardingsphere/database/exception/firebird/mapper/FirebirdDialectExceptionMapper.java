@@ -203,7 +203,7 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof BatchSegmentTooBigException) {
             BatchSegmentTooBigException ex = (BatchSegmentTooBigException) sqlDialectException;
-            return toBlobBufferFormatException(FirebirdVendorError.BATCH_SEGMENT_TOO_BIG, ISCConstants.isc_batch_big_seg2, (int) ex.getSegmentLength(), (int) ex.getAvailableLength());
+            return toBlobBufferFormatException(FirebirdVendorError.BATCH_SEGMENT_TOO_BIG, ISCConstants.isc_batch_big_seg2, ex.getSegmentLength(), ex.getAvailableLength());
         }
         if (sqlDialectException instanceof StringTruncationException) {
             StringTruncationException ex = (StringTruncationException) sqlDialectException;

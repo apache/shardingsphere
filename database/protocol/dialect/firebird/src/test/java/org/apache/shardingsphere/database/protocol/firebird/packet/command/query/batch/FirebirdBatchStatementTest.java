@@ -99,9 +99,8 @@ class FirebirdBatchStatementTest {
     }
     
     @Test
-    void assertAppendStreamBlob() {
-        ByteBuf data = Unpooled.buffer();
-        writeHeader(data, 0x100000002L, 5, 0);
+    void assertAppendBlobStreamWithLongBatchBlobId() {
+        ByteBuf data = createBlobHeader(0x100000002L, 5, 0);
         data.writeBytes("abcde".getBytes(StandardCharsets.US_ASCII));
         byte[] actual = appendBlobStream(createBatchStatement(), data, 24L);
         ByteBuf expected = Unpooled.buffer().writeIntLE(1).writeIntLE(2).writeIntLE(5).writeIntLE(0).writeBytes("abcde".getBytes(StandardCharsets.US_ASCII)).writeZero(3);
@@ -111,8 +110,7 @@ class FirebirdBatchStatementTest {
     
     @Test
     void assertAppendBlobStreamWithSegmentedBlobAndBpb() {
-        ByteBuf data = Unpooled.buffer();
-        writeHeader(data, 10L, 14, SEGMENTED_BPB.length);
+        ByteBuf data = createBlobHeader(10L, 14, SEGMENTED_BPB.length);
         data.writeBytes(SEGMENTED_BPB);
         data.writeInt(3);
         data.writeBytes("abc".getBytes(StandardCharsets.US_ASCII));
@@ -128,8 +126,7 @@ class FirebirdBatchStatementTest {
     @Test
     void assertAppendBlobStreamWithBlobSplitAcrossPackets() {
         FirebirdBatchStatement batchStatement = createBatchStatement();
-        ByteBuf firstData = Unpooled.buffer();
-        writeHeader(firstData, 1L, 20, 0);
+        ByteBuf firstData = createBlobHeader(1L, 20, 0);
         firstData.writeBytes(new byte[16]);
         appendBlobStream(batchStatement, firstData, 32L);
         ByteBuf secondData = Unpooled.wrappedBuffer(new byte[]{1, 2, 3, 4});
@@ -139,8 +136,7 @@ class FirebirdBatchStatementTest {
     
     @Test
     void assertAppendBlobStreamWithHeaderSentInNextPacket() {
-        ByteBuf data = Unpooled.buffer();
-        writeHeader(data, 1L, 12, 0);
+        ByteBuf data = createBlobHeader(1L, 12, 0);
         data.writeBytes(new byte[12]);
         data.writeInt(1);
         byte[] actual = appendBlobStream(createBatchStatement(), data, 40L);
@@ -152,8 +148,7 @@ class FirebirdBatchStatementTest {
     void assertAppendBlobStreamWithDefaultSegmentedBpb() {
         FirebirdBatchStatement batchStatement = createBatchStatement();
         batchStatement.getBlobStream().setDefaultBpb(Unpooled.wrappedBuffer(SEGMENTED_BPB));
-        ByteBuf data = Unpooled.buffer();
-        writeHeader(data, 1L, 4, 0);
+        ByteBuf data = createBlobHeader(1L, 4, 0);
         data.writeInt(2);
         data.writeBytes(new byte[]{7, 8});
         byte[] actual = appendBlobStream(batchStatement, data, 20L);
@@ -165,8 +160,7 @@ class FirebirdBatchStatementTest {
     void assertAppendBlobStreamWithDefaultStreamBpb() {
         FirebirdBatchStatement batchStatement = createBatchStatement();
         batchStatement.getBlobStream().setDefaultBpb(Unpooled.wrappedBuffer(new byte[]{1, 3, 4, 1, 0, 0, 0}));
-        ByteBuf data = Unpooled.buffer();
-        writeHeader(data, 1L, 4, 0);
+        ByteBuf data = createBlobHeader(1L, 4, 0);
         data.writeBytes(new byte[]{7, 8, 9, 10});
         byte[] actual = appendBlobStream(batchStatement, data, 20L);
         assertThat(actual, is(ByteBufUtil.getBytes(createRestoredHeader(1, 4, 0).writeBytes(new byte[]{7, 8, 9, 10}))));
@@ -175,8 +169,7 @@ class FirebirdBatchStatementTest {
     
     @Test
     void assertAppendBlobStreamWithBpbLongerThanBlob() {
-        ByteBuf data = Unpooled.buffer();
-        writeHeader(data, 1L, 2, 4);
+        ByteBuf data = createBlobHeader(1L, 2, 4);
         data.writeBytes(new byte[]{1, 3, 1, 1});
         data.writeBytes(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
         byte[] actual = appendBlobStream(createBatchStatement(), data, 32L);
@@ -185,8 +178,7 @@ class FirebirdBatchStatementTest {
     
     @Test
     void assertAppendBlobStreamWithSegmentHeaderBeyondBlob() {
-        ByteBuf data = Unpooled.buffer();
-        writeHeader(data, 1L, 9, SEGMENTED_BPB.length);
+        ByteBuf data = createBlobHeader(1L, 9, SEGMENTED_BPB.length);
         data.writeBytes(SEGMENTED_BPB);
         data.writeInt(2);
         data.writeBytes(new byte[]{1, 2});
@@ -199,8 +191,7 @@ class FirebirdBatchStatementTest {
     
     @Test
     void assertAppendBlobStreamWithIncompleteData() {
-        ByteBuf data = Unpooled.buffer();
-        writeHeader(data, 1L, 5, 0);
+        ByteBuf data = createBlobHeader(1L, 5, 0);
         data.writeBytes(new byte[2]);
         assertThrows(IndexOutOfBoundsException.class, () -> appendBlobStream(createBatchStatement(), data, 24L));
     }
@@ -343,12 +334,6 @@ class FirebirdBatchStatementTest {
         batchStatement.appendBlobStream(data, length);
         List<byte[]> portions = new ArrayList<>(batchStatement.getBlobBuffer());
         return portions.get(portions.size() - 1);
-    }
-    
-    private static void writeHeader(final ByteBuf data, final long batchBlobId, final int blobLength, final int bpbLength) {
-        data.writeLong(batchBlobId);
-        data.writeInt(blobLength);
-        data.writeInt(bpbLength);
     }
     
     private static ByteBuf createRestoredHeader(final int batchBlobId, final int blobLength, final int bpbLength) {

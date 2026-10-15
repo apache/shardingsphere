@@ -80,6 +80,7 @@ public final class FirebirdBlobWrite {
      *
      * @return BLOB data, or empty if the garbage collector released the data of a used write
      */
+    @HighFrequencyInvocation
     public Optional<byte[]> getBytes() {
         if (!closed) {
             return Optional.of(buffer.toByteArray());

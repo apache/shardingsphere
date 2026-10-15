@@ -57,6 +57,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test of {@link FirebirdOpenBlobCommandExecutor}.
+ *
+ * <p>{@link FirebirdBlobWriteCache} is mocked with a direct {@code mockStatic} in one test only, because the other tests use the real cache instance,
+ * so {@code StaticMockSettings} of {@code AutoMockExtension} cannot be applied to the whole class.</p>
+ */
 @ExtendWith(MockitoExtension.class)
 class FirebirdOpenBlobCommandExecutorTest {
     

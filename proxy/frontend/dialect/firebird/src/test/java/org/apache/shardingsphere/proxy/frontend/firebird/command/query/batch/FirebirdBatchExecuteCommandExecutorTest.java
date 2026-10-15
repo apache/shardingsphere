@@ -798,7 +798,6 @@ class FirebirdBatchExecuteCommandExecutorTest {
     @Test
     void assertExecuteWithInvalidBlobForConvertedParameter() {
         mockBlobParameterBatch(Collections.singletonList(Collections.singletonList(10L)), Collections.singletonList(createParameterColumn(Types.VARCHAR, 20)));
-        when(blobWriteCache.useBlobData(CONNECTION_ID, 10L, transactionId)).thenReturn(Optional.empty());
         try (MockedConstruction<FirebirdBatchedStatementsExecutor> mockedExecutor = mockConstruction(FirebirdBatchedStatementsExecutor.class)) {
             when(FirebirdBlobWriteCache.getInstance()).thenReturn(blobWriteCache);
             ParameterConversionException actual = assertThrows(ParameterConversionException.class, () -> new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute());

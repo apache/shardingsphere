@@ -137,6 +137,10 @@ public final class FirebirdBlobParameterBufferUtils {
         return Optional.of(new FirebirdBlobTransliterator(getJavaCharset(actualSourceCharsetId), getJavaCharset(actualTargetCharsetId)));
     }
     
+    private static boolean isPlainCharset(final int charsetId) {
+        return ISCConstants.CS_NONE == charsetId || ISCConstants.CS_BINARY == charsetId;
+    }
+    
     private static Charset getJavaCharset(final int charsetId) {
         Optional<Charset> result = findJavaCharset(charsetId);
         ShardingSpherePreconditions.checkState(result.isPresent(), UnsupportedBlobFilterException::new);
@@ -152,10 +156,6 @@ public final class FirebirdBlobParameterBufferUtils {
      */
     static int getActualCharset(final int charsetId, final int connectionCharsetId) {
         return ISCConstants.CS_dynamic == charsetId ? connectionCharsetId : charsetId;
-    }
-    
-    private static boolean isPlainCharset(final int charsetId) {
-        return ISCConstants.CS_NONE == charsetId || ISCConstants.CS_BINARY == charsetId;
     }
     
     /**

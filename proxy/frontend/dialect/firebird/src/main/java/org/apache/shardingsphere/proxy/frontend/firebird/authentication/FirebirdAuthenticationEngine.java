@@ -52,6 +52,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnec
 import org.firebirdsql.encodings.EncodingDefinition;
 import org.firebirdsql.encodings.EncodingFactory;
 import org.firebirdsql.gds.ISCConstants;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -115,7 +116,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         }
     }
     
-    private int getCharsetId(final String encoding) {
+    private int getCharsetId(@Nullable final String encoding) {
         EncodingDefinition encodingDefinition = EncodingFactory.getPlatformDefault().getEncodingDefinitionByFirebirdName(null == encoding ? "NONE" : encoding);
         return null == encodingDefinition ? ISCConstants.CS_dynamic : encodingDefinition.getFirebirdCharacterSetId();
     }
