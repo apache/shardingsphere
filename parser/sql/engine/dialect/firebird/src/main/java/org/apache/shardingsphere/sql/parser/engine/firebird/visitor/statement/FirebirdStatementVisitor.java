@@ -117,6 +117,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -593,6 +594,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         }
     }
     
+    @Nullable
     private NullsOrderType generateNullsOrderType(final OrderByItemContext ctx) {
         if (null == ctx.FIRST() && null == ctx.LAST()) {
             return null;
