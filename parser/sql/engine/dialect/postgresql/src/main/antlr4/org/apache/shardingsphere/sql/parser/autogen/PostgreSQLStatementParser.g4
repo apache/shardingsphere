@@ -60,6 +60,7 @@ execute
     | set
     | resetParameter
     | call
+    | doStatement
     | alterAggregate
     | alterCollation
     | alterFunction

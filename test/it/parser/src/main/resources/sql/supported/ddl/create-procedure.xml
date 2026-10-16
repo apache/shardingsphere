@@ -132,4 +132,5 @@
     <sql-case id="create_procedure_atomic_empty_pg" value="CREATE PROCEDURE p() BEGIN ATOMIC END" db-types="PostgreSQL" />
     <sql-case id="create_procedure_atomic_dml_pg" value="CREATE OR REPLACE PROCEDURE p() LANGUAGE sql BEGIN ATOMIC INSERT INTO t VALUES (1); END" db-types="PostgreSQL" />
     <sql-case id="create_procedure_body_string_control_pg" value="CREATE PROCEDURE p() LANGUAGE sql AS 'INSERT INTO t VALUES (1)'" db-types="PostgreSQL" />
+    <sql-case id="create_plsql_block_with_schema_qualified_type_attribute" value="DECLARE foo_value foo_schema.foo_table.foo_id%TYPE; BEGIN NULL; END;" db-types="Oracle" />
 </sql-cases>

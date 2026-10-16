@@ -1480,3 +1480,11 @@ ATOMIC
 RETURN
     : R E T U R N
     ;
+
+SOURCE
+    : S O U R C E
+    ;
+
+TARGET
+    : T A R G E T
+    ;
