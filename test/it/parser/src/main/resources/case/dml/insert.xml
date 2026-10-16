@@ -6145,4 +6145,68 @@
         </values>
         <on-duplicate-key-columns start-index="37" stop-index="78" />
     </insert>
+
+    <insert sql-case-id="insert_array_parameters_pg" parameters="1, 2, 3" parameter-marker-count="4">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="44">
+            <column name="status" start-index="21" stop-index="34" />
+            <column name="user_id" start-index="37" stop-index="43" />
+        </columns>
+        <values>
+            <value start-index="53" stop-index="60">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="2" start-index="54" stop-index="55" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="58" stop-index="59" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_array_jdbc_parameters_pg" parameters="1, 2, 3, 4" parameter-marker-count="4">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="42">
+            <column name="status" start-index="21" stop-index="32" />
+            <column name="user_id" start-index="35" stop-index="41" />
+        </columns>
+        <values>
+            <value start-index="51" stop-index="56">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="2" start-index="52" stop-index="52" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="3" start-index="55" stop-index="55" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_array_slice_parameters_pg" parameters="1, 2, 3, 4" parameter-marker-count="4">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="38">
+            <column name="status" start-index="21" stop-index="37" />
+        </columns>
+        <values>
+            <value start-index="47" stop-index="50">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="3" start-index="48" stop-index="49" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_array_slice_jdbc_parameters_pg" parameters="1, 2, 3, 4" parameter-marker-count="4">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="35">
+            <column name="status" start-index="21" stop-index="34" />
+        </columns>
+        <values>
+            <value start-index="44" stop-index="46">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="3" start-index="45" stop-index="45" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>

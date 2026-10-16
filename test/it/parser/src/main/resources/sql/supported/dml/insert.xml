@@ -225,4 +225,8 @@
     <sql-case id="insert_conflict_select_no_key_update_pg" value="INSERT INTO foo_table (a) VALUES (1) ON CONFLICT (a) DO SELECT FOR NO KEY UPDATE" db-types="PostgreSQL" case-types="Literal" />
     <sql-case id="insert_conflict_select_parameters_pg" value="INSERT INTO foo_table (a) VALUES ($1) ON CONFLICT (a) DO SELECT FOR UPDATE WHERE a = $2 RETURNING a" db-types="PostgreSQL" case-types="Placeholder" />
     <sql-case id="insert_conflict_select_constraint_pg" value="INSERT INTO foo_table (a) VALUES (1) ON CONFLICT ON CONSTRAINT foo_pk DO SELECT" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="insert_array_parameters_pg" value="INSERT INTO t_order (status[$2][$1], user_id) VALUES ($3, $2)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_array_jdbc_parameters_pg" value="INSERT INTO t_order (status[?][?], user_id) VALUES (?, ?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_array_slice_parameters_pg" value="INSERT INTO t_order (status[$1:$2][$3]) VALUES ($4)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_array_slice_jdbc_parameters_pg" value="INSERT INTO t_order (status[?:?][?]) VALUES (?)" db-types="PostgreSQL" case-types="Placeholder" />
 </sql-cases>

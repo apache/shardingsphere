@@ -851,6 +851,14 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitInsertRest(final InsertRestContext ctx) {
         InsertStatement.InsertStatementBuilder result = InsertStatement.builder().databaseType(databaseType);
+        if (null == ctx.insertColumnList()) {
+            result.insertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+        } else {
+            InsertColumnListContext insertColumns = ctx.insertColumnList();
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(insertColumns);
+            InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(insertColumns.start.getStartIndex() - 1, insertColumns.stop.getStopIndex() + 1, columns.getValue());
+            result.insertColumns(insertColumnsSegment);
+        }
         if (null == ctx.DEFAULT()) {
             SimpleSelectContext simpleSelect = ctx.select().selectNoParens().selectClauseN().simpleSelect();
             ValuesClauseContext valuesClause = null == simpleSelect ? null : simpleSelect.valuesClause();
@@ -860,14 +868,6 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             } else {
                 result.values(createInsertValuesSegments(valuesClause));
             }
-        }
-        if (null == ctx.insertColumnList()) {
-            result.insertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
-        } else {
-            InsertColumnListContext insertColumns = ctx.insertColumnList();
-            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(insertColumns);
-            InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(insertColumns.start.getStartIndex() - 1, insertColumns.stop.getStopIndex() + 1, columns.getValue());
-            result.insertColumns(insertColumnsSegment);
         }
         return result.build();
     }
@@ -885,6 +885,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitInsertColumnItem(final InsertColumnItemContext ctx) {
+        visit(ctx.optIndirection());
         if (null == ctx.optIndirection().indirectionEl()) {
             return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
         }
