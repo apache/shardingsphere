@@ -84,11 +84,14 @@ class SimpleTableSegmentBinderTest {
     @Test
     void assertBindWithDBLinkContainsDBLink() {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_not_exists")));
+        simpleTableSegment.setAt(new IdentifierValue("@"));
         simpleTableSegment.setDbLink(new IdentifierValue("foo_db_link"));
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        SimpleTableSegmentBinder.bind(simpleTableSegment,
+        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment,
                 new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).build()), tableBinderContexts);
+        assertThat(actual.getAt().get().getValue(), is("@"));
+        assertThat(actual.getDbLink().get().getValue(), is("foo_db_link"));
         SimpleTableSegmentBinderContext tableSegmentBinderContext = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
         assertTrue(tableSegmentBinderContext.isContainsDBLink());
     }

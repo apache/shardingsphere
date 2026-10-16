@@ -34,13 +34,39 @@
 
     <plsql-block sql-case-id="plsql_block_record_constructor_empty_oracle" />
 
-    <plsql-block sql-case-id="plsql_block_forall_insert_oracle" />
+    <plsql-block sql-case-id="plsql_block_forall_insert_oracle">
+        <sql-statements>
+            <sql-statement start-index="23" stop-index="57" statement-class-simple-name="InsertStatement" />
+        </sql-statements>
+    </plsql-block>
 
-    <plsql-block sql-case-id="plsql_block_forall_update_oracle" />
+    <plsql-block sql-case-id="plsql_block_forall_update_oracle">
+        <sql-statements>
+            <sql-statement start-index="23" stop-index="52" statement-class-simple-name="UpdateStatement" />
+        </sql-statements>
+    </plsql-block>
 
-    <plsql-block sql-case-id="plsql_block_forall_delete_oracle" />
+    <plsql-block sql-case-id="plsql_block_forall_delete_oracle">
+        <sql-statements>
+            <sql-statement start-index="23" stop-index="59" statement-class-simple-name="DeleteStatement" />
+        </sql-statements>
+    </plsql-block>
 
-    <plsql-block sql-case-id="plsql_block_forall_merge_oracle" />
+    <plsql-block sql-case-id="plsql_block_forall_merge_oracle">
+        <sql-statements>
+            <sql-statement start-index="23" stop-index="117" statement-class-simple-name="MergeStatement" />
+        </sql-statements>
+    </plsql-block>
 
     <plsql-block sql-case-id="plsql_block_forall_execute_immediate_save_exceptions_oracle" />
+    <plsql-block sql-case-id="plsql_block_with_insert_select_in_while_if_oracle">
+        <sql-statements>
+            <sql-statement start-index="183" stop-index="325" statement-class-simple-name="InsertStatement" />
+            <sql-statement start-index="333" stop-index="458" statement-class-simple-name="InsertStatement" />
+            <sql-statement start-index="499" stop-index="504" statement-class-simple-name="CommitStatement" />
+        </sql-statements>
+    </plsql-block>
+    <plsql-block sql-case-id="plsql_block_record_field_defaults_oracle">
+        <procedure-call name="RAISE_APPLICATION_ERROR" />
+    </plsql-block>
 </sql-parser-test-cases>

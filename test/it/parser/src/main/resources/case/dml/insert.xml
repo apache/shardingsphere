@@ -2344,7 +2344,7 @@
     </insert>
 
     <insert sql-case-id="insert_into_table_with_dblink">
-        <table name="remote_table" start-index="12" stop-index="28" />
+        <table name="remote_table" start-index="12" stop-index="23" db-link="link" at="@" table-name-start-index="12" table-name-stop-index="23" />
         <columns start-index="29" stop-index="29" />
         <select>
             <from>
@@ -5924,5 +5924,21 @@
                 </assignment-value>
             </assignment>
         </on-duplicate-key-columns>
+    </insert>
+    <insert sql-case-id="insert_with_schema_database_link_oracle" parameters="1">
+        <table name="USER_CONSIS_LIST" db-link="pjzw" at="@" start-index="12" stop-index="36" table-name-start-index="21" table-name-stop-index="36">
+            <owner name="userinfo" start-index="12" stop-index="19" />
+        </table>
+        <columns start-index="43" stop-index="50">
+            <column name="telnum" start-index="44" stop-index="49" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="60" stop-index="60" />
+                    <literal-expression value="1" start-index="60" stop-index="60" />
+                </assignment-value>
+            </value>
+        </values>
     </insert>
 </sql-parser-test-cases>

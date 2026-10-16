@@ -21,6 +21,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
@@ -1053,7 +1054,11 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     private SimpleTableSegment createTypeAttributeTable(final TypeNameContext ctx) {
         OwnerContext tableName = ctx.owner();
-        return new SimpleTableSegment(new TableNameSegment(tableName.start.getStartIndex(), tableName.stop.getStopIndex(), (IdentifierValue) visit(tableName.identifier())));
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(tableName.start.getStartIndex(), tableName.stop.getStopIndex(), (IdentifierValue) visit(tableName.identifier())));
+        if (null != ctx.schemaName()) {
+            result.setOwner(new OwnerSegment(ctx.schemaName().start.getStartIndex(), ctx.schemaName().stop.getStopIndex(), (IdentifierValue) visit(ctx.schemaName().identifier())));
+        }
+        return result;
     }
     
     private ColumnSegment createTypeAttributeColumn(final ObjectNameContext ctx) {
@@ -2193,6 +2198,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         return result;
     }
     
+    @HighFrequencyInvocation
     @Override
     public ASTNode visitPlsqlBlock(final PlsqlBlockContext ctx) {
         if (null != ctx.declareSection()) {
@@ -2204,8 +2210,17 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                 visitPlsqlStatementList(each.plsqlStatements());
             }
         }
+        getSqlStatementsInPlsql().sort(Comparator.comparingInt(SQLStatementSegment::getStartIndex));
         getProcedureCallNames().sort(Comparator.comparingInt(ProcedureCallNameSegment::getStartIndex));
-        return new OraclePLSQLBlockStatement(getDatabaseType(), getProcedureCallNames());
+        OraclePLSQLBlockStatement result = new OraclePLSQLBlockStatement(getDatabaseType(), getProcedureCallNames());
+        TypeAttributeSegments typeAttributeSegments = extractTypeAttributeSegments(ctx);
+        result.getTables().addAll(typeAttributeSegments.getTables());
+        result.getColumns().addAll(typeAttributeSegments.getColumns());
+        result.getSqlStatements().addAll(getSqlStatementsInPlsql());
+        result.getVariableNames().addAll(getVariableNames());
+        getSqlStatementsInPlsql().forEach(each -> each.getSqlStatement().getVariableNames().addAll(getVariableNames()));
+        result.getCursorForLoopStatements().addAll(getCursorForLoopStatementSegments());
+        return result;
     }
     
     @Override

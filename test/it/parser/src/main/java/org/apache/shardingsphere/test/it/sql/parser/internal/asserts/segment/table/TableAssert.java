@@ -131,6 +131,20 @@ public final class TableAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final SimpleTableSegment actual, final ExpectedSimpleTable expected) {
         assertTableNameSegment(assertContext, actual, expected);
         assertThat(assertContext.getText("Table alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
+        // SPEX ADDED: BEGIN
+        if (null != expected.getDbLink()) {
+            assertThat(assertContext.getText("Database link assertion error: "), actual.getDbLink().map(each -> each.getValue()).orElse(null), is(expected.getDbLink()));
+        }
+        if (null != expected.getAt()) {
+            assertThat(assertContext.getText("Database link separator assertion error: "), actual.getAt().map(each -> each.getValue()).orElse(null), is(expected.getAt()));
+        }
+        if (null != expected.getTableNameStartIndex()) {
+            assertThat(assertContext.getText("Table name start index assertion error: "), actual.getTableName().getStartIndex(), is(expected.getTableNameStartIndex()));
+        }
+        if (null != expected.getTableNameStopIndex()) {
+            assertThat(assertContext.getText("Table name stop index assertion error: "), actual.getTableName().getStopIndex(), is(expected.getTableNameStopIndex()));
+        }
+        // SPEX ADDED: END
         if (null == expected.getOwner()) {
             assertFalse(actual.getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
         } else {

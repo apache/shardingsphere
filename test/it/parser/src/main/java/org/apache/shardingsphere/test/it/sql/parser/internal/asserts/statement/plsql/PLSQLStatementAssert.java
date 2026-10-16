@@ -92,6 +92,9 @@ public final class PLSQLStatementAssert {
         }
         if (actual instanceof OraclePLSQLBlockStatement && expected instanceof OraclePLSQLBlockStatementTestCase) {
             assertProcedureCallNames(assertContext, ((OraclePLSQLBlockStatement) actual).getProcedureCallNames(), ((OraclePLSQLBlockStatementTestCase) expected).getProcedureCalls());
+            // SPEX ADDED: BEGIN
+            assertSQLStatements(assertContext, ((OraclePLSQLBlockStatement) actual).getSqlStatements(), ((OraclePLSQLBlockStatementTestCase) expected).getSqlStatements());
+            // SPEX ADDED: END
         }
     }
     

@@ -107,9 +107,11 @@ materializedViewName
     : (owner DOT_)? name
     ;
 
+// SPEX CHANGED: BEGIN
 columnName
-    : (owner? DOT_)? name (DOT_ nestedItem)*
+    : (owner? DOT_)? name (DOT_ nestedItem)* (AT_ dbLink)?
     ;
+// SPEX CHANGED: END
 
 objectName
     : (owner DOT_)? name
@@ -144,7 +146,10 @@ rollbackSegmentName
     ;
 
 typeName
+    // SPEX CHANGED: BEGIN
     : (owner DOT_)? name
+    | schemaName DOT_ owner DOT_ name
+    // SPEX CHANGED: END
     ;
 
 indexTypeName
@@ -669,9 +674,11 @@ extractFunction
     : EXTRACT LP_ (YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | TIMEZONE_HOUR | TIMEZONE_MINUTE | TIMEZONE_REGION | TIMEZONE_ABBR) FROM expr RP_
     ;
 
+// SPEX CHANGED: BEGIN
 regularFunction
-    : (owner DOT_)* regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : (owner DOT_)* regularFunctionName (AT_ dbLink)? LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
+// SPEX CHANGED: END
 
 regularFunctionName
     : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL | DECODE | TRANSLATE

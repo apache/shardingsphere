@@ -15457,4 +15457,14 @@
             </column-projection>
         </projections>
     </select>
+    <select sql-case-id="select_with_schema_database_link_and_alias_oracle">
+        <from>
+            <simple-table name="subs_rateplan" alias="x" db-link="PJZW" at="@" start-index="14" stop-index="42" table-name-start-index="23" table-name-stop-index="35">
+                <owner name="userinfo" start-index="14" stop-index="21" />
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+    </select>
 </sql-parser-test-cases>
