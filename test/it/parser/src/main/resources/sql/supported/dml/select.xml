@@ -455,6 +455,8 @@
     <sql-case id="select_parenthesized_column_firebird" value="SELECT (user_id) FROM t_order" db-types="Firebird"/>
     <sql-case id="select_schema_table_firebird" value="SELECT * FROM schema1.t_order" db-types="Firebird"/>
     <sql-case id="select_where_and_like_firebird" value="SELECT * FROM t_order WHERE user_id = 1 AND status LIKE 'A%'" db-types="Firebird"/>
+    <sql-case id="select_where_like_escape_backslash_firebird" value="SELECT * FROM t_order WHERE status LIKE 'a\_b' ESCAPE '\'" db-types="Firebird"/>
+    <sql-case id="select_where_backslash_literal_firebird" value="SELECT * FROM t_order WHERE status = 'C:\dir\'" db-types="Firebird"/>
     <sql-case id="select_safe_eq_firebird" value="SELECT 1 &lt;=&gt; 1" db-types="Firebird"/>
     <sql-case id="select_in_list_firebird" value="SELECT * FROM t_order WHERE id IN (1,2)" db-types="Firebird"/>
     <sql-case id="select_not_in_list_firebird" value="SELECT * FROM t_order WHERE id NOT IN (1,2)" db-types="Firebird"/>
@@ -585,4 +587,21 @@
     <sql-case id="select_in_with_owner_column_rhs_oracle" value="SELECT * FROM t_order o WHERE o.user_id IN o.order_id" db-types="Oracle" />
     <sql-case id="select_in_with_function_rhs_oracle" value="SELECT * FROM t_order o WHERE o.user_id IN NVL(o.order_id, 0)" db-types="Oracle" />
     <sql-case id="select_parenthesized_column_alias" value="SELECT (c.password) PASSWORD FROM t_account c" db-types="Oracle,PostgreSQL,openGauss,SQLServer,Hive" />
+    <sql-case id="select_cast_tsvector_name_pg" value="SELECT 'foo'::tsvector" db-types="PostgreSQL" />
+    <sql-case id="select_cast_tsquery_name_pg" value="SELECT 'foo'::tsquery" db-types="PostgreSQL" />
+    <sql-case id="select_cast_varbit_name_pg" value="SELECT '0101'::varbit" db-types="PostgreSQL" />
+    <sql-case id="select_cast_inet_name_pg" value="SELECT '127.0.0.1'::inet" db-types="PostgreSQL" />
+    <sql-case id="select_cast_cidr_name_pg" value="SELECT '127.0.0.0/8'::cidr" db-types="PostgreSQL" />
+    <sql-case id="select_cast_macaddr_name_pg" value="SELECT '08:00:2b:01:02:03'::macaddr" db-types="PostgreSQL" />
+    <sql-case id="select_cast_macaddr8_name_pg" value="SELECT '08:00:2b:01:02:03:04:05'::macaddr8" db-types="PostgreSQL" />
+    <sql-case id="select_cast_line_name_pg" value="SELECT '{1,2,3}'::line" db-types="PostgreSQL" />
+    <sql-case id="select_tsvector_function_name_pg" value="SELECT tsvector('foo')" db-types="PostgreSQL" />
+    <sql-case id="select_tsquery_function_name_pg" value="SELECT tsquery('foo')" db-types="PostgreSQL" />
+    <sql-case id="select_type_keyword_columns_pg" value="SELECT tsvector, tsquery, varbit, inet, cidr, macaddr, macaddr8, line FROM foo" db-types="PostgreSQL" />
+    <sql-case id="select_where_is_not_distinct_from_firebird" value="SELECT order_id FROM t_order WHERE status IS NOT DISTINCT FROM ?" db-types="Firebird" />
+    <sql-case id="select_where_starting_with_firebird" value="SELECT order_id FROM t_order WHERE status STARTING WITH ?" db-types="Firebird" />
+    <sql-case id="select_where_similar_to_escape_firebird" value="SELECT order_id FROM t_order WHERE status SIMILAR TO ? ESCAPE ?" db-types="Firebird" />
+    <sql-case id="select_where_is_distinct_from_and_equal_firebird" value="SELECT order_id FROM t_order WHERE status IS DISTINCT FROM ? AND order_id = ?" db-types="Firebird" />
+    <sql-case id="select_with_schema_database_link_and_alias_oracle" value="SELECT * FROM userinfo.subs_rateplan@PJZW x" db-types="Oracle" />
+    <sql-case id="select_with_dotted_database_link_oracle" value="SELECT * FROM userinfo.subs_rateplan@PJZW.EXAMPLE.COM x" db-types="Oracle" />
 </sql-cases>

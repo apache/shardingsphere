@@ -380,17 +380,42 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
                 "foo_column.foo_field.*",
                 "foo_column[?].*",
                 "foo_column.*[?]",
-                "foo_column[?:?].foo_field.*",
-                "foo_column[1]",
-                "foo_column[?]",
-                "foo_column[1 * 2]",
-                "foo_column[?].bar_field",
-                "foo_column.bar_field[?]",
-                "foo_column[?:?].bar_field",
-                "foo_column[:]",
-                "foo_column[:?]",
-                "foo_column[?:]",
-                "foo_column[?][?]");
+                "foo_column[?:?].foo_field.*");
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getArrayAssignmentTargetCases")
+    void assertArrayAssignmentTarget(final String target, final Collection<String> expectedFields, final Collection<Integer> expectedParams) {
+        String sql = "UPDATE foo_table SET " + target + " = ? WHERE foo_id = ?";
+        UpdateStatement actual = (UpdateStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        ColumnAssignmentSegment actualAssignment = actual.getSetAssignment().getAssignments().iterator().next();
+        ColumnSegment actualColumn = actualAssignment.getColumns().get(0);
+        assertThat(actualColumn.getIdentifier().getValue(), is("foo_column"));
+        if (expectedFields.isEmpty()) {
+            assertNull(actualColumn.getNestedObjectAttributes());
+        } else {
+            assertThat(actualColumn.getNestedObjectAttributes().stream().map(IdentifierValue::getValue).collect(Collectors.toList()), is(expectedFields));
+        }
+        assertThat(actualColumn.getStartIndex(), is(sql.indexOf(target)));
+        assertThat(actualColumn.getStopIndex(), is(sql.indexOf(target) + target.length() - 1));
+        ParameterMarkerExpressionSegment actualValue = (ParameterMarkerExpressionSegment) actualAssignment.getValue();
+        assertThat(actualValue.getParameterMarkerIndex(), is(expectedParams.size() - 2));
+        assertThat(actualValue.getStartIndex(), is(sql.indexOf(" = ?") + 3));
+        assertThat(actual.getParameterMarkers().stream().map(ParameterMarkerSegment::getParameterIndex).collect(Collectors.toList()), is(expectedParams));
+    }
+    
+    private static Stream<Arguments> getArrayAssignmentTargetCases() {
+        return Stream.of(
+                Arguments.of("foo_column[1]", Collections.emptyList(), Arrays.asList(0, 1)),
+                Arguments.of("foo_column[?]", Collections.emptyList(), Arrays.asList(0, 1, 2)),
+                Arguments.of("foo_column[1 * 2]", Collections.emptyList(), Arrays.asList(0, 1)),
+                Arguments.of("foo_column[?].bar_field", Collections.singletonList("bar_field"), Arrays.asList(0, 1, 2)),
+                Arguments.of("foo_column.bar_field[?]", Collections.singletonList("bar_field"), Arrays.asList(0, 1, 2)),
+                Arguments.of("foo_column[?:?].bar_field", Collections.singletonList("bar_field"), Arrays.asList(0, 1, 2, 3)),
+                Arguments.of("foo_column[:]", Collections.emptyList(), Arrays.asList(0, 1)),
+                Arguments.of("foo_column[:?]", Collections.emptyList(), Arrays.asList(0, 1, 2)),
+                Arguments.of("foo_column[?:]", Collections.emptyList(), Arrays.asList(0, 1, 2)),
+                Arguments.of("foo_column[?][?]", Collections.emptyList(), Arrays.asList(0, 1, 2, 3)));
     }
     
     @ParameterizedTest(name = "{0}")

@@ -733,7 +733,7 @@
     </delete>
 
     <delete sql-case-id="delete_with_remote_database_table">
-        <table name="locations" start-index="12" stop-index="30">
+        <table name="locations" start-index="12" stop-index="23" db-link="remote" at="@" table-name-start-index="15" table-name-stop-index="23">
             <owner name="hr" start-index="12" stop-index="13" />
         </table>
         <where start-index="32" stop-index="55">
@@ -1036,7 +1036,7 @@
         <table name="foo" start-index="12" stop-index="14" />
         <where start-index="16" stop-index="42">
             <expr>
-                <common-expression text="WHERE CURRENT OF foo_cursor" start-index="16" stop-index="42" />
+                <common-expression text="CURRENT OF foo_cursor" start-index="22" stop-index="42" />
             </expr>
         </where>
     </delete>
@@ -1128,5 +1128,13 @@
                 </expression-projection>
             </projections>
         </returning>
+    </delete>
+    <delete sql-case-id="delete_current_of_quoted_pg">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <where start-index="20" stop-index="41">
+            <expr>
+                <common-expression text="current of &quot;Foo&quot;" start-index="26" stop-index="41" />
+            </expr>
+        </where>
     </delete>
 </sql-parser-test-cases>

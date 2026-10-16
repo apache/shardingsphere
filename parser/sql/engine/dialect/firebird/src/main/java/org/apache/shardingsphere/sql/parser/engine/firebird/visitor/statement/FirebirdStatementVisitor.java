@@ -328,6 +328,9 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         if (null != ctx.LIKE()) {
             return createBinaryOperationExpressionFromLike(ctx);
         }
+        if (null != ctx.STARTING() || null != ctx.DISTINCT() || null != ctx.SIMILAR()) {
+            return createBinaryOperationExpressionFromPredicate(ctx);
+        }
         return visit(ctx.bitExpr(0));
     }
     
@@ -365,6 +368,30 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
         boolean not = null != ctx.NOT();
         return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
+    }
+    
+    private BinaryOperationExpression createBinaryOperationExpressionFromPredicate(final PredicateContext ctx) {
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
+        ExpressionSegment right = null == ctx.ESCAPE() ? (ExpressionSegment) visit(ctx.bitExpr(1)) : createEscapedPattern(ctx);
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, getPredicateOperator(ctx), text);
+    }
+    
+    private ListExpression createEscapedPattern(final PredicateContext ctx) {
+        ListExpression result = new ListExpression(ctx.bitExpr(1).start.getStartIndex(), ctx.bitExpr(2).stop.getStopIndex());
+        result.getItems().add((ExpressionSegment) visit(ctx.bitExpr(1)));
+        result.getItems().add((ExpressionSegment) visit(ctx.bitExpr(2)));
+        return result;
+    }
+    
+    private String getPredicateOperator(final PredicateContext ctx) {
+        if (null != ctx.STARTING()) {
+            return null == ctx.NOT() ? "STARTING WITH" : "NOT STARTING WITH";
+        }
+        if (null != ctx.DISTINCT()) {
+            return null == ctx.NOT() ? "IS DISTINCT FROM" : "IS NOT DISTINCT FROM";
+        }
+        return null == ctx.NOT() ? "SIMILAR TO" : "NOT SIMILAR TO";
     }
     
     @Override

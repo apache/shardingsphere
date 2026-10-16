@@ -173,6 +173,7 @@ unreservedWord
     | CHAIN
     | CHARACTERISTICS
     | CHECKPOINT
+    | CIDR
     | CLASS
     | CLOSE
     | CLUSTER
@@ -260,6 +261,7 @@ unreservedWord
     | INCREMENT
     | INDEX
     | INDEXES
+    | INET
     | INHERIT
     | INHERITS
     | INLINE
@@ -277,6 +279,7 @@ unreservedWord
     | LAST
     | LEAKPROOF
     | LEVEL
+    | LINE
     | LISTEN
     | LOAD
     | LOCAL
@@ -286,6 +289,8 @@ unreservedWord
     | LOGGED
     | LOGIN
     | LSEG
+    | MACADDR
+    | MACADDR8
     | MAIN
     | MAINTAIN
     | MAPPING
@@ -431,6 +436,8 @@ unreservedWord
     | TRIGGER
     | TRUNCATE
     | TRUSTED
+    | TSQUERY
+    | TSVECTOR
     | TYPE
     | TYPES
     | TIME
@@ -450,6 +457,7 @@ unreservedWord
     | VALIDATE
     | VALIDATOR
     | VALUE
+    | VARBIT
     | VARYING
     | VERSION
     | VIEW
@@ -499,6 +507,8 @@ unreservedWord
     | TABLE
     | CONSTRAINT
     | COLLATION
+    | SOURCE
+    | TARGET
     ;
 
 typeFuncNameKeyword

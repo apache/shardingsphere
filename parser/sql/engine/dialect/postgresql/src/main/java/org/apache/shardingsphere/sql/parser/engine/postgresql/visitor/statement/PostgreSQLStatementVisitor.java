@@ -1243,7 +1243,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText())));
             return result;
         }
-        return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText()));
+        return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), createIdentifierValue(ctx.colId().getText()));
     }
     
     private void visitIndirectionExpressions(final OptIndirectionContext ctx) {
@@ -1292,29 +1292,27 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitSetClause(final SetClauseContext ctx) {
         List<ColumnSegment> columnSegments = new LinkedList<>();
-        if (null == ctx.setTargetList()) {
-            columnSegments.add((ColumnSegment) visit(ctx.setTarget()));
+        if (null == ctx.setTarget()) {
+            appendSetTargets(ctx.setTargetList(), columnSegments);
         } else {
-            columnSegments.addAll(generateSetTargets(ctx.setTargetList()));
+            columnSegments.add((ColumnSegment) visit(ctx.setTarget()));
         }
         ExpressionSegment expressionSegment = (ExpressionSegment) visit(ctx.aExpr());
         return new ColumnAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegments, expressionSegment);
     }
     
-    private Collection<ColumnSegment> generateSetTargets(final SetTargetListContext ctx) {
-        Collection<ColumnSegment> result = new LinkedList<>();
+    private void appendSetTargets(final SetTargetListContext ctx, final Collection<ColumnSegment> columns) {
         if (null != ctx.setTargetList()) {
-            result.addAll(generateSetTargets(ctx.setTargetList()));
+            appendSetTargets(ctx.setTargetList(), columns);
         }
-        result.add((ColumnSegment) visit(ctx.setTarget()));
-        return result;
+        columns.add((ColumnSegment) visit(ctx.setTarget()));
     }
     
     @Override
     public ASTNode visitSetTarget(final SetTargetContext ctx) {
+        visitIndirectionExpressions(ctx.optIndirection());
         List<IdentifierValue> fieldAttributes = getSetTargetFieldAttributes(ctx.optIndirection());
-        ColumnSegment result = new ColumnSegment(ctx.colId().start.getStartIndex(), fieldAttributes.isEmpty() ? ctx.colId().stop.getStopIndex() : ctx.stop.getStopIndex(),
-                createIdentifierValue(ctx.colId().getText()));
+        ColumnSegment result = new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), createIdentifierValue(ctx.colId().getText()));
         if (!fieldAttributes.isEmpty()) {
             result.setNestedObjectAttributes(fieldAttributes);
         }
@@ -1328,9 +1326,12 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         List<IdentifierValue> result = new LinkedList<>();
         OptIndirectionContext current = ctx;
         while (null != current.indirectionEl()) {
+            ShardingSpherePreconditions.checkState(null == current.indirectionEl().ASTERISK_() && null == current.indirectionEl().DOT_ASTERISK_(),
+                    () -> new SQLParsingException("Only field indirection is supported in assignment targets"));
             AttrNameContext attrName = current.indirectionEl().attrName();
-            ShardingSpherePreconditions.checkNotNull(attrName, () -> new SQLParsingException("Only field indirection is supported in assignment targets"));
-            result.add(0, createIdentifierValue(attrName.getText()));
+            if (null != attrName) {
+                result.add(0, createIdentifierValue(attrName.getText()));
+            }
             current = current.optIndirection();
         }
         return result;
@@ -1415,8 +1416,10 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.whereClause()) {
             return visit(ctx.whereClause());
         }
-        return new WhereSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx),
-                Collections.emptyList()));
+        int startIndex = ctx.CURRENT().getSymbol().getStartIndex();
+        int stopIndex = ctx.stop.getStopIndex();
+        String text = ctx.start.getInputStream().getText(new Interval(startIndex, stopIndex));
+        return new WhereSegment(ctx.start.getStartIndex(), stopIndex, new CommonExpressionSegment(startIndex, stopIndex, text, Collections.emptyList()));
     }
     
     @Override

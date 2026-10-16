@@ -77,4 +77,4 @@ jobs:
         run: ./mvnw -PgenerateMetadata -T1C clean verify
       - name: Run Native Tests with GraalVM CE
         if: matrix.os == '${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}'
-        run: ./mvnw -PnativeTestInShardingSphere clean verify
+        run: ./mvnw -PnativeTestInShardingSphere -T1C clean verify

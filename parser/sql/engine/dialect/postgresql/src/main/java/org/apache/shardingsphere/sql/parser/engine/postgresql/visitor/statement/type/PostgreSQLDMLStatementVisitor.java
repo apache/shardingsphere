@@ -129,5 +129,4 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     public ASTNode visitCopyWithTableBinary(final CopyWithTableBinaryContext ctx) {
         return new PostgreSQLCopyStatement(getDatabaseType(), null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()), Collections.emptyList(), null);
     }
-    
 }

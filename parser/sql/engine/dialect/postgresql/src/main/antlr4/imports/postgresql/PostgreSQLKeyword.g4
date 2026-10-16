@@ -1520,3 +1520,11 @@ ASENSITIVE
 DESCRIPTOR
     : D E S C R I P T O R
     ;
+
+SOURCE
+    : S O U R C E
+    ;
+
+TARGET
+    : T A R G E T
+    ;

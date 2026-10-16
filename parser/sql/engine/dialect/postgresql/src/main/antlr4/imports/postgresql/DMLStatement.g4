@@ -53,6 +53,7 @@ insertColumnItem
 optOnConflict
     : ON CONFLICT optConfExpr DO UPDATE SET setClauseList whereClause?
     | ON CONFLICT optConfExpr DO NOTHING
+    | ON CONFLICT optConfExpr DO SELECT forLockingStrength? whereClause?
     ;
 
 optConfExpr
@@ -116,8 +117,8 @@ mergeUsingClause
 
 mergeWhenClause
     : WHEN MATCHED (AND aExpr)? THEN mergeMatchedThenClause
-    | WHEN NOT MATCHED (BY TARGET)? (AND aExpr)? THEN mergeNotMatchedThenClause
     | WHEN NOT MATCHED BY SOURCE (AND aExpr)? THEN mergeMatchedThenClause
+    | WHEN NOT MATCHED (BY TARGET)? (AND aExpr)? THEN mergeNotMatchedThenClause
     ;
 
 mergeMatchedThenClause

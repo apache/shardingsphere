@@ -675,7 +675,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitDmlTableClause(final DmlTableClauseContext ctx) {
         if (null != ctx.AT_() && null != ctx.dbLink()) {
-            SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().name().getText())));
+            SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.tableName().name().start.getStartIndex(), ctx.tableName().name().stop.getStopIndex(),
+                    new IdentifierValue(ctx.tableName().name().getText())));
             if (null != ctx.tableName().owner()) {
                 result.setOwner(
                         new OwnerSegment(ctx.tableName().owner().start.getStartIndex(), ctx.tableName().owner().stop.getStopIndex(), (IdentifierValue) visit(ctx.tableName().owner().identifier())));
@@ -1526,6 +1527,11 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         TableSegment result;
         if (null != ctx.queryTableExprSampleClause()) {
             result = (SimpleTableSegment) visit(ctx.queryTableExprSampleClause().queryTableExprTableClause().tableName());
+            if (null != ctx.queryTableExprSampleClause().queryTableExprTableClause().AT_()
+                    && null != ctx.queryTableExprSampleClause().queryTableExprTableClause().dbLink()) {
+                ((SimpleTableSegment) result).setAt(new IdentifierValue(ctx.queryTableExprSampleClause().queryTableExprTableClause().AT_().getText()));
+                ((SimpleTableSegment) result).setDbLink(new IdentifierValue(ctx.queryTableExprSampleClause().queryTableExprTableClause().dbLink().getText()));
+            }
         } else if (null != ctx.lateralClause()) {
             SelectStatement subquery = (SelectStatement) visit(ctx.lateralClause().selectSubquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.lateralClause().selectSubquery().start.getStartIndex(), ctx.lateralClause().selectSubquery().stop.getStopIndex(), subquery,
