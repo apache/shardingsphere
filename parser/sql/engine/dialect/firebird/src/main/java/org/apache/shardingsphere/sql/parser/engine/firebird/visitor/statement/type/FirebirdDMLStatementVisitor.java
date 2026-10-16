@@ -134,22 +134,22 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        InsertStatement insertValuesStatement = (InsertStatement) visit(null == ctx.insertValuesClause() ? ctx.insertSelectClause() : ctx.insertValuesClause());
+        InsertStatement insertBodyStatement = (InsertStatement) visit(null == ctx.insertValuesClause() ? ctx.insertSelectClause() : ctx.insertValuesClause());
         InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()))
-                .insertColumns(insertValuesStatement.getInsertColumns().orElse(null)).insertSelect(insertValuesStatement.getInsertSelect().orElse(null))
-                .setAssignment(insertValuesStatement.getSetAssignment().orElse(null)).onDuplicateKeyColumns(insertValuesStatement.getOnDuplicateKeyColumns().orElse(null))
-                .valueReference(insertValuesStatement.getValueReference().orElse(null))
-                .returning(null == ctx.returningClause() ? insertValuesStatement.getReturning().orElse(null) : (ReturningSegment) visit(ctx.returningClause()))
-                .output(insertValuesStatement.getOutput().orElse(null)).with(insertValuesStatement.getWith().orElse(null))
-                .multiTableInsertType(insertValuesStatement.getMultiTableInsertType().orElse(null))
-                .multiTableInsertInto(insertValuesStatement.getMultiTableInsertInto().orElse(null))
-                .multiTableConditionalInto(insertValuesStatement.getMultiTableConditionalInto().orElse(null)).where(insertValuesStatement.getWhere().orElse(null))
-                .exec(insertValuesStatement.getExec().orElse(null)).withTableHint(insertValuesStatement.getWithTableHint().orElse(null))
-                .rowSetFunction(insertValuesStatement.getRowSetFunction().orElse(null)).ignore(insertValuesStatement.isIgnore()).replace(insertValuesStatement.isReplace())
-                .values(new LinkedList<>(insertValuesStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertValuesStatement.getDerivedInsertColumns())).build();
-        result.addParameterMarkers(insertValuesStatement.getParameterMarkers());
-        result.getVariableNames().addAll(insertValuesStatement.getVariableNames());
-        result.getComments().addAll(insertValuesStatement.getComments());
+                .insertColumns(insertBodyStatement.getInsertColumns().orElse(null)).insertSelect(insertBodyStatement.getInsertSelect().orElse(null))
+                .setAssignment(insertBodyStatement.getSetAssignment().orElse(null)).onDuplicateKeyColumns(insertBodyStatement.getOnDuplicateKeyColumns().orElse(null))
+                .valueReference(insertBodyStatement.getValueReference().orElse(null))
+                .returning(null == ctx.returningClause() ? insertBodyStatement.getReturning().orElse(null) : (ReturningSegment) visit(ctx.returningClause()))
+                .output(insertBodyStatement.getOutput().orElse(null)).with(insertBodyStatement.getWith().orElse(null))
+                .multiTableInsertType(insertBodyStatement.getMultiTableInsertType().orElse(null))
+                .multiTableInsertInto(insertBodyStatement.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(insertBodyStatement.getMultiTableConditionalInto().orElse(null)).where(insertBodyStatement.getWhere().orElse(null))
+                .exec(insertBodyStatement.getExec().orElse(null)).withTableHint(insertBodyStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(insertBodyStatement.getRowSetFunction().orElse(null)).ignore(insertBodyStatement.isIgnore()).replace(insertBodyStatement.isReplace())
+                .values(new LinkedList<>(insertBodyStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertBodyStatement.getDerivedInsertColumns())).build();
+        result.addParameterMarkers(insertBodyStatement.getParameterMarkers());
+        result.getVariableNames().addAll(insertBodyStatement.getVariableNames());
+        result.getComments().addAll(insertBodyStatement.getComments());
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
