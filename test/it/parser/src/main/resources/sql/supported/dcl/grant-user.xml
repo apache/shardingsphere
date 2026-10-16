@@ -185,4 +185,26 @@
 
     <sql-case id="grant_database_spaced_wildcard" value="GRANT SELECT ON db . * TO u@localhost" db-types="MySQL,Doris" />
 
+
+    <sql-case id="grant_maintain_pg" value="GRANT MAINTAIN ON t TO r" db-types="PostgreSQL" />
+
+    <sql-case id="grant_maintain_multiple_pg" value="GRANT SELECT, MAINTAIN ON TABLE s.t TO r WITH GRANT OPTION" db-types="PostgreSQL" />
+
+    <sql-case id="grant_named_privilege_pg" value="GRANT custom_privilege ON t TO r" db-types="PostgreSQL" />
+
+    <sql-case id="grant_granted_by_pg" value="GRANT SELECT ON t TO r GRANTED BY CURRENT_USER" db-types="PostgreSQL" />
+
+    <sql-case id="grant_select_privilege_control_pg" value="GRANT SELECT ON t TO r" db-types="PostgreSQL" />
+
+    <sql-case id="grant_role_privilege_control_pg" value="GRANT r1 TO r2" db-types="PostgreSQL" />
+
+    <sql-case id="grant_role_admin_true_pg" value="GRANT r1 TO r2 WITH ADMIN TRUE" db-types="PostgreSQL" />
+
+    <sql-case id="grant_role_admin_false_pg" value="GRANT r1 TO r2 WITH ADMIN FALSE" db-types="PostgreSQL" />
+
+    <sql-case id="grant_role_inherit_set_pg" value="GRANT r1 TO r2 WITH INHERIT TRUE, SET FALSE" db-types="PostgreSQL" />
+
+    <sql-case id="grant_role_options_grantor_pg" value="GRANT r1 TO r2 WITH ADMIN OPTION, INHERIT FALSE, SET TRUE GRANTED BY CURRENT_USER" db-types="PostgreSQL" />
+
+    <sql-case id="grant_role_admin_option_control_pg" value="GRANT r1 TO r2 WITH ADMIN OPTION" db-types="PostgreSQL" />
 </sql-cases>

@@ -118,7 +118,13 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitResetParameter(final ResetParameterContext ctx) {
-        return new PostgreSQLResetParameterStatement(getDatabaseType(), null == ctx.ALL() ? ctx.identifier().getText() : "ALL");
+        if (null != ctx.varName()) {
+            return new PostgreSQLResetParameterStatement(getDatabaseType(), ctx.varName().getText());
+        }
+        if (null != ctx.TIME()) {
+            return new PostgreSQLResetParameterStatement(getDatabaseType(), "timezone");
+        }
+        return new PostgreSQLResetParameterStatement(getDatabaseType(), null == ctx.SESSION() ? "ALL" : "session_authorization");
     }
     
     @SuppressWarnings("unchecked")

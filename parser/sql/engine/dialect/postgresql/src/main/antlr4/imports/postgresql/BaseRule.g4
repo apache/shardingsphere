@@ -139,6 +139,7 @@ unreservedWord
     | ASSIGNMENT
     | AT
     | ATTACH
+    | ATOMIC
     | ATTRIBUTE
     | BACKWARD
     | BEFORE
@@ -165,6 +166,7 @@ unreservedWord
     | COMMITTED
     | CONFIGURATION
     | CONFLICT
+    | CONNECT
     | CONNECTION
     | CONSTRAINTS
     | CONTENT
@@ -350,6 +352,7 @@ unreservedWord
     | REPLACE
     | REPLICA
     | RESET
+    | RETURN
     | RESTART
     | RESTRICT
     | RETURNS
@@ -447,6 +450,7 @@ unreservedWord
     | TABLE
     | CONSTRAINT
     | COLLATION
+    | USAGE
     ;
 
 typeFuncNameKeyword
@@ -1472,7 +1476,7 @@ defArg
     : funcType
     | reservedKeyword
     | qualAllOp
-    | NUMBER_
+    | (PLUS_ | MINUS_)? NUMBER_
     | STRING_
     | NONE
     | funcName (LP_ funcArgsList RP_ | LP_ RP_)

@@ -368,4 +368,10 @@
         <valid-statement type="RollbackStatement" />
     </create-procedure>
     <create-procedure sql-case-id="create_procedure_flush_kill" />
+
+    <create-procedure sql-case-id="create_procedure_atomic_empty_pg" />
+
+    <create-procedure sql-case-id="create_procedure_atomic_dml_pg" />
+
+    <create-procedure sql-case-id="create_procedure_body_string_control_pg" />
 </sql-parser-test-cases>
