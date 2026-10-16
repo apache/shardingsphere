@@ -30,6 +30,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdReturnColumnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
@@ -87,6 +88,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Co
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -466,6 +468,31 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
+    @HighFrequencyInvocation
+    private int getOperationType(final BinaryOperationExpression expr) {
+        if ("||".equals(expr.getOperator())) {
+            return 12;
+        }
+        return Long.SIZE == getArithmeticResultWidth(expr) ? Types.BIGINT : 4;
+    }
+    
+    private int getArithmeticResultWidth(final BinaryOperationExpression expr) {
+        if (!isArithmeticOperator(expr.getOperator())) {
+            return 0;
+        }
+        int leftWidth = getIntegerWidth(expr.getLeft());
+        int rightWidth = getIntegerWidth(expr.getRight());
+        if (0 == leftWidth || 0 == rightWidth) {
+            return 0;
+        }
+        boolean additive = "+".equals(expr.getOperator()) || "-".equals(expr.getOperator());
+        return additive || Integer.SIZE == leftWidth && Integer.SIZE == rightWidth ? Long.SIZE : 0;
+    }
+    
+    private boolean isArithmeticOperator(final String operator) {
+        return "+".equals(operator) || "-".equals(operator) || "*".equals(operator) || "/".equals(operator);
+    }
+    
     private int getIntegerWidth(final ExpressionSegment expr) {
         if (expr instanceof LiteralExpressionSegment) {
             Object value = ((LiteralExpressionSegment) expr).getLiterals();
@@ -484,19 +511,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return 0;
     }
     
-    private int getArithmeticResultWidth(final BinaryOperationExpression expr) {
-        if (!isArithmeticOperator(expr.getOperator())) {
-            return 0;
-        }
-        int leftWidth = getIntegerWidth(expr.getLeft());
-        int rightWidth = getIntegerWidth(expr.getRight());
-        if (0 == leftWidth || 0 == rightWidth) {
-            return 0;
-        }
-        boolean additive = "+".equals(expr.getOperator()) || "-".equals(expr.getOperator());
-        return additive || Integer.SIZE == leftWidth && Integer.SIZE == rightWidth ? Long.SIZE : 0;
-    }
-    
+    @Nullable
     private ShardingSphereColumn findColumn(final ColumnSegment columnSegment) {
         ColumnSegmentBoundInfo boundInfo = columnSegment.getColumnBoundInfo();
         String tableName = boundInfo.getOriginalTable().getValue();
@@ -519,17 +534,6 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             default:
                 return 0;
         }
-    }
-    
-    private boolean isArithmeticOperator(final String operator) {
-        return "+".equals(operator) || "-".equals(operator) || "*".equals(operator) || "/".equals(operator);
-    }
-    
-    private int getOperationType(final BinaryOperationExpression expr) {
-        if ("||".equals(expr.getOperator())) {
-            return 12;
-        }
-        return Long.SIZE == getArithmeticResultWidth(expr) ? Types.BIGINT : 4;
     }
     
     private void processCustomColumn(final String tableName, final String columnName, final IdentifierValue columnAlias, final int dataType,
