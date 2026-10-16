@@ -45,6 +45,8 @@ confirmed findings consolidated by fix boundary, needs-discussion conditions,
 incomplete-evidence gaps, and Completion Gate state.
 
 Record each applicable requirement's source, content version, scope and valid exceptions in readable basis source material; a task-only requirement applies only to its authorized task candidate and must not become a universal repository or public-PR rule.
+Reconstruct those requirements from original user requests and maintained contracts before checking the author's proposed solution, distinguishing author choices and unverified assumptions from confirmed constraints.
+Preserve later user approvals with their actual provenance instead of treating approval of an implementation choice as proof of an original version requirement or of its necessity.
 Keep effective content and delta identity separate from Git revision lineage so equal local and public candidates retain one code-correctness basis.
 
 Output mode must not affect candidate discovery, proof, classification,
@@ -213,6 +215,8 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 - Use the existing private system temporary directory and record the exact ledger path returned by initialization for this review.
 - Initialize with `--review-basis <JSON>` containing the selected focus and readable sources identified by role and origin, so the ledger binds their actual content versions to the effective candidate, original baseline and authoritative files.
 - Record each substantive changed block's behavior, applicable risk axes and requirement origins, strongest counter-evidence and current source anchors with `mark-file --coverage <JSON>`, and attach finding anchors with `add-finding --anchors <JSON>`.
+- For each newly introduced local override, compatibility exception or parallel mechanism, use the existing basis sources and block `requirements`, `counter_evidence` and `anchors` to record its constraint origins, verified limits of direct reuse and necessity conclusion separately from behavior correctness.
+- Keep author-only choices and unverified assumptions as `evidence` sources.
 - Record partial coverage with pending files and keep unproved findings as candidates; recording evidence does not establish a completed review.
 - Rebuild ledgers with an older schema or stale inputs without inheriting their completion state.
 - Validate the current basis and coverage before selecting a result; a passing ledger proves mechanical coverage and evidence freshness, while the reviewer must still establish semantic proof under the existing gates.
