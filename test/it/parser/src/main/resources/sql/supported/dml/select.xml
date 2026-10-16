@@ -602,4 +602,6 @@
     <sql-case id="select_where_starting_with_firebird" value="SELECT order_id FROM t_order WHERE status STARTING WITH ?" db-types="Firebird" />
     <sql-case id="select_where_similar_to_escape_firebird" value="SELECT order_id FROM t_order WHERE status SIMILAR TO ? ESCAPE ?" db-types="Firebird" />
     <sql-case id="select_where_is_distinct_from_and_equal_firebird" value="SELECT order_id FROM t_order WHERE status IS DISTINCT FROM ? AND order_id = ?" db-types="Firebird" />
+    <sql-case id="select_with_schema_database_link_and_alias_oracle" value="SELECT * FROM userinfo.subs_rateplan@PJZW x" db-types="Oracle" />
+    <sql-case id="select_with_dotted_database_link_oracle" value="SELECT * FROM userinfo.subs_rateplan@PJZW.EXAMPLE.COM x" db-types="Oracle" />
 </sql-cases>
