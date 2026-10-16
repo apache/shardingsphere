@@ -176,6 +176,8 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
         
         private boolean clientStatement;
         
+        private boolean emptyQuotedIdentifier;
+        
         private boolean echoAll = true;
         
         private boolean clientStateKnown = true;
@@ -210,6 +212,9 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
                     continue;
                 }
                 String kind = lexer.getVocabulary().getSymbolicName(token.getType());
+                if ("DQ_".equals(kind) || "IDENTIFIER_".equals(kind) && '"' == input.LA(1) && '"' == input.LA(token.getStartIndex() - input.index())) {
+                    readQuotedIdentifier(token);
+                }
                 if ("BACKSLASH_".equals(kind) && readCommand(token.getStartIndex())) {
                     continue;
                 }
@@ -242,6 +247,33 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
                     quotedLines[i] = true;
                 }
             }
+        }
+        
+        private void readQuotedIdentifier(final Token token) {
+            clientStateKnown = false;
+            input.seek(token.getStartIndex() + 1);
+            boolean empty = true;
+            boolean closed = false;
+            while (Token.EOF != input.LA(1)) {
+                int character = input.LA(1);
+                input.consume();
+                if ('"' == character) {
+                    if ('"' != input.LA(1)) {
+                        closed = true;
+                        break;
+                    }
+                    input.consume();
+                }
+                empty = false;
+            }
+            if (closed && empty) {
+                emptyQuotedIdentifier = true;
+            }
+            int lastLine = lineAt(input.index() - 1);
+            for (int i = token.getLine(); i <= lastLine; i++) {
+                quotedLines[i] = true;
+            }
+            seek(input.index());
         }
         
         private List<String> getEcho(final int firstLine, final int lastLine) {
@@ -370,7 +402,7 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
         private void readParentheses(final String kind) {
             if ("LP_".equals(kind)) {
                 parentheses++;
-                if (0 == jsonObjectParentheses && "JSON_OBJECT".equals(previousKind)) {
+                if (0 == jsonObjectParentheses && ("JSON_OBJECT".equals(previousKind) || "JSON_OBJECTAGG".equals(previousKind))) {
                     jsonObjectParentheses = parentheses;
                 }
             } else if (parentheses > 0) {
@@ -448,7 +480,7 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
         }
         
         private String getSQL(final int end) {
-            if (clientStatement) {
+            if (clientStatement || emptyQuotedIdentifier) {
                 return "";
             }
             if (variableEnd < 0) {
@@ -472,6 +504,7 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             copyOutput = false;
             pendingCopy = false;
             unsafe = false;
+            emptyQuotedIdentifier = false;
             clientBuffer = false;
             clientStatement = false;
         }
