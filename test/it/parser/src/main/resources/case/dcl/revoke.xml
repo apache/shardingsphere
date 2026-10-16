@@ -274,15 +274,9 @@
     <revoke sql-case-id="revoke_granted_by_pg">
         <table name="t" start-index="17" stop-index="17" />
     </revoke>
-
-    <revoke sql-case-id="revoke_role_inherit_pg">
-    </revoke>
-
-    <revoke sql-case-id="revoke_role_set_grantor_pg">
-    </revoke>
-
-    <revoke sql-case-id="revoke_role_admin_option_control_pg">
-    </revoke>
+    <revoke sql-case-id="revoke_role_inherit_pg" />
+    <revoke sql-case-id="revoke_role_set_grantor_pg" />
+    <revoke sql-case-id="revoke_role_admin_option_control_pg" />
 
     <revoke sql-case-id="revoke_object_grant_option_control_pg">
         <table name="t" start-index="34" stop-index="34" />

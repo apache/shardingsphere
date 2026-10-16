@@ -340,22 +340,10 @@
     <grant sql-case-id="grant_select_privilege_control_pg">
         <table name="t" start-index="16" stop-index="16" />
     </grant>
-
-    <grant sql-case-id="grant_role_privilege_control_pg">
-    </grant>
-
-    <grant sql-case-id="grant_role_admin_true_pg">
-    </grant>
-
-    <grant sql-case-id="grant_role_admin_false_pg">
-    </grant>
-
-    <grant sql-case-id="grant_role_inherit_set_pg">
-    </grant>
-
-    <grant sql-case-id="grant_role_options_grantor_pg">
-    </grant>
-
-    <grant sql-case-id="grant_role_admin_option_control_pg">
-    </grant>
+    <grant sql-case-id="grant_role_privilege_control_pg" />
+    <grant sql-case-id="grant_role_admin_true_pg" />
+    <grant sql-case-id="grant_role_admin_false_pg" />
+    <grant sql-case-id="grant_role_inherit_set_pg" />
+    <grant sql-case-id="grant_role_options_grantor_pg" />
+    <grant sql-case-id="grant_role_admin_option_control_pg" />
 </sql-parser-test-cases>
