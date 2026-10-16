@@ -35,6 +35,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.firebirdsql.gds.BlrConstants;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -90,7 +91,7 @@ class FirebirdBlobParameterConverterTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("textArguments")
-    void assertConvertToText(final String name, final FirebirdBatchColumnDescriptor field, final byte[] content, final Integer length, final String expected) {
+    void assertConvertToText(final String name, final FirebirdBatchColumnDescriptor field, final byte[] content, @Nullable final Integer length, final String expected) {
         assertThat(new FirebirdBlobParameterConverter(UTF8).convert(content, field, createParameter(Types.VARCHAR, length)), is(expected));
     }
     
@@ -113,8 +114,9 @@ class FirebirdBlobParameterConverterTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("failedConversionArguments")
-    void assertConvertFailed(final String name, final FirebirdBatchColumnDescriptor field, final byte[] content, final FirebirdReturnColumnPacket parameter, final int connectionCharsetId,
-                             final Class<? extends SQLDialectException> expectedErrorType) {
+    void assertConvertWithUnconvertibleBlob(final String name, final FirebirdBatchColumnDescriptor field, final byte[] content, final FirebirdReturnColumnPacket parameter,
+                                            final int connectionCharsetId,
+                                            final Class<? extends SQLDialectException> expectedErrorType) {
         ParameterConversionException actual = assertThrows(ParameterConversionException.class, () -> new FirebirdBlobParameterConverter(connectionCharsetId).convert(content, field, parameter));
         assertThat(actual.getConversionError(), isA(expectedErrorType));
     }
@@ -229,17 +231,17 @@ class FirebirdBlobParameterConverterTest {
         return FirebirdParseBatchBlr.parse(blr, blr.readableBytes()).getFields().get(0);
     }
     
-    private static FirebirdReturnColumnPacket createParameter(final int dataType, final Integer length) {
-        ShardingSphereColumn column = new ShardingSphereColumn("C", dataType, false, false, true, true, false, true);
+    private static FirebirdReturnColumnPacket createParameter(final int dataType, @Nullable final Integer length) {
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", dataType, false, false, true, true, false, true);
         return new FirebirdReturnColumnPacket(Collections.emptyList(), 1, createTable(), column, null, null, null, length, false, null);
     }
     
     private static FirebirdReturnColumnPacket createBlobParameter(final int subType) {
-        ShardingSphereColumn column = new ShardingSphereColumn("C", Types.BLOB, false, false, true, true, false, true);
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", Types.BLOB, false, false, true, true, false, true);
         return new FirebirdReturnColumnPacket(Collections.emptyList(), 1, createTable(), column, null, null, null, null, true, subType);
     }
     
     private static ShardingSphereTable createTable() {
-        return new ShardingSphereTable("T", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        return new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
 }

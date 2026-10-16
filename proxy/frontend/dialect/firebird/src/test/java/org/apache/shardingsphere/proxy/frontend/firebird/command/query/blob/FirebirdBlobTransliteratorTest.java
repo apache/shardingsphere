@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.TransliterationFailedException;
+import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;
@@ -31,49 +32,59 @@ class FirebirdBlobTransliteratorTest {
     
     private static final Charset WIN1251 = Charset.forName("windows-1251");
     
+    private static final int UTF8_ID = 4;
+    
+    private static final int WIN1251_ID = 52;
+    
     @Test
     void assertPut() {
-        assertThat(new FirebirdBlobTransliterator(WIN1251, StandardCharsets.UTF_8).put("Текст".getBytes(WIN1251)), is("Текст".getBytes(StandardCharsets.UTF_8)));
+        assertThat(createTransliterator(WIN1251_ID, UTF8_ID).put("Текст".getBytes(WIN1251)), is("Текст".getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test
     void assertPutWithCharacterSplitBetweenPuts() {
-        FirebirdBlobTransliterator transliterator = new FirebirdBlobTransliterator(StandardCharsets.UTF_8, WIN1251);
+        FirebirdBlobTransliterator transliterator = createTransliterator(UTF8_ID, WIN1251_ID);
         assertThat(transliterator.put(new byte[]{'a', (byte) 0xD0}), is(new byte[]{'a'}));
         assertThat(transliterator.put(new byte[]{(byte) 0xB2, 'b'}), is("вb".getBytes(WIN1251)));
     }
     
     @Test
     void assertPutWithoutConvertibleBytes() {
-        assertThrows(TransliterationFailedException.class, () -> new FirebirdBlobTransliterator(StandardCharsets.UTF_8, WIN1251).put(new byte[]{(byte) 0xFF, 'a'}));
+        assertThrows(TransliterationFailedException.class, () -> createTransliterator(UTF8_ID, WIN1251_ID).put(new byte[]{(byte) 0xFF, 'a'}));
     }
     
     @Test
     void assertPutAfterInvalidCharacter() {
-        FirebirdBlobTransliterator transliterator = new FirebirdBlobTransliterator(StandardCharsets.UTF_8, WIN1251);
+        FirebirdBlobTransliterator transliterator = createTransliterator(UTF8_ID, WIN1251_ID);
         assertThat(transliterator.put(new byte[]{'a', (byte) 0xFF}), is(new byte[]{'a'}));
         assertThrows(TransliterationFailedException.class, () -> transliterator.put(new byte[]{'b'}));
     }
     
     @Test
     void assertPutEmptyDataAfterIncompleteCharacter() {
-        FirebirdBlobTransliterator transliterator = new FirebirdBlobTransliterator(StandardCharsets.UTF_8, WIN1251);
+        FirebirdBlobTransliterator transliterator = createTransliterator(UTF8_ID, WIN1251_ID);
         transliterator.put(new byte[]{'a', (byte) 0xD0});
         assertThrows(TransliterationFailedException.class, () -> transliterator.put(new byte[0]));
     }
     
     @Test
     void assertPutEmptyData() {
-        assertThat(new FirebirdBlobTransliterator(StandardCharsets.UTF_8, WIN1251).put(new byte[0]), is(new byte[0]));
+        assertThat(createTransliterator(UTF8_ID, WIN1251_ID).put(new byte[0]), is(new byte[0]));
     }
     
     @Test
     void assertPutWithUnmappableTargetCharacter() {
-        assertThrows(TransliterationFailedException.class, () -> new FirebirdBlobTransliterator(StandardCharsets.UTF_8, WIN1251).put("a中".getBytes(StandardCharsets.UTF_8)));
+        assertThrows(TransliterationFailedException.class, () -> createTransliterator(UTF8_ID, WIN1251_ID).put("a中".getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test
     void assertPutWithUndefinedSourceByte() {
-        assertThat(new FirebirdBlobTransliterator(WIN1251, StandardCharsets.UTF_8).put(new byte[]{'a', (byte) 0x98}), is(new byte[]{'a', 0}));
+        assertThat(createTransliterator(WIN1251_ID, UTF8_ID).put(new byte[]{'a', (byte) 0x98}), is(new byte[]{'a', 0}));
+    }
+    
+    private FirebirdBlobTransliterator createTransliterator(final int sourceCharsetId, final int targetCharsetId) {
+        byte[] bpb = {ISCConstants.isc_bpb_version1, ISCConstants.isc_bpb_source_type, 1, ISCConstants.BLOB_SUB_TYPE_TEXT, ISCConstants.isc_bpb_target_type, 1, ISCConstants.BLOB_SUB_TYPE_TEXT,
+                ISCConstants.isc_bpb_source_interp, 1, (byte) sourceCharsetId, ISCConstants.isc_bpb_target_interp, 1, (byte) targetCharsetId};
+        return FirebirdBlobParameterBufferUtils.createTransliterator(bpb, UTF8_ID).orElseThrow(IllegalStateException::new);
     }
 }

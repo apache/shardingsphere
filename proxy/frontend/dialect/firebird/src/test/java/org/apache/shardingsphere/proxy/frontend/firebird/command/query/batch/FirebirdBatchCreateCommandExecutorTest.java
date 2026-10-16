@@ -229,45 +229,59 @@ class FirebirdBatchCreateCommandExecutorTest {
     
     @Test
     void assertExecuteWithEmptyBatchParameters() throws SQLException {
-        FirebirdBatchStatement actual = executeWithBatchParameters(Unpooled.EMPTY_BUFFER);
+        mockBatchCreate(Unpooled.EMPTY_BUFFER);
+        new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute();
+        FirebirdBatchStatement actual = FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID);
         assertThat(actual.getBufferSize(), is(DEFAULT_BUFFER_SIZE));
         assertFalse(actual.isBlobStreamAllowed());
     }
     
     @Test
     void assertExecuteWithBufferSize() throws SQLException {
-        assertThat(executeWithBatchParameters(createBatchParametersBuffer(TAG_BUFFER_BYTES_SIZE, 1024)).getBufferSize(), is(1024L));
+        mockBatchCreate(createBatchParametersBuffer(TAG_BUFFER_BYTES_SIZE, 1024));
+        new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute();
+        assertThat(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID).getBufferSize(), is(1024L));
     }
     
     @Test
     void assertExecuteWithMaximumBufferSize() throws SQLException {
-        assertThat(executeWithBatchParameters(createBatchParametersBuffer(TAG_BUFFER_BYTES_SIZE, 0)).getBufferSize(), is(MAX_BUFFER_SIZE));
+        mockBatchCreate(createBatchParametersBuffer(TAG_BUFFER_BYTES_SIZE, 0));
+        new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute();
+        assertThat(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID).getBufferSize(), is(MAX_BUFFER_SIZE));
     }
     
     @Test
     void assertExecuteWithTooLargeBufferSize() throws SQLException {
-        assertThat(executeWithBatchParameters(createBatchParametersBuffer(TAG_BUFFER_BYTES_SIZE, -1)).getBufferSize(), is(MAX_BUFFER_SIZE));
+        mockBatchCreate(createBatchParametersBuffer(TAG_BUFFER_BYTES_SIZE, -1));
+        new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute();
+        assertThat(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID).getBufferSize(), is(MAX_BUFFER_SIZE));
     }
     
     @Test
     void assertExecuteWithDisabledMultiError() throws SQLException {
-        assertFalse(executeWithBatchParameters(createBatchParametersBuffer(TAG_MULTIERROR, 0)).isMultiError());
+        mockBatchCreate(createBatchParametersBuffer(TAG_MULTIERROR, 0));
+        new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute();
+        assertFalse(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID).isMultiError());
     }
     
     @Test
     void assertExecuteWithBlobPolicy() throws SQLException {
-        assertTrue(executeWithBatchParameters(createBatchParametersBuffer(TAG_BLOB_POLICY, BLOB_NONE)).isBlobStreamAllowed());
+        mockBatchCreate(createBatchParametersBuffer(TAG_BLOB_POLICY, BLOB_NONE));
+        new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute();
+        assertTrue(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID).isBlobStreamAllowed());
     }
     
     @Test
     void assertExecuteWithInvalidBatchParametersVersion() {
-        assertThrows(InvalidBatchParameterVersionException.class, () -> executeWithBatchParameters(Unpooled.wrappedBuffer(new byte[]{2})));
+        mockBatchCreate(Unpooled.wrappedBuffer(new byte[]{2}));
+        assertThrows(InvalidBatchParameterVersionException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidBatchParametersArguments")
     void assertExecuteWithInvalidBatchParameters(final String name, final ByteBuf batchParametersBuffer) {
-        assertThrows(DatabaseProtocolException.class, () -> executeWithBatchParameters(batchParametersBuffer));
+        mockBatchCreate(batchParametersBuffer);
+        assertThrows(DatabaseProtocolException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
     }
     
     private static Stream<Arguments> invalidBatchParametersArguments() {
@@ -279,12 +293,14 @@ class FirebirdBatchCreateCommandExecutorTest {
     
     @Test
     void assertExecuteWithUnknownBatchParameter() throws SQLException {
-        FirebirdBatchStatement actual = executeWithBatchParameters(Unpooled.buffer().writeByte(BATCH_VERSION_1).writeByte(99).writeIntLE(1).writeByte(1));
+        mockBatchCreate(Unpooled.buffer().writeByte(BATCH_VERSION_1).writeByte(99).writeIntLE(1).writeByte(1));
+        new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute();
+        FirebirdBatchStatement actual = FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID);
         assertThat(actual.getBufferSize(), is(DEFAULT_BUFFER_SIZE));
         assertFalse(actual.isRecordCounts());
     }
     
-    private FirebirdBatchStatement executeWithBatchParameters(final ByteBuf batchParametersBuffer) throws SQLException {
+    private void mockBatchCreate(final ByteBuf batchParametersBuffer) {
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
@@ -292,8 +308,6 @@ class FirebirdBatchCreateCommandExecutorTest {
         when(packet.getBatchBlr()).thenReturn(createBatchBlr());
         when(packet.getBatchMessageLength()).thenReturn(6L);
         when(packet.getBatchParametersBuffer()).thenReturn(batchParametersBuffer);
-        new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute();
-        return FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID);
     }
     
     private ByteBuf createBatchBlr() {

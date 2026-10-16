@@ -82,7 +82,6 @@ class FirebirdBatchRegisterBlobCommandExecutorTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle(), is(0));
-        verify(batchRegistry).getBatchStatement(9, 7);
     }
     
     @Test

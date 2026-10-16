@@ -196,6 +196,20 @@ class FirebirdBatchStatementTest {
         assertThrows(IndexOutOfBoundsException.class, () -> appendBlobStream(createBatchStatement(), data, 24L));
     }
     
+    private static FirebirdBatchStatement createBatchStatement() {
+        return new FirebirdBatchStatement(1, Collections.emptyList(), 1024L, false, false, true);
+    }
+    
+    private static byte[] appendBlobStream(final FirebirdBatchStatement batchStatement, final ByteBuf data, final long length) {
+        batchStatement.appendBlobStream(data, length);
+        List<byte[]> portions = new ArrayList<>(batchStatement.getBlobBuffer());
+        return portions.get(portions.size() - 1);
+    }
+    
+    private static ByteBuf createRestoredHeader(final int batchBlobId, final int blobLength, final int bpbLength) {
+        return Unpooled.buffer().writeIntLE(0).writeIntLE(batchBlobId).writeIntLE(blobLength).writeIntLE(bpbLength);
+    }
+    
     @Test
     void assertReadStreamBlobs() {
         FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32);
@@ -324,20 +338,6 @@ class FirebirdBatchStatementTest {
         assertTrue(batchStatement.getBlobBuffer().isEmpty());
         assertThat(batchStatement.getBlobStreamSize(), is(0L));
         assertThat(otherBatchStatement.getBlobIds(), is(Collections.singletonMap(1L, 3L)));
-    }
-    
-    private static FirebirdBatchStatement createBatchStatement() {
-        return new FirebirdBatchStatement(1, Collections.emptyList(), 1024L, false, false, true);
-    }
-    
-    private static byte[] appendBlobStream(final FirebirdBatchStatement batchStatement, final ByteBuf data, final long length) {
-        batchStatement.appendBlobStream(data, length);
-        List<byte[]> portions = new ArrayList<>(batchStatement.getBlobBuffer());
-        return portions.get(portions.size() - 1);
-    }
-    
-    private static ByteBuf createRestoredHeader(final int batchBlobId, final int blobLength, final int bpbLength) {
-        return Unpooled.buffer().writeIntLE(0).writeIntLE(batchBlobId).writeIntLE(blobLength).writeIntLE(bpbLength);
     }
     
     private static ByteBuf createBlobHeader(final long batchBlobId, final int blobLength, final int bpbLength) {

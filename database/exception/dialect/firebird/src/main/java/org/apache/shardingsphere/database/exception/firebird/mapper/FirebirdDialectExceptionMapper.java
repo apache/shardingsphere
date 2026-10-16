@@ -241,11 +241,16 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
     }
     
     private SQLException createDynamicSQLException(final VendorError vendorError, final Object[] messageArgs, final StatusVectorEntry... errors) {
-        Collection<StatusVectorEntry> statusVector = new ArrayList<>(errors.length + 2);
-        statusVector.add(DYNAMIC_SQL_ERROR);
-        statusVector.add(BATCH_SQL_ERROR_CODE);
-        statusVector.addAll(Arrays.asList(errors));
-        return new FirebirdException(String.format(vendorError.getReason(), messageArgs), vendorError.getSqlState().getValue(), vendorError.getVendorCode(), statusVector);
+        return new FirebirdException(String.format(vendorError.getReason(), messageArgs), vendorError.getSqlState().getValue(), vendorError.getVendorCode(),
+                createDynamicSQLStatusVector(BATCH_SQL_ERROR_CODE, Arrays.asList(errors)));
+    }
+    
+    private Collection<StatusVectorEntry> createDynamicSQLStatusVector(final StatusVectorEntry sqlErrorCode, final Collection<StatusVectorEntry> errors) {
+        Collection<StatusVectorEntry> result = new ArrayList<>(errors.size() + 2);
+        result.add(DYNAMIC_SQL_ERROR);
+        result.add(sqlErrorCode);
+        result.addAll(errors);
+        return result;
     }
     
     private String toQuad(final long quad) {
@@ -272,11 +277,8 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         Collection<StatusVectorEntry> conversionStatusVector = conversionError instanceof FirebirdException
                 ? ((FirebirdException) conversionError).getStatusVector()
                 : Collections.singletonList(new StatusVectorEntry(conversionError.getErrorCode(), Collections.emptyList()));
-        Collection<StatusVectorEntry> statusVector = new ArrayList<>(conversionStatusVector.size() + 2);
-        statusVector.add(DYNAMIC_SQL_ERROR);
-        statusVector.add(PARAMETER_CONVERSION_SQL_ERROR_CODE);
-        statusVector.addAll(conversionStatusVector);
-        return new FirebirdException(conversionError.getMessage(), conversionError.getSQLState(), conversionError.getErrorCode(), statusVector);
+        return new FirebirdException(conversionError.getMessage(), conversionError.getSQLState(), conversionError.getErrorCode(),
+                createDynamicSQLStatusVector(PARAMETER_CONVERSION_SQL_ERROR_CODE, conversionStatusVector));
     }
     
     @Override

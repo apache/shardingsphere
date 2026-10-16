@@ -91,6 +91,7 @@ public final class FirebirdBlobWrite {
     /**
      * Mark this BLOB write as closed and keep its data as one exact-size array.
      */
+    @HighFrequencyInvocation
     public void markClosed() {
         content = buffer.toByteArray();
         buffer = null;

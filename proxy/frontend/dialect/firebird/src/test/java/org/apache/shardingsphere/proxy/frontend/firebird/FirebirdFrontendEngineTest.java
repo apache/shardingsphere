@@ -106,14 +106,6 @@ class FirebirdFrontendEngineTest {
         assertTrue(connectionContext.getTransactionContext().isExceptionOccur());
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("provideIgnoredExceptionParameters")
-    void assertHandleIgnoredException(final String testName, final boolean inTransaction, final Exception exception) {
-        ConnectionContext connectionContext = mockConnectionSession(inTransaction, false);
-        engine.handleException(connectionSession, exception);
-        assertFalse(connectionContext.getTransactionContext().isExceptionOccur());
-    }
-    
     private ConnectionContext mockConnectionSession(final boolean inTransaction, final boolean exceptionOccur) {
         TransactionStatus transactionStatus = new TransactionStatus();
         transactionStatus.setInTransaction(inTransaction);
@@ -128,6 +120,14 @@ class FirebirdFrontendEngineTest {
     
     private static Stream<Arguments> provideHandleExceptionParameters() {
         return Stream.of(Arguments.of("mark when in transaction", false, new Exception("error")), Arguments.of("keep marked when already occurred", true, new Exception("error")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideIgnoredExceptionParameters")
+    void assertHandleIgnoredException(final String testName, final boolean inTransaction, final Exception exception) {
+        ConnectionContext connectionContext = mockConnectionSession(inTransaction, false);
+        engine.handleException(connectionSession, exception);
+        assertFalse(connectionContext.getTransactionContext().isExceptionOccur());
     }
     
     private static Stream<Arguments> provideIgnoredExceptionParameters() {

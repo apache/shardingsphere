@@ -74,6 +74,18 @@ class FirebirdBatchBlobStreamCommandPacketTest {
         assertThat(FirebirdBatchBlobStreamCommandPacket.getLength(new FirebirdPacketPayload(incompletePacket, StandardCharsets.UTF_8), new FirebirdBatchBlobStream()), is(-1));
     }
     
+    private ByteBuf createPacket(final long length) {
+        ByteBuf result = Unpooled.buffer();
+        result.writeInt(FirebirdCommandPacketType.BATCH_BLOB_STREAM.getValue());
+        result.writeInt(7);
+        result.writeInt((int) length);
+        result.writeLong(1L);
+        result.writeInt(5);
+        result.writeInt(0);
+        result.writeBytes(ByteBufUtil.decodeHexDump("6162636465"));
+        return result;
+    }
+    
     @Test
     void assertGetLengthWithIncompleteLargeBpb() {
         ByteBuf data = Unpooled.buffer();
@@ -113,26 +125,14 @@ class FirebirdBatchBlobStreamCommandPacketTest {
         return result;
     }
     
-    private ByteBuf createPacket(final long length) {
-        ByteBuf result = Unpooled.buffer();
-        result.writeInt(FirebirdCommandPacketType.BATCH_BLOB_STREAM.getValue());
-        result.writeInt(7);
-        result.writeInt((int) length);
-        result.writeLong(1L);
-        result.writeInt(5);
-        result.writeInt(0);
-        result.writeBytes(ByteBufUtil.decodeHexDump("6162636465"));
-        return result;
+    private static void writeHeader(final ByteBuf data, final long batchBlobId, final int blobLength, final int bpbLength) {
+        data.writeLong(batchBlobId);
+        data.writeInt(blobLength);
+        data.writeInt(bpbLength);
     }
     
     private static int getLength(final FirebirdBatchBlobStream blobStream, final ByteBuf data, final long length) {
         ByteBuf packet = Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_BLOB_STREAM.getValue()).writeInt(1).writeInt((int) length).writeBytes(data);
         return FirebirdBatchBlobStreamCommandPacket.getLength(new FirebirdPacketPayload(packet, StandardCharsets.UTF_8), blobStream);
-    }
-    
-    private static void writeHeader(final ByteBuf data, final long batchBlobId, final int blobLength, final int bpbLength) {
-        data.writeLong(batchBlobId);
-        data.writeInt(blobLength);
-        data.writeInt(bpbLength);
     }
 }

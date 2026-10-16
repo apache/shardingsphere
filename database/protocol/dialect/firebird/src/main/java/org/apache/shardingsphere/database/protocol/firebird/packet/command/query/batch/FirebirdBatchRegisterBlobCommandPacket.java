@@ -23,7 +23,7 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 /**
- * Register an existing BLOB under a batch BLOB identifier.
+ * Firebird batch register BLOB command packet.
  */
 @HighFrequencyInvocation
 @Getter

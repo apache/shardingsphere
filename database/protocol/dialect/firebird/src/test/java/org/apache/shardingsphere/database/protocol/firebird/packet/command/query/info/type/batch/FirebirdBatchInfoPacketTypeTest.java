@@ -35,14 +35,7 @@ class FirebirdBatchInfoPacketTypeTest {
     
     @Test
     void assertCreatePacket() {
-        ByteBuf packet = Unpooled.buffer();
-        packet.writeInt(FirebirdCommandPacketType.INFO_BATCH.getValue());
-        packet.writeInt(7);
-        packet.writeInt(0);
-        packet.writeInt(3);
-        packet.writeBytes(new byte[]{13, 10, 14, 0});
-        packet.writeInt(64);
-        FirebirdInfoPacket actual = FirebirdBatchInfoPacketType.createPacket(new FirebirdPacketPayload(packet, StandardCharsets.UTF_8));
+        FirebirdInfoPacket actual = FirebirdBatchInfoPacketType.createPacket(createPayload(new byte[]{13, 10, 14, 0}));
         assertThat(actual.getHandle(), is(7));
         assertThat(actual.getInfoItems(), is(Arrays.asList(FirebirdBatchInfoPacketType.BLOB_ALIGNMENT, FirebirdBatchInfoPacketType.BUFFER_BYTES_SIZE, FirebirdBatchInfoPacketType.BLOB_HEADER)));
         assertThat(actual.getMaxLength(), is(64));
@@ -50,14 +43,12 @@ class FirebirdBatchInfoPacketTypeTest {
     
     @Test
     void assertCreatePacketWithUnknownItems() {
-        ByteBuf packet = Unpooled.buffer();
-        packet.writeInt(FirebirdCommandPacketType.INFO_BATCH.getValue());
-        packet.writeInt(7);
-        packet.writeInt(0);
-        packet.writeInt(3);
-        packet.writeBytes(new byte[]{20, 126, 1, 0});
-        packet.writeInt(64);
-        FirebirdInfoPacket actual = FirebirdBatchInfoPacketType.createPacket(new FirebirdPacketPayload(packet, StandardCharsets.UTF_8));
+        FirebirdInfoPacket actual = FirebirdBatchInfoPacketType.createPacket(createPayload(new byte[]{20, 126, 1, 0}));
         assertThat(actual.getInfoItems(), is(Arrays.asList(FirebirdCommonInfoPacketType.ERROR, FirebirdCommonInfoPacketType.LENGTH, FirebirdCommonInfoPacketType.END)));
+    }
+    
+    private FirebirdPacketPayload createPayload(final byte[] infoItems) {
+        ByteBuf packet = Unpooled.buffer().writeInt(FirebirdCommandPacketType.INFO_BATCH.getValue()).writeInt(7).writeInt(0).writeInt(3).writeBytes(infoItems).writeInt(64);
+        return new FirebirdPacketPayload(packet, StandardCharsets.UTF_8);
     }
 }

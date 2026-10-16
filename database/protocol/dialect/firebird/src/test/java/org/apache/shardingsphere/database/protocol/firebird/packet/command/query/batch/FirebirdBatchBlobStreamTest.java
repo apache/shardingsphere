@@ -37,6 +37,27 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FirebirdBatchBlobStreamTest {
     
+    @Test
+    void assertCopy() {
+        FirebirdBatchBlobStream blobStream = new FirebirdBatchBlobStream();
+        ByteBuf data = Unpooled.buffer();
+        writeHeader(data, 1L, 20, 0);
+        data.writeBytes(new byte[16]);
+        getLength(blobStream.copy(), data, 32L);
+        assertThat(getLength(blobStream, Unpooled.wrappedBuffer(new byte[]{1, 2, 3, 4}), 4L), is(12));
+    }
+    
+    private static void writeHeader(final ByteBuf data, final long batchBlobId, final int blobLength, final int bpbLength) {
+        data.writeLong(batchBlobId);
+        data.writeInt(blobLength);
+        data.writeInt(bpbLength);
+    }
+    
+    private static int getLength(final FirebirdBatchBlobStream blobStream, final ByteBuf data, final long length) {
+        ByteBuf packet = Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_BLOB_STREAM.getValue()).writeInt(1).writeInt((int) length).writeBytes(data);
+        return FirebirdBatchBlobStreamCommandPacket.getLength(new FirebirdPacketPayload(packet, StandardCharsets.UTF_8), blobStream);
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidStructureBpbArguments")
     void assertSetDefaultBpbWithInvalidStructure(final String name, final byte[] bpb, final String expectedReason, final int expectedData) {
@@ -59,26 +80,5 @@ class FirebirdBatchBlobStreamTest {
         InvalidBpbVersionException actual = assertThrows(InvalidBpbVersionException.class, () -> new FirebirdBatchBlobStream().setDefaultBpb(Unpooled.wrappedBuffer(new byte[]{2, 3, 1, 0})));
         assertThat(actual.getVersion(), is(2));
         assertThat(actual.getExpectedVersion(), is(1));
-    }
-    
-    @Test
-    void assertCopy() {
-        FirebirdBatchBlobStream blobStream = new FirebirdBatchBlobStream();
-        ByteBuf data = Unpooled.buffer();
-        writeHeader(data, 1L, 20, 0);
-        data.writeBytes(new byte[16]);
-        getLength(blobStream.copy(), data, 32L);
-        assertThat(getLength(blobStream, Unpooled.wrappedBuffer(new byte[]{1, 2, 3, 4}), 4L), is(12));
-    }
-    
-    private static void writeHeader(final ByteBuf data, final long batchBlobId, final int blobLength, final int bpbLength) {
-        data.writeLong(batchBlobId);
-        data.writeInt(blobLength);
-        data.writeInt(bpbLength);
-    }
-    
-    private static int getLength(final FirebirdBatchBlobStream blobStream, final ByteBuf data, final long length) {
-        ByteBuf packet = Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_BLOB_STREAM.getValue()).writeInt(1).writeInt((int) length).writeBytes(data);
-        return FirebirdBatchBlobStreamCommandPacket.getLength(new FirebirdPacketPayload(packet, StandardCharsets.UTF_8), blobStream);
     }
 }

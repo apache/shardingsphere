@@ -321,9 +321,9 @@ class FirebirdDialectExceptionMapperTest {
     
     @Test
     void assertConvertWithConversionError() {
-        SQLException actual = mapper.convert(new ConversionErrorException("from-blobs"));
-        assertFirebirdSQLException(actual, "22018", ISCConstants.isc_convert_error, "conversion error from string \"from-blobs\"");
-        assertStatusVector(actual, Collections.singletonList(Arrays.asList(ISCConstants.isc_convert_error, "from-blobs")));
+        SQLException actual = mapper.convert(new ConversionErrorException("foo_value"));
+        assertFirebirdSQLException(actual, "22018", ISCConstants.isc_convert_error, "conversion error from string \"foo_value\"");
+        assertStatusVector(actual, Collections.singletonList(Arrays.asList(ISCConstants.isc_convert_error, "foo_value")));
     }
     
     @Test

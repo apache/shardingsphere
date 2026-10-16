@@ -62,6 +62,8 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
     
     private static final byte[] NO_DATA = new byte[0];
     
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "Firebird");
+    
     private final FirebirdBatchExecuteCommandPacket packet;
     
     private final ConnectionSession connectionSession;
@@ -129,7 +131,6 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
         List<List<Object>> params = new ArrayList<>(batchStatement.getParameterValues().size());
         Collection<FirebirdBatchCompletion> completions = new ArrayList<>();
         FirebirdBlobParameterConverter converter = new FirebirdBlobParameterConverter(connectionSession.getAttributeMap().attr(FirebirdConstant.CONNECTION_CHARSET_ID).get());
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
         for (List<Object> each : batchStatement.getParameterValues()) {
             SQLDialectException failure;
             try {
@@ -149,7 +150,7 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
                 batchStatement.getStreamBlobContents().keySet().retainAll(streamBlobContents.keySet());
                 throw failure;
             }
-            SQLException cause = SQLExceptionTransformEngine.toSQLException(failure, databaseType);
+            SQLException cause = SQLExceptionTransformEngine.toSQLException(failure, DATABASE_TYPE);
             completions.add(new FirebirdBatchCompletion(1, new int[]{FirebirdBatchCompletion.EXECUTE_FAILED}, Collections.singleton(new FirebirdBatchCompletion.Failure(0, cause))));
             if (!batchStatement.isMultiError()) {
                 return mergeCompletions(completions);
