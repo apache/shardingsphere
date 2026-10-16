@@ -587,4 +587,8 @@
     <sql-case id="select_in_with_owner_column_rhs_oracle" value="SELECT * FROM t_order o WHERE o.user_id IN o.order_id" db-types="Oracle" />
     <sql-case id="select_in_with_function_rhs_oracle" value="SELECT * FROM t_order o WHERE o.user_id IN NVL(o.order_id, 0)" db-types="Oracle" />
     <sql-case id="select_parenthesized_column_alias" value="SELECT (c.password) PASSWORD FROM t_account c" db-types="Oracle,PostgreSQL,openGauss,SQLServer,Hive" />
+    <sql-case id="select_where_is_not_distinct_from_firebird" value="SELECT order_id FROM t_order WHERE status IS NOT DISTINCT FROM ?" db-types="Firebird" />
+    <sql-case id="select_where_starting_with_firebird" value="SELECT order_id FROM t_order WHERE status STARTING WITH ?" db-types="Firebird" />
+    <sql-case id="select_where_similar_to_escape_firebird" value="SELECT order_id FROM t_order WHERE status SIMILAR TO ? ESCAPE ?" db-types="Firebird" />
+    <sql-case id="select_where_is_distinct_from_and_equal_firebird" value="SELECT order_id FROM t_order WHERE status IS DISTINCT FROM ? AND order_id = ?" db-types="Firebird" />
 </sql-cases>
