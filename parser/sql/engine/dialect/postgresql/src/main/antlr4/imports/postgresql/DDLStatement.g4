@@ -91,7 +91,7 @@ accessMethod
 
 createIndex
     : CREATE createIndexSpecification INDEX concurrentlyClause (ifNotExists? indexName)? ON onlyClause tableName
-      accessMethodClause? LP_ indexParams RP_ include? (WITH reloptions)? tablespace? whereClause?
+      accessMethodClause? LP_ indexParams RP_ include? nullsDistinct? (WITH reloptions)? tablespace? whereClause?
     ;
 
 include
@@ -192,11 +192,19 @@ createDefinitionClause
     ;
 
 createDefinition
-    : columnDefinition | tableConstraint | LIKE tableName likeOption*
+    : createTableConstraint | columnDefinition | LIKE tableName likeOption*
+    ;
+
+createTableConstraint
+    : constraintClause? tableConstraintOption constraintAttributeSpec
     ;
 
 columnDefinition
-    : columnName dataType collateClause? columnConstraint*
+    : columnName dataType columnStorage? columnCompression? collateClause? columnConstraint*
+    ;
+
+columnStorage
+    : STORAGE (colId | DEFAULT)
     ;
 
 columnConstraint
@@ -208,12 +216,13 @@ constraintClause
     ;
 
 columnConstraintOption
-    : NOT? NULL
+    : NULL
+    | NOT NULL (NO INHERIT)?
     | checkOption
     | DEFAULT defaultExpr
-    | GENERATED ALWAYS AS LP_ aExpr RP_ STORED
+    | GENERATED ALWAYS AS LP_ aExpr RP_ (STORED | VIRTUAL)?
     | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
-    | UNIQUE indexParameters
+    | UNIQUE nullsDistinct? indexParameters
     | primaryKey indexParameters
     | REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
     ;
@@ -243,6 +252,10 @@ sequenceOption
     | OWNED BY
     ;
 
+nullsDistinct
+    : NULLS NOT? DISTINCT
+    ;
+
 indexParameters
     : (USING INDEX TABLESPACE ignoredIdentifier)?
     | INCLUDE columnNames
@@ -254,23 +267,32 @@ action
     ;
 
 constraintOptionalParam
-    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED | IMMEDIATE))?
+    : (NOT? DEFERRABLE | INITIALLY (DEFERRED | IMMEDIATE) | NOT? ENFORCED)*
     ;
 
 likeOption
-    : (INCLUDING | EXCLUDING) (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
+    : (INCLUDING | EXCLUDING) (COMMENTS | COMPRESSION | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
     ;
 
 tableConstraint
-    : constraintClause? tableConstraintOption constraintOptionalParam
+    : constraintClause? tableConstraintOption constraintOptionalParam (NO INHERIT constraintOptionalParam)*
     ;
 
 tableConstraintOption
     : checkOption
-    | UNIQUE columnNames indexParameters
-    | primaryKey columnNames indexParameters
+    | NOT NULL name
+    | UNIQUE nullsDistinct? (columnNames | temporalColumnNames) indexParameters
+    | primaryKey (columnNames | temporalColumnNames) indexParameters
     | EXCLUDE (USING ignoredIdentifier)? LP_ exclusionConstraintList RP_ indexParameters exclusionWhereClause?
-    | FOREIGN KEY columnNames REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
+    | FOREIGN KEY (columnNames | periodColumnNames) REFERENCES tableName (columnNames | periodColumnNames)? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
+    ;
+
+temporalColumnNames
+    : LP_ columnName (COMMA_ columnName)* WITHOUT OVERLAPS RP_
+    ;
+
+periodColumnNames
+    : LP_ columnName (COMMA_ columnName)* COMMA_ PERIOD columnName RP_
     ;
 
 exclusionWhereClause
@@ -424,6 +446,7 @@ dropColumnSpecification
 modifyColumnSpecification
     : modifyColumn (SET DATA)? TYPE dataType collateClause? (USING aExpr)?
     | modifyColumn SET DEFAULT aExpr
+    | modifyColumn SET EXPRESSION AS LP_ aExpr RP_
     | modifyColumn DROP DEFAULT
     | modifyColumn (SET | DROP) NOT NULL
     | modifyColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RP_)?
@@ -452,7 +475,7 @@ attributeOption
     ;
 
 addConstraintSpecification
-    : ADD (tableConstraint (NOT VALID)? | tableConstraintUsingIndex)
+    : ADD (tableConstraint (NOT VALID constraintAttributeSpec)? | tableConstraintUsingIndex)
     ;
 
 tableConstraintUsingIndex
@@ -460,7 +483,7 @@ tableConstraintUsingIndex
     ;
 
 modifyConstraintSpecification
-    : ALTER CONSTRAINT constraintName constraintOptionalParam
+    : ALTER CONSTRAINT constraintName (INHERIT | constraintAttributeSpec)
     ;
 
 validateConstraintSpecification
@@ -594,6 +617,8 @@ constraintAttributeElem
     | INITIALLY DEFERRED
     | NOT VALID
     | NO INHERIT
+    | NOT ENFORCED
+    | ENFORCED
     ;
 
 alterGenericOptions
@@ -1523,8 +1548,8 @@ ruleActionMulti
     ;
 
 createTrigger
-    : CREATE TRIGGER name triggerActionTime triggerEvents ON qualifiedName triggerReferencing? triggerForSpec? triggerWhen? EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs? RP_
-    | CREATE CONSTRAINT TRIGGER (FROM qualifiedName)? constraintAttributeSpec FOR EACH ROW triggerWhen EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs? RP_
+    : CREATE (OR REPLACE)? TRIGGER name triggerActionTime triggerEvents ON qualifiedName triggerReferencing? triggerForSpec? triggerWhen? EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs? RP_
+    | CREATE (OR REPLACE)? CONSTRAINT TRIGGER name AFTER triggerEvents ON qualifiedName (FROM qualifiedName)? constraintAttributeSpec FOR EACH ROW triggerWhen? EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs? RP_
     ;
 
 triggerEvents
