@@ -1031,4 +1031,13 @@
             </expr>
         </where>
     </delete>
+
+    <delete sql-case-id="delete_current_of_quoted_pg">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <where start-index="20" stop-index="41">
+            <expr>
+                <common-expression text="current of &quot;Foo&quot;" start-index="26" stop-index="41" />
+            </expr>
+        </where>
+    </delete>
 </sql-parser-test-cases>
