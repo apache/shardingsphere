@@ -105,6 +105,8 @@ import java.util.OptionalInt;
 @RequiredArgsConstructor
 public final class FirebirdPrepareStatementCommandExecutor implements CommandExecutor {
     
+    private static final ShardingSphereTable LITERAL_TABLE = new ShardingSphereTable(null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    
     private final FirebirdPrepareStatementPacket packet;
     
     private final ConnectionSession connectionSession;
@@ -469,6 +471,21 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
+    @HighFrequencyInvocation
+    private void processLiteralColumn(@Nullable final Object value, @Nullable final IdentifierValue columnAlias, final int dataType, final Collection<FirebirdReturnColumnPacket> describeColumns,
+                                      final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
+        ShardingSphereColumn column = new ShardingSphereColumn("CONSTANT", dataType, false, false, true, true, false, false);
+        String columnAliasString = null == columnAlias ? column.getName() : columnAlias.getValue();
+        String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
+        Integer columnLength = value instanceof String ? getStringLiteralLength((String) value) : null;
+        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, columnCount, LITERAL_TABLE, column, null, columnAliasString, owner, columnLength, false, null));
+    }
+    
+    private int getStringLiteralLength(final String value) {
+        String text = value.replace("''", "'");
+        return text.codePointCount(0, text.length());
+    }
+    
     private void processCustomColumn(final String tableName, final String columnName, final IdentifierValue columnAlias, final int dataType,
                                      final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
         ShardingSphereTable table = new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
@@ -525,21 +542,5 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             default:
                 return false;
         }
-    }
-    
-    @HighFrequencyInvocation
-    private void processLiteralColumn(@Nullable final Object value, @Nullable final IdentifierValue columnAlias, final int dataType, final Collection<FirebirdReturnColumnPacket> describeColumns,
-                                      final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
-        ShardingSphereTable table = new ShardingSphereTable(null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereColumn column = new ShardingSphereColumn("CONSTANT", dataType, false, false, true, true, false, false);
-        String columnAliasString = null == columnAlias ? column.getName() : columnAlias.getValue();
-        String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
-        Integer columnLength = value instanceof String ? getStringLiteralLength((String) value) : null;
-        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, columnCount, table, column, null, columnAliasString, owner, columnLength, false, null));
-    }
-    
-    private int getStringLiteralLength(final String value) {
-        String text = value.replace("''", "'");
-        return text.codePointCount(0, text.length());
     }
 }
