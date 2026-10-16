@@ -4748,6 +4748,46 @@
         </values>
     </insert>
 
+    <insert sql-case-id="update_or_insert_with_matching_firebird" parameters="1, 1">
+        <table name="t_order" start-index="22" stop-index="28" />
+        <columns start-index="30" stop-index="48">
+            <column name="order_id" start-index="31" stop-index="38" />
+            <column name="user_id" start-index="41" stop-index="47" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="58" stop-index="58" />
+                    <literal-expression value="1" start-index="58" stop-index="58" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="61" stop-index="61" />
+                    <literal-expression value="1" start-index="61" stop-index="61" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="update_or_insert_without_matching_firebird" parameters="1, 1">
+        <table name="t_order" start-index="22" stop-index="28" />
+        <columns start-index="30" stop-index="48">
+            <column name="order_id" start-index="31" stop-index="38" />
+            <column name="user_id" start-index="41" stop-index="47" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="58" stop-index="58" />
+                    <literal-expression value="1" start-index="58" stop-index="58" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="61" stop-index="61" />
+                    <literal-expression value="1" start-index="61" stop-index="61" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
     <insert sql-case-id="insert_with_geom_collection_function">
         <table name="t1" start-index="12" stop-index="13" />
         <columns start-index="14" stop-index="14" />

@@ -21,6 +21,7 @@ import BaseRule;
 
 insert
     : INSERT INTO? tableName (insertValuesClause | insertSelectClause) returningClause?
+    | UPDATE OR INSERT INTO tableName insertValuesClause matchingClause? returningClause?
     ;
 
 insertValuesClause
@@ -33,6 +34,10 @@ insertSelectClause
 
 returningClause
     : RETURNING projections
+    ;
+
+matchingClause
+    : MATCHING columnNames
     ;
 
 update
