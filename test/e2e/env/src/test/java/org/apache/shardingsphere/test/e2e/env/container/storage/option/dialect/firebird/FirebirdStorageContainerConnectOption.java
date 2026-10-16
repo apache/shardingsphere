@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect.
 
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 
+import java.util.Optional;
+
 /**
  * Storage container connect option for Firebird.
  */
@@ -37,5 +39,10 @@ public final class FirebirdStorageContainerConnectOption implements StorageConta
     @Override
     public String getURL(final String host, final int port, final String dataSourceName) {
         return String.format("jdbc:firebirdsql://%s:%s/%s?encoding=UTF8", host, port, dataSourceName);
+    }
+    
+    @Override
+    public Optional<String> getConnectionTestQuery() {
+        return Optional.of("SELECT 1 FROM RDB$DATABASE");
     }
 }
