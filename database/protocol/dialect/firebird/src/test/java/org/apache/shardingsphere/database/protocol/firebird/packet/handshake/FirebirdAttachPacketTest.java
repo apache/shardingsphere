@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.handshake;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.type.FirebirdDatabaseParameterBufferType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,6 +73,15 @@ class FirebirdAttachPacketTest {
     void assertWrite() {
         FirebirdAttachPacket packet = createPacket();
         assertDoesNotThrow(() -> packet.write(payload));
+    }
+    
+    @Test
+    void assertGetLength() {
+        ByteBuf packet = Unpooled.buffer();
+        packet.writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(0);
+        packet.writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2);
+        packet.writeInt(1).writeByte(1).writeZero(3);
+        assertThat(FirebirdAttachPacket.getLength(new FirebirdPacketPayload(packet, StandardCharsets.UTF_8)), is(28));
     }
     
     private FirebirdAttachPacket createPacket() {

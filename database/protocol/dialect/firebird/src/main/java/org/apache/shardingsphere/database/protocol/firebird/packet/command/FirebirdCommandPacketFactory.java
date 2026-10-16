@@ -47,6 +47,8 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.handshake.FirebirdAttachPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.handshake.FirebirdConnectPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 /**
@@ -192,6 +194,10 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdBatchCancelCommandPacket.getLength();
             case BATCH_SYNC:
                 return FirebirdBatchSyncCommandPacket.getLength(payload);
+            case CONNECT:
+                return FirebirdConnectPacket.getLength(payload);
+            case ATTACH:
+                return FirebirdAttachPacket.getLength(payload);
             default:
                 return 0;
         }

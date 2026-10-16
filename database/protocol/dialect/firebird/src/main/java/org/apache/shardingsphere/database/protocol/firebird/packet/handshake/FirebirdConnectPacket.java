@@ -117,4 +117,19 @@ public final class FirebirdConnectPacket extends FirebirdPacket {
     @Override
     protected void write(final FirebirdPacketPayload payload) {
     }
+    
+    /**
+     * Get length of packet.
+     *
+     * @param payload Firebird packet payload
+     * @return Length of packet
+     */
+    public static int getLength(final FirebirdPacketPayload payload) {
+        int length = 16;
+        length += payload.getBufferLength(length);
+        int protocolsCount = payload.getByteBuf().getInt(length);
+        length += 4;
+        length += payload.getBufferLength(length);
+        return length + protocolsCount * 20;
+    }
 }
