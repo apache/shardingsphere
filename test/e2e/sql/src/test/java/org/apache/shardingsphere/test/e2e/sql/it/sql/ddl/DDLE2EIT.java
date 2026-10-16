@@ -61,7 +61,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -397,7 +396,7 @@ class DDLE2EIT implements SQLE2EIT {
     }
     
     private void assertColumnMetaData(final AssertionTestParameter testParam, final DataSetColumn actual, final DataSetColumn expected) {
-        assertThat("Mismatched column name.", actual.getName(), equalToIgnoringCase(expected.getName()));
+        assertThat("Mismatched column name.", actual.getName().toUpperCase(), is(expected.getName().toUpperCase()));
         if ("MySQL".equals(testParam.getDatabaseType().getType()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int"));
         } else if ("PostgreSQL".equals(testParam.getDatabaseType().getType()) && "integer".equals(expected.getType())) {
