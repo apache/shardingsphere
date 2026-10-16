@@ -93,7 +93,7 @@ public final class ShardingSphereDatabaseFactory {
      * @param protocolType database protocol type
      * @param databaseConfig database configuration
      * @param computeNodeInstanceContext compute node instance context
-     * @param schemas schemas
+     * @param schemas loaded schemas; system schemas missing from them are built and added
      * @return created database
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
@@ -109,14 +109,25 @@ public final class ShardingSphereDatabaseFactory {
      * @param databaseConfig database configuration
      * @param props configuration properties
      * @param computeNodeInstanceContext compute node instance context
-     * @param schemas schemas
+     * @param schemas loaded schemas; system schemas missing from them are built and added
      * @return created database
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext, final Collection<ShardingSphereSchema> schemas) {
         ResourceMetaData resourceMetaData = new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
         Collection<ShardingSphereRule> rules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
-        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(rules), schemas, props);
+        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(rules), mergeSystemSchemas(name, protocolType, props, schemas), props);
+    }
+    
+    private static Collection<ShardingSphereSchema> mergeSystemSchemas(final String name, final DatabaseType protocolType, final ConfigurationProperties props,
+                                                                       final Collection<ShardingSphereSchema> schemas) {
+        Collection<String> schemaNames = new LinkedList<>();
+        for (ShardingSphereSchema each : schemas) {
+            schemaNames.add(each.getName());
+        }
+        Collection<ShardingSphereSchema> result = new LinkedList<>(schemas);
+        result.addAll(SystemSchemaBuilder.build(name, protocolType, props, schemaNames).values());
+        return result;
     }
     
     /**

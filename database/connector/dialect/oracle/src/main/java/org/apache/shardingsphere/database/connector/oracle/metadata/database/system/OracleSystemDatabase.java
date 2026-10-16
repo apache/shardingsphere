@@ -28,7 +28,7 @@ import java.util.Collections;
  */
 public final class OracleSystemDatabase implements DialectSystemDatabase {
     
-    private static final Collection<String> SYSTEM_SCHEMAS = Arrays.asList("sys", "system_lobs");
+    private static final Collection<String> SYSTEM_SCHEMAS = Arrays.asList("SYS", "SYSTEM_LOBS");
     
     @Override
     public Collection<String> getSystemDatabases() {
@@ -37,7 +37,7 @@ public final class OracleSystemDatabase implements DialectSystemDatabase {
     
     @Override
     public Collection<String> getSystemSchemas(final String databaseName) {
-        return Collections.emptyList();
+        return SYSTEM_SCHEMAS;
     }
     
     @Override
