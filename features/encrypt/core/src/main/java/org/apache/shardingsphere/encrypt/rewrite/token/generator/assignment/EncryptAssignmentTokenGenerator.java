@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
@@ -56,6 +57,8 @@ import java.util.Optional;
 @AllArgsConstructor
 @Slf4j
 public final class EncryptAssignmentTokenGenerator {
+    
+    private static final String UNSUPPORTED_ASSIGNMENT_MESSAGE = "Encrypted assignments with multiple columns, nested fields or unsupported expressions";
     
     private final EncryptRule rule;
     
@@ -76,16 +79,16 @@ public final class EncryptAssignmentTokenGenerator {
         String schemaName = tablesContext.getSchemaName().orElseGet(database::getDefaultSchemaName);
         QuoteCharacter quoteCharacter = databaseTypeRegistry.getDialectDatabaseMetaData().getQuoteCharacter();
         for (ColumnAssignmentSegment each : setAssignmentSegment.getAssignments()) {
-            ExpressionSegment value = each.getValue();
             ColumnSegment assignedColumn = getAssignedColumn(each);
-            if (each.getColumns().size() > 1 || null != assignedColumn.getNestedObjectAttributes() && !assignedColumn.getNestedObjectAttributes().isEmpty()
-                    || null != value && !(value instanceof ParameterMarkerExpressionSegment) && !(value instanceof LiteralExpressionSegment)) {
+            if (each.getColumns().size() > 1 || null != assignedColumn.getNestedObjectAttributes() && !assignedColumn.getNestedObjectAttributes().isEmpty()) {
                 checkUnsupportedAssignment(each);
                 continue;
             }
             findEncryptTable(assignedColumn).ifPresent(encryptTable -> {
                 String columnName = assignedColumn.getIdentifier().getValue();
                 if (encryptTable.isEncryptColumn(columnName)) {
+                    ExpressionSegment value = each.getValue();
+                    ShardingSpherePreconditions.checkState(null == value || !isUnsupportedExpression(value), () -> new UnsupportedSQLOperationException(UNSUPPORTED_ASSIGNMENT_MESSAGE));
                     result.addAll(generateAssignmentSQLTokens(schemaName, encryptTable.getTable(), encryptTable.getEncryptColumn(columnName), each, quoteCharacter));
                 }
             });
@@ -96,8 +99,20 @@ public final class EncryptAssignmentTokenGenerator {
     private void checkUnsupportedAssignment(final ColumnAssignmentSegment assignment) {
         for (ColumnSegment each : assignment.getColumns()) {
             ShardingSpherePreconditions.checkState(!findEncryptTable(each).map(optional -> optional.isEncryptColumn(each.getIdentifier().getValue())).orElse(false),
-                    () -> new UnsupportedSQLOperationException("Encrypted assignments with multiple columns, nested fields or unsupported expressions"));
+                    () -> new UnsupportedSQLOperationException(UNSUPPORTED_ASSIGNMENT_MESSAGE));
         }
+    }
+    
+    private boolean isUnsupportedExpression(final ExpressionSegment expression) {
+        if (!(expression instanceof FunctionSegment)) {
+            return !(expression instanceof ParameterMarkerExpressionSegment) && !(expression instanceof LiteralExpressionSegment);
+        }
+        for (ExpressionSegment each : ((FunctionSegment) expression).getParameters()) {
+            if (!(each instanceof ColumnSegment) && isUnsupportedExpression(each)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private Collection<SQLToken> generateAssignmentSQLTokens(final String schemaName, final String tableName, final EncryptColumn encryptColumn,

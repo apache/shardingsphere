@@ -205,6 +205,32 @@ class EncryptAssignmentTokenGeneratorTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("getSupportedFunctionValues")
+    void assertGenerateSQLTokensWithEncryptedFunction(final String name, final FunctionSegment value) {
+        EncryptRule rule = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        when(rule.findEncryptTable("foo_table")).thenReturn(Optional.of(encryptTable));
+        when(encryptTable.isEncryptColumn("foo_cipher")).thenReturn(true);
+        when(assignmentSegment.getColumns()).thenReturn(Collections.singletonList(createBoundColumn("foo_cipher")));
+        when(assignmentSegment.getValue()).thenReturn(value);
+        tokenGenerator = new EncryptAssignmentTokenGenerator(rule, mock(ShardingSphereDatabase.class), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        assertTrue(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).isEmpty());
+    }
+    
+    private static Stream<Arguments> getSupportedFunctionValues() {
+        FunctionSegment ifnull = new FunctionSegment(0, 20, "IFNULL", "IFNULL(foo_cipher, ?)");
+        ifnull.getParameters().add(new ColumnSegment(7, 16, new IdentifierValue("foo_cipher")));
+        ifnull.getParameters().add(new ParameterMarkerExpressionSegment(19, 19, 0));
+        FunctionSegment coalesce = new FunctionSegment(0, 33, "COALESCE", "COALESCE(IFNULL(foo_cipher, ?), 0)");
+        coalesce.getParameters().add(ifnull);
+        coalesce.getParameters().add(new LiteralExpressionSegment(32, 32, 0));
+        return Stream.of(
+                Arguments.of("legacy function", ifnull),
+                Arguments.of("nested legacy function", coalesce),
+                Arguments.of("function without parameters", new FunctionSegment(0, 3, "PI", "PI()")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("getUnsupportedAssignmentValues")
     void assertGenerateSQLTokensWithEncryptedUnsupportedValue(final String name, final ExpressionSegment value) {
         EncryptRule rule = mock(EncryptRule.class);
@@ -222,11 +248,18 @@ class EncryptAssignmentTokenGeneratorTest {
         UnaryOperationExpression unary = new UnaryOperationExpression(0, 1, new ParameterMarkerExpressionSegment(1, 1, 0), "~", "~?");
         FunctionSegment function = new FunctionSegment(0, 11, "coalesce", "coalesce(~?)");
         function.getParameters().add(unary);
+        FunctionSegment nestedFunction = new FunctionSegment(0, 21, "coalesce", "coalesce(coalesce(~?))");
+        nestedFunction.getParameters().add(function);
+        FunctionSegment commonFunction = new FunctionSegment(0, 15, "coalesce", "coalesce((?)[1])");
+        commonFunction.getParameters().add(new CommonExpressionSegment(9, 14, "(?)[1]", Collections.singletonList(new ParameterMarkerExpressionSegment(10, 10, 0))));
         return Stream.of(
                 Arguments.of("common children", new CommonExpressionSegment(0, 5, "(?)[1]", Collections.singletonList(new ParameterMarkerExpressionSegment(1, 1, 0)))),
                 Arguments.of("opaque common", new CommonExpressionSegment(0, 6, "DEFAULT", Collections.emptyList())),
                 Arguments.of("cast unary value", new TypeCastExpression(0, 14, "CAST(~? AS text)", unary, "text")),
-                Arguments.of("function unary value", function));
+                Arguments.of("unary value", unary),
+                Arguments.of("function unary value", function),
+                Arguments.of("nested function unary value", nestedFunction),
+                Arguments.of("function common value", commonFunction));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -234,8 +267,7 @@ class EncryptAssignmentTokenGeneratorTest {
     void assertGenerateSQLTokensWithPlainUnsupportedValue(final String name, final ExpressionSegment value) {
         EncryptRule rule = mock(EncryptRule.class);
         when(rule.findEncryptTable("foo_table")).thenReturn(Optional.of(mock(EncryptTable.class)));
-        when(assignmentSegment.getColumns()).thenReturn(Collections.singletonList(createBoundColumn("foo_plain")));
-        when(assignmentSegment.getValue()).thenReturn(value);
+        when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(createBoundColumn("foo_plain")), value)));
         tokenGenerator = new EncryptAssignmentTokenGenerator(rule, mock(ShardingSphereDatabase.class), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         assertTrue(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).isEmpty());
     }
@@ -249,8 +281,7 @@ class EncryptAssignmentTokenGeneratorTest {
         when(encryptTable.isEncryptColumn("foo_cipher")).thenReturn(true);
         ColumnSegment column = createBoundColumn("foo_cipher");
         column.setNestedObjectAttributes(fields.stream().map(IdentifierValue::new).collect(Collectors.toList()));
-        when(assignmentSegment.getColumns()).thenReturn(Collections.singletonList(column));
-        when(assignmentSegment.getValue()).thenReturn(value);
+        when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(column), value)));
         tokenGenerator = new EncryptAssignmentTokenGenerator(rule, mock(ShardingSphereDatabase.class), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class, () -> tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment));
         assertThat(actualException.getMessage(), is("Unsupported SQL operation: Encrypted assignments with multiple columns, nested fields or unsupported expressions."));
@@ -270,8 +301,7 @@ class EncryptAssignmentTokenGeneratorTest {
         when(rule.findEncryptTable("foo_table")).thenReturn(Optional.of(mock(EncryptTable.class)));
         ColumnSegment column = createBoundColumn("foo_plain");
         column.setNestedObjectAttributes(fields.stream().map(IdentifierValue::new).collect(Collectors.toList()));
-        when(assignmentSegment.getColumns()).thenReturn(Collections.singletonList(column));
-        when(assignmentSegment.getValue()).thenReturn(value);
+        when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(column), value)));
         tokenGenerator = new EncryptAssignmentTokenGenerator(rule, mock(ShardingSphereDatabase.class), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         assertTrue(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).isEmpty());
     }
