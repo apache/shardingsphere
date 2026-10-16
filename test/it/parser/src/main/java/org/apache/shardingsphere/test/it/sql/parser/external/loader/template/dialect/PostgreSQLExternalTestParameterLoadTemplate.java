@@ -46,6 +46,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -125,6 +127,9 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
     
     private static final class ScriptReader extends BaseErrorListener {
         
+        private static final Pattern PSQL_VARIABLE_PATTERN =
+                Pattern.compile(":(?:[A-Za-z_0-9\\x80-\\uFFFF]+|'[A-Za-z_0-9\\x80-\\uFFFF]+'|\"[A-Za-z_0-9\\x80-\\uFFFF]+\"|\\{\\?[A-Za-z_0-9\\x80-\\uFFFF]+\\})");
+        
         private final List<String> lines;
         
         private final DatabaseType databaseType;
@@ -139,9 +144,17 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
         
         private final List<ScriptStatement> statements = new ArrayList<>();
         
+        private final StringBuilder normalizedSQL = new StringBuilder();
+        
         private int start = -1;
         
+        private int variableEnd = -1;
+        
         private int parentheses;
+        
+        private int jsonObjectParentheses;
+        
+        private int brackets;
         
         private int atomicBlocks;
         
@@ -160,6 +173,8 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
         private boolean unsafe;
         
         private boolean clientBuffer;
+        
+        private boolean clientStatement;
         
         private boolean echoAll = true;
         
@@ -203,9 +218,12 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
                 }
                 readBlock(kind, token);
                 readCopy(kind);
-                previousKind = kind;
+                previousKind = "IDENTIFIER_".equals(kind) && isJsonObjectConstructor(token) ? "JSON_OBJECT" : kind;
                 if ("COLON_".equals(kind)) {
                     unsafe = true;
+                    if (0 == brackets && 0 == jsonObjectParentheses) {
+                        readClientVariable(token.getStartIndex());
+                    }
                 }
                 if ("SEMI_".equals(kind) && (clientBuffer || 0 == parentheses && 0 == atomicBlocks)) {
                     submit(token.getStopIndex() + 1, token.getStopIndex() + 1, true);
@@ -237,16 +255,22 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             if (command.startsWith(";")) {
                 unsafe = true;
                 clientBuffer = true;
+                clientStatement = true;
                 firstToken = true;
                 previousKind = "";
                 seek(offset + 2);
                 return true;
             }
             String name = command.split("\\s|\\\\", 2)[0];
-            if (command.indexOf('\\') >= 0) {
+            boolean compoundCommand = command.indexOf('\\') >= 0;
+            if (start >= 0 && compoundCommand) {
                 unsafe = true;
                 clientBuffer = true;
+                clientStatement = true;
                 return false;
+            }
+            if (compoundCommand && !"copy".equals(name)) {
+                clientStateKnown = false;
             }
             if (Arrays.asList("g", "gx", "gset", "gexec").contains(name)) {
                 boolean copy = pendingCopy;
@@ -263,11 +287,13 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             if (start >= 0) {
                 unsafe = true;
                 clientBuffer = true;
+                clientStatement = true;
                 return false;
             }
             if ("copy".equals(name)) {
                 start = offset;
                 unsafe = true;
+                clientStatement = true;
                 boolean copy = isCopyFromStdin(command);
                 pendingCopy = copy;
                 submit(end, end, false);
@@ -322,10 +348,12 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
         }
         
         private void readBlock(final String kind, final Token token) {
-            if ("LP_".equals(kind)) {
-                parentheses++;
-            } else if ("RP_".equals(kind) && parentheses > 0) {
-                parentheses--;
+            if ("LP_".equals(kind) || "RP_".equals(kind)) {
+                readParentheses(kind);
+            } else if ("LBT_".equals(kind)) {
+                brackets++;
+            } else if ("RBT_".equals(kind) && brackets > 0) {
+                brackets--;
             } else if ("BEGIN".equals(previousKind) && "ATOMIC".equalsIgnoreCase(token.getText())) {
                 atomicBlocks++;
             } else if (atomicBlocks > 0 && "CASE".equals(kind)) {
@@ -336,6 +364,20 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
                 } else {
                     atomicBlocks--;
                 }
+            }
+        }
+        
+        private void readParentheses(final String kind) {
+            if ("LP_".equals(kind)) {
+                parentheses++;
+                if (0 == jsonObjectParentheses && "JSON_OBJECT".equals(previousKind)) {
+                    jsonObjectParentheses = parentheses;
+                }
+            } else if (parentheses > 0) {
+                if (jsonObjectParentheses == parentheses) {
+                    jsonObjectParentheses = 0;
+                }
+                parentheses--;
             }
         }
         
@@ -350,6 +392,39 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             if (copyStatement && 0 == parentheses && "TO".equals(previousKind) && "STDOUT".equals(kind)) {
                 copyOutput = true;
             }
+        }
+        
+        private boolean isJsonObjectConstructor(final Token token) {
+            String identifier = token.getText();
+            return "JSON_OBJECT".equalsIgnoreCase(identifier) || "JSON_OBJECTAGG".equalsIgnoreCase(identifier);
+        }
+        
+        private void readClientVariable(final int offset) {
+            int line = lineAt(offset);
+            Matcher matcher = PSQL_VARIABLE_PATTERN.matcher(lines.get(line)).region(offset - lineStarts[line], lines.get(line).length());
+            if (!matcher.lookingAt()) {
+                return;
+            }
+            String variable = matcher.group();
+            String replacement;
+            switch (variable.charAt(1)) {
+                case '\'':
+                    replacement = "'foo'";
+                    break;
+                case '"':
+                    replacement = "\"foo\"";
+                    break;
+                case '{':
+                    replacement = "TRUE";
+                    break;
+                default:
+                    clientStatement = true;
+                    seek(offset + variable.length());
+                    return;
+            }
+            normalizedSQL.append(input.getText(Interval.of(variableEnd < 0 ? start : variableEnd, offset - 1))).append(replacement);
+            variableEnd = offset + variable.length();
+            seek(variableEnd);
         }
         
         private void submit(final int sqlEnd, final int echoEnd, final boolean filterable) {
@@ -368,14 +443,27 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
                     seek(Math.min(input.size(), lineStarts[marker] + lines.get(marker).length() + 1));
                 }
             }
-            statements.add(new ScriptStatement(input.getText(Interval.of(start, end - 1)).trim(), getEcho(firstLine, lastLine),
-                    filterable && exclusive && !unsafe && !copyOutput && echoAll && clientStateKnown));
+            statements.add(new ScriptStatement(getSQL(end), getEcho(firstLine, lastLine), filterable && exclusive && !unsafe && !copyOutput && echoAll && clientStateKnown));
             reset();
+        }
+        
+        private String getSQL(final int end) {
+            if (clientStatement) {
+                return "";
+            }
+            if (variableEnd < 0) {
+                return input.getText(Interval.of(start, end - 1)).trim();
+            }
+            return normalizedSQL.append(input.getText(Interval.of(variableEnd, end - 1))).toString().trim();
         }
         
         private void reset() {
             start = -1;
+            variableEnd = -1;
+            normalizedSQL.setLength(0);
             parentheses = 0;
+            jsonObjectParentheses = 0;
+            brackets = 0;
             atomicBlocks = 0;
             caseBlocks = 0;
             previousKind = "";
@@ -385,6 +473,7 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             pendingCopy = false;
             unsafe = false;
             clientBuffer = false;
+            clientStatement = false;
         }
         
         @Override
