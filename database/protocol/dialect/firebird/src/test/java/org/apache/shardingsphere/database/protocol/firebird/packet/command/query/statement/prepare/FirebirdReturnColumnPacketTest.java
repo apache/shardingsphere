@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -114,8 +115,8 @@ class FirebirdReturnColumnPacketTest {
         verify(payload).writeInt4LE(4);
     }
     
-    private FirebirdReturnColumnPacket createPacket(final Collection<FirebirdSQLInfoPacketType> requestedItems, final int dataType, final Integer columnLength,
-                                                    final boolean blobColumn, final Integer blobSubType) {
+    private FirebirdReturnColumnPacket createPacket(final Collection<FirebirdSQLInfoPacketType> requestedItems, final int dataType, @Nullable final Integer columnLength,
+                                                    final boolean blobColumn, @Nullable final Integer blobSubType) {
         ShardingSphereColumn column = new ShardingSphereColumn("col", dataType, false, false, false, true, false, true);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
         return new FirebirdReturnColumnPacket(requestedItems, 1, table, column, "t", "c", "o", columnLength, blobColumn, blobSubType);

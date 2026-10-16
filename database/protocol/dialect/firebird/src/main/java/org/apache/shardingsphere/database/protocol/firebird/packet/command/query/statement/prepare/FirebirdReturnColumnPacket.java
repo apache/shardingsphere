@@ -74,7 +74,7 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
                     if (columnType == FirebirdBinaryColumnType.BLOB && null != blobSubType) {
                         subType = blobSubType;
                     }
-                    if (columnType == FirebirdBinaryColumnType.VARYING && (Types.VARBINARY == column.getDataType() || Types.BINARY == column.getDataType())) {
+                    if (FirebirdBinaryColumnType.VARYING == columnType && (Types.VARBINARY == column.getDataType() || Types.BINARY == column.getDataType())) {
                         subType = OCTETS_CHARACTER_SET_ID;
                     }
                     FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.SUB_TYPE, subType, payload);

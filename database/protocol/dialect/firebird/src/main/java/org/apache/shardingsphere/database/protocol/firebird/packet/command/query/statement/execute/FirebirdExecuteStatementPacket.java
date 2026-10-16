@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,6 +108,7 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         }
     }
     
+    @HighFrequencyInvocation
     private static boolean isOctets(final FirebirdBinaryColumnType type, final int characterSet) {
         return FirebirdBinaryColumnType.VARYING == type && OCTETS_CHARACTER_SET_ID == characterSet;
     }
