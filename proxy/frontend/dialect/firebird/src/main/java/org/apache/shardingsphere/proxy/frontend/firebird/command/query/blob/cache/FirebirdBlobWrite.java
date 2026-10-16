@@ -19,9 +19,18 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cac
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.ref.SoftReference;
+import java.util.Optional;
 
+/**
+ * Firebird BLOB data written by the client and buffered by the proxy.
+ *
+ * <p>Firebird keeps the BLOB ID of a temporary BLOB used by a statement valid until the transaction ends, but stores its data in the database instead of memory.
+ * That is why the proxy keeps the data of a used BLOB only softly reachable: it stays available for reuse until the garbage collector needs the memory.</p>
+ */
 @RequiredArgsConstructor
 public final class FirebirdBlobWrite {
     
@@ -32,9 +41,16 @@ public final class FirebirdBlobWrite {
     private final long blobId;
     
     @Getter
+    private final int transactionId;
+    
+    @Getter
     private final boolean streamBlob;
     
-    private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    
+    private byte[] content;
+    
+    private SoftReference<byte[]> usedContent;
     
     @Getter
     private boolean closed;
@@ -48,18 +64,48 @@ public final class FirebirdBlobWrite {
         buffer.write(segment, 0, segment.length);
     }
     
+    /**
+     * Get size of BLOB data.
+     *
+     * @return size of BLOB data in bytes
+     */
     public int getSize() {
-        return buffer.size();
-    }
-    
-    public byte[] getBytes() {
-        return buffer.toByteArray();
+        return closed ? content.length : buffer.size();
     }
     
     /**
-     * Mark this BLOB write as closed.
+     * Get BLOB data.
+     *
+     * <p>The data of a closed write is shared by every caller without copying and must not be modified.</p>
+     *
+     * @return BLOB data, or empty if the garbage collector released the data of a used write
      */
+    @HighFrequencyInvocation
+    public Optional<byte[]> getBytes() {
+        if (!closed) {
+            return Optional.of(buffer.toByteArray());
+        }
+        return Optional.ofNullable(null == content ? usedContent.get() : content);
+    }
+    
+    /**
+     * Mark this BLOB write as closed and keep its data as one exact-size array.
+     */
+    @HighFrequencyInvocation
     public void markClosed() {
+        content = buffer.toByteArray();
+        buffer = null;
         closed = true;
+    }
+    
+    /**
+     * Mark this closed BLOB write as used by a statement and keep its data only softly reachable.
+     */
+    @HighFrequencyInvocation
+    void markUsed() {
+        if (null != content) {
+            usedContent = new SoftReference<>(content);
+            content = null;
+        }
     }
 }

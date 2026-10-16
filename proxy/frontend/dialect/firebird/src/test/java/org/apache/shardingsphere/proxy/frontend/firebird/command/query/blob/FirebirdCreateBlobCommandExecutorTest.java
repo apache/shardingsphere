@@ -46,6 +46,8 @@ class FirebirdCreateBlobCommandExecutorTest {
     
     private static final int CONNECTION_ID = 1;
     
+    private static final int TRANSACTION_ID = 2;
+    
     @Mock
     private FirebirdCreateBlobCommandPacket packet;
     
@@ -71,6 +73,7 @@ class FirebirdCreateBlobCommandExecutorTest {
     
     @Test
     void assertExecute() {
+        when(packet.getTransactionId()).thenReturn(TRANSACTION_ID);
         FirebirdCreateBlobCommandExecutor executor = new FirebirdCreateBlobCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
@@ -78,6 +81,8 @@ class FirebirdCreateBlobCommandExecutorTest {
         assertThat(response, isA(FirebirdGenericResponsePacket.class));
         assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(1));
         assertThat(((FirebirdGenericResponsePacket) response).getId(), is(1L));
+        FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, 1);
+        assertTrue(FirebirdBlobWriteCache.getInstance().useBlobData(CONNECTION_ID, 1L, TRANSACTION_ID).isPresent());
     }
     
     @Test

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.firebirdsql.gds.BlrConstants;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,9 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdParseBatchBlrTest {
     
@@ -54,6 +55,18 @@ class FirebirdParseBatchBlrTest {
         assertThat(actual.getNetLength(), is(28));
     }
     
+    @Test
+    void assertParseBlob2Field() {
+        ByteBuf blr = createBlr(BlrConstants.blr_version5, field(BlrConstants.blr_blob2, 0, 0, 0, 0), 2);
+        assertTrue(FirebirdParseBatchBlr.parse(blr, blr.readableBytes()).getFields().get(0).isBatchBlobId());
+    }
+    
+    @Test
+    void assertParseQuadField() {
+        ByteBuf blr = createBlr(BlrConstants.blr_version5, field(BlrConstants.blr_quad, 0), 2);
+        assertFalse(FirebirdParseBatchBlr.parse(blr, blr.readableBytes()).getFields().get(0).isBatchBlobId());
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("validSingleFieldArguments")
     void assertParseSingleField(final String name, final int version, final byte[] fieldBlr, final FirebirdBinaryColumnType expectedType,
@@ -64,6 +77,15 @@ class FirebirdParseBatchBlrTest {
         assertDescriptor(actual.getFields().get(0), expectedType, expectedLength, expectedScale, 0);
         assertThat(actual.getMessageLength(), is(expectedMessageLength));
         assertThat(actual.getNetLength(), is(expectedNetLength));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("blobFieldArguments")
+    void assertParseBlobField(final String name, final byte[] fieldBlr, final int expectedSubType, final int expectedCharset) {
+        ByteBuf blr = createBlr(BlrConstants.blr_version5, fieldBlr, 2);
+        FirebirdBatchColumnDescriptor actual = FirebirdParseBatchBlr.parse(blr, blr.readableBytes()).getFields().get(0);
+        assertDescriptor(actual, FirebirdBinaryColumnType.BLOB, 8, expectedCharset, 0);
+        assertThat(actual.getSubType(), is(expectedSubType));
     }
     
     @Test
@@ -109,23 +131,6 @@ class FirebirdParseBatchBlrTest {
         assertThrows(IllegalArgumentException.class, () -> FirebirdParseBatchBlr.parse(blr, blr.readableBytes()));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("blobFieldArguments")
-    void assertParseRejectsBlob(final String name, final byte[] fieldBlr, final int scale) {
-        ByteBuf blr = createBlr(BlrConstants.blr_version5, fieldBlr, 2);
-        DatabaseProtocolException actual = assertThrows(DatabaseProtocolException.class, () -> FirebirdParseBatchBlr.parse(blr, blr.readableBytes()));
-        assertThat(actual.getMessage(), is("BLOB fields are not supported in Firebird batch operations"));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("blobFieldArguments")
-    void assertParseForFramingAcceptsBlobStructurally(final String name, final byte[] fieldBlr, final int expectedScale) {
-        ByteBuf blr = createBlr(BlrConstants.blr_version5, fieldBlr, 2);
-        FirebirdParseBatchBlr actual = FirebirdParseBatchBlr.parseForFraming(blr, blr.readableBytes());
-        assertThat(actual.getFields().size(), is(1));
-        assertDescriptor(actual.getFields().get(0), FirebirdBinaryColumnType.BLOB, 8, expectedScale, 0);
-    }
-    
     private static Stream<Arguments> validSingleFieldArguments() {
         return Stream.of(
                 Arguments.of("legacy_text", BlrConstants.blr_version5, field(BlrConstants.blr_text, 3, 0), FirebirdBinaryColumnType.LEGACY_TEXT, 3, 0, 6, 4),
@@ -142,13 +147,17 @@ class FirebirdParseBatchBlrTest {
                 Arguments.of("double", BlrConstants.blr_version5, field(BlrConstants.blr_double), FirebirdBinaryColumnType.DOUBLE, 8, 0, 10, 8),
                 Arguments.of("d_float", BlrConstants.blr_version5, field(BlrConstants.blr_d_float), FirebirdBinaryColumnType.D_FLOAT, 8, 0, 10, 8),
                 Arguments.of("timestamp", BlrConstants.blr_version5, field(BlrConstants.blr_timestamp), FirebirdBinaryColumnType.TIMESTAMP, 8, 0, 10, 8),
-                Arguments.of("boolean", BlrConstants.blr_version5, field(BlrConstants.blr_bool), FirebirdBinaryColumnType.BOOLEAN, 1, 0, 4, 4));
+                Arguments.of("boolean", BlrConstants.blr_version5, field(BlrConstants.blr_bool), FirebirdBinaryColumnType.BOOLEAN, 1, 0, 4, 4),
+                Arguments.of("blob2", BlrConstants.blr_version5, field(BlrConstants.blr_blob2, 0, 0, 0, 0), FirebirdBinaryColumnType.BLOB, 8, 0, 10, 8),
+                Arguments.of("quad", BlrConstants.blr_version5, field(BlrConstants.blr_quad, 0), FirebirdBinaryColumnType.BLOB, 8, 0, 10, 8),
+                Arguments.of("quad_negative_scale", BlrConstants.blr_version5, field(BlrConstants.blr_quad, -3), FirebirdBinaryColumnType.BLOB, 8, -3, 10, 8));
     }
     
     private static Stream<Arguments> blobFieldArguments() {
         return Stream.of(
-                Arguments.of("blob2", new byte[]{(byte) BlrConstants.blr_blob2, 0, 0, 0, 0, (byte) BlrConstants.blr_short, 0}, 0),
-                Arguments.of("quad", new byte[]{(byte) BlrConstants.blr_quad, -3, (byte) BlrConstants.blr_short, 0}, -3));
+                Arguments.of("text_blob", field(BlrConstants.blr_blob2, 1, 0, 52, 0), 1, 52),
+                Arguments.of("user_blob", field(BlrConstants.blr_blob2, -1, -1, 0, 0), -1, 0),
+                Arguments.of("quad", field(BlrConstants.blr_quad, 0), 0, 0));
     }
     
     private static Stream<Arguments> invalidTerminatorArguments() {

@@ -96,7 +96,7 @@ class FirebirdBlobInfoExecutorTest {
     
     @Test
     void assertExecuteWithWriteBlob() {
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, 3L, false);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, 3L, 1, false);
         FirebirdBlobWriteCache.getInstance().appendSegment(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3, 4});
         Collection<DatabasePacket> actual = new FirebirdBlobInfoExecutor(packet, connectionSession).execute();
         assertThat(getBlobLength(actual), is(4));

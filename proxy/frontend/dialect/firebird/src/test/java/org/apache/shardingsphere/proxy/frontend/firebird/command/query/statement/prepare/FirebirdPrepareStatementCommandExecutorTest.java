@@ -74,6 +74,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -287,6 +288,25 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPrepareStatementReturnPacket returnPacket = (FirebirdPrepareStatementReturnPacket) responsePacket.getData();
         assertThat(returnPacket.getDescribeSelect().size(), is(1));
         return returnPacket.getDescribeSelect().get(0);
+    }
+    
+    @Test
+    void assertDescribeBind() throws Exception {
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id, content) VALUES (?, ?)");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.BIND,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        Collection<DatabasePacket> actual = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession).execute();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        List<FirebirdReturnColumnPacket> actualParameterColumns = connectionSession.getServerPreparedStatementRegistry().<FirebirdServerPreparedStatement>getPreparedStatement(1).getParameterColumns();
+        assertThat(actualParameterColumns, is(actualReturnPacket.getDescribeBind()));
+        assertThat(actualParameterColumns.get(0).getColumnType(), is(FirebirdBinaryColumnType.LONG));
+        assertThat(actualParameterColumns.get(1).getColumnType(), is(FirebirdBinaryColumnType.BLOB));
     }
     
     @Test

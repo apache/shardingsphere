@@ -21,11 +21,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchBlobStreamCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegisterBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSetBpbCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSyncCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
@@ -36,6 +39,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.batch.FirebirdBatchInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
@@ -71,6 +75,8 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdDatabaseInfoPacketType.createPacket(payload);
             case INFO_BLOB:
                 return FirebirdBlobInfoPacketType.createPacket(payload);
+            case INFO_BATCH:
+                return FirebirdBatchInfoPacketType.createPacket(payload);
             case TRANSACTION:
                 return new FirebirdStartTransactionPacket(payload);
             case CREATE_BLOB:
@@ -114,6 +120,12 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdBatchMessageCommandPacket(payload);
             case BATCH_EXEC:
                 return new FirebirdBatchExecuteCommandPacket(payload);
+            case BATCH_REGBLOB:
+                return new FirebirdBatchRegisterBlobCommandPacket(payload);
+            case BATCH_BLOB_STREAM:
+                return new FirebirdBatchBlobStreamCommandPacket(payload);
+            case BATCH_SET_BPB:
+                return new FirebirdBatchSetBpbCommandPacket(payload);
             case BATCH_RLS:
                 return new FirebirdBatchReleaseCommandPacket(payload);
             case BATCH_CANCEL:
@@ -144,6 +156,7 @@ public final class FirebirdCommandPacketFactory {
             case INFO_DATABASE:
             case INFO_SQL:
             case INFO_BLOB:
+            case INFO_BATCH:
                 return FirebirdInfoPacket.getLength(payload);
             case TRANSACTION:
                 return FirebirdStartTransactionPacket.getLength(payload);
@@ -186,6 +199,10 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdBatchMessageCommandPacket.getLength(payload, connectionId);
             case BATCH_EXEC:
                 return FirebirdBatchExecuteCommandPacket.getLength();
+            case BATCH_REGBLOB:
+                return FirebirdBatchRegisterBlobCommandPacket.getLength();
+            case BATCH_SET_BPB:
+                return FirebirdBatchSetBpbCommandPacket.getLength(payload);
             case BATCH_RLS:
                 return FirebirdBatchReleaseCommandPacket.getLength();
             case BATCH_CANCEL:

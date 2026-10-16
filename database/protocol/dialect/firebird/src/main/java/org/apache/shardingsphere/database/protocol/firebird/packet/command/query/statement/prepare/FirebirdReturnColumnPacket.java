@@ -23,10 +23,12 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacke
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Firebird return column packet.
@@ -54,9 +56,39 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
     
     private final Integer blobSubType;
     
+    /**
+     * Find column length.
+     *
+     * @return column length, or empty if the column has no known length
+     */
+    @HighFrequencyInvocation
+    public Optional<Integer> findColumnLength() {
+        return Optional.ofNullable(columnLength);
+    }
+    
+    /**
+     * Find BLOB sub type.
+     *
+     * @return BLOB sub type, or empty if the column is not a BLOB column with a known sub type
+     */
+    @HighFrequencyInvocation
+    public Optional<Integer> findBlobSubType() {
+        return Optional.ofNullable(blobSubType);
+    }
+    
+    /**
+     * Get column type.
+     *
+     * @return column type
+     */
+    @HighFrequencyInvocation
+    public FirebirdBinaryColumnType getColumnType() {
+        return blobColumn ? FirebirdBinaryColumnType.BLOB : FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType());
+    }
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        FirebirdBinaryColumnType columnType = blobColumn ? FirebirdBinaryColumnType.BLOB : FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType());
+        FirebirdBinaryColumnType columnType = getColumnType();
         for (FirebirdSQLInfoPacketType requestedItem : requestedItems) {
             switch (requestedItem) {
                 case SQLDA_SEQ:

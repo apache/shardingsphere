@@ -49,6 +49,10 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEng
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticatorType;
 import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnectionResourceManager;
+import org.firebirdsql.encodings.EncodingDefinition;
+import org.firebirdsql.encodings.EncodingFactory;
+import org.firebirdsql.gds.ISCConstants;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -95,6 +99,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
     private AuthenticationResult processAttach(final ChannelHandlerContext context, final FirebirdPacketPayload payload, final AuthorityRule rule) {
         FirebirdAttachPacket attachPacket = new FirebirdAttachPacket(payload);
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseAttachCharset(attachPacket.getEncoding()));
+        context.channel().attr(FirebirdConstant.CONNECTION_CHARSET_ID).set(getCharsetId(attachPacket.getEncoding()));
         login(currentAuthResult.getDatabase(), currentAuthResult.getUsername(), attachPacket, rule);
         context.writeAndFlush(new FirebirdGenericResponsePacket());
         return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), "", currentAuthResult.getDatabase(), currentAuthResult.getConnectionAttributes());
@@ -109,6 +114,11 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         } catch (final IllegalArgumentException ex) {
             throw new InvalidParameterValueException("lc_ctype", encoding);
         }
+    }
+    
+    private int getCharsetId(@Nullable final String encoding) {
+        EncodingDefinition encodingDefinition = EncodingFactory.getPlatformDefault().getEncodingDefinitionByFirebirdName(null == encoding ? "NONE" : encoding);
+        return null == encodingDefinition ? ISCConstants.CS_dynamic : encodingDefinition.getFirebirdCharacterSetId();
     }
     
     private void login(final String databaseName, final String username, final FirebirdAttachPacket attachPacket, final AuthorityRule rule) {
