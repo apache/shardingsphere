@@ -301,6 +301,28 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeLikeParameters() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT id FROM foo_tbl WHERE content LIKE ? ESCAPE ?");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.BIND,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(2));
+        for (FirebirdReturnColumnPacket each : actualReturnPacket.getDescribeBind()) {
+            FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+            each.write(payload);
+            verify(payload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
+        }
+    }
+    
+    @Test
     void assertExecuteWithValidStatementHandleWithoutFetchHandler() throws Exception {
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         executor.execute();
