@@ -101,6 +101,7 @@
 1. Sharding: Compute the Snowflake key generator epoch in UTC instead of the JVM default timezone - [#38932](https://github.com/apache/shardingsphere/pull/38932)
 1. Sharding: Fix order-dependent data source intersection in Cartesian routing - [#39407](https://github.com/apache/shardingsphere/pull/39407)
 1. Sharding: Fix incorrect AVG(DISTINCT) merge result across shards - [#39429](https://github.com/apache/shardingsphere/pull/39429)
+1. Sharding: Fix incorrect range routing for right-side sharding columns - [#39534](https://github.com/apache/shardingsphere/pull/39534)
 1. Sharding: Fix MySQL SHOW INDEX stripping table suffix from index names of non-sharding tables - [#39853](https://github.com/apache/shardingsphere/pull/39853)
 1. Sharding: Fix NOT BETWEEN on sharding column being routed as BETWEEN - [#39855](https://github.com/apache/shardingsphere/pull/39855)
 1. Sharding: Use configured sharding column name when checking UPDATE assignments - [#39864](https://github.com/apache/shardingsphere/pull/39864)
