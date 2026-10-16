@@ -13482,6 +13482,57 @@
         </from>
     </select>
 
+    <select sql-case-id="select_where_like_escape_backslash_firebird">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="56">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="56">
+                    <left>
+                        <column name="status" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="40" stop-index="56">
+                            <items>
+                                <literal-expression value="a\_b" start-index="40" stop-index="45" />
+                            </items>
+                            <items>
+                                <literal-expression value="\" start-index="54" stop-index="56" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_backslash_literal_firebird">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="45">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="45">
+                    <left>
+                        <column name="status" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="C:\dir\" start-index="37" stop-index="45" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_where_and_like_firebird">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />

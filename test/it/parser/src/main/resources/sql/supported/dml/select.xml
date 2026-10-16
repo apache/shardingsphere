@@ -455,6 +455,8 @@
     <sql-case id="select_parenthesized_column_firebird" value="SELECT (user_id) FROM t_order" db-types="Firebird"/>
     <sql-case id="select_schema_table_firebird" value="SELECT * FROM schema1.t_order" db-types="Firebird"/>
     <sql-case id="select_where_and_like_firebird" value="SELECT * FROM t_order WHERE user_id = 1 AND status LIKE 'A%'" db-types="Firebird"/>
+    <sql-case id="select_where_like_escape_backslash_firebird" value="SELECT * FROM t_order WHERE status LIKE 'a\_b' ESCAPE '\'" db-types="Firebird"/>
+    <sql-case id="select_where_backslash_literal_firebird" value="SELECT * FROM t_order WHERE status = 'C:\dir\'" db-types="Firebird"/>
     <sql-case id="select_safe_eq_firebird" value="SELECT 1 &lt;=&gt; 1" db-types="Firebird"/>
     <sql-case id="select_in_list_firebird" value="SELECT * FROM t_order WHERE id IN (1,2)" db-types="Firebird"/>
     <sql-case id="select_not_in_list_firebird" value="SELECT * FROM t_order WHERE id NOT IN (1,2)" db-types="Firebird"/>
