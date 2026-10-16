@@ -13482,6 +13482,57 @@
         </from>
     </select>
 
+    <select sql-case-id="select_where_like_escape_backslash_firebird">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="56">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="56">
+                    <left>
+                        <column name="status" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="40" stop-index="56">
+                            <items>
+                                <literal-expression value="a\_b" start-index="40" stop-index="45" />
+                            </items>
+                            <items>
+                                <literal-expression value="\" start-index="54" stop-index="56" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_backslash_literal_firebird">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="45">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="45">
+                    <left>
+                        <column name="status" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="C:\dir\" start-index="37" stop-index="45" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_where_and_like_firebird">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
@@ -15456,6 +15507,123 @@
                 <right-parentheses parentheses=")" start-index="18" stop-index="18" />
             </column-projection>
         </projections>
+    </select>
+
+    <select sql-case-id="select_where_is_not_distinct_from_firebird" parameters="'init'">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="29" stop-index="63" literal-stop-index="68">
+            <expr>
+                <binary-operation-expression start-index="35" stop-index="63" literal-stop-index="68">
+                    <left>
+                        <column name="status" start-index="35" stop-index="40" />
+                    </left>
+                    <operator>IS NOT DISTINCT FROM</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="0" start-index="63" stop-index="63" />
+                        <literal-expression value="init" start-index="63" stop-index="68" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_starting_with_firebird" parameters="'in'">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="29" stop-index="56" literal-stop-index="59">
+            <expr>
+                <binary-operation-expression start-index="35" stop-index="56" literal-stop-index="59">
+                    <left>
+                        <column name="status" start-index="35" stop-index="40" />
+                    </left>
+                    <operator>STARTING WITH</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="0" start-index="56" stop-index="56" />
+                        <literal-expression value="in" start-index="56" stop-index="59" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_similar_to_escape_firebird" parameters="'in#%', '#'">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="29" stop-index="62" literal-stop-index="69">
+            <expr>
+                <binary-operation-expression start-index="35" stop-index="62" literal-stop-index="69">
+                    <left>
+                        <column name="status" start-index="35" stop-index="40" />
+                    </left>
+                    <operator>SIMILAR TO</operator>
+                    <right>
+                        <list-expression start-index="53" stop-index="62" literal-start-index="53" literal-stop-index="69">
+                            <items>
+                                <parameter-marker-expression parameter-index="0" start-index="53" stop-index="53" />
+                                <literal-expression value="in#%" start-index="53" stop-index="58" />
+                            </items>
+                            <items>
+                                <parameter-marker-expression parameter-index="1" start-index="62" stop-index="62" />
+                                <literal-expression value="#" start-index="67" stop-index="69" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_is_distinct_from_and_equal_firebird" parameters="'init', 1">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="29" stop-index="76" literal-stop-index="81">
+            <expr>
+                <binary-operation-expression start-index="35" stop-index="76" literal-stop-index="81">
+                    <left>
+                        <binary-operation-expression start-index="35" stop-index="59" literal-stop-index="64">
+                            <left>
+                                <column name="status" start-index="35" stop-index="40" />
+                            </left>
+                            <operator>IS DISTINCT FROM</operator>
+                            <right>
+                                <parameter-marker-expression parameter-index="0" start-index="59" stop-index="59" />
+                                <literal-expression value="init" start-index="59" stop-index="64" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="65" stop-index="76" literal-start-index="70" literal-stop-index="81">
+                            <left>
+                                <column name="order_id" start-index="65" stop-index="72" literal-start-index="70" literal-stop-index="77" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <parameter-marker-expression parameter-index="1" start-index="76" stop-index="76" />
+                                <literal-expression value="1" start-index="81" stop-index="81" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </select>
     <select sql-case-id="select_with_schema_database_link_and_alias_oracle">
         <from>
