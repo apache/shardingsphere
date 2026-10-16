@@ -26,8 +26,12 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.with.ExpectedCommonTableExpressionClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.with.ExpectedWithClause;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -71,6 +75,22 @@ public final class WithClauseAssert {
         if (null != expected.getSubquery()) {
             ExpressionAssert.assertSubquery(assertContext, actual.getSubquery(), expected.getSubquery());
         }
+        if (null != expected.getSearchColumnCount()) {
+            assertColumns(assertContext, actual.getSearchColumns(), expected.getSearchColumns(), expected.getSearchColumnCount(), "search");
+        }
+        if (null != expected.getCycleColumnCount()) {
+            assertColumns(assertContext, actual.getCycleColumns(), expected.getCycleColumns(), expected.getCycleColumnCount(), "cycle");
+        }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
+    }
+    
+    private static void assertColumns(final SQLCaseAssertContext assertContext, final Collection<ColumnSegment> actual, final Collection<ExpectedColumn> expected,
+                                      final int expectedCount, final String type) {
+        assertThat(assertContext.getText(String.format("Common table expression %s expected column count assertion error: ", type)), expected.size(), is(expectedCount));
+        assertThat(assertContext.getText(String.format("Common table expression %s column count assertion error: ", type)), actual.size(), is(expectedCount));
+        Iterator<ColumnSegment> iterator = actual.iterator();
+        for (ExpectedColumn each : expected) {
+            ColumnAssert.assertIs(assertContext, iterator.next(), each);
+        }
     }
 }

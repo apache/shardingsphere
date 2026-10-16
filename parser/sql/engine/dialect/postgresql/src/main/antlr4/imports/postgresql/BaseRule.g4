@@ -146,6 +146,7 @@ unreservedWord
     | BY
     | BYTEA
     | BOX
+    | BREADTH
     | CACHE
     | CALL
     | CALLED
@@ -190,6 +191,7 @@ unreservedWord
     | DELIMITER
     | DELIMITERS
     | DEPENDS
+    | DEPTH
     | DETACH
     | DICTIONARY
     | DISABLE
