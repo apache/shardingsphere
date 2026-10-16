@@ -934,10 +934,10 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitSetClause(final SetClauseContext ctx) {
         List<ColumnSegment> columnSegments = new LinkedList<>();
-        if (null != ctx.setTarget()) {
-            columnSegments.add((ColumnSegment) visit(ctx.setTarget()));
-        } else {
+        if (null == ctx.setTarget()) {
             appendSetTargets(ctx.setTargetList(), columnSegments);
+        } else {
+            columnSegments.add((ColumnSegment) visit(ctx.setTarget()));
         }
         ExpressionSegment expressionSegment = (ExpressionSegment) visit(ctx.aExpr());
         return new ColumnAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegments, expressionSegment);

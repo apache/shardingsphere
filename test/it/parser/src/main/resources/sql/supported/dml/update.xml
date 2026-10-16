@@ -85,16 +85,10 @@
     <sql-case id="update_with_where_sql92" value="UPDATE t_order SET status = 'x' WHERE order_id = 1" db-types="SQL92" />
     <sql-case id="update_set_default_oracle" value="UPDATE employees SET status = DEFAULT WHERE employee_id = 1" db-types="Oracle" />
     <sql-case id="update_table_collection_oracle" value="UPDATE TABLE(SELECT nested_col FROM t_nested) SET nested_col = DEFAULT" db-types="Oracle" />
-
     <sql-case id="update_tuple_literal_pg" value="UPDATE t_order SET (user_id, status) = (1, 'foo')" db-types="PostgreSQL" />
-
     <sql-case id="update_tuple_subquery_pg" value="UPDATE t_order SET (user_id, status) = (SELECT 1, 'foo')" db-types="PostgreSQL" />
-
     <sql-case id="update_array_element_pg" value="UPDATE t_order SET status[1] = 'foo'" db-types="PostgreSQL" />
-
     <sql-case id="update_array_slice_pg" value="UPDATE t_order SET status[1:2][2] = 'foo'" db-types="PostgreSQL" />
-
     <sql-case id="update_array_parameter_pg" value="UPDATE t_order SET status[$1] = $2" db-types="PostgreSQL" case-types="Placeholder" />
-
     <sql-case id="update_member_target_pg" value="UPDATE t_order SET status.value = 'foo'" db-types="PostgreSQL" />
 </sql-cases>

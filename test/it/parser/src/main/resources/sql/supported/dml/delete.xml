@@ -57,6 +57,5 @@
     <sql-case id="delete_with_where" value="DELETE FROM orders WHERE order_id = 9527;" db-types="Hive" />
     <sql-case id="delete_without_where_sql92" value="DELETE FROM t_order" db-types="SQL92" />
     <sql-case id="delete_with_where_sql92" value="DELETE FROM t_order WHERE order_id = 1" db-types="SQL92" />
-
     <sql-case id="delete_current_of_quoted_pg" value="delete from t_order where current of &quot;Foo&quot;" db-types="PostgreSQL" />
 </sql-cases>
