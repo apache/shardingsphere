@@ -483,4 +483,20 @@
         </table>
         <column start-index="35" stop-index="39" name="col_a" />
     </create-index>
+
+    <create-index sql-case-id="create_index_nulls_distinct_pg">
+        <table>
+            <simple-table name="foo_table" start-index="27" stop-index="35" />
+        </table>
+        <index name="idx" start-index="20" stop-index="22" />
+        <column name="a" start-index="38" stop-index="38" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_nulls_not_distinct_pg">
+        <table>
+            <simple-table name="foo_table" start-index="27" stop-index="35" />
+        </table>
+        <index name="idx" start-index="20" stop-index="22" />
+        <column name="a" start-index="38" stop-index="38" />
+    </create-index>
 </sql-parser-test-cases>

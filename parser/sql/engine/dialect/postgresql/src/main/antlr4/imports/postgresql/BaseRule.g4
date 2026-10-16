@@ -430,6 +430,7 @@ unreservedWord
     | VERSION
     | VIEW
     | VIEWS
+    | VIRTUAL
     | VOLATILE
     | WEEK
     | WHITESPACE
@@ -447,6 +448,8 @@ unreservedWord
     | TABLE
     | CONSTRAINT
     | COLLATION
+    | ENFORCED
+    | PERIOD
     ;
 
 typeFuncNameKeyword

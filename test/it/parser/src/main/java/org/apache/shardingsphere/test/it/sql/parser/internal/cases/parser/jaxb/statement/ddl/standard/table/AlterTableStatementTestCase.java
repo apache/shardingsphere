@@ -49,6 +49,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.partition.ExpectedAddPartitions;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,6 +75,9 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "add-column")
     private final List<ExpectedAddColumnDefinition> addColumns = new LinkedList<>();
+    
+    @XmlAttribute(name = "add-constraint-count")
+    private Integer addConstraintCount;
     
     @XmlElement(name = "add-constraint")
     private final List<ExpectedConstraintDefinition> addConstraints = new LinkedList<>();
