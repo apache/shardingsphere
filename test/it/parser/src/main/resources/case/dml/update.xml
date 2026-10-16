@@ -323,8 +323,8 @@
     </update>
 
     <update sql-case-id="update_with_dblink_oracle">
-        <table start-index="7" stop-index="22">
-            <simple-table name="employees" start-index="7" stop-index="22" />
+        <table start-index="7" stop-index="15">
+            <simple-table name="employees" start-index="7" stop-index="15" db-link="remote" at="@" table-name-start-index="7" table-name-stop-index="15" />
         </table>
         <set start-index="24" stop-index="42">
             <assignment start-index="24" stop-index="42">
