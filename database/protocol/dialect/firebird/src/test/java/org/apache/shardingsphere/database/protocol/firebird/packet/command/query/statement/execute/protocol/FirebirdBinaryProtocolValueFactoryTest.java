@@ -106,6 +106,24 @@ class FirebirdBinaryProtocolValueFactoryTest {
     }
     
     @Test
+    void assertGetTimeTZBinaryProtocolValue() {
+        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.TIME_TZ);
+        assertThat(actual, isA(FirebirdTimeTZBinaryProtocolValue.class));
+    }
+    
+    @Test
+    void assertGetDec16BinaryProtocolValue() {
+        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.DEC16);
+        assertThat(actual, isA(FirebirdDecFloatBinaryProtocolValue.class));
+    }
+    
+    @Test
+    void assertGetDec34BinaryProtocolValue() {
+        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.DEC34);
+        assertThat(actual, isA(FirebirdDecFloatBinaryProtocolValue.class));
+    }
+    
+    @Test
     void assertGetNullBinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.NULL);
         assertThat(actual, isA(FirebirdNullBinaryProtocolValue.class));

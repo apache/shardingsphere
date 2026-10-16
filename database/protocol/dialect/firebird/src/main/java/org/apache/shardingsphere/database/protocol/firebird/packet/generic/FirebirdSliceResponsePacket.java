@@ -38,9 +38,16 @@ import java.util.Collection;
  * elements are written per the XDR binary protocol values, so a SMALLINT element occupies 4 bytes on the wire although its logical
  * size is 2 bytes. The Firebird server likewise writes the same total slice length to both fields.</p>
  *
- * <p>A text array element is the exception. Firebird encodes it as fixed length opaque data of its storage length, without the
- * leading length field that a variable length value carries, so {@code elementLength} is what decides how many bytes each text
- * element occupies. Varying text keeps its own shape and is still written through the binary protocol values.</p>
+ * <p>The server walks the elements of a slice with {@code xdr_slice} and writes every one of them with {@code xdr_datum}, see
+ * src/remote/protocol.cpp of the Firebird server, so each element keeps the wire form of its own data type. The wire length of an
+ * element is decided by that data type and not by the descriptor storage length, for instance a TIME_TZ element occupies 8 bytes and
+ * a DEC34 element 16 bytes.</p>
+ *
+ * <p>A text array element is the exception spelled out by {@code xdr_datum}: it is written as fixed length opaque data of its
+ * storage length, without the leading length field that a variable length value carries, so {@code elementLength} is what decides how
+ * many bytes each text element occupies. Its bytes are the raw value when the element carries them, for example a JDBC
+ * {@code Types.BINARY} element, and are encoded with the connection charset otherwise. Varying text keeps its own shape and is still
+ * written through the binary protocol values.</p>
  *
  * @see <a href="https://firebirdsql.org/file/documentation/html/en/firebirddocs/wireprotocol/firebird-wire-protocol.html#wireprotocol-responses-slice">Firebird wire protocol - slice response</a>
  */
@@ -67,7 +74,7 @@ public final class FirebirdSliceResponsePacket extends FirebirdPacket {
     private void writeSliceData(final FirebirdPacketPayload payload) {
         if (FirebirdBinaryColumnType.TEXT == columnType || FirebirdBinaryColumnType.LEGACY_TEXT == columnType) {
             for (Object each : elements) {
-                payload.writeOpaque(each.toString(), elementLength);
+                writeTextElement(payload, each);
             }
             return;
         }
@@ -75,5 +82,13 @@ public final class FirebirdSliceResponsePacket extends FirebirdPacket {
         for (Object each : elements) {
             protocolValue.write(payload, each);
         }
+    }
+    
+    private void writeTextElement(final FirebirdPacketPayload payload, final Object element) {
+        if (element instanceof byte[]) {
+            payload.writeOpaque((byte[]) element, elementLength);
+            return;
+        }
+        payload.writeOpaque(element.toString(), elementLength);
     }
 }

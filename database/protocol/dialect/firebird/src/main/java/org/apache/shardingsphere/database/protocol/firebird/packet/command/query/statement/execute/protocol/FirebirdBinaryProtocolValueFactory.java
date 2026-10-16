@@ -41,6 +41,7 @@ public final class FirebirdBinaryProtocolValueFactory {
         setInt8BinaryProtocolValue();
         setInt4BinaryProtocolValue();
         setInt2BinaryProtocolValue();
+        setDecFloatBinaryProtocolValue();
         setBooleanBinaryProtocolValue();
         setDoubleBinaryProtocolValue();
         setFloatBinaryProtocolValue();
@@ -48,6 +49,7 @@ public final class FirebirdBinaryProtocolValueFactory {
         setTimeBinaryProtocolValue();
         setTimestampBinaryProtocolValue();
         setTimestampTZBinaryProtocolValue();
+        setTimeTZBinaryProtocolValue();
         setNullBinaryProtocolValue();
         setBlobBinaryProtocolValue();
     }
@@ -75,14 +77,17 @@ public final class FirebirdBinaryProtocolValueFactory {
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.INT64, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.NUMERIC, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.DECIMAL, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.DEC34, binaryProtocolValue);
     }
     
     private static void setInt4BinaryProtocolValue() {
         FirebirdInt4BinaryProtocolValue binaryProtocolValue = new FirebirdInt4BinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.LONG, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.DEC16, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.QUAD, binaryProtocolValue);
+    }
+    
+    private static void setDecFloatBinaryProtocolValue() {
+        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.DEC16, new FirebirdDecFloatBinaryProtocolValue(FirebirdBinaryColumnType.DEC16));
+        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.DEC34, new FirebirdDecFloatBinaryProtocolValue(FirebirdBinaryColumnType.DEC34));
     }
     
     private static void setInt2BinaryProtocolValue() {
@@ -124,6 +129,11 @@ public final class FirebirdBinaryProtocolValueFactory {
     private static void setTimestampTZBinaryProtocolValue() {
         FirebirdTimestampTZBinaryProtocolValue binaryProtocolValue = new FirebirdTimestampTZBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIMESTAMP_TZ, binaryProtocolValue);
+    }
+    
+    private static void setTimeTZBinaryProtocolValue() {
+        FirebirdTimeTZBinaryProtocolValue binaryProtocolValue = new FirebirdTimeTZBinaryProtocolValue();
+        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIME_TZ, binaryProtocolValue);
     }
     
     private static void setNullBinaryProtocolValue() {
