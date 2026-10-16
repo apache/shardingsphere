@@ -94,6 +94,8 @@ public final class PLSQLStatementAssert {
             assertProcedureCallNames(assertContext, ((OraclePLSQLBlockStatement) actual).getProcedureCallNames(), ((OraclePLSQLBlockStatementTestCase) expected).getProcedureCalls());
             // SPEX ADDED: BEGIN
             assertSQLStatements(assertContext, ((OraclePLSQLBlockStatement) actual).getSqlStatements(), ((OraclePLSQLBlockStatementTestCase) expected).getSqlStatements());
+            TableAssert.assertIs(assertContext, ((OraclePLSQLBlockStatement) actual).getTables(), ((OraclePLSQLBlockStatementTestCase) expected).getTables());
+            ColumnAssert.assertIs(assertContext, ((OraclePLSQLBlockStatement) actual).getColumns(), ((OraclePLSQLBlockStatementTestCase) expected).getColumns());
             // SPEX ADDED: END
         }
     }

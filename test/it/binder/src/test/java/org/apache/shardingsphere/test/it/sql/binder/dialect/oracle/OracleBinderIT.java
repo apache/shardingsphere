@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.test.it.sql.binder.dialect.oracle;
 
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.test.it.sql.binder.SQLBinderIT;
 import org.apache.shardingsphere.test.it.sql.binder.SQLBinderITSettings;
@@ -30,6 +33,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SQLBinderITSettings("Oracle")
 class OracleBinderIT extends SQLBinderIT {
@@ -64,5 +68,20 @@ class OracleBinderIT extends SQLBinderIT {
         ColumnSegmentBoundInfo actual = ((ColumnProjectionSegment) actualProjection).getColumn().getColumnBoundInfo();
         assertThat(actual.getOriginalTable().getValue(), is(expectedTable));
         assertThat(actual.getOriginalColumn().getValue(), is(expectedColumn));
+    }
+    
+    @Test
+    void assertBindDottedDatabaseLink() {
+        SelectStatement actual = (SelectStatement) bindSQLStatement("Oracle", "SELECT 1 FROM foo_table@foo_link.example.com");
+        SimpleTableSegment actualTable = (SimpleTableSegment) actual.getFrom().get();
+        assertThat(actualTable.getDbLink().get().getValue(), is("foo_link.example.com"));
+        assertThat(actualTable.getAt().get().getValue(), is("@"));
+    }
+    
+    @Test
+    void assertBindBlockWithLocalRecordFieldTypeAttribute() {
+        String sql = "DECLARE TYPE foo_rec IS RECORD (order_id NUMBER); t_order foo_rec; foo_copy t_order.order_id%TYPE; BEGIN NULL; END;";
+        SQLStatement actual = bindSQLStatement("Oracle", sql);
+        assertTrue(new CommonSQLStatementContext(actual).getTablesContext().getTableNames().isEmpty());
     }
 }

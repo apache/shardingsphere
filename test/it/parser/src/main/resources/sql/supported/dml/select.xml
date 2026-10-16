@@ -586,4 +586,5 @@
     <sql-case id="select_in_with_function_rhs_oracle" value="SELECT * FROM t_order o WHERE o.user_id IN NVL(o.order_id, 0)" db-types="Oracle" />
     <sql-case id="select_parenthesized_column_alias" value="SELECT (c.password) PASSWORD FROM t_account c" db-types="Oracle,PostgreSQL,openGauss,SQLServer,Hive" />
     <sql-case id="select_with_schema_database_link_and_alias_oracle" value="SELECT * FROM userinfo.subs_rateplan@PJZW x" db-types="Oracle" />
+    <sql-case id="select_with_dotted_database_link_oracle" value="SELECT * FROM userinfo.subs_rateplan@PJZW.EXAMPLE.COM x" db-types="Oracle" />
 </sql-cases>

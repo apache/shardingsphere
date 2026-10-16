@@ -1533,8 +1533,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             if (null != ctx.queryTableExprSampleClause().queryTableExprTableClause().AT_()
                     && null != ctx.queryTableExprSampleClause().queryTableExprTableClause().dbLink()) {
                 ((SimpleTableSegment) result).setAt(new IdentifierValue(ctx.queryTableExprSampleClause().queryTableExprTableClause().AT_().getText()));
-                ((SimpleTableSegment) result).setDbLink(
-                        new IdentifierValue(ctx.queryTableExprSampleClause().queryTableExprTableClause().dbLink().identifier(0).getText()));
+                ((SimpleTableSegment) result).setDbLink(new IdentifierValue(ctx.queryTableExprSampleClause().queryTableExprTableClause().dbLink().getText()));
             }
             // SPEX ADDED: END
         } else if (null != ctx.lateralClause()) {
