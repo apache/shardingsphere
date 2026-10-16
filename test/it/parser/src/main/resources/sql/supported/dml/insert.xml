@@ -77,7 +77,7 @@
     <sql-case id="insert_select_without_generate_key_column" value="INSERT INTO t_order_item(order_id, user_id, status, creation_date) SELECT order_id, user_id, 'insert', '2017-08-08' FROM t_order_item WHERE order_id = ?" db-types="MySQL" />
     <sql-case id="insert_select_on_duplicate_key_update" value="INSERT INTO t_order(order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = ? ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
     <sql-case id="insert_with_emoji_value" value="INSERT INTO t_emoji_test(col1) VALUES('test😀')" db-types="MySQL" />
-    <sql-case id="insert_with_digit_literals_value" value="INSERT INTO digit_literals_value_test(col1, col2) VALUES(x'1234', x'')" db-types="MySQL" />
+    <sql-case id="insert_with_digit_literals_value" value="INSERT INTO digit_literals_value_test(col1, col2) VALUES(x'1234', x'')" db-types="MySQL,Firebird" />
     <sql-case id="insert_with_with_clause" value="WITH cte (order_id, user_id) AS (SELECT order_id, user_id FROM t_order) INSERT INTO t_order (order_id, user_id) SELECT order_id, user_id FROM cte" db-types="SQLServer" />
     <sql-case id="insert_without_columns_with_with_clause" value="WITH cte AS (SELECT order_id, user_id FROM t_order) INSERT INTO t_order (order_id, user_id) SELECT order_id, user_id FROM cte" db-types="SQLServer" />
     <sql-case id="insert_without_into_keyword" value="INSERT t_order (order_id, user_id, status) VALUES (?, ?, ?)" db-types="MySQL,SQLServer" />
@@ -166,6 +166,9 @@
     <sql-case id="insert_on_duplicate_key_update_with_values" value="INSERT INTO table (a,b,c) VALUES (1,2,3),(4,5,6) ON DUPLICATE KEY UPDATE c=VALUES(a)+VALUES(b);" db-types="MySQL" />
     <sql-case id="insert_returning_expressions" value="INSERT INTO t2 (id) VALUES (2),(3) RETURNING id,t&amp;t" db-types="MySQL,Firebird" />
     <sql-case id="insert_default_firebird" value="INSERT INTO t_order (id) VALUES (DEFAULT)" db-types="Firebird"/>
+    <sql-case id="insert_string_literal_with_introducer_firebird" value="INSERT INTO t_order (order_id, status) VALUES (1, _UTF8 'abc')" db-types="Firebird"/>
+    <sql-case id="insert_string_literal_with_collate_firebird" value="INSERT INTO t_order (order_id, status) VALUES (1, 'abc' COLLATE UNICODE)" db-types="Firebird"/>
+    <sql-case id="insert_hexadecimal_literal_with_introducer_firebird" value="INSERT INTO t_order (order_id, status) VALUES (1, _OCTETS x'4142')" db-types="Firebird"/>
     <sql-case id="insert_with_geom_collection_function" value="INSERT INTO t1 VALUES (GEOMCOLLECTION(POINT(0, 0)))" db-types="MySQL" />
     <sql-case id="insert_select_with_brackets" value="insert into t_order (order_id) (select order_id from t_order_item)" db-types="MySQL" />
     <sql-case id="insert_into_four_level_naming" value="INSERT INTO MyLinkServer.AdventureWorks2022.HumanResources.Department (Name, GroupName) VALUES (N'Public Relations', N'Executive General and Administration');" db-types="SQLServer"/>
