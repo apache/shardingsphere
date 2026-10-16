@@ -194,7 +194,6 @@ class FirebirdPrepareStatementCommandExecutorTest {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("foo_db");
         doReturn(true).when(database).containsSchema(new IdentifierValue("system_tables"));
         doReturn(systemSchema).when(database).getSchema(new IdentifierValue("system_tables"));
-        doReturn(systemSchema).when(database).getSchema("system_tables");
         when(packet.getSQL()).thenReturn("SELECT RDB$RELATION_ID FROM RDB$RELATIONS WHERE RDB$RELATION_ID = ?");
         when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
         when(packet.getCurrentItem()).thenReturn(

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdReturnColumnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
@@ -245,11 +246,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         for (Projection each : projections) {
             if (each instanceof ColumnProjection) {
                 String tableName = ((ColumnProjection) each).getOriginalTable().getValue();
-                ShardingSphereTable table = schema.getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
-                if (null == table) {
-                    table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema("system_tables")
-                            .getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
-                }
+                ShardingSphereTable table = getTable(database, schema, tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) each).getOriginalColumn().getValue());
                 processColumn(describeColumns, requestedItems, table, column, ((ColumnProjection) each).getOwner().orElse(null), each.getAlias().orElse(null), ++columnCount);
             } else if (each instanceof ExpressionProjection) {
@@ -318,6 +315,12 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return result;
     }
     
+    @HighFrequencyInvocation
+    private ShardingSphereTable getTable(final ShardingSphereDatabase database, final ShardingSphereSchema schema, final String tableName) {
+        ShardingSphereTable result = schema.getTable(tableName);
+        return null == result ? database.getSchema("system_tables").getTable(tableName) : result;
+    }
+    
     private void processParameters(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final Collection<FirebirdReturnColumnPacket> describeColumns,
                                    final Collection<FirebirdSQLInfoPacketType> requestedItems) {
         if (sqlStatementContext instanceof InsertStatementContext) {
@@ -326,15 +329,11 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         Collection<ColumnSegment> affectedColumns = findAffectedColumns(sqlStatementContext);
         int parametersCount = sqlStatementContext.getSqlStatement().getParameterMarkers().size();
-        String databaseName = connectionSession.getCurrentDatabaseName();
-        ShardingSphereSchema schema = metaDataContexts.getMetaData().getDatabase(databaseName).findDefaultSchema().orElse(null);
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getCurrentDatabaseName());
+        ShardingSphereSchema schema = database.findDefaultSchema().orElse(null);
         int columnCount = 0;
         for (ColumnSegment columnSegment : affectedColumns) {
-            String tableName = columnSegment.getColumnBoundInfo().getOriginalTable().getValue();
-            ShardingSphereTable table = schema.getTable(tableName);
-            if (null == table) {
-                table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema("system_tables").getTable(tableName);
-            }
+            ShardingSphereTable table = getTable(database, schema, columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
             ShardingSphereColumn column = table.getColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue());
             processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), ++columnCount);
         }
