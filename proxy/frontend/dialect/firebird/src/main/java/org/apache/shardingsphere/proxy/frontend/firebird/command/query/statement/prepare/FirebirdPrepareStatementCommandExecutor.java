@@ -178,7 +178,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         if (statement instanceof InsertStatement) {
             if (((InsertStatement) statement).getReturning().isPresent()) {
                 returningSegment = ((InsertStatement) statement).getReturning().orElse(null);
-                return FirebirdSQLInfoReturnValue.EXEC_PROCEDURE;
+                return ((InsertStatement) statement).getInsertSelect().isPresent() ? FirebirdSQLInfoReturnValue.SELECT : FirebirdSQLInfoReturnValue.EXEC_PROCEDURE;
             }
             return FirebirdSQLInfoReturnValue.INSERT;
         }
@@ -323,7 +323,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private void processParameters(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final Collection<FirebirdReturnColumnPacket> describeColumns,
                                    final Collection<FirebirdSQLInfoPacketType> requestedItems) {
-        if (sqlStatementContext instanceof InsertStatementContext) {
+        if (sqlStatementContext instanceof InsertStatementContext && null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
             processInsertStatement((InsertStatementContext) sqlStatementContext, metaDataContexts, describeColumns, requestedItems);
             return;
         }

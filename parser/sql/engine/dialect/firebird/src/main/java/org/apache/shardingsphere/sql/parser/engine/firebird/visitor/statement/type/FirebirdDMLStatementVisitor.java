@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.From
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.HavingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.InsertContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.InsertSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.JoinedTableContext;
@@ -114,6 +115,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -132,38 +134,38 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        InsertStatement insertValuesStatement = (InsertStatement) visit(ctx.insertValuesClause());
+        InsertStatement insertBodyStatement = (InsertStatement) visit(null == ctx.insertValuesClause() ? ctx.insertSelectClause() : ctx.insertValuesClause());
         InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()))
-                .insertColumns(insertValuesStatement.getInsertColumns().orElse(null)).insertSelect(insertValuesStatement.getInsertSelect().orElse(null))
-                .setAssignment(insertValuesStatement.getSetAssignment().orElse(null)).onDuplicateKeyColumns(insertValuesStatement.getOnDuplicateKeyColumns().orElse(null))
-                .valueReference(insertValuesStatement.getValueReference().orElse(null))
-                .returning(null == ctx.returningClause() ? insertValuesStatement.getReturning().orElse(null) : (ReturningSegment) visit(ctx.returningClause()))
-                .output(insertValuesStatement.getOutput().orElse(null)).with(insertValuesStatement.getWith().orElse(null))
-                .multiTableInsertType(insertValuesStatement.getMultiTableInsertType().orElse(null))
-                .multiTableInsertInto(insertValuesStatement.getMultiTableInsertInto().orElse(null))
-                .multiTableConditionalInto(insertValuesStatement.getMultiTableConditionalInto().orElse(null)).where(insertValuesStatement.getWhere().orElse(null))
-                .exec(insertValuesStatement.getExec().orElse(null)).withTableHint(insertValuesStatement.getWithTableHint().orElse(null))
-                .rowSetFunction(insertValuesStatement.getRowSetFunction().orElse(null)).ignore(insertValuesStatement.isIgnore()).replace(insertValuesStatement.isReplace())
-                .values(new LinkedList<>(insertValuesStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertValuesStatement.getDerivedInsertColumns())).build();
-        result.addParameterMarkers(insertValuesStatement.getParameterMarkers());
-        result.getVariableNames().addAll(insertValuesStatement.getVariableNames());
-        result.getComments().addAll(insertValuesStatement.getComments());
+                .insertColumns(insertBodyStatement.getInsertColumns().orElse(null)).insertSelect(insertBodyStatement.getInsertSelect().orElse(null))
+                .setAssignment(insertBodyStatement.getSetAssignment().orElse(null)).onDuplicateKeyColumns(insertBodyStatement.getOnDuplicateKeyColumns().orElse(null))
+                .valueReference(insertBodyStatement.getValueReference().orElse(null))
+                .returning(null == ctx.returningClause() ? insertBodyStatement.getReturning().orElse(null) : (ReturningSegment) visit(ctx.returningClause()))
+                .output(insertBodyStatement.getOutput().orElse(null)).with(insertBodyStatement.getWith().orElse(null))
+                .multiTableInsertType(insertBodyStatement.getMultiTableInsertType().orElse(null))
+                .multiTableInsertInto(insertBodyStatement.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(insertBodyStatement.getMultiTableConditionalInto().orElse(null)).where(insertBodyStatement.getWhere().orElse(null))
+                .exec(insertBodyStatement.getExec().orElse(null)).withTableHint(insertBodyStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(insertBodyStatement.getRowSetFunction().orElse(null)).ignore(insertBodyStatement.isIgnore()).replace(insertBodyStatement.isReplace())
+                .values(new LinkedList<>(insertBodyStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertBodyStatement.getDerivedInsertColumns())).build();
+        result.addParameterMarkers(insertBodyStatement.getParameterMarkers());
+        result.getVariableNames().addAll(insertBodyStatement.getVariableNames());
+        result.getComments().addAll(insertBodyStatement.getComments());
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertColumnsSegment insertColumns;
-        if (null != ctx.columnNames()) {
-            ColumnNamesContext columnNames = ctx.columnNames();
-            CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
-            insertColumns = new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
-        } else {
-            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
+        return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(createInsertColumns(ctx, ctx.columnNames())).values(createInsertValuesSegments(ctx.assignmentValues())).build();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private InsertColumnsSegment createInsertColumns(final ParserRuleContext ctx, @Nullable final ColumnNamesContext columnNames) {
+        if (null == columnNames) {
+            return new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
+        CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
+        return new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
@@ -172,6 +174,14 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
             result.add((InsertValuesSegment) visit(each));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
+        SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
+        selectStatement.addParameterMarkers(getParameterMarkerSegments());
+        SubquerySegment insertSelect = new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select()));
+        return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(createInsertColumns(ctx, ctx.columnNames())).insertSelect(insertSelect).build();
     }
     
     @Override
