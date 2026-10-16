@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
@@ -76,6 +77,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Cl
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ClusterContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnrefContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommentContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CountContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateAccessMethodContext;
@@ -196,7 +198,6 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Un
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ValidateConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.PostgreSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.DirectionType;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
@@ -219,7 +220,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Ren
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.NameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
@@ -753,26 +753,20 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
                 result.getValue().add(new ColumnSegment(each.colId().start.getStartIndex(), each.colId().stop.getStopIndex(), new IdentifierValue(each.colId().getText())));
             }
             if (null != each.functionExprWindowless()) {
-                appendIndexExpressionColumns((ExpressionSegment) visit(each.functionExprWindowless()), result.getValue());
+                appendIndexExpressionColumns(each.functionExprWindowless(), result.getValue());
             }
         }
         return result;
     }
     
-    private void appendIndexExpressionColumns(final ExpressionSegment expression, final Collection<ColumnSegment> columns) {
-        if (expression instanceof TypeCastExpression) {
-            ExpressionSegment actual = expression;
-            while (actual instanceof TypeCastExpression) {
-                actual = ((TypeCastExpression) actual).getExpression();
-            }
-            columns.addAll(ColumnExtractor.extract(actual));
+    private void appendIndexExpressionColumns(final ParseTree expression, final Collection<ColumnSegment> columns) {
+        if (expression instanceof ColumnrefContext) {
+            columns.add((ColumnSegment) visit(expression));
             return;
         }
-        ((FunctionSegment) expression).getParameters().forEach(param -> {
-            if (param instanceof ColumnSegment) {
-                columns.add((ColumnSegment) param);
-            }
-        });
+        for (int index = 0; index < expression.getChildCount(); index++) {
+            appendIndexExpressionColumns(expression.getChild(index), columns);
+        }
     }
     
     @Override
