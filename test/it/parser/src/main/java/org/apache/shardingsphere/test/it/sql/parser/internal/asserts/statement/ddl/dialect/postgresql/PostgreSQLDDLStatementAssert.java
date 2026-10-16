@@ -117,24 +117,26 @@ public final class PostgreSQLDDLStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DDLStatement actual, final SQLParserTestCase expected) {
         Class<? extends DDLStatement> expectedType = EXPECTED_STATEMENT_TYPES.get(expected.getClass());
-        if (null != expectedType) {
-            assertThat(actual, isA(expectedType));
-        } else if (actual instanceof PostgreSQLDeclareStatement) {
-            PostgreSQLDeclareStatementAssert.assertIs(assertContext, (PostgreSQLDeclareStatement) actual, (PostgreSQLDeclareStatementTestCase) expected);
-        } else if (actual instanceof PostgreSQLClusterStatement) {
-            PostgreSQLClusterStatementAssert.assertIs(assertContext, (PostgreSQLClusterStatement) actual, (PostgreSQLClusterStatementTestCase) expected);
-        } else if (actual instanceof PostgreSQLListenStatement) {
-            PostgreSQLListenStatementAssert.assertIs(assertContext, (PostgreSQLListenStatement) actual, (PostgreSQLListenStatementTestCase) expected);
-        } else if (actual instanceof PostgreSQLUnlistenStatement) {
-            PostgreSQLUnlistenStatementAssert.assertIs(assertContext, (PostgreSQLUnlistenStatement) actual, (PostgreSQLUnlistenStatementTestCase) expected);
-        } else if (actual instanceof PostgreSQLNotifyStmtStatement) {
-            PostgreSQLNotifyStmtStatementAssert.assertIs(assertContext, (PostgreSQLNotifyStmtStatement) actual, (PostgreSQLNotifyStmtStatementTestCase) expected);
-        } else if (actual instanceof PostgreSQLReindexStatement) {
-            PostgreSQLReindexStatementAssert.assertIs(assertContext, (PostgreSQLReindexStatement) actual, (PostgreSQLReindexStatementTestCase) expected);
-        } else if (actual instanceof PostgreSQLSecurityLabelStmtStatement) {
-            PostgreSQLSecurityLabelStmtStatementAssert.assertIs(assertContext, (PostgreSQLSecurityLabelStmtStatement) actual, (PostgreSQLSecurityLabelStmtStatementTestCase) expected);
-        } else if (actual instanceof PostgreSQLOpenStatement) {
-            PostgreSQLOpenStatementAssert.assertIs(assertContext, (PostgreSQLOpenStatement) actual, (PostgreSQLOpenStatementTestCase) expected);
+        if (null == expectedType) {
+            if (actual instanceof PostgreSQLDeclareStatement) {
+                PostgreSQLDeclareStatementAssert.assertIs(assertContext, (PostgreSQLDeclareStatement) actual, (PostgreSQLDeclareStatementTestCase) expected);
+            } else if (actual instanceof PostgreSQLClusterStatement) {
+                PostgreSQLClusterStatementAssert.assertIs(assertContext, (PostgreSQLClusterStatement) actual, (PostgreSQLClusterStatementTestCase) expected);
+            } else if (actual instanceof PostgreSQLListenStatement) {
+                PostgreSQLListenStatementAssert.assertIs(assertContext, (PostgreSQLListenStatement) actual, (PostgreSQLListenStatementTestCase) expected);
+            } else if (actual instanceof PostgreSQLUnlistenStatement) {
+                PostgreSQLUnlistenStatementAssert.assertIs(assertContext, (PostgreSQLUnlistenStatement) actual, (PostgreSQLUnlistenStatementTestCase) expected);
+            } else if (actual instanceof PostgreSQLNotifyStmtStatement) {
+                PostgreSQLNotifyStmtStatementAssert.assertIs(assertContext, (PostgreSQLNotifyStmtStatement) actual, (PostgreSQLNotifyStmtStatementTestCase) expected);
+            } else if (actual instanceof PostgreSQLReindexStatement) {
+                PostgreSQLReindexStatementAssert.assertIs(assertContext, (PostgreSQLReindexStatement) actual, (PostgreSQLReindexStatementTestCase) expected);
+            } else if (actual instanceof PostgreSQLSecurityLabelStmtStatement) {
+                PostgreSQLSecurityLabelStmtStatementAssert.assertIs(assertContext, (PostgreSQLSecurityLabelStmtStatement) actual, (PostgreSQLSecurityLabelStmtStatementTestCase) expected);
+            } else if (actual instanceof PostgreSQLOpenStatement) {
+                PostgreSQLOpenStatementAssert.assertIs(assertContext, (PostgreSQLOpenStatement) actual, (PostgreSQLOpenStatementTestCase) expected);
+            }
+            return;
         }
+        assertThat(actual, isA(expectedType));
     }
 }
