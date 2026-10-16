@@ -31,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -42,6 +43,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -105,6 +108,25 @@ class FirebirdNonFixedLengthColumnSizeLoaderTest {
     void assertLoadWithNoTables() throws SQLException {
         MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.emptyList(), "logic_ds", dataSource, databaseType, "schema");
         assertTrue(new FirebirdNonFixedLengthColumnSizeLoader(material).load().isEmpty());
+    }
+    
+    @Test
+    void assertLoadSystemTables() throws SQLException {
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getString("TABLE_NAME")).thenReturn("RDB$RELATIONS", "RDB$DATABASE");
+        when(resultSet.getString("COLUMN_NAME")).thenReturn("RDB$RELATION_NAME", "rdb$character_set_name");
+        when(resultSet.getInt("CHAR_LEN")).thenReturn(63, 0);
+        when(resultSet.getInt("FIELD_LENGTH")).thenReturn(31);
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.emptyList(), "logic_ds", dataSource, databaseType, "schema");
+        Map<String, Map<String, Integer>> actual = new FirebirdNonFixedLengthColumnSizeLoader(material).loadSystemTables();
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get("RDB$RELATIONS"), is(Collections.singletonMap("RDB$RELATION_NAME", 63)));
+        assertThat(actual.get("RDB$DATABASE"), is(Collections.singletonMap("RDB$CHARACTER_SET_NAME", 31)));
     }
     
     private void mockLoadPrerequisites() throws SQLException {

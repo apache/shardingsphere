@@ -47,11 +47,31 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test of {@link FirebirdMetaDataLoader}.
+ *
+ * <p>The loaders and registries are mocked with direct {@code mockConstruction} and {@code mockStatic} because this module does not depend on {@code test-infra-framework},
+ * and the tests stub methods of the constructed loaders and verify static registry calls.</p>
+ */
 class FirebirdMetaDataLoaderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
     
     private final DialectMetaDataLoader dialectMetaDataLoader = DatabaseTypedSPILoader.getService(DialectMetaDataLoader.class, databaseType);
+    
+    @Test
+    void assertLoadWithSystemTables() throws SQLException {
+        DataSource dataSource = mock(DataSource.class);
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.emptyList(), "logic_ds", dataSource, databaseType, "schema");
+        Map<String, Integer> systemTableSizes = Collections.singletonMap("RDB$RELATION_NAME", 63);
+        try (
+                MockedStatic<FirebirdNonFixedLengthColumnSizeRegistry> sizeRegistryMocked = mockStatic(FirebirdNonFixedLengthColumnSizeRegistry.class);
+                MockedConstruction<FirebirdNonFixedLengthColumnSizeLoader> ignoredSizeLoader = mockConstruction(FirebirdNonFixedLengthColumnSizeLoader.class,
+                        (mock, context) -> when(mock.loadSystemTables()).thenReturn(Collections.singletonMap("RDB$RELATIONS", systemTableSizes)))) {
+            dialectMetaDataLoader.load(material);
+            sizeRegistryMocked.verify(() -> FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("schema", "RDB$RELATIONS", systemTableSizes));
+        }
+    }
     
     @Test
     void assertLoadRefreshesSizeRegistry() throws SQLException {

@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -35,6 +36,12 @@ import java.util.Objects;
  */
 @RequiredArgsConstructor
 final class FirebirdNonFixedLengthColumnSizeLoader {
+    
+    private static final String SELECT_SYSTEM_TABLE_COLUMN_SIZES_SQL =
+            "SELECT TRIM(rf.RDB$RELATION_NAME) AS TABLE_NAME, TRIM(rf.RDB$FIELD_NAME) AS COLUMN_NAME, f.RDB$CHARACTER_LENGTH AS CHAR_LEN, f.RDB$FIELD_LENGTH AS FIELD_LENGTH "
+                    + "FROM RDB$RELATION_FIELDS rf "
+                    + "JOIN RDB$FIELDS f ON rf.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME "
+                    + "WHERE rf.RDB$SYSTEM_FLAG = 1 AND f.RDB$FIELD_TYPE IN (14, 37)";
     
     private final MetaDataLoaderMaterial material;
     
@@ -96,5 +103,20 @@ final class FirebirdNonFixedLengthColumnSizeLoader {
             default:
                 return false;
         }
+    }
+    
+    Map<String, Map<String, Integer>> loadSystemTables() throws SQLException {
+        Map<String, Map<String, Integer>> result = new HashMap<>();
+        try (
+                MetaDataLoaderConnection connection = new MetaDataLoaderConnection(material.getStorageType(), material.getDataSource().getConnection());
+                PreparedStatement preparedStatement = connection.prepareStatement(SELECT_SYSTEM_TABLE_COLUMN_SIZES_SQL);
+                ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                int characterLength = resultSet.getInt("CHAR_LEN");
+                int columnSize = resultSet.wasNull() || characterLength <= 0 ? resultSet.getInt("FIELD_LENGTH") : characterLength;
+                result.computeIfAbsent(resultSet.getString("TABLE_NAME"), key -> new HashMap<>()).put(resultSet.getString("COLUMN_NAME").toUpperCase(Locale.ENGLISH), columnSize);
+            }
+        }
+        return result;
     }
 }

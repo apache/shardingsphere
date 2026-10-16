@@ -59,6 +59,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.AfterEach;
@@ -187,6 +188,31 @@ class FirebirdPrepareStatementCommandExecutorTest {
         when(connectionSession.getUsedDatabaseName()).thenReturn(null);
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         assertThrows(NoDatabaseSelectedException.class, executor::execute);
+    }
+    
+    @Test
+    void assertDescribeSystemTableParameter() throws Exception {
+        ShardingSphereColumn relationIdColumn = new ShardingSphereColumn("RDB$RELATION_ID", Types.SMALLINT, false, false, false, true, false, true);
+        ShardingSphereTable relationsTable = new ShardingSphereTable("RDB$RELATIONS", Collections.singleton(relationIdColumn), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema systemSchema = new ShardingSphereSchema("system_tables", databaseType, Collections.singleton(relationsTable), Collections.emptyList());
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("foo_db");
+        doReturn(true).when(database).containsSchema(new IdentifierValue("system_tables"));
+        doReturn(systemSchema).when(database).getSchema(new IdentifierValue("system_tables"));
+        when(packet.getSQL()).thenReturn("SELECT RDB$RELATION_ID FROM RDB$RELATIONS WHERE RDB$RELATION_ID = ?");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.BIND,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        FirebirdPrepareStatementReturnPacket actual = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
+        assertThat(actual.getDescribeBind().size(), is(1));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actual.getDescribeBind().iterator().next().write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.SHORT.getValue() + 1);
     }
     
     @Test

@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Meta data loader for Firebird.
@@ -48,10 +49,14 @@ public final class FirebirdMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private void loadNonFixedLengthColumnSizes(final MetaDataLoaderMaterial material) throws SQLException {
-        Map<String, Map<String, Integer>> nonFixedColumnSizes = new FirebirdNonFixedLengthColumnSizeLoader(material).load();
+        FirebirdNonFixedLengthColumnSizeLoader loader = new FirebirdNonFixedLengthColumnSizeLoader(material);
+        Map<String, Map<String, Integer>> nonFixedColumnSizes = loader.load();
         for (String each : material.getActualTableNames()) {
             Map<String, Integer> tableSizes = nonFixedColumnSizes.getOrDefault(each, Collections.emptyMap());
             FirebirdNonFixedLengthColumnSizeRegistry.refreshTable(material.getDefaultSchemaName(), each, tableSizes);
+        }
+        for (Entry<String, Map<String, Integer>> entry : loader.loadSystemTables().entrySet()) {
+            FirebirdNonFixedLengthColumnSizeRegistry.refreshTable(material.getDefaultSchemaName(), entry.getKey(), entry.getValue());
         }
     }
     
