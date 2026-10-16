@@ -1048,11 +1048,11 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     }
     
     private TypeAttributeSegments extractTypeAttributeSegments(final Collection<? extends ParseTree> contexts) {
-        TypeAttributeSegments result = new TypeAttributeSegments();
+        TypeAttributeExtractor extractor = new TypeAttributeExtractor();
         for (ParseTree each : contexts) {
-            result.addAll(extractTypeAttributeSegments(each));
+            extractor.visit(each);
         }
-        return result;
+        return extractor.getResult();
     }
     
     private SimpleTableSegment createTypeAttributeTable(final ObjectNameContext ctx) {
@@ -2402,25 +2402,47 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         
         private boolean isVariableScope(final RuleNode node) {
             return node instanceof PlsqlBlockContext || node instanceof PlsqlProcedureSourceContext || node instanceof PlsqlFunctionSourceContext || node instanceof PlsqlTriggerSourceContext
-                    || node instanceof FunctionDefinitionContext || node instanceof ProcedureDefinitionContext || node instanceof FunctionDeclarationContext
-                    || node instanceof CursorForLoopStatementContext || node instanceof ProcedureDeclarationContext && !(node.getParent() instanceof ProcedureDefinitionContext);
+                    || node instanceof PlsqlPackageSourceContext || node instanceof PlsqlPackageBodySourceContext || node instanceof FunctionDefinitionContext
+                    || node instanceof ProcedureDefinitionContext || node instanceof FunctionDeclarationContext || node instanceof CursorForLoopStatementContext
+                    || node instanceof ProcedureDeclarationContext && !(node.getParent() instanceof ProcedureDefinitionContext);
         }
         
         private void registerVariable(final String identifier, final RuleNode declaration) {
             String variableName = normalizeVariableName(identifier);
             registerVariable(Collections.singletonList(variableName));
-            RuleNode scope = declaration;
-            while (!isVariableScope(scope) && null != scope.getParent()) {
-                scope = (RuleNode) scope.getParent();
-            }
+            RuleNode scope = findVariableScope(declaration);
             for (ParseTree each : getVariableScopeNames(scope)) {
-                registerVariable(Arrays.asList(normalizeVariableName(each.getText()), variableName));
+                String scopeName = normalizeVariableName(each.getText());
+                registerVariable(Arrays.asList(scopeName, variableName));
+                registerQualifiedVariable(scope, scopeName, variableName);
             }
         }
         
         private void registerVariable(final List<String> variableName) {
             variableScopes.peek().add(variableName);
             variableNames.merge(variableName, 1, Integer::sum);
+        }
+        
+        private RuleNode findVariableScope(final RuleNode node) {
+            RuleNode result = node;
+            while (!isVariableScope(result) && null != result.getParent()) {
+                result = (RuleNode) result.getParent();
+            }
+            return result;
+        }
+        
+        private void registerQualifiedVariable(final RuleNode scope, final String scopeName, final String variableName) {
+            ParseTree schemaName = scope instanceof PlsqlFunctionSourceContext ? ((PlsqlFunctionSourceContext) scope).function().owner()
+                    : ((ParserRuleContext) scope).getRuleContext(SchemaNameContext.class, 0);
+            if (null != schemaName) {
+                registerVariable(Arrays.asList(normalizeVariableName(schemaName.getText()), scopeName, variableName));
+            }
+            if (null != scope.getParent()) {
+                RuleNode outerScope = findVariableScope((RuleNode) scope.getParent());
+                for (ParseTree each : getVariableScopeNames(outerScope)) {
+                    registerVariable(Arrays.asList(normalizeVariableName(each.getText()), scopeName, variableName));
+                }
+            }
         }
         
         private Collection<? extends ParseTree> getVariableScopeNames(final RuleNode scope) {
@@ -2439,6 +2461,12 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             }
             if (scope instanceof PlsqlTriggerSourceContext) {
                 return Collections.singletonList(((PlsqlTriggerSourceContext) scope).triggerName());
+            }
+            if (scope instanceof PlsqlPackageSourceContext) {
+                return Collections.singletonList(((PlsqlPackageSourceContext) scope).packageName(0));
+            }
+            if (scope instanceof PlsqlPackageBodySourceContext) {
+                return Collections.singletonList(((PlsqlPackageBodySourceContext) scope).packageName(0));
             }
             if (scope instanceof FunctionDefinitionContext) {
                 return Collections.singletonList(((FunctionDefinitionContext) scope).functionHeading().functionName());
@@ -2463,13 +2491,31 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         @Override
         public Void visitDeclareItem(final DeclareItemContext ctx) {
             super.visitDeclareItem(ctx);
-            ParserRuleContext declaration = (ParserRuleContext) ctx.getChild(0);
-            if (null != ctx.itemDeclaration()) {
-                declaration = (ParserRuleContext) ctx.itemDeclaration().getChild(0);
+            if (null == ctx.itemDeclaration()) {
+                registerDeclaredVariable(ctx);
             }
-            VariableNameContext variableName = declaration.getRuleContext(VariableNameContext.class, 0);
+            return null;
+        }
+        
+        private void registerDeclaredVariable(final ParserRuleContext declaration) {
+            VariableNameContext variableName = ((ParserRuleContext) declaration.getChild(0)).getRuleContext(VariableNameContext.class, 0);
             if (null != variableName) {
-                registerVariable(variableName.getText(), ctx);
+                registerVariable(variableName.getText(), declaration);
+            }
+        }
+        
+        @Override
+        public Void visitItemDeclaration(final ItemDeclarationContext ctx) {
+            super.visitItemDeclaration(ctx);
+            registerDeclaredVariable(ctx);
+            return null;
+        }
+        
+        @Override
+        public Void visitPackageSpecificationItem(final PackageSpecificationItemContext ctx) {
+            super.visitPackageSpecificationItem(ctx);
+            if (null == ctx.itemDeclaration()) {
+                registerDeclaredVariable(ctx);
             }
             return null;
         }
@@ -2492,15 +2538,20 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         
         @Override
         public Void visitRowtypeAttribute(final RowtypeAttributeContext ctx) {
-            if (null != ctx.objectName()) {
+            if (null != ctx.objectName() && !isLocalRowtypeAttribute(ctx.objectName())) {
                 result.getTables().add(createRowtypeTable(ctx.objectName()));
             }
             return null;
         }
         
+        private boolean isLocalRowtypeAttribute(final ObjectNameContext ctx) {
+            return null == ctx.owner() ? variableNames.containsKey(Collections.singletonList(normalizeVariableName(ctx.name().getText())))
+                    : variableNames.containsKey(Arrays.asList(normalizeVariableName(ctx.owner().getText()), normalizeVariableName(ctx.name().getText())));
+        }
+        
         @Override
         public Void visitRowtype(final RowtypeContext ctx) {
-            if (null != ctx.ROWTYPE()) {
+            if (null != ctx.ROWTYPE() && !isLocalVariable(ctx.typeName())) {
                 result.getTables().add(createRowtypeTable(ctx.typeName()));
             } else if (null != ctx.TYPE() && null != ctx.MOD_() && null != ctx.typeName().owner() && !isLocalTypeAttribute(ctx.typeName())) {
                 result.getTables().add(createTypeAttributeTable(ctx.typeName()));
@@ -2509,8 +2560,20 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             return null;
         }
         
+        private boolean isLocalVariable(final TypeNameContext ctx) {
+            if (null == ctx.owner()) {
+                return variableNames.containsKey(Collections.singletonList(normalizeVariableName(ctx.name().getText())));
+            }
+            if (null == ctx.schemaName()) {
+                return variableNames.containsKey(Arrays.asList(normalizeVariableName(ctx.owner().getText()), normalizeVariableName(ctx.name().getText())));
+            }
+            return variableNames.containsKey(Arrays.asList(normalizeVariableName(ctx.schemaName().getText()), normalizeVariableName(ctx.owner().getText()),
+                    normalizeVariableName(ctx.name().getText())));
+        }
+        
         private boolean isLocalTypeAttribute(final TypeNameContext ctx) {
-            return null == ctx.schemaName() ? isLocalTypeAttribute(ctx.owner().getText(), ctx.name().getText()) : isLocalTypeAttribute(ctx.schemaName().getText(), ctx.owner().getText());
+            return isLocalVariable(ctx) || (null == ctx.schemaName() ? isLocalTypeAttribute(ctx.owner().getText(), ctx.name().getText())
+                    : isLocalTypeAttribute(ctx.schemaName().getText(), ctx.owner().getText()));
         }
         
         private boolean isLocalTypeAttribute(final String owner, final String name) {
@@ -2541,7 +2604,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         public Void visitRefCursorTypeDefinition(final RefCursorTypeDefinitionContext ctx) {
             if (null != ctx.RETURN() && ctx.typeName().size() > 1) {
                 TypeNameContext returnTypeName = ctx.typeName(1);
-                if (null != ctx.ROWTYPE()) {
+                if (null != ctx.ROWTYPE() && !isLocalVariable(returnTypeName)) {
                     result.getTables().add(createRowtypeTable(returnTypeName));
                 } else if (null != ctx.MOD_() && ctx.TYPE().size() > 1 && null != returnTypeName.owner() && !isLocalTypeAttribute(returnTypeName)) {
                     result.getTables().add(createTypeAttributeTable(returnTypeName));

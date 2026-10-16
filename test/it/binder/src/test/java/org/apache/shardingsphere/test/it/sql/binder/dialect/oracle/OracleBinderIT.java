@@ -84,4 +84,64 @@ class OracleBinderIT extends SQLBinderIT {
         SQLStatement actual = bindSQLStatement("Oracle", sql);
         assertTrue(new CommonSQLStatementContext(actual).getTablesContext().getTableNames().isEmpty());
     }
+    
+    @Test
+    void assertBindBlockWithLocalCursorRowtypeAttribute() {
+        String sql = "DECLARE CURSOR foo_cursor IS SELECT 1 foo_id FROM dual; TYPE foo_ref IS REF CURSOR RETURN foo_cursor%ROWTYPE; BEGIN NULL; END;";
+        SQLStatement actual = bindSQLStatement("Oracle", sql);
+        assertTrue(new CommonSQLStatementContext(actual).getTablesContext().getTableNames().isEmpty());
+    }
+    
+    @Test
+    void assertBindPackageWithLocalRecordFieldTypeAttribute() {
+        String sql = "CREATE PACKAGE foo_pkg AS TYPE foo_rec IS RECORD (foo_id NUMBER); foo_record foo_rec; foo_copy foo_pkg.foo_record.foo_id%TYPE; END;";
+        SQLStatement actual = bindSQLStatement("Oracle", sql);
+        assertTrue(new CommonSQLStatementContext(actual).getTablesContext().getTableNames().isEmpty());
+    }
+    
+    @Test
+    void assertBindPackageWithSchemaQualifiedCursorRowtypeAttribute() {
+        String sql = "CREATE PACKAGE foo_schema.foo_pkg AS TYPE foo_rec IS RECORD (foo_id NUMBER); CURSOR foo_cursor RETURN foo_rec;"
+                + " TYPE foo_ref IS REF CURSOR RETURN foo_schema.foo_pkg.foo_cursor%ROWTYPE; END;";
+        SQLStatement actual = bindSQLStatement("Oracle", sql);
+        assertTrue(new CommonSQLStatementContext(actual).getTablesContext().getTableNames().isEmpty());
+    }
+    
+    @Test
+    void assertBindPackageWithNestedLocalCursorRowtypeAttribute() {
+        String sql = "CREATE PACKAGE BODY foo_pkg AS PROCEDURE foo_proc IS CURSOR foo_cursor IS SELECT 1 foo_id FROM dual;"
+                + " TYPE foo_ref IS REF CURSOR RETURN foo_pkg.foo_proc.foo_cursor%ROWTYPE; BEGIN NULL; END; END;";
+        SQLStatement actual = bindSQLStatement("Oracle", sql);
+        assertTrue(new CommonSQLStatementContext(actual).getTablesContext().getTableNames().isEmpty());
+    }
+    
+    @Test
+    void assertBindBlockWithNestedLocalCursorRowtypeAttribute() {
+        String sql = "<<foo_block>> DECLARE PROCEDURE foo_proc IS CURSOR foo_cursor IS SELECT 1 foo_id FROM dual;"
+                + " TYPE foo_ref IS REF CURSOR RETURN foo_block.foo_proc.foo_cursor%ROWTYPE; BEGIN NULL; END; BEGIN NULL; END;";
+        SQLStatement actual = bindSQLStatement("Oracle", sql);
+        assertTrue(new CommonSQLStatementContext(actual).getTablesContext().getTableNames().isEmpty());
+    }
+    
+    @Test
+    void assertBindPackageWithSchemaQualifiedScalarTypeAttribute() {
+        String sql = "CREATE PACKAGE foo_schema.foo_pkg AS foo_var NUMBER; foo_copy foo_schema.foo_pkg.foo_var%TYPE; END;";
+        SQLStatement actual = bindSQLStatement("Oracle", sql);
+        assertTrue(new CommonSQLStatementContext(actual).getTablesContext().getTableNames().isEmpty());
+    }
+    
+    @Test
+    void assertBindPackageWithNestedScalarTypeAttribute() {
+        String sql = "CREATE PACKAGE BODY foo_pkg AS PROCEDURE foo_proc IS foo_var NUMBER; foo_copy foo_pkg.foo_proc.foo_var%TYPE; BEGIN NULL; END; END;";
+        SQLStatement actual = bindSQLStatement("Oracle", sql);
+        assertTrue(new CommonSQLStatementContext(actual).getTablesContext().getTableNames().isEmpty());
+    }
+    
+    @Test
+    void assertBindFunctionWithSchemaQualifiedCursorRowtypeAttribute() {
+        String sql = "CREATE FUNCTION foo_schema.foo_func RETURN NUMBER AS CURSOR foo_cursor IS SELECT 1 foo_id FROM dual;"
+                + " TYPE foo_ref IS REF CURSOR RETURN foo_schema.foo_func.foo_cursor%ROWTYPE; BEGIN RETURN 1; END;";
+        SQLStatement actual = bindSQLStatement("Oracle", sql);
+        assertTrue(new CommonSQLStatementContext(actual).getTablesContext().getTableNames().isEmpty());
+    }
 }

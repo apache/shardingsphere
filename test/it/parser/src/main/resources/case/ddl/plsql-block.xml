@@ -113,4 +113,41 @@
             <owner name="foo_block.foo_table" start-delimiter="&quot;" end-delimiter="&quot;" start-index="90" stop-index="110" />
         </column>
     </plsql-block>
+    <plsql-block sql-case-id="plsql_block_ref_cursor_return_local_cursor_rowtype_oracle">
+        <sql-statements>
+            <sql-statement start-index="29" stop-index="53" statement-class-simple-name="SelectStatement" />
+        </sql-statements>
+    </plsql-block>
+    <plsql-block sql-case-id="plsql_block_labeled_local_cursor_rowtype_oracle">
+        <sql-statements>
+            <sql-statement start-index="43" stop-index="67" statement-class-simple-name="SelectStatement" />
+        </sql-statements>
+    </plsql-block>
+    <plsql-block sql-case-id="plsql_block_ref_cursor_return_table_rowtype_oracle">
+        <table name="foo_table" start-index="42" stop-index="50" table-name-start-index="42" table-name-stop-index="50" />
+    </plsql-block>
+    <plsql-block sql-case-id="plsql_block_ref_cursor_return_schema_table_with_local_cursor_oracle">
+        <table name="foo_cursor" start-index="90" stop-index="110" table-name-start-index="101" table-name-stop-index="110">
+            <owner name="foo_schema" start-index="90" stop-index="99" />
+        </table>
+        <sql-statements>
+            <sql-statement start-index="29" stop-index="53" statement-class-simple-name="SelectStatement" />
+        </sql-statements>
+    </plsql-block>
+    <plsql-block sql-case-id="plsql_block_cursor_return_local_cursor_rowtype_oracle">
+        <sql-statements>
+            <sql-statement start-index="29" stop-index="53" statement-class-simple-name="SelectStatement" />
+        </sql-statements>
+    </plsql-block>
+    <plsql-block sql-case-id="plsql_block_nested_local_cursor_rowtype_oracle">
+        <table name="foo_table" start-index="191" stop-index="210" table-name-start-index="202" table-name-stop-index="210">
+            <owner name="foo_schema" start-index="191" stop-index="200" />
+        </table>
+        <column name="foo_id" start-index="212" stop-index="217">
+            <owner name="foo_table" start-index="202" stop-index="210" />
+        </column>
+        <sql-statements>
+            <sql-statement start-index="65" stop-index="89" statement-class-simple-name="SelectStatement" />
+        </sql-statements>
+    </plsql-block>
 </sql-parser-test-cases>
