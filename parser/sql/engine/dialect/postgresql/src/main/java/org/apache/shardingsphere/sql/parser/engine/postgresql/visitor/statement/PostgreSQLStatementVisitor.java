@@ -230,6 +230,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Paren
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -1376,7 +1377,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         WithSegment with = null == ctx.withClause() ? null : (WithSegment) visit(ctx.withClause());
-        SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
+        TableSegment tableSegment = createDeleteTableSegment(ctx);
         DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder().databaseType(databaseType).table(tableSegment).with(with);
         if (null != ctx.whereOrCurrentClause()) {
             result.where((WhereSegment) visit(ctx.whereOrCurrentClause()));
@@ -1387,6 +1388,26 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         DeleteStatement deleteStatement = result.build();
         deleteStatement.addParameterMarkers(getParameterMarkerSegments());
         return deleteStatement;
+    }
+    
+    private TableSegment createDeleteTableSegment(final DeleteContext ctx) {
+        SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
+        if (null == ctx.usingClause()) {
+            return tableSegment;
+        }
+        TableSegment usingTable = (TableSegment) visit(ctx.usingClause().fromList());
+        JoinTableSegment relationTable = new JoinTableSegment();
+        relationTable.setStartIndex(tableSegment.getStartIndex());
+        relationTable.setStopIndex(usingTable.getStopIndex());
+        relationTable.setLeft(tableSegment);
+        relationTable.setRight(usingTable);
+        relationTable.setJoinType(JoinType.COMMA.name());
+        DeleteMultiTableSegment result = new DeleteMultiTableSegment();
+        result.setStartIndex(tableSegment.getStartIndex());
+        result.setStopIndex(usingTable.getStopIndex());
+        result.getActualDeleteTables().add(tableSegment);
+        result.setRelationTable(relationTable);
+        return result;
     }
     
     @Override

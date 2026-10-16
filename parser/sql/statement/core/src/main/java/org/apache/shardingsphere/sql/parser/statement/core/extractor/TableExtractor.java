@@ -167,6 +167,9 @@ public final class TableExtractor {
     }
     
     private boolean containsUsingAlias(final TableSegment tableSegment) {
+        if (tableSegment instanceof DeleteMultiTableSegment) {
+            return containsUsingAlias(((DeleteMultiTableSegment) tableSegment).getRelationTable());
+        }
         if (!(tableSegment instanceof JoinTableSegment)) {
             return false;
         }

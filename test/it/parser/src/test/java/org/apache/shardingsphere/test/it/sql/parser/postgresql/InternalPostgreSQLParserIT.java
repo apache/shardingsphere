@@ -21,6 +21,7 @@ import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
@@ -39,9 +40,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Aggr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
@@ -286,6 +293,77 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
                 Arguments.of("without source", "UPDATE foo_table SET foo_column = ? WHERE foo_id = ?", Arrays.asList("34:0", "51:1"), 1),
                 Arguments.of("explicit dollar indices", "UPDATE foo_table SET foo_column = $3 FROM JSON_TABLE($1, '$' COLUMNS (foo_value int PATH '$')) foo_json WHERE foo_id = $2",
                         Arrays.asList("34:2", "53:0", "119:1"), 1));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getDeleteUsingMarkerCases")
+    void assertDeleteUsingMarkers(final String name, final String sql, final Collection<String> expectedMarkers) {
+        DeleteStatement actual = (DeleteStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        assertThat(actual.getParameterMarkers().stream().map(each -> each.getStartIndex() + ":" + each.getParameterIndex()).collect(Collectors.toList()), is(expectedMarkers));
+    }
+    
+    private static Stream<Arguments> getDeleteUsingMarkerCases() {
+        return Stream.of(
+                Arguments.of("JSON table source", "DELETE FROM foo USING JSON_TABLE(?, '$' COLUMNS (id int PATH '$')) AS jt WHERE foo.id = ? RETURNING ?",
+                        Arrays.asList("33:0", "88:1", "100:2")),
+                Arguments.of("source without where or returning", "DELETE FROM foo USING JSON_TABLE(?, '$' COLUMNS (id int PATH '$')) AS jt", Collections.singletonList("33:0")),
+                Arguments.of("multiple sources", "DELETE FROM foo USING JSON_TABLE(?, '$' COLUMNS (id int PATH '$')) AS jt, (SELECT ? AS id) AS src WHERE foo.id = ? RETURNING ?",
+                        Arrays.asList("33:0", "82:1", "113:2", "125:3")),
+                Arguments.of("explicit dollar indices", "DELETE FROM foo USING JSON_TABLE($3, '$' COLUMNS (id int PATH '$')) AS jt WHERE foo.id = $1 RETURNING $1",
+                        Arrays.asList("33:2", "89:0", "102:0")),
+                Arguments.of("with before using", "WITH seed AS (SELECT ?) DELETE FROM foo USING JSON_TABLE(?, '$' COLUMNS (id int PATH '$')) AS jt WHERE foo.id = ? RETURNING ?",
+                        Arrays.asList("21:0", "57:1", "112:2", "124:3")),
+                Arguments.of("ordinary subquery source", "DELETE FROM foo USING (SELECT ? AS id) AS src WHERE foo.id = ? RETURNING ?", Arrays.asList("30:0", "61:1", "73:2")));
+    }
+    
+    @Test
+    void assertDeleteUsingTables() {
+        String sql = "DELETE FROM foo_schema.foo_table AS foo USING foo_source AS src, JSON_TABLE(?, '$' COLUMNS (id int PATH '$')) AS jt WHERE foo.id = jt.id RETURNING foo.id";
+        DeleteStatement actual = (DeleteStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        DeleteMultiTableSegment actualTables = (DeleteMultiTableSegment) actual.getTable();
+        assertThat(actualTables.getActualDeleteTables().size(), is(1));
+        SimpleTableSegment actualTarget = actualTables.getActualDeleteTables().get(0);
+        assertThat(actualTarget.getTableName().getIdentifier().getValue(), is("foo_table"));
+        assertThat(actualTarget.getOwner().get().getIdentifier().getValue(), is("foo_schema"));
+        assertThat(actualTarget.getAliasName().get(), is("foo"));
+        JoinTableSegment actualRelation = (JoinTableSegment) actualTables.getRelationTable();
+        assertThat(actualRelation.getJoinType(), is(JoinType.COMMA.name()));
+        assertThat(actualRelation.getLeft().getAliasName().get(), is("foo"));
+        JoinTableSegment actualSources = (JoinTableSegment) actualRelation.getRight();
+        assertThat(((SimpleTableSegment) actualSources.getLeft()).getTableName().getIdentifier().getValue(), is("foo_source"));
+        assertThat(actualSources.getLeft().getAliasName().get(), is("src"));
+        FunctionTableSegment actualJsonTable = (FunctionTableSegment) actualSources.getRight();
+        assertThat(actualJsonTable.getAliasName().get(), is("jt"));
+        assertThat(actualJsonTable.getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), contains("id"));
+        assertThat(sql.substring(actualJsonTable.getStartIndex(), actualJsonTable.getStopIndex() + 1), is("JSON_TABLE(?, '$' COLUMNS (id int PATH '$')) AS jt"));
+        FunctionSegment actualFunction = (FunctionSegment) actualJsonTable.getTableFunction();
+        assertThat(actualFunction.getFunctionName(), is("JSON_TABLE"));
+        assertThat(((ParameterMarkerExpressionSegment) actualFunction.getParameters().iterator().next()).getParameterMarkerIndex(), is(0));
+    }
+    
+    @Test
+    void assertDeleteWithoutUsing() {
+        String sql = "DELETE FROM foo_schema.foo_table AS foo WHERE foo.id = ? RETURNING ?";
+        DeleteStatement actual = (DeleteStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        SimpleTableSegment actualTable = (SimpleTableSegment) actual.getTable();
+        assertThat(actualTable.getTableName().getIdentifier().getValue(), is("foo_table"));
+        assertThat(actualTable.getOwner().get().getIdentifier().getValue(), is("foo_schema"));
+        assertThat(actualTable.getAliasName().get(), is("foo"));
+        assertThat(actual.getParameterMarkers().stream().map(ParameterMarkerSegment::getParameterIndex).collect(Collectors.toList()), contains(0, 1));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getDeleteUsingJoinAliasPrefixes")
+    void assertDeleteUsingJoinAliasAttributes(final String prefix) {
+        String sql = prefix + "DELETE FROM foo_target USING JSON_TABLE(?, '$' COLUMNS (id int PATH '$')) AS jt JOIN foo_source USING (id) AS joined WHERE foo_target.id = joined.id";
+        SQLStatement actual = new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        Collection<String> actualTables = actual.getAttributes().getAttribute(TableSQLStatementAttribute.class).getTables().stream()
+                .map(each -> each.getTableName().getIdentifier().getValue()).distinct().collect(Collectors.toList());
+        assertThat(actualTables, contains("foo_target", "foo_source"));
+    }
+    
+    private static Stream<String> getDeleteUsingJoinAliasPrefixes() {
+        return Stream.of("PREPARE foo_stmt AS ", "EXPLAIN ");
     }
     
     @ParameterizedTest(name = "{0}")
