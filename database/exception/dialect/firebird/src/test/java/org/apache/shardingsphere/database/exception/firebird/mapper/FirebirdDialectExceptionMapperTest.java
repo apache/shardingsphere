@@ -353,16 +353,16 @@ class FirebirdDialectExceptionMapperTest {
         assertThat(actual.getSQLState(), is("HY000"));
     }
     
-    private void assertSQLException(final SQLException actual, final VendorError vendorError, final Object... messageArgs) {
-        assertThat(actual.getSQLState(), is(vendorError.getSqlState().getValue()));
-        assertThat(actual.getErrorCode(), is(vendorError.getVendorCode()));
-        assertThat(actual.getMessage(), is(String.format(vendorError.getReason(), messageArgs)));
-    }
-    
     private void assertFirebirdSQLException(final SQLException actual, final String expectedSQLState, final int expectedErrorCode, final String expectedMessage) {
         assertThat(actual.getSQLState(), is(expectedSQLState));
         assertThat(actual.getErrorCode(), is(expectedErrorCode));
         assertThat(actual.getMessage(), is(expectedMessage));
+    }
+    
+    private void assertSQLException(final SQLException actual, final VendorError vendorError, final Object... messageArgs) {
+        assertThat(actual.getSQLState(), is(vendorError.getSqlState().getValue()));
+        assertThat(actual.getErrorCode(), is(vendorError.getVendorCode()));
+        assertThat(actual.getMessage(), is(String.format(vendorError.getReason(), messageArgs)));
     }
     
     private void assertDynamicSQLStatusVector(final SQLException actual, final List<?>... expectedErrors) {

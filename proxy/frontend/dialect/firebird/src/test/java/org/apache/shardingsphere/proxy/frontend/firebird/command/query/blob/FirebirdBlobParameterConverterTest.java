@@ -154,6 +154,11 @@ class FirebirdBlobParameterConverterTest {
                 Arguments.of("binary_blob_parameter", createField(1, WIN1251), createBlobParameter(0), UTF8));
     }
     
+    private static FirebirdReturnColumnPacket createBlobParameter(final int subType) {
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", Types.BLOB, false, false, true, true, false, true);
+        return new FirebirdReturnColumnPacket(Collections.emptyList(), 1, createTable(), column, null, null, null, null, true, subType);
+    }
+    
     private static Stream<Arguments> textBlobArguments() {
         return Stream.of(
                 Arguments.of("transliterated", createField(1, WIN1251), "Привет".getBytes(WIN1251_CHARSET), UTF8, "Привет"),
@@ -234,11 +239,6 @@ class FirebirdBlobParameterConverterTest {
     private static FirebirdReturnColumnPacket createParameter(final int dataType, @Nullable final Integer length) {
         ShardingSphereColumn column = new ShardingSphereColumn("foo_col", dataType, false, false, true, true, false, true);
         return new FirebirdReturnColumnPacket(Collections.emptyList(), 1, createTable(), column, null, null, null, length, false, null);
-    }
-    
-    private static FirebirdReturnColumnPacket createBlobParameter(final int subType) {
-        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", Types.BLOB, false, false, true, true, false, true);
-        return new FirebirdReturnColumnPacket(Collections.emptyList(), 1, createTable(), column, null, null, null, null, true, subType);
     }
     
     private static ShardingSphereTable createTable() {
