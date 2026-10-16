@@ -63,11 +63,9 @@ public final class GroupBySegmentBinder {
     private static OrderByItemSegment bind(final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,
                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts, final OrderByItemSegment groupByItemSegment) {
-        // SPEX ADDED: BEGIN
         if (groupByItemSegment instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) groupByItemSegment).getColumn().getOwner().isPresent()) {
             return OrderByItemSegmentBinder.bind(groupByItemSegment, binderContext, tableBinderContexts, outerTableBinderContexts, SegmentType.GROUP_BY);
         }
-        // SPEX ADDED: END
         try {
             return OrderByItemSegmentBinder.bind(groupByItemSegment, binderContext, currentTableBinderContexts, outerTableBinderContexts, SegmentType.GROUP_BY);
         } catch (final ColumnNotFoundException ignored) {

@@ -462,11 +462,9 @@ plsqlBlock
     : ((SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_)*)? (DECLARE declareSection)? body
     ;
 
-// SPEX CHANGED: BEGIN
 procedureCall
     : (packageName DOT_)? procedureName (AT_ dbLink)? (LP_ (procedureCallParameter (COMMA_ procedureCallParameter)*)? RP_)? SEMI_
     ;
-// SPEX CHANGED: END
 
 procedureCallParameter
     : (identifier EQ_ GT_)? expression
@@ -653,16 +651,12 @@ typeDefinition
     ;
 
 recordTypeDefinition
-    // SPEX CHANGED: BEGIN
     : TYPE typeName IS RECORD LP_ recordFieldDefinition (COMMA_ recordFieldDefinition)* RP_ SEMI_
-    // SPEX CHANGED: END
     ;
 
-// SPEX CHANGED: BEGIN
 recordFieldDefinition
     : typeName dataType ((NOT NULL)? (ASSIGNMENT_OPERATOR_ | DEFAULT) expr)?
     ;
-// SPEX CHANGED: END
 
 refCursorTypeDefinition
     : TYPE typeName IS REF CURSOR (RETURN (
