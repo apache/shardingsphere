@@ -1066,13 +1066,28 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitCommonTableExpr(final CommonTableExprContext ctx) {
+        ParserRuleContext subqueryContext = null == ctx.searchClause() && null == ctx.cycleClause() ? ctx : ctx.preparableStmt();
         CommonTableExpressionSegment result = new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (AliasSegment) visit(ctx.alias()),
-                new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.preparableStmt().select()),
+                new SubquerySegment(subqueryContext.getStart().getStartIndex(), subqueryContext.getStop().getStopIndex(), (SelectStatement) visit(ctx.preparableStmt().select()),
                         getOriginalText(ctx.preparableStmt().select())));
         if (null != ctx.optNameList().nameList()) {
             result.getColumns().addAll(generateUsingColumn(ctx.optNameList().nameList()));
         }
+        if (null != ctx.searchClause()) {
+            result.getSearchColumns().addAll(generateUsingColumn(ctx.searchClause().nameList()));
+            result.getColumns().add(createCommonTableExpressionColumn(ctx.searchClause().name()));
+        }
+        if (null != ctx.cycleClause()) {
+            result.getCycleColumns().addAll(generateUsingColumn(ctx.cycleClause().nameList()));
+            for (NameContext each : ctx.cycleClause().name()) {
+                result.getColumns().add(createCommonTableExpressionColumn(each));
+            }
+        }
         return result;
+    }
+    
+    private ColumnSegment createCommonTableExpressionColumn(final NameContext ctx) {
+        return new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.getText()));
     }
     
     @Override
@@ -1592,17 +1607,13 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.selectLimitValue()) {
             return (LimitValueSegment) visit(ctx.selectLimitValue());
         }
-        return null;
+        int startIndex = ctx.rowOrRows().start.getStartIndex();
+        return new NumberLiteralLimitValueSegment(startIndex, startIndex - 1, 1L);
     }
     
     private LimitSegment createLimitSegmentWhenRowCountOrOffsetAbsent(final SelectLimitContext ctx) {
         if (null != ctx.limitClause()) {
-            if (null != ctx.limitClause().selectFetchValue()) {
-                LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectFetchValue());
-                return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, limit);
-            }
-            LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
-            return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, limit);
+            return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, createRowCountValueSegment(ctx.limitClause()));
         }
         LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);

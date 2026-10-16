@@ -1472,3 +1472,11 @@ ASENSITIVE
 DESCRIPTOR
     : D E S C R I P T O R
     ;
+
+BREADTH
+    : B R E A D T H
+    ;
+
+DEPTH
+    : D E P T H
+    ;

@@ -20,13 +20,22 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.rewrite.sql.impl.DefaultSQLBuilder;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.RowCountToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -40,21 +49,19 @@ class ShardingRowCountTokenGeneratorTest {
     
     private final ShardingRowCountTokenGenerator generator = new ShardingRowCountTokenGenerator();
     
-    @Test
-    void assertIsNotGenerateSQLTokenWithNotSelectStatementContext() {
-        assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getNotGenerateSQLTokenContexts")
+    void assertIsNotGenerateSQLToken(final String name, final SQLStatementContext sqlStatementContext) {
+        assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
-    @Test
-    void assertIsNotGenerateSQLTokenWithoutRowCountSegment() {
-        assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS)));
-    }
-    
-    @Test
-    void assertIsNotGenerateSQLTokenWithNotNumberLiteralPaginationValueSegment() {
-        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getPaginationContext().getRowCountSegment()).thenReturn(Optional.of(mock(ParameterMarkerPaginationValueSegment.class)));
-        assertFalse(generator.isGenerateSQLToken(selectStatementContext));
+    private static Stream<Arguments> getNotGenerateSQLTokenContexts() {
+        SelectStatementContext parameterMarkerContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(parameterMarkerContext.getPaginationContext().getRowCountSegment()).thenReturn(Optional.of(mock(ParameterMarkerPaginationValueSegment.class)));
+        return Stream.of(
+                Arguments.of("not select", mock(SQLStatementContext.class)),
+                Arguments.of("without row count", mock(SelectStatementContext.class, RETURNS_DEEP_STUBS)),
+                Arguments.of("parameter marker row count", parameterMarkerContext));
     }
     
     @Test
@@ -68,6 +75,28 @@ class ShardingRowCountTokenGeneratorTest {
     void assertGenerateSQLToken() {
         RowCountToken actual = generator.generateSQLToken(mockSelectStatementContext());
         assertThat(actual.toString(), is(String.valueOf(20L)));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getImplicitFetchCases")
+    void assertGenerateSQLTokenWithImplicitFetch(final String name, final String sql, final String expectedSQL) {
+        int offsetIndex = sql.indexOf("12");
+        int rowCountIndex = sql.toUpperCase(Locale.ROOT).indexOf("ROW", sql.toUpperCase(Locale.ROOT).indexOf("FETCH"));
+        NumberLiteralLimitValueSegment offset = new NumberLiteralLimitValueSegment(offsetIndex, offsetIndex + 1, 12L);
+        NumberLiteralLimitValueSegment rowCount = new NumberLiteralLimitValueSegment(rowCountIndex, rowCountIndex - 1, 1L);
+        SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getPaginationContext()).thenReturn(new PaginationContext(offset, rowCount, null));
+        when(statementContext.isSameGroupByAndOrderByItems()).thenReturn(true);
+        RowCountToken actual = generator.generateSQLToken(statementContext);
+        List<SQLToken> tokens = Arrays.asList(new ShardingOffsetTokenGenerator().generateSQLToken(statementContext), actual);
+        assertThat(new DefaultSQLBuilder(sql, tokens).toSQL(), is(expectedSQL));
+    }
+    
+    private static Stream<Arguments> getImplicitFetchCases() {
+        return Stream.of(
+                Arguments.of("FIRST after offset", "SELECT 1 OFFSET 12 ROWS FETCH FIRST ROW ONLY", "SELECT 1 OFFSET 0 ROWS FETCH FIRST 13 ROW ONLY"),
+                Arguments.of("NEXT before offset", "SELECT 1 FETCH NEXT ROWS ONLY OFFSET 12 ROWS", "SELECT 1 FETCH NEXT 13 ROWS ONLY OFFSET 0 ROWS"),
+                Arguments.of("lowercase and comment", "select 1 offset 12 rows fetch first /*gap*/ row only", "select 1 offset 0 rows fetch first /*gap*/ 13 row only"));
     }
     
     private SelectStatementContext mockSelectStatementContext() {

@@ -185,7 +185,15 @@ cteList
     ;
 
 commonTableExpr
-    :  alias optNameList AS optMaterialized LP_ preparableStmt RP_
+    :  alias optNameList AS optMaterialized LP_ preparableStmt RP_ searchClause? cycleClause?
+    ;
+
+searchClause
+    : SEARCH (DEPTH | BREADTH) FIRST BY nameList SET name
+    ;
+
+cycleClause
+    : CYCLE nameList SET name (TO aexprConst DEFAULT aexprConst)? USING name
     ;
 
 optMaterialized
@@ -491,14 +499,23 @@ copyOption
     | QUOTE STRING_
     | ESCAPE STRING_
     | FORCE_QUOTE (columnNames | ASTERISK_)
-    | FORCE_NOT_NULL columnNames
-    | FORCE_NULL columnNames
+    | FORCE_NOT_NULL (columnNames | ASTERISK_)
+    | FORCE_NULL (columnNames | ASTERISK_)
     | ENCODING STRING_
+    | colLabel copyOptionArgument?
+    ;
+
+copyOptionArgument
+    : booleanOrString
+    | numericOnly
+    | ASTERISK_
+    | DEFAULT
+    | LP_ booleanOrString (COMMA_ booleanOrString)* RP_
     ;
 
 
 copyWithTableOrQueryBinaryCsv
-    : COPY (qualifiedName columnNames? | LP_ preparableStmt RP_) (FROM | TO) (fileName | STDIN | STDOUT) (WITH? BINARY? (DELIMITER AS? STRING_)? (NULL AS? STRING_)? (CSV HEADER? (QUOTE AS? STRING_)? (ESCAPE AS? STRING_)? (FORCE NOT NULL columnName (COMMA_ columnName)*)? (FORCE QUOTE (columnName (COMMA_ columnName)* | ASTERISK_))?)?)?
+    : COPY (qualifiedName columnNames? | LP_ preparableStmt RP_) (FROM | TO) (fileName | STDIN | STDOUT) (WITH? BINARY? (DELIMITER AS? STRING_)? (NULL AS? STRING_)? ((CSV | JSON) HEADER? (QUOTE AS? STRING_)? (ESCAPE AS? STRING_)? (FORCE NOT NULL columnName (COMMA_ columnName)*)? (FORCE QUOTE (columnName (COMMA_ columnName)* | ASTERISK_))?)?)?
     ;
 
 copyWithTableBinary

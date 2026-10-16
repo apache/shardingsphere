@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Substitutable;
 
@@ -38,7 +39,9 @@ public final class RowCountToken extends SQLToken implements Substitutable {
     }
     
     @Override
+    @HighFrequencyInvocation
     public String toString() {
-        return String.valueOf(revisedRowCount);
+        String result = String.valueOf(revisedRowCount);
+        return getStartIndex() > stopIndex ? new StringBuilder(result).append(' ').toString() : result;
     }
 }
