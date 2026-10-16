@@ -78,6 +78,12 @@ class FirebirdStatementIdGeneratorTest {
     }
     
     @Test
+    void assertReleaseStatementIdWithUnregisteredConnection() {
+        GENERATOR.releaseStatementId(1, 1);
+        assertFalse(GENERATOR.isAllocated(1, 1));
+    }
+    
+    @Test
     void assertUnregisterConnection() {
         GENERATOR.registerConnection(1);
         registeredConnectionIds.add(1);

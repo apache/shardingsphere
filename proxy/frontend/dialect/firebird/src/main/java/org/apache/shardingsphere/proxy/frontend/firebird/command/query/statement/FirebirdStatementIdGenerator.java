@@ -63,6 +63,7 @@ public final class FirebirdStatementIdGenerator {
      * @param connectionId connection ID
      * @return generated statement ID
      */
+    @HighFrequencyInvocation
     public int nextStatementId(final int connectionId) {
         int result = getStatementCounter(connectionId).incrementAndGet();
         allocatedStatementIds.get(connectionId).add(result);
@@ -119,7 +120,7 @@ public final class FirebirdStatementIdGenerator {
     private AtomicInteger getStatementCounter(final int connectionId) {
         AtomicInteger result = connectionRegistry.get(connectionId);
         if (null == result) {
-            throw new IllegalStateException("No statement ID generator found for connectionId: " + connectionId);
+            throw new IllegalStateException(String.format("No statement ID generator found for connectionId: %d", connectionId));
         }
         return result;
     }

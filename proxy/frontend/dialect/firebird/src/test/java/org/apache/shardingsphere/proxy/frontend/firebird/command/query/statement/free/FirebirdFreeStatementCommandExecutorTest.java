@@ -139,8 +139,8 @@ class FirebirdFreeStatementCommandExecutorTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("keptStatementHandleOptions")
-    void assertExecuteWithKeptStatementHandle(final String scenario, final int option) throws Exception {
+    @MethodSource("nonDropOptions")
+    void assertExecuteWithNonDropOption(final String scenario, final int option) throws Exception {
         when(packet.getOption()).thenReturn(option);
         new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
         assertTrue(FirebirdStatementIdGenerator.getInstance().isAllocated(CONNECTION_ID, STATEMENT_ID));
@@ -160,7 +160,7 @@ class FirebirdFreeStatementCommandExecutorTest {
         assertThrows(DatabaseProtocolException.class, new FirebirdFreeStatementCommandExecutor(packet, connectionSession)::execute);
     }
     
-    private static Stream<Arguments> keptStatementHandleOptions() {
+    private static Stream<Arguments> nonDropOptions() {
         return Stream.of(Arguments.of("unprepare", FirebirdFreeStatementPacket.UNPREPARE), Arguments.of("close", FirebirdFreeStatementPacket.CLOSE));
     }
     
