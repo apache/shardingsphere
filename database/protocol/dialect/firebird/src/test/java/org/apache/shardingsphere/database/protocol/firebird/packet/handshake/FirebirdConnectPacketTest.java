@@ -106,6 +106,16 @@ class FirebirdConnectPacketTest {
         assertThrows(IndexOutOfBoundsException.class, () -> FirebirdConnectPacket.getLength(incompletePayload));
     }
     
+    private ByteBuf createConnectPacketBytes() {
+        ByteBuf result = Unpooled.buffer();
+        result.writeInt(FirebirdCommandPacketType.CONNECT.getValue()).writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(3).writeInt(FirebirdArchType.ARCH_GENERIC.getCode());
+        result.writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2);
+        result.writeInt(1);
+        result.writeInt(3).writeBytes(new byte[]{9, 1, 'x'}).writeZero(1);
+        result.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION13.getCode()).writeInt(FirebirdArchType.ARCH_GENERIC.getCode()).writeInt(0).writeInt(5).writeInt(2);
+        return result;
+    }
+    
     private FirebirdConnectPacket createPacketWithSpecificData() {
         when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.CONNECT.getValue(), 1, FirebirdArchType.ARCH_GENERIC.getCode(), 1);
         when(payload.readString()).thenReturn("db");
@@ -147,15 +157,5 @@ class FirebirdConnectPacketTest {
         when(userInfo.readSlice(5)).thenReturn(loginBuf);
         when(payload.readBuffer()).thenReturn(userInfo);
         return new FirebirdConnectPacket(payload);
-    }
-    
-    private ByteBuf createConnectPacketBytes() {
-        ByteBuf result = Unpooled.buffer();
-        result.writeInt(FirebirdCommandPacketType.CONNECT.getValue()).writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(3).writeInt(FirebirdArchType.ARCH_GENERIC.getCode());
-        result.writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2);
-        result.writeInt(1);
-        result.writeInt(3).writeBytes(new byte[]{9, 1, 'x'}).writeZero(1);
-        result.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION13.getCode()).writeInt(FirebirdArchType.ARCH_GENERIC.getCode()).writeInt(0).writeInt(5).writeInt(2);
-        return result;
     }
 }
