@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
 
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementStateException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
@@ -26,10 +27,13 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -46,11 +50,18 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdSQLInfoExecutorTest {
+    
+    private static final int CONNECTION_ID = 1;
+    
+    private static final int STATEMENT_ID = 1;
     
     @Mock
     private FirebirdInfoPacket packet;
@@ -58,10 +69,25 @@ class FirebirdSQLInfoExecutorTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
+    @BeforeEach
+    void setUp() {
+        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID);
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+    }
+    
+    @AfterEach
+    void tearDown() {
+        FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+    }
+    
     @Test
     void assertExecute() {
         when(packet.getInfoItems()).thenReturn(Collections.emptyList());
-        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
+        when(packet.getHandle()).thenReturn(STATEMENT_ID);
+        ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
+        registry.addPreparedStatement(STATEMENT_ID, new FirebirdServerPreparedStatement("SELECT 1 FROM RDB$DATABASE", mock(SQLStatementContext.class), new HintValueContext()));
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
         FirebirdSQLInfoExecutor executor = new FirebirdSQLInfoExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
@@ -73,13 +99,13 @@ class FirebirdSQLInfoExecutorTest {
     @MethodSource("sqlStatementProvider")
     void assertExecuteWithRecordsInfo(final String name, final SQLStatement sqlStatement, final long expectedInsertCount, final long expectedUpdateCount, final long expectedDeleteCount) {
         when(packet.getInfoItems()).thenReturn(Collections.emptyList());
-        when(packet.getHandle()).thenReturn(1);
+        when(packet.getHandle()).thenReturn(STATEMENT_ID);
         ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         FirebirdServerPreparedStatement preparedStatement = new FirebirdServerPreparedStatement("DML", sqlStatementContext, new HintValueContext());
         preparedStatement.setAffectedRows(3L);
-        registry.addPreparedStatement(1, preparedStatement);
+        registry.addPreparedStatement(STATEMENT_ID, preparedStatement);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
         FirebirdSQLInfoExecutor executor = new FirebirdSQLInfoExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
@@ -88,6 +114,21 @@ class FirebirdSQLInfoExecutorTest {
         assertThat(returnPacket.getRecordsInfo().getInsertCount(), is(expectedInsertCount));
         assertThat(returnPacket.getRecordsInfo().getUpdateCount(), is(expectedUpdateCount));
         assertThat(returnPacket.getRecordsInfo().getDeleteCount(), is(expectedDeleteCount));
+    }
+    
+    @Test
+    void assertExecuteWithNotAllocatedStatement() {
+        when(packet.getHandle()).thenReturn(STATEMENT_ID + 1);
+        InvalidStatementStateException actual = assertThrows(InvalidStatementStateException.class, new FirebirdSQLInfoExecutor(packet, connectionSession)::execute);
+        assertFalse(actual.isAllocated());
+    }
+    
+    @Test
+    void assertExecuteWithNotPreparedStatement() {
+        when(packet.getHandle()).thenReturn(STATEMENT_ID);
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
+        InvalidStatementStateException actual = assertThrows(InvalidStatementStateException.class, new FirebirdSQLInfoExecutor(packet, connectionSession)::execute);
+        assertTrue(actual.isAllocated());
     }
     
     private static Stream<Arguments> sqlStatementProvider() {

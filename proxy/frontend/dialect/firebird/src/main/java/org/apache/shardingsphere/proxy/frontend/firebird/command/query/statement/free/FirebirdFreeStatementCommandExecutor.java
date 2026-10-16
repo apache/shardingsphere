@@ -19,12 +19,15 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementStateException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchStatementManager;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 
 import java.sql.SQLException;
@@ -43,12 +46,17 @@ public final class FirebirdFreeStatementCommandExecutor implements CommandExecut
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
+        ShardingSpherePreconditions.checkState(FirebirdStatementIdGenerator.getInstance().isAllocated(connectionSession.getConnectionId(), packet.getStatementId()),
+                () -> new InvalidStatementStateException(packet.getStatementId(), false));
         switch (packet.getOption()) {
             case FirebirdFreeStatementPacket.DROP:
             case FirebirdFreeStatementPacket.UNPREPARE:
                 connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
                 FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementId());
                 FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), true);
+                if (FirebirdFreeStatementPacket.DROP == packet.getOption()) {
+                    FirebirdStatementIdGenerator.getInstance().releaseStatementId(connectionSession.getConnectionId(), packet.getStatementId());
+                }
                 break;
             case FirebirdFreeStatementPacket.CLOSE:
                 FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementId());

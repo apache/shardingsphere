@@ -18,14 +18,17 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementStateException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLRecordsInfo;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
@@ -46,14 +49,14 @@ public final class FirebirdSQLInfoExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdSQLInfoReturnPacket(packet.getInfoItems(), getRecordsInfo())));
+        ShardingSpherePreconditions.checkState(FirebirdStatementIdGenerator.getInstance().isAllocated(connectionSession.getConnectionId(), packet.getHandle()),
+                () -> new InvalidStatementStateException(packet.getHandle(), false));
+        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getHandle());
+        ShardingSpherePreconditions.checkNotNull(preparedStatement, () -> new InvalidStatementStateException(packet.getHandle(), true));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdSQLInfoReturnPacket(packet.getInfoItems(), getRecordsInfo(preparedStatement))));
     }
     
-    private FirebirdSQLRecordsInfo getRecordsInfo() {
-        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getHandle());
-        if (null == preparedStatement) {
-            return new FirebirdSQLRecordsInfo(0L, 0L, 0L);
-        }
+    private FirebirdSQLRecordsInfo getRecordsInfo(final FirebirdServerPreparedStatement preparedStatement) {
         long affectedRows = preparedStatement.getAffectedRows();
         SQLStatement sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
         long insertCount = sqlStatement instanceof InsertStatement ? affectedRows : 0L;

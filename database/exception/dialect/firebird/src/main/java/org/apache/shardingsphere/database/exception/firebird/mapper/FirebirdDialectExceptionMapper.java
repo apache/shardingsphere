@@ -38,6 +38,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementStateException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
@@ -85,6 +86,9 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof InvalidStatementHandleException) {
             return toSQLException(FirebirdVendorError.INVALID_STATEMENT_HANDLE);
+        }
+        if (sqlDialectException instanceof InvalidStatementStateException) {
+            return toSQLException(((InvalidStatementStateException) sqlDialectException).isAllocated() ? FirebirdVendorError.UNPREPARED_STATEMENT : FirebirdVendorError.INVALID_REQUEST_HANDLE);
         }
         if (sqlDialectException instanceof InvalidTransactionHandleException) {
             return toSQLException(FirebirdVendorError.INVALID_TRANSACTION_HANDLE);

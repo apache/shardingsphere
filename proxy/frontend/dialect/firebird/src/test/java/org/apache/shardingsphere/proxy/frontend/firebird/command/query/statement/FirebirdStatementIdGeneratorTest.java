@@ -25,7 +25,9 @@ import java.util.HashSet;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdStatementIdGeneratorTest {
     
@@ -56,11 +58,38 @@ class FirebirdStatementIdGeneratorTest {
     }
     
     @Test
+    void assertIsAllocated() {
+        GENERATOR.registerConnection(1);
+        registeredConnectionIds.add(1);
+        int statementId = GENERATOR.nextStatementId(1);
+        assertTrue(GENERATOR.isAllocated(1, statementId));
+        assertFalse(GENERATOR.isAllocated(1, statementId + 1));
+        assertFalse(GENERATOR.isAllocated(2, statementId));
+    }
+    
+    @Test
+    void assertReleaseStatementId() {
+        GENERATOR.registerConnection(1);
+        registeredConnectionIds.add(1);
+        int statementId = GENERATOR.nextStatementId(1);
+        GENERATOR.releaseStatementId(1, statementId);
+        assertFalse(GENERATOR.isAllocated(1, statementId));
+        assertThat(GENERATOR.nextStatementId(1), is(statementId + 1));
+    }
+    
+    @Test
+    void assertReleaseStatementIdWithUnregisteredConnection() {
+        GENERATOR.releaseStatementId(1, 1);
+        assertFalse(GENERATOR.isAllocated(1, 1));
+    }
+    
+    @Test
     void assertUnregisterConnection() {
         GENERATOR.registerConnection(1);
         registeredConnectionIds.add(1);
         GENERATOR.unregisterConnection(1);
         registeredConnectionIds.remove(1);
         assertThrows(IllegalStateException.class, () -> GENERATOR.getStatementId(1));
+        assertFalse(GENERATOR.isAllocated(1, 1));
     }
 }

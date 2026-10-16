@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.free;
 
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementStateException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.junit.jupiter.api.AfterEach;
@@ -46,8 +48,10 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -75,6 +79,8 @@ class FirebirdFreeStatementCommandExecutorTest {
     
     @BeforeEach
     void setUp() {
+        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID);
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
         FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
@@ -89,6 +95,7 @@ class FirebirdFreeStatementCommandExecutorTest {
         FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @ParameterizedTest(name = "{0}")
@@ -125,9 +132,36 @@ class FirebirdFreeStatementCommandExecutorTest {
     }
     
     @Test
+    void assertExecuteWithDropStatementHandle() throws Exception {
+        when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.DROP);
+        new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
+        assertFalse(FirebirdStatementIdGenerator.getInstance().isAllocated(CONNECTION_ID, STATEMENT_ID));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("nonDropOptions")
+    void assertExecuteWithNonDropOption(final String scenario, final int option) throws Exception {
+        when(packet.getOption()).thenReturn(option);
+        new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
+        assertTrue(FirebirdStatementIdGenerator.getInstance().isAllocated(CONNECTION_ID, STATEMENT_ID));
+    }
+    
+    @Test
+    void assertExecuteWithNotAllocatedStatement() {
+        when(packet.getStatementId()).thenReturn(STATEMENT_ID + 1);
+        InvalidStatementStateException actual = assertThrows(InvalidStatementStateException.class, new FirebirdFreeStatementCommandExecutor(packet, connectionSession)::execute);
+        assertFalse(actual.isAllocated());
+        verify(registry, never()).removePreparedStatement(STATEMENT_ID + 1);
+    }
+    
+    @Test
     void assertExecuteWithUnknownOption() {
         when(packet.getOption()).thenReturn(999);
         assertThrows(DatabaseProtocolException.class, new FirebirdFreeStatementCommandExecutor(packet, connectionSession)::execute);
+    }
+    
+    private static Stream<Arguments> nonDropOptions() {
+        return Stream.of(Arguments.of("unprepare", FirebirdFreeStatementPacket.UNPREPARE), Arguments.of("close", FirebirdFreeStatementPacket.CLOSE));
     }
     
     private static Stream<Arguments> preparedStatementFreeOptions() {

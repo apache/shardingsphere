@@ -40,6 +40,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementStateException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
@@ -122,6 +123,16 @@ class FirebirdDialectExceptionMapperTest {
     @Test
     void assertConvertWithInvalidStatementHandle() {
         assertSQLException(mapper.convert(new InvalidStatementHandleException(42)), FirebirdVendorError.INVALID_STATEMENT_HANDLE);
+    }
+    
+    @Test
+    void assertConvertWithNotAllocatedStatement() {
+        assertSQLException(mapper.convert(new InvalidStatementStateException(42, false)), FirebirdVendorError.INVALID_REQUEST_HANDLE);
+    }
+    
+    @Test
+    void assertConvertWithNotPreparedStatement() {
+        assertSQLException(mapper.convert(new InvalidStatementStateException(42, true)), FirebirdVendorError.UNPREPARED_STATEMENT);
     }
     
     @Test
