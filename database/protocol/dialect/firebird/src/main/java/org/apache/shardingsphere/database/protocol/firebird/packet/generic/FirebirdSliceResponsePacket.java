@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.generic;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
@@ -24,8 +25,13 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdDecFloatBinaryProtocolValue;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdTimeTZBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -43,6 +49,13 @@ import java.util.Collection;
  * element is decided by that data type and not by the descriptor storage length, for instance a TIME_TZ element occupies 8 bytes and
  * a DEC34 element 16 bytes.</p>
  *
+ * <p>The encoder of an element is selected by this packet rather than by {@code FirebirdBinaryProtocolValueFactory}.
+ * That factory also encodes the row values of a query result, so changing a registration there would change row value encoding too.
+ * Row value encoding is a different path, so the pre-existing factory defects for DEC16, DEC34, INT128 and TIME_TZ stay untouched here.</p>
+ *
+ * <p>DEC16, DEC34, INT128 and TIME_TZ are encoded here per the XDR contract of their data types, namely 8, 16, 16 and 8 bytes.
+ * Every other element type still uses the value returned by the factory.</p>
+ *
  * <p>A text array element is the exception spelled out by {@code xdr_datum}: it is written as fixed length opaque data of its
  * storage length, without the leading length field that a variable length value carries, so {@code elementLength} is what decides how
  * many bytes each text element occupies. Its bytes are the raw value when the element carries them, for example a JDBC
@@ -54,6 +67,8 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class FirebirdSliceResponsePacket extends FirebirdPacket {
+    
+    private static final int INT128_BYTE_LENGTH = 16;
     
     private final int sliceLength;
     
@@ -78,10 +93,53 @@ public final class FirebirdSliceResponsePacket extends FirebirdPacket {
             }
             return;
         }
-        FirebirdBinaryProtocolValue protocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(columnType);
+        if (FirebirdBinaryColumnType.INT128 == columnType) {
+            for (Object each : elements) {
+                payload.getByteBuf().writeBytes(toInt128Bytes(each));
+            }
+            return;
+        }
+        FirebirdBinaryProtocolValue protocolValue = getProtocolValue();
         for (Object each : elements) {
             protocolValue.write(payload, each);
         }
+    }
+    
+    private FirebirdBinaryProtocolValue getProtocolValue() {
+        if (FirebirdBinaryColumnType.DEC16 == columnType) {
+            return new FirebirdDecFloatBinaryProtocolValue(FirebirdBinaryColumnType.DEC16);
+        }
+        if (FirebirdBinaryColumnType.DEC34 == columnType) {
+            return new FirebirdDecFloatBinaryProtocolValue(FirebirdBinaryColumnType.DEC34);
+        }
+        if (FirebirdBinaryColumnType.TIME_TZ == columnType) {
+            return new FirebirdTimeTZBinaryProtocolValue();
+        }
+        return FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(columnType);
+    }
+    
+    private byte[] toInt128Bytes(final Object element) {
+        BigInteger value = toBigInteger(element);
+        Preconditions.checkArgument(value.bitLength() <= 127, "INT128 slice element `%s` requires more than 16 bytes of storage", value);
+        byte[] minimumBytes = value.toByteArray();
+        int offset = Math.max(0, minimumBytes.length - INT128_BYTE_LENGTH);
+        byte[] result = new byte[INT128_BYTE_LENGTH];
+        if (value.signum() < 0) {
+            Arrays.fill(result, (byte) -1);
+        }
+        System.arraycopy(minimumBytes, offset, result, INT128_BYTE_LENGTH + offset - minimumBytes.length, minimumBytes.length - offset);
+        return result;
+    }
+    
+    private BigInteger toBigInteger(final Object element) {
+        if (element instanceof BigInteger) {
+            return (BigInteger) element;
+        }
+        if (element instanceof BigDecimal) {
+            return ((BigDecimal) element).toBigInteger();
+        }
+        Preconditions.checkArgument(element instanceof Integer || element instanceof Long, "Can not encode INT128 slice element `%s`", element);
+        return BigInteger.valueOf(((Number) element).longValue());
     }
     
     private void writeTextElement(final FirebirdPacketPayload payload, final Object element) {

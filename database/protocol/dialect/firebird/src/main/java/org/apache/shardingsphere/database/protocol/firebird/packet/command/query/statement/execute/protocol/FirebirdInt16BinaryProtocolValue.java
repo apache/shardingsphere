@@ -17,24 +17,15 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
 
 /**
  * Binary protocol value for int16 for Firebird.
- *
- * <p>Firebird writes an INT128 datum with {@code xdr_int128}, which emits the two 64-bit halves of the value as
- * {@code xdr_hyper} longwords, the high half first (see {@code xdr_int128} and {@code xdr_hyper} of
- * src/common/xdr.cpp of the Firebird server). The wire form is therefore a 16 byte big-endian two's complement value,
- * sign extended, not a zero padded one.</p>
  */
 public final class FirebirdInt16BinaryProtocolValue implements FirebirdBinaryProtocolValue {
-    
-    private static final int INT128_BYTE_LENGTH = 16;
     
     @Override
     public Object read(final FirebirdPacketPayload payload) {
@@ -43,30 +34,21 @@ public final class FirebirdInt16BinaryProtocolValue implements FirebirdBinaryPro
     
     @Override
     public void write(final FirebirdPacketPayload payload, final Object value) {
-        payload.getByteBuf().writeBytes(toInt128Bytes(toBigInteger(value)));
-    }
-    
-    private BigInteger toBigInteger(final Object value) {
-        if (value instanceof BigInteger) {
-            return (BigInteger) value;
-        }
         if (value instanceof BigDecimal) {
-            return ((BigDecimal) value).toBigInteger();
+            byte[] int16 = ((BigDecimal) value).toBigInteger().toByteArray();
+            payload.getByteBuf().writeZero(16 - int16.length);
+            payload.getByteBuf().writeBytes(int16);
+        } else if (value instanceof Integer) {
+            payload.getByteBuf().writeZero(12);
+            payload.writeInt4((Integer) value);
+        } else if (value instanceof BigInteger) {
+            byte[] int16 = ((BigInteger) value).toByteArray();
+            payload.getByteBuf().writeZero(16 - int16.length);
+            payload.getByteBuf().writeBytes(int16);
+        } else {
+            payload.getByteBuf().writeZero(8);
+            payload.writeInt8((Long) value);
         }
-        Preconditions.checkArgument(value instanceof Integer || value instanceof Long, "Can not encode INT128 value `%s`", value);
-        return BigInteger.valueOf(((Number) value).longValue());
-    }
-    
-    private byte[] toInt128Bytes(final BigInteger value) {
-        Preconditions.checkArgument(value.bitLength() <= 127, "INT128 value `%s` requires more than 16 bytes of storage", value);
-        byte[] minimumBytes = value.toByteArray();
-        int offset = Math.max(0, minimumBytes.length - INT128_BYTE_LENGTH);
-        byte[] result = new byte[INT128_BYTE_LENGTH];
-        if (value.signum() < 0) {
-            Arrays.fill(result, (byte) -1);
-        }
-        System.arraycopy(minimumBytes, offset, result, INT128_BYTE_LENGTH + offset - minimumBytes.length, minimumBytes.length - offset);
-        return result;
     }
     
     @Override

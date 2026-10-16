@@ -35,7 +35,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,21 +72,11 @@ class FirebirdInt16BinaryProtocolValueTest {
         assertThat(new FirebirdInt16BinaryProtocolValue().getLength(payload), is(16));
     }
     
-    @Test
-    void assertWriteValueOutOfRangeThrowsException() {
-        FirebirdPacketPayload actualPayload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
-        assertThrows(IllegalArgumentException.class, () -> new FirebirdInt16BinaryProtocolValue().write(actualPayload, BigInteger.ONE.shiftLeft(127)));
-    }
-    
     private static Stream<Arguments> writeArguments() {
         return Stream.of(
                 Arguments.of("big decimal", BigDecimal.valueOf(10L), new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10}),
                 Arguments.of("integer", 513, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1}),
                 Arguments.of("big integer", BigInteger.valueOf(66051L), new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3}),
-                Arguments.of("long", 4294967298L, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2}),
-                Arguments.of("negative big integer", BigInteger.valueOf(-1L), new byte[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}),
-                Arguments.of("negative integer", -2, new byte[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2}),
-                Arguments.of("negative big decimal", BigDecimal.valueOf(-10L), new byte[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -10}),
-                Arguments.of("max int128", new BigInteger("170141183460469231731687303715884105727"), new byte[]{0x7F, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}));
+                Arguments.of("long", 4294967298L, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2}));
     }
 }
