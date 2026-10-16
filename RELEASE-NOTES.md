@@ -157,6 +157,7 @@
 1. SQL Parser: Support Oracle pseudo-record collection index parsing - [#39566](https://github.com/apache/shardingsphere/pull/39566)
 1. SQL Parser: Support Oracle DML error logging parser model and binder - [#39711](https://github.com/apache/shardingsphere/pull/39711)
 1. SQL Parser: Support Oracle PL/SQL syntax parsing and binding - [#39723](https://github.com/apache/shardingsphere/pull/39723)
+1. SQL Parser: Enhance Oracle PL/SQL and database-link parsing and SQL binding - [#40207](https://github.com/apache/shardingsphere/pull/40207)
 1. SQL Parser: Support scalar expressions in Oracle `IN` predicates - [#39876](https://github.com/apache/shardingsphere/pull/39876)
 1. SQL Parser: Support Oracle `ORDER BY` after `FOR UPDATE` and `HAVING` without `GROUP BY` - [#39877](https://github.com/apache/shardingsphere/pull/39877)
 1. SQL Parser: Support Oracle parenthesized `WITH` queries and qualified PL/SQL collection types - [#39914](https://github.com/apache/shardingsphere/pull/39914)
