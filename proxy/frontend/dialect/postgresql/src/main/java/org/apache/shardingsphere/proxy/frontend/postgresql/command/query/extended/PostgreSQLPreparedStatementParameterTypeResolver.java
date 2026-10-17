@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentif
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.In
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -99,30 +101,27 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         }
         ParameterMetaData parameterMetaData = actualPreparedStatement.getParameterMetaData();
         for (int i = 0; i < preparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount(); i++) {
-            if (PostgreSQLBinaryColumnType.UNSPECIFIED == preparedStatement.getParameterTypes().get(i)) {
-                preparedStatement.getParameterTypes().set(i, PostgreSQLBinaryColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1), parameterMetaData.getParameterTypeName(i + 1)));
+            int parameterIndex = preparedStatement.getActualParameterMarkerIndexes().get(i);
+            if (PostgreSQLBinaryColumnType.UNSPECIFIED == preparedStatement.getParameterTypes().get(parameterIndex)) {
+                preparedStatement.getParameterTypes().set(parameterIndex, getParameterType(parameterMetaData, i + 1));
             }
         }
+    }
+    
+    private static PostgreSQLBinaryColumnType getParameterType(final ParameterMetaData parameterMetaData, final int parameterMarkerIndex) throws SQLException {
+        int jdbcType = parameterMetaData.getParameterType(parameterMarkerIndex);
+        String parameterTypeName = parameterMetaData.getParameterTypeName(parameterMarkerIndex);
+        return Types.TIMESTAMP == jdbcType && "timestamptz".equalsIgnoreCase(parameterTypeName)
+                ? PostgreSQLBinaryColumnType.TIMESTAMPTZ
+                : PostgreSQLBinaryColumnType.valueOfJDBCType(jdbcType, parameterTypeName);
     }
     
     private static void resolveInsertParameterTypes(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement, final InsertStatement insertStatement) {
         String logicTableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         ShardingSphereTable table = getTableFromMetaData(connectionSession.getUsedDatabaseName(), insertStatement, logicTableName);
         List<ShardingSphereIdentifier> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
-        int parameterMarkerIndex = 0;
         for (InsertValuesSegment each : insertStatement.getValues()) {
-            for (int i = 0; i < each.getValues().size(); i++) {
-                if (!(each.getValues().get(i) instanceof ParameterMarkerExpressionSegment)) {
-                    continue;
-                }
-                if (PostgreSQLBinaryColumnType.UNSPECIFIED != preparedStatement.getParameterTypes().get(parameterMarkerIndex)) {
-                    parameterMarkerIndex++;
-                    continue;
-                }
-                String columnName = columnNamesOfInsert.get(i).toString();
-                ShardingSpherePreconditions.checkState(table.containsColumn(columnName), () -> new ColumnNotFoundException(logicTableName, columnName));
-                preparedStatement.getParameterTypes().set(parameterMarkerIndex++, PostgreSQLBinaryColumnType.valueOfJDBCType(table.getColumn(columnName).getDataType()));
-            }
+            resolveInsertValuesParameterTypes(preparedStatement, each, logicTableName, table, columnNamesOfInsert);
         }
     }
     
@@ -136,6 +135,23 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         return insertStatement.getColumns().isEmpty()
                 ? table.getColumnNames()
                 : insertStatement.getColumns().stream().map(each -> new ShardingSphereIdentifier(each.getIdentifier().getValue())).collect(Collectors.toList());
+    }
+    
+    private static void resolveInsertValuesParameterTypes(final PostgreSQLServerPreparedStatement preparedStatement, final InsertValuesSegment insertValuesSegment,
+                                                          final String logicTableName, final ShardingSphereTable table, final List<ShardingSphereIdentifier> columnNamesOfInsert) {
+        for (int i = 0; i < insertValuesSegment.getValues().size(); i++) {
+            ExpressionSegment value = insertValuesSegment.getValues().get(i);
+            if (!(value instanceof ParameterMarkerExpressionSegment)) {
+                continue;
+            }
+            int parameterIndex = preparedStatement.getActualParameterMarkerIndexes().get(((ParameterMarkerExpressionSegment) value).getParameterIndex());
+            if (PostgreSQLBinaryColumnType.UNSPECIFIED != preparedStatement.getParameterTypes().get(parameterIndex)) {
+                continue;
+            }
+            String columnName = columnNamesOfInsert.get(i).toString();
+            ShardingSpherePreconditions.checkState(table.containsColumn(columnName), () -> new ColumnNotFoundException(logicTableName, columnName));
+            preparedStatement.getParameterTypes().set(parameterIndex, PostgreSQLBinaryColumnType.valueOfJDBCType(table.getColumn(columnName).getDataType()));
+        }
     }
     
     private static boolean hasUnspecifiedParameterTypes(final PostgreSQLServerPreparedStatement preparedStatement) {

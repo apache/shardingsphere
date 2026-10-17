@@ -18,8 +18,12 @@
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -39,5 +43,22 @@ class PostgreSQLNumericValueParserTest {
     @Test
     void assertParseWithBigDecimal() {
         assertThat(new PostgreSQLNumericValueParser().parse(Long.MAX_VALUE + "0"), is(new BigDecimal(Long.MAX_VALUE + "0")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("parseWithSpecialValueArguments")
+    void assertParseWithSpecialValue(final String name, final String input, final double expected) {
+        assertThat(new PostgreSQLNumericValueParser().parse(input), is(expected));
+    }
+    
+    private static Stream<Arguments> parseWithSpecialValueArguments() {
+        return Stream.of(
+                Arguments.of("NaN", "NaN", Double.NaN),
+                Arguments.of("lower case NaN with spaces", " nan ", Double.NaN),
+                Arguments.of("Infinity", "Infinity", Double.POSITIVE_INFINITY),
+                Arguments.of("signed infinity", "+Infinity", Double.POSITIVE_INFINITY),
+                Arguments.of("short infinity", "inf", Double.POSITIVE_INFINITY),
+                Arguments.of("negative infinity", "-Infinity", Double.NEGATIVE_INFINITY),
+                Arguments.of("short negative infinity", "-inf", Double.NEGATIVE_INFINITY));
     }
 }

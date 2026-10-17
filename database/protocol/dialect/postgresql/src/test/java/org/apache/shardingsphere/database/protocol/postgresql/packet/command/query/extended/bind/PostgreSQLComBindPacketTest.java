@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -28,6 +29,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -128,7 +131,29 @@ class PostgreSQLComBindPacketTest {
                 Arguments.of("single binary format parameter", READ_PARAMETERS_BINARY_PACKET_BYTES,
                         Collections.singletonList(PostgreSQLBinaryColumnType.INT4), Collections.singletonList(10)),
                 Arguments.of("multi format text and binary parameters", READ_PARAMETERS_MIXED_PACKET_BYTES,
-                        Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.INT4), Arrays.asList(12, 3)));
+                        Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.INT4), Arrays.asList(12, 3)),
+                Arguments.of("text bool parameters", createTextParametersPacketBytes("t", "yes", "off"),
+                        Arrays.asList(PostgreSQLBinaryColumnType.BOOL, PostgreSQLBinaryColumnType.BOOL, PostgreSQLBinaryColumnType.BOOL), Arrays.asList(true, true, false)),
+                Arguments.of("text numeric special parameters", createTextParametersPacketBytes("NaN", "-Infinity"),
+                        Arrays.asList(PostgreSQLBinaryColumnType.NUMERIC, PostgreSQLBinaryColumnType.NUMERIC), Arrays.asList(Double.NaN, Double.NEGATIVE_INFINITY)),
+                Arguments.of("text timestamptz parameters with different offsets", createTextParametersPacketBytes("2026-01-01 00:00:00+02", "2026-01-01 00:00:00+00"),
+                        Arrays.asList(PostgreSQLBinaryColumnType.TIMESTAMPTZ, PostgreSQLBinaryColumnType.TIMESTAMPTZ),
+                        Arrays.asList(Timestamp.from(Instant.parse("2025-12-31T22:00:00Z")), Timestamp.from(Instant.parse("2026-01-01T00:00:00Z")))));
+    }
+    
+    private static byte[] createTextParametersPacketBytes(final String... parameterValues) {
+        ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeBytes(NEW_INSTANCE_PACKET_BYTES);
+        byteBuf.writeShort(0);
+        byteBuf.writeShort(parameterValues.length);
+        for (String each : parameterValues) {
+            byte[] parameterValue = each.getBytes(StandardCharsets.UTF_8);
+            byteBuf.writeInt(parameterValue.length);
+            byteBuf.writeBytes(parameterValue);
+        }
+        byte[] result = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(result);
+        return result;
     }
     
     private static Stream<Arguments> assertReadResultFormatsArguments() {

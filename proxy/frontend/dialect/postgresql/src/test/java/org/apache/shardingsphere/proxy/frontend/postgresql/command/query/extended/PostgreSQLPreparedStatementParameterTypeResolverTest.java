@@ -125,6 +125,24 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
     }
     
     @Test
+    void assertResolveInsertParameterTypesBeforeReadingParametersWithReorderedParameters() throws SQLException {
+        String sql = "INSERT INTO foo_tbl (id, name) VALUES (?, ?)";
+        SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
+        SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("postgres");
+        when(database.getDefaultSchemaName()).thenReturn("public");
+        when(database.getSchema("public").getTable("foo_tbl")).thenReturn(new ShardingSphereTable("foo_tbl", Arrays.asList(
+                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(),
+                Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.UNSPECIFIED), Arrays.asList(1, 0));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement);
+        assertThat(preparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLBinaryColumnType.VARCHAR, PostgreSQLBinaryColumnType.INT4)));
+    }
+    
+    @Test
     void assertResolveParameterTypesBeforeReadingParametersWithoutUnspecified() throws SQLException {
         SQLStatement sqlStatement = sqlParserEngine.parse(SQL, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
@@ -166,6 +184,40 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
                 sqlStatementContext, new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.INT4), Arrays.asList(0, 1));
         PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement);
         assertThat(preparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLBinaryColumnType.INT2, PostgreSQLBinaryColumnType.INT4)));
+    }
+    
+    @Test
+    void assertResolveParameterTypesWithPreparedStatementWithReorderedParameters() throws SQLException {
+        SQLStatement sqlStatement = sqlParserEngine.parse("SELECT id FROM foo_tbl WHERE id=? AND k=?", false);
+        SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
+        when(parameterMetaData.getParameterType(1)).thenReturn(Types.SMALLINT);
+        when(parameterMetaData.getParameterTypeName(1)).thenReturn("int2");
+        when(parameterMetaData.getParameterType(2)).thenReturn(Types.INTEGER);
+        when(parameterMetaData.getParameterTypeName(2)).thenReturn("int4");
+        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
+        when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("SELECT id FROM foo_tbl WHERE id=? AND k=?",
+                sqlStatementContext, new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.UNSPECIFIED), Arrays.asList(1, 0));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement);
+        assertThat(preparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.INT2)));
+    }
+    
+    @Test
+    void assertResolveParameterTypesWithPreparedStatementWithTimestampWithTimeZone() throws SQLException {
+        SQLStatement sqlStatement = sqlParserEngine.parse(SQL, false);
+        SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
+        when(parameterMetaData.getParameterType(1)).thenReturn(Types.TIMESTAMP);
+        when(parameterMetaData.getParameterTypeName(1)).thenReturn("timestamptz");
+        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
+        when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                SQL, sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement);
+        assertThat(preparedStatement.getParameterTypes(), is(Collections.singletonList(PostgreSQLBinaryColumnType.TIMESTAMPTZ)));
     }
     
     @Test
