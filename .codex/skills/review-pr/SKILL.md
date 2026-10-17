@@ -46,6 +46,7 @@ incomplete-evidence gaps, and Completion Gate state.
 
 Record each applicable requirement's source, content version, scope and valid exceptions in readable basis source material; a task-only requirement applies only to its authorized task candidate and must not become a universal repository or public-PR rule.
 Reconstruct those requirements from original user requests and maintained contracts before checking the author's proposed solution, distinguishing author choices and unverified assumptions from confirmed constraints.
+Do not promote an unverified inference into a requirement for a new interface, SPI, behavior, or test.
 Preserve later user approvals with their actual provenance instead of treating approval of an implementation choice as proof of an original version requirement or of its necessity.
 Keep effective content and delta identity separate from Git revision lineage so equal local and public candidates retain one code-correctness basis.
 
@@ -272,6 +273,8 @@ unclear.
 
 - First classify the local candidate as standalone or as targeting an existing public PR.
 - For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate. Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.
+- Record the current round's authorized files and change intents separately from the full cumulative task-owned candidate and affected behavior and contracts to review.
+  A narrow fix authorization limits writes without shrinking that review scope or treating earlier task-owned changes as unrelated existing code.
 - For a local candidate targeting an existing PR, use the latest public PR head plus authorized local commits, index changes, and working-tree changes as the effective candidate. Verify with read-only Git that local `HEAD` equals or descends from the public head; if that relationship cannot be established, record the unavailable lineage as an incomplete gap, and if the refs prove divergence, resolve the correct review basis before selecting a verdict.
 - Review a PR-backed local candidate from the public PR merge-base through the working tree, use the union of GitHub files and the authorized local delta, and exclude unrelated local changes.
 - Apply Code Correctness Review through the canonical assessment, including the same proof and completion gates, triggered high-risk criteria, convergence loop, and Formal Decision Contract.
@@ -280,7 +283,8 @@ unclear.
 
 ## Multi-Round and Challenged Findings
 
-Read [review-corrections.md](references/review-corrections.md) for previous feedback, finding-fix commits, or challenged findings. Re-evaluate the latest head, test prior findings against challenger evidence, withdraw unsupported blockers, and classify later findings under that reference.
+Read [review-corrections.md](references/review-corrections.md) for previous feedback, finding-fix commits, challenged findings, or a disputed overall readiness conclusion.
+Re-evaluate the latest head, test prior findings against challenger evidence, withdraw unsupported blockers, and classify later findings under that reference.
 
 ## Output Contract
 
@@ -325,7 +329,5 @@ Do not force a formal verdict.
 
 ### Correction
 
-Begin with `### Correction`, then `Previous Finding`, `Current Status`
-(`Retained`, `Withdrawn`, or `Changed to Review Incomplete`), and `Reason`.
-Follow with the applicable current result while keeping exactly one formal
-`Review Result` line when a formal result is requested.
+Begin with `### Correction`, then `Previous Finding or Conclusion`, `Current Status` (`Retained`, `Withdrawn`, or `Changed to Review Incomplete`), and `Reason`.
+Follow with the applicable current result while keeping exactly one formal `Review Result` line when a formal result is requested.
