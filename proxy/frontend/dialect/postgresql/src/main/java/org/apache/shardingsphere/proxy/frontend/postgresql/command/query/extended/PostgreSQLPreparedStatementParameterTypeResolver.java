@@ -38,7 +38,9 @@ import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,10 +50,14 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLPreparedStatementParameterTypeResolver {
     
+    private static final Collection<Integer> AMBIGUOUS_COLUMN_JDBC_TYPES = new HashSet<>(Arrays.asList(Types.OTHER, Types.TIME, Types.TIMESTAMP, Types.DOUBLE, Types.ARRAY));
+    
     /**
      * Resolve unspecified parameter types before reading parameter values.
      * Insert statements are resolved by table metadata, other statements are resolved by JDBC metadata without parameters,
      * because parameter values of unspecified types can not be used to route.
+     * Insert parameters of columns whose JDBC type is shared by several PostgreSQL types, such as uuid and jsonb as OTHER or timestamptz as TIMESTAMP,
+     * stay unspecified, so their values are passed to the database as text.
      *
      * @param connectionSession connection session
      * @param preparedStatement prepared statement
@@ -63,10 +69,10 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         }
         SQLStatement sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
-            resolveInsertParameterTypes(connectionSession, preparedStatement, (InsertStatement) sqlStatement);
+            resolveInsertParameterTypes(connectionSession, preparedStatement, (InsertStatement) sqlStatement, false);
             return;
         }
-        try (PreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement, Collections.emptyList())) {
+        try (PreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementMetadataFactory.loadForParameterMetadata(connectionSession, preparedStatement)) {
             resolveParameterTypes(preparedStatement, actualPreparedStatement);
         }
     }
@@ -108,21 +114,32 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         }
     }
     
+    /**
+     * Resolve unspecified parameter types of insert statement by table metadata.
+     *
+     * @param connectionSession connection session
+     * @param preparedStatement prepared statement
+     */
+    public static void resolveInsertParameterTypes(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement) {
+        resolveInsertParameterTypes(connectionSession, preparedStatement, (InsertStatement) preparedStatement.getSqlStatementContext().getSqlStatement(), true);
+    }
+    
+    private static void resolveInsertParameterTypes(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement, final InsertStatement insertStatement,
+                                                    final boolean resolveAmbiguousTypes) {
+        String logicTableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
+        ShardingSphereTable table = getTableFromMetaData(connectionSession.getUsedDatabaseName(), insertStatement, logicTableName);
+        List<ShardingSphereIdentifier> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
+        for (InsertValuesSegment each : insertStatement.getValues()) {
+            resolveInsertValuesParameterTypes(preparedStatement, each, logicTableName, table, columnNamesOfInsert, resolveAmbiguousTypes);
+        }
+    }
+    
     private static PostgreSQLBinaryColumnType getParameterType(final ParameterMetaData parameterMetaData, final int parameterMarkerIndex) throws SQLException {
         int jdbcType = parameterMetaData.getParameterType(parameterMarkerIndex);
         String parameterTypeName = parameterMetaData.getParameterTypeName(parameterMarkerIndex);
         return Types.TIMESTAMP == jdbcType && "timestamptz".equalsIgnoreCase(parameterTypeName)
                 ? PostgreSQLBinaryColumnType.TIMESTAMPTZ
                 : PostgreSQLBinaryColumnType.valueOfJDBCType(jdbcType, parameterTypeName);
-    }
-    
-    private static void resolveInsertParameterTypes(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement, final InsertStatement insertStatement) {
-        String logicTableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
-        ShardingSphereTable table = getTableFromMetaData(connectionSession.getUsedDatabaseName(), insertStatement, logicTableName);
-        List<ShardingSphereIdentifier> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
-        for (InsertValuesSegment each : insertStatement.getValues()) {
-            resolveInsertValuesParameterTypes(preparedStatement, each, logicTableName, table, columnNamesOfInsert);
-        }
     }
     
     private static ShardingSphereTable getTableFromMetaData(final String databaseName, final InsertStatement insertStatement, final String logicTableName) {
@@ -138,7 +155,8 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
     }
     
     private static void resolveInsertValuesParameterTypes(final PostgreSQLServerPreparedStatement preparedStatement, final InsertValuesSegment insertValuesSegment,
-                                                          final String logicTableName, final ShardingSphereTable table, final List<ShardingSphereIdentifier> columnNamesOfInsert) {
+                                                          final String logicTableName, final ShardingSphereTable table, final List<ShardingSphereIdentifier> columnNamesOfInsert,
+                                                          final boolean resolveAmbiguousTypes) {
         for (int i = 0; i < insertValuesSegment.getValues().size(); i++) {
             ExpressionSegment value = insertValuesSegment.getValues().get(i);
             if (!(value instanceof ParameterMarkerExpressionSegment)) {
@@ -150,7 +168,10 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
             }
             String columnName = columnNamesOfInsert.get(i).toString();
             ShardingSpherePreconditions.checkState(table.containsColumn(columnName), () -> new ColumnNotFoundException(logicTableName, columnName));
-            preparedStatement.getParameterTypes().set(parameterIndex, PostgreSQLBinaryColumnType.valueOfJDBCType(table.getColumn(columnName).getDataType()));
+            int columnType = table.getColumn(columnName).getDataType();
+            if (resolveAmbiguousTypes || !AMBIGUOUS_COLUMN_JDBC_TYPES.contains(columnType)) {
+                preparedStatement.getParameterTypes().set(parameterIndex, PostgreSQLBinaryColumnType.valueOfJDBCType(columnType));
+            }
         }
     }
     

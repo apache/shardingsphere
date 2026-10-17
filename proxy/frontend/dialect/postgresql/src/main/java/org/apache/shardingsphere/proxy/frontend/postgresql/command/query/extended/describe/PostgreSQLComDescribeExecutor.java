@@ -119,7 +119,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         preparedStatement.setRowDescription(returningSegment.isPresent()
                 ? describeReturning(returningSegment.get(), table, preparedStatement)
                 : PostgreSQLNoDataPacket.getInstance());
-        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement);
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveInsertParameterTypes(connectionSession, preparedStatement);
     }
     
     private ShardingSphereTable getTableFromMetaData(final String databaseName, final InsertStatement insertStatement, final String logicTableName) {
