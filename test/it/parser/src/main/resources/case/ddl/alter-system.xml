@@ -46,4 +46,6 @@
     <alter-system sql-case-id="alter_system_set_parameter_recyclebin_scope" />
     <alter-system sql-case-id="alter_system_set_events1" />
     <alter-system sql-case-id="alter_system_set_events2" />
+    <postgresql-alter-system sql-case-id="alter_system_set_pg" />
+    <postgresql-alter-system sql-case-id="alter_system_reset_pg" />
 </sql-parser-test-cases>

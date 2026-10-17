@@ -22,7 +22,7 @@ import DDLStatement;
 options {tokenVocab = ModeLexer;}
 
 grant
-    : GRANT (privilegeClause | roleClause)
+    : GRANT (privilegeClause | grantRoleClause)
     ;
 
 revoke
@@ -30,7 +30,7 @@ revoke
     ;
 
 optionForClause
-    : (GRANT | ADMIN) OPTION FOR
+    : (GRANT | ADMIN | colId) OPTION FOR
     ;
 
 createUser

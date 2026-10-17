@@ -127,7 +127,7 @@ columnElem
     ;
 
 dropDatabase
-    : DROP DATABASE ifExists? name
+    : DROP DATABASE ifExists? name (WITH? LP_ FORCE (COMMA_ FORCE)* RP_)?
     ;
 
 dropGroup
@@ -404,7 +404,7 @@ alterTableAction
     | SET (LOGGED | UNLOGGED)
     | SET LP_ (storageParameterWithValue) (COMMA_ storageParameterWithValue)* RP_
     | SET LP_ (storageParameter) (COMMA_ storageParameter)* RP_
-    | RESET LP_ storageParameterWithValue (COMMA_ storageParameterWithValue)* RP_
+    | RESET reloptions
     | INHERIT tableName
     | NO INHERIT tableName
     | OF dataTypeName
@@ -431,7 +431,7 @@ modifyColumnSpecification
     | modifyColumn DROP IDENTITY ifExists?
     | modifyColumn SET STATISTICS NUMBER_
     | modifyColumn SET LP_ attributeOptions RP_
-    | modifyColumn RESET LP_ attributeOptions RP_
+    | modifyColumn RESET reloptions
     | modifyColumn SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN)
     ;
 
@@ -660,8 +660,17 @@ alterOperatorFamily
     ;
 
 alterOperatorFamilyClauses
-    : (ADD | DROP) opclassItemList
+    : ADD opclassItemList
+    | DROP opclassDropList
     | alterOperatorClassClauses
+    ;
+
+opclassDropList
+    : opclassDrop (COMMA_ opclassDrop)*
+    ;
+
+opclassDrop
+    : (OPERATOR | FUNCTION) NUMBER_ LP_ typeList RP_
     ;
 
 opclassItemList
@@ -841,7 +850,7 @@ alterEventTrigger
 
 alterEventTriggerClause
     : DISABLE
-    | ENABLE (REPLICA | ALWAYS)
+    | ENABLE (REPLICA | ALWAYS)?
     | OWNER TO roleSpec
     | RENAME TO tiggerName
     ;
@@ -1032,7 +1041,8 @@ alterPublication
     ( RENAME TO name
     | OWNER TO roleSpec
     | SET definition
-    | (ADD | SET | DROP) TABLE relationExprList)
+    | (ADD | DROP) publicationObjectList
+    | SET (publicationObjectList | publicationAllObjectList))
     ;
 
 alterRoutine
@@ -1411,9 +1421,27 @@ tableLikeOption
 
 createFunction
     : CREATE (OR REPLACE)? FUNCTION funcName funcArgsWithDefaults
-    ( RETURNS funcReturn createfuncOptList
-    | RETURNS TABLE LP_ tableFuncColumnList RP_ createfuncOptList
-    | createfuncOptList)
+    ( RETURNS funcReturn createfuncOptList?
+    | RETURNS TABLE LP_ tableFuncColumnList RP_ createfuncOptList?
+    | createfuncOptList?) routineBody?
+    ;
+
+routineBody
+    : routineReturnStatement
+    | BEGIN ATOMIC (routineBodyStatement? SEMI_)* END
+    ;
+
+routineBodyStatement
+    : select
+    | insert
+    | update
+    | delete
+    | merge
+    | routineReturnStatement
+    ;
+
+routineReturnStatement
+    : RETURN aExpr
     ;
 
 tableFuncColumnList
@@ -1488,15 +1516,34 @@ createPolicy
     ;
 
 createProcedure
-    : CREATE (OR REPLACE)? PROCEDURE funcName funcArgsWithDefaults createfuncOptList
+    : CREATE (OR REPLACE)? PROCEDURE funcName funcArgsWithDefaults createfuncOptList? routineBody?
     ;
 
 createPublication
-    : CREATE PUBLICATION name publicationForTables?	(WITH definition)?
+    : CREATE PUBLICATION name publicationForTables? (WITH definition)?
     ;
 
 publicationForTables
-    : FOR TABLE relationExprList | FOR ALL TABLES
+    : FOR (publicationObjectList | publicationAllObjectList)
+    ;
+
+publicationObjectList
+    : publicationObject (COMMA_ publicationObject)*
+    ;
+
+publicationObject
+    : TABLE? relationExpr columnNames? (WHERE aExpr)?
+    | TABLES IN SCHEMA (colId | CURRENT_SCHEMA)
+    | CURRENT_SCHEMA
+    ;
+
+publicationAllObjectList
+    : publicationAllObject (COMMA_ publicationAllObject)*
+    ;
+
+publicationAllObject
+    : ALL TABLES (EXCEPT LP_ TABLE relationExpr (COMMA_ TABLE? relationExpr)* RP_)?
+    | ALL SEQUENCES
     ;
 
 createRule
@@ -1592,15 +1639,15 @@ tempOption
     ;
 
 createServer
-    : CREATE SERVER ifNotExists? name (TYPE STRING_)? foreignServerVersion? FOREIGN DATA WRAPPER name createGenericOptions
+    : CREATE SERVER ifNotExists? name (TYPE STRING_)? foreignServerVersion? FOREIGN DATA WRAPPER name createGenericOptions?
     ;
 
 createStatistics
-    : CREATE STATISTICS ifNotExists? anyName optNameList ON exprList FROM fromList
+    : CREATE STATISTICS (ifNotExists anyName | anyName?) optNameList ON exprList FROM fromList
     ;
 
 createSubscription
-    : CREATE SUBSCRIPTION name CONNECTION STRING_ PUBLICATION publicationNameList (WITH definition)?
+    : CREATE SUBSCRIPTION name (CONNECTION STRING_ | SERVER name) PUBLICATION publicationNameList (WITH definition)?
     ;
 
 createTablespace
@@ -1631,7 +1678,7 @@ enumValList
     ;
 
 createUserMapping
-    : CREATE USER MAPPING ifNotExists? FOR authIdent SERVER name createGenericOptions
+    : CREATE USER MAPPING ifNotExists? FOR authIdent SERVER name createGenericOptions?
     ;
 
 discard
@@ -1964,7 +2011,19 @@ grant
     ;
 
 privilegeClause
-    : privilegeTypes ON onObjectClause (FROM | TO) granteeList (WITH GRANT OPTION)?
+    : privilegeTypes ON onObjectClause (FROM | TO) granteeList (WITH GRANT OPTION)? (GRANTED BY roleSpec)?
+    ;
+
+grantRoleClause
+    : privilegeList TO roleList (WITH grantRoleOptionList)? (GRANTED BY roleSpec)?
+    ;
+
+grantRoleOptionList
+    : grantRoleOption (COMMA_ grantRoleOption)*
+    ;
+
+grantRoleOption
+    : colLabel (OPTION | TRUE | FALSE)
     ;
 
 roleClause
@@ -2024,6 +2083,7 @@ privilegeType
     | EXECUTE
     | USAGE
     | ALL PRIVILEGES?
+    | colId
     ;
 
 alterSchema

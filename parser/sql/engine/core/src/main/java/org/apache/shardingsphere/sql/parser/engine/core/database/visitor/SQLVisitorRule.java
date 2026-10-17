@@ -81,6 +81,10 @@ public enum SQLVisitorRule {
     
     ALTER_OPERATOR("AlterOperator", SQLStatementType.DDL),
     
+    ALTER_OPERATOR_CLASS("AlterOperatorClass", SQLStatementType.DDL),
+    
+    ALTER_OPERATOR_FAMILY("AlterOperatorFamily", SQLStatementType.DDL),
+    
     ALTER_PROFILE("AlterProfile", SQLStatementType.DDL),
     
     ALTER_ROLLBACK_SEGMENT("AlterRollbackSegment", SQLStatementType.DDL),
@@ -190,6 +194,26 @@ public enum SQLVisitorRule {
     CREATE_DIRECTORY("CreateDirectory", SQLStatementType.DDL),
     
     ALTER_SERVER("AlterServer", SQLStatementType.DDL),
+    
+    ALTER_EVENT_TRIGGER("AlterEventTrigger", SQLStatementType.DDL),
+    
+    ALTER_LARGE_OBJECT("AlterLargeObject", SQLStatementType.DDL),
+    
+    ALTER_USER_MAPPING("AlterUserMapping", SQLStatementType.DDL),
+    
+    CREATE_SUBSCRIPTION("CreateSubscription", SQLStatementType.DDL),
+    
+    CREATE_TRANSFORM("CreateTransform", SQLStatementType.DDL),
+    
+    CREATE_USER_MAPPING("CreateUserMapping", SQLStatementType.DDL),
+    
+    DROP_USER_MAPPING("DropUserMapping", SQLStatementType.DDL),
+    
+    CREATE_OPERATOR_CLASS("CreateOperatorClass", SQLStatementType.DDL),
+    
+    CREATE_OPERATOR_FAMILY("CreateOperatorFamily", SQLStatementType.DDL),
+    
+    CREATE_STATISTICS("CreateStatistics", SQLStatementType.DDL),
     
     ALTER_STATISTICS("AlterStatistics", SQLStatementType.DDL),
     

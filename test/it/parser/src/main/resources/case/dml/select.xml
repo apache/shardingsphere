@@ -15509,6 +15509,16 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_routine_keywords_identifier_pg">
+        <projections start-index="7" stop-index="20">
+            <column-projection name="atomic" start-index="7" stop-index="12" />
+            <column-projection name="return" start-index="15" stop-index="20" />
+        </projections>
+        <from>
+            <simple-table name="atomic" start-index="27" stop-index="42" alias="return" />
+        </from>
+    </select>
+
     <select sql-case-id="select_cast_tsvector_name_pg">
         <projections start-index="7" stop-index="21">
             <expression-projection text="'foo'::tsvector" start-index="7" stop-index="21">

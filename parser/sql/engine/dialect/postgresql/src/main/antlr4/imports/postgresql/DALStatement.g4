@@ -53,7 +53,7 @@ configurationParameterClause
     ;
 
 resetParameter
-    : RESET (ALL | identifier)
+    : RESET (ALL | varName | TIME ZONE | SESSION AUTHORIZATION)
     ;
 
 explain

@@ -266,4 +266,19 @@
         <table name="t_order" start-index="28" stop-index="34" />
         <column name="order_id" start-index="14" stop-index="21" />
     </revoke>
+
+    <revoke sql-case-id="revoke_maintain_pg">
+        <table name="t" start-index="19" stop-index="19" />
+    </revoke>
+
+    <revoke sql-case-id="revoke_granted_by_pg">
+        <table name="t" start-index="17" stop-index="17" />
+    </revoke>
+    <revoke sql-case-id="revoke_role_inherit_pg" />
+    <revoke sql-case-id="revoke_role_set_grantor_pg" />
+    <revoke sql-case-id="revoke_role_admin_option_control_pg" />
+
+    <revoke sql-case-id="revoke_object_grant_option_control_pg">
+        <table name="t" start-index="34" stop-index="34" />
+    </revoke>
 </sql-parser-test-cases>

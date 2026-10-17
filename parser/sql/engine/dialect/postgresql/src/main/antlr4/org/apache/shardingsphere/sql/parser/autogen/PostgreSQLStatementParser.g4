@@ -156,6 +156,8 @@ execute
     | close
     | cluster
     | alterOperator
+    | alterOperatorClass
+    | alterOperatorFamily
     | createAccessMethod
     | alterPublication
     | createAggregate
@@ -171,6 +173,7 @@ execute
     | createEventTrigger
     | createForeignDataWrapper
     | createForeignTable
+    | createStatistics
     | alterStatistics
     | createGroup
     | alterSubscription
@@ -182,6 +185,16 @@ execute
     | alterTrigger
     | createPublication
     | checkpoint
+    | alterEventTrigger
+    | alterLargeObject
+    | alterSystem
+    | alterUserMapping
+    | createSubscription
+    | createTransform
+    | createUserMapping
+    | dropUserMapping
+    | createOperatorClass
+    | createOperatorFamily
     | emptyStatement
     | open
     ) SEMI_? EOF
