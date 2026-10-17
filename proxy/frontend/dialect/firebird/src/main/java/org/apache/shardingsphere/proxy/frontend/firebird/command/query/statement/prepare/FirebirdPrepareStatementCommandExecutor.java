@@ -89,6 +89,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Co
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -416,7 +417,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             processCustomColumn(null, functionName, expr.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, columnCount);
         } else if (exprSegment instanceof BinaryOperationExpression) {
             String operationName = getOperationName(((BinaryOperationExpression) exprSegment).getOperator());
-            int operationType = getOperationType(((BinaryOperationExpression) exprSegment).getOperator());
+            int operationType = getOperationType((BinaryOperationExpression) exprSegment);
             processCustomColumn(null, operationName, expr.getAlias().orElse(null), operationType, describeColumns, requestedItems, columnCount);
         } else if (exprSegment instanceof LiteralExpressionSegment) {
             Object value = ((LiteralExpressionSegment) exprSegment).getLiterals();
@@ -456,17 +457,84 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         switch (operationType) {
             case "||":
                 return "CONCATENATION";
+            case "+":
+                return "ADD";
+            case "-":
+                return "SUBTRACT";
+            case "*":
+                return "MULTIPLY";
+            case "/":
+                return "DIVIDE";
             default:
                 return operationType;
         }
     }
     
-    private int getOperationType(final String operationType) {
-        switch (operationType) {
-            case "||":
-                return 12;
+    @HighFrequencyInvocation
+    private int getOperationType(final BinaryOperationExpression expr) {
+        if ("||".equals(expr.getOperator())) {
+            return 12;
+        }
+        return Long.SIZE == getArithmeticResultWidth(expr) ? Types.BIGINT : 4;
+    }
+    
+    private int getArithmeticResultWidth(final BinaryOperationExpression expr) {
+        if (!isArithmeticOperator(expr.getOperator())) {
+            return 0;
+        }
+        int leftWidth = getIntegerWidth(expr.getLeft());
+        int rightWidth = getIntegerWidth(expr.getRight());
+        if (0 == leftWidth || 0 == rightWidth) {
+            return 0;
+        }
+        boolean additive = "+".equals(expr.getOperator()) || "-".equals(expr.getOperator());
+        return additive || Integer.SIZE == leftWidth && Integer.SIZE == rightWidth ? Long.SIZE : 0;
+    }
+    
+    private boolean isArithmeticOperator(final String operator) {
+        return "+".equals(operator) || "-".equals(operator) || "*".equals(operator) || "/".equals(operator);
+    }
+    
+    private int getIntegerWidth(final ExpressionSegment expr) {
+        if (expr instanceof LiteralExpressionSegment) {
+            Object value = ((LiteralExpressionSegment) expr).getLiterals();
+            if (value instanceof Integer) {
+                return Integer.SIZE;
+            }
+            return value instanceof Long ? Long.SIZE : 0;
+        }
+        if (expr instanceof BinaryOperationExpression) {
+            return getArithmeticResultWidth((BinaryOperationExpression) expr);
+        }
+        if (expr instanceof ColumnSegment) {
+            ShardingSphereColumn column = findColumn((ColumnSegment) expr);
+            return null == column ? 0 : getIntegerTypeWidth(column.getDataType());
+        }
+        return 0;
+    }
+    
+    @Nullable
+    private ShardingSphereColumn findColumn(final ColumnSegment columnSegment) {
+        ColumnSegmentBoundInfo boundInfo = columnSegment.getColumnBoundInfo();
+        String tableName = boundInfo.getOriginalTable().getValue();
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(connectionSession.getCurrentDatabaseName());
+        ShardingSphereTable table = database.findDefaultSchema().map(optional -> optional.getTable(tableName)).orElse(null);
+        if (null == table && database.containsSchema("system_tables")) {
+            table = database.getSchema("system_tables").getTable(tableName);
+        }
+        return null == table ? null : table.getColumn(boundInfo.getOriginalColumn().getValue());
+    }
+    
+    private int getIntegerTypeWidth(final int dataType) {
+        switch (dataType) {
+            case Types.TINYINT:
+            case Types.SMALLINT:
+            case Types.INTEGER:
+                return Integer.SIZE;
+            case Types.BIGINT:
+                return Long.SIZE;
             default:
-                return 4;
+                return 0;
         }
     }
     

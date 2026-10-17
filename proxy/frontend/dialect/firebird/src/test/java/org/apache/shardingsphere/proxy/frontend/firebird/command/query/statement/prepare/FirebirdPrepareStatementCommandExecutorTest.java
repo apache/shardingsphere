@@ -70,6 +70,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
@@ -154,6 +155,36 @@ class FirebirdPrepareStatementCommandExecutorTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(database), new ResourceMetaData(Collections.emptyMap()), globalRuleMetaData, new ConfigurationProperties(new Properties()));
         return new MetaDataContexts(metaData, new ShardingSphereStatistics());
+    }
+    
+    @Test
+    void assertDescribeArithmeticOfIntegerColumns() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT id + 1, id * 2, id / 2, id || 'x' FROM foo_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.SELECT,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.FIELD,
+                FirebirdSQLInfoPacketType.FIELD,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        FirebirdPrepareStatementReturnPacket actual = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
+        assertThat(actual.getDescribeSelect().size(), is(4));
+        assertArithmeticColumn(actual.getDescribeSelect().get(0), FirebirdBinaryColumnType.INT64, "ADD");
+        assertArithmeticColumn(actual.getDescribeSelect().get(1), FirebirdBinaryColumnType.INT64, "MULTIPLY");
+        assertArithmeticColumn(actual.getDescribeSelect().get(2), FirebirdBinaryColumnType.INT64, "DIVIDE");
+        assertArithmeticColumn(actual.getDescribeSelect().get(3), FirebirdBinaryColumnType.VARYING, "CONCATENATION");
+    }
+    
+    private void assertArithmeticColumn(final FirebirdReturnColumnPacket columnPacket, final FirebirdBinaryColumnType expectedType, final String expectedName) {
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        when(payload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        columnPacket.write(payload);
+        verify(payload).writeInt4LE(expectedType.getValue() + 1);
+        verify(payload).writeBytes(expectedName.getBytes(StandardCharsets.UTF_8));
     }
     
     @Test
