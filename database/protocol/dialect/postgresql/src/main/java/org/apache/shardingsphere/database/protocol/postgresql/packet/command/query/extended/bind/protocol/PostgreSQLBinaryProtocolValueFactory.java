@@ -106,6 +106,7 @@ public final class PostgreSQLBinaryProtocolValueFactory {
     private static void setTimeBinaryProtocolValue() {
         PostgreSQLTimeBinaryProtocolValue binaryProtocolValue = new PostgreSQLTimeBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(PostgreSQLBinaryColumnType.TIMESTAMP, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLBinaryColumnType.TIMESTAMPTZ, binaryProtocolValue);
     }
     
     private static void setInt2ArrayBinaryProtocolValue() {

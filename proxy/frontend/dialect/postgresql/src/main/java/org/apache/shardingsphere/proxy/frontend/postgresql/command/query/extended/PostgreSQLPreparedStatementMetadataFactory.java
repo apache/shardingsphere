@@ -41,6 +41,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +50,19 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLPreparedStatementMetadataFactory {
+    
+    /**
+     * Load actual prepared statement for parameter metadata access.
+     * Result metadata is not checked, because the statement is routed without parameters and may reach more storage units than its execution.
+     *
+     * @param connectionSession connection session
+     * @param preparedStatement prepared statement
+     * @return actual prepared statement
+     * @throws SQLException SQL exception
+     */
+    public static PreparedStatement loadForParameterMetadata(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement) throws SQLException {
+        return load(connectionSession, preparedStatement, Collections.emptyList(), false);
+    }
     
     /**
      * Load actual prepared statement for metadata access.
@@ -60,6 +74,11 @@ public final class PostgreSQLPreparedStatementMetadataFactory {
      * @throws SQLException SQL exception
      */
     public static PreparedStatement load(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement, final List<Object> parameters) throws SQLException {
+        return load(connectionSession, preparedStatement, parameters, true);
+    }
+    
+    private static PreparedStatement load(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement, final List<Object> parameters,
+                                          final boolean checkResultMetadata) throws SQLException {
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), preparedStatement.getHintValueContext())
                 .bind(preparedStatement.getSqlStatementContext().getSqlStatement());
@@ -80,7 +99,7 @@ public final class PostgreSQLPreparedStatementMetadataFactory {
         String sql = executionUnit.getSqlUnit().getSql();
         PreparedStatement result = connections.iterator().next().prepareStatement(sql);
         try {
-            if (executionContext.getExecutionUnits().size() > 1) {
+            if (checkResultMetadata && executionContext.getExecutionUnits().size() > 1) {
                 Optional<DialectJDBCResultMetadataChecker> checker =
                         DatabaseTypedSPILoader.findService(DialectJDBCResultMetadataChecker.class, connectionSession.getProtocolType());
                 if (checker.isPresent()) {

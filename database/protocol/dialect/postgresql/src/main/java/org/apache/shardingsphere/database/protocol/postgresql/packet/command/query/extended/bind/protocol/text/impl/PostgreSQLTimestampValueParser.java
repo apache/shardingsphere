@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.postgresql.jdbc.TimestampUtils;
@@ -24,12 +25,16 @@ import org.postgresql.jdbc.TimestampUtils;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 
 /**
  * Timestamp value parser of PostgreSQL.
  */
+@RequiredArgsConstructor
 public final class PostgreSQLTimestampValueParser implements PostgreSQLTextValueParser<Timestamp> {
     
     private static final DateTimeFormatter POSTGRESQL_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
@@ -40,10 +45,15 @@ public final class PostgreSQLTimestampValueParser implements PostgreSQLTextValue
                     + "[ ]"
                     + "[XXXXX][XXXX][XXX][XX][X]");
     
+    private final boolean withTimeZone;
+    
     @Override
     public Timestamp parse(final String value) {
         try {
-            return Timestamp.valueOf(LocalDateTime.from(POSTGRESQL_DATE_TIME_FORMATTER.parse(value)));
+            TemporalAccessor parsedValue = POSTGRESQL_DATE_TIME_FORMATTER.parse(value);
+            return withTimeZone && parsedValue.isSupported(ChronoField.OFFSET_SECONDS)
+                    ? Timestamp.from(OffsetDateTime.from(parsedValue).toInstant())
+                    : Timestamp.valueOf(LocalDateTime.from(parsedValue));
         } catch (final DateTimeParseException ignored) {
             return fallbackToPostgreSQLTimestampUtils(value);
         }
