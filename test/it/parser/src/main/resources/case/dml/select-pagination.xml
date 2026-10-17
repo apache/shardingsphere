@@ -2182,6 +2182,47 @@
         </limit>
     </select>
 
+    <select sql-case-id="select_pagination_with_cte_where_parameter_offset_and_fetch_firebird" parameters="7, 8, 9">
+        <with start-index="0" stop-index="56">
+            <common-table-expression name="c" start-index="5" stop-index="56">
+                <subquery-expression start-index="5" stop-index="56">
+                    <select>
+                        <projections start-index="18" stop-index="24">
+                            <column-projection name="user_id" start-index="18" stop-index="24" />
+                        </projections>
+                        <from start-index="31" stop-index="37">
+                            <simple-table name="t_order" start-index="31" stop-index="37" />
+                        </from>
+                        <where start-index="39" stop-index="55">
+                            <expr>
+                                <binary-operation-expression start-index="45" stop-index="55">
+                                    <left>
+                                        <column name="user_id" start-index="45" stop-index="51" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="7" start-index="55" stop-index="55" />
+                                        <parameter-marker-expression parameter-index="0" start-index="55" stop-index="55" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <projections start-index="65" stop-index="65">
+            <shorthand-projection start-index="65" stop-index="65" />
+        </projections>
+        <from start-index="72" stop-index="72">
+            <simple-table name="c" start-index="72" stop-index="72" />
+        </from>
+        <limit start-index="74" stop-index="109" literal-start-index="74" literal-stop-index="109">
+            <offset value="8" parameter-index="1" start-index="81" stop-index="81" literal-start-index="81" literal-stop-index="81" />
+            <row-count value="9" parameter-index="2" start-index="99" stop-index="99" literal-start-index="99" literal-stop-index="99" />
+        </limit>
+    </select>
+
     <select sql-case-id="select_limit_offset_doris">
         <from>
             <simple-table name="t_order" start-index="14" stop-index="20" />

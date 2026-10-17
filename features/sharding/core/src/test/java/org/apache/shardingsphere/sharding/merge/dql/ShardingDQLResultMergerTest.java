@@ -100,6 +100,8 @@ class ShardingDQLResultMergerTest {
     
     private final DatabaseType sqlserverDatabaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
     
+    private final DatabaseType firebirdDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
+    
     @Test
     void assertBuildIteratorStreamMergedResult() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
@@ -195,6 +197,31 @@ class ShardingDQLResultMergerTest {
             assertTrue(actual.next());
         }
         assertFalse(actual.next());
+    }
+    
+    @Test
+    void assertBuildIteratorStreamMergedResultWithFirebirdOffsetFetch() throws SQLException {
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(firebirdDatabaseType);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        SelectStatement selectStatement = buildSelectStatement(firebirdDatabaseType);
+        selectStatement = withProjections(selectStatement, new ProjectionsSegment(0, 0));
+        selectStatement = withLimit(selectStatement, new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 2L), new NumberLiteralLimitValueSegment(0, 0, 2L)));
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
+                selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
+        MergedResult actual = resultMerger.merge(createFourQueryResults(), selectStatementContext, createDialectDatabase(firebirdDatabaseType), mock(ConnectionContext.class));
+        assertTrue(actual.next());
+        assertTrue(actual.next());
+        assertFalse(actual.next());
+    }
+    
+    private List<QueryResult> createFourQueryResults() throws SQLException {
+        List<QueryResult> result = new LinkedList<>();
+        for (int i = 0; i < 4; i++) {
+            QueryResult queryResult = createQueryResult();
+            when(queryResult.next()).thenReturn(true, true, false);
+            result.add(queryResult);
+        }
+        return result;
     }
     
     @Test

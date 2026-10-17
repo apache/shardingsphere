@@ -261,11 +261,12 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
+        WithSegment withSegment = null == ctx.withClause() ? null : (WithSegment) visit(ctx.withClause());
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
-        result.addParameterMarkers(getParameterMarkerSegments());
-        if (null != ctx.withClause()) {
-            result = createSelectStatementBuilder(result).with((WithSegment) visit(ctx.withClause())).build();
+        if (null != withSegment) {
+            result = createSelectStatementBuilder(result).with(withSegment).build();
         }
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -656,9 +657,10 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
+        WithSegment withSegment = null == ctx.withClause() ? null : (WithSegment) visit(ctx.withClause());
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
-        if (null != ctx.withClause()) {
-            result = createSelectStatementBuilder(result).with((WithSegment) visit(ctx.withClause())).build();
+        if (null != withSegment) {
+            result = createSelectStatementBuilder(result).with(withSegment).build();
         }
         return result;
     }
