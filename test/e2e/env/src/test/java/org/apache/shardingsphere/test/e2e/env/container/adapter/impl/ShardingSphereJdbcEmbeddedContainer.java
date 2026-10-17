@@ -21,10 +21,15 @@ import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.driver.yaml.YamlJDBCConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.EmbeddedE2EContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 
+import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileWriter;
@@ -61,18 +66,13 @@ public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedE2ECon
     @Override
     public DataSource getTargetDataSource(final String serverLists, final String dataSourceName) {
         String effectiveDataSourceName = Strings.isNullOrEmpty(dataSourceName) ? configPath : dataSourceName;
-        return targetDataSources.computeIfAbsent(effectiveDataSourceName, this::createTargetDataSource);
+        return targetDataSources.computeIfAbsent(effectiveDataSourceName, unused -> createTargetDataSource(serverLists));
     }
     
-    @Override
-    public Collection<DataSource> getTargetDataSources() {
-        return targetDataSources.values();
-    }
-    
-    private DataSource createTargetDataSource(final String dataSourceName) {
+    private DataSource createTargetDataSource(@Nullable final String serverLists) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        result.setJdbcUrl("jdbc:shardingsphere:absolutepath:" + processFile(configPath, storageContainer.getLinkReplacements()));
+        result.setJdbcUrl("jdbc:shardingsphere:absolutepath:" + processFile(configPath, storageContainer.getLinkReplacements(), serverLists));
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         result.setLeakDetectionThreshold(10000L);
@@ -80,11 +80,23 @@ public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedE2ECon
     }
     
     @SneakyThrows(IOException.class)
-    private String processFile(final String filePath, final Map<String, String> replacements) {
+    private String processFile(final String filePath, final Map<String, String> replacements, @Nullable final String serverLists) {
         Path path = Paths.get(filePath);
         String content = new String(Files.readAllBytes(path));
         for (Entry<String, String> entry : replacements.entrySet()) {
             content = content.replace(entry.getKey(), entry.getValue());
+        }
+        if (!Strings.isNullOrEmpty(serverLists)) {
+            YamlJDBCConfiguration config = YamlEngine.unmarshal(content, YamlJDBCConfiguration.class);
+            YamlPersistRepositoryConfiguration repository = new YamlPersistRepositoryConfiguration();
+            repository.setType("ZooKeeper");
+            repository.getProps().setProperty("namespace", "e2e_db");
+            repository.getProps().setProperty("server-lists", serverLists);
+            YamlModeConfiguration modeConfig = new YamlModeConfiguration();
+            modeConfig.setType("Cluster");
+            modeConfig.setRepository(repository);
+            config.setMode(modeConfig);
+            content = YamlEngine.marshal(config);
         }
         File tempFile = File.createTempFile("shardingsphere_e2e_jdbc_tmp_config_", null);
         tempFile.deleteOnExit();
@@ -92,6 +104,11 @@ public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedE2ECon
             writer.write(content);
         }
         return tempFile.getAbsolutePath();
+    }
+    
+    @Override
+    public Collection<DataSource> getTargetDataSources() {
+        return targetDataSources.values();
     }
     
     @Override
