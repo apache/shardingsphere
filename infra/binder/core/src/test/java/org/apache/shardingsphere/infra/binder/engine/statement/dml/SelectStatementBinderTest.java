@@ -279,8 +279,8 @@ class SelectStatementBinderTest {
         withProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("email"))));
         SelectStatement withSelectStatement = SelectStatement.builder().databaseType(databaseType).projections(withProjections)
                 .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).build();
-        CommonTableExpressionSegment commonTableExpressionSegment = new CommonTableExpressionSegment(
-                0, 0, new AliasSegment(0, 0, new IdentifierValue("t_user")), new SubquerySegment(0, 0, withSelectStatement, ""));
+        CommonTableExpressionSegment commonTableExpressionSegment = new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("t_user")),
+                new SubquerySegment(0, 0, withSelectStatement, ""), null);
         WithSegment withSegment = new WithSegment(0, 0, new LinkedList<>(Collections.singleton(commonTableExpressionSegment)), false);
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         projections.getProjections().add(new ShorthandProjectionSegment(0, 0));
@@ -528,7 +528,7 @@ class SelectStatementBinderTest {
     }
     
     private CommonTableExpressionSegment createCommonTableExpression(final String alias, final SelectStatement selectStatement) {
-        return new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue(alias)), new SubquerySegment(0, 0, selectStatement, ""));
+        return new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue(alias)), new SubquerySegment(0, 0, selectStatement, ""), null);
     }
     
     private ProjectionsSegment createOrderProjections() {

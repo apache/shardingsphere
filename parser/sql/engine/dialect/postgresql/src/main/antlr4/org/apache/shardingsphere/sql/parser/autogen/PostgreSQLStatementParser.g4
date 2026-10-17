@@ -29,6 +29,7 @@ execute
     | update
     | delete
     | merge
+    | doStatement
     | createIndex
     | alterIndex
     | dropIndex
@@ -80,6 +81,11 @@ execute
     | createFunction
     | createProcedure
     | createServer
+    | createUserMapping
+    | alterUserMapping
+    | dropUserMapping
+    | createTransform
+    | alterLargeObject
     | createTrigger
     | createView
     | createSequence
@@ -156,6 +162,10 @@ execute
     | close
     | cluster
     | alterOperator
+    | createOperatorClass
+    | alterOperatorClass
+    | createOperatorFamily
+    | alterOperatorFamily
     | createAccessMethod
     | alterPublication
     | createAggregate
@@ -169,11 +179,15 @@ execute
     | reindex
     | securityLabelStmt
     | createEventTrigger
+    | alterEventTrigger
     | createForeignDataWrapper
     | createForeignTable
+    | importForeignSchema
     | alterStatistics
+    | createStatistics
     | createGroup
     | alterSubscription
+    | createSubscription
     | createMaterializedView
     | createOperator
     | alterTextSearchConfiguration

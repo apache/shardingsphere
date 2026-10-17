@@ -212,6 +212,13 @@
     <sql-case id="insert_table_collection_oracle" value="INSERT INTO TABLE(SELECT t.nested_col FROM t_nested t) VALUES (1)" db-types="Oracle" />
     <sql-case id="insert_returning_into_parameter_marker_oracle" value="INSERT INTO t_user (user_id, user_name) VALUES (?, ?) RETURNING user_id INTO ?" db-types="Oracle" />
     <sql-case id="insert_on_conflit_do_update" value="INSERT INTO t_order ( c1, c2, c3 ) VALUES ( ?, now(), ? ) ON CONFLICT ( c1, c3 ) DO UPDATE set c2 = now() WHERE user_id= ?" db-types="PostgreSQL" />
+
+    <sql-case id="insert_default_values_postgresql_regression" value="INSERT INTO foo DEFAULT VALUES" db-types="PostgreSQL" />
+    <sql-case id="insert_parenthesized_select_postgresql_regression" value="INSERT INTO foo (id) (SELECT ?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_set_select_postgresql_regression" value="INSERT INTO foo (id) SELECT ? UNION ALL SELECT ?" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_indirection_parameters_postgresql_regression" value="INSERT INTO foo (items[?], span[?:?]) VALUES (?, ?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_with_returning_postgresql_regression" value="WITH seed(id) AS (SELECT ?) INSERT INTO foo (id) VALUES (?) RETURNING id, ?" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_returning_aliases_postgresql_regression" value="INSERT INTO foo (id) VALUES (?) RETURNING WITH (OLD AS old_row, NEW AS new_row) old_row.id, new_row.id, ?" db-types="PostgreSQL" case-types="Placeholder" />
     <sql-case id="insert_with_schema_database_link_oracle" value="INSERT INTO userinfo.USER_CONSIS_LIST@pjzw (telnum) VALUES (?)" db-types="Oracle" />
     <sql-case id="insert_default_values_returning_pg" value="INSERT INTO foo.t_order AS bar DEFAULT VALUES RETURNING bar.*" db-types="PostgreSQL" />
     <sql-case id="insert_parenthesized_query_pg" value="INSERT INTO t_order (SELECT 1)" db-types="PostgreSQL" />

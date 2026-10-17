@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Te
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -287,9 +288,9 @@ public final class SQLUtils {
             return new TemporalLiteralExpressionSegment(startIndex, stopIndex, ((DateTimeLiteralValue) astNode).getDateTimeValue(), text);
         }
         if (astNode instanceof OtherLiteralValue) {
-            return new CommonExpressionSegment(startIndex, stopIndex, ((OtherLiteralValue) astNode).getValue());
+            return new CommonExpressionSegment(startIndex, stopIndex, ((OtherLiteralValue) astNode).getValue(), Collections.emptyList());
         }
-        return new CommonExpressionSegment(startIndex, stopIndex, text);
+        return new CommonExpressionSegment(startIndex, stopIndex, text, Collections.emptyList());
     }
     
     /**

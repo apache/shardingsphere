@@ -31,6 +31,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -69,6 +71,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,6 +79,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.Mockito.mock;
 
 class ColumnExtractorTest {
@@ -97,6 +101,29 @@ class ColumnExtractorTest {
     @MethodSource("provideExpressions")
     void assertExtract(final String name, final ExpressionSegment expression, final List<String> expectedColumnNames) {
         assertThat(toColumnNames(ColumnExtractor.extract(expression)), is(expectedColumnNames));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideCommonExpressions")
+    void assertExtractFromCommonExpression(final String name, final CommonExpressionSegment expression, final List<ColumnSegment> expected) {
+        Collection<ColumnSegment> actual = ColumnExtractor.extract(expression);
+        assertThat(actual.size(), is(expected.size()));
+        Iterator<ColumnSegment> actualIterator = actual.iterator();
+        for (int index = 0; index < expected.size(); index++) {
+            assertThat(actualIterator.next(), sameInstance(expected.get(index)));
+        }
+    }
+    
+    private static Stream<Arguments> provideCommonExpressions() {
+        ColumnSegment first = createColumnSegment("foo_indexed");
+        ColumnSegment second = createColumnSegment("bar_indexed");
+        CommonExpressionSegment direct = new CommonExpressionSegment(0, 0, "(foo_indexed)[1]", Collections.singleton(first));
+        CommonExpressionSegment inner = new CommonExpressionSegment(0, 0, "bar_indexed || foo_indexed", Arrays.asList(second, first));
+        CommonExpressionSegment nested = new CommonExpressionSegment(0, 0, "(foo_indexed || (bar_indexed || foo_indexed))[1]", Arrays.asList(first, inner));
+        return Stream.of(
+                Arguments.of("Empty common expression", new CommonExpressionSegment(0, 0, "legacy", Collections.emptyList()), Collections.emptyList()),
+                Arguments.of("Common column", direct, Collections.singletonList(first)),
+                Arguments.of("Nested common order and deduplication", nested, Arrays.asList(first, second)));
     }
     
     private static Stream<Arguments> provideSelectStatements() {
@@ -157,6 +184,9 @@ class ColumnExtractorTest {
                 Arguments.of("BetweenExpressionWithNonColumnOperands", createBetweenExpressionWithMixedOperands(),
                         Arrays.asList("foo_between_function_column", "foo_between_binary_left", "bar_between_binary_right")),
                 Arguments.of("ListExpressionWithColumns", createListExpression(), Arrays.asList("foo_list_left", "bar_list_right")),
+                Arguments.of("TypeCastColumn", new TypeCastExpression(0, 0, "", createColumnSegment("foo_cast_column"), "text"), Collections.singletonList("foo_cast_column")),
+                Arguments.of("BinaryOperationWithTypeCastOperand", new BinaryOperationExpression(0, 0, new TypeCastExpression(0, 0, "", createColumnSegment("foo_cast_left"), "integer"),
+                        createColumnSegment("bar_cast_right"), "+", ""), Arrays.asList("bar_cast_right", "foo_cast_left")),
                 Arguments.of("AggregationProjectionWithFunctionParameters", createAggregationProjectionExpression(),
                         Arrays.asList("foo_agg_direct", "foo_agg_func_direct", "foo_agg_func_binary_left", "bar_agg_func_binary_right")),
                 Arguments.of("AggregationProjectionWithWindow", createAggregationProjectionWithWindow(),
@@ -164,6 +194,7 @@ class ColumnExtractorTest {
                                 "foo_agg_window_order_column", "foo_agg_window_order_expr_left", "bar_agg_window_order_expr_right", "foo_agg_window_frame_column")),
                 Arguments.of("FunctionSegmentWithNestedBinary", createFunctionWithColumnAndBinaryParameter(),
                         Arrays.asList("foo_function_direct", "foo_function_binary_left", "bar_function_binary_right")),
+                Arguments.of("FunctionSegmentWithTypeCastParameters", createFunctionWithTypeCastParameters(), Collections.singletonList("foo_cast_column")),
                 Arguments.of("FunctionSegmentWithWindow", createFunctionWithWindow(),
                         Arrays.asList("foo_function_param", "foo_window_partition", "bar_window_partition_func",
                                 "foo_window_order_column", "foo_window_order_expr_left", "bar_window_order_expr_right", "foo_window_frame_column")),
@@ -171,6 +202,13 @@ class ColumnExtractorTest {
                         Arrays.asList("foo_xml_element_param", "bar_xml_element_attr")),
                 Arguments.of("XmlSerializeFunction", createXmlSerializeFunctionSegment("foo_xml_serialize_param", "bar_xml_serialize_attr"),
                         Arrays.asList("foo_xml_serialize_param", "bar_xml_serialize_attr")));
+    }
+    
+    private static FunctionSegment createFunctionWithTypeCastParameters() {
+        FunctionSegment result = new FunctionSegment(0, 0, "FUNC", "func");
+        result.getParameters().add(new TypeCastExpression(0, 0, "", new TypeCastExpression(0, 0, "", createColumnSegment("foo_cast_column"), "integer"), "text"));
+        result.getParameters().add(new TypeCastExpression(0, 0, "", new LiteralExpressionSegment(0, 0, 1), "integer"));
+        return result;
     }
     
     private static Collection<WhereSegment> createWhereSegments() {
@@ -241,7 +279,7 @@ class ColumnExtractorTest {
         JoinTableSegment innerJoin = new JoinTableSegment();
         innerJoin.setLeft(new CollectionTableSegment(createColumnSegment("foo_collection_expr")));
         CommonTableExpressionSegment commonTableExpressionSegment = new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("cte_alias")),
-                new SubquerySegment(0, 0, createSelectStatementWithProjection("foo_cte_subquery_column"), ""));
+                new SubquerySegment(0, 0, createSelectStatementWithProjection("foo_cte_subquery_column"), ""), null);
         innerJoin.setRight(commonTableExpressionSegment);
         innerJoin.setCondition(createBinaryOperation("foo_inner_join_left", "bar_inner_join_right"));
         JoinTableSegment result = new JoinTableSegment();

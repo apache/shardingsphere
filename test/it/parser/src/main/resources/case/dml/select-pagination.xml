@@ -2158,4 +2158,103 @@
 <!--                <simple-table name="t_order" start-index="27" stop-index="33"/>-->
 <!--            </from>-->
 <!--        </select>-->
+
+    <select sql-case-id="select_fetch_implicit_only_postgresql_regression">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="15" stop-index="17" />
+        </from>
+        <order-by start-index="19" stop-index="29">
+            <column-item name="id" order-direction="ASC" start-index="28" stop-index="29" />
+        </order-by>
+        <limit start-index="31" stop-index="50" row-count-implicit="true" />
+    </select>
+    <select sql-case-id="select_fetch_implicit_ties_postgresql_regression">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="15" stop-index="17" />
+        </from>
+        <order-by start-index="19" stop-index="29">
+            <column-item name="id" order-direction="ASC" start-index="28" stop-index="29" />
+        </order-by>
+        <limit start-index="31" stop-index="54" with-ties="true" row-count-implicit="true" />
+    </select>
+    <select sql-case-id="select_offset_fetch_implicit_postgresql_regression" parameters="1">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="15" stop-index="17" />
+        </from>
+        <order-by start-index="19" stop-index="29">
+            <column-item name="id" order-direction="ASC" start-index="28" stop-index="29" />
+        </order-by>
+        <limit start-index="31" stop-index="63" row-count-implicit="true">
+            <offset parameter-index="0" start-index="38" stop-index="38" />
+        </limit>
+    </select>
+    <select sql-case-id="select_fetch_offset_parameters_postgresql_regression" parameters="1, 2">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="15" stop-index="17" />
+        </from>
+        <order-by start-index="19" stop-index="29">
+            <column-item name="id" order-direction="ASC" start-index="28" stop-index="29" />
+        </order-by>
+        <limit start-index="31" stop-index="67">
+            <offset parameter-index="1" start-index="62" stop-index="62" />
+            <row-count parameter-index="0" start-index="43" stop-index="43" />
+        </limit>
+    </select>
+    <select sql-case-id="select_offset_fetch_parameters_postgresql_regression" parameters="1, 2">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="15" stop-index="17" />
+        </from>
+        <order-by start-index="19" stop-index="29">
+            <column-item name="id" order-direction="ASC" start-index="28" stop-index="29" />
+        </order-by>
+        <limit start-index="31" stop-index="71" with-ties="true">
+            <offset parameter-index="0" start-index="38" stop-index="38" />
+            <row-count parameter-index="1" start-index="56" stop-index="56" />
+        </limit>
+    </select>
+    <select sql-case-id="select_fetch_explicit_ties_postgresql_regression">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="15" stop-index="17" />
+        </from>
+        <order-by start-index="19" stop-index="29">
+            <column-item name="id" order-direction="ASC" start-index="28" stop-index="29" />
+        </order-by>
+        <limit start-index="31" stop-index="72" with-ties="true">
+            <offset value="3" start-index="67" stop-index="67" />
+            <row-count value="2" start-index="43" stop-index="43" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_fetch_explicit_one_postgresql_regression">
+        <projections start-index="7" stop-index="8">
+            <column-projection start-index="7" stop-index="8" name="id" />
+        </projections>
+        <from>
+            <simple-table start-index="15" stop-index="17" name="foo" />
+        </from>
+        <order-by start-index="19" stop-index="29">
+            <column-item start-index="28" stop-index="29" name="id" order-direction="ASC" />
+        </order-by>
+        <limit start-index="31" stop-index="52">
+            <row-count start-index="43" stop-index="43" value="1" />
+        </limit>
+    </select>
 </sql-parser-test-cases>

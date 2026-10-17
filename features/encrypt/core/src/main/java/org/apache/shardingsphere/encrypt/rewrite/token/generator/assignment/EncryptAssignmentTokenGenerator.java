@@ -31,6 +31,8 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
@@ -38,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
@@ -54,6 +57,8 @@ import java.util.Optional;
 @AllArgsConstructor
 @Slf4j
 public final class EncryptAssignmentTokenGenerator {
+    
+    private static final String UNSUPPORTED_ASSIGNMENT_MESSAGE = "Encrypted assignments with multiple columns, nested fields or unsupported expressions";
     
     private final EncryptRule rule;
     
@@ -75,14 +80,39 @@ public final class EncryptAssignmentTokenGenerator {
         QuoteCharacter quoteCharacter = databaseTypeRegistry.getDialectDatabaseMetaData().getQuoteCharacter();
         for (ColumnAssignmentSegment each : setAssignmentSegment.getAssignments()) {
             ColumnSegment assignedColumn = getAssignedColumn(each);
+            if (each.getColumns().size() > 1 || null != assignedColumn.getNestedObjectAttributes() && !assignedColumn.getNestedObjectAttributes().isEmpty()) {
+                checkUnsupportedAssignment(each);
+                continue;
+            }
             findEncryptTable(assignedColumn).ifPresent(encryptTable -> {
                 String columnName = assignedColumn.getIdentifier().getValue();
                 if (encryptTable.isEncryptColumn(columnName)) {
+                    ExpressionSegment value = each.getValue();
+                    ShardingSpherePreconditions.checkState(null == value || !isUnsupportedExpression(value), () -> new UnsupportedSQLOperationException(UNSUPPORTED_ASSIGNMENT_MESSAGE));
                     result.addAll(generateAssignmentSQLTokens(schemaName, encryptTable.getTable(), encryptTable.getEncryptColumn(columnName), each, quoteCharacter));
                 }
             });
         }
         return result;
+    }
+    
+    private void checkUnsupportedAssignment(final ColumnAssignmentSegment assignment) {
+        for (ColumnSegment each : assignment.getColumns()) {
+            ShardingSpherePreconditions.checkState(!findEncryptTable(each).map(optional -> optional.isEncryptColumn(each.getIdentifier().getValue())).orElse(false),
+                    () -> new UnsupportedSQLOperationException(UNSUPPORTED_ASSIGNMENT_MESSAGE));
+        }
+    }
+    
+    private boolean isUnsupportedExpression(final ExpressionSegment expression) {
+        if (!(expression instanceof FunctionSegment)) {
+            return !(expression instanceof ParameterMarkerExpressionSegment) && !(expression instanceof LiteralExpressionSegment);
+        }
+        for (ExpressionSegment each : ((FunctionSegment) expression).getParameters()) {
+            if (!(each instanceof ColumnSegment) && isUnsupportedExpression(each)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private Collection<SQLToken> generateAssignmentSQLTokens(final String schemaName, final String tableName, final EncryptColumn encryptColumn,

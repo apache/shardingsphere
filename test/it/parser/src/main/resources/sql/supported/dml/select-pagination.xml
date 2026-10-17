@@ -47,4 +47,13 @@
     <sql-case id="select_limit_with_params_doris" value="SELECT * FROM t_order LIMIT ?, ?" db-types="Doris,Hive,openGauss" />
 <!--    <sql-case id="select_pagination_with_first_and_expr_value" value="SELECT FIRST (1+1) 1 a FROM t_order" db-types="Firebird" />-->
 <!--    <sql-case id="select_pagination_with_skip_and_expr_value" value="SELECT SKIP (2+2) 1 a FROM t_order" db-types="Firebird" />-->
+
+    <sql-case id="select_fetch_implicit_only_postgresql_regression" value="SELECT id FROM foo ORDER BY id FETCH FIRST ROW ONLY" db-types="PostgreSQL" />
+    <sql-case id="select_fetch_implicit_ties_postgresql_regression" value="SELECT id FROM foo ORDER BY id FETCH NEXT ROW WITH TIES" db-types="PostgreSQL" />
+    <sql-case id="select_offset_fetch_implicit_postgresql_regression" value="SELECT id FROM foo ORDER BY id OFFSET ? ROWS FETCH NEXT ROW ONLY" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_fetch_offset_parameters_postgresql_regression" value="SELECT id FROM foo ORDER BY id FETCH FIRST ? ROWS ONLY OFFSET ? ROWS" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_offset_fetch_parameters_postgresql_regression" value="SELECT id FROM foo ORDER BY id OFFSET ? ROWS FETCH NEXT ? ROWS WITH TIES" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_fetch_explicit_ties_postgresql_regression" value="SELECT id FROM foo ORDER BY id FETCH FIRST 2 ROWS WITH TIES OFFSET 3 ROWS" db-types="PostgreSQL" />
+
+    <sql-case id="select_fetch_explicit_one_postgresql_regression" value="SELECT id FROM foo ORDER BY id FETCH FIRST 1 ROW ONLY" db-types="PostgreSQL" case-types="literal" />
 </sql-cases>

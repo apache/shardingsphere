@@ -85,10 +85,18 @@
     <sql-case id="update_with_where_sql92" value="UPDATE t_order SET status = 'x' WHERE order_id = 1" db-types="SQL92" />
     <sql-case id="update_set_default_oracle" value="UPDATE employees SET status = DEFAULT WHERE employee_id = 1" db-types="Oracle" />
     <sql-case id="update_table_collection_oracle" value="UPDATE TABLE(SELECT nested_col FROM t_nested) SET nested_col = DEFAULT" db-types="Oracle" />
+
+    <sql-case id="update_tuple_implicit_postgresql_regression" value="UPDATE foo SET (a, b) = (?, ?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="update_tuple_explicit_postgresql_regression" value="UPDATE foo SET (a, b) = ROW(?, ?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="update_tuple_subquery_postgresql_regression" value="UPDATE foo SET (a, b) = (SELECT ?, ?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="update_current_of_postgresql_regression" value="UPDATE foo SET id = ? WHERE CURRENT OF foo_cursor" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="update_with_returning_postgresql_regression" value="WITH seed(id) AS (SELECT ?) UPDATE foo SET id = ? WHERE id = ? RETURNING id, ?" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="update_with_returning_aliases_postgresql_regression" value="WITH seed(id) AS (SELECT ?) UPDATE foo SET id = ? WHERE id = ? RETURNING WITH (OLD AS old_row, NEW AS new_row) old_row.id, new_row.id, ?" db-types="PostgreSQL" case-types="Placeholder" />
     <sql-case id="update_tuple_literal_pg" value="UPDATE t_order SET (user_id, status) = (1, 'foo')" db-types="PostgreSQL" />
     <sql-case id="update_tuple_subquery_pg" value="UPDATE t_order SET (user_id, status) = (SELECT 1, 'foo')" db-types="PostgreSQL" />
     <sql-case id="update_array_element_pg" value="UPDATE t_order SET status[1] = 'foo'" db-types="PostgreSQL" />
     <sql-case id="update_array_slice_pg" value="UPDATE t_order SET status[1:2][2] = 'foo'" db-types="PostgreSQL" />
     <sql-case id="update_array_parameter_pg" value="UPDATE t_order SET status[$1] = $2" db-types="PostgreSQL" case-types="Placeholder" />
     <sql-case id="update_member_target_pg" value="UPDATE t_order SET status.value = 'foo'" db-types="PostgreSQL" />
+    <sql-case id="update_indirection_parameters_postgresql_regression" value="UPDATE foo SET items[?] = ?, span[?:?] = ?" db-types="PostgreSQL" case-types="Placeholder" />
 </sql-cases>

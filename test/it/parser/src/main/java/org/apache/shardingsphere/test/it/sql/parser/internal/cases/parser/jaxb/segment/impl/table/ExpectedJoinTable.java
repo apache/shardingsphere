@@ -56,6 +56,15 @@ public final class ExpectedJoinTable extends AbstractExpectedDelimiterSQLSegment
     @XmlElement(name = "column")
     private final List<ExpectedColumn> rightQueryPartitionColumns = new LinkedList<>();
     
+    @XmlAttribute(name = "using-alias")
+    private String usingAlias;
+    
+    @XmlAttribute(name = "using-alias-start-index")
+    private Integer usingAliasStartIndex;
+    
+    @XmlAttribute(name = "using-alias-stop-index")
+    private Integer usingAliasStopIndex;
+    
     @XmlAttribute(name = "join-type")
     private String joinType;
     

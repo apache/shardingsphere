@@ -199,7 +199,7 @@ class ConditionValueCompareOperatorGeneratorTest {
     
     @Test
     void assertGenerateConditionValueWithoutNowExpression() {
-        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new CommonExpressionSegment(0, 0, "value"), "=", null);
+        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new CommonExpressionSegment(0, 0, "value", Collections.emptyList()), "=", null);
         assertFalse(generator.generate(rightValue, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
     }
     

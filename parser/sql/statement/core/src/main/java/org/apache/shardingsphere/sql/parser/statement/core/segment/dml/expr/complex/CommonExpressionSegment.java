@@ -19,6 +19,9 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.com
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+
+import java.util.Collection;
 
 /**
  * Common expression segment.
@@ -32,4 +35,6 @@ public final class CommonExpressionSegment implements ComplexExpressionSegment {
     private final int stopIndex;
     
     private final String text;
+    
+    private final Collection<ExpressionSegment> children;
 }
