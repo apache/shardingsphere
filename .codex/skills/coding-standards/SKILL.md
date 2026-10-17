@@ -66,7 +66,8 @@ Read only the references whose conditions below match the affected files and tas
 - Do not invent rules from preference or nearby code, and do not report pre-existing violations outside task scope.
 - Run the applicable formatting and standards checks required by the repository workflow.
 - Do not run `apply`, `format`, or another file-modifying command unless the current task authority and repository rules authorize every possible write.
-- Do not build a complete file inventory or perform physical-line accounting in this mode.
+- Do not build a complete file inventory or count physical lines to report audit coverage in this mode.
+  Measure the length of applicable Java constructs as required by the line-wrapping rules.
 
 This mode constrains the current task; it is not a repository-wide audit.
 
