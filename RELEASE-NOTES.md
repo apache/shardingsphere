@@ -68,6 +68,7 @@
 1. JDBC: Fix statement close invalidating live result sets of other statements on the same connection - [#39503](https://github.com/apache/shardingsphere/pull/39503)
 1. Proxy: Resolve MySQL prepared statement parameter columns for where clause - [#38382](https://github.com/apache/shardingsphere/pull/38382)
 1. Proxy: Resolve PostgreSQL prepared statement parameter types before bind - [#38384](https://github.com/apache/shardingsphere/pull/38384)
+1. Proxy: Exclude derived projections from PostgreSQL prepared statement row descriptions - [#40194](https://github.com/apache/shardingsphere/issues/40194)
 1. Proxy: Resolve openGauss batch bind parameter types before reading values - [#38390](https://github.com/apache/shardingsphere/pull/38390)
 1. Proxy: Fix primary key metadata loss for aliased columns in mysql prepare probe path - [#38517](https://github.com/apache/shardingsphere/pull/38517)
 1. Proxy: Force PostgreSQL backend `client_encoding` to UTF8 and reject non-UTF8 values to keep pgjdbc parameter encoding consistent - [#38645](https://github.com/apache/shardingsphere/pull/38645)
