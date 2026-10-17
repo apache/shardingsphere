@@ -76,7 +76,7 @@ unreservedWord
     | FORTRAN
     | LENGTH
     | MESSAGE_LENGTH | MESSAGE_OCTET_LENGTH | MESSAGE_TEXT | MORE92 | MUMPS
-    | NAME | NULLABLE | NUMBER
+    | NAME | NULLABLE | NULLS | NUMBER
     | ORDER
     | PASCAL | PLI
     | REPEATABLE | RETURNED_LENGTH | RETURNED_OCTET_LENGTH | RETURNED_SQLSTATE | ROW_COUNT
@@ -394,7 +394,7 @@ orderByClause
     ;
 
 orderByItem
-    : (numberLiterals | expr) (ASC | DESC)?
+    : (numberLiterals | expr) (ASC | DESC)? (NULLS FIRST | NULLS LAST)?
     ;
 
 limitClause
