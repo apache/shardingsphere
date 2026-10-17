@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.connector;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -77,7 +78,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
@@ -310,12 +311,16 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     }
     
     private void deferMetaDataRefresh(final Collection<RouteUnit> routeUnits) {
-        String defaultSchemaName = SchemaRefreshUtils.getActualSchemaName(database, queryContext.getSqlStatementContext());
+        String defaultSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(database.getDefaultSchemaName()));
         for (SimpleTableSegment each : queryContext.getSqlStatementContext().getTablesContext().getSimpleTables()) {
             IdentifierValue tableName = each.getTableName().getIdentifier();
-            String schemaName = each.getOwner().map(OwnerSegment::getIdentifier).map(owner -> SchemaRefreshUtils.getActualSchemaName(database, owner)).orElse(defaultSchemaName);
+            String schemaName = getBoundSchemaName(each).map(optional -> SchemaRefreshUtils.getActualSchemaName(database, optional)).orElse(defaultSchemaName);
             databaseConnectionManager.getDeferredMetaDataRefreshContext().add(database.getName(), schemaName, findLogicDataSourceName(routeUnits, tableName), tableName);
         }
+    }
+    
+    private Optional<IdentifierValue> getBoundSchemaName(final SimpleTableSegment tableSegment) {
+        return tableSegment.getTableName().getTableBoundInfo().map(TableSegmentBoundInfo::getOriginalSchema).filter(originalSchema -> !Strings.isNullOrEmpty(originalSchema.getValue()));
     }
     
     private String findLogicDataSourceName(final Collection<RouteUnit> routeUnits, final IdentifierValue tableName) {
