@@ -40,6 +40,8 @@ public final class FirebirdBlrRowMetadata {
     
     private final List<FirebirdBinaryColumnType> columnTypes;
     
+    private final List<Integer> columnCharacterSets;
+    
     /**
      * Parse FirebirdBlrRowMetadata from BLR buffer.
      *
@@ -48,11 +50,12 @@ public final class FirebirdBlrRowMetadata {
      */
     public static FirebirdBlrRowMetadata parseBLR(final ByteBuf blrBuffer) {
         int length = blrBuffer.readableBytes();
-        List<FirebirdBinaryColumnType> columnTypes = parse(blrBuffer);
-        return new FirebirdBlrRowMetadata(blrBuffer, length, columnTypes);
+        List<Integer> columnCharacterSets = new ArrayList<>();
+        List<FirebirdBinaryColumnType> columnTypes = parse(blrBuffer, columnCharacterSets);
+        return new FirebirdBlrRowMetadata(blrBuffer, length, columnTypes, columnCharacterSets);
     }
     
-    private static List<FirebirdBinaryColumnType> parse(final ByteBuf blrBuffer) {
+    private static List<FirebirdBinaryColumnType> parse(final ByteBuf blrBuffer, final List<Integer> columnCharacterSets) {
         ByteBuf buffer = blrBuffer.duplicate();
         if (!buffer.isReadable()) {
             return new ArrayList<>(0);
@@ -65,6 +68,7 @@ public final class FirebirdBlrRowMetadata {
         while (blrType != BlrConstants.blr_end) {
             FirebirdBinaryColumnType type = FirebirdBinaryColumnType.valueOfBLRType(blrType);
             result.add(type);
+            columnCharacterSets.add(FirebirdBinaryColumnType.VARYING == type || FirebirdBinaryColumnType.TEXT == type ? buffer.getUnsignedShortLE(buffer.readerIndex()) : 0);
             buffer.skipBytes(getSkipCount(type) + 2);
             blrType = buffer.readUnsignedByte();
         }

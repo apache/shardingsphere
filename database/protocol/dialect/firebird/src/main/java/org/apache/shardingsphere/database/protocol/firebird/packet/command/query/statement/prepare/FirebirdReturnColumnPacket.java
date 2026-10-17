@@ -26,6 +26,7 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
+import java.sql.Types;
 import java.util.Collection;
 
 /**
@@ -33,6 +34,8 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 public final class FirebirdReturnColumnPacket extends FirebirdPacket {
+    
+    private static final int OCTETS_CHARACTER_SET_ID = 1;
     
     private final Collection<FirebirdSQLInfoPacketType> requestedItems;
     
@@ -70,6 +73,9 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
                     int subType = columnType.getSubtype();
                     if (columnType == FirebirdBinaryColumnType.BLOB && null != blobSubType) {
                         subType = blobSubType;
+                    }
+                    if (FirebirdBinaryColumnType.VARYING == columnType && (Types.VARBINARY == column.getDataType() || Types.BINARY == column.getDataType())) {
+                        subType = OCTETS_CHARACTER_SET_ID;
                     }
                     FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.SUB_TYPE, subType, payload);
                     break;

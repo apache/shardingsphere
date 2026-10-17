@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute;
 
+import io.netty.buffer.ByteBufUtil;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,8 @@ import java.util.List;
  */
 @Getter
 public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket {
+    
+    private static final int OCTETS_CHARACTER_SET_ID = 1;
     
     private final FirebirdCommandPacketType type;
     
@@ -62,7 +66,8 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         type = FirebirdCommandPacketType.valueOf(payload.readInt4());
         statementId = payload.readInt4();
         transactionId = payload.readInt4();
-        parameterTypes = FirebirdBlrRowMetadata.parseBLR(payload.readBuffer()).getColumnTypes();
+        FirebirdBlrRowMetadata parameterMetadata = FirebirdBlrRowMetadata.parseBLR(payload.readBuffer());
+        parameterTypes = parameterMetadata.getColumnTypes();
         message = payload.readInt4();
         int msgCount = payload.readInt4();
         List<Integer> nullBits = new ArrayList<>();
@@ -78,7 +83,8 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
             Integer nullBit = nullBits.get(i / 8);
             if (((nullBit >> i % 8) & 1) == 0) {
                 FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(parameterTypes.get(i));
-                parameterValues.add(binaryProtocolValue.read(payload));
+                boolean octets = isOctets(parameterTypes.get(i), parameterMetadata.getColumnCharacterSets().get(i));
+                parameterValues.add(octets ? ByteBufUtil.getBytes(payload.readBuffer()) : binaryProtocolValue.read(payload));
             } else {
                 parameterValues.add(null);
             }
@@ -100,6 +106,11 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION19.getCode()) {
             maxBlobSize = payload.readInt4Unsigned();
         }
+    }
+    
+    @HighFrequencyInvocation
+    private static boolean isOctets(final FirebirdBinaryColumnType type, final int characterSet) {
+        return FirebirdBinaryColumnType.VARYING == type && OCTETS_CHARACTER_SET_ID == characterSet;
     }
     
     /**

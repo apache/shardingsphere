@@ -45,7 +45,7 @@ class FirebirdBinaryColumnTypeTest {
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.DATE), is(FirebirdBinaryColumnType.DATE));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.TIME), is(FirebirdBinaryColumnType.TIME));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.TIMESTAMP), is(FirebirdBinaryColumnType.TIMESTAMP));
-        assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.BINARY), is(FirebirdBinaryColumnType.TEXT));
+        assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.BINARY), is(FirebirdBinaryColumnType.VARYING));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.VARBINARY), is(FirebirdBinaryColumnType.VARYING));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.LONGVARBINARY), is(FirebirdBinaryColumnType.BLOB));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.NULL), is(FirebirdBinaryColumnType.NULL));

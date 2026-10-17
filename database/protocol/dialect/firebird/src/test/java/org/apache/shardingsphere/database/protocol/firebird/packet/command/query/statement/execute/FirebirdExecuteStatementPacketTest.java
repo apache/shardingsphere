@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -100,6 +101,19 @@ class FirebirdExecuteStatementPacketTest {
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         assertThat(packet.getParameterTypes(), is(Collections.emptyList()));
         assertThat(packet.getParameterValues(), is(Collections.emptyList()));
+    }
+    
+    @Test
+    void assertExecuteStatementPacketWithOctetsParameter() {
+        ByteBuf blr = Unpooled.buffer().writeZero(4).writeShortLE(2)
+                .writeByte(BlrConstants.blr_varying2).writeShortLE(1).writeShortLE(10).writeByte(BlrConstants.blr_short).writeByte(0)
+                .writeByte(BlrConstants.blr_end);
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1);
+        when(payload.readInt1()).thenReturn(0);
+        when(payload.readBuffer()).thenReturn(blr, Unpooled.wrappedBuffer(new byte[]{1, 2, (byte) 0xFF}));
+        FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
+        assertThat(packet.getParameterTypes(), is(Collections.singletonList(FirebirdBinaryColumnType.VARYING)));
+        assertThat(packet.getParameterValues().get(0), is(new byte[]{1, 2, (byte) 0xFF}));
     }
     
     @Test
