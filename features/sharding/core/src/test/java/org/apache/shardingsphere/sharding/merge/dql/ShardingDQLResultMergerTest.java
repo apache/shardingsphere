@@ -45,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
@@ -53,6 +54,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
@@ -99,6 +102,41 @@ class ShardingDQLResultMergerTest {
     private final DatabaseType oracleDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
     
     private final DatabaseType sqlserverDatabaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
+    
+    @Test
+    void assertMergeWithAggregationAliasCollisionAfterShorthand() throws SQLException {
+        ShardingSphereDatabase database = createDatabase();
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("col1"))));
+        ShorthandProjectionSegment shorthand = new ShorthandProjectionSegment(0, 0);
+        for (String each : Arrays.asList("col1", "col2", "col3")) {
+            shorthand.getActualProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue(each))));
+        }
+        projections.getProjections().add(shorthand);
+        projections.getProjections().add(new AggregationDistinctProjectionSegment(0, 0, AggregationType.SUM, "SUM(DISTINCT col2)", "col2"));
+        SelectStatement selectStatement = withProjections(buildSelectStatement(mysqlDatabaseType), projections);
+        selectStatement = withOrderBy(selectStatement, new OrderBySegment(0, 0, Arrays.asList(
+                new ExpressionOrderByItemSegment(0, 0, "SUM(DISTINCT col2)", OrderDirection.DESC, NullsOrderType.FIRST),
+                new IndexOrderByItemSegment(0, 0, 5, OrderDirection.DESC, NullsOrderType.FIRST),
+                new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("col2")), OrderDirection.DESC, NullsOrderType.FIRST))));
+        SelectStatementContext context = new SelectStatementContext(selectStatement,
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
+        context.getProjectionsContext().setAggregationDistinctColumnsRewritten(true);
+        QueryResult queryResult = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(queryResult.getMetaData().getColumnCount()).thenReturn(6);
+        when(queryResult.getMetaData().getColumnLabel(1)).thenReturn("col1");
+        when(queryResult.getMetaData().getColumnLabel(2)).thenReturn("col1");
+        when(queryResult.getMetaData().getColumnLabel(3)).thenReturn("col2");
+        when(queryResult.getMetaData().getColumnLabel(4)).thenReturn("col3");
+        when(queryResult.getMetaData().getColumnLabel(5)).thenReturn("AGGREGATION_DISTINCT_DERIVED_0");
+        when(queryResult.getMetaData().getColumnLabel(6)).thenReturn("AGGREGATION_DISTINCT_DERIVED_0");
+        new ShardingDQLResultMerger(mysqlDatabaseType).merge(Arrays.asList(queryResult, queryResult), context, database, mock(ConnectionContext.class));
+        assertThat(context.getProjectionsContext().getAggregationDistinctProjections().iterator().next().getIndex(), is(6));
+        Iterator<Integer> actualOrderByIndexes = context.getOrderByContext().getItems().stream().map(each -> each.getIndex()).iterator();
+        assertThat(actualOrderByIndexes.next(), is(6));
+        assertThat(actualOrderByIndexes.next(), is(5));
+        assertThat(actualOrderByIndexes.next(), is(3));
+    }
     
     @Test
     void assertBuildIteratorStreamMergedResult() throws SQLException {

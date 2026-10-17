@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.driver.exception.ResultSetClosedException;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
@@ -65,6 +66,8 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     private static final String BINARY = "Binary";
     
+    private final ResultSet firstResultSet;
+    
     private final MergedResult mergeResultSet;
     
     private final DialectResultSetValueConverter dialectResultSetValueConverter;
@@ -74,6 +77,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final SQLStatementContext sqlStatementContext) throws SQLException {
         super(resultSets, statement, sqlStatementContext);
+        firstResultSet = resultSets.get(0);
         this.mergeResultSet = mergeResultSet;
         DatabaseType protocolType = getProtocolType(statement);
         dialectResultSetValueConverter = getDialectResultSetValueConverter(protocolType);
@@ -83,10 +87,24 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement,
                                    final SQLStatementContext sqlStatementContext, final Map<String, Integer> columnLabelAndIndexMap) {
         super(resultSets, statement, sqlStatementContext);
+        firstResultSet = resultSets.get(0);
         this.mergeResultSet = mergeResultSet;
         DatabaseType protocolType = getProtocolType(statement);
         dialectResultSetValueConverter = getDialectResultSetValueConverter(protocolType);
         this.columnLabelAndIndexMap = columnLabelAndIndexMap;
+    }
+    
+    @Override
+    public int findColumn(final String columnLabel) throws SQLException {
+        ShardingSpherePreconditions.checkState(!isClosed() && !firstResultSet.isClosed(), () -> new ResultSetClosedException().toSQLException());
+        super.getType();
+        return getIndexFromColumnLabelAndIndexMap(columnLabel);
+    }
+    
+    private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLException {
+        Integer result = columnLabelAndIndexMap.get(columnLabel);
+        ShardingSpherePreconditions.checkNotNull(result, () -> new SQLFeatureNotSupportedException(String.format("Can not get index from column label `%s`.", columnLabel)));
+        return result;
     }
     
     @Override
@@ -401,12 +419,6 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     @Override
     public <T> T getObject(final String columnLabel, final Class<T> type) throws SQLException {
         return getObject(getIndexFromColumnLabelAndIndexMap(columnLabel), type);
-    }
-    
-    private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLException {
-        Integer result = columnLabelAndIndexMap.get(columnLabel);
-        ShardingSpherePreconditions.checkNotNull(result, () -> new SQLFeatureNotSupportedException(String.format("Can not get index from column label `%s`.", columnLabel)));
-        return result;
     }
     
     private DatabaseType getProtocolType(final Statement statement) {

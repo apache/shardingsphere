@@ -29,21 +29,33 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Aggr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ProjectionsContextTest {
+    
+    @Test
+    void assertColumnLabelAndIndexMapWithExplicitDerivedAlias() {
+        ColumnProjection projection = new ColumnProjection("foo_table", "order_id", "ORDER_BY_DERIVED_9", mock(DatabaseType.class));
+        ProjectionsContext context = new ProjectionsContext(0, 0, false, Collections.singleton(projection));
+        assertThat(context.getColumnLabelAndIndexMap().get("ORDER_BY_DERIVED_9"), is(1));
+    }
     
     @Test
     void assertIsUnqualifiedShorthandProjectionWithEmptyItems() {
@@ -106,6 +118,42 @@ class ProjectionsContextTest {
         List<AggregationProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection())).getAggregationProjections();
         assertTrue(items.contains(projection));
         assertThat(items.size(), is(1));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("aggregationDistinctColumnCounts")
+    void assertGetAggregationDistinctProjectionsByColumnIndex(final String name, final int columnCount) {
+        AggregationDistinctProjection projection = getAggregationDistinctProjection();
+        Collection<Projection> projections = Arrays.asList(getColumnProjection(), getShorthandProjection(), projection, new DerivedProjection("column", new IdentifierValue("derived"), null));
+        ProjectionsContext context = new ProjectionsContext(0, 0, false, projections);
+        Map<Integer, AggregationDistinctProjection> actual = context.getAggregationDistinctProjectionsByColumnIndex(columnCount);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(columnCount), sameInstance(projection));
+    }
+    
+    private static Collection<Arguments> aggregationDistinctColumnCounts() {
+        return Arrays.asList(Arguments.of("one shorthand column", 3), Arguments.of("bound shorthand width", 4), Arguments.of("added shorthand column", 5));
+    }
+    
+    @Test
+    void assertAggregationDistinctColumnIndexBeforeShorthand() {
+        AggregationDistinctProjection projection = getAggregationDistinctProjection();
+        ProjectionsContext context = new ProjectionsContext(0, 0, false, Arrays.asList(projection, getShorthandProjection()));
+        Map<Integer, AggregationDistinctProjection> actual = context.getAggregationDistinctProjectionsByColumnIndex(4);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(1), sameInstance(projection));
+    }
+    
+    @Test
+    void assertAggregationDistinctColumnIndexesWithoutShorthand() {
+        ProjectionsContext context = new ProjectionsContext(0, 0, false, Collections.singleton(getAggregationDistinctProjection()));
+        assertTrue(context.getAggregationDistinctProjectionsByColumnIndex(1).isEmpty());
+    }
+    
+    @Test
+    void assertAggregationDistinctColumnIndexesWithMultipleShorthands() {
+        ProjectionsContext context = new ProjectionsContext(0, 0, false, Arrays.asList(getShorthandProjection(), getAggregationDistinctProjection(), getShorthandProjection()));
+        assertTrue(context.getAggregationDistinctProjectionsByColumnIndex(5).isEmpty());
     }
     
     @Test

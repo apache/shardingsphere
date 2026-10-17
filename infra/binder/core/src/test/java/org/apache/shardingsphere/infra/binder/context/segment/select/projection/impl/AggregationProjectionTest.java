@@ -23,8 +23,11 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Optional;
 
@@ -53,6 +56,20 @@ class AggregationProjectionTest {
     void assertGetColumnLabelWithAliasAndQuote() {
         assertThat(new AggregationProjection(AggregationType.COUNT, new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT( A.\"DIRECTION\" )"),
                 new IdentifierValue("DIRECTION_COUNT", QuoteCharacter.BACK_QUOTE), databaseType).getColumnLabel(), is("DIRECTION_COUNT"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"ORDER_BY_DERIVED_9", "AGGREGATION_DISTINCT_DERIVED_0", "AVG_DERIVED_SUM_0"})
+    void assertGetColumnLabelWithExplicitDerivedAlias(final String alias) {
+        AggregationProjectionSegment segment = new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(user_id)");
+        segment.setAlias(new AliasSegment(0, 0, new IdentifierValue(alias)));
+        assertThat(new AggregationProjection(AggregationType.COUNT, segment, new IdentifierValue(alias), databaseType).getColumnLabel(), is(alias));
+    }
+    
+    @Test
+    void assertGetColumnLabelWithGeneratedDerivedAlias() {
+        AggregationProjectionSegment segment = new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(user_id)");
+        assertThat(new AggregationProjection(AggregationType.COUNT, segment, new IdentifierValue("AVG_DERIVED_COUNT_0"), databaseType).getColumnLabel(), is("COUNT(user_id)"));
     }
     
     @Test
