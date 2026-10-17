@@ -18,9 +18,14 @@
 package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.datetime.DatetimeExpression;
@@ -47,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.MergeWhenAndThenSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.LockSegment;
@@ -72,7 +78,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.In
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -218,7 +226,11 @@ public final class TableExtractor {
         if (tableSegment instanceof SubqueryTableSegment) {
             addTableContext(tableSegment, tableScope);
             TableExtractor tableExtractor = new TableExtractor();
-            tableExtractor.extractTablesFromSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
+            if (null != tableScope && null != tableScope.identifierCasePolicy) {
+                tableExtractor.extractTablesFromNestedStatement(((SubqueryTableSegment) tableSegment).getSubquery().getSelect(), tableScope);
+            } else {
+                tableExtractor.extractTablesFromSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
+            }
             rewriteTables.addAll(tableExtractor.rewriteTables);
             joinTables.addAll(tableExtractor.joinTables);
         }
@@ -475,11 +487,49 @@ public final class TableExtractor {
     }
     
     private void extractTablesFromMerge(final MergeStatement mergeStatement, final TableScope tableScope) {
-        extractTablesFromTableSegment(mergeStatement.getTarget(), tableScope);
-        extractTablesFromTableSegment(mergeStatement.getSource(), tableScope);
+        TableScope mergeScope = null == tableScope ? new TableScope(null, tableContext) : tableScope;
+        extractTablesFromTableSegment(mergeStatement.getTarget(), mergeScope);
+        extractTablesFromTableSegment(mergeStatement.getSource(), mergeScope);
         if (null != mergeStatement.getExpression()) {
-            extractTablesFromExpression(mergeStatement.getExpression().getExpr(), tableScope);
+            extractTablesFromExpression(mergeStatement.getExpression().getExpr(), mergeScope);
         }
+        for (MergeWhenAndThenSegment each : mergeStatement.getWhenAndThens()) {
+            extractTablesFromExpression(each.getAndExpr(), mergeScope);
+            if (null != each.getUpdate()) {
+                extractTablesFromMergeUpdate(each.getUpdate(), mergeScope);
+            }
+            if (null != each.getInsert()) {
+                extractTablesFromMergeInsert(each.getInsert(), mergeScope);
+            }
+        }
+        if (mergeStatement.getReturning().isPresent()) {
+            extractTablesFromMergeReturning(mergeStatement, mergeScope);
+        }
+        if (mergeStatement.getWith().isPresent()) {
+            extractTablesFromCTEs(mergeStatement.getWith().get().getCommonTableExpressions(), mergeScope);
+        }
+    }
+    
+    private void extractTablesFromMergeUpdate(final UpdateStatement updateStatement, final TableScope tableScope) {
+        for (ColumnAssignmentSegment each : updateStatement.getSetAssignment().getAssignments()) {
+            extractTablesFromExpression(each.getValue(), tableScope);
+        }
+    }
+    
+    private void extractTablesFromMergeInsert(final InsertStatement insertStatement, final TableScope tableScope) {
+        for (InsertValuesSegment each : insertStatement.getValues()) {
+            extractTablesFromExpressions(each.getValues(), tableScope);
+        }
+    }
+    
+    private void extractTablesFromMergeReturning(final MergeStatement mergeStatement, final TableScope tableScope) {
+        ReturningSegment returning = mergeStatement.getReturning().get();
+        TableScope returningScope = new TableScope(tableScope, null);
+        returningScope.identifierCasePolicy = IdentifierNormalizeEngine.resolvePolicy(mergeStatement.getDatabaseType(), null, IdentifierScope.TABLE);
+        returningScope.tables.addAll(tableScope.tables);
+        returningScope.aliases.add(null == returning.getOldAlias() ? new IdentifierValue("old") : returning.getOldAlias().getIdentifier());
+        returningScope.aliases.add(null == returning.getNewAlias() ? new IdentifierValue("new") : returning.getNewAlias().getIdentifier());
+        extractTablesFromProjections(returning.getProjections(), returningScope);
     }
     
     /**
@@ -499,39 +549,57 @@ public final class TableExtractor {
     }
     
     private boolean needRewrite(final OwnerSegment owner, final TableScope tableScope) {
-        return null == tableScope || null == tableScope.parent ? needRewrite(owner) : needRewriteFromLocalTableContext(owner.getIdentifier().getValue(), tableScope);
+        return null == tableScope || null == tableScope.parent ? needRewrite(owner) : needRewriteFromLocalTableContext(owner.getIdentifier(), tableScope);
     }
     
-    private boolean needRewriteFromLocalTableContext(final String ownerName, final TableScope scope) {
+    private boolean needRewriteFromLocalTableContext(final IdentifierValue owner, final TableScope scope) {
         for (TableSegment each : scope.tables) {
-            if (isAlias(ownerName, each)) {
+            if (isAlias(owner, each, scope.identifierCasePolicy)) {
                 return false;
             }
         }
         for (TableSegment each : scope.tables) {
-            if (each instanceof SimpleTableSegment && !each.getAliasName().isPresent() && ownerName.equalsIgnoreCase(((SimpleTableSegment) each).getTableName().getIdentifier().getValue())) {
+            if (each instanceof SimpleTableSegment && !each.getAliasName().isPresent()
+                    && matchesIdentifier(owner, ((SimpleTableSegment) each).getTableName().getIdentifier(), scope.identifierCasePolicy)) {
                 return true;
             }
         }
+        if (scope.aliases.stream().anyMatch(each -> matchesIdentifier(owner, each, scope.identifierCasePolicy))) {
+            return false;
+        }
         if (null != scope.parent) {
-            return needRewriteFromLocalTableContext(ownerName, scope.parent);
+            return needRewriteFromLocalTableContext(owner, scope.parent);
         }
         int inheritedTableIndex = 0;
         for (TableSegment each : scope.inheritedTables) {
             if (inheritedTableIndex++ == scope.inheritedTableCount) {
                 break;
             }
-            if (isAlias(ownerName, each)) {
+            if (isAlias(owner, each, scope.identifierCasePolicy)) {
                 return false;
             }
         }
         return true;
     }
     
+    private boolean isAlias(final IdentifierValue owner, final TableSegment tableSegment, @Nullable final IdentifierCasePolicy identifierCasePolicy) {
+        if (null == identifierCasePolicy) {
+            return isAlias(owner.getValue(), tableSegment);
+        }
+        return tableSegment.getAlias().filter(alias -> matchesIdentifier(owner, alias, identifierCasePolicy)).isPresent()
+                || tableSegment instanceof JoinTableSegment && ((JoinTableSegment) tableSegment).getUsingAliasSegment()
+                        .filter(usingAlias -> matchesIdentifier(owner, usingAlias.getIdentifier(), identifierCasePolicy)).isPresent();
+    }
+    
     private boolean isAlias(final String ownerName, final TableSegment tableSegment) {
         return ownerName.equalsIgnoreCase(tableSegment.getAliasName().orElse(null))
                 || tableSegment instanceof JoinTableSegment && ownerName.equalsIgnoreCase(
                         ((JoinTableSegment) tableSegment).getUsingAliasSegment().map(optional -> optional.getIdentifier().getValue()).orElse(null));
+    }
+    
+    private boolean matchesIdentifier(final IdentifierValue owner, final IdentifierValue declared, @Nullable final IdentifierCasePolicy identifierCasePolicy) {
+        return null == identifierCasePolicy ? owner.getValue().equalsIgnoreCase(declared.getValue())
+                : identifierCasePolicy.matches(identifierCasePolicy.normalizeForDefinition(declared.getValue(), declared.getQuoteCharacter()), owner.getValue(), owner.getQuoteCharacter());
     }
     
     /**
@@ -639,10 +707,15 @@ public final class TableExtractor {
         
         private final Collection<TableSegment> tables = new LinkedList<>();
         
+        private final Collection<IdentifierValue> aliases = new LinkedList<>();
+        
+        private IdentifierCasePolicy identifierCasePolicy;
+        
         private TableScope(final TableScope parent, final Collection<TableSegment> inheritedTables) {
             this.parent = parent;
             this.inheritedTables = inheritedTables;
             inheritedTableCount = null == inheritedTables ? 0 : inheritedTables.size();
+            identifierCasePolicy = null == parent ? null : parent.identifierCasePolicy;
         }
     }
 }

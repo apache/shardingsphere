@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
@@ -43,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.MergeWhenAndThenSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
@@ -68,6 +72,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Me
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.test.infra.fixture.database.MockedDatabaseType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -147,7 +152,7 @@ class TableExtractorTest {
         assertThat(tableExtractor.getRewriteTables(), contains(first, second));
     }
     
-    private SubqueryExpressionSegment createSubqueryExpression(final SimpleTableSegment table) {
+    private static SubqueryExpressionSegment createSubqueryExpression(final SimpleTableSegment table) {
         SelectStatement statement = SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).from(table).build();
         return new SubqueryExpressionSegment(new SubquerySegment(0, 0, statement, ""));
     }
@@ -186,23 +191,107 @@ class TableExtractorTest {
     @MethodSource("getMergeArguments")
     void assertExtractTablesFromMerge(final String name, final MergeStatement mergeStatement, final Collection<SimpleTableSegment> expected) {
         tableExtractor.extractTablesFromMerge(mergeStatement);
-        assertThat(tableExtractor.getRewriteTables(), is(expected));
+        assertThat(tableExtractor.getRewriteTables().size(), is(expected.size()));
+        Iterator<SimpleTableSegment> actual = tableExtractor.getRewriteTables().iterator();
+        for (SimpleTableSegment each : expected) {
+            assertTableSegment(actual.next(), each.getStartIndex(), each.getStopIndex(), each.getTableName().getIdentifier().getValue());
+        }
     }
     
     private static Stream<Arguments> getMergeArguments() {
-        SimpleTableSegment target = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_target")));
-        SimpleTableSegment source = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_source")));
         SimpleTableSegment nested = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_nested")));
         SelectStatement nestedSelect = SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).from(nested).build();
         ExistsSubqueryExpression expression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, nestedSelect, ""));
+        SimpleTableSegment updateConditionTable = createScopeTable("foo_update_condition", 100);
+        SimpleTableSegment firstUpdateTable = createScopeTable("foo_first_update", 150);
+        SimpleTableSegment secondUpdateTable = createScopeTable("foo_second_update", 200);
+        MergeWhenAndThenSegment update = new MergeWhenAndThenSegment(0, 0, "WHEN MATCHED AND EXISTS (...) THEN UPDATE SET id = (...), value = (...)");
+        update.setAndExpr(new ExistsSubqueryExpression(0, 0, createSubqueryExpression(updateConditionTable).getSubquery()));
+        update.setUpdate(UpdateStatement.builder().setAssignment(new SetAssignmentSegment(0, 0, Arrays.asList(
+                new ColumnAssignmentSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id"))), createSubqueryExpression(firstUpdateTable)),
+                new ColumnAssignmentSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("value"))), createSubqueryExpression(secondUpdateTable))))).build());
+        SimpleTableSegment insertConditionTable = createScopeTable("foo_insert_condition", 250);
+        SimpleTableSegment firstInsertTable = createScopeTable("foo_first_insert", 300);
+        SimpleTableSegment secondInsertTable = createScopeTable("foo_second_insert", 350);
+        MergeWhenAndThenSegment insert = new MergeWhenAndThenSegment(0, 0, "WHEN NOT MATCHED AND EXISTS (...) THEN INSERT VALUES ((...), (...))");
+        insert.setAndExpr(new ExistsSubqueryExpression(0, 0, createSubqueryExpression(insertConditionTable).getSubquery()));
+        insert.setInsert(InsertStatement.builder().values(Collections.singletonList(new InsertValuesSegment(0, 0,
+                Arrays.asList(createSubqueryExpression(firstInsertTable), createSubqueryExpression(secondInsertTable))))).build());
+        SimpleTableSegment commonTableSource = createScopeTable("foo_common_source", 450);
+        CommonTableExpressionSegment commonTable = new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("foo_source")),
+                createSubqueryExpression(commonTableSource).getSubquery(), null);
+        MergeWhenAndThenSegment delete = new MergeWhenAndThenSegment(0, 0, "WHEN MATCHED AND EXISTS (...) THEN DELETE");
+        delete.setAndExpr(expression);
+        delete.setDelete(DeleteStatement.builder().build());
+        MergeWhenAndThenSegment doNothing = new MergeWhenAndThenSegment(0, 0, "WHEN NOT MATCHED THEN DO NOTHING");
+        ExpressionWithParamsSegment onExpression = new ExpressionWithParamsSegment(0, 0, new LiteralExpressionSegment(0, 0, true));
+        MergeWhenAndThenSegment defaultInsert = new MergeWhenAndThenSegment(0, 0, "WHEN NOT MATCHED THEN INSERT DEFAULT VALUES");
+        defaultInsert.setInsert(InsertStatement.builder().build());
+        SimpleTableSegment innerTarget = createScopeTable("foo_inner_target", 10);
+        MergeStatement innerMerge = MergeStatement.builder().target(innerTarget).source(nested).expression(onExpression).whenAndThens(Collections.singletonList(doNothing)).build();
+        CommonTableExpressionSegment mergingCommonTable = new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("foo_merged")), null, innerMerge);
+        WithSegment mergingWith = new WithSegment(0, 0, Arrays.asList(mergingCommonTable, commonTable));
+        ReturningSegment defaultReturning = new ReturningSegment(0, 0, createScopeProjections(
+                new ColumnProjectionSegment(createScopeColumn("old", 70)), new ColumnProjectionSegment(createScopeColumn("new", 90))));
+        ReturningSegment aliasedReturning = new ReturningSegment(0, 0, createScopeProjections(
+                new ColumnProjectionSegment(createScopeColumn("old_row", 70)), new ColumnProjectionSegment(createScopeColumn("new_row", 90))));
+        aliasedReturning.setOldAlias(new AliasSegment(0, 0, new IdentifierValue("old_row")));
+        aliasedReturning.setNewAlias(new AliasSegment(0, 0, new IdentifierValue("new_row")));
+        SimpleTableSegment shadowingTable = createScopeTable("old_row", 150);
+        SelectStatement shadowingSelect = SelectStatement.builder().from(shadowingTable)
+                .projections(createScopeProjections(new ColumnProjectionSegment(createScopeColumn("old_row", 180)))).build();
+        ReturningSegment shadowingReturning = new ReturningSegment(0, 0, createScopeProjections(
+                new ColumnProjectionSegment(createScopeColumn("old_row", 70)), new SubqueryProjectionSegment(new SubquerySegment(0, 0, shadowingSelect, ""), "")));
+        shadowingReturning.setOldAlias(new AliasSegment(0, 0, new IdentifierValue("old_row")));
+        SimpleTableSegment oldTable = createScopeTable("old", 10);
+        SimpleTableSegment newTable = createScopeTable("new", 30);
+        SelectStatement correlatedSelect = SelectStatement.builder().projections(createScopeProjections(new ColumnProjectionSegment(createScopeColumn("old", 150)))).build();
+        SubqueryTableSegment derivedTable = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, correlatedSelect, ""));
+        derivedTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("x")));
+        SelectStatement derivedSelect = SelectStatement.builder().from(derivedTable).projections(createScopeProjections(new ColumnProjectionSegment(createScopeColumn("x", 180)))).build();
+        ReturningSegment derivedReturning = new ReturningSegment(0, 0,
+                createScopeProjections(new SubqueryProjectionSegment(new SubquerySegment(0, 0, derivedSelect, ""), "")));
+        SimpleTableSegment target = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_target")));
+        SimpleTableSegment source = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_source")));
         MergeStatement mergeStatement = MergeStatement.builder().target(target).source(source).expression(new ExpressionWithParamsSegment(0, 0, expression)).build();
         SimpleTableSegment left = createScopeTable("foo_left", 40);
         SimpleTableSegment right = createScopeTable("bar_right", 60);
         MergeStatement usingAliasMerge = MergeStatement.builder().target(target).source(createUsingAliasJoin(left, right))
                 .expression(new ExpressionWithParamsSegment(20, 32, createScopeColumn("foo_outer", 20))).build();
-        return Stream.of(Arguments.of("ON subquery", mergeStatement, Arrays.asList(target, source, nested)),
+        DatabaseType databaseType = new MockedDatabaseType();
+        SimpleTableSegment returningTable = createScopeTable("foo_returning", 400);
+        ReturningSegment returning = new ReturningSegment(0, 0, createScopeProjections(new SubqueryProjectionSegment(createSubqueryExpression(returningTable).getSubquery(), "")));
+        MergeStatement allClauses = MergeStatement.builder().databaseType(databaseType).target(target).source(source).expression(new ExpressionWithParamsSegment(0, 0, expression))
+                .whenAndThens(Arrays.asList(update, insert)).returning(returning).with(new WithSegment(0, 0, Collections.singletonList(commonTable))).build();
+        ReturningSegment usingAliasReturning = new ReturningSegment(0, 0, createScopeProjections(
+                new ColumnProjectionSegment(createScopeColumn("foo_outer", 70)), new ColumnProjectionSegment(createScopeColumn("old", 90))));
+        return Stream.of(
+                Arguments.of("ON subquery", mergeStatement, Arrays.asList(target, source, nested)),
                 Arguments.of("Source USING alias", usingAliasMerge, Arrays.asList(target, left, right)),
-                Arguments.of("Without ON expression", MergeStatement.builder().target(target).source(source).build(), Arrays.asList(target, source)));
+                Arguments.of("Without ON expression", MergeStatement.builder().target(target).source(source).build(), Arrays.asList(target, source)),
+                Arguments.of("WHEN actions and traversal order", allClauses,
+                        Arrays.asList(target, source, nested, updateConditionTable, firstUpdateTable, secondUpdateTable, insertConditionTable, firstInsertTable, secondInsertTable,
+                                returningTable, commonTableSource)),
+                Arguments.of("DELETE and DO NOTHING", MergeStatement.builder().target(target).source(source).expression(onExpression).whenAndThens(Arrays.asList(delete, doNothing)).build(),
+                        Arrays.asList(target, source, nested)),
+                Arguments.of("INSERT DEFAULT VALUES", MergeStatement.builder().target(target).source(source).expression(onExpression).whenAndThens(Collections.singletonList(defaultInsert)).build(),
+                        Arrays.asList(target, source)),
+                Arguments.of("MERGE and SELECT CTE bodies", MergeStatement.builder().target(target).source(source).expression(onExpression).whenAndThens(Collections.singletonList(doNothing))
+                        .with(mergingWith).build(), Arrays.asList(target, source, innerTarget, nested, commonTableSource)),
+                Arguments.of("Default RETURNING row aliases", MergeStatement.builder().databaseType(databaseType).target(target).source(source).returning(defaultReturning).build(),
+                        Arrays.asList(target, source)),
+                Arguments.of("Explicit RETURNING row aliases", MergeStatement.builder().databaseType(databaseType).target(target).source(source).returning(aliasedReturning).build(),
+                        Arrays.asList(target, source)),
+                Arguments.of("Local table shadows RETURNING row alias", MergeStatement.builder().databaseType(databaseType).target(target).source(source).returning(shadowingReturning).build(),
+                        Arrays.asList(target, source, shadowingTable, createScopeTable("old_row", 180))),
+                Arguments.of("Physical tables mask default RETURNING aliases",
+                        MergeStatement.builder().databaseType(databaseType).target(oldTable).source(newTable).returning(defaultReturning).build(),
+                        Arrays.asList(oldTable, newTable, createScopeTable("old", 70), createScopeTable("new", 90))),
+                Arguments.of("Derived query inherits RETURNING aliases", MergeStatement.builder().databaseType(databaseType).target(target).source(source).returning(derivedReturning).build(),
+                        Arrays.asList(target, source)),
+                Arguments.of("RETURNING respects source USING alias",
+                        MergeStatement.builder().databaseType(databaseType).target(target).source(createUsingAliasJoin(left, right)).returning(usingAliasReturning).build(),
+                        Arrays.asList(target, left, right)));
     }
     
     @Test

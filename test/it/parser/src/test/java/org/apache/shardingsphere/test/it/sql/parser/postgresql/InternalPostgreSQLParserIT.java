@@ -367,6 +367,50 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("getMergeTableAttributeCases")
+    void assertMergeTableAttributes(final String name, final String sql, final Collection<String> expectedTables) {
+        SQLStatement actual = new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        Collection<String> actualTables = actual.getAttributes().getAttribute(TableSQLStatementAttribute.class).getTables().stream()
+                .map(each -> each.getTableName().getIdentifier().getValue()).distinct().sorted().collect(Collectors.toList());
+        assertThat(actualTables, is(expectedTables));
+    }
+    
+    private static Stream<Arguments> getMergeTableAttributeCases() {
+        String merge = "MERGE INTO foo_target USING foo_source ON foo_target.id = foo_source.id ";
+        Collection<String> expectedTables = Arrays.asList("foo_nested", "foo_source", "foo_target");
+        return Stream.of(
+                Arguments.of("when predicate", merge + "WHEN MATCHED AND EXISTS (SELECT 1 FROM foo_nested) THEN DO NOTHING", expectedTables),
+                Arguments.of("update assignment", merge + "WHEN MATCHED THEN UPDATE SET id = (SELECT MAX(id) FROM foo_nested)", expectedTables),
+                Arguments.of("insert values", merge + "WHEN NOT MATCHED THEN INSERT (id) VALUES ((SELECT MAX(id) FROM foo_nested))", expectedTables),
+                Arguments.of("returning projection", merge + "WHEN MATCHED THEN DO NOTHING RETURNING (SELECT MAX(id) FROM foo_nested)", expectedTables),
+                Arguments.of("default returning row aliases", merge + "WHEN MATCHED THEN DO NOTHING RETURNING old.id, new.id, (SELECT MAX(id) FROM foo_nested)", expectedTables),
+                Arguments.of("explicit returning row aliases", merge
+                        + "WHEN MATCHED THEN DO NOTHING RETURNING WITH (OLD AS old_row, NEW AS new_row) old_row.id, new_row.id, (SELECT MAX(id) FROM foo_nested)", expectedTables),
+                Arguments.of("local table shadows returning row alias", merge
+                        + "WHEN MATCHED THEN DO NOTHING RETURNING WITH (OLD AS old_row) old_row.id, (SELECT MAX(old_row.id) FROM old_row)",
+                        Arrays.asList("foo_source", "foo_target", "old_row")),
+                Arguments.of("physical tables mask default returning aliases", "MERGE INTO old USING new ON old.id = new.id WHEN MATCHED THEN DO NOTHING RETURNING old.id, new.id",
+                        Arrays.asList("new", "old")),
+                Arguments.of("quoted table does not mask default returning alias", "MERGE INTO \"OLD\" USING foo_source ON true WHEN MATCHED THEN DO NOTHING RETURNING old.id",
+                        Arrays.asList("OLD", "foo_source")),
+                Arguments.of("quoted local table does not mask returning alias", merge
+                        + "WHEN MATCHED THEN DO NOTHING RETURNING old.id, (SELECT old.id FROM \"OLD\")", Arrays.asList("OLD", "foo_source", "foo_target")),
+                Arguments.of("derived query inherits returning aliases", merge
+                        + "WHEN MATCHED THEN DO NOTHING RETURNING (SELECT x.id FROM LATERAL (SELECT old.id) AS x)", Arrays.asList("foo_source", "foo_target")),
+                Arguments.of("returning respects source using alias", "MERGE INTO foo_target USING foo_left JOIN foo_right USING (id) AS foo_outer ON foo_target.id = foo_outer.id "
+                        + "WHEN MATCHED THEN DO NOTHING RETURNING foo_outer.id, old.id", Arrays.asList("foo_left", "foo_right", "foo_target")),
+                Arguments.of("merge with body", "WITH seed AS (SELECT id FROM foo_nested) MERGE INTO foo_target USING seed ON foo_target.id = seed.id WHEN MATCHED THEN DO NOTHING",
+                        Arrays.asList("foo_nested", "foo_target", "seed")),
+                Arguments.of("merge in with body", "WITH changed AS (" + merge
+                        + "WHEN MATCHED AND EXISTS (SELECT 1 FROM foo_nested) THEN DO NOTHING RETURNING foo_target.id) SELECT 1", expectedTables),
+                Arguments.of("on predicate", "MERGE INTO foo_target USING foo_source ON foo_target.id = foo_source.id AND EXISTS (SELECT 1 FROM foo_nested) WHEN MATCHED THEN DO NOTHING",
+                        expectedTables),
+                Arguments.of("correlated aliases", "MERGE INTO foo_target AS foo_t USING foo_source AS foo_s ON foo_t.id = foo_s.id "
+                        + "WHEN MATCHED AND EXISTS (SELECT 1 FROM foo_nested WHERE foo_nested.id = foo_t.id) THEN UPDATE SET id = foo_s.id", expectedTables))
+                .flatMap(each -> Stream.of("PREPARE foo_stmt AS ", "EXPLAIN ").map(prefix -> Arguments.of(prefix + each.get()[0], prefix + each.get()[1], each.get()[2])));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("getUnsupportedAssignmentTargets")
     void assertUnsupportedAssignmentTarget(final String target) {
         String sql = "UPDATE foo_table SET " + target + " = ?";
