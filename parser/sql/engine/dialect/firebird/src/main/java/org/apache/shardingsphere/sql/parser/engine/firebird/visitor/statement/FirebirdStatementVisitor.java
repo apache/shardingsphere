@@ -24,6 +24,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementBaseVisitor;
@@ -116,6 +117,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -328,6 +330,9 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         if (null != ctx.LIKE()) {
             return createBinaryOperationExpressionFromLike(ctx);
         }
+        if (null != ctx.STARTING() || null != ctx.DISTINCT() || null != ctx.SIMILAR()) {
+            return createBinaryOperationExpressionFromPredicate(ctx);
+        }
         return visit(ctx.bitExpr(0));
     }
     
@@ -365,6 +370,30 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
         boolean not = null != ctx.NOT();
         return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
+    }
+    
+    private BinaryOperationExpression createBinaryOperationExpressionFromPredicate(final PredicateContext ctx) {
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
+        ExpressionSegment right = null == ctx.ESCAPE() ? (ExpressionSegment) visit(ctx.bitExpr(1)) : createEscapedPattern(ctx);
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, getPredicateOperator(ctx), text);
+    }
+    
+    private ListExpression createEscapedPattern(final PredicateContext ctx) {
+        ListExpression result = new ListExpression(ctx.bitExpr(1).start.getStartIndex(), ctx.bitExpr(2).stop.getStopIndex());
+        result.getItems().add((ExpressionSegment) visit(ctx.bitExpr(1)));
+        result.getItems().add((ExpressionSegment) visit(ctx.bitExpr(2)));
+        return result;
+    }
+    
+    private String getPredicateOperator(final PredicateContext ctx) {
+        if (null != ctx.STARTING()) {
+            return null == ctx.NOT() ? "STARTING WITH" : "NOT STARTING WITH";
+        }
+        if (null != ctx.DISTINCT()) {
+            return null == ctx.NOT() ? "IS DISTINCT FROM" : "IS NOT DISTINCT FROM";
+        }
+        return null == ctx.NOT() ? "SIMILAR TO" : "NOT SIMILAR TO";
     }
     
     @Override
@@ -577,18 +606,27 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     @Override
     public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
         OrderDirection orderDirection = null == ctx.DESC() ? OrderDirection.ASC : OrderDirection.DESC;
+        NullsOrderType nullsOrderType = generateNullsOrderType(ctx);
         if (null != ctx.numberLiterals()) {
             return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
-                    SQLUtils.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, null);
+                    SQLUtils.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, nullsOrderType);
         } else {
             ASTNode expr = visitExpr(ctx.expr());
             if (expr instanceof ColumnSegment) {
-                return new ColumnOrderByItemSegment((ColumnSegment) expr, orderDirection, null);
+                return new ColumnOrderByItemSegment((ColumnSegment) expr, orderDirection, nullsOrderType);
             } else {
                 return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(),
-                        ctx.expr().getStop().getStopIndex(), getOriginalText(ctx.expr()), orderDirection, null, (ExpressionSegment) expr);
+                        ctx.expr().getStop().getStopIndex(), getOriginalText(ctx.expr()), orderDirection, nullsOrderType, (ExpressionSegment) expr);
             }
         }
+    }
+    
+    @Nullable
+    private NullsOrderType generateNullsOrderType(final OrderByItemContext ctx) {
+        if (null == ctx.FIRST() && null == ctx.LAST()) {
+            return null;
+        }
+        return null == ctx.FIRST() ? NullsOrderType.LAST : NullsOrderType.FIRST;
     }
     
     @Override

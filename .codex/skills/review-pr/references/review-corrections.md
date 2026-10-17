@@ -17,7 +17,7 @@
 
 # Review Corrections and Multi-Round Review
 
-Read this reference when review feedback already exists, new commits address previous findings, or an author, maintainer, or user challenges a finding.
+Read this reference when review feedback already exists, new commits address previous findings, an author, maintainer, or user challenges a finding, or a previous overall readiness conclusion is challenged or disproved.
 
 ## Multi-Round Review
 
@@ -26,7 +26,8 @@ For standalone local corrections, inherit the main Skill's task baseline, attrib
 Do not expose private review notes, local chat iterations, raw inventory, or internal scratch state.
 
 Before changing an overall conclusion, compare the prior and current effective candidates, requirement sources and versions, applicable exceptions, review focus, evidence identities and finding sets; candidate-type or Git revision labels and a different previous verdict do not establish a changed basis.
-Correct a proven earlier error rather than preserving an unsupported previous verdict for consistency.
+Correct both unsupported findings and an unsupported overall readiness conclusion, including a previous claim that no issues remain.
+Do not preserve an unsupported previous verdict for consistency.
 
 For every prior public finding, classify the latest head as:
 
@@ -57,8 +58,9 @@ Classify every finding first reported after an earlier formal review:
 - `Established by a changed review basis`: a proven applicable requirement, selected focus or decisive fact changed and newly supports a finding that the prior basis did not support.
 
 Prove the classification from the previous and current effective candidates and their applicable requirements, focus and decisive facts.
+Identify a changed requirement or review scope separately and cite the decision establishing it; a later rejection of an earlier approved design does not by itself prove an earlier code defect.
 Do not describe an earlier-candidate problem as newly introduced.
-For a previous-review miss, acknowledge it directly, rerun the full Completion Gate, and return the complete remaining blocker set rather than publishing only the late finding.
+For a previous-review miss, acknowledge it directly and inspect the complete effective candidate for the same omitted structure before rerunning the full Completion Gate and returning the complete remaining blocker set.
 
 ## Challenged Findings
 
@@ -82,7 +84,7 @@ Run the final finding audit again before publishing another blocking result.
 
 When correcting a previously reported conclusion, use the selected mode's output contract and begin with:
 
-- `Previous Finding`
+- `Previous Finding or Conclusion`
 - `Current Status`: `Retained`, `Withdrawn`, or `Changed to Review Incomplete`
 - `Reason`
 

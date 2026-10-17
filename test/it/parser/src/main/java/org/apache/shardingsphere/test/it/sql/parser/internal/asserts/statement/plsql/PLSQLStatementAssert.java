@@ -92,6 +92,9 @@ public final class PLSQLStatementAssert {
         }
         if (actual instanceof OraclePLSQLBlockStatement && expected instanceof OraclePLSQLBlockStatementTestCase) {
             assertProcedureCallNames(assertContext, ((OraclePLSQLBlockStatement) actual).getProcedureCallNames(), ((OraclePLSQLBlockStatementTestCase) expected).getProcedureCalls());
+            assertSQLStatements(assertContext, ((OraclePLSQLBlockStatement) actual).getSqlStatements(), ((OraclePLSQLBlockStatementTestCase) expected).getSqlStatements());
+            TableAssert.assertIs(assertContext, ((OraclePLSQLBlockStatement) actual).getTables(), ((OraclePLSQLBlockStatementTestCase) expected).getTables());
+            ColumnAssert.assertIs(assertContext, ((OraclePLSQLBlockStatement) actual).getColumns(), ((OraclePLSQLBlockStatementTestCase) expected).getColumns());
         }
     }
     

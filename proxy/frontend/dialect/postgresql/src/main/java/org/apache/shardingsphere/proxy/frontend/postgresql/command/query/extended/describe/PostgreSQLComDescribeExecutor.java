@@ -27,6 +27,8 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDLoader;
 import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDResolver;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -213,8 +215,12 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             return;
         }
         Map<Integer, Integer> columnTypeOIDs = ColumnTypeOIDLoader.load(actualPreparedStatement.getConnection(), resultSetMetaData, columnTypeOIDResolver);
-        List<PostgreSQLColumnDescription> columnDescriptions = new ArrayList<>(resultSetMetaData.getColumnCount());
-        for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
+        SQLStatementContext sqlStatementContext = logicPreparedStatement.getSqlStatementContext();
+        int columnCount = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()
+                ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size()
+                : resultSetMetaData.getColumnCount();
+        List<PostgreSQLColumnDescription> columnDescriptions = new ArrayList<>(columnCount);
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             String columnName = resultSetMetaData.getColumnName(columnIndex);
             int columnType = resultSetMetaData.getColumnType(columnIndex);
             int columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
