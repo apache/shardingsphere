@@ -32,10 +32,15 @@ import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.Connecti
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 /**
  * OpenTelemetry JDBC executor callback advice executor.
  */
 public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCExecutorCallbackAdvice<Span> {
+    
+    private static final ThreadLocal<Deque<PendingSpan>> ACTIVE_SPANS = ThreadLocal.withInitial(ArrayDeque::new);
     
     @Override
     protected void recordExecuteInfo(final Span parentSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread,
@@ -53,24 +58,57 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
                 .setAttribute(AttributeConstants.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql())
                 .setAttribute(AttributeConstants.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString())
                 .setAttribute(AttributeConstants.SPAN_KIND, AttributeConstants.SPAN_KIND_CLIENT);
-        target.setAttachment(spanBuilder.startSpan());
+        ACTIVE_SPANS.get().push(new PendingSpan(spanBuilder.startSpan()));
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
-        Span span = (Span) target.getAttachment();
-        if (null != span) {
-            span.setStatus(StatusCode.OK);
+        PendingSpan pending = ACTIVE_SPANS.get().poll();
+        if (null != pending) {
+            Span span = pending.getSpan();
+            if (null != pending.getThrowable()) {
+                span.setStatus(StatusCode.ERROR).recordException(pending.getThrowable());
+            } else {
+                span.setStatus(StatusCode.OK);
+            }
             span.end();
         }
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Throwable throwable, final String pluginType) {
-        Span span = (Span) target.getAttachment();
-        if (null != span) {
-            span.setStatus(StatusCode.ERROR).recordException(throwable);
-            span.end();
+        PendingSpan pending = ACTIVE_SPANS.get().peek();
+        if (null != pending) {
+            pending.setThrowable(throwable);
+        }
+    }
+    
+    /**
+     * A span started for one invocation, together with the throwable recorded by a preceding
+     * {@code onThrowing} call. The advice executor invokes {@code onThrowing} before the
+     * {@code finally} block invokes {@code afterMethod}, so {@code afterMethod} is the single
+     * exit that ends the span and applies its final status.
+     */
+    private static final class PendingSpan {
+        
+        private final Span span;
+        
+        private Throwable throwable;
+        
+        PendingSpan(final Span span) {
+            this.span = span;
+        }
+        
+        Span getSpan() {
+            return span;
+        }
+        
+        Throwable getThrowable() {
+            return throwable;
+        }
+        
+        void setThrowable(final Throwable throwable) {
+            this.throwable = throwable;
         }
     }
 }

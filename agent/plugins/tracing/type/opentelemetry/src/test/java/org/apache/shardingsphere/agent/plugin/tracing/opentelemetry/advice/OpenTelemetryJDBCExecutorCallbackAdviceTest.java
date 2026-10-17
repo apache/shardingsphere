@@ -53,11 +53,15 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -120,7 +124,7 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
         advice.afterMethod(targetObject, null, new Object[]{executionUnit, false}, null, "OpenTelemetry");
-        List<SpanData> spanItems = testExporter.getFinishedSpanItems();
+        Collection<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertCommonData(spanItems, parentSpan.getSpanContext().getSpanId());
         assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.OK));
     }
@@ -131,7 +135,7 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
         advice.afterMethod(targetObject, null, new Object[]{executionUnit, false}, null, "OpenTelemetry");
-        List<SpanData> spanItems = testExporter.getFinishedSpanItems();
+        Collection<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertCommonData(spanItems, SpanId.getInvalid());
     }
     
@@ -140,12 +144,92 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
         advice.onThrowing(targetObject, null, new Object[]{executionUnit, false}, new IOException(""), "OpenTelemetry");
-        List<SpanData> spanItems = testExporter.getFinishedSpanItems();
+        advice.afterMethod(targetObject, null, new Object[]{executionUnit, false}, null, "OpenTelemetry");
+        Collection<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertCommonData(spanItems, parentSpan.getSpanContext().getSpanId());
         assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.ERROR));
     }
     
-    private void assertCommonData(final List<SpanData> spanItems, final String expectedParentSpanId) {
+    @Test
+    void assertNestedFailureDoesNotEndOuterSpan() {
+        OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
+        JDBCExecutionUnit innerExecutionUnit = new JDBCExecutionUnit(
+                new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit("SELECT 2", Collections.emptyList())), null, executionUnit.getStorageResource());
+        advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
+        advice.beforeMethod(targetObject, null, new Object[]{innerExecutionUnit, false}, "OpenTelemetry");
+        advice.onThrowing(targetObject, null, new Object[]{innerExecutionUnit, false}, new IOException("mock"), "OpenTelemetry");
+        advice.afterMethod(targetObject, null, new Object[]{innerExecutionUnit, false}, null, "OpenTelemetry");
+        advice.afterMethod(targetObject, null, new Object[]{executionUnit, false}, null, "OpenTelemetry");
+        Collection<SpanData> spanItems = testExporter.getFinishedSpanItems();
+        assertThat(spanItems.size(), is(2));
+        SpanData actualInnerSpan = findSpanByStatement(spanItems, "SELECT 2");
+        SpanData actualOuterSpan = findSpanByStatement(spanItems, SQL);
+        assertThat(actualInnerSpan.getStatus().getStatusCode(), is(StatusCode.ERROR));
+        assertThat(actualOuterSpan.getStatus().getStatusCode(), is(StatusCode.OK));
+    }
+    
+    @Test
+    void assertConcurrentInvocations() throws InterruptedException {
+        OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
+        JDBCExecutionUnit otherExecutionUnit = new JDBCExecutionUnit(
+                new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit("SELECT 2", Collections.emptyList())), null, executionUnit.getStorageResource());
+        CountDownLatch invocationAStarted = new CountDownLatch(1);
+        CountDownLatch invocationBStarted = new CountDownLatch(1);
+        AtomicReference<Throwable> workerError = new AtomicReference<>();
+        Thread threadA = new Thread(() -> {
+            try {
+                advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
+                invocationAStarted.countDown();
+                if (!invocationBStarted.await(5L, TimeUnit.SECONDS)) {
+                    workerError.set(new AssertionError("timed out waiting for invocation B to start"));
+                    return;
+                }
+                advice.afterMethod(targetObject, null, new Object[]{executionUnit, false}, null, "OpenTelemetry");
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                workerError.set(ex);
+            }
+        });
+        Thread threadB = new Thread(() -> {
+            try {
+                if (!invocationAStarted.await(5L, TimeUnit.SECONDS)) {
+                    workerError.set(new AssertionError("timed out waiting for invocation A to start"));
+                    return;
+                }
+                advice.beforeMethod(targetObject, null, new Object[]{otherExecutionUnit, false}, "OpenTelemetry");
+                invocationBStarted.countDown();
+                advice.onThrowing(targetObject, null, new Object[]{otherExecutionUnit, false}, new IOException("mock"), "OpenTelemetry");
+                advice.afterMethod(targetObject, null, new Object[]{otherExecutionUnit, false}, null, "OpenTelemetry");
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                workerError.set(ex);
+            }
+        });
+        threadA.start();
+        threadB.start();
+        threadA.join(5000L);
+        threadB.join(5000L);
+        assertNull(workerError.get());
+        Collection<SpanData> spanItems = testExporter.getFinishedSpanItems();
+        assertThat(spanItems.size(), is(2));
+        SpanData actualSpanA = findSpanByStatement(spanItems, SQL);
+        SpanData actualSpanB = findSpanByStatement(spanItems, "SELECT 2");
+        assertThat(actualSpanA.getStatus().getStatusCode(), is(StatusCode.OK));
+        assertThat(actualSpanB.getStatus().getStatusCode(), is(StatusCode.ERROR));
+        assertThat(actualSpanA.getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
+        assertThat(actualSpanB.getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
+    }
+    
+    private SpanData findSpanByStatement(final Collection<SpanData> spanItems, final String sql) {
+        for (SpanData each : spanItems) {
+            if (sql.equals(each.getAttributes().get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)))) {
+                return each;
+            }
+        }
+        throw new AssertionError("No span found with statement: " + sql);
+    }
+    
+    private void assertCommonData(final Collection<SpanData> spanItems, final String expectedParentSpanId) {
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.iterator().next();
         assertThat(spanData.getName(), is("/ShardingSphere/executeSQL/"));
