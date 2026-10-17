@@ -92,9 +92,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -387,12 +390,35 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             }
         }
         if (sqlStatementContext instanceof WhereContextAvailable) {
-            Collection<WhereSegment> whereSegments = ((WhereContextAvailable) sqlStatementContext).getWhereSegments();
+            Collection<WhereSegment> whereSegments = getWhereSegments((WhereContextAvailable) sqlStatementContext);
             for (WhereSegment each : whereSegments) {
                 processExpr(each.getExpr(), result);
             }
         }
         return result;
+    }
+    
+    @HighFrequencyInvocation
+    private Collection<WhereSegment> getWhereSegments(final WhereContextAvailable sqlStatementContext) {
+        if (!(sqlStatementContext instanceof SelectStatementContext) || !((SelectStatementContext) sqlStatementContext).isContainsCombine()) {
+            return sqlStatementContext.getWhereSegments();
+        }
+        List<WhereSegment> result = new ArrayList<>(sqlStatementContext.getWhereSegments());
+        appendCombineWhereSegments(((SelectStatementContext) sqlStatementContext).getSqlStatement(), result);
+        result.sort(Comparator.comparingInt(WhereSegment::getStartIndex));
+        return result;
+    }
+    
+    private void appendCombineWhereSegments(final SelectStatement selectStatement, final Collection<WhereSegment> whereSegments) {
+        selectStatement.getCombine().ifPresent(optional -> {
+            appendBranchWhereSegments(optional.getLeft().getSelect(), whereSegments);
+            appendBranchWhereSegments(optional.getRight().getSelect(), whereSegments);
+        });
+    }
+    
+    private void appendBranchWhereSegments(final SelectStatement branch, final Collection<WhereSegment> whereSegments) {
+        branch.getWhere().filter(optional -> !whereSegments.contains(optional)).ifPresent(whereSegments::add);
+        appendCombineWhereSegments(branch, whereSegments);
     }
     
     private boolean processExpr(final ExpressionSegment expr, final Collection<ColumnSegment> affectedColumns) {

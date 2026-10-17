@@ -182,6 +182,44 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeParametersOfUnionWithTwoBranches() throws Exception {
+        FirebirdPrepareStatementReturnPacket actual = describeBind("SELECT id FROM foo_tbl WHERE content = ? UNION ALL SELECT id FROM foo_tbl WHERE id = ?");
+        assertThat(actual.getDescribeBind().size(), is(2));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.BLOB);
+        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.LONG);
+    }
+    
+    @Test
+    void assertDescribeParametersOfUnionWithThreeBranches() throws Exception {
+        String sql = "SELECT id FROM foo_tbl WHERE id = ? UNION ALL SELECT id FROM foo_tbl WHERE content = ? UNION ALL SELECT id FROM foo_tbl WHERE id = ?";
+        FirebirdPrepareStatementReturnPacket actual = describeBind(sql);
+        assertThat(actual.getDescribeBind().size(), is(3));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.BLOB);
+        assertParameterType(actual.getDescribeBind().get(2), FirebirdBinaryColumnType.LONG);
+    }
+    
+    private FirebirdPrepareStatementReturnPacket describeBind(final String sql) throws Exception {
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.BIND,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        return (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
+    }
+    
+    private void assertParameterType(final FirebirdReturnColumnPacket actual, final FirebirdBinaryColumnType expected) {
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actual.write(payload);
+        verify(payload).writeInt4LE(expected.getValue() + 1);
+    }
+    
+    @Test
     void assertExecuteDropDatabaseWithoutNameAndCurrentDatabase() {
         when(packet.getSQL()).thenReturn("DROP DATABASE");
         when(connectionSession.getUsedDatabaseName()).thenReturn(null);
