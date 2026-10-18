@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection.engine;
 
+import com.google.common.collect.Iterables;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.GroupByContext;
@@ -45,7 +46,7 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ProjectionsContextEngineTest {
     
@@ -184,9 +185,9 @@ class ProjectionsContextEngineTest {
         projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));
         OrderByItem orderByItem = new OrderByItem(new ExpressionOrderByItemSegment(0, 0, null, OrderDirection.ASC, NullsOrderType.FIRST));
         ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
-        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.emptyList()),
-                new OrderByContext(Collections.singleton(orderByItem), false)));
-        assertThat(actual.getMessage(), is("Order item text must not be null."));
+        ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.singleton(orderByItem), false));
+        assertThat(actual.getProjections().size(), is(2));
+        assertNull(Iterables.getLast(actual.getProjections()).getExpression());
     }
     
     @Test
@@ -195,9 +196,9 @@ class ProjectionsContextEngineTest {
         projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));
         OrderByItem groupByItem = new OrderByItem(new ExpressionOrderByItemSegment(0, 0, null, OrderDirection.ASC, NullsOrderType.FIRST));
         ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
-        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.singleton(groupByItem)),
-                new OrderByContext(Collections.emptyList(), false)));
-        assertThat(actual.getMessage(), is("Order item text must not be null."));
+        ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.singleton(groupByItem)), new OrderByContext(Collections.emptyList(), false));
+        assertThat(actual.getProjections().size(), is(2));
+        assertNull(Iterables.getLast(actual.getProjections()).getExpression());
     }
     
     @Test
@@ -205,9 +206,9 @@ class ProjectionsContextEngineTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         OrderByItem orderByItem = new OrderByItem(new ExpressionOrderByItemSegment(0, 0, null, OrderDirection.ASC, NullsOrderType.FIRST));
         ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
-        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.emptyList()),
-                new OrderByContext(Collections.singleton(orderByItem), false)));
-        assertThat(actual.getMessage(), is("Order item text must not be null."));
+        ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.singleton(orderByItem), false));
+        assertThat(actual.getProjections().size(), is(1));
+        assertNull(Iterables.getLast(actual.getProjections()).getExpression());
     }
     
     @Test
