@@ -64,6 +64,79 @@ class RunTest(unittest.TestCase):
             self.assertEqual(0, run.main())
         run_cases.assert_not_called()
 
+    def test_main_summary_contract_for_each_mode(self) -> None:
+        case = run.load_cases(["read_only_review"])[0]
+        bundle = run.load_policy_manifest(Path(run.__file__).resolve().parents[3])
+        policy_keys = [
+            "policy_manifest", "policy_manifest_sha256", "policy_bundle_sha256", "policy_inventory_sha256",
+            "policy_sources", "policy_source_changes", "authorized_policy_source_changes",
+            "policy_source_baseline_available", "policy_binding_sha256", "policy_bindings", "policy_binding_changes",
+            "authorized_policy_binding_changes", "policy_binding_baseline_available", "profiles", "profile_case_counts",
+            "root_max_bytes", "default_project_doc_max_bytes", "semantic_evaluation", "routing_trace", "impact",
+        ]
+        actual = {"results": [self._create_case_result(case, "Review FooService without editing it.")]}
+        evaluations = [self._create_evaluation([case["id"]], [])]
+        trace_results = [{"passed": True}]
+        for mode in ("validate", "trace", "semantic", "all"):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                output_dir = Path(directory) / "output"
+                with patch("sys.argv", [
+                        "run.py", "--mode", mode, "--case", case["id"], "--profile", "root",
+                        "--output-dir", str(output_dir)
+                ]), patch.object(run, "resolve_codex_home", return_value=Path(directory)), patch.object(
+                        run, "run_cases", return_value=(0, 1.0, actual, evaluations)
+                ) as run_cases, patch.object(
+                        run, "semantic_surface_digest", return_value="semantic-surface"
+                ), patch.object(
+                        run, "run_local_read_traces", return_value=trace_results
+                ), patch.object(
+                        run, "compare_policy_inventory", return_value=(["inventory-regression"], [])
+                ), patch.object(
+                        run, "compare_with_baseline", return_value=(["semantic-regression"], [])
+                ), patch.object(
+                        run, "read_usage", return_value={
+                            "input_tokens": 1, "cached_input_tokens": 0, "uncached_input_tokens": 1, "output_tokens": 1,
+                        }
+                ), patch("builtins.print") as print_summary:
+                    self.assertEqual(1, run.main())
+                summary = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
+                self.assertEqual(summary, json.loads(print_summary.call_args.args[0]))
+                deterministic = mode in {"validate", "trace"}
+                policy_start = 2 if deterministic else 4
+                self.assertEqual(policy_keys, list(summary)[policy_start:policy_start + len(policy_keys)])
+                self.assertEqual(["label", "mode"], list(summary)[:2])
+                self.assertEqual(mode, summary["mode"])
+                self.assertEqual(bundle["manifest_file"], summary["policy_manifest"])
+                self.assertEqual(bundle["manifest_sha256"], summary["policy_manifest_sha256"])
+                self.assertEqual(bundle["bundle_sha256"], summary["policy_bundle_sha256"])
+                self.assertEqual(bundle["inventory_sha256"], summary["policy_inventory_sha256"])
+                self.assertEqual(bundle["inventory"], summary["policy_sources"])
+                self.assertEqual([], summary["policy_source_changes"])
+                self.assertEqual([], summary["authorized_policy_source_changes"])
+                self.assertFalse(summary["policy_source_baseline_available"])
+                self.assertFalse(summary["policy_binding_baseline_available"])
+                self.assertEqual(bundle["root_max_bytes"], summary["root_max_bytes"])
+                self.assertEqual(run.DEFAULT_PROJECT_DOC_MAX_BYTES, summary["default_project_doc_max_bytes"])
+                self.assertIsNone(summary["impact"])
+                expected_profiles = {"root": bundle["profiles"]["root"]} if deterministic else bundle["profiles"]
+                self.assertEqual(expected_profiles, summary["profiles"])
+                self.assertEqual(not deterministic, summary["semantic_evaluation"]["executed"])
+                expected_traces = trace_results if mode in {"trace", "all"} else []
+                self.assertEqual(expected_traces, summary["trace_results"])
+                self.assertEqual(bool(expected_traces), summary["routing_trace"]["executed"])
+                expected_regressions = ["inventory-regression"] if deterministic else ["inventory-regression", "semantic-regression"]
+                self.assertEqual(expected_regressions, summary["critical_regressions"])
+                if deterministic:
+                    run_cases.assert_not_called()
+                    self.assertEqual([
+                        "trace_results", "critical_regressions", "output_dir", "policy_snapshot_dir"
+                    ], list(summary)[policy_start + len(policy_keys):])
+                else:
+                    run_cases.assert_called_once()
+                    self.assertEqual(["policy_file", "policy_sha256"], list(summary)[2:4])
+                    self.assertEqual("AGENTS.md", summary["policy_file"])
+                    self.assertEqual(hashlib.sha256(Path(run.__file__).read_bytes()).hexdigest(), summary["runner_sha256"])
+
     @staticmethod
     def _create_case_result(case: dict[str, Any], summary: str) -> dict[str, Any]:
         return {

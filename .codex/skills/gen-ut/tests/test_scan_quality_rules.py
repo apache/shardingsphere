@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+import io
 import json
 import subprocess
 import sys
@@ -166,6 +167,136 @@ class ScanQualityRulesTest(unittest.TestCase):
         source = "class TargetTest {}"
         actual = rules.resolve_target_source_path(Path("src/test/java/sample/TargetTest.java"), source)
         self.assertEqual(Path("src/main/java/sample/Target.java"), actual)
+
+    def test_scan_reuses_parameterized_prechecks(self):
+        source = 'class TargetTest {\n@ParameterizedTest(name = "{0}")\nvoid assertRun(int value) {}\n}'
+        with tempfile.TemporaryDirectory() as temp_dir:
+            paths = [Path(temp_dir) / "TargetTest.java", Path(temp_dir) / "OtherTest.java"]
+            for path in paths:
+                path.write_text(source, encoding="utf-8")
+            with patch.object(rules, "check_r15_d", wraps=rules.check_r15_d) as check_d, patch.object(rules, "check_r15_e", wraps=rules.check_r15_e) as check_e:
+                actual = rules.collect_scan_result([*paths, Path(temp_dir) / "sample.bin"], None)
+        self.assertEqual(2, check_d.call_count)
+        self.assertEqual(2, check_e.call_count)
+        expected_d = [f"{path}:2 method=assertRun missing @MethodSource" for path in paths]
+        expected_e = [f"{path}:2 method=assertRun firstParam=int value" for path in paths]
+        expected_violations = {"R15-C": ["missing scope baseline"], "R15-D": expected_d, "R15-E": expected_e}
+        self.assertEqual({
+            "rules": {
+                each.name: {"message": each.message, "mode": each.mode, "violations": expected_violations.get(each.name, [])}
+                for each in rules.RULE_SPECS
+            },
+            "prechecks": {
+                "checkstyle-final-parameters": {
+                    "message": rules.PRECHECK_MESSAGES["checkstyle-final-parameters"],
+                    "violations": [f"{path}:2 method=assertRun param=int value" for path in paths],
+                },
+                "parameterized-methodsource": {"message": rules.PRECHECK_MESSAGES["parameterized-methodsource"], "violations": expected_d},
+                "parameterized-name-parameter": {"message": rules.PRECHECK_MESSAGES["parameterized-name-parameter"], "violations": expected_e},
+            },
+            "candidates": [],
+            "reviews": {"R15-A": [str(path) for path in paths], "R15-B": [], "R15-D": [], "R15-G": [], "R15-I": [], "R15-J": [str(path) for path in paths]},
+            "java_file_count": 2,
+        }, actual)
+
+    def test_precheck_only_skips_full_scan_work(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "src/test/java/sample/TargetTest.java"
+            target = Path(temp_dir) / "src/main/java/sample/Target.java"
+            baseline = Path(temp_dir) / "scope.json"
+            path.parent.mkdir(parents=True)
+            target.parent.mkdir(parents=True)
+            path.write_text('class TargetTest { @ParameterizedTest(name = "{0}") @MethodSource("Samples#cases") void assertRun(final String name) {} }', encoding="utf-8")
+            target.write_bytes(b"\xff")
+            baseline.write_text("invalid baseline", encoding="utf-8")
+            with (
+                patch.object(sys, "argv", ["scan", "--precheck-only", "--scope-baseline", str(baseline), str(path)]),
+                patch.object(sys, "stdout", new_callable=io.StringIO) as stdout,
+                patch.object(Path, "read_text", autospec=True, side_effect=Path.read_text) as read_text,
+                patch.object(rules, "create_file_scan_context", side_effect=AssertionError("full context requested")),
+                patch.object(rules.subprocess, "run", side_effect=AssertionError("Git requested")),
+            ):
+                actual = rules.main()
+            read_text.assert_called_once_with(path, encoding="utf-8")
+        self.assertEqual(0, actual)
+        self.assertEqual("[precheck:checkstyle-final-parameters] ok\n[precheck:parameterized-methodsource] ok\n[precheck:parameterized-name-parameter] ok\n", stdout.getvalue())
+
+    def test_precheck_only_diagnostics(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "TargetTest.java"
+            valid_source = (
+                'class TargetTest { @ParameterizedTest(name = "{0}") @MethodSource("samples") void assertRun(final String name) {} '
+                'static Stream<Arguments> samples() { return Stream.of(Arguments.of("foo"), Arguments.of("bar"), Arguments.of("baz")); } }'
+            )
+            invalid_source = 'class TargetTest { @ParameterizedTest(name = "{0}") void assertRun(int value) {} }'
+            expected_violations = (
+                "[precheck:checkstyle-final-parameters] test method parameters should be final to avoid Checkstyle FinalParameters failures\n"
+                f"{path}:1 method=assertRun param=int value\n"
+                "[precheck:parameterized-methodsource] parameterized tests should use @MethodSource providers with at least 3 Arguments rows\n"
+                f"{path}:1 method=assertRun missing @MethodSource\n"
+                "[precheck:parameterized-name-parameter] parameterized tests should declare the first parameter exactly as `final String name`\n"
+                f"{path}:1 method=assertRun firstParam=int value\n"
+            )
+            expected_ok = "[precheck:checkstyle-final-parameters] ok\n[precheck:parameterized-methodsource] ok\n[precheck:parameterized-name-parameter] ok\n"
+            expected_short_provider = (
+                "[precheck:checkstyle-final-parameters] ok\n"
+                "[precheck:parameterized-methodsource] parameterized tests should use @MethodSource providers with at least 3 Arguments rows\n"
+                f"{path}:1 method=assertRun argumentsRows=2\n"
+                "[precheck:parameterized-name-parameter] ok\n"
+            )
+            fixtures = (
+                ("valid", path, valid_source, 0, expected_ok, ""),
+                ("violations", path, invalid_source, 1, expected_violations, ""),
+                ("short-provider", path, valid_source.replace(', Arguments.of("baz")', ""), 1, expected_short_provider, ""),
+                ("missing-java", Path(temp_dir) / "MissingTest.java", None, 2, "", f"[Errno 2] No such file or directory: '{Path(temp_dir) / 'MissingTest.java'}'\n"),
+                ("non-java", Path(temp_dir) / "sample.bin", None, 0, expected_ok, ""),
+            )
+            for name, input_path, source, expected_exit, expected_stdout, expected_stderr in fixtures:
+                with self.subTest(name=name):
+                    if source is not None:
+                        input_path.write_text(source, encoding="utf-8")
+                    with (
+                        patch.object(sys, "argv", ["scan", "--precheck-only", "--summary-only", str(input_path)]),
+                        patch.object(sys, "stdout", new_callable=io.StringIO) as stdout,
+                        patch.object(sys, "stderr", new_callable=io.StringIO) as stderr,
+                    ):
+                        actual = rules.main()
+                    self.assertEqual(expected_exit, actual)
+                    self.assertEqual(expected_stdout, stdout.getvalue())
+                    self.assertEqual(expected_stderr, stderr.getvalue())
+
+    def test_json_precedes_precheck_and_summary(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "TargetTest.java"
+            path.write_text("class TargetTest {}", encoding="utf-8")
+            with (
+                patch.object(sys, "argv", ["scan", "--json", "--precheck-only", "--summary-only", str(path)]),
+                patch.object(sys, "stdout", new_callable=io.StringIO) as stdout,
+            ):
+                actual = rules.main()
+        result = json.loads(stdout.getvalue())
+        self.assertEqual(1, actual)
+        self.assertEqual(["candidates", "java_file_count", "prechecks", "reviews", "rules"], list(result))
+        self.assertEqual(["missing scope baseline"], result["rules"]["R15-C"]["violations"])
+        self.assertEqual(1, result["java_file_count"])
+        self.assertEqual(json.dumps(result, indent=2, sort_keys=True) + "\n", stdout.getvalue())
+
+    def test_capture_precedes_report_flags(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            baseline = repo_root / "scope.json"
+            path = repo_root / "TargetTest.java"
+            with (
+                patch.object(sys, "argv", ["scan", "--capture-scope-baseline", str(baseline), "--json", "--precheck-only", "--summary-only", str(path)]),
+                patch.object(sys, "stdout", new_callable=io.StringIO) as stdout,
+                patch.object(rules, "get_repo_root", return_value=repo_root),
+                patch.object(rules, "write_scope_baseline") as write_baseline,
+                patch.object(rules, "collect_scan_result", side_effect=AssertionError("scan requested")),
+            ):
+                actual = rules.main()
+            write_baseline.assert_called_once_with(baseline, repo_root, [path])
+        self.assertEqual(0, actual)
+        self.assertEqual(f"[scope-baseline] path={baseline.resolve()} allowedPathCount=1\n", stdout.getvalue())
 
     def test_scope_baseline_detects_change_to_preexisting_dirty_file(self):
         with tempfile.TemporaryDirectory() as temp_dir:

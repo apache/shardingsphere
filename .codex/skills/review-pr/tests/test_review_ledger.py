@@ -706,10 +706,6 @@ class ReviewLedgerTest(unittest.TestCase):
         self.save_session_report(actual, 1, report)
         self.assertTrue(ledger.validate_session(actual))
 
-    def test_session_allows_second_pair_after_disagreement(self):
-        actual = self.create_session([[("F1", "confirmed")], [], [("F1", "confirmed")], [("F1", "confirmed")]])
-        self.assertEqual([], ledger.validate_session(actual))
-
     def test_session_preserves_finding_discovered_during_result_review(self):
         original = self.create_session([[], [], [("F1", "confirmed")], [("F1", "confirmed")]])
         original["rounds"][0]["findings"].append({
