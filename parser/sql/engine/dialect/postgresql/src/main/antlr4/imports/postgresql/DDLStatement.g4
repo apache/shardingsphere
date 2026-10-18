@@ -510,6 +510,7 @@ alterDatabaseClause
     | RENAME TO databaseName
     | OWNER TO roleSpec
     | SET TABLESPACE name
+    | REFRESH COLLATION VERSION
     | setResetClause
     ;
 
@@ -1905,8 +1906,10 @@ reindex
 reIndexClauses
     : reindexTargetType CONCURRENTLY? qualifiedName
     | reindexTargetMultitable CONCURRENTLY? name
+    | (SYSTEM | DATABASE) CONCURRENTLY?
     | LP_ reindexOptionList RP_ reindexTargetType CONCURRENTLY? qualifiedName
     | LP_ reindexOptionList RP_ reindexTargetMultitable CONCURRENTLY? name
+    | LP_ reindexOptionList RP_ (SYSTEM | DATABASE) CONCURRENTLY?
     ;
 
 reindexOptionList
@@ -1988,6 +1991,7 @@ securityLabel
 securityLabelClausces
     : objectTypeAnyName anyName
     | COLUMN anyName
+    | ROLE name
     | (TYPE | DOMAIN) typeName
     | (AGGREGATE | FUNCTION) aggregateWithArgtypes
     | LARGE OBJECT numericOnly

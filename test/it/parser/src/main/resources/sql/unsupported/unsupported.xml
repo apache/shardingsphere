@@ -394,4 +394,9 @@
     <sql-case id="unsupported_postgresql_json_exists_missing_path" value="SELECT JSON_EXISTS('{}')" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="select_postgresql_json_arrayagg_filter_window" value="SELECT JSON_ARRAYAGG(?) FILTER (WHERE ?) OVER ()" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="select_postgresql_json_arrayagg_filter_without_window" value="SELECT JSON_ARRAYAGG(?) FILTER (WHERE ?)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_reindex_schema_without_name" value="REINDEX SCHEMA;" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_reindex_schema_without_name_with_options" value="REINDEX (VERBOSE) SCHEMA;" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_security_label_without_role_name" value="SECURITY LABEL ON ROLE IS 'foo_label';" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_copy_format_without_value" value="COPY t_order TO STDOUT (FORMAT);" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_copy_header_unquoted_value" value="COPY t_order FROM STDIN (HEADER wrong_choice);" db-types="PostgreSQL" case-types="literal" />
 </sql-cases>
