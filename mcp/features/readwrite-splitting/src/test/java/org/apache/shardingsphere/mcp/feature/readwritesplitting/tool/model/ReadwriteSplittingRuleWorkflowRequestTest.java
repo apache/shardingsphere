@@ -59,6 +59,13 @@ class ReadwriteSplittingRuleWorkflowRequestTest {
         assertThat(actual.getDatabase(), is("logic_db"));
     }
     
+    @Test
+    void assertSetReadStorageUnitsWithMissingListValues() {
+        ReadwriteSplittingRuleWorkflowRequest request = new ReadwriteSplittingRuleWorkflowRequest();
+        request.setReadStorageUnits(List.of(" ", " foo_read "));
+        assertThat(request.getReadStorageUnits(), is(List.of("foo_read")));
+    }
+    
     private ReadwriteSplittingRuleWorkflowRequest createRequest() {
         ReadwriteSplittingRuleWorkflowRequest result = new ReadwriteSplittingRuleWorkflowRequest();
         result.setRuleName("readwrite_ds");

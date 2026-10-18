@@ -19,9 +19,13 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedProcedureCallNameSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedSQLStatementSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,4 +37,14 @@ public final class OraclePLSQLBlockStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "procedure-call")
     private final List<ExpectedProcedureCallNameSegment> procedureCalls = new LinkedList<>();
+    
+    @XmlElementWrapper(name = "sql-statements")
+    @XmlElement(name = "sql-statement")
+    private final List<ExpectedSQLStatementSegment> sqlStatements = new LinkedList<>();
+    
+    @XmlElement(name = "table")
+    private final List<ExpectedSimpleTable> tables = new LinkedList<>();
+    
+    @XmlElement(name = "column")
+    private final List<ExpectedColumn> columns = new LinkedList<>();
 }

@@ -3325,7 +3325,7 @@ required_summary_terms = ["Previous Finding", "Current Status: Withdrawn", "Reas
 forbidden_summary_terms = ["Review Result: Not Mergeable", "Review Result: Review Incomplete", "Current Status: Retained", "Current Status: Changed to Review Incomplete"]
 critical = true
 policy_binding_profile = "review-pr"
-policy_assertions = [{source = "review-pr", statements = ["For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate. Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.", "Return every review output as one complete copy-ready Markdown report in a fenced block labelled `markdown`, in both output modes and every review round.", "`Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`."]}, {source = "review-pr-corrections", statements = ["For standalone local corrections, inherit the main Skill's task baseline, attributed local delta, authorized evidence boundary and selected mode's output contract.", "When correcting a previously reported conclusion, use the selected mode's output contract and begin with:\n\n- `Previous Finding`\n- `Current Status`: `Retained`, `Withdrawn`, or `Changed to Review Incomplete`\n- `Reason`\n\nThen provide the current mode's ordinary result.", "Then provide the current mode's ordinary result.", "Keep exactly one formal `Review Result` line when a formal result is requested."]}]
+policy_assertions = [{source = "review-pr", statements = ["For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate. Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.", "Return every review output as one complete copy-ready Markdown report in a fenced block labelled `markdown`, in both output modes and every review round.", "`Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`."]}, {source = "review-pr-corrections", statements = ["For standalone local corrections, inherit the main Skill's task baseline, attributed local delta, authorized evidence boundary and selected mode's output contract.", "When correcting a previously reported conclusion, use the selected mode's output contract and begin with:\n\n- `Previous Finding or Conclusion`\n- `Current Status`: `Retained`, `Withdrawn`, or `Changed to Review Incomplete`\n- `Reason`\n\nThen provide the current mode's ordinary result.", "Then provide the current mode's ordinary result.", "Keep exactly one formal `Review Result` line when a formal result is requested."]}]
 required_summary_prefix = "```markdown\n"
 
 [[cases]]
@@ -3597,7 +3597,7 @@ required_summary_terms = ["origin=previous-review-miss", "current=change-request
 forbidden_summary_terms = ["origin=introduced-by-latest-commits", "origin=exposed-by-previous-fix", "origin=changed-review-basis", "current=continue-review", "current=mergeable", "current=review-incomplete", "current=needs-discussion", "prior-verdict=evidence"]
 critical = true
 policy_binding_profile = "review-pr"
-policy_assertions = [{source = "review-pr", statements = ["For a proven previous-review miss, contradictory assessments on an unchanged basis, a triggered high-risk review criterion, or an explicit user request for independent review, obtain an independent read-only assessment through this workflow and the Completion Gate using the current basis and complete effective candidate without the previous verdict or an expected finding count.", "Never use a previous Formal Review result as\nevidence or as a conclusion to match.", "If at least one candidate passes the Finding Proof Gate, use `Not Mergeable`\n   with `Feedback Mode: Change Request`."]}, {source = "review-pr-corrections", statements = ["Before changing an overall conclusion, compare the prior and current effective candidates, requirement sources and versions, applicable exceptions, review focus, evidence identities and finding sets; candidate-type or Git revision labels and a different previous verdict do not establish a changed basis.", "Correct a proven earlier error rather than preserving an unsupported previous verdict for consistency.", "`Missed in the previous review`: the problem was already present in the\n  previously reviewed head.", "`Established by a changed review basis`: a proven applicable requirement, selected focus or decisive fact changed and newly supports a finding that the prior basis did not support.", "Prove the classification from the previous and current effective candidates and their applicable requirements, focus and decisive facts.", "For a previous-review miss, acknowledge it directly, rerun the full Completion Gate, and return the complete remaining blocker set rather than publishing only the late finding."]}]
+policy_assertions = [{source = "review-pr", statements = ["For a proven previous-review miss, contradictory assessments on an unchanged basis, a triggered high-risk review criterion, or an explicit user request for independent review, obtain an independent read-only assessment through this workflow and the Completion Gate using the current basis and complete effective candidate without the previous verdict or an expected finding count.", "Never use a previous Formal Review result as\nevidence or as a conclusion to match.", "If at least one candidate passes the Finding Proof Gate, use `Not Mergeable`\n   with `Feedback Mode: Change Request`."]}, {source = "review-pr-corrections", statements = ["Before changing an overall conclusion, compare the prior and current effective candidates, requirement sources and versions, applicable exceptions, review focus, evidence identities and finding sets; candidate-type or Git revision labels and a different previous verdict do not establish a changed basis.", "Correct both unsupported findings and an unsupported overall readiness conclusion, including a previous claim that no issues remain.", "Do not preserve an unsupported previous verdict for consistency.", "`Missed in the previous review`: the problem was already present in the\n  previously reviewed head.", "`Established by a changed review basis`: a proven applicable requirement, selected focus or decisive fact changed and newly supports a finding that the prior basis did not support.", "Prove the classification from the previous and current effective candidates and their applicable requirements, focus and decisive facts.", "For a previous-review miss, acknowledge it directly and inspect the complete effective candidate for the same omitted structure before rerunning the full Completion Gate and returning the complete remaining blocker set."]}]
 
 [[cases]]
 id = "review_ledger_reuses_facts_without_inheriting_completion"
@@ -3638,3 +3638,529 @@ forbidden_summary_terms = ["A=retain", "B=retain", "C=retain", "D=delete", "E=cl
 critical = true
 policy_binding_profile = "review-pr"
 policy_assertions = [{source = "review-pr", statements = ["Use the existing private system temporary directory and record the exact ledger path returned by initialization for this review.", "Keep ledger data private and remove only the exact current-review ledger.", "Before returning a completed review result, form a self-contained report and automatically run `scripts/review_ledger.py cleanup --ledger <recorded-ledger>` for the recorded current-review instance, including Mergeable, Not Mergeable and Review Incomplete results.", "Before cleaning the ledger, remove only temporary input materials created and explicitly recorded for this review, preserving declared sources owned by the repository, the user or another review.", "On a handled failure or cancellation, attempt the same cleanup for resources whose ownership is established, preserve the original failure and report any cleanup failure or remaining resources.", "Keep the report independent of temporary files and report cleanup failures without changing the review assessment."]}]
+
+[[cases]]
+id = "implementation_preflight_preserves_requirement_provenance"
+group = "implementation requirement provenance"
+description = "Separates original requirements, approved implementation choices and verified reuse before an exception."
+phase = "implementation preflight"
+ordinary_loop = false
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Answer this self-contained pre-edit policy question using only the supplied records and bound rules; do not inspect files, run commands, edit anything or produce a Formal Review report. A: U0, the original user message, says \"Fix the client-loading failure and preserve the supported build profiles.\" The maintained parent-POM contract assigns dependency-version ownership to RootVersions. The author's subsequent plan says \"Add child dependencyManagement at client 1.4 because RootVersions client 2.2 probably omits Launcher.\" U1 replies \"Go ahead with that plan.\" Current artifact contents contain Launcher at 2.2; effective-model, resolved-tree and integration results show the direct parent-managed path satisfies U0 on every supported profile. The author's task notes label \"client must remain 1.4\" as an original user requirement. Classify the lock's provenance using A_origin=original-requirement, approved-design-choice, unapproved-design-choice or project-contract, and classify the direct reuse evidence using A_reuse=viable, disproved or unchecked. B: U0 has the same initial goal. U2 later explicitly says \"Keeping client 1.4 is an acceptance condition; the supported server protocol must remain compatible.\" The maintained server contract and current executions show 1.4 satisfies it and the existing 2.2 owner path cannot; no existing configuration or delegation path satisfies that contract, and one child-only override is sufficient. Classify B_origin using original-requirement, confirmed-user-constraint, author-choice or assumption, and B_exception using admissible, forbidden or unchecked. Explain separately the original goal, maintained contract, implementation choice and assumption, which approval or constraint remains binding, and whether an observed fact changes the plan's justification. Report exactly one assignment per marker."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A_origin=approved-design-choice", "A_reuse=viable", "B_origin=confirmed-user-constraint", "B_exception=admissible"]
+forbidden_summary_terms = ["A_origin=original-requirement", "A_origin=unapproved-design-choice", "A_origin=project-contract", "A_reuse=disproved", "A_reuse=unchecked", "B_origin=original-requirement", "B_origin=author-choice", "B_origin=assumption", "B_exception=forbidden", "B_exception=unchecked"]
+critical = true
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "code-implementation", statements = ["Before selecting an implementation, distinguish original user requirements, maintained project contracts, author design choices and unverified assumptions in the existing task record, and trace every hard constraint to its original source.", "Approval to implement a proposal preserves the approved choice but does not establish that its version pin was an original requirement or that the pin is necessary; retain the constraints and tradeoffs the user actually confirmed with their sources.", "For a new local override, compatibility exception or parallel mechanism, record the verified reason direct reuse cannot meet the accepted requirements."]}]
+
+[[cases]]
+id = "review_exception_necessity_and_requirement_provenance"
+group = "review-pr exception necessity"
+description = "Checks unnecessary and justified exceptions, obtainable premise evidence, ordinary changes and actual approval provenance."
+phase = "review-pr basis and exception necessity"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "Answer this self-contained read-only review-policy question using only the supplied source records, candidate facts and bound rules; do not inspect files, run commands, edit anything or produce a Formal Review report. A, B, C and D are independent Code Correctness reviews. Authoritative candidate scope is established for each. Current-candidate tests and applicable style checks pass. Every other discovery, evidence, convergence and Completion Gate is complete, with no independent finding or gap beyond the facts stated here. A: the original user message requests that client loading work on the supported build profiles and specifies no client version. No later user message approves a version lock. The author adds child dependencyManagement at client 1.4, writes in the task notes that \"the user requires 1.4\", and claims that parent-managed 2.2 lacks Launcher. The maintained parent owns this dependency version. Artifact inspection finds Launcher at 2.2; effective POMs, resolved dependency trees and supported-profile executions show that the existing parent-managed path meets the requested loading behavior. There is no other compatibility contract or consumer requiring 1.4. The override is the only candidate-introduced parallel dependency-management path. B: a similar override is justified by the author's statement that the parent-managed client rejects a supported input. That input contract, implementation, caller setup and consuming path are available through admissible local evidence but have not been inspected; no present evidence establishes or refutes the claim. C: the user explicitly confirms compatibility with the maintained legacy-server protocol as an acceptance condition. Current server-contract evidence and executions show that client 1.4 meets that condition and the parent-managed client 2.2 does not. Inspection of the existing owner's supported configurations and delegation paths finds none that satisfies this contract. A child-only 1.4 override is sufficient, its compatibility boundary and consumers are covered, and it adds no other mechanism. D: the candidate corrects a local value calculation in its existing owner, follows all applicable maintained contracts, and adds no local override, compatibility exception or parallel mechanism; every requested and supported behavior has been verified. For A, B, C and D report exactly one assignment, choosing continue-review, mergeable, review-incomplete, change-request or needs-discussion, using marker=value. E is a separate provenance question, not an additional verdict: U0 says \"Fix client loading on the supported profiles\"; P1, the author's plan, proposes a child 1.4 lock; U1 says \"Proceed with that plan\". The author's review notes cite U1 as proof that U0 originally required 1.4. Classify E_origin using original-user-constraint, approved-design-choice, unapproved-design-choice or repository-contract. Explain the evidence for each assignment, keep behavior verification separate from exception necessity, and preserve the approval actually recorded in E."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A=change-request", "B=continue-review", "C=mergeable", "D=mergeable", "E_origin=approved-design-choice"]
+forbidden_summary_terms = ["A=continue-review", "A=mergeable", "A=review-incomplete", "A=needs-discussion", "B=mergeable", "B=review-incomplete", "B=change-request", "B=needs-discussion", "C=continue-review", "C=review-incomplete", "C=change-request", "C=needs-discussion", "D=continue-review", "D=review-incomplete", "D=change-request", "D=needs-discussion", "E_origin=original-user-constraint", "E_origin=unapproved-design-choice", "E_origin=repository-contract"]
+critical = true
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["Reconstruct those requirements from original user requests and maintained contracts before checking the author's proposed solution, distinguishing author choices and unverified assumptions from confirmed constraints.", "Preserve later user approvals with their actual provenance instead of treating approval of an implementation choice as proof of an original version requirement or of its necessity.", "When such a premise remains unverified and admissible evidence is available, continue the review instead of treating the absence of a proven blocker as evidence for acceptance.", "Classify a gap as incomplete only when a specific outcome-sensitive decisive fact remains unavailable after every admissible evidence route has been attempted; if relevant local or public evidence exists or another allowed route remains, continue the review and classify the candidate.", "For each newly introduced local override, compatibility exception or parallel mechanism, use the existing basis sources and block `requirements`, `counter_evidence` and `anchors` to record its constraint origins, verified limits of direct reuse and necessity conclusion separately from behavior correctness.", "Keep author-only choices and unverified assumptions as `evidence` sources.", "When the behavior is accepted but the patch adds unsupported generalization, public surface, parallel models, or abstractions without a real stable boundary, treat the excess as a finding candidate under the implementation rules; patch size or novelty alone is not evidence of overdesign."]}, {source = "implementation-rules", statements = ["Prefer direct reuse, then composition or delegation, then an existing extension point.", "Keep coexistence only for a verified compatibility contract."]}]
+
+[[cases]]
+id = "discovery_01"
+group = "synthetic source and consumer discovery"
+description = "Checks two implementations against an existing optional capability and a supported provider."
+phase = "read-only source and consumer analysis"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = '''
+Answer this self-contained read-only source-analysis question using only the supplied synthetic records and bound rules. Do not inspect files, run commands, edit anything, or produce an overall PR verdict. Java fragments omit unrelated declarations and imports; assess the supplied behavior and the stated task delta. U0 requests that the existing exporter collect every registered count capability while remaining runnable with optional modules absent. The maintained core owns Source and CountCapability; optional modules may implement either without a required class name. The registry below contains one OtherPool implementing both interfaces, returning 7, and one LabelSource implementing only Source. Consumer collectCounts(registry) publishes every returned number in order. The previous implementation used an optional-module class literal. These are independent replacement candidates:
+```java
+interface Source { }
+interface CountCapability { int count(); }
+final class OtherPool implements Source, CountCapability {
+    public int count() { return 7; }
+}
+final class LabelSource implements Source { }
+```
+A, Collector.collectCounts:
+```java
+List<Integer> collectCounts(List<Source> sources) {
+    List<Integer> result = new ArrayList<>();
+    for (Source each : sources) {
+        if (each.getClass().getSimpleName().equals("VendorPool")) {
+            result.add(((CountCapability) each).count());
+        }
+    }
+    return result;
+}
+```
+B, Collector.collectCounts:
+```java
+List<Integer> collectCounts(List<Source> sources) {
+    List<Integer> result = new ArrayList<>();
+    for (Source each : sources) {
+        if (each instanceof CountCapability) {
+            result.add(((CountCapability) each).count());
+        }
+    }
+    return result;
+}
+```
+Give A.current, B.current and required as compact lists of integers. Give A.status and B.status as keep or change. Identify the responsible expression for any difference and evaluate the strongest reason the optional-class failure no longer occurs. Report exactly one assignment per requested marker in the summary, then explain each decision using the relevant code and consumer contract. Do not repeat an alternative assignment for a marker.
+'''
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A.current=[]", "B.current=[7]", "required=[7]", "A.status=change", "B.status=keep"]
+required_summary_term_groups = [["getSimpleName", "VendorPool"]]
+forbidden_summary_terms = ["A.status=keep", "B.status=change"]
+critical = true
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Counter-evidence`: check the strongest evidence that could disprove the finding, especially author or maintainer replies and version-specific facts.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable."]}, {source = "implementation-rules", statements = ["Before choosing an implementation, inspect the current behavior owner, relevant architecture and sibling modules for existing capabilities and patterns that fit the required responsibilities, contracts and dependency boundaries.", "Before adding an interface, SPI, public method, registration mechanism, or bridge, identify why existing capabilities cannot express the confirmed requirement, why the proposed owner owns it, and which confirmed acceptance criterion fails without the addition."]}]
+
+[[cases]]
+id = "discovery_02"
+group = "synthetic source and consumer discovery"
+description = "Distinguishes module-owned metric knowledge from a maintained shared sample contract."
+phase = "read-only source and consumer analysis"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = '''
+Answer this self-contained read-only source-analysis question using only the supplied synthetic records and bound rules. Do not inspect files, run commands, edit anything, or produce an overall PR verdict. Java fragments omit unrelated declarations and imports; assess the supplied behavior and the stated task delta. U0 requests moving optional-module metric production into its existing provider owner while preserving the generic collector. The maintained contract says every provider chooses its own metric names and values; GenericCollector concatenates those samples without knowing provider-specific names. The stable shared wire format uses type=gauge for every sample. A supported CacheProvider returns Sample("cache_hits", 3). The previous provider interface had no pool constants, and the collector was being refactored to consume providers. Compare independent candidates A and B.
+A:
+```java
+interface SampleProvider {
+    String IDLE = "pool_idle";
+    String ACTIVE = "pool_active";
+    List<Sample> samples();
+}
+final class GenericCollector {
+    List<Sample> collect(List<SampleProvider> providers) {
+        Map<String, String> names = Map.of("idle", SampleProvider.IDLE, "active", SampleProvider.ACTIVE);
+        List<Sample> result = new ArrayList<>();
+        for (SampleProvider each : providers) {
+            for (Sample sample : each.samples()) {
+                if (names.containsKey(sample.name())) {
+                    result.add(new Sample(names.get(sample.name()), sample.value()));
+                }
+            }
+        }
+        return result;
+    }
+}
+```
+B:
+```java
+interface SampleProvider {
+    String TYPE = "gauge";
+    List<Sample> samples();
+}
+final class PoolProvider implements SampleProvider {
+    public List<Sample> samples() { return List.of(new Sample("pool_idle", 2)); }
+}
+final class GenericCollector {
+    List<Sample> collect(List<SampleProvider> providers) {
+        List<Sample> result = new ArrayList<>();
+        for (SampleProvider each : providers) {
+            result.addAll(each.samples());
+        }
+        return result;
+    }
+}
+```
+With only CacheProvider registered, give A.current, B.current and required as compact [name:value] lists. Give A.status, B.status and shared.status as keep or change, where shared.status assesses the current location of B's TYPE constant. Explain which declarations or expressions matter to ownership, and whether the maintained shared wire-format constant should be moved into every provider. Report exactly one assignment per requested marker in the summary, then explain each decision using the relevant code and consumer contract. Do not repeat an alternative assignment for a marker.
+Also give A.owners and B.owners as compact lists of declaration owners that require correction, in source declaration order; use [] when none require correction. Write assignments as marker=value without quotation marks or backticks around scalar values; lists must be compact, with no internal spaces.
+'''
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A.current=[]", "B.current=[cache_hits:3]", "required=[cache_hits:3]", "A.status=change", "B.status=keep", "shared.status=keep", "A.owners=[SampleProvider,GenericCollector]", "B.owners=[]"]
+required_summary_term_groups = [["TYPE", "gauge"]]
+forbidden_summary_terms = ["A.status=keep", "B.status=change", "shared.status=change", "A.owners=[]", "B.owners=[SampleProvider,GenericCollector]"]
+critical = true
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Counter-evidence`: check the strongest evidence that could disprove the finding, especially author or maintainer replies and version-specific facts.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable."]}, {source = "implementation-rules", statements = ["Before choosing an implementation, inspect the current behavior owner, relevant architecture and sibling modules for existing capabilities and patterns that fit the required responsibilities, contracts and dependency boundaries.", "Before adding an interface, SPI, public method, registration mechanism, or bridge, identify why existing capabilities cannot express the confirmed requirement, why the proposed owner owns it, and which confirmed acceptance criterion fails without the addition."]}]
+
+[[cases]]
+id = "discovery_03"
+group = "synthetic source and consumer discovery"
+description = "Judges detail, count and optional empty exports from their consumers rather than return-type similarity."
+phase = "read-only source and consumer analysis"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = '''
+Answer this self-contained read-only source-analysis question using only the supplied synthetic records and bound rules. Do not inspect files, run commands, edit anything, or produce an overall PR verdict. Java fragments omit unrelated declarations and imports; assess the supplied behavior and the stated task delta. U0 requests implementing the three existing export contracts. Workers are ordered [Worker("a"), Worker("b")]. D is a detail export whose maintained consumer displays each worker id in order. C is a count export whose maintained consumer parses the single entry as the worker count. E is an optional detail export disabled by current configuration; its maintained consumer treats an empty list as "feature unavailable", and no requirement requests details in that state. Before the task all three methods returned List.of(). Independent candidate implementations and unchanged consumers are:
+```java
+List<String> exportD(List<Worker> workers) { return List.of(Integer.toString(workers.size())); }
+String displayD(List<Worker> workers) { return String.join(",", exportD(workers)); }
+List<String> exportC(List<Worker> workers) { return List.of(Integer.toString(workers.size())); }
+int readC(List<Worker> workers) { return Integer.parseInt(exportC(workers).get(0)); }
+List<String> exportE(List<Worker> workers) { return List.of(); }
+String displayE(List<Worker> workers) { return exportE(workers).isEmpty() ? "unavailable" : String.join(",", exportE(workers)); }
+```
+Give D.current and D.required as the displayed strings, C.current and C.required as integers, and E.current and E.required as the displayed strings. Give D.status, C.status and E.status as keep or change. Explain the minimum correction, if any, using each export's actual consumer. Report exactly one assignment per requested marker in the summary, then explain each decision using the relevant code and consumer contract. Do not repeat an alternative assignment for a marker.
+Write assignments as marker=value without quotation marks or backticks around scalar values; lists must be compact, with no internal spaces.
+'''
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["D.current=2", "D.required=a,b", "C.current=2", "C.required=2", "E.current=unavailable", "E.required=unavailable", "D.status=change", "C.status=keep", "E.status=keep"]
+forbidden_summary_terms = ["D.status=keep", "C.status=change", "E.status=change"]
+critical = true
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable."]}, {source = "implementation-rules", statements = ["Before designing state-dependent output, establish the expected result for each supported state from confirmed requirements and consumers, distinguishing an unloaded module, a loaded module without instances, and instances with a zero count when applicable.", "Check details, counts, and empty results against those requirements and consumers; the same Java return type does not establish the same data contract."]}]
+
+[[cases]]
+id = "discovery_04"
+group = "synthetic source and consumer discovery"
+description = "Computes output across module states and checks the production initialization path."
+phase = "read-only source and consumer analysis"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = '''
+Answer this self-contained read-only source-analysis question using only the supplied synthetic records and bound rules. Do not inspect files, run commands, edit anything, or produce an overall PR verdict. Java fragments omit unrelated declarations and imports; assess the supplied behavior and the stated task delta. U0 requests count samples from every loaded provider through the existing registry. The maintained contract returns no sample for an unloaded module; each loaded provider contributes one pool_count sample whose value is the sum of its instances' counts, including when there are no instances. Registry.providers() is the maintained discovery route. GaugeBuilder's existing build(name, value) responsibility is constructing one Gauge. Startup loads provider registrations into Registry and immediately calls Collector.collect(registry); it does not construct a Gauge beforehand. P, Q and R are independent inputs: P has no providers; Q has one provider with no instances; R has one provider with one instance whose count is 0. Before the task Collector iterated existing instances, so Q produced no sample. Compare independent replacement candidates.
+A:
+```java
+final class GaugeBuilder {
+    private static final List<Provider> sources = new ArrayList<>();
+    static Gauge build(String name, int value, Provider provider) {
+        sources.add(provider);
+        return new Gauge(name, value);
+    }
+    static List<Integer> collect() {
+        List<Integer> result = new ArrayList<>();
+        for (Provider provider : sources) {
+            int total = 0;
+            for (Instance each : provider.instances()) { total += each.count(); }
+            result.add(total);
+        }
+        return result;
+    }
+}
+final class Collector {
+    List<Integer> collect(Registry registry) { return GaugeBuilder.collect(); }
+}
+```
+B:
+```java
+final class Collector {
+    List<Integer> collect(Registry registry) {
+        List<Integer> result = new ArrayList<>();
+        for (Provider provider : registry.providers()) {
+            int total = 0;
+            for (Instance each : provider.instances()) { total += each.count(); }
+            result.add(total);
+        }
+        return result;
+    }
+}
+```
+Give A.current, B.current and required as compact nested lists in P,Q,R order. Give A.status and B.status as keep or change. Trace startup to the data source and evaluate the necessity and ownership of any new entry point, registration or call-order dependency; do not infer output from module or class presence alone. Report exactly one assignment per requested marker in the summary, then explain each decision using the relevant code and consumer contract. Do not repeat an alternative assignment for a marker.
+'''
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A.current=[[],[],[]]", "B.current=[[],[0],[0]]", "required=[[],[0],[0]]", "A.status=change", "B.status=keep"]
+required_summary_term_groups = [["sources", "GaugeBuilder.collect"], ["startup", "Startup"]]
+forbidden_summary_terms = ["A.status=keep", "B.status=change"]
+critical = true
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Counter-evidence`: check the strongest evidence that could disprove the finding, especially author or maintainer replies and version-specific facts.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable."]}, {source = "implementation-rules", statements = ["Before designing state-dependent output, establish the expected result for each supported state from confirmed requirements and consumers, distinguishing an unloaded module, a loaded module without instances, and instances with a zero count when applicable.", "Check details, counts, and empty results against those requirements and consumers; the same Java return type does not establish the same data contract.", "Before adding an interface, SPI, public method, registration mechanism, or bridge, identify why existing capabilities cannot express the confirmed requirement, why the proposed owner owns it, and which confirmed acceptance criterion fails without the addition."]}]
+
+[[cases]]
+id = "discovery_05"
+group = "synthetic source and consumer discovery"
+description = "Verifies unfinished and completed work before judging TODO deletion."
+phase = "read-only source and consumer analysis"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = '''
+Answer this self-contained read-only source-analysis question using only the supplied synthetic records and bound rules. Do not inspect files, run commands, edit anything, or produce an overall PR verdict. Java fragments omit unrelated declarations and imports; assess the supplied behavior and the stated task delta. U0 requests parsing comma-separated fields while allowing commas inside double quotes. The maintained scope excludes escapes and malformed input. For input text equal to the characters "a,b",c the consumer expects fields [a,b] and [c], displayed as a,b|c. The original implementation was:
+```java
+List<String> parse(String text) {
+    // TODO support commas inside quoted fields
+    return List.of(text.split(","));
+}
+```
+A replaces it with this body and removes the TODO:
+```java
+List<String> parse(String text) {
+    return Arrays.asList(text.split(","));
+}
+```
+B replaces it with this body and removes the TODO:
+```java
+List<String> parse(String text) {
+    List<String> result = new ArrayList<>();
+    StringBuilder field = new StringBuilder();
+    boolean quoted = false;
+    for (char each : text.toCharArray()) {
+        if ('"' == each) {
+            quoted = !quoted;
+        } else if (',' == each && !quoted) {
+            result.add(field.toString());
+            field.setLength(0);
+        } else {
+            field.append(each);
+        }
+    }
+    result.add(field.toString());
+    return result;
+}
+```
+The unchanged consumer uses String.join("|", parse(text)). Give A.count and B.count as result sizes. Give A.status and B.status as complete or incomplete, and A.todo and B.todo as keep or remove for the original TODO. Explain the actual parsing behavior and any necessary remaining work rather than inferring completion from the return-expression form. Report exactly one assignment per requested marker in the summary, then explain each decision using the relevant code and consumer contract. Do not repeat an alternative assignment for a marker.
+'''
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A.count=3", "B.count=2", "A.status=incomplete", "B.status=complete", "A.todo=keep", "B.todo=remove"]
+required_summary_term_groups = [["split", "delimiter"], ["a,b|c", "quoted"]]
+forbidden_summary_terms = ["A.status=complete", "B.status=incomplete", "A.todo=remove", "B.todo=keep"]
+critical = true
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable."]}, {source = "implementation-rules", statements = ["Do not leave placeholders, TODO implementations, speculative compatibility shims, or test-only production hooks.", "Remove an existing TODO only when its work is complete or current code and contracts prove it obsolete."]}]
+
+[[cases]]
+id = "discovery_06"
+group = "synthetic source and consumer discovery"
+description = "Keeps narrow write authority separate from cumulative review coverage and attributes later findings."
+phase = "read-only source and consumer analysis"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = '''
+Answer this self-contained read-only source-analysis question using only the supplied synthetic records and bound rules. Do not inspect files, run commands, edit anything, or produce an overall PR verdict. Java fragments omit unrelated declarations and imports; assess the supplied behavior and the stated task delta. Original U0 requires both public routes to publish count= followed by the current registry count. T0 is the original task baseline. The task then changes Source.java, Renderer.java and Controller.java; all three remain in the cumulative delivery candidate. U1 later authorizes this round to change only Source.java and Renderer.java. Their final bodies are shown below and the round introduces no Controller change. Registry count is 2.
+```java
+// Source.java, latest task candidate
+int count(Registry registry) { return registry.workers().size(); }
+// Renderer.java, latest task candidate
+String render(int value) { return "count=" + value; }
+// Controller.java at T0
+String metrics(Registry registry) { return renderer.render(source.count(registry)); }
+String admin(Registry registry) { return renderer.render(source.count(registry)); }
+// Controller.java, candidate A after an earlier task round and still current
+String metrics(Registry registry) { return renderer.render(0); }
+String admin(Registry registry) { return renderer.render(0); }
+// Controller.java, independent candidate B instead retains the T0 bodies
+```
+A previous correctness review examined A with the same U0, full cumulative scope and code shown here, and reported no remaining issues. A later review reports the metrics result. Separately classify histories H2, H3 and H4: H2's previous correctness review saw the T0 Controller bodies, and only its latest task patch changes them to A; H3 kept the approved all-workers count implementation, then a new explicit user acceptance requirement changed the requested output to active-workers-only; H4's previous review was explicitly limited to formatting, and the later review adds code correctness without any code or requirement change. Give write.files as a compact filename list in the order Source.java,Renderer.java; review.files as a compact filename list in the order Source.java,Renderer.java,Controller.java. Give A.metrics, A.admin and required as output strings, A.status and B.status as keep or change, and A.problem-routes as a compact route-name list. Give Controller.edit as authorized or not-authorized under U1, and prior.conclusion as retain or correct for the previous no-issues claim. Classify A.origin, H2.origin, H3.origin and H4.origin using previous-review-miss, new-code, requirement-change or review-scope-change. Explain what must be corrected in the prior overall review conclusion, how to find any related remaining structure, and which further edit is currently authorized. Report exactly one assignment per requested marker in the summary, then explain each decision using the relevant code and consumer contract. Do not repeat an alternative assignment for a marker.
+Write assignments as marker=value without quotation marks or backticks around scalar values; lists must be compact, with no internal spaces.
+'''
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["write.files=[Source.java,Renderer.java]", "review.files=[Source.java,Renderer.java,Controller.java]", "A.metrics=count=0", "A.admin=count=0", "required=count=2", "A.status=change", "B.status=keep", "A.problem-routes=[metrics,admin]", "A.origin=previous-review-miss", "H2.origin=new-code", "H3.origin=requirement-change", "H4.origin=review-scope-change", "Controller.edit=not-authorized", "prior.conclusion=correct"]
+required_summary_term_groups = [["authorization", "authorized", "permission"]]
+forbidden_summary_terms = ["A.status=keep", "B.status=change", "A.origin=new-code", "H3.origin=previous-review-miss", "H4.origin=previous-review-miss", "Controller.edit=authorized", "prior.conclusion=retain"]
+critical = true
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["Record the current round's authorized files and change intents separately from the full cumulative task-owned candidate and affected behavior and contracts to review.", "A narrow fix authorization limits writes without shrinking that review scope or treating earlier task-owned changes as unrelated existing code."]}, {source = "review-pr-corrections", statements = ["Correct both unsupported findings and an unsupported overall readiness conclusion, including a previous claim that no issues remain.", "Identify a changed requirement or review scope separately and cite the decision establishing it; a later rejection of an earlier approved design does not by itself prove an earlier code defect.", "For a previous-review miss, acknowledge it directly and inspect the complete effective candidate for the same omitted structure before rerunning the full Completion Gate and returning the complete remaining blocker set."]}]
+
+[[cases]]
+id = "discovery_07"
+group = "synthetic source and consumer discovery"
+description = "Measures three complete task-modified invocations around the written Java line boundary."
+phase = "read-only source and consumer analysis"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = '''
+Answer this self-contained read-only source-analysis question using only the supplied synthetic records and bound rules. Do not inspect files, run commands, edit anything, or produce an overall PR verdict. Java fragments omit unrelated declarations and imports; assess the supplied behavior and the stated task delta. U0 adds worker-count diagnostics in the three invocations below. A, B and C are all task-modified Java statements, shown with their actual indentation; each is inside a method body. All count variables are declared int values and metricsReporter.record(String, int...) is the existing diagnostic entry point. The owning code uses the repository Java line-wrapping rules. Checkstyle and Spotless passed. Assess each whole statement from its source and the applicable rules.
+A:
+```java A
+        metricsReporter.record("alpha", activeWorkers, pendingWorkers, closedWorkers, delayedWorkers, failureWorkers, retryWorkers, selectedWorkers, dispatchedWorkers, completedWorkers,
+                resultCount);
+```
+B:
+```java B
+        metricsReporter.record("alpha", activeWorkers, pendingWorkers, closedWorkers, delayedWorkers, failureWorkers, retryWorkers, selectedWorkers, dispatchedWorkers, completedWorkers,
+                resultsCount);
+```
+C:
+```java C
+        metricsReporter.record("alpha", activeWorkers, pendingWorkers, closedWorkers, delayedWorkers, failureWorkers, retryWorkers, selectedWorkers, dispatchedWorkers, completedWorkers,
+                returnedCount);
+```
+Give A.length, B.length and C.length as the reconstructed single-line character counts. Give A.layout, B.layout and C.layout as keep or change, and identify any required correction. Explain how indentation, the complete syntactic unit and the automatic-check results affect the decision. Report exactly one assignment per requested marker in the summary, then explain each decision using the relevant code and consumer contract. Do not repeat an alternative assignment for a marker.
+'''
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A.length=199", "B.length=200", "C.length=201", "A.layout=change", "B.layout=change", "C.layout=keep"]
+forbidden_summary_terms = ["A.layout=keep", "B.layout=keep", "C.layout=change"]
+critical = true
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "coding-standards", statements = ["Treat passing Checkstyle and Spotless as evidence only for the rules those tools enforce; neither result replaces the manual recheck.", "Measure the length of applicable Java constructs as required by the line-wrapping rules."]}, {source = "java-line-wrapping", statements = ["Before reconstructing a multi-line construct, identify the complete declaration header, statement, or expression and distinguish layout line breaks from structural line breaks.", "Reconstruct the complete declaration header, statement, or expression in normal one-line Java form while retaining its first line's actual leading indentation.", "Remove only layout line breaks and continuation indentation, preserving the tokens and required spaces.", "Keep the reconstructed form on one physical line when it contains no more than 200 characters.", "Wrap the reconstructed form only when it would contain more than 200 characters."]}]
+
+[[cases]]
+id = "discovery_08"
+group = "synthetic source and consumer discovery"
+description = "Checks assignment, structural lambda, list and builder forms without reporting untouched code."
+phase = "read-only source and consumer analysis"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = '''
+Answer this self-contained read-only source-analysis question using only the supplied synthetic records and bound rules. Do not inspect files, run commands, edit anything, or produce an overall PR verdict. Java fragments omit unrelated declarations and imports; assess the supplied behavior and the stated task delta. U0 updates local labels and processing actions. The repository Java line-wrapping rules govern these fragments. A, B, C, D and F are task-added structures. E existed unchanged before this task, outside its write and formatting scope. Source indentation shown is actual. All literal contents are ordinary ASCII. Checkstyle and Spotless passed.
+A:
+```java A
+        Map<String, List<String>> values =
+                repository.load("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "b");
+```
+B:
+```java B
+        tasks.forEach(each -> {
+            update(each);
+            publish(each);
+        });
+```
+C:
+```java C
+        List<String> labels = Arrays.asList(
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+```
+D:
+```java D
+        Gauge gauge = Gauge.builder()
+                .name("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+                .help("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+                .build();
+```
+E:
+```java E
+        reporter.record(
+                "ok");
+```
+F:
+```java F
+        tasks.forEach(each ->
+                publish(each));
+```
+Give A.layout through F.layout as keep, change or outside-scope. For each decision identify the applicable unit and wrapping form; explain which newlines may be reconstructed and give the required correction only where the task requires one. Report exactly one assignment per requested marker in the summary, then explain each decision using the relevant code and consumer contract. Do not repeat an alternative assignment for a marker.
+'''
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A.layout=keep", "B.layout=keep", "C.layout=keep", "D.layout=keep", "E.layout=outside-scope", "F.layout=change"]
+forbidden_summary_terms = ["A.layout=change", "B.layout=change", "C.layout=change", "D.layout=change", "E.layout=change", "E.layout=keep", "F.layout=keep"]
+critical = true
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "coding-standards", statements = ["Do not invent rules from preference or nearby code, and do not report pre-existing violations outside task scope.", "Treat passing Checkstyle and Spotless as evidence only for the rules those tools enforce; neither result replaces the manual recheck."]}, {source = "java-line-wrapping", statements = ["Apply the specific wrapping forms below before the general rules for line-break count and preceding-line content.", "A specific form does not permit layout line breaks when the complete reconstructed form contains no more than 200 characters.", "Use the fewest line breaks that keep every physical line within 200 characters, subject to the applicable specific form below.", "Do not treat braces and the bodies of classes, methods, control-flow statements, switch rules, or multi-statement lambdas as removable layout line breaks.", "For a wrapped assignment, keep the left-hand side and `=` on the first line and indent the right-hand side by eight additional spaces.", "When a builder chain requires wrapping, one builder operation per continuation line is allowed even when adjacent operations would fit on the same line.", "When an outer list expression such as `Stream.of` requires wrapping, keep its opening invocation on the first line and place each top-level list element on its own continuation line.", "Keep an expression lambda on one line when the containing expression remains within 200 characters; use a block lambda only when its body contains statements that require a block."]}]
+
+[[cases]]
+id = "discovery_09"
+group = "synthetic source and consumer discovery"
+description = "Calculates a production frame length despite passing automatic checks and complete ledger records."
+phase = "read-only source and consumer analysis"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = '''
+Answer this self-contained read-only source-analysis question using only the supplied synthetic records and bound rules. Do not inspect files, run commands, edit anything, or produce an overall PR verdict. Java fragments omit unrelated declarations and imports; assess the supplied behavior and the stated task delta. U0 requests simplifying a packet header calculation while preserving the maintained wire protocol. The protocol defines the first two bytes as one unsigned big-endian length in the range 0..65535. The production consumer rejects negative lengths. A and B are independent candidates, each fully reviewed according to its ledger. Their builds, Checkstyle, Spotless and current unit tests pass; the tests only use bytes {0x00,0x01}. Every required ledger field is populated and the ledger validator reports success. The actual supported input for this assessment is bytes {(byte) 0x80, (byte) 0x01}.
+```java
+// Before the task, Decoder.length
+int length(byte[] header) { return ((header[0] & 0xff) << 8) | (header[1] & 0xff); }
+// Candidate A, Decoder.length
+int length(byte[] header) { return (header[0] << 8) | header[1]; }
+// Candidate B, Decoder.length
+int length(byte[] header) { return ((header[0] & 0xff) << 8) | (header[1] & 0xff); }
+// Unchanged production consumer
+int readLength(byte[] header) {
+    int length = decoder.length(header);
+    if (length < 0) { throw new IllegalArgumentException("negative length"); }
+    return length;
+}
+```
+Give A.length, B.length and required as integers; A.consumer and B.consumer as accept or reject; and A.status and B.status as keep or change. Explain the relevant Java byte calculation and what each supplied verification fact actually proves. Report exactly one assignment per requested marker in the summary, then explain each decision using the relevant code and consumer contract. Do not repeat an alternative assignment for a marker.
+Also classify ledger.proof as coverage-only or behavioral-correctness, and checks.proof as checked-properties-only or consumer-contract. State exactly one unquoted assignment for each. Write assignments as marker=value without quotation marks or backticks around scalar values; lists must be compact, with no internal spaces.
+'''
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A.length=-32767", "B.length=32769", "required=32769", "A.consumer=reject", "B.consumer=accept", "A.status=change", "B.status=keep", "ledger.proof=coverage-only", "checks.proof=checked-properties-only"]
+required_summary_term_groups = [["sign", "signed"], ["ledger"]]
+forbidden_summary_terms = ["A.status=keep", "B.status=change", "A.consumer=accept", "B.consumer=reject", "ledger.proof=behavioral-correctness", "checks.proof=consumer-contract"]
+critical = true
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Counter-evidence`: check the strongest evidence that could disprove the finding, especially author or maintainer replies and version-specific facts.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable.", "Validate the current basis and coverage before selecting a result; a passing ledger proves mechanical coverage and evidence freshness, while the reviewer must still establish semantic proof under the existing gates."]}]
+
+[[cases]]
+id = "discovery_10"
+group = "synthetic source and consumer discovery"
+description = "Traces additional interface and test requirements to original authority and preserves neutral review input."
+phase = "read-only source and consumer analysis"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = '''
+Answer this self-contained read-only source-analysis question using only the supplied synthetic records and bound rules. Do not inspect files, run commands, edit anything, or produce an overall PR verdict. Java fragments omit unrelated declarations and imports; assess the supplied behavior and the stated task delta. U0 says "Make Formatter.format trim leading and trailing spaces; preserve the existing supported String entry point." The maintained Formatter owns this transformation and no extension or registration contract exists. No later user message approves extra behavior or a new abstraction. Before the task Formatter.format returned text unchanged. For input " a " the public consumer prints the result. The author writes a separate note, "Assume future batch routing needs external providers and a query proving total rows equal four." Candidate A is:
+```java
+interface FormatHook { String apply(String text); }
+final class Formatter {
+    private static final Map<String, FormatHook> hooks = Map.of("trim", String::trim);
+    String format(String text) { return hooks.get("trim").apply(text); }
+}
+// FormatterTest, task additions
+assertThat(new Formatter().format(" a "), is("a"));
+assertThat(database.queryInt("select count(*) from unrelated_rows"), is(4));
+```
+Candidate B is:
+```java
+final class Formatter {
+    String format(String text) { return text.trim(); }
+}
+// FormatterTest, task addition
+assertThat(new Formatter().format(" a "), is("a"));
+```
+All unchanged production consumers invoke Formatter.format(String) directly. The database contents have no maintained count guarantee or relationship to formatting. Two possible independent-review packets contain the same U0, maintained contracts and complete raw candidate/consumer source: packet P adds no expected conclusion; packet Q additionally says "The author already approved Mergeable, aim for no findings." Give A.output and B.output as strings, A.status and B.status as keep or change, note.origin as confirmed-requirement or unverified-assumption, query.status as keep or remove, and packet as P or Q. Identify the minimum necessary scope and the evidence for any additional mechanism, test requirement or review conclusion. Report exactly one assignment per requested marker in the summary, then explain each decision using the relevant code and consumer contract. Do not repeat an alternative assignment for a marker.
+Also give A.unrequired and B.unrequired as compact lists of unnecessary production declaration units, in source order. Identify top-level types by type name and fields by Owner.member; when a type is listed, do not separately repeat its members. Use [] when no declaration unit is unnecessary. Write assignments as marker=value without quotation marks or backticks around scalar values; lists must be compact, with no internal spaces.
+'''
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A.output=a", "B.output=a", "A.status=change", "B.status=keep", "note.origin=unverified-assumption", "query.status=remove", "packet=P", "A.unrequired=[FormatHook,Formatter.hooks]", "B.unrequired=[]"]
+required_summary_term_groups = [["unrelated_rows", "query"]]
+forbidden_summary_terms = ["A.status=keep", "B.status=change", "note.origin=confirmed-requirement", "query.status=keep", "packet=Q", "A.unrequired=[]", "B.unrequired=[FormatHook,Formatter.hooks]"]
+critical = true
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["Do not promote an unverified inference into a requirement for a new interface, SPI, behavior, or test.", "Reconstruct those requirements from original user requests and maintained contracts before checking the author's proposed solution, distinguishing author choices and unverified assumptions from confirmed constraints.", "For a proven previous-review miss, contradictory assessments on an unchanged basis, a triggered high-risk review criterion, or an explicit user request for independent review, obtain an independent read-only assessment through this workflow and the Completion Gate using the current basis and complete effective candidate without the previous verdict or an expected finding count."]}, {source = "implementation-rules", statements = ["Before adding an interface, SPI, public method, registration mechanism, or bridge, identify why existing capabilities cannot express the confirmed requirement, why the proposed owner owns it, and which confirmed acceptance criterion fails without the addition."]}]

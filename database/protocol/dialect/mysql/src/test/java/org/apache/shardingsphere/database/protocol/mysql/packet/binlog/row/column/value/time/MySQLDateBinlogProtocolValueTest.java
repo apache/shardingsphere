@@ -27,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Locale;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -50,6 +51,33 @@ class MySQLDateBinlogProtocolValueTest {
         when(byteBuf.readUnsignedMediumLE()).thenReturn(1901 * 16 * 32 + 32 + 1);
         Date expected = Date.valueOf(LocalDate.of(1901, 1, 1));
         assertThat(new MySQLDateBinlogProtocolValue().read(columnDef, payload), is(expected));
+    }
+    
+    @Test
+    void assertReadDateWithZeroMonth() {
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedMediumLE()).thenReturn(2023 * 16 * 32 + 15);
+        assertThat(new MySQLDateBinlogProtocolValue().read(columnDef, payload), is("2023-00-15"));
+    }
+    
+    @Test
+    void assertReadDateWithZeroDay() {
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedMediumLE()).thenReturn(2023 * 16 * 32 + 5 * 32);
+        assertThat(new MySQLDateBinlogProtocolValue().read(columnDef, payload), is("2023-05-00"));
+    }
+    
+    @Test
+    void assertReadDateWithZeroMonthUnderNonLatinDefaultFormatLocale() {
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedMediumLE()).thenReturn(2023 * 16 * 32 + 15);
+        Locale originalLocale = Locale.getDefault(Locale.Category.FORMAT);
+        Locale.setDefault(Locale.Category.FORMAT, Locale.forLanguageTag("th-TH-u-nu-thai"));
+        try {
+            assertThat(new MySQLDateBinlogProtocolValue().read(columnDef, payload), is("2023-00-15"));
+        } finally {
+            Locale.setDefault(Locale.Category.FORMAT, originalLocale);
+        }
     }
     
     @Test

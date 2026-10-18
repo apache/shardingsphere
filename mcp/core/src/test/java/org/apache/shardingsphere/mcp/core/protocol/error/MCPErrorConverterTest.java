@@ -61,6 +61,7 @@ import java.sql.SQLTransientConnectionException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -72,6 +73,66 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MCPErrorConverterTest {
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("argumentContractRecoveryCases")
+    void assertConvertArgumentContractWithoutSafeRetry(final String name, final String category, final String expectedType, final String expectedMessage, final String expectedModelAction) {
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPToolArgumentContractViolationException("foo_tool", "foo_field", category, expectedType, List.of(), Map.of())).toPayload();
+        assertThat(actual.get("summary"), is(expectedMessage));
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is(category));
+        assertThat(actualRecovery.get("field"), is("foo_field"));
+        assertThat(actualRecovery.get("model_action"), is(expectedModelAction));
+        assertThat(Objects.toString(actualRecovery.get("expected_type"), ""), is(expectedType));
+        assertFalse(actualRecovery.containsKey("allowed_values"));
+        assertFalse(actualRecovery.containsKey("suggested_arguments"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
+        assertThat(actualNextAction.get("type"), is("ask_user"));
+        assertThat(actualNextAction.get("required_inputs"), is(List.of("foo_field")));
+    }
+    
+    private static Stream<Arguments> argumentContractRecoveryCases() {
+        return Stream.of(
+                Arguments.of("unknown argument", "unknown_argument", "", "foo_field is not a supported argument for foo_tool.",
+                        "Remove arguments that are not declared by the tool inputSchema before retrying."),
+                Arguments.of("invalid argument type", "invalid_argument_type", "integer", "foo_field must be an integer.", "Retry with a value that matches the declared inputSchema type."),
+                Arguments.of("general schema mismatch", "invalid_argument", "", "foo_field does not match the input schema for foo_tool.",
+                        "Retry with a value that matches the declared inputSchema type."));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("missingArgumentRecoveryCases")
+    void assertConvertMissingArgumentRecovery(final String name, final String field, final String expectedResource, final String expectedAction) {
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPMissingToolArgumentException(field)).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("missing_argument"));
+        assertThat(actualRecovery.get("missing_fields"), is(List.of(field)));
+        Collection<?> actualResources = (Collection<?>) actualRecovery.get("resources_to_read");
+        assertThat(actualResources.isEmpty(), is(expectedResource.isEmpty()));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
+        assertThat(actualNextAction.get("type"), is(expectedAction));
+        assertThat(Objects.toString(actualNextAction.get("resource_uri"), ""), is(expectedResource));
+    }
+    
+    private static Stream<Arguments> missingArgumentRecoveryCases() {
+        return Stream.of(
+                Arguments.of("workflow identifier", "plan_id", "shardingsphere://capabilities", "resource_read"),
+                Arguments.of("SQL text", "sql", "", "ask_user"),
+                Arguments.of("schema name", "schema", "", "ask_user"));
+    }
+    
+    @Test
+    void assertConvertInvalidUpdateExecutionMode() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidExecutionModeException("database_gateway_execute_update", List.of("preview", "execute"),
+                Map.of("sql", "UPDATE foo SET id=1", "execution_mode", "preview"))).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("model_action"), is("Retry with execution_mode=preview or execution_mode=execute."));
+        assertThat(actualRecovery.get("allowed_values"), is(List.of("preview", "execute")));
+        assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("sql", "UPDATE foo SET id=1", "execution_mode", "preview")));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
+        assertThat(actualNextAction.get("tool_name"), is("database_gateway_execute_update"));
+        assertThat(actualNextAction.get("arguments"), is(Map.of("sql", "UPDATE foo SET id=1", "execution_mode", "preview")));
+    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertConvertCases")

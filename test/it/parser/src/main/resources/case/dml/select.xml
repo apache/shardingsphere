@@ -13403,6 +13403,20 @@
         </from>
     </select>
 
+    <select sql-case-id="select_string_literal_projection_firebird">
+        <projections start-index="7" stop-index="19">
+            <expression-projection text="x" start-index="7" stop-index="9">
+                <expr>
+                    <literal-expression value="x" start-index="7" stop-index="9" />
+                </expr>
+            </expression-projection>
+            <column-projection name="order_id" start-index="12" stop-index="19" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="26" stop-index="32" />
+        </from>
+    </select>
+
     <select sql-case-id="select_gen_id_with_identifier_firebird">
         <projections start-index="7" stop-index="20">
             <expression-projection text="GEN_ID(seq, 1)" start-index="7" stop-index="20">
@@ -13480,6 +13494,57 @@
                 <owner name="schema1" start-index="14" stop-index="20" />
             </simple-table>
         </from>
+    </select>
+
+    <select sql-case-id="select_where_like_escape_backslash_firebird">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="56">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="56">
+                    <left>
+                        <column name="status" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="40" stop-index="56">
+                            <items>
+                                <literal-expression value="a\_b" start-index="40" stop-index="45" />
+                            </items>
+                            <items>
+                                <literal-expression value="\" start-index="54" stop-index="56" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_backslash_literal_firebird">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="45">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="45">
+                    <left>
+                        <column name="status" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="C:\dir\" start-index="37" stop-index="45" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </select>
 
     <select sql-case-id="select_where_and_like_firebird">
@@ -15455,6 +15520,307 @@
                 <left-parentheses parentheses="(" start-index="7" stop-index="7" />
                 <right-parentheses parentheses=")" start-index="18" stop-index="18" />
             </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cast_tsvector_name_pg">
+        <projections start-index="7" stop-index="21">
+            <expression-projection text="'foo'::tsvector" start-index="7" stop-index="21">
+                <expr>
+                    <type-cast-expression>
+                        <expression>
+                            <literal-expression value="foo" start-index="7" stop-index="11" />
+                        </expression>
+                        <data-type>tsvector</data-type>
+                    </type-cast-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cast_tsquery_name_pg">
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="'foo'::tsquery" start-index="7" stop-index="20">
+                <expr>
+                    <type-cast-expression>
+                        <expression>
+                            <literal-expression value="foo" start-index="7" stop-index="11" />
+                        </expression>
+                        <data-type>tsquery</data-type>
+                    </type-cast-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cast_varbit_name_pg">
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="'0101'::varbit" start-index="7" stop-index="20">
+                <expr>
+                    <type-cast-expression>
+                        <expression>
+                            <literal-expression value="0101" start-index="7" stop-index="12" />
+                        </expression>
+                        <data-type>varbit</data-type>
+                    </type-cast-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cast_inet_name_pg">
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="'127.0.0.1'::inet" start-index="7" stop-index="23">
+                <expr>
+                    <type-cast-expression>
+                        <expression>
+                            <literal-expression value="127.0.0.1" start-index="7" stop-index="17" />
+                        </expression>
+                        <data-type>inet</data-type>
+                    </type-cast-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cast_cidr_name_pg">
+        <projections start-index="7" stop-index="25">
+            <expression-projection text="'127.0.0.0/8'::cidr" start-index="7" stop-index="25">
+                <expr>
+                    <type-cast-expression>
+                        <expression>
+                            <literal-expression value="127.0.0.0/8" start-index="7" stop-index="19" />
+                        </expression>
+                        <data-type>cidr</data-type>
+                    </type-cast-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cast_macaddr_name_pg">
+        <projections start-index="7" stop-index="34">
+            <expression-projection text="'08:00:2b:01:02:03'::macaddr" start-index="7" stop-index="34">
+                <expr>
+                    <type-cast-expression>
+                        <expression>
+                            <literal-expression value="08:00:2b:01:02:03" start-index="7" stop-index="25" />
+                        </expression>
+                        <data-type>macaddr</data-type>
+                    </type-cast-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cast_macaddr8_name_pg">
+        <projections start-index="7" stop-index="41">
+            <expression-projection text="'08:00:2b:01:02:03:04:05'::macaddr8" start-index="7" stop-index="41">
+                <expr>
+                    <type-cast-expression>
+                        <expression>
+                            <literal-expression value="08:00:2b:01:02:03:04:05" start-index="7" stop-index="31" />
+                        </expression>
+                        <data-type>macaddr8</data-type>
+                    </type-cast-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cast_line_name_pg">
+        <projections start-index="7" stop-index="21">
+            <expression-projection text="'{1,2,3}'::line" start-index="7" stop-index="21">
+                <expr>
+                    <type-cast-expression>
+                        <expression>
+                            <literal-expression value="{1,2,3}" start-index="7" stop-index="15" />
+                        </expression>
+                        <data-type>line</data-type>
+                    </type-cast-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_tsvector_function_name_pg">
+        <projections start-index="7" stop-index="21">
+            <expression-projection text="tsvector('foo')" start-index="7" stop-index="21">
+                <expr>
+                    <function function-name="tsvector" text="tsvector('foo')" start-index="7" stop-index="21">
+                        <parameter>
+                            <literal-expression value="foo" start-index="16" stop-index="20" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_tsquery_function_name_pg">
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="tsquery('foo')" start-index="7" stop-index="20">
+                <expr>
+                    <function function-name="tsquery" text="tsquery('foo')" start-index="7" stop-index="20">
+                        <parameter>
+                            <literal-expression value="foo" start-index="15" stop-index="19" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_type_keyword_columns_pg">
+        <from>
+            <simple-table name="foo" start-index="75" stop-index="77" />
+        </from>
+        <projections start-index="7" stop-index="68">
+            <column-projection name="tsvector" start-index="7" stop-index="14" />
+            <column-projection name="tsquery" start-index="17" stop-index="23" />
+            <column-projection name="varbit" start-index="26" stop-index="31" />
+            <column-projection name="inet" start-index="34" stop-index="37" />
+            <column-projection name="cidr" start-index="40" stop-index="43" />
+            <column-projection name="macaddr" start-index="46" stop-index="52" />
+            <column-projection name="macaddr8" start-index="55" stop-index="62" />
+            <column-projection name="line" start-index="65" stop-index="68" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_where_is_not_distinct_from_firebird" parameters="'init'">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="29" stop-index="63" literal-stop-index="68">
+            <expr>
+                <binary-operation-expression start-index="35" stop-index="63" literal-stop-index="68">
+                    <left>
+                        <column name="status" start-index="35" stop-index="40" />
+                    </left>
+                    <operator>IS NOT DISTINCT FROM</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="0" start-index="63" stop-index="63" />
+                        <literal-expression value="init" start-index="63" stop-index="68" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_starting_with_firebird" parameters="'in'">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="29" stop-index="56" literal-stop-index="59">
+            <expr>
+                <binary-operation-expression start-index="35" stop-index="56" literal-stop-index="59">
+                    <left>
+                        <column name="status" start-index="35" stop-index="40" />
+                    </left>
+                    <operator>STARTING WITH</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="0" start-index="56" stop-index="56" />
+                        <literal-expression value="in" start-index="56" stop-index="59" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_similar_to_escape_firebird" parameters="'in#%', '#'">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="29" stop-index="62" literal-stop-index="69">
+            <expr>
+                <binary-operation-expression start-index="35" stop-index="62" literal-stop-index="69">
+                    <left>
+                        <column name="status" start-index="35" stop-index="40" />
+                    </left>
+                    <operator>SIMILAR TO</operator>
+                    <right>
+                        <list-expression start-index="53" stop-index="62" literal-start-index="53" literal-stop-index="69">
+                            <items>
+                                <parameter-marker-expression parameter-index="0" start-index="53" stop-index="53" />
+                                <literal-expression value="in#%" start-index="53" stop-index="58" />
+                            </items>
+                            <items>
+                                <parameter-marker-expression parameter-index="1" start-index="62" stop-index="62" />
+                                <literal-expression value="#" start-index="67" stop-index="69" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_is_distinct_from_and_equal_firebird" parameters="'init', 1">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="29" stop-index="76" literal-stop-index="81">
+            <expr>
+                <binary-operation-expression start-index="35" stop-index="76" literal-stop-index="81">
+                    <left>
+                        <binary-operation-expression start-index="35" stop-index="59" literal-stop-index="64">
+                            <left>
+                                <column name="status" start-index="35" stop-index="40" />
+                            </left>
+                            <operator>IS DISTINCT FROM</operator>
+                            <right>
+                                <parameter-marker-expression parameter-index="0" start-index="59" stop-index="59" />
+                                <literal-expression value="init" start-index="59" stop-index="64" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="65" stop-index="76" literal-start-index="70" literal-stop-index="81">
+                            <left>
+                                <column name="order_id" start-index="65" stop-index="72" literal-start-index="70" literal-stop-index="77" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <parameter-marker-expression parameter-index="1" start-index="76" stop-index="76" />
+                                <literal-expression value="1" start-index="81" stop-index="81" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    <select sql-case-id="select_with_schema_database_link_and_alias_oracle">
+        <from>
+            <simple-table name="subs_rateplan" alias="x" db-link="PJZW" at="@" start-index="14" stop-index="42" table-name-start-index="23" table-name-stop-index="35">
+                <owner name="userinfo" start-index="14" stop-index="21" />
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_dotted_database_link_oracle">
+        <from>
+            <simple-table name="subs_rateplan" alias="x" db-link="PJZW.EXAMPLE.COM" at="@" start-index="14" stop-index="54" table-name-start-index="23" table-name-stop-index="35">
+                <owner name="userinfo" start-index="14" stop-index="21" />
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
     </select>
 </sql-parser-test-cases>

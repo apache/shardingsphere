@@ -41,6 +41,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -67,6 +70,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
@@ -82,6 +86,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -133,6 +138,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, 1);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobInfoRegistry.refreshTable("foo_db", "foo_tbl", Collections.emptyMap());
+        FirebirdBlobInfoRegistry.refreshTable("foo_db", "foo_tbl_0", Collections.emptyMap());
     }
     
     private MetaDataContexts createMetaDataContexts() {
@@ -218,6 +224,22 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeBlobColumnOfShardingTable() throws Exception {
+        DataNodeRuleAttribute dataNodeRuleAttribute = mock(DataNodeRuleAttribute.class);
+        when(dataNodeRuleAttribute.findFirstActualTable("foo_tbl")).thenReturn(Optional.of("foo_tbl_0"));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(dataNodeRuleAttribute));
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("foo_db");
+        doReturn(new RuleMetaData(Collections.singleton(rule))).when(database).getRuleMetaData();
+        FirebirdBlobInfoRegistry.refreshTable("foo_db", "foo_tbl_0", Collections.singletonMap("id", 7));
+        FirebirdReturnColumnPacket actualColumnPacket = describeSingleColumn("SELECT id FROM foo_tbl");
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class, RETURNS_DEEP_STUBS);
+        actualColumnPacket.write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
+        verify(payload).writeInt4LE(7);
+    }
+    
+    @Test
     void assertDescribeBlobTypeColumnWithoutRegistryEntryReturnsBlobTypeAndDefaultSubtype() throws Exception {
         FirebirdReturnColumnPacket columnPacket = describeSingleColumn("SELECT content FROM foo_tbl");
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class, RETURNS_DEEP_STUBS);
@@ -267,6 +289,37 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPrepareStatementReturnPacket returnPacket = (FirebirdPrepareStatementReturnPacket) responsePacket.getData();
         assertThat(returnPacket.getDescribeSelect().size(), is(1));
         return returnPacket.getDescribeSelect().get(0);
+    }
+    
+    @Test
+    void assertDescribeLiterals() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT 'it''s', 1 AS one FROM foo_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.SELECT,
+                FirebirdSQLInfoPacketType.FIELD,
+                FirebirdSQLInfoPacketType.FIELD,
+                FirebirdSQLInfoPacketType.ALIAS,
+                FirebirdSQLInfoPacketType.ALIAS,
+                FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPacketPayload stringPayload = mock(FirebirdPacketPayload.class);
+        when(stringPayload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        actualReturnPacket.getDescribeSelect().get(0).write(stringPayload);
+        verify(stringPayload, times(2)).writeBytes("CONSTANT".getBytes(StandardCharsets.UTF_8));
+        verify(stringPayload).writeInt4LE(4);
+        FirebirdPacketPayload numberPayload = mock(FirebirdPacketPayload.class);
+        when(numberPayload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        actualReturnPacket.getDescribeSelect().get(1).write(numberPayload);
+        verify(numberPayload).writeBytes("CONSTANT".getBytes(StandardCharsets.UTF_8));
+        verify(numberPayload).writeBytes("one".getBytes(StandardCharsets.UTF_8));
     }
     
     @Test

@@ -21,13 +21,38 @@ import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowLifecycleUtilsTest {
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("dropWorkflowCases")
+    void assertIsDropWorkflow(final String name, final WorkflowContextSnapshot snapshot, final boolean expected) {
+        assertThat(WorkflowLifecycleUtils.isDropWorkflow(snapshot), is(expected));
+    }
+    
+    private static Stream<Arguments> dropWorkflowCases() {
+        return Stream.of(
+                Arguments.of("before clarification", new WorkflowContextSnapshot(), false),
+                Arguments.of("drop operation", createSnapshot("drop"), true),
+                Arguments.of("create operation", createSnapshot("create"), false));
+    }
+    
+    private static WorkflowContextSnapshot createSnapshot(final String operationType) {
+        WorkflowContextSnapshot result = new WorkflowContextSnapshot();
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        clarifiedIntent.setOperationType(operationType);
+        result.setClarifiedIntent(clarifiedIntent);
+        return result;
+    }
     
     @Test
     void assertIsNotOwnedBySessionWithBlankSnapshotSession() {
@@ -54,23 +79,5 @@ class WorkflowLifecycleUtilsTest {
     @Test
     void assertResolveCurrentStepWithoutInteractionPlan() {
         assertThat(WorkflowLifecycleUtils.resolveCurrentStep(new WorkflowContextSnapshot()), is(""));
-    }
-    
-    @Test
-    void assertIsDropWorkflow() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        clarifiedIntent.setOperationType("drop");
-        snapshot.setClarifiedIntent(clarifiedIntent);
-        assertTrue(WorkflowLifecycleUtils.isDropWorkflow(snapshot));
-    }
-    
-    @Test
-    void assertIsDropWorkflowWithNonDropOperation() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        clarifiedIntent.setOperationType("create");
-        snapshot.setClarifiedIntent(clarifiedIntent);
-        assertFalse(WorkflowLifecycleUtils.isDropWorkflow(snapshot));
     }
 }

@@ -323,8 +323,8 @@
     </update>
 
     <update sql-case-id="update_with_dblink_oracle">
-        <table start-index="7" stop-index="22">
-            <simple-table name="employees" start-index="7" stop-index="22" />
+        <table start-index="7" stop-index="15">
+            <simple-table name="employees" start-index="7" stop-index="15" db-link="remote" at="@" table-name-start-index="7" table-name-stop-index="15" />
         </table>
         <set start-index="24" stop-index="42">
             <assignment start-index="24" stop-index="42">
@@ -2843,6 +2843,107 @@
                 <column name="last_login" start-index="25" stop-index="34" />
                 <assignment-value>
                     <literal-expression value="null" start-index="38" stop-index="41" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_tuple_literal_pg">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="48">
+            <assignment start-index="19" stop-index="48">
+                <columns name="user_id" start-index="20" stop-index="26" />
+                <columns name="status" start-index="29" stop-index="34" />
+                <assignment-value>
+                    <common-expression text="(1, 'foo')" start-index="39" stop-index="48" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_tuple_subquery_pg">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="55">
+            <assignment start-index="19" stop-index="55">
+                <columns name="user_id" start-index="20" stop-index="26" />
+                <columns name="status" start-index="29" stop-index="34" />
+                <assignment-value>
+                    <subquery start-index="39" stop-index="55">
+                        <select>
+                            <projections start-index="47" stop-index="54">
+                                <expression-projection text="1" start-index="47" stop-index="47">
+                                    <expr>
+                                        <literal-expression value="1" start-index="47" stop-index="47" />
+                                    </expr>
+                                </expression-projection>
+                                <expression-projection text="'foo'" start-index="50" stop-index="54">
+                                    <expr>
+                                        <literal-expression value="foo" start-index="50" stop-index="54" />
+                                    </expr>
+                                </expression-projection>
+                            </projections>
+                        </select>
+                    </subquery>
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_array_element_pg">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="35">
+            <assignment start-index="19" stop-index="35">
+                <column name="status" start-index="19" stop-index="27" />
+                <assignment-value>
+                    <literal-expression value="foo" start-index="31" stop-index="35" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_array_slice_pg">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="40">
+            <assignment start-index="19" stop-index="40">
+                <column name="status" start-index="19" stop-index="32" />
+                <assignment-value>
+                    <literal-expression value="foo" start-index="36" stop-index="40" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_array_parameter_pg" parameters="1, 'foo'">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="33">
+            <assignment start-index="19" stop-index="33">
+                <column name="status" start-index="19" stop-index="28" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="32" stop-index="33" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_member_target_pg">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="38">
+            <assignment start-index="19" stop-index="38">
+                <column name="status" start-index="19" stop-index="30" />
+                <assignment-value>
+                    <literal-expression value="foo" start-index="34" stop-index="38" />
                 </assignment-value>
             </assignment>
         </set>

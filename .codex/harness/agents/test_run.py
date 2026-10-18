@@ -1669,6 +1669,30 @@ class RunTest(unittest.TestCase):
                 self.assertNotIn(answer, prompt)
         self.assertIn("Preserve exact technical terms", prompt)
 
+    def test_create_prompt_excludes_expected_answer_fields(self) -> None:
+        case = copy.deepcopy(self.case)
+        case["required_summary_terms"] = ["hidden_required_answer"]
+        case["forbidden_summary_terms"] = ["hidden_forbidden_answer"]
+        case["required_summary_term_groups"] = [["hidden_group_answer"]]
+        case["required_summary_prefix"] = "hidden_prefix_answer"
+        prompt = run.create_prompt([case], "sha256")
+        for answer in (
+                "hidden_required_answer", "hidden_forbidden_answer", "hidden_group_answer", "hidden_prefix_answer"):
+            with self.subTest(answer=answer):
+                self.assertNotIn(answer, prompt)
+
+    def test_discovery_java_fixture_lengths_include_indentation(self) -> None:
+        case = run.load_cases(["discovery_07"])[0]
+        for marker, expected_length in (("A", 199), ("B", 200), ("C", 201)):
+            with self.subTest(marker=marker):
+                source = case["prompt"].split(f"```java {marker}\n", 1)[1].split("\n```", 1)[0]
+                lines = source.splitlines()
+                self.assertEqual(2, len(lines))
+                self.assertTrue(lines[0].startswith(" " * 8))
+                reconstructed = lines[0].rstrip() + " " + lines[1].lstrip()
+                self.assertEqual(expected_length, len(reconstructed))
+                self.assertTrue(all(len(line) <= 200 for line in lines))
+
     def test_create_prompt_distinguishes_local_checks_from_smoke_actions(self) -> None:
         prompt = run.create_prompt([self.case], "sha256")
         self.assertIn("Use `run_local_checks` when the case explicitly asks to run or rerun a focused unit test", prompt)
