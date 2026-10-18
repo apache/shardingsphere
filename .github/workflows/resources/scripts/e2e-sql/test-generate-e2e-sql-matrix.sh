@@ -104,16 +104,34 @@ assert_scenarios() {
   assert_eq "$desc" "$expected" "$actual"
 }
 
-assert_no_excludes() {
+assert_opengauss_scope() {
   local desc="$1" matrix_json="$2"
   local count
   count=$(echo "$matrix_json" | jq '[.include[] | select(
-    (.adapter == "jdbc" and .scenario == "passthrough") or
-    (.adapter == "jdbc" and .mode == "Cluster") or
-    (.adapter == "proxy" and .mode == "Standalone" and
-      (.scenario == "empty_rules" or .scenario == "distsql_rdl" or .scenario == "passthrough"))
+    (.database == "openGauss" and
+      (.mode != "Cluster" or .scenario != "encrypt" or .["additional-options"] != ""))
   )] | length')
   assert_eq "$desc" "0" "$count"
+}
+
+assert_adapter_parity() {
+  local desc="$1" matrix_json="$2"
+  local count
+  count=$(echo "$matrix_json" | jq '[
+    .include[] | select(.database != "H2" and .["additional-options"] == "")
+  ] | group_by([.mode, .database, .scenario]) |
+    map(select([.[].adapter] | sort != ["jdbc", "proxy"])) | length')
+  assert_eq "$desc" "0" "$count"
+}
+
+assert_cluster_encrypt_jobs() {
+  local desc="$1" matrix_json="$2" expected_json="$3"
+  local expected actual
+  expected=$(echo "$expected_json" | jq -c 'sort')
+  actual=$(echo "$matrix_json" | jq -c '[.include[] | select(
+    .mode == "Cluster" and .scenario == "encrypt" and .["additional-options"] == ""
+  ) | [.adapter, .database]] | sort')
+  assert_eq "$desc" "$expected" "$actual"
 }
 
 assert_extra_passthrough_job() {
@@ -191,7 +209,7 @@ assert_full_trigger() {
   target_matrix=$(get_output "$outputs" "target-matrix")
   assert_all_scenarios "$label: target-matrix has all 22 scenarios" "$target_matrix"
   assert_distsql_bootstrap_job "$label: target-matrix" "$target_matrix" "1"
-  assert_no_excludes "$label: target-matrix has no excluded combinations" "$target_matrix"
+  assert_opengauss_scope "$label: openGauss is limited to Cluster encrypt" "$target_matrix"
   assert_extra_passthrough_job "$label: target-matrix has extra passthrough job" "$target_matrix"
   assert_not_empty "$label: target-smoke-overlap-count exists" "$(get_output "$outputs" "target-smoke-overlap-count")"
   assert_not_empty "$label: estimated-remaining-tests-jobs exists" "$(get_output "$outputs" "estimated-remaining-tests-jobs")"
@@ -212,6 +230,8 @@ if [ ! -f "$TARGET_SCRIPT" ]; then
   exit 1
 fi
 
+eval "$(sed -n '/^build_matrix() {/,/^}/p' "$TARGET_SCRIPT")"
+
 echo "Running tests for generate-e2e-sql-matrix.sh"
 echo ""
 
@@ -229,19 +249,19 @@ echo ""
 echo "--- #2: core_infra=true ---"
 outputs=$(run_script "$(build_filters core_infra=true)")
 assert_full_trigger "#2" "$outputs" "pairwise"
-assert_less_than "#2: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "119"
+assert_less_than "#2: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "172"
 
 echo ""
 echo "--- #3: test_framework=true ---"
 outputs=$(run_script "$(build_filters test_framework=true)")
 assert_full_trigger "#3" "$outputs" "pairwise"
-assert_less_than "#3: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "119"
+assert_less_than "#3: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "172"
 
 echo ""
 echo "--- #4: pom_changes=true ---"
 outputs=$(run_script "$(build_filters pom_changes=true)")
 assert_full_trigger "#4" "$outputs" "pairwise"
-assert_less_than "#4: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "119"
+assert_less_than "#4: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "172"
 
 # ============================================================
 # B. workflow_dispatch
@@ -253,12 +273,21 @@ echo ""
 echo "--- #5: workflow_dispatch ---"
 outputs=$(run_script "$(build_filters)" "workflow_dispatch")
 assert_full_trigger "#5" "$outputs" "cartesian"
+manual_full=$(get_output "$outputs" "target-matrix")
+manual_smoke=$(get_output "$outputs" "smoke-matrix")
+expected_cluster_encrypt='[["proxy","MySQL"],["proxy","PostgreSQL"],["proxy","openGauss"],["jdbc","MySQL"],["jdbc","PostgreSQL"],["jdbc","openGauss"]]'
+assert_cluster_encrypt_jobs "#5: all six Cluster encrypt jobs occur once" "$manual_full" "$expected_cluster_encrypt"
+assert_eq "#5: complete candidate count" "172" "$(echo "$manual_full" | jq '.include | length')"
+assert_eq "#5: no duplicate candidates" "0" "$(echo "$manual_full" | jq '.include | length - (unique | length)')"
+assert_eq "#5: Smoke covers both adapters in both modes" "16" "$(echo "$manual_smoke" | jq '.include | length')"
+assert_adapter_parity "#5: full candidates have matching adapter coverage" "$manual_full"
+assert_adapter_parity "#5: Smoke has matching adapter coverage" "$manual_smoke"
 
 echo ""
 echo "--- #6: workflow_dispatch with pairwise ---"
 outputs=$(run_script "$(build_filters)" "workflow_dispatch" "pairwise")
 assert_full_trigger "#6" "$outputs" "pairwise"
-assert_less_than "#6: workflow_dispatch pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "119"
+assert_less_than "#6: workflow_dispatch pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "172"
 
 echo ""
 echo "--- #7: workflow_dispatch with invalid algorithm falls back to auto(cartesian) ---"
@@ -337,10 +366,11 @@ echo "--- #16: feature_encrypt ---"
 outputs=$(run_script "$(build_filters feature_encrypt=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_scenarios "#16: encrypt smoke scenarios" "$smoke" '["encrypt"]'
+assert_eq "#16: Smoke includes both adapters without openGauss extras" "8" "$(echo "$smoke" | jq '.include | length')"
 target=$(get_output "$outputs" "target-matrix")
 expected_encrypt='["encrypt","dbtbl_with_readwrite_splitting_and_encrypt","sharding_and_encrypt","encrypt_and_readwrite_splitting","encrypt_shadow","sharding_encrypt_shadow","mask_encrypt","mask_encrypt_sharding"]'
 assert_scenarios "#16: encrypt scenarios" "$target" "$expected_encrypt"
-assert_all_dimensions "#16" "$target"
+assert_all_dimensions "#16" "$target" "3"
 assert_eq "#16: target-matrix-algorithm" "pairwise" "$(get_output "$outputs" "target-matrix-algorithm")"
 
 echo ""
@@ -448,6 +478,26 @@ GITHUB_OUTPUT="$output_file" bash "$SCRIPT_DIR/generate-remaining-matrix.sh" "$f
 remaining=$(get_output "$(cat "$output_file")" "matrix")
 rm -f "$output_file"
 assert_distsql_bootstrap_job "#26: remaining-matrix" "$remaining" "1"
+
+echo ""
+echo "--- #27: Cluster encrypt additions remain in Remaining Tests ---"
+output_file=$(mktemp)
+GITHUB_OUTPUT="$output_file" bash "$SCRIPT_DIR/generate-remaining-matrix.sh" "$(build_filters)" "$manual_full" "$manual_smoke"
+remaining=$(get_output "$(cat "$output_file")" "matrix")
+rm -f "$output_file"
+assert_eq "#27: Remaining Tests is exactly full minus Smoke" \
+  "$(jq -cn --argjson full "$manual_full" --argjson smoke "$manual_smoke" '{include: ($full.include - $smoke.include)}')" "$remaining"
+
+echo ""
+echo "--- #28: Cluster encrypt includes follow effective dimensions ---"
+matrix=$(build_matrix '["proxy"]' '["Cluster"]' '["PostgreSQL"]' '["encrypt"]')
+assert_cluster_encrypt_jobs "#28: proxy respects database selection and adds openGauss" "$matrix" '[["proxy","PostgreSQL"],["proxy","openGauss"]]'
+matrix=$(build_matrix '["jdbc"]' '["Cluster"]' '["MySQL"]' '["encrypt"]')
+assert_cluster_encrypt_jobs "#28: JDBC respects MySQL selection and adds openGauss" "$matrix" '[["jdbc","MySQL"],["jdbc","openGauss"]]'
+matrix=$(build_matrix '["jdbc"]' '["Cluster"]' '["PostgreSQL"]' '["encrypt"]')
+assert_cluster_encrypt_jobs "#28: JDBC respects PostgreSQL selection and adds openGauss" "$matrix" '[["jdbc","PostgreSQL"],["jdbc","openGauss"]]'
+matrix=$(build_matrix '["proxy","jdbc"]' '["Standalone"]' '["MySQL","PostgreSQL"]' '["encrypt"]')
+assert_eq "#28: Standalone encrypt has only four original jobs" "4" "$(echo "$matrix" | jq '.include | length')"
 
 # ============================================================
 # Summary

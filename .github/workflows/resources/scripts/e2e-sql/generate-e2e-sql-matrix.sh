@@ -59,7 +59,7 @@ ALL_MODES='["Standalone","Cluster"]'
 ALL_DATABASES='["MySQL","PostgreSQL"]'
 SMOKE_SCENARIOS='["db","tbl"]'
 
-# Build matrix JSON from dimension arrays and scenarios, applying exclude/include rules
+# Build matrix JSON from dimension arrays and scenarios, applying include rules
 build_matrix() {
   local adapters="$1"
   local modes="$2"
@@ -74,18 +74,11 @@ build_matrix() {
     --argjson scenarios "$scenarios" \
     --argjson include_extra_job "$include_extra_job" \
     '
-    def should_exclude(adapter; mode; scenario):
-      (adapter == "jdbc" and scenario == "passthrough") or
-      (adapter == "jdbc" and mode == "Cluster") or
-      (adapter == "proxy" and mode == "Standalone" and
-        (scenario == "empty_rules" or scenario == "distsql_rdl" or scenario == "passthrough"));
-
     [
       $adapters[] as $adapter |
       $modes[] as $mode |
       $databases[] as $database |
       $scenarios[] as $scenario |
-      select(should_exclude($adapter; $mode; $scenario) | not) |
       {adapter: $adapter, mode: $mode, database: $database, scenario: $scenario, "additional-options": ""}
     ] as $base_jobs |
 
@@ -103,7 +96,12 @@ build_matrix() {
      else []
      end) as $distsql_bootstrap_job |
 
-    {include: ($base_jobs + $extra_job + $distsql_bootstrap_job)}
+    (if $include_extra_job and ($modes | index("Cluster")) != null and ($scenarios | index("encrypt")) != null
+     then [$adapters[] | {adapter: ., mode: "Cluster", database: "openGauss", scenario: "encrypt", "additional-options": ""}]
+     else []
+     end) as $opengauss_encrypt_jobs |
+
+    {include: ($base_jobs + $extra_job + $distsql_bootstrap_job + $opengauss_encrypt_jobs)}
     '
 }
 
