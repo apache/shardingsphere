@@ -502,12 +502,12 @@ copyOptionList
     ;
 
 copyOption
-    : FORMAT identifier
+    : FORMAT (identifier | BINARY)
     | FREEZE booleanValue?
     | DELIMITER STRING_
     | NULL STRING_
     | DEFAULT STRING_
-    | HEADER (booleanValue | MATCH)?
+    | HEADER (booleanValue | MATCH | STRING_)?
     | QUOTE STRING_
     | ESCAPE STRING_
     | FORCE_QUOTE (columnNames | ASTERISK_)
