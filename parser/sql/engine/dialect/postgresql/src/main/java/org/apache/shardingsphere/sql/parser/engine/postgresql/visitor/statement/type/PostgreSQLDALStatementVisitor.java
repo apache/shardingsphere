@@ -49,7 +49,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.Se
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLCheckpointStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
@@ -142,7 +141,7 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         for (VacuumRelationContext each : ctx.vacuumRelation()) {
             ColIdContext colId = each.qualifiedName().colId();
-            TableNameSegment tableName = new TableNameSegment(colId.start.getStartIndex(), colId.stop.getStopIndex(), new IdentifierValue(colId.getText()));
+            TableNameSegment tableName = new TableNameSegment(colId.start.getStartIndex(), colId.stop.getStopIndex(), createIdentifierValue(colId.getText()));
             result.getValue().add(new SimpleTableSegment(tableName));
         }
         return result;
