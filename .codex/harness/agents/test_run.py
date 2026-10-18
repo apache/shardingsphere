@@ -75,6 +75,30 @@ class RunTest(unittest.TestCase):
             "response_style": case.get("response_style", "concise"),
         }
 
+    def _create_passing_baseline(self) -> dict[str, Any]:
+        return {
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
+            "case_contracts": run.normalize_case_contracts([self.case]),
+            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
+            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
+        }
+
+    @staticmethod
+    def _create_evaluation(case_ids: list[str], failed_case_ids: list[str]) -> dict[str, Any]:
+        return {
+            "evaluation": 1,
+            "case_count": len(case_ids),
+            "case_ids": case_ids,
+            "returned_case_ids": case_ids,
+            "input_bytes": 1,
+            "prompt_sha256": "prompt",
+            "duration_seconds": 1.0,
+            "runner_exit_code": 0,
+            "failed_case_ids": failed_case_ids,
+            "events_log": "events-evaluation-1.jsonl",
+            "stderr_log": "stderr-evaluation-1.log",
+        }
+
     def test_duplicate_action(self) -> None:
         with patch.object(run, "ACTIONS", [*run.ACTIONS, run.ACTIONS[0]]), self.assertRaisesRegex(ValueError, "Duplicate actions"):
             run.validate_cases([self.case])
@@ -513,12 +537,7 @@ class RunTest(unittest.TestCase):
         actual_case["actions"] = ["edit_code"]
         actual = {"results": [actual_case]}
         results = run.grade([self.case], actual)
-        baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
-            "case_contracts": run.normalize_case_contracts([self.case]),
-            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
-            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
-        }
+        baseline = self._create_passing_baseline()
         stability = run.summarize_semantic_stability([self.case], actual, results, baseline, [])
         self.assertFalse(stability["passed"])
         self.assertEqual(["semantic-stability-safety-regression"], stability["blockers"])
@@ -528,12 +547,7 @@ class RunTest(unittest.TestCase):
         actual_case["decision"] = "refuse"
         actual = {"results": [actual_case]}
         results = run.grade([self.case], actual)
-        baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
-            "case_contracts": run.normalize_case_contracts([self.case]),
-            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
-            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
-        }
+        baseline = self._create_passing_baseline()
         stability = run.summarize_semantic_stability([self.case], actual, results, baseline, [])
         self.assertFalse(stability["aggregate_non_regression"])
         self.assertTrue(stability["aggregate_non_regression_is_diagnostic"])
@@ -544,12 +558,7 @@ class RunTest(unittest.TestCase):
         actual_case["decision"] = "refuse"
         actual = {"results": [actual_case]}
         results = run.grade([self.case], actual)
-        baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
-            "case_contracts": run.normalize_case_contracts([self.case]),
-            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
-            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
-        }
+        baseline = self._create_passing_baseline()
         confirmation = {
             "safety_regressions": [],
             "blockers": [],
@@ -567,12 +576,7 @@ class RunTest(unittest.TestCase):
         actual_case["decision"] = "refuse"
         actual = {"results": [actual_case]}
         results = run.grade([self.case], actual)
-        baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
-            "case_contracts": run.normalize_case_contracts([self.case]),
-            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
-            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
-        }
+        baseline = self._create_passing_baseline()
         confirmation = {
             "safety_regressions": [],
             "blockers": [],
@@ -970,12 +974,7 @@ class RunTest(unittest.TestCase):
         cases = [self.case, added_case]
         actual = {"results": [self._create_case_result(each, "Proceed.") for each in cases]}
         results = run.grade(cases, actual)
-        baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
-            "case_contracts": run.normalize_case_contracts([self.case]),
-            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
-            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
-        }
+        baseline = self._create_passing_baseline()
         confirmation = {
             "safety_regressions": [],
             "blockers": [],
@@ -999,12 +998,7 @@ class RunTest(unittest.TestCase):
         failed_original["decision"] = "refuse"
         actual = {"results": [failed_original, self._create_case_result(added_case, "Proceed.")]}
         results = run.grade(cases, actual)
-        baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
-            "case_contracts": run.normalize_case_contracts([self.case]),
-            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
-            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
-        }
+        baseline = self._create_passing_baseline()
         confirmation = {
             "safety_regressions": [],
             "blockers": [],
@@ -1021,12 +1015,7 @@ class RunTest(unittest.TestCase):
     def test_semantic_stability_rejects_unreported_addition_and_removed_original(self) -> None:
         added_case = copy.deepcopy(self.case)
         added_case["id"] = "added_case"
-        baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
-            "case_contracts": run.normalize_case_contracts([self.case]),
-            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
-            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
-        }
+        baseline = self._create_passing_baseline()
         for cases, contract_changes in (([self.case, added_case], []), ([added_case], ["added_case:case-added"])):
             with self.subTest(cases=cases, contract_changes=contract_changes):
                 actual = {"results": [self._create_case_result(each, "Proceed.") for each in cases]}
@@ -1186,19 +1175,7 @@ class RunTest(unittest.TestCase):
         passing_result = self._create_case_result(case, "Review FooService without editing it.")
         failing_result = self._create_case_result(case, "Refuse.")
         failing_result["decision"] = "refuse"
-        passing_evaluations = [{
-            "evaluation": 1,
-            "case_count": 1,
-            "case_ids": [case["id"]],
-            "returned_case_ids": [case["id"]],
-            "input_bytes": 1,
-            "prompt_sha256": "prompt",
-            "duration_seconds": 1.0,
-            "runner_exit_code": 0,
-            "failed_case_ids": [],
-            "events_log": "events-evaluation-1.jsonl",
-            "stderr_log": "stderr-evaluation-1.log",
-        }]
+        passing_evaluations = [self._create_evaluation([case["id"]], [])]
         failing_evaluations = copy.deepcopy(passing_evaluations)
         failing_evaluations[0]["failed_case_ids"] = [case["id"]]
         with tempfile.TemporaryDirectory() as output_parent:
@@ -1246,19 +1223,7 @@ class RunTest(unittest.TestCase):
         failed_case_ids = [
             each["case_id"] for each in run.grade(cases, {"results": actual_results}) if not each["passed"]
         ]
-        evaluations = [{
-            "evaluation": 1,
-            "case_count": len(cases),
-            "case_ids": case_ids,
-            "returned_case_ids": case_ids,
-            "input_bytes": 1,
-            "prompt_sha256": "prompt",
-            "duration_seconds": 1.0,
-            "runner_exit_code": 0,
-            "failed_case_ids": failed_case_ids,
-            "events_log": "events-evaluation-1.jsonl",
-            "stderr_log": "stderr-evaluation-1.log",
-        }]
+        evaluations = [self._create_evaluation(case_ids, failed_case_ids)]
         with tempfile.TemporaryDirectory() as output_parent:
             baseline_dir = Path(output_parent) / "baseline"
             common_patches = (
@@ -1318,19 +1283,7 @@ class RunTest(unittest.TestCase):
             failed_case_ids = [
                 each["case_id"] for each in run.grade(cases, {"results": actual_results}) if not each["passed"]
             ]
-            return [{
-                "evaluation": 1,
-                "case_count": len(cases),
-                "case_ids": case_ids,
-                "returned_case_ids": case_ids,
-                "input_bytes": 1,
-                "prompt_sha256": "prompt",
-                "duration_seconds": 1.0,
-                "runner_exit_code": 0,
-                "failed_case_ids": failed_case_ids,
-                "events_log": "events-evaluation-1.jsonl",
-                "stderr_log": "stderr-evaluation-1.log",
-            }]
+            return [self._create_evaluation(case_ids, failed_case_ids)]
 
         confirmation = {
             "executed": True,

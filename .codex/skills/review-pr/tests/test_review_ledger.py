@@ -82,20 +82,12 @@ class ReviewLedgerTest(unittest.TestCase):
 
     def test_confirmed_finding_requires_non_blank_proof(self):
         actual_ledger = self.create_valid_ledger()
-        actual_ledger["findings"] = [{
-            "id": "F1",
-            "status": "confirmed",
-            "origin": " ",
-            "fix_boundary": "boundary",
-            "evidence": [""],
-            "full_path": [" "],
-            "counter_evidence": [],
-            "necessity": " ",
-            "scope_proof": " ",
-            "files": [""],
-            "reason": "",
-            "anchors": [],
-        }]
+        finding = self.create_confirmed_finding("F1")
+        finding.update({
+            "origin": " ", "fix_boundary": "boundary", "evidence": [""], "full_path": [" "], "counter_evidence": [],
+            "necessity": " ", "scope_proof": " ", "files": [""], "anchors": [],
+        })
+        actual_ledger["findings"] = [finding]
         errors = ledger.validate_ledger(actual_ledger)
         self.assertIn("F1 confirmed finding is missing origin", errors)
         self.assertIn("F1 confirmed finding is missing evidence", errors)
@@ -162,20 +154,12 @@ class ReviewLedgerTest(unittest.TestCase):
 
     def test_incomplete_gap_requires_complete_proof(self):
         actual_ledger = self.create_valid_ledger()
-        actual_ledger["findings"] = [{
-            "id": "G1",
-            "status": "review-incomplete-gap",
-            "origin": " ",
-            "fix_boundary": "",
-            "evidence": [""],
-            "full_path": [" "],
-            "counter_evidence": [],
-            "necessity": " ",
-            "scope_proof": " ",
-            "files": [""],
-            "reason": " ",
-            "anchors": [],
-        }]
+        finding = self.create_incomplete_gap()
+        finding.update({
+            "origin": " ", "evidence": [""], "full_path": [" "], "counter_evidence": [],
+            "necessity": " ", "scope_proof": " ", "files": [""], "reason": " ", "anchors": [],
+        })
+        actual_ledger["findings"] = [finding]
         errors = ledger.validate_ledger(actual_ledger, incomplete_result=True)
         expected_errors = [
             "G1 incomplete gap is missing the unavailable fact",

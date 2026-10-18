@@ -60,7 +60,6 @@ class FileScanContext:
     added_lines: list[str]
 
 
-RULE_ORDER = ("R8", "R14", "R15-A", "R15-B", "R15-C", "R15-D", "R15-E", "R15-F", "R15-G", "R15-H", "R15-I", "R15-J")
 PRECHECK_ORDER = (
     "checkstyle-final-parameters",
     "parameterized-methodsource",
@@ -71,29 +70,20 @@ PRECHECK_MESSAGES = {
     "parameterized-methodsource": "parameterized tests should use @MethodSource providers with at least 3 Arguments rows",
     "parameterized-name-parameter": "parameterized tests should declare the first parameter exactly as `final String name`",
 }
-RULE_MESSAGES = {
-    "R8": "@ParameterizedTest must use name = \"{0}\"",
-    "R14": "forbidden boolean assertion found",
-    "R15-A": "parameterization suitability requires semantic evidence",
-    "R15-B": "metadata accessor candidates require request-scope review",
-    "R15-C": "out-of-scope worktree mutation detected",
-    "R15-D": "each @ParameterizedTest must have >= 3 Arguments rows from @MethodSource",
-    "R15-E": "each @ParameterizedTest method must declare first parameter as `final String name`",
-    "R15-F": "@ParameterizedTest method body must not contain switch",
-    "R15-G": "added type declarations require nested scenario-transport review",
-    "R15-H": "do not dispatch boolean assertions by control flow to choose assertTrue/assertFalse",
-    "R15-I": "parameterized tests must not use Consumer in signatures or @MethodSource argument rows",
-    "R15-J": "helper and provider target invocations require semantic ownership review",
-}
-RULE_MODES = {
-    "R15-A": "manual",
-    "R15-B": "manual",
-    "R15-D": "hybrid",
-    "R15-G": "manual",
-    "R15-I": "hybrid",
-    "R15-J": "hybrid",
-}
-RULE_SPECS = tuple(RuleSpec(each, RULE_MESSAGES[each], RULE_MODES.get(each, "automated")) for each in RULE_ORDER)
+RULE_SPECS = (
+    RuleSpec("R8", "@ParameterizedTest must use name = \"{0}\"", "automated"),
+    RuleSpec("R14", "forbidden boolean assertion found", "automated"),
+    RuleSpec("R15-A", "parameterization suitability requires semantic evidence", "manual"),
+    RuleSpec("R15-B", "metadata accessor candidates require request-scope review", "manual"),
+    RuleSpec("R15-C", "out-of-scope worktree mutation detected", "automated"),
+    RuleSpec("R15-D", "each @ParameterizedTest must have >= 3 Arguments rows from @MethodSource", "hybrid"),
+    RuleSpec("R15-E", "each @ParameterizedTest method must declare first parameter as `final String name`", "automated"),
+    RuleSpec("R15-F", "@ParameterizedTest method body must not contain switch", "automated"),
+    RuleSpec("R15-G", "added type declarations require nested scenario-transport review", "manual"),
+    RuleSpec("R15-H", "do not dispatch boolean assertions by control flow to choose assertTrue/assertFalse", "automated"),
+    RuleSpec("R15-I", "parameterized tests must not use Consumer in signatures or @MethodSource argument rows", "hybrid"),
+    RuleSpec("R15-J", "helper and provider target invocations require semantic ownership review", "hybrid"),
+)
 BOOLEAN_ASSERTION_BAN_PATTERN = re.compile(
     r"assertThat\s*\((?s:[^;]*?)is\s*\(\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*\)\s*\)"
     r"|assertEquals\s*\(\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*,"
