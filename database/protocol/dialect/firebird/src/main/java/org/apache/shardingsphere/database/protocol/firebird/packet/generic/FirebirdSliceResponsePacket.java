@@ -26,6 +26,8 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdDecFloatBinaryProtocolValue;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdDoubleBinaryProtocolValue;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdInt8BinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdTimeTZBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
@@ -105,17 +107,12 @@ public final class FirebirdSliceResponsePacket extends FirebirdPacket {
         }
     }
     
-    private FirebirdBinaryProtocolValue getProtocolValue() {
-        if (FirebirdBinaryColumnType.DEC16 == columnType) {
-            return new FirebirdDecFloatBinaryProtocolValue(FirebirdBinaryColumnType.DEC16);
+    private void writeTextElement(final FirebirdPacketPayload payload, final Object element) {
+        if (element instanceof byte[]) {
+            payload.writeOpaque((byte[]) element, elementLength);
+            return;
         }
-        if (FirebirdBinaryColumnType.DEC34 == columnType) {
-            return new FirebirdDecFloatBinaryProtocolValue(FirebirdBinaryColumnType.DEC34);
-        }
-        if (FirebirdBinaryColumnType.TIME_TZ == columnType) {
-            return new FirebirdTimeTZBinaryProtocolValue();
-        }
-        return FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(columnType);
+        payload.writeOpaque(element.toString(), elementLength);
     }
     
     private byte[] toInt128Bytes(final Object element) {
@@ -142,11 +139,22 @@ public final class FirebirdSliceResponsePacket extends FirebirdPacket {
         return BigInteger.valueOf(((Number) element).longValue());
     }
     
-    private void writeTextElement(final FirebirdPacketPayload payload, final Object element) {
-        if (element instanceof byte[]) {
-            payload.writeOpaque((byte[]) element, elementLength);
-            return;
+    private FirebirdBinaryProtocolValue getProtocolValue() {
+        if (FirebirdBinaryColumnType.DEC16 == columnType) {
+            return new FirebirdDecFloatBinaryProtocolValue(FirebirdBinaryColumnType.DEC16);
         }
-        payload.writeOpaque(element.toString(), elementLength);
+        if (FirebirdBinaryColumnType.DEC34 == columnType) {
+            return new FirebirdDecFloatBinaryProtocolValue(FirebirdBinaryColumnType.DEC34);
+        }
+        if (FirebirdBinaryColumnType.TIME_TZ == columnType) {
+            return new FirebirdTimeTZBinaryProtocolValue();
+        }
+        if (FirebirdBinaryColumnType.D_FLOAT == columnType) {
+            return new FirebirdDoubleBinaryProtocolValue();
+        }
+        if (FirebirdBinaryColumnType.QUAD == columnType) {
+            return new FirebirdInt8BinaryProtocolValue();
+        }
+        return FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(columnType);
     }
 }

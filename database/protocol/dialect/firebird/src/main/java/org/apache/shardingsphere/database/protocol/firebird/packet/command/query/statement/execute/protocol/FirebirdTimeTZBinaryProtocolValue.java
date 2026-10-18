@@ -22,17 +22,23 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetTime;
+import java.time.ZoneOffset;
 
 /**
  * Binary protocol value for time with timezone for Firebird.
  *
- * <p>Firebird writes a {@code dtype_sql_time_tz} datum as {@code xdr_long} of the time fractions followed by
- * {@code xdr_short} of the zone offset in minutes, see the {@code dtype_sql_time_tz} case of src/common/xdr.cpp of the
- * Firebird server. Because {@code xdr_short} is transported in a longword the value occupies 8 bytes on the wire
- * although its descriptor storage length is 6 bytes.</p>
+ * <p>Firebird writes a {@code dtype_sql_time_tz} datum as {@code xdr_long} of the UTC time fractions followed by
+ * {@code xdr_short} of the Firebird time zone identifier, see the {@code dtype_sql_time_tz} case of src/common/xdr.cpp
+ * of the Firebird server. The identifier is not an offset, it is the offset in minutes shifted by {@code 1439}, so
+ * {@code UTC} is 1439 and {@code +02:00} is 1559, which keeps the whole supported range positive. Because
+ * {@code xdr_short} is transported in a longword the value occupies 8 bytes on the wire although its descriptor
+ * storage length is 6 bytes.</p>
  */
 public final class FirebirdTimeTZBinaryProtocolValue implements FirebirdBinaryProtocolValue {
+    
+    private static final int TIME_ZONE_ID_CORRECTION = 1439;
     
     @Override
     public Object read(final FirebirdPacketPayload payload) {
@@ -44,8 +50,9 @@ public final class FirebirdTimeTZBinaryProtocolValue implements FirebirdBinaryPr
     @Override
     public void write(final FirebirdPacketPayload payload, final Object value) {
         OffsetTime offsetTime = (OffsetTime) value;
-        payload.writeInt4(new FirebirdDateTimeUtils(LocalDateTime.of(LocalDate.ofEpochDay(0L), offsetTime.toLocalTime())).getEncodedTime());
-        payload.writeInt4(offsetTime.getOffset().getTotalSeconds() / 60);
+        LocalTime utcTime = offsetTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalTime();
+        payload.writeInt4(new FirebirdDateTimeUtils(LocalDateTime.of(LocalDate.ofEpochDay(0L), utcTime)).getEncodedTime());
+        payload.writeInt4(offsetTime.getOffset().getTotalSeconds() / 60 + TIME_ZONE_ID_CORRECTION);
     }
     
     @Override

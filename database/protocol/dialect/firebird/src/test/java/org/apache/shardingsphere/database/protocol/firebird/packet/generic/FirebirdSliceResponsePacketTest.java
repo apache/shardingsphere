@@ -64,13 +64,13 @@ class FirebirdSliceResponsePacketTest {
                 Arguments.of("smallint_slice", 2, FirebirdBinaryColumnType.SHORT, Collections.singletonList(1), 2, new byte[]{0, 0, 0, 60, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 1}),
                 Arguments.of("int4_slice", 8, FirebirdBinaryColumnType.LONG, Arrays.asList(1, 2), 4, new byte[]{0, 0, 0, 60, 0, 0, 0, 8, 0, 0, 0, 8, 0, 0, 0, 1, 0, 0, 0, 2}),
                 Arguments.of("text_slice", 1, FirebirdBinaryColumnType.TEXT, Collections.singletonList("A"), 1, new byte[]{0, 0, 0, 60, 0, 0, 0, 1, 0, 0, 0, 1, 65, 0, 0, 0}),
-                Arguments.of("padded_text_slice", 4, FirebirdBinaryColumnType.TEXT, Arrays.asList("A", "B"), 2, new byte[]{0, 0, 0, 60, 0, 0, 0, 4, 0, 0, 0, 4, 65, 0, 0, 0, 66, 0, 0, 0}),
+                Arguments.of("padded_text_slice", 4, FirebirdBinaryColumnType.TEXT, Arrays.asList("A", "B"), 2, new byte[]{0, 0, 0, 60, 0, 0, 0, 4, 0, 0, 0, 4, 65, 32, 0, 0, 66, 32, 0, 0}),
                 Arguments.of("binary_element_slice", 1, FirebirdBinaryColumnType.TEXT, Collections.singletonList(new byte[]{(byte) 0xFF}), 1,
                         new byte[]{0, 0, 0, 60, 0, 0, 0, 1, 0, 0, 0, 1, (byte) 0xFF, 0, 0, 0}),
                 Arguments.of("int128_slice", 16, FirebirdBinaryColumnType.INT128, Collections.singletonList(BigInteger.valueOf(-1L)), 16,
                         new byte[]{0, 0, 0, 60, 0, 0, 0, 16, 0, 0, 0, 16, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}),
                 Arguments.of("time_tz_slice", 6, FirebirdBinaryColumnType.TIME_TZ, Collections.singletonList(OffsetTime.parse("01:02:03+02:00")), 6,
-                        new byte[]{0, 0, 0, 60, 0, 0, 0, 6, 0, 0, 0, 6, 0x02, 0x38, 0x15, (byte) 0xB0, 0, 0, 0, 0x78}));
+                        new byte[]{0, 0, 0, 60, 0, 0, 0, 6, 0, 0, 0, 6, 0x31, 0x6d, 0x0b, (byte) 0xB0, 0, 0, 0x06, 0x17}));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -112,7 +112,9 @@ class FirebirdSliceResponsePacketTest {
         BigDecimal value = new BigDecimal("1.5");
         return Stream.of(
                 Arguments.of("int128", 16, FirebirdBinaryColumnType.INT128, BigInteger.valueOf(-2L), 16, repeatedSignBytes(16, (byte) -2)),
-                Arguments.of("time_tz", 6, FirebirdBinaryColumnType.TIME_TZ, OffsetTime.parse("01:02:03+02:00"), 6, new byte[]{0x02, 0x38, 0x15, (byte) 0xB0, 0, 0, 0, 0x78}),
+                Arguments.of("time_tz", 6, FirebirdBinaryColumnType.TIME_TZ, OffsetTime.parse("01:02:03+02:00"), 6, new byte[]{0x31, 0x6d, 0x0b, (byte) 0xB0, 0, 0, 0x06, 0x17}),
+                Arguments.of("d_float", 8, FirebirdBinaryColumnType.D_FLOAT, 1.5D, 8, new byte[]{0x3F, (byte) 0xF8, 0, 0, 0, 0, 0, 0}),
+                Arguments.of("quad", 8, FirebirdBinaryColumnType.QUAD, 5L, 8, new byte[]{0, 0, 0, 0, 0, 0, 0, 5}),
                 Arguments.of("dec16", 8, FirebirdBinaryColumnType.DEC16, value, 8, Decimal64.valueOf(value).toBytes()),
                 Arguments.of("dec34", 16, FirebirdBinaryColumnType.DEC34, value, 16, Decimal128.valueOf(value).toBytes()),
                 Arguments.of("binary_element", 1, FirebirdBinaryColumnType.TEXT, new byte[]{(byte) 0xFF}, 1, new byte[]{(byte) 0xFF, 0, 0, 0}));

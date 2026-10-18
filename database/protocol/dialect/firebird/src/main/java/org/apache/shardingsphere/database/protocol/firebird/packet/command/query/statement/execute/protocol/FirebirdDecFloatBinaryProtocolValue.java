@@ -64,12 +64,12 @@ public final class FirebirdDecFloatBinaryProtocolValue implements FirebirdBinary
         return getByteLength();
     }
     
+    private int getByteLength() {
+        return FirebirdBinaryColumnType.DEC16 == columnType ? DEC16_BYTE_LENGTH : DEC34_BYTE_LENGTH;
+    }
+    
     private BigDecimal toBigDecimal(final Object value) {
         Preconditions.checkArgument(value instanceof Number, "Can not encode DECFLOAT value `%s`", value);
         return value instanceof BigDecimal ? (BigDecimal) value : new BigDecimal(value.toString());
-    }
-    
-    private int getByteLength() {
-        return FirebirdBinaryColumnType.DEC16 == columnType ? DEC16_BYTE_LENGTH : DEC34_BYTE_LENGTH;
     }
 }

@@ -31,8 +31,11 @@ import static org.hamcrest.Matchers.is;
 
 class FirebirdTimeTZBinaryProtocolValueTest {
     
-    // 01:02:03 is 37230000 Firebird fractions, 0x023815B0, and the +02:00 offset is 120 minutes, 0x78, inside a longword
-    private static final byte[] ENCODED_TIME_TZ = {0x02, 0x38, 0x15, (byte) 0xB0, 0, 0, 0, 0x78};
+    /**
+     * 23:02:03 UTC, the instant of 01:02:03+02:00, is 829230000 Firebird time fractions, 0x316D0BB0, followed by the
+     * Firebird time zone id of that offset, 120 minutes plus the 1439 correction is 1559, 0x0617 inside a longword.
+     */
+    private static final byte[] ENCODED_TIME_TZ = {0x31, 0x6d, 0x0b, (byte) 0xB0, 0, 0, 0x06, 0x17};
     
     @Test
     void assertWrite() {
@@ -47,7 +50,7 @@ class FirebirdTimeTZBinaryProtocolValueTest {
     @Test
     void assertRead() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.wrappedBuffer(ENCODED_TIME_TZ), StandardCharsets.UTF_8);
-        assertThat(new FirebirdTimeTZBinaryProtocolValue().read(payload), is(FirebirdDateTimeUtils.getTime(37230000)));
+        assertThat(new FirebirdTimeTZBinaryProtocolValue().read(payload), is(FirebirdDateTimeUtils.getTime(829230000)));
         assertThat(payload.getByteBuf().readableBytes(), is(0));
     }
     
