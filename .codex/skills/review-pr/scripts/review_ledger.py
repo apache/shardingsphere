@@ -590,8 +590,8 @@ def validate_ledger(ledger: dict[str, Any], incomplete_result: bool = False) -> 
     return _validate_ledger(ledger, incomplete_result)
 
 
-def _validate_ledger(ledger: dict[str, Any], incomplete_result: bool = False) -> list[str]:
-    result = validate_current_basis(ledger)
+def _validate_ledger(ledger: dict[str, Any], incomplete_result: bool = False, current_basis: bool = True) -> list[str]:
+    result = validate_current_basis(ledger) if current_basis else []
     requirement_origins = {each["origin"] for each in ledger["basis"]["sources"] if each["role"] in {"rule", "requirement"}}
     for entry in ledger["files"]:
         result.extend(coverage_errors(entry, requirement_origins))
@@ -775,7 +775,14 @@ def review_input_identity(ledger: dict[str, Any]) -> str:
                                           if each["role"] in {"rule", "requirement"})})
 
 
-def result_review_errors(proof: Any, reviews: dict[str, dict[str, Any]], own_reviewer: str = "") -> list[str]:
+def review_evidence_versions(ledger: dict[str, Any]) -> dict[tuple[str, str, str], tuple[str, str]]:
+    result = {("source", "", each["origin"]): (each["mode"], each["sha256"]) for each in ledger["basis"]["sources"]}
+    result.update(((each["side"], "" if "source" == each["side"] else each["path"], each.get("origin", "")),
+                   (each["mode"], each["sha256"])) for each in all_anchors(ledger))
+    return result
+
+
+def result_review_errors(proof: Any, reviews: dict[str, dict[str, Any]], own_reviewer: str = "", current_basis: bool = True) -> list[str]:
     if not isinstance(proof, dict) or any(not has_text(proof.get(key)) for key in ("reason", "counter_evidence")):
         raise RuntimeError("Result review requires an evidence assessment and strongest counter-evidence")
     if not isinstance(proof.get("evidence"), list) or not proof["evidence"]:
@@ -790,14 +797,17 @@ def result_review_errors(proof: Any, reviews: dict[str, dict[str, Any]], own_rev
             continue
         anchor = entry["anchor"]
         validate_anchor_shape(anchor, captured=True)
-        if capture_anchor(anchor, reviews[reviewer]["ledger"]) != anchor:
+        ledger = reviews[reviewer]["ledger"]
+        if not current_basis and anchor not in all_anchors(ledger):
+            errors.append("Historical result-review evidence is not recorded in its original ledger")
+        elif current_basis and capture_anchor(anchor, ledger) != anchor:
             errors.append("Result-review evidence is stale")
     return errors
 
 
 def validate_session(session: Any) -> list[str]:
-    if not isinstance(session, dict) or not isinstance(session.get("reviews"), list) or len(session["reviews"]) not in {2, 4}:
-        raise RuntimeError("A review session requires one or two pairs of original results")
+    if not isinstance(session, dict) or not isinstance(session.get("reviews"), list) or len(session["reviews"]) < 2 or len(session["reviews"]) % 2:
+        raise RuntimeError("A review session requires complete pairs of original results")
     if not isinstance(session.get("rounds"), list) or len(session["rounds"]) * 2 != len(session["reviews"]):
         raise RuntimeError("Every review pair requires its own substantive result review")
     validate_review_decision(session)
@@ -806,28 +816,46 @@ def validate_session(session: Any) -> list[str]:
         if len(records) != len({each[key] for each in records}):
             raise RuntimeError("Independent reviews must have distinct identities, results and ledgers")
     errors = []
-    if len({review_input_identity(each["ledger"]) for each in records}) != 1:
-        errors.append("Review candidates, original baselines, requirements or focus differ")
+    if len({each["ledger"]["basis"]["baseline"]["tree"] for each in records}) != 1:
+        errors.append("The original task baseline changed across review rounds")
+    current_start = 0
+    previous_identity = None
     source_versions = {}
-    for record in records:
+    for index in range(len(session["rounds"])):
+        pair = records[index * 2:index * 2 + 2]
+        identity = review_input_identity(pair[0]["ledger"])
+        if identity != review_input_identity(pair[1]["ledger"]):
+            errors.append("Review candidates, original baselines, requirements or focus differ within a pair")
+        pair_versions = {}
+        for record in pair:
+            versions = review_evidence_versions(record["ledger"])
+            if any(key in pair_versions and pair_versions[key] != value for key, value in versions.items()):
+                errors.append("Independent reviews disagree on a shared source version")
+            pair_versions.update(versions)
+        if identity != previous_identity or any(key in source_versions and source_versions[key] != value for key, value in pair_versions.items()):
+            current_start = index
+            source_versions = {}
+        source_versions.update(pair_versions)
+        previous_identity = identity
+    if len(session["rounds"]) - current_start < 2:
+        errors.append("The current review basis requires at least two consecutive independent pairs")
+    for index, record in enumerate(records):
         ledger = record["ledger"]
-        errors.extend(validate_ledger(ledger, incomplete_result="Review Incomplete" == record["result"]))
+        errors.extend(_validate_ledger(ledger, incomplete_result="Review Incomplete" == record["result"], current_basis=index >= current_start * 2))
         confirmed = any(each["status"] == "confirmed" for each in ledger["findings"])
         if "Review Incomplete" != record["result"] and confirmed != ("Not Mergeable" == record["result"]):
             errors.append("An original decision contradicts its confirmed finding set")
-        for source in ledger["basis"]["sources"]:
-            version = (source["mode"], source["sha256"])
-            if source["origin"] in source_versions and source_versions[source["origin"]] != version:
-                errors.append("Independent reviews disagree on a shared source version")
-            source_versions[source["origin"]] = version
     known_reviews = {}
     original_findings = set()
     prior_ids = set()
     final_groups = []
     final_members = {}
+    assessments = []
     for index, review_round in enumerate(session["rounds"]):
         if not isinstance(review_round, dict) or not isinstance(review_round.get("report_reviews"), list) or not isinstance(review_round.get("findings"), list):
             raise RuntimeError("Every pair requires report reviews and explicit finding dispositions")
+        validate_review_decision(review_round)
+        current_basis = index >= current_start
         pair = records[index * 2:index * 2 + 2]
         known_reviews.update((each["reviewer"], each) for each in pair)
         for record in pair:
@@ -838,21 +866,20 @@ def validate_session(session: Any) -> list[str]:
                 raise RuntimeError("Every report review requires its original reviewer identity")
             reviewer = report_review["reviewer"]
             audited_reviewers.append(reviewer)
-            errors.extend(result_review_errors(report_review, known_reviews, own_reviewer=reviewer))
+            errors.extend(result_review_errors(report_review, known_reviews, own_reviewer=reviewer, current_basis=current_basis))
         if Counter(audited_reviewers) != Counter(each["reviewer"] for each in pair):
             errors.append("Both original reports require substantive result review, even when they agree")
         groups, members = {}, {}
         for finding in review_round["findings"]:
-            if not isinstance(finding, dict) or not has_text(finding.get("id")) or not isinstance(finding.get("status"), str):
-                raise RuntimeError("Finding dispositions require a stable identity and supported status")
-            if finding["status"] not in FINDING_STATUSES:
-                raise RuntimeError("Finding dispositions require a stable identity and supported status")
+            if (not isinstance(finding, dict) or not has_text(finding.get("id")) or not has_text(finding.get("classification"))
+                    or not isinstance(finding.get("status"), str) or finding["status"] not in FINDING_STATUSES):
+                raise RuntimeError("Finding dispositions require a stable identity, classification and supported status")
             if not isinstance(finding.get("members"), list):
                 raise RuntimeError("Finding dispositions require explicit original finding mappings")
             if finding["id"] in groups:
                 errors.append("Canonical finding identities are duplicated")
             groups[finding["id"]] = finding
-            errors.extend(result_review_errors(finding, known_reviews))
+            errors.extend(result_review_errors(finding, known_reviews, current_basis=current_basis))
             for member in finding["members"]:
                 if not isinstance(member, dict) or any(not has_text(member.get(key)) for key in ("reviewer", "finding")):
                     raise RuntimeError("Finding mappings require an original reviewer and finding identity")
@@ -866,20 +893,27 @@ def validate_session(session: Any) -> list[str]:
             errors.append("A previous result-review finding disappeared without a disposition")
         prior_ids = set(groups)
         final_groups, final_members = list(groups.values()), members
+        confirmed = {each["id"] for each in final_groups if each["status"] == "confirmed"}
+        gaps = {each["id"] for each in final_groups if each["status"] == "review-incomplete-gap"}
+        expected_result = "Review Incomplete" if gaps else "Not Mergeable" if confirmed else "Mergeable"
+        if review_round["result"] != expected_result:
+            errors.append("A round decision contradicts its complete historical dispositions")
+        assessments.append((review_round["result"], review_round["feedback_mode"],
+                            frozenset((each["id"], each["status"], each["classification"]) for each in final_groups)))
     if any(each["status"] == "candidate" for each in final_groups):
         errors.append("Result-review candidates remain unresolved")
-    final_confirmed = {each["id"] for each in final_groups if each["status"] == "confirmed"}
-    final_gaps = {each["id"] for each in final_groups if each["status"] == "review-incomplete-gap"}
-    expected_result = "Review Incomplete" if final_gaps else "Not Mergeable" if final_confirmed else "Mergeable"
-    if session["result"] != expected_result:
-        errors.append("The final decision contradicts the complete historical dispositions")
-    expected = (session["result"], session["feedback_mode"], final_confirmed, final_gaps)
+    if len(session["rounds"]) - current_start >= 2 and assessments[-2] != assessments[-1]:
+        errors.append("The latest complete adjudication differs from the previous round; obtain a fresh independent pair")
+    if (session["result"], session["feedback_mode"]) != assessments[-1][:2]:
+        errors.append("The final decision contradicts the latest complete adjudication")
+    expected = (session["result"], session["feedback_mode"], confirmed, gaps)
+    expected_dispositions = {(each["id"], each["status"]) for each in final_groups}
     for record in records[-2:]:
-        finding_sets = []
-        for status in ("confirmed", "review-incomplete-gap"):
-            finding_sets.append({final_members[(record["reviewer"], each["id"])] for each in record["ledger"]["findings"]
-                                 if each["status"] == status and (record["reviewer"], each["id"]) in final_members})
-        if (record["result"], record["feedback_mode"], *finding_sets) != expected:
+        dispositions = {(final_members[(record["reviewer"], each["id"])], each["status"]) for each in record["ledger"]["findings"]
+                        if (record["reviewer"], each["id"]) in final_members}
+        finding_sets = [{finding_id for finding_id, finding_status in dispositions if finding_status == status}
+                        for status in ("confirmed", "review-incomplete-gap")]
+        if (record["result"], record["feedback_mode"], *finding_sets) != expected or not dispositions.issubset(expected_dispositions):
             errors.append("The latest pair does not agree with the result review and all historical findings")
     return errors
 
@@ -976,7 +1010,7 @@ def build_parser() -> argparse.ArgumentParser:
     validate_incomplete = subparsers.add_parser("validate-incomplete", help="Validate a proven Review Incomplete result")
     validate_incomplete.add_argument("--ledger", required=True, help="Ledger file or directory")
     validate_incomplete.set_defaults(func=cmd_validate_incomplete)
-    validate_session_parser = subparsers.add_parser("validate-session", help="Validate two blind reviews and substantive result review")
+    validate_session_parser = subparsers.add_parser("validate-session", help="Validate cross-round blind reviews and substantive result review")
     validate_session_parser.add_argument("--session", required=True, help="JSON original result references and result-review dispositions")
     validate_session_parser.set_defaults(func=cmd_validate_session)
     status = subparsers.add_parser("status", help="Print compact coverage status")

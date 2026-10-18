@@ -175,36 +175,8 @@ Triage functional boundaries, ownership and shared contracts, compatibility and 
 
 ## Independent Review Coordination
 
-For every top-level Formal Review and every discussion reply that makes or changes an overall readiness conclusion, a coordinator must obtain two independent complete assessments of the same effective candidate, original baseline, authoritative scope, requirements and rule versions, and review focus.
-A reply limited to one finding remains scoped to that finding and does not require a full-candidate pair unless it makes an overall readiness conclusion.
-Reviewers may discover different relevant raw evidence, but shared evidence must refer to the same content version and all outcome-sensitive evidence must be reconciled before completion.
-Use isolated reviewer contexts within the active task; do not create another user-owned task or send repository material to an external review service.
-Give each reviewer the current requirements and their provenance, complete candidate inventory and relevant raw evidence without the author's full session history, previous assessments, expected verdict or expected finding count.
-If isolated contexts are unavailable, report that the required independent reviews could not be completed and do not claim a completed Formal Review.
-
-Each independent reviewer runs the complete Review Workflow and Completion Gate once, records a separate ledger and original assessment, and returns them privately to the coordinator.
-The independent-review role must not start another pair of reviews or publish a final Formal Review result.
-Existing previous-miss, challenged-finding and high-risk triggers remain applicable within each assessment; the required pair supplies their independent review rather than adding another reviewer.
-Share only current raw facts and verification evidence whose inputs and applicable coverage remain valid; never share reviewed-file statuses, candidate findings, proof conclusions or convergence results between independent reviewers.
-Preserve every original assessment and ledger without rewriting them to make the pair agree.
-
-The coordinator must substantively review both assessments and their supporting evidence even when their verdicts and issue lists already match.
-Recheck each claim's full path, strongest counter-evidence, necessity, scope and decision classification, and check the pair for duplicated issues, omitted historical candidates and unsupported acceptance conclusions.
-Normalize issues by root cause, trigger and independent fix boundary; compare the complete issue sets, evidence gaps, discussion conditions, verdicts and feedback modes rather than counts, order or wording.
-Record an evidence-based disposition for every candidate raised in any assessment, including retained, withdrawn or merged candidates, with its supporting evidence, strongest counter-evidence and explanation.
-A later reviewer failing to rediscover a candidate does not withdraw it, and neither majority voting nor repeated matching subsets can discard a historical candidate.
-The coordinator's result review is focused verification of the reports and their evidence, not another complete independent assessment, and mechanical session validation never replaces it.
-
-Accept a pair only when both original assessments agree after issue normalization and the coordinator's verified dispositions support that same complete assessment, including every historical candidate.
-When the first pair disagrees or its matching result is unsupported, adjudicate the candidates from current evidence and obtain one further independent pair with a fresh complete review of the same basis.
-Do not give that pair the earlier assessments, candidate list, dispositions or a target conclusion; provide any newly verified raw evidence without the prior conclusions.
-Permit at most two pairs and four complete independent assessments for one unchanged review basis, and never select an arbitrary matching pair across groups.
-If the second pair still disagrees or contradicts a verified historical disposition, report `Review Status: Not Converged`, the confirmed facts and unresolved differences without a formal `Review Result` line or a mergeability conclusion.
-Disagreement, an unavailable isolation mechanism and exhausted review attempts do not satisfy the Review Incomplete Proof Gate.
-A changed effective candidate, requirement, rule version or outcome-sensitive external fact invalidates the affected prior assessments; never combine results from different bases to pass this gate.
-
-When authoritative scope cannot be established, preserve the Review Incomplete Proof Gate's missing-scope evidence route and state explicitly that complete independent code reviews could not start.
-That proven scope failure may return the existing `Review Incomplete` report without a session, but must not claim completed dual coverage or a mergeability conclusion.
+Read [review-coordination.md](references/review-coordination.md) through EOF for every top-level Formal Review, discussion reply that makes or changes an overall readiness conclusion, and assigned independent assessment.
+That reference owns reviewer roles, cross-round confirmation, session records and review-material lifecycle; the single-assessment rules remain below.
 
 ## Review Workflow
 
@@ -254,33 +226,6 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 - Validate the current basis and coverage before selecting a result; a passing ledger proves mechanical coverage and evidence freshness, while the reviewer must still establish semantic proof under the existing gates.
 - For a standalone local candidate with index or working-tree changes, provide the same exact task-path file to both scripts with `--candidate-files <path>`. The scripts resolve those paths from the computed merge-base through the working tree, include matching untracked files, and fail when a listed path is unchanged.
 - Mutate one ledger sequentially; do not run ledger commands concurrently.
-- Keep ledger data private and remove only the exact current-review ledger.
-- Before returning a completed review result, form a self-contained report and automatically run `scripts/review_ledger.py cleanup --ledger <recorded-ledger>` for the recorded current-review instance, including Mergeable, Not Mergeable and Review Incomplete results.
-- The coordinator retains the owned review ledgers and input materials until result review and session validation finish, then applies the exact-path cleanup rules to each recorded instance and its owned session materials, including an unconverged session.
-- Before cleaning the ledger, remove only temporary input materials created and explicitly recorded for this review, preserving declared sources owned by the repository, the user or another review.
-- On a handled failure or cancellation, attempt the same cleanup for resources whose ownership is established, preserve the original failure and report any cleanup failure or remaining resources.
-- Keep the report independent of temporary files and report cleanup failures without changing the review assessment.
-
-Before publishing a completed Formal Review result or an overall readiness conclusion in a discussion reply, run `scripts/review_ledger.py validate-session --session <JSON>` after the coordinator's substantive result review.
-The command is read-only and validates records, references and evidence freshness; it neither launches reviewers nor proves their isolation or semantic correctness.
-Each reviewer writes one private original result JSON containing `reviewer`, the exact `ledger` path, `ledger_sha256`, `result` and `feedback_mode` after completing its ledger.
-Use a distinct isolated reviewer identity for every assessment, compute hashes from the frozen file bytes, and keep the original result and ledger unchanged through session validation.
-Use `Mergeable`, `Not Mergeable` or `Review Incomplete` for `result`, and an empty string, `Change Request` or `Needs Discussion` for `feedback_mode` as required by the Formal Decision Contract.
-
-The coordinator's private session JSON has this shape, with two or four `reviews` in consecutive pairs and one `rounds` entry per pair:
-
-```json
-{"reviews": [{"path": "<original-result JSON>", "sha256": "<original-result SHA256>"}], "rounds": [{"report_reviews": [{"reviewer": "<identity>", "reason": "<result and evidence recheck>", "counter_evidence": "<strongest contrary evidence checked>", "evidence": [{"reviewer": "<identity>", "anchor": {}}]}], "findings": [{"id": "<stable canonical issue ID>", "members": [{"reviewer": "<identity>", "finding": "<ledger finding ID>"}], "status": "<finding status>", "reason": "<disposition and supporting evidence>", "counter_evidence": "<strongest contrary evidence checked>", "evidence": [{"reviewer": "<identity>", "anchor": {}}]}]}], "result": "<agreed final result>", "feedback_mode": "<agreed feedback mode>"}
-```
-
-Include a `report_reviews` entry for both reviewers in every pair, even for matching empty issue lists, and substantiate the result classification and acceptance premises as well as individual findings.
-Replace every example `anchor` with a complete captured real-source anchor from that reviewer's ledger, including its object and range hashes; an empty object or a free-form citation does not establish evidence.
-Each round's `findings` must cover every original candidate raised up to that round, map each reviewer and finding exactly once, and retain earlier canonical IDs with their updated evidence-based disposition.
-Use the existing finding statuses; a duplicate may map to the same canonical issue, while a merged earlier canonical ID remains recorded as withdrawn with the merge target explained in `reason`.
-An issue discovered during result review may have empty `members` but still requires real evidence, a disposition and counter-evidence; an unresolved candidate never permits a completed result.
-The final pair's original result, feedback mode, normalized confirmed issues and evidence gaps must agree with each other and with the final round's complete historical dispositions and proposed session result.
-If session validation fails, inspect the exact failure and correct only an unsupported record or missing evidence; never rewrite an original assessment or change issue mappings merely to obtain a pass.
-Only the coordinator emits the final report under the Output Contract after validation succeeds.
 
 Use these JSON shapes in local files passed to the arguments, replacing the example values with current evidence and block IDs from the initialized ledger:
 Sources use `rule`, `requirement` or `evidence` roles; `--anchors` takes an anchor-array file shaped like `anchors` below.

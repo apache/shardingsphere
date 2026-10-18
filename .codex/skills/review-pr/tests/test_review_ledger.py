@@ -650,8 +650,9 @@ class ReviewLedgerTest(unittest.TestCase):
 
     def test_session_normalizes_matching_root_causes(self):
         actual = self.create_session([[("F1", "confirmed")], [("F2", "confirmed")]])
-        findings = actual["rounds"][0]["findings"]
-        findings[0]["members"].extend(findings.pop()["members"])
+        for review_round in actual["rounds"]:
+            findings = review_round["findings"]
+            findings[0]["members"].extend(findings.pop()["members"])
         self.assertEqual([], ledger.validate_session(actual))
 
     def test_session_accepts_verified_maintainer_decision(self):
@@ -674,16 +675,20 @@ class ReviewLedgerTest(unittest.TestCase):
             ledger.write_ledger(ledger_file, actual_ledger)
             report.update({"ledger_sha256": hashlib.sha256(ledger_file.read_bytes()).hexdigest(), "feedback_mode": "Needs Discussion"})
             self.save_session_report(actual, index, report)
-        findings = actual["rounds"][0]["findings"]
-        findings[0]["members"].extend(findings.pop()["members"])
-        findings[0].update({"id": "project-commitment-decision", "reason": "The confirmed project rule requires a maintainer decision.",
-                            "counter_evidence": "Reviewer agreement cannot replace the required maintainer decision.",
-                            "evidence": [{"reviewer": "review-2", "anchor": rule_anchor}]})
+        for review_round in actual["rounds"]:
+            findings = review_round["findings"]
+            findings[0]["members"].extend(findings.pop()["members"])
+            findings[0].update({"id": "project-commitment-decision", "classification": "project-commitment",
+                                "reason": "The confirmed project rule requires a maintainer decision.",
+                                "counter_evidence": "Reviewer agreement cannot replace the required maintainer decision.",
+                                "evidence": [{"reviewer": "review-2", "anchor": rule_anchor}]})
+            review_round["feedback_mode"] = "Needs Discussion"
         actual["feedback_mode"] = "Needs Discussion"
         self.assertEqual([], ledger.validate_session(actual))
 
     def test_session_preserves_all_candidate_dispositions(self):
-        original = self.create_session([[("F1", "withdrawn"), ("F2", "non-blocking"), ("F3", "out-of-scope")], []])
+        original = self.create_session([[("F1", "withdrawn"), ("F2", "non-blocking"), ("F3", "out-of-scope")],
+                                        [], [], [], [], []])
         self.assertEqual([], ledger.validate_session(original))
         for missing in ("member", "finding", "disposition"):
             with self.subTest(missing=missing):
@@ -694,16 +699,17 @@ class ReviewLedgerTest(unittest.TestCase):
                 elif "finding" == missing:
                     findings.pop()
                 else:
-                    findings[0]["status"] = "candidate"
+                    actual["rounds"][-1]["findings"][0]["status"] = "candidate"
                 self.assertTrue(ledger.validate_session(actual))
 
     def test_session_rejects_same_count_with_different_findings_or_feedback(self):
         actual = self.create_session([[("F1", "confirmed")], [("F2", "confirmed")]])
         self.assertTrue(ledger.validate_session(actual))
-        actual["rounds"][0]["findings"][0]["members"].extend(actual["rounds"][0]["findings"].pop()["members"])
-        report = json.loads(Path(actual["reviews"][1]["path"]).read_text(encoding="utf-8"))
+        for review_round in actual["rounds"]:
+            review_round["findings"][0]["members"].extend(review_round["findings"].pop()["members"])
+        report = json.loads(Path(actual["reviews"][-1]["path"]).read_text(encoding="utf-8"))
         report["feedback_mode"] = "Needs Discussion"
-        self.save_session_report(actual, 1, report)
+        self.save_session_report(actual, len(actual["reviews"]) - 1, report)
         self.assertTrue(ledger.validate_session(actual))
 
     def test_session_allows_second_pair_after_disagreement(self):
@@ -714,10 +720,12 @@ class ReviewLedgerTest(unittest.TestCase):
         original = self.create_session([[], [], [("F1", "confirmed")], [("F1", "confirmed")]])
         original["rounds"][0]["findings"].append({
             "id": "normalized-F1", "members": [], "status": "confirmed",
+            "classification": "correctness",
             "reason": "The report evidence review found an unsupported triggering path.",
             "counter_evidence": "The supported alternative does not protect this path.",
             "evidence": original["rounds"][0]["report_reviews"][0]["evidence"],
         })
+        original["rounds"][0].update({"result": "Not Mergeable", "feedback_mode": "Change Request"})
         first_pair = json.loads(json.dumps(original))
         first_pair.update({"reviews": first_pair["reviews"][:2], "rounds": first_pair["rounds"][:1], "result": "Mergeable", "feedback_mode": ""})
         self.assertTrue(ledger.validate_session(first_pair))
@@ -728,19 +736,62 @@ class ReviewLedgerTest(unittest.TestCase):
 
     def test_session_requires_historical_findings_in_final_pair(self):
         original = self.create_session([[("F1", "confirmed")], [("F1", "confirmed"), ("F2", "confirmed")],
+                                        [("F1", "confirmed")], [("F1", "confirmed")],
                                         [("F1", "confirmed")], [("F1", "confirmed")]])
         self.assertTrue(ledger.validate_session(original))
         actual = json.loads(json.dumps(original))
         actual["rounds"][-1]["findings"].pop()
         self.assertTrue(ledger.validate_session(actual))
         actual = json.loads(json.dumps(original))
-        actual["rounds"][-1]["findings"][-1]["status"] = "withdrawn"
+        for review_round in actual["rounds"][-2:]:
+            review_round["findings"][-1]["status"] = "withdrawn"
         self.assertEqual([], ledger.validate_session(actual))
 
-    def test_session_limits_complete_review_pairs(self):
-        original = self.create_session([[("F1", "confirmed")], [], [("F1", "confirmed")], [("F1", "confirmed")]])
-        self.assertEqual([], ledger.validate_session(original))
-        for count in (0, 1, 3, 6):
+    def test_session_allows_more_than_two_complete_pairs(self):
+        actual = self.create_session([[("F1", "confirmed")], [], [("F1", "confirmed")], [("F1", "confirmed")],
+                                      [("F1", "confirmed")], [("F1", "confirmed")]])
+        actual["rounds"][-1]["findings"][0].update({"reason": "The fresh source evidence confirms the same triggering path.",
+                                                   "evidence": actual["rounds"][-1]["report_reviews"][0]["evidence"]})
+        self.assertEqual([], ledger.validate_session(actual))
+
+    def test_session_requires_confirmation_after_first_round(self):
+        actual = self.create_session([[], []])
+        actual.update({"reviews": actual["reviews"][:2], "rounds": actual["rounds"][:1]})
+        self.assertTrue(ledger.validate_session(actual))
+
+    def test_session_requires_stable_complete_dispositions(self):
+        original = self.create_session([[("F1", "withdrawn")]] * 6)
+        for field, value in (("classification", "performance"), ("status", "non-blocking")):
+            with self.subTest(field=field):
+                actual = json.loads(json.dumps(original))
+                actual["rounds"][-1]["findings"][0][field] = value
+                self.assertTrue(ledger.validate_session(actual))
+
+    def test_session_requires_stable_feedback_mode(self):
+        actual = self.create_session([[("F1", "confirmed")], [("F1", "confirmed")]])
+        actual["rounds"][-2]["feedback_mode"] = "Needs Discussion"
+        self.assertTrue(ledger.validate_session(actual))
+
+    def test_session_requires_final_closed_dispositions(self):
+        for status in ("withdrawn", "non-blocking", "out-of-scope"):
+            with self.subTest(status=status):
+                actual = self.create_session([[("F1", "withdrawn")], [("F1", status)]])
+                for reference in actual["reviews"]:
+                    report = json.loads(Path(reference["path"]).read_text(encoding="utf-8"))
+                    self.assertEqual([], ledger.validate_ledger(ledger.read_ledger(report["ledger"])))
+                errors = ledger.validate_session(actual)
+                if "withdrawn" == status:
+                    self.assertEqual([], errors)
+                else:
+                    self.assertIn("The latest pair does not agree with the result review and all historical findings", errors)
+
+    def test_session_rejects_repeated_unconfirmed_adjudication(self):
+        actual = self.create_session([[("F1", "confirmed")], []])
+        self.assertTrue(ledger.validate_session(actual))
+
+    def test_session_requires_complete_review_pairs(self):
+        original = self.create_session([[], []])
+        for count in (0, 1, 3):
             with self.subTest(count=count):
                 actual = json.loads(json.dumps(original))
                 actual["reviews"] = (actual["reviews"] * 2)[:count]
@@ -806,6 +857,42 @@ class ReviewLedgerTest(unittest.TestCase):
         self.update_session_basis(actual, 1, actual_ledger, basis)
         self.assertEqual([], ledger.validate_session(actual))
 
+    def test_session_preserves_original_baseline_across_basis_changes(self):
+        historical = self.create_session([[], []])
+        self.assertEqual([], ledger.validate_session(historical))
+        self.git("add", self.source_path)
+        self.git("commit", "-qm", "Synthetic candidate baseline")
+        self.base_sha = self.git("rev-parse", "HEAD").strip()
+        (self.repo / self.source_path).write_text("first\nnext_first\nthird\nfourth\nfifth\nnew_second\nlast\n", encoding="utf-8")
+        current = self.create_session([[], []], review_start=len(historical["reviews"]))
+        self.assertEqual([], ledger.validate_session(current))
+        actual = {**current, "reviews": historical["reviews"] + current["reviews"],
+                  "rounds": historical["rounds"] + current["rounds"]}
+        self.assertIn("The original task baseline changed across review rounds", ledger.validate_session(actual))
+
+    def test_session_reconfirms_changed_basis_and_retains_history(self):
+        for changed in ("candidate", "evidence"):
+            with self.subTest(changed=changed):
+                historical = self.create_session([[("F1", "confirmed")], [("F1", "confirmed")]])
+                if "candidate" == changed:
+                    (self.repo / self.source_path).write_text("first\nfixed_first\nthird\nfourth\nfifth\nnew_second\nlast\n", encoding="utf-8")
+                else:
+                    self.attempt_log.write_text("Synthetic evidence route: target version is now available and the original assumption is disproved.\n", encoding="utf-8")
+                current = self.create_session([[], []], review_start=len(historical["reviews"]))
+                for review_round in current["rounds"]:
+                    review_round["findings"] = json.loads(json.dumps(historical["rounds"][-1]["findings"]))
+                    for finding in review_round["findings"]:
+                        finding.update({"status": "withdrawn", "reason": "Current evidence disproves the historical triggering path.",
+                                        "evidence": review_round["report_reviews"][0]["evidence"]})
+                actual = {**current, "reviews": historical["reviews"] + current["reviews"],
+                          "rounds": historical["rounds"] + current["rounds"]}
+                pending = {**actual, "reviews": actual["reviews"][:-2], "rounds": actual["rounds"][:-1]}
+                self.assertTrue(ledger.validate_session(pending))
+                self.assertEqual([], ledger.validate_session(actual))
+                original_report = Path(historical["reviews"][0]["path"])
+                original_report.write_bytes(original_report.read_bytes() + b"\n")
+                self.assert_session_cli_rejected(actual)
+
     def test_session_preserves_real_incomplete_evidence(self):
         actual = self.create_session([[("G1", "review-incomplete-gap")], [("G1", "review-incomplete-gap")]])
         self.assertEqual([], ledger.validate_session(actual))
@@ -824,7 +911,7 @@ class ReviewLedgerTest(unittest.TestCase):
                 self.assertEqual(0, ledger.main())
         self.assertEqual(original_files, {path: path.read_bytes() for path in original_files})
         original = json.loads(json.dumps(actual))
-        for invalid in ("unfinished", "shape", "result", "feedback_mode", "finding_status"):
+        for invalid in ("unfinished", "shape", "result", "feedback_mode", "finding_status", "classification", "round_result", "round_feedback"):
             with self.subTest(invalid=invalid):
                 actual = json.loads(json.dumps(original))
                 if "unfinished" == invalid:
@@ -833,6 +920,14 @@ class ReviewLedgerTest(unittest.TestCase):
                     actual = {"reviews": "invalid"}
                 elif "finding_status" == invalid:
                     actual["rounds"][0]["findings"] = [{"id": "invalid", "members": [], "status": []}]
+                elif "classification" == invalid:
+                    for review_round in actual["rounds"]:
+                        review_round["findings"] = [{"id": "coordinator-candidate", "members": [], "status": "withdrawn", "classification": " ",
+                                                     "reason": "The current owner evidence disproves this candidate.",
+                                                     "counter_evidence": "The alternate triggering path is unsupported.",
+                                                     "evidence": review_round["report_reviews"][0]["evidence"]}]
+                elif invalid in {"round_result", "round_feedback"}:
+                    actual["rounds"][0]["result" if "round_result" == invalid else "feedback_mode"] = []
                 else:
                     actual[invalid] = []
                 session_file.write_text(json.dumps(actual), encoding="utf-8")
@@ -840,13 +935,15 @@ class ReviewLedgerTest(unittest.TestCase):
                         redirect_stdout(StringIO()), redirect_stderr(StringIO()):
                     self.assertEqual(1, ledger.main())
 
-    def create_session(self, review_findings):
+    def create_session(self, review_findings, review_start=0):
+        if 2 == len(review_findings):
+            review_findings = review_findings * 2
         original = self.create_valid_ledger()
         actual = {"reviews": [], "rounds": [], "result": "Mergeable", "feedback_mode": ""}
         findings = {}
         report_reviews = []
         for index, each in enumerate(review_findings):
-            reviewer = "review-" + str(index + 1)
+            reviewer = "review-" + str(review_start + index + 1)
             actual_ledger = json.loads(json.dumps(original))
             for finding_id, status in each:
                 finding = self.create_incomplete_gap() if "review-incomplete-gap" == status else self.create_confirmed_finding(finding_id)
@@ -856,7 +953,7 @@ class ReviewLedgerTest(unittest.TestCase):
             ledger_file.parent.mkdir(exist_ok=True)
             ledger.write_ledger(ledger_file, actual_ledger)
             statuses = {finding["status"] for finding in actual_ledger["findings"]}
-            result = "Not Mergeable" if "confirmed" in statuses else "Review Incomplete" if "review-incomplete-gap" in statuses else "Mergeable"
+            result = "Review Incomplete" if "review-incomplete-gap" in statuses else "Not Mergeable" if "confirmed" in statuses else "Mergeable"
             report = {"reviewer": reviewer, "ledger": str(ledger_file), "ledger_sha256": hashlib.sha256(ledger_file.read_bytes()).hexdigest(),
                       "result": result, "feedback_mode": "Change Request" if "Not Mergeable" == result else ""}
             actual["reviews"].append({"path": str(self.private_root / (reviewer + ".json")), "sha256": ""})
@@ -866,13 +963,17 @@ class ReviewLedgerTest(unittest.TestCase):
                                    "counter_evidence": "Checked the supported alternative behavior.", "evidence": evidence})
             for finding in actual_ledger["findings"]:
                 disposition = findings.setdefault(finding["id"], {"id": "normalized-" + finding["id"], "members": [], "status": finding["status"],
+                                                                  "classification": "correctness",
                                                                   "reason": "Checked the triggering path and independent fix boundary.",
                                                                   "counter_evidence": "Checked the strongest supported counterexample.", "evidence": evidence})
                 disposition["members"].append({"reviewer": reviewer, "finding": finding["id"]})
             if index % 2:
-                actual["rounds"].append({"report_reviews": report_reviews, "findings": json.loads(json.dumps(list(findings.values())))})
+                round_statuses = {finding["status"] for finding in findings.values()}
+                result = "Review Incomplete" if "review-incomplete-gap" in round_statuses else "Not Mergeable" if "confirmed" in round_statuses else "Mergeable"
+                actual["rounds"].append({"report_reviews": report_reviews, "findings": json.loads(json.dumps(list(findings.values()))),
+                                         "result": result, "feedback_mode": "Change Request" if "Not Mergeable" == result else ""})
                 report_reviews = []
-            actual.update({"result": report["result"], "feedback_mode": report["feedback_mode"]})
+                actual.update({"result": result, "feedback_mode": actual["rounds"][-1]["feedback_mode"]})
         return actual
 
     def save_session_report(self, session, index, report):
