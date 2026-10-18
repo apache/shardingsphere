@@ -784,11 +784,11 @@ def checkstyle_preview_final_parameters(path: Path, source: str) -> list[str]:
     return violations
 
 
-def collect_precheck_violations(context: FileScanContext) -> dict[str, list[str]]:
+def collect_precheck_violations(path: Path, source: str, method_bodies: dict[str, str]) -> dict[str, list[str]]:
     return {
-        "checkstyle-final-parameters": checkstyle_preview_final_parameters(context.path, context.source),
-        "parameterized-methodsource": check_r15_d(context.path, context.source, context.method_bodies),
-        "parameterized-name-parameter": check_r15_e(context.path, context.source),
+        "checkstyle-final-parameters": checkstyle_preview_final_parameters(path, source),
+        "parameterized-methodsource": check_r15_d(path, source, method_bodies),
+        "parameterized-name-parameter": check_r15_e(path, source),
     }
 
 
@@ -808,12 +808,12 @@ def create_file_scan_context(path: Path, scope_baseline: dict | None = None) -> 
     )
 
 
-def file_rule_violations(context: FileScanContext) -> dict[str, list[str]]:
+def file_rule_violations(context: FileScanContext, precheck_violations: dict[str, list[str]]) -> dict[str, list[str]]:
     violations = defaultdict(list)
     violations["R8"].extend(check_parameterized_name(context.path, context.source))
     violations["R14"].extend(check_r14(context.path, context.source))
-    violations["R15-D"].extend(check_r15_d(context.path, context.source, context.method_bodies))
-    violations["R15-E"].extend(check_r15_e(context.path, context.source))
+    violations["R15-D"].extend(precheck_violations["parameterized-methodsource"])
+    violations["R15-E"].extend(precheck_violations["parameterized-name-parameter"])
     violations["R15-F"].extend(check_r15_f(context.path, context.source))
     violations["R15-H"].extend(check_r15_h(context.path, context.source))
     violations["R15-I"].extend(check_r15_i(context.path, context.source, context.method_bodies))
@@ -832,17 +832,36 @@ def build_rule_result(violations_by_rule: dict[str, list[str]]) -> dict[str, dic
     }
 
 
-def collect_scan_result(paths: list[Path], scope_baseline_path: Path | None) -> dict:
+def collect_scan_result(paths: list[Path], scope_baseline_path: Path | None, precheck_only: bool = False) -> dict:
     violations_by_rule = defaultdict(list)
     precheck_violations = defaultdict(list)
     java_paths = [each for each in paths if each.suffix == ".java"]
-    scope_baseline = load_scope_baseline(scope_baseline_path) if scope_baseline_path and scope_baseline_path.exists() else None
-    contexts = [create_file_scan_context(each, scope_baseline) for each in java_paths]
-    for context in contexts:
-        for rule, entries in file_rule_violations(context).items():
-            violations_by_rule[rule].extend(entries)
-        for name, entries in collect_precheck_violations(context).items():
+    scope_baseline = load_scope_baseline(scope_baseline_path) if not precheck_only and scope_baseline_path and scope_baseline_path.exists() else None
+    contexts = []
+    for path in java_paths:
+        if precheck_only:
+            source = path.read_text(encoding="utf-8")
+            method_bodies = {name: body for name, (_, body) in parse_method_blocks(source).items()}
+        else:
+            context = create_file_scan_context(path, scope_baseline)
+            contexts.append(context)
+            source = context.source
+            method_bodies = context.method_bodies
+        file_prechecks = collect_precheck_violations(path, source, method_bodies)
+        for name, entries in file_prechecks.items():
             precheck_violations[name].extend(entries)
+        if not precheck_only:
+            for rule, entries in file_rule_violations(context, file_prechecks).items():
+                violations_by_rule[rule].extend(entries)
+    prechecks = {
+        name: {
+            "message": PRECHECK_MESSAGES[name],
+            "violations": precheck_violations[name],
+        }
+        for name in PRECHECK_ORDER
+    }
+    if precheck_only:
+        return {"prechecks": prechecks}
     violations_by_rule["R15-C"].extend(
         check_scope_baseline(scope_baseline_path, paths) if scope_baseline_path else ["missing scope baseline"]
     )
@@ -853,13 +872,7 @@ def collect_scan_result(paths: list[Path], scope_baseline_path: Path | None) -> 
     ]
     return {
         "rules": build_rule_result(violations_by_rule),
-        "prechecks": {
-            name: {
-                "message": PRECHECK_MESSAGES[name],
-                "violations": precheck_violations[name],
-            }
-            for name in PRECHECK_ORDER
-        },
+        "prechecks": prechecks,
         "candidates": [asdict(each) for context in contexts for each in context.candidates],
         "reviews": {
             "R15-A": [str(context.path) for context in contexts if not context.target_public_methods],
@@ -954,7 +967,7 @@ def main() -> int:
             print(f"[scope-baseline] path={output_path.resolve()} allowedPathCount={len(paths)}")
             return 0
         baseline_path = Path(args.scope_baseline) if args.scope_baseline else None
-        result = collect_scan_result(paths, baseline_path)
+        result = collect_scan_result(paths, baseline_path, precheck_only=args.precheck_only and not args.json)
         if args.json:
             print(json.dumps(result, indent=2, sort_keys=True))
             return 1 if failed_rule_names(result) else 0
