@@ -1511,6 +1511,7 @@
             <id>coverage-check</id>
             <properties>
                 <jacoco.check.class.pattern>**/*</jacoco.check.class.pattern>
+                <jacoco.check.counter>INSTRUCTION</jacoco.check.counter>
                 <jacoco.minimum.coverage>0.95</jacoco.minimum.coverage>
             </properties>
             <build>
@@ -1541,6 +1542,7 @@
                                     <goal>check</goal>
                                 </goals>
                                 <configuration>
+                                    <dataFile>${jacoco.dataFile}</dataFile>
                                     <rules>
                                         <rule>
                                             <element>CLASS</element>
@@ -1549,7 +1551,7 @@
                                             </includes>
                                             <limits>
                                                 <limit>
-                                                    <counter>INSTRUCTION</counter>
+                                                    <counter>${jacoco.check.counter}</counter>
                                                     <value>COVEREDRATIO</value>
                                                     <minimum>${jacoco.minimum.coverage}</minimum>
                                                 </limit>
