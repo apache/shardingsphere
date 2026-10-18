@@ -148,7 +148,7 @@ class FirebirdPacketPayloadTest {
         new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).writeBuffer(value);
         verify(byteBuf).writeInt(4);
         verify(byteBuf).writeBytes(value);
-        verify(byteBuf).writeBytes(new byte[0]);
+        verify(byteBuf).writeZero(0);
     }
     
     @Test
@@ -165,7 +165,7 @@ class FirebirdPacketPayloadTest {
         new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).writeString("value");
         verify(byteBuf).writeInt(5);
         verify(byteBuf).writeBytes("value".getBytes(StandardCharsets.UTF_8));
-        verify(byteBuf).writeBytes(new byte[3]);
+        verify(byteBuf).writeZero(3);
     }
     
     @Test
@@ -178,6 +178,12 @@ class FirebirdPacketPayloadTest {
     void assertSkipPadding() {
         new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).skipPadding(5);
         verify(byteBuf).skipBytes(3);
+    }
+    
+    @Test
+    void assertWritePadding() {
+        new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).writePadding(5);
+        verify(byteBuf).writeZero(3);
     }
     
     @Test
