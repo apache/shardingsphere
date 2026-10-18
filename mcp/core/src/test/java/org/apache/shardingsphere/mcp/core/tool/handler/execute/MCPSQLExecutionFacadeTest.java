@@ -379,7 +379,7 @@ class MCPSQLExecutionFacadeTest {
         WindowItemSegment item = new WindowItemSegment(0, 0);
         item.setPartitionListSegments(List.of(createCurrentFunction("foo_partition")));
         item.setOrderBySegment(expressionOrder(createCurrentFunction("foo_order")));
-        item.setFrameClause(new CommonExpressionSegment(0, 0, "ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW"));
+        item.setFrameClause(new CommonExpressionSegment(0, 0, "ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW", List.of()));
         AggregationProjectionSegment aggregation = new AggregationProjectionSegment(0, 0, AggregationType.SUM, "SUM(logic_db.foo_value())");
         aggregation.getParameters().add(createCurrentFunction("foo_value"));
         aggregation.setWindow(item);

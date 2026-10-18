@@ -5925,6 +5925,145 @@
             </assignment>
         </on-duplicate-key-columns>
     </insert>
+
+    <insert sql-case-id="insert_default_values_postgresql_regression">
+        <table name="foo" start-index="12" stop-index="14" />
+        <columns start-index="15" stop-index="15" />
+    </insert>
+    <insert sql-case-id="insert_parenthesized_select_postgresql_regression" parameters="1">
+        <table name="foo" start-index="12" stop-index="14" />
+        <columns start-index="16" stop-index="19">
+            <column name="id" start-index="17" stop-index="18" />
+        </columns>
+        <select parameters="1">
+            <projections start-index="29" stop-index="29">
+                <expression-projection text="?" start-index="29" stop-index="29">
+                    <expr>
+                        <parameter-marker-expression parameter-index="0" start-index="29" stop-index="29" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </insert>
+    <insert sql-case-id="insert_set_select_postgresql_regression" parameters="1, 2">
+        <table name="foo" start-index="12" stop-index="14" />
+        <columns start-index="16" stop-index="19">
+            <column name="id" start-index="17" stop-index="18" />
+        </columns>
+        <select parameters="1, 2">
+            <projections start-index="28" stop-index="28">
+                <expression-projection text="?" start-index="28" stop-index="28">
+                    <expr>
+                        <parameter-marker-expression parameter-index="0" start-index="28" stop-index="28" />
+                    </expr>
+                </expression-projection>
+            </projections>
+            <combine combine-type="UNION_ALL" start-index="21" stop-index="47">
+                <left>
+                    <projections start-index="28" stop-index="28">
+                        <expression-projection text="?" start-index="28" stop-index="28">
+                            <expr>
+                                <parameter-marker-expression parameter-index="0" start-index="28" stop-index="28" />
+                            </expr>
+                        </expression-projection>
+                    </projections>
+                </left>
+                <right>
+                    <projections start-index="47" stop-index="47">
+                        <expression-projection text="?" start-index="47" stop-index="47">
+                            <expr>
+                                <parameter-marker-expression parameter-index="1" start-index="47" stop-index="47" />
+                            </expr>
+                        </expression-projection>
+                    </projections>
+                </right>
+            </combine>
+        </select>
+    </insert>
+    <insert sql-case-id="insert_indirection_parameters_postgresql_regression" parameters="1, 2, 3, 4, 5">
+        <table name="foo" start-index="12" stop-index="14" />
+        <columns start-index="16" stop-index="36">
+            <column name="items" start-index="17" stop-index="24" />
+            <column name="span" start-index="27" stop-index="35" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="3" start-index="46" stop-index="46" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="4" start-index="49" stop-index="49" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    <insert sql-case-id="insert_with_returning_postgresql_regression" parameters="1, 2, 3">
+        <table name="foo" start-index="40" stop-index="42" />
+        <columns start-index="44" stop-index="47">
+            <column name="id" start-index="45" stop-index="46" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="57" stop-index="57" />
+                </assignment-value>
+            </value>
+        </values>
+        <with start-index="0" stop-index="26">
+            <common-table-expression name="seed" start-index="5" stop-index="26">
+                <column name="id" start-index="10" stop-index="11" />
+                <subquery-expression start-index="5" stop-index="26">
+                    <select parameters="1">
+                        <projections start-index="25" stop-index="25">
+                            <expression-projection text="?" start-index="25" stop-index="25">
+                                <expr>
+                                    <parameter-marker-expression parameter-index="0" start-index="25" stop-index="25" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <returning>
+            <projections start-index="70" stop-index="74">
+                <column-projection name="id" start-index="70" stop-index="71" />
+                <expression-projection text="?" start-index="74" stop-index="74">
+                    <expr>
+                        <parameter-marker-expression parameter-index="2" start-index="74" stop-index="74" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </returning>
+    </insert>
+    <insert sql-case-id="insert_returning_aliases_postgresql_regression" parameters="1, 2">
+        <table name="foo" start-index="12" stop-index="14" />
+        <columns start-index="16" stop-index="19">
+            <column name="id" start-index="17" stop-index="18" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="29" stop-index="29" />
+                </assignment-value>
+            </value>
+        </values>
+        <returning old-alias="old_row" old-alias-start-index="55" old-alias-stop-index="61" new-alias="new_row" new-alias-start-index="71" new-alias-stop-index="77">
+            <projections start-index="80" stop-index="104">
+                <column-projection name="id" start-index="80" stop-index="89">
+                    <owner name="old_row" start-index="80" stop-index="86" />
+                </column-projection>
+                <column-projection name="id" start-index="92" stop-index="101">
+                    <owner name="new_row" start-index="92" stop-index="98" />
+                </column-projection>
+                <expression-projection text="?" start-index="104" stop-index="104">
+                    <expr>
+                        <parameter-marker-expression parameter-index="1" start-index="104" stop-index="104" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </returning>
+    </insert>
     <insert sql-case-id="insert_with_schema_database_link_oracle" parameters="1">
         <table name="USER_CONSIS_LIST" db-link="pjzw" at="@" start-index="12" stop-index="36" table-name-start-index="21" table-name-stop-index="36">
             <owner name="userinfo" start-index="12" stop-index="19" />

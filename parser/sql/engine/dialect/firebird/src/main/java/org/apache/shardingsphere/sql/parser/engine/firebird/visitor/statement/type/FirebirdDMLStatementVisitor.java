@@ -229,7 +229,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         if (null != expr) {
             return visit(expr);
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList());
     }
     
     @Override

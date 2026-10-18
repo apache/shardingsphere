@@ -330,7 +330,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         }
         super.visitAExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text, Collections.emptyList());
     }
     
     private Optional<String> findBinaryOperator(final AExprContext ctx) {
@@ -432,7 +432,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         }
         super.visitCExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), text);
+        return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), text, Collections.emptyList());
     }
     
     private ExpressionSegment createSubqueryExpressionSegment(final CExprContext ctx) {
@@ -1034,7 +1034,8 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     public ASTNode visitCommonTableExpr(final CommonTableExprContext ctx) {
         CommonTableExpressionSegment result = new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (AliasSegment) visit(ctx.alias()),
                 new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.preparableStmt().select()),
-                        getOriginalText(ctx.preparableStmt().select())));
+                        getOriginalText(ctx.preparableStmt().select())),
+                null);
         if (null != ctx.optNameList().nameList()) {
             result.getColumns().addAll(generateUsingColumn(ctx.optNameList().nameList()));
         }
@@ -1179,7 +1180,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
             result.setOrderBySegment(orderBySegment);
         }
         if (null != ctx.frameClause()) {
-            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText()));
+            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText(), Collections.emptyList()));
         }
     }
     
