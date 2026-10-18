@@ -765,7 +765,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         CollectionValue<ColumnSegment> result = new CollectionValue<>();
         for (IndexElemContext each : ctx.indexElem()) {
             if (null != each.colId()) {
-                result.getValue().add(new ColumnSegment(each.colId().start.getStartIndex(), each.colId().stop.getStopIndex(), new IdentifierValue(each.colId().getText())));
+                result.getValue().add(new ColumnSegment(each.colId().start.getStartIndex(), each.colId().stop.getStopIndex(), createIdentifierValue(each.colId().getText())));
             }
             if (null != each.functionExprWindowless()) {
                 ExpressionSegment expression = (ExpressionSegment) visit(each.functionExprWindowless());
@@ -958,7 +958,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @Override
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
         CreateTriggerStatement result = new CreateTriggerStatement(getDatabaseType());
-        result.setTriggerName(new FunctionNameSegment(ctx.name().start.getStartIndex(), ctx.name().stop.getStopIndex(), new IdentifierValue(ctx.name().getText())));
+        result.setTriggerName(new FunctionNameSegment(ctx.name().start.getStartIndex(), ctx.name().stop.getStopIndex(), createIdentifierValue(ctx.name().getText())));
         result.setTable((SimpleTableSegment) visit(ctx.qualifiedName(0)));
         return result;
     }
@@ -1120,7 +1120,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     public ASTNode visitCreateSchema(final CreateSchemaContext ctx) {
         CreateSchemaStatement result = new CreateSchemaStatement(getDatabaseType());
         if (null != ctx.createSchemaClauses().colId()) {
-            result.setSchemaName(new IdentifierValue(ctx.createSchemaClauses().colId().getText()));
+            result.setSchemaName(createIdentifierValue(ctx.createSchemaClauses().colId().getText()));
         }
         if (null != ctx.createSchemaClauses().roleSpec() && null != ctx.createSchemaClauses().roleSpec().identifier()) {
             result.setUsername((IdentifierValue) visit(ctx.createSchemaClauses().roleSpec().identifier()));

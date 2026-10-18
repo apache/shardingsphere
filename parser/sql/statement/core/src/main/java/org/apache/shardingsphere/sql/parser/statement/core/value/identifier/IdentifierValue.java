@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.value.identifier;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,11 @@ public final class IdentifierValue implements ValueASTNode<String> {
     
     private final QuoteCharacter quoteCharacter;
     
+    @Getter(AccessLevel.NONE)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private boolean escapeQuoteCharacters;
+    
     public IdentifierValue(final String text) {
         quoteCharacter = QuoteCharacter.getQuoteCharacter(text);
         if (QuoteCharacter.BACK_QUOTE == quoteCharacter) {
@@ -48,11 +54,26 @@ public final class IdentifierValue implements ValueASTNode<String> {
     }
     
     /**
+     * Create identifier value from a decoded double-quoted name.
+     *
+     * @param value decoded identifier name
+     * @return identifier value whose internal double quotes are escaped when rendered
+     */
+    public static IdentifierValue fromDecodedQuotedName(final String value) {
+        IdentifierValue result = new IdentifierValue(value, QuoteCharacter.QUOTE);
+        result.escapeQuoteCharacters = true;
+        return result;
+    }
+    
+    /**
      * Get value with quote characters, i.e. `table1` or `field1`
      *
      * @return value with quote characters
      */
     public String getValueWithQuoteCharacters() {
-        return null == value ? "" : quoteCharacter.wrap(value);
+        if (null == value) {
+            return "";
+        }
+        return quoteCharacter.wrap(escapeQuoteCharacters ? value.replace("\"", "\"\"") : value);
     }
 }

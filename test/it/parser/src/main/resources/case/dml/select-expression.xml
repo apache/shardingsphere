@@ -4422,6 +4422,26 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_postgresql_escaped_identifiers">
+        <projections start-index="7" stop-index="81">
+            <column-projection name="foo&quot;bar" start-delimiter="&quot;" end-delimiter="&quot;" start-index="7" stop-index="16" />
+            <column-projection name="foo&quot;&quot;bar" start-delimiter="&quot;" end-delimiter="&quot;" start-index="19" stop-index="30" />
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="33" stop-index="51" />
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="54" stop-index="81" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_unicode_identifier_controls">
+        <projections start-index="7" stop-index="211">
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="7" stop-index="35" />
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="38" stop-index="69" />
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="72" stop-index="103" />
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="106" stop-index="139" />
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="142" stop-index="179" />
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="182" stop-index="211" />
+        </projections>
+    </select>
+
     <select sql-case-id="select_postgresql_unicode_strings">
         <projections start-index="7" stop-index="69">
             <expression-projection start-index="7" stop-index="25" text="U&amp;'d\0061t\+000061'">

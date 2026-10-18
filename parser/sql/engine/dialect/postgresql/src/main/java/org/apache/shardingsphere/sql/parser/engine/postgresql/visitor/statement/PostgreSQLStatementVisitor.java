@@ -295,7 +295,84 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
         UnreservedWordContext unreservedWord = ctx.unreservedWord();
-        return null == unreservedWord ? new IdentifierValue(ctx.getText()) : visit(unreservedWord);
+        return null == unreservedWord ? createIdentifierValue(ctx.getText()) : visit(unreservedWord);
+    }
+    
+    protected final IdentifierValue createIdentifierValue(final String text) {
+        boolean unicode = text.regionMatches(true, 0, "U&", 0, 2);
+        if (!unicode && !text.startsWith("\"")) {
+            return new IdentifierValue(text);
+        }
+        int stopIndex = text.lastIndexOf('"');
+        String value = text.substring(unicode ? 3 : 1, stopIndex).replace("\"\"", "\"");
+        if (unicode) {
+            char escape = stopIndex + 1 == text.length() ? '\\' : getUnicodeEscapeCharacter(text.substring(stopIndex + 8));
+            value = decodeUnicode(value, escape);
+        }
+        return IdentifierValue.fromDecodedQuotedName(value);
+    }
+    
+    private char getUnicodeEscapeCharacter(final String text) {
+        String literal = concatenateStringLiterals(text);
+        String value = literal.substring(1, literal.length() - 1);
+        if (!text.regionMatches(true, 0, "E", 0, 1) || '\\' != value.charAt(0)) {
+            return value.charAt(0);
+        }
+        char character = value.charAt(1);
+        if ('x' == character || 'u' == character || 'U' == character) {
+            return (char) Integer.parseInt(value.substring(2), 16);
+        }
+        if ('0' <= character && '7' >= character) {
+            return (char) Integer.parseInt(value.substring(1), 8);
+        }
+        return 'b' == character ? '\b' : character;
+    }
+    
+    private String concatenateStringLiterals(final String text) {
+        StringBuilder result = new StringBuilder("'");
+        boolean escaped = 'E' == text.charAt(0) || 'e' == text.charAt(0);
+        int index = text.indexOf('\'') + 1;
+        while (index < text.length()) {
+            char character = text.charAt(index);
+            if (escaped && '\\' == character) {
+                result.append(character).append(text.charAt(++index));
+            } else if ('\'' != character) {
+                result.append(character);
+            } else if (index + 1 < text.length() && '\'' == text.charAt(index + 1)) {
+                result.append("''");
+                index++;
+            } else {
+                int nextIndex = text.indexOf('\'', index + 1);
+                if (-1 == nextIndex) {
+                    break;
+                }
+                index = nextIndex;
+            }
+            index++;
+        }
+        return result.append('\'').toString();
+    }
+    
+    private String decodeUnicode(final String value, final char escape) {
+        StringBuilder result = new StringBuilder();
+        int index = 0;
+        while (index < value.length()) {
+            char character = value.charAt(index);
+            if (escape != character) {
+                result.append(character);
+                index++;
+            } else if (escape == value.charAt(index + 1)) {
+                result.append(escape);
+                index += 2;
+            } else {
+                int startIndex = index + 1;
+                int length = '+' == value.charAt(startIndex) ? 6 : 4;
+                startIndex += 6 == length ? 1 : 0;
+                result.appendCodePoint(Integer.parseInt(value.substring(startIndex, startIndex + length), 16));
+                index = startIndex + length;
+            }
+        }
+        return result.toString();
     }
     
     @Override
@@ -657,7 +734,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             return createWindowItem(ctx.windowSpecification());
         }
         WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        result.setWindowName(new IdentifierValue(ctx.colId().getText()));
+        result.setWindowName(createIdentifierValue(ctx.colId().getText()));
         return result;
     }
     
@@ -830,69 +907,6 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return new StringLiteralValue(text);
     }
     
-    private String concatenateStringLiterals(final String text) {
-        StringBuilder result = new StringBuilder("'");
-        boolean escaped = 'E' == text.charAt(0) || 'e' == text.charAt(0);
-        int index = text.indexOf('\'') + 1;
-        while (index < text.length()) {
-            char character = text.charAt(index);
-            if (escaped && '\\' == character) {
-                result.append(character).append(text.charAt(++index));
-            } else if ('\'' != character) {
-                result.append(character);
-            } else if (index + 1 < text.length() && '\'' == text.charAt(index + 1)) {
-                result.append("''");
-                index++;
-            } else {
-                int nextIndex = text.indexOf('\'', index + 1);
-                if (-1 == nextIndex) {
-                    break;
-                }
-                index = nextIndex;
-            }
-            index++;
-        }
-        return result.append('\'').toString();
-    }
-    
-    private char getUnicodeEscapeCharacter(final String text) {
-        String literal = concatenateStringLiterals(text);
-        String value = literal.substring(1, literal.length() - 1);
-        if (!text.regionMatches(true, 0, "E", 0, 1) || '\\' != value.charAt(0)) {
-            return value.charAt(0);
-        }
-        char character = value.charAt(1);
-        if ('x' == character || 'u' == character || 'U' == character) {
-            return (char) Integer.parseInt(value.substring(2), 16);
-        }
-        if ('0' <= character && '7' >= character) {
-            return (char) Integer.parseInt(value.substring(1), 8);
-        }
-        return 'b' == character ? '\b' : character;
-    }
-    
-    private String decodeUnicode(final String value, final char escape) {
-        StringBuilder result = new StringBuilder();
-        int index = 0;
-        while (index < value.length()) {
-            char character = value.charAt(index);
-            if (escape != character) {
-                result.append(character);
-                index++;
-            } else if (escape == value.charAt(index + 1)) {
-                result.append(escape);
-                index += 2;
-            } else {
-                int startIndex = index + 1;
-                int length = '+' == value.charAt(startIndex) ? 6 : 4;
-                startIndex += 6 == length ? 1 : 0;
-                result.appendCodePoint(Integer.parseInt(value.substring(startIndex, startIndex + length), 16));
-                index = startIndex + length;
-            }
-        }
-        return result.toString();
-    }
-    
     @Override
     public ASTNode visitColumnref(final ColumnrefContext ctx) {
         if (null != ctx.indirection()) {
@@ -906,17 +920,17 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         }
         if (null != ctx.indirection() && null != ctx.indirection().indirectionEl().DOT_ASTERISK_()) {
             ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("*"));
-            result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+            result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText())));
             return result;
         }
         if (null != ctx.indirection() && null != ctx.indirection().indirectionEl().attrName()) {
             AttrNameContext attrName = ctx.indirection().indirectionEl().attrName();
-            ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(attrName.getText()));
-            OwnerSegment owner = new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
+            ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), createIdentifierValue(attrName.getText()));
+            OwnerSegment owner = new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText()));
             result.setOwner(owner);
             return result;
         }
-        return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
+        return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText()));
     }
     
     private ColumnSegment createSubscriptColumn(final ColumnrefContext ctx, final Collection<IndirectionElContext> elements) {
@@ -930,10 +944,10 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             }
         }
         if (null == columnName) {
-            return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
+            return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText()));
         }
-        ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), columnName.stop.getStopIndex(), new IdentifierValue(columnName.getText()));
-        result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+        ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), columnName.stop.getStopIndex(), createIdentifierValue(columnName.getText()));
+        result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText())));
         return result;
     }
     
@@ -1150,7 +1164,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         SimpleTableSegment result = (SimpleTableSegment) visit(ctx.qualifiedName());
         if (null != ctx.AS()) {
             ColIdContext colId = ctx.colId();
-            result.setAlias(new AliasSegment(colId.start.getStartIndex(), colId.stop.getStopIndex(), new IdentifierValue(colId.getText())));
+            result.setAlias(new AliasSegment(colId.start.getStartIndex(), colId.stop.getStopIndex(), createIdentifierValue(colId.getText())));
         }
         return result;
     }
@@ -1172,8 +1186,8 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     public ASTNode visitQualifiedName(final QualifiedNameContext ctx) {
         if (null != ctx.indirection()) {
             AttrNameContext attrName = ctx.indirection().indirectionEl().attrName();
-            TableNameSegment tableName = new TableNameSegment(attrName.start.getStartIndex(), attrName.stop.getStopIndex(), new IdentifierValue(attrName.getText()));
-            OwnerSegment owner = new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
+            TableNameSegment tableName = new TableNameSegment(attrName.start.getStartIndex(), attrName.stop.getStopIndex(), createIdentifierValue(attrName.getText()));
+            OwnerSegment owner = new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText()));
             SimpleTableSegment result = new SimpleTableSegment(tableName);
             if (null != ctx.indirection().indirection()) {
                 OwnerSegment tableOwner = createTableOwner(ctx.indirection().indirection());
@@ -1184,7 +1198,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             }
             return result;
         }
-        return new SimpleTableSegment(new TableNameSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+        return new SimpleTableSegment(new TableNameSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText())));
     }
     
     @SuppressWarnings("unchecked")
@@ -1228,11 +1242,11 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         visitIndirectionExpressions(ctx.optIndirection());
         if (null != ctx.optIndirection().indirectionEl() && null != ctx.optIndirection().indirectionEl().attrName()) {
             AttrNameContext attrName = ctx.optIndirection().indirectionEl().attrName();
-            ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(attrName.getText()));
-            result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+            ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), createIdentifierValue(attrName.getText()));
+            result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText())));
             return result;
         }
-        return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
+        return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), createIdentifierValue(ctx.colId().getText()));
     }
     
     private void visitIndirectionExpressions(final OptIndirectionContext ctx) {
@@ -1301,7 +1315,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     public ASTNode visitSetTarget(final SetTargetContext ctx) {
         visitIndirectionExpressions(ctx.optIndirection());
         List<IdentifierValue> fieldAttributes = getSetTargetFieldAttributes(ctx.optIndirection());
-        ColumnSegment result = new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
+        ColumnSegment result = new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), createIdentifierValue(ctx.colId().getText()));
         if (!fieldAttributes.isEmpty()) {
             result.setNestedObjectAttributes(fieldAttributes);
         }
@@ -1319,7 +1333,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                     () -> new SQLParsingException("Only field indirection is supported in assignment targets"));
             AttrNameContext attrName = current.indirectionEl().attrName();
             if (null != attrName) {
-                result.add(0, new IdentifierValue(attrName.getText()));
+                result.add(0, createIdentifierValue(attrName.getText()));
             }
             current = current.optIndirection();
         }
@@ -1330,7 +1344,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     public ASTNode visitRelationExprOptAlias(final RelationExprOptAliasContext ctx) {
         SimpleTableSegment result = (SimpleTableSegment) visit(ctx.relationExpr().qualifiedName());
         if (null != ctx.colId()) {
-            result.setAlias(new AliasSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+            result.setAlias(new AliasSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), createIdentifierValue(ctx.colId().getText())));
         }
         return result;
     }
@@ -1415,7 +1429,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     public ASTNode visitReturningClause(final ReturningClauseContext ctx) {
         ReturningSegment result = new ReturningSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ProjectionsSegment) visit(ctx.targetList()));
         for (ReturningOptionContext each : ctx.returningOption()) {
-            AliasSegment alias = new AliasSegment(each.colId().start.getStartIndex(), each.colId().stop.getStopIndex(), new IdentifierValue(each.colId().getText()));
+            AliasSegment alias = new AliasSegment(each.colId().start.getStartIndex(), each.colId().stop.getStopIndex(), createIdentifierValue(each.colId().getText()));
             if (null != each.OLD()) {
                 result.setOldAlias(alias);
             } else {
@@ -1538,12 +1552,12 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     }
     
     private ColumnSegment createColumnSegment(final ColIdContext ctx) {
-        return new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.getText()));
+        return new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), createIdentifierValue(ctx.getText()));
     }
     
     @Override
     public ASTNode visitAlias(final AliasContext ctx) {
-        return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText()));
+        return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), createIdentifierValue(ctx.identifier().getText()));
     }
     
     @Override
@@ -1665,7 +1679,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitWindowDefinition(final WindowDefinitionContext ctx) {
         WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        result.setWindowName(new IdentifierValue(ctx.colId().getText()));
+        result.setWindowName(createIdentifierValue(ctx.colId().getText()));
         setWindowSpecification(ctx.windowSpecification(), result);
         return result;
     }
@@ -1673,7 +1687,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     private WindowItemSegment createWindowItem(final WindowSpecificationContext ctx) {
         WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         if (null != ctx.existingWindowName()) {
-            result.setWindowName(new IdentifierValue(ctx.existingWindowName().colId().getText()));
+            result.setWindowName(createIdentifierValue(ctx.existingWindowName().colId().getText()));
         }
         setWindowSpecification(ctx, result);
         return result;
@@ -1748,7 +1762,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         ProjectionSegment result = createProjectionSegment(ctx, ctx.aExpr());
         ParserRuleContext alias = null == ctx.colLabel() ? ctx.identifier() : ctx.colLabel();
         if (null != alias) {
-            ((AliasAvailable) result).setAlias(new AliasSegment(alias.start.getStartIndex(), alias.stop.getStopIndex(), new IdentifierValue(alias.getText())));
+            ((AliasAvailable) result).setAlias(new AliasSegment(alias.start.getStartIndex(), alias.stop.getStopIndex(), createIdentifierValue(alias.getText())));
         }
         return result;
     }
@@ -1759,7 +1773,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         }
         if (null != ctx.DOT_ASTERISK_()) {
             ShorthandProjectionSegment result = new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-            result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+            result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText())));
             return result;
         }
         if (null != ctx.aExpr()) {
@@ -1893,7 +1907,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         } else if (null != ctx.funcAliasClause()) {
             if (null != ctx.funcAliasClause().colId()) {
                 ColIdContext alias = ctx.funcAliasClause().colId();
-                result.setAlias(new AliasSegment(alias.start.getStartIndex(), alias.stop.getStopIndex(), new IdentifierValue(alias.getText())));
+                result.setAlias(new AliasSegment(alias.start.getStartIndex(), alias.stop.getStopIndex(), createIdentifierValue(alias.getText())));
             }
             result.getColumns().addAll(createTableFunctionColumns(ctx.funcAliasClause().tableFuncElementList().tableFuncElement()));
         }
@@ -1968,7 +1982,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                 defaultString = getOriginalText(each.bExpr());
             } else {
                 stringsAsIdentifiers.add(new XmlNamespaceStringAsIdentifierSegment(each.start.getStartIndex(), each.stop.getStopIndex(), getOriginalText(each.bExpr()),
-                        new IdentifierValue(each.identifier().getText()).getValue(), getOriginalText(each)));
+                        createIdentifierValue(each.identifier().getText()).getValue(), getOriginalText(each)));
             }
         }
         XmlNamespacesClauseSegment result = new XmlNamespacesClauseSegment(ctx.xmlNamespaceList().start.getStartIndex(), ctx.xmlNamespaceList().stop.getStopIndex(), defaultString,
@@ -1994,7 +2008,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                 params.add(expression);
             }
         }
-        return new XmlTableColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()).getValue(),
+        return new XmlTableColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), createIdentifierValue(ctx.colId().getText()).getValue(),
                 null == ctx.typeName() ? null : getOriginalText(ctx.typeName()), path, defaultExpr, getOriginalText(ctx));
     }
     
@@ -2008,7 +2022,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         }
         FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), functionName, getOriginalText(ctx));
         if (null != funcNameContext.colId()) {
-            result.setOwner(new OwnerSegment(funcNameContext.colId().start.getStartIndex(), funcNameContext.colId().stop.getStopIndex(), new IdentifierValue(funcNameContext.colId().getText())));
+            result.setOwner(new OwnerSegment(funcNameContext.colId().start.getStartIndex(), funcNameContext.colId().stop.getStopIndex(), createIdentifierValue(funcNameContext.colId().getText())));
         } else if (null != funcNameContext.owner() && null != funcNameContext.typeFunctionName()) {
             result.setOwner((OwnerSegment) visit(funcNameContext.owner()));
         }
@@ -2073,7 +2087,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.USING()) {
             joinTableSource.setUsing(generateUsingColumn(ctx.nameList()));
             if (null != ctx.colId()) {
-                joinTableSource.setUsingAlias(new AliasSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+                joinTableSource.setUsingAlias(new AliasSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText())));
             }
         }
     }
@@ -2084,14 +2098,14 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             result.addAll(generateUsingColumn(ctx.nameList()));
         }
         if (null != ctx.name()) {
-            result.add(new ColumnSegment(ctx.name().start.getStartIndex(), ctx.name().stop.getStopIndex(), new IdentifierValue(ctx.name().getText())));
+            result.add(new ColumnSegment(ctx.name().start.getStartIndex(), ctx.name().stop.getStopIndex(), createIdentifierValue(ctx.name().getText())));
         }
         return result;
     }
     
     @Override
     public ASTNode visitAliasClause(final AliasClauseContext ctx) {
-        AliasSegment result = new AliasSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
+        AliasSegment result = new AliasSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), createIdentifierValue(ctx.colId().getText()));
         if (null != ctx.nameList()) {
             result.getColumnAliases().addAll(generateAliasColumns(ctx.nameList()));
         }
@@ -2104,14 +2118,14 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             result.addAll(generateAliasColumns(ctx.nameList()));
         }
         if (null != ctx.name()) {
-            result.add(new IdentifierValue(ctx.name().getText()));
+            result.add(createIdentifierValue(ctx.name().getText()));
         }
         return result;
     }
     
     private OwnerSegment createTableOwner(final IndirectionContext ctx) {
         AttrNameContext attrName = ctx.indirectionEl().attrName();
-        return new OwnerSegment(attrName.start.getStartIndex(), attrName.stop.getStopIndex(), new IdentifierValue(attrName.getText()));
+        return new OwnerSegment(attrName.start.getStartIndex(), attrName.stop.getStopIndex(), createIdentifierValue(attrName.getText()));
     }
     
     @Override
@@ -2237,7 +2251,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.attrs()) {
             result.combine((CollectionValue<NameSegment>) visit(ctx.attrs()));
         }
-        result.getValue().add(new NameSegment(ctx.colId().getStart().getStartIndex(), ctx.colId().getStop().getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+        result.getValue().add(new NameSegment(ctx.colId().getStart().getStartIndex(), ctx.colId().getStop().getStopIndex(), createIdentifierValue(ctx.colId().getText())));
         return result;
     }
     
@@ -2245,7 +2259,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @SuppressWarnings("unchecked")
     public ASTNode visitAttrs(final AttrsContext ctx) {
         CollectionValue<NameSegment> result = new CollectionValue<>();
-        result.getValue().add(new NameSegment(ctx.attrName().getStart().getStartIndex(), ctx.attrName().getStop().getStopIndex(), new IdentifierValue(ctx.attrName().getText())));
+        result.getValue().add(new NameSegment(ctx.attrName().getStart().getStartIndex(), ctx.attrName().getStop().getStopIndex(), createIdentifierValue(ctx.attrName().getText())));
         if (null != ctx.attrs()) {
             result.combine((CollectionValue<NameSegment>) visit(ctx.attrs()));
         }

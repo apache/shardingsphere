@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PrivilegeObjectSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -47,8 +48,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema.CreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -78,6 +84,117 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @InternalSQLParserITSettings("PostgreSQL")
 class InternalPostgreSQLParserIT extends InternalSQLParserIT {
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getQuotedIdentifierCases")
+    void assertQuotedIdentifierRoundTrip(final String name, final String identifier, final String expectedValue, final String expectedQuotedValue) {
+        String sql = "SELECT " + identifier + " AS " + identifier + " FROM " + identifier + "." + identifier + " AS " + identifier;
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        ColumnProjectionSegment actualProjection = (ColumnProjectionSegment) actual.getProjections().getProjections().iterator().next();
+        SimpleTableSegment actualTable = (SimpleTableSegment) actual.getFrom().get();
+        ColumnSegment actualColumn = actualProjection.getColumn();
+        assertThat(sql.substring(actualColumn.getStartIndex(), actualColumn.getStopIndex() + 1), is(identifier));
+        assertThat(sql.substring(actualTable.getTableName().getStartIndex(), actualTable.getTableName().getStopIndex() + 1), is(identifier));
+        Collection<IdentifierValue> actualIdentifiers = Arrays.asList(actualColumn.getIdentifier(), actualProjection.getAlias().get(), actualTable.getOwner().get().getIdentifier(),
+                actualTable.getTableName().getIdentifier(), actualTable.getAlias().get());
+        for (IdentifierValue each : actualIdentifiers) {
+            assertThat(each.getValue(), is(expectedValue));
+            assertThat(each.getValueWithQuoteCharacters(), is(expectedQuotedValue));
+            String roundTripSQL = "SELECT " + each.getValueWithQuoteCharacters();
+            SelectStatement actualRoundTrip = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL")
+                    .visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(roundTripSQL, false));
+            assertThat(((ColumnProjectionSegment) actualRoundTrip.getProjections().getProjections().iterator().next()).getColumn().getIdentifier().getValue(), is(expectedValue));
+        }
+    }
+    
+    private static Stream<Arguments> getQuotedIdentifierCases() {
+        return Stream.of(
+                Arguments.of("one embedded quote", "\"foo\"\"bar\"", "foo\"bar", "\"foo\"\"bar\""),
+                Arguments.of("two adjacent embedded quotes", "\"foo\"\"\"\"bar\"", "foo\"\"bar", "\"foo\"\"\"\"bar\""),
+                Arguments.of("default Unicode escape", "U&\"foo\\0061\"", "fooa", "\"fooa\""),
+                Arguments.of("six digit Unicode escape", "U&\"foo\\+01F600\"", "foo😀", "\"foo😀\""),
+                Arguments.of("surrogate pair Unicode escape", "U&\"foo\\D83D\\DE00\"", "foo😀", "\"foo😀\""),
+                Arguments.of("literal Unicode escape character", "U&\"foo\\\\bar\"", "foo\\bar", "\"foo\\bar\""),
+                Arguments.of("custom Unicode escape", "U&\"foo!0061\" UESCAPE '!'", "fooa", "\"fooa\""),
+                Arguments.of("escaped custom Unicode escape", "U&\"foo!0061\" UESCAPE E'\\041'", "fooa", "\"fooa\""),
+                Arguments.of("escaped backslash Unicode escape", "U&\"foo\\0061\" UESCAPE E'\\\\'", "fooa", "\"fooa\""),
+                Arguments.of("Unicode embedded quote", "U&\"foo\\0022bar\"", "foo\"bar", "\"foo\"\"bar\""),
+                Arguments.of("Unicode adjacent decoded quotes", "U&\"foo\\0022\\0022bar\"", "foo\"\"bar", "\"foo\"\"\"\"bar\""),
+                Arguments.of("Unicode decoded and literal quotes", "U&\"foo!0022\"\"bar\" UESCAPE '!'", "foo\"\"bar", "\"foo\"\"\"\"bar\""));
+    }
+    
+    @Test
+    void assertCreateSchemaQuotedIdentifierRoundTrip() {
+        String sql = "CREATE SCHEMA U&\"foo!0022\"\"schema\" UESCAPE '!'";
+        CreateSchemaStatement actual = (CreateSchemaStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        IdentifierValue actualIdentifier = actual.getSchemaName().get();
+        assertThat(actualIdentifier.getValue(), is("foo\"\"schema"));
+        String roundTripSQL = "CREATE SCHEMA " + actualIdentifier.getValueWithQuoteCharacters();
+        CreateSchemaStatement actualRoundTrip = (CreateSchemaStatement) new SQLStatementVisitorEngine("PostgreSQL")
+                .visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(roundTripSQL, false));
+        assertThat(actualRoundTrip.getSchemaName().get().getValue(), is("foo\"\"schema"));
+    }
+    
+    @Test
+    void assertCreateIndexQuotedColumnRoundTrip() {
+        String identifier = "U&\"foo\\0022\\0022column\"";
+        String sql = "CREATE INDEX foo_index ON foo_table (" + identifier + ")";
+        CreateIndexStatement actual = (CreateIndexStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        ColumnSegment actualColumn = actual.getColumns().iterator().next();
+        assertThat(actualColumn.getIdentifier().getValue(), is("foo\"\"column"));
+        assertThat(sql.substring(actualColumn.getStartIndex(), actualColumn.getStopIndex() + 1), is(identifier));
+        String roundTripSQL = "CREATE INDEX foo_index ON foo_table (" + actualColumn.getIdentifier().getValueWithQuoteCharacters() + ")";
+        CreateIndexStatement actualRoundTrip = (CreateIndexStatement) new SQLStatementVisitorEngine("PostgreSQL")
+                .visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(roundTripSQL, false));
+        assertThat(actualRoundTrip.getColumns().iterator().next().getIdentifier().getValue(), is("foo\"\"column"));
+    }
+    
+    @Test
+    void assertCreateTriggerQuotedIdentifierRoundTrip() {
+        String triggerClause = " BEFORE INSERT ON foo_table FOR EACH ROW EXECUTE FUNCTION foo_function()";
+        String sql = "CREATE TRIGGER U&\"foo!0022!0022trigger\" UESCAPE '!'" + triggerClause;
+        CreateTriggerStatement actual = (CreateTriggerStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        IdentifierValue actualIdentifier = actual.getTriggerName().get().getIdentifier();
+        assertThat(actualIdentifier.getValue(), is("foo\"\"trigger"));
+        String roundTripSQL = "CREATE TRIGGER " + actualIdentifier.getValueWithQuoteCharacters() + triggerClause;
+        CreateTriggerStatement actualRoundTrip = (CreateTriggerStatement) new SQLStatementVisitorEngine("PostgreSQL")
+                .visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(roundTripSQL, false));
+        assertThat(actualRoundTrip.getTriggerName().get().getIdentifier().getValue(), is("foo\"\"trigger"));
+    }
+    
+    @Test
+    void assertAnalyzeQuotedTableRoundTrip() {
+        String identifier = "U&\"foo!0022\"\"table\" UESCAPE '!'";
+        String sql = "ANALYZE " + identifier;
+        AnalyzeTableStatement actual = (AnalyzeTableStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        SimpleTableSegment actualTable = actual.getTables().iterator().next();
+        assertThat(actualTable.getTableName().getIdentifier().getValue(), is("foo\"\"table"));
+        assertThat(sql.substring(actualTable.getStartIndex(), actualTable.getStopIndex() + 1), is(identifier));
+        String roundTripSQL = "ANALYZE " + actualTable.getTableName().getIdentifier().getValueWithQuoteCharacters();
+        AnalyzeTableStatement actualRoundTrip = (AnalyzeTableStatement) new SQLStatementVisitorEngine("PostgreSQL")
+                .visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(roundTripSQL, false));
+        assertThat(actualRoundTrip.getTables().iterator().next().getTableName().getIdentifier().getValue(), is("foo\"\"table"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getQuotedPrivilegeObjectCases")
+    void assertQuotedPrivilegeObjectRoundTrip(final String name, final String sqlPrefix, final String objectName, final String sqlSuffix, final Collection<String> expectedIdentifiers) {
+        String sql = sqlPrefix + objectName + sqlSuffix;
+        GrantStatement actual = (GrantStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        PrivilegeObjectSegment actualObject = actual.getPrivilegeObjects().iterator().next();
+        assertThat(actualObject.getIdentifiers().stream().map(IdentifierValue::getValue).collect(Collectors.toList()), is(expectedIdentifiers));
+        String roundTripSQL = sqlPrefix + actualObject.getIdentifiers().stream().map(IdentifierValue::getValueWithQuoteCharacters).collect(Collectors.joining(".")) + sqlSuffix;
+        GrantStatement actualRoundTrip = (GrantStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(roundTripSQL, false));
+        assertThat(actualRoundTrip.getPrivilegeObjects().iterator().next().getIdentifiers().stream().map(IdentifierValue::getValue).collect(Collectors.toList()), is(expectedIdentifiers));
+    }
+    
+    private static Stream<Arguments> getQuotedPrivilegeObjectCases() {
+        return Stream.of(
+                Arguments.of("schema name", "GRANT ALL ON SCHEMA ", "U&\"foo\\0061\"", " TO foo_role", Collections.singletonList("fooa")),
+                Arguments.of("type name and attribute", "GRANT ALL ON TYPE ", "U&\"foo\\0061\".U&\"bar!0022!0022\" UESCAPE '!'", " TO foo_role", Arrays.asList("fooa", "bar\"\"")),
+                Arguments.of("function owner and name", "GRANT ALL ON FUNCTION ", "U&\"foo\\0061\".U&\"bar!0062\" UESCAPE '!'", "(integer) TO foo_role", Arrays.asList("fooa", "barb")),
+                Arguments.of("function indirection", "GRANT ALL ON FUNCTION ", "U&\"foo\\0061\".U&\"bar!0062\" UESCAPE '!'", " TO foo_role", Arrays.asList("fooa", "barb")));
+    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getUnsupportedFilterExpressions")
