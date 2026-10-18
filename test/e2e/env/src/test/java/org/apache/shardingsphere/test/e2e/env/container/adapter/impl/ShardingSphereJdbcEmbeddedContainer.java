@@ -21,6 +21,8 @@ import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.yaml.YamlJDBCConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
@@ -37,6 +39,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -59,6 +62,20 @@ public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedE2ECon
     }
     
     @Override
+    @SneakyThrows(SQLException.class)
+    public void stop() {
+        for (Entry<String, DataSource> entry : targetDataSources.entrySet()) {
+            HikariDataSource targetDataSource = (HikariDataSource) entry.getValue();
+            DataSource dataSource = targetDataSource.getDataSource();
+            if (null != dataSource) {
+                targetDataSource.close();
+                ((ShardingSphereDataSource) dataSource).close();
+                targetDataSources.remove(entry.getKey());
+            }
+        }
+    }
+    
+    @Override
     public DataSource getTargetDataSource(final String serverLists) {
         return getTargetDataSource(serverLists, configPath);
     }
@@ -69,10 +86,15 @@ public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedE2ECon
         return targetDataSources.computeIfAbsent(effectiveDataSourceName, unused -> createTargetDataSource(serverLists));
     }
     
+    @SneakyThrows({IOException.class, SQLException.class})
     private DataSource createTargetDataSource(@Nullable final String serverLists) {
         HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        result.setJdbcUrl("jdbc:shardingsphere:absolutepath:" + processFile(configPath, storageContainer.getLinkReplacements(), serverLists));
+        if (Strings.isNullOrEmpty(serverLists)) {
+            result.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+            result.setJdbcUrl("jdbc:shardingsphere:absolutepath:" + processFile(configPath, storageContainer.getLinkReplacements(), serverLists));
+        } else {
+            result.setDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new File(processFile(configPath, storageContainer.getLinkReplacements(), serverLists))));
+        }
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         result.setLeakDetectionThreshold(10000L);
