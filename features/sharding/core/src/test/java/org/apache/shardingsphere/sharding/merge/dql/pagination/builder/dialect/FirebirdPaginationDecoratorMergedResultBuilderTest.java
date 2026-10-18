@@ -39,7 +39,7 @@ class FirebirdPaginationDecoratorMergedResultBuilderTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
     
     @Test
-    void assertBuildWithLimitValueSegment() throws SQLException {
+    void assertBuild() throws SQLException {
         PaginationContext paginationContext = new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 10L), new NumberLiteralLimitValueSegment(0, 0, 10L), Collections.emptyList());
         PaginationDecoratorMergedResultBuilder builder = DatabaseTypedSPILoader.getService(PaginationDecoratorMergedResultBuilder.class, databaseType);
         assertThat(builder, isA(FirebirdPaginationDecoratorMergedResultBuilder.class));

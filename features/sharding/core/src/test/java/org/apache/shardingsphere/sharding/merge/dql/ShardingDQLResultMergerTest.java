@@ -206,8 +206,7 @@ class ShardingDQLResultMergerTest {
         SelectStatement selectStatement = buildSelectStatement(firebirdDatabaseType);
         selectStatement = withProjections(selectStatement, new ProjectionsSegment(0, 0));
         selectStatement = withLimit(selectStatement, new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 2L), new NumberLiteralLimitValueSegment(0, 0, 2L)));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-                selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(createFourQueryResults(), selectStatementContext, createDialectDatabase(firebirdDatabaseType), mock(ConnectionContext.class));
         assertTrue(actual.next());
         assertTrue(actual.next());
