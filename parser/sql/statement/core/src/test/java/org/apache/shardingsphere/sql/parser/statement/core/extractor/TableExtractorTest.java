@@ -256,7 +256,7 @@ class TableExtractorTest {
         MergeStatement mergeStatement = MergeStatement.builder().target(target).source(source).expression(new ExpressionWithParamsSegment(0, 0, expression)).build();
         SimpleTableSegment left = createScopeTable("foo_left", 40);
         SimpleTableSegment right = createScopeTable("bar_right", 60);
-        MergeStatement usingAliasMerge = MergeStatement.builder().target(target).source(createUsingAliasJoin(left, right))
+        MergeStatement usingAliasMerge = MergeStatement.builder().databaseType(new MockedDatabaseType()).target(target).source(createUsingAliasJoin(left, right))
                 .expression(new ExpressionWithParamsSegment(20, 32, createScopeColumn("foo_outer", 20))).build();
         DatabaseType databaseType = new MockedDatabaseType();
         SimpleTableSegment returningTable = createScopeTable("foo_returning", 400);
@@ -481,12 +481,26 @@ class TableExtractorTest {
         column.setOwner(new OwnerSegment(0, 0, new IdentifierValue(owner)));
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         projections.getProjections().add(new ColumnProjectionSegment(column));
-        tableExtractor.extractTablesFromSelect(SelectStatement.builder().projections(projections).from(joinTable).build());
+        tableExtractor.extractTablesFromSelect(SelectStatement.builder().databaseType(new MockedDatabaseType()).projections(projections).from(joinTable).build());
         assertThat(tableExtractor.getRewriteTables(), contains(left, right));
     }
     
     private static Stream<Arguments> getUsingAliasArguments() {
         return Stream.of(Arguments.of("USING alias", "joined"), Arguments.of("Left table alias", "f"), Arguments.of("Right table alias", "b"));
+    }
+    
+    @Test
+    void assertExtractTablesFromSelectWithCorrelatedDerivedUsingAlias() {
+        SimpleTableSegment left = createScopeTable("foo_left", 20);
+        SimpleTableSegment right = createScopeTable("bar_right", 40);
+        SelectStatement correlated = SelectStatement.builder().projections(createScopeProjections(new ColumnProjectionSegment(createScopeColumn("foo_outer", 80)))).build();
+        SubqueryTableSegment derived = new SubqueryTableSegment(70, 110, new SubquerySegment(70, 110, correlated, ""));
+        derived.setAlias(new AliasSegment(115, 115, new IdentifierValue("x")));
+        JoinTableSegment from = new JoinTableSegment();
+        from.setLeft(createUsingAliasJoin(left, right));
+        from.setRight(derived);
+        tableExtractor.extractTablesFromSelect(SelectStatement.builder().databaseType(new MockedDatabaseType()).from(from).projections(new ProjectionsSegment(0, 0)).build());
+        assertThat(tableExtractor.getRewriteTables(), contains(left, right));
     }
     
     @Test
@@ -496,7 +510,7 @@ class TableExtractorTest {
         innerJoin.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_inner_right"))));
         innerJoin.setUsing(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id"))));
         innerJoin.setUsingAlias(new AliasSegment(0, 0, new IdentifierValue("foo_outer")));
-        SelectStatement innerSelect = SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).from(innerJoin).build();
+        SelectStatement innerSelect = SelectStatement.builder().databaseType(new MockedDatabaseType()).projections(new ProjectionsSegment(0, 0)).from(innerJoin).build();
         SubqueryTableSegment subqueryTable = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, innerSelect, ""));
         subqueryTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("foo_nested")));
         JoinTableSegment outerJoin = new JoinTableSegment();
@@ -536,8 +550,8 @@ class TableExtractorTest {
         JoinTableSegment rightUsingJoin = new JoinTableSegment();
         rightUsingJoin.setLeft(tailTable);
         rightUsingJoin.setRight(parentJoin);
-        SelectStatement leftUsingSelect = SelectStatement.builder().projections(childProjections).from(leftUsingJoin).build();
-        SelectStatement rightUsingSelect = SelectStatement.builder().projections(childProjections).from(rightUsingJoin).build();
+        SelectStatement leftUsingSelect = SelectStatement.builder().databaseType(new MockedDatabaseType()).projections(childProjections).from(leftUsingJoin).build();
+        SelectStatement rightUsingSelect = SelectStatement.builder().databaseType(new MockedDatabaseType()).projections(childProjections).from(rightUsingJoin).build();
         SelectStatement correlated = SelectStatement.builder().projections(childProjections).build();
         SimpleTableSegment localPhysical = createScopeTable("foo_outer", 100);
         SelectStatement physicalShadow = SelectStatement.builder().projections(childProjections).from(localPhysical).build();
@@ -559,7 +573,8 @@ class TableExtractorTest {
         SimpleTableSegment innerLeft = createScopeTable("foo_left", 40);
         SimpleTableSegment innerRight = createScopeTable("bar_right", 60);
         JoinTableSegment innerJoin = createUsingAliasJoin(innerLeft, innerRight);
-        SelectStatement innerSelect = SelectStatement.builder().projections(createScopeProjections(new ExpressionProjectionSegment(0, 0, "true", new LiteralExpressionSegment(0, 0, true))))
+        SelectStatement innerSelect = SelectStatement.builder().databaseType(new MockedDatabaseType())
+                .projections(createScopeProjections(new ExpressionProjectionSegment(0, 0, "true", new LiteralExpressionSegment(0, 0, true))))
                 .from(innerJoin).build();
         SubquerySegment innerSubquery = new SubquerySegment(30, 90, innerSelect, "");
         SelectStatement combine = SelectStatement.builder().combine(new CombineSegment(0, 130, innerSubquery, CombineType.UNION, new SubquerySegment(95, 130, physicalShadow, ""))).build();
@@ -570,28 +585,28 @@ class TableExtractorTest {
         SimpleTableSegment updateTarget = createScopeTable("foo_target", 5);
         SetAssignmentSegment assignments = new SetAssignmentSegment(0, 0, Collections.singletonList(new ColumnAssignmentSegment(0, 0,
                 Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id"))), new LiteralExpressionSegment(0, 0, 1))));
-        UpdateStatement firstUpdate = UpdateStatement.builder().table(updateTarget).from(innerJoin).setAssignment(assignments).build();
+        UpdateStatement firstUpdate = UpdateStatement.builder().databaseType(new MockedDatabaseType()).table(updateTarget).from(innerJoin).setAssignment(assignments).build();
         UpdateStatement secondUpdate = UpdateStatement.builder().table(localPhysical).setAssignment(assignments)
                 .where(new WhereSegment(120, 134, new BinaryOperationExpression(120, 134, createScopeColumn("foo_outer", 120), new LiteralExpressionSegment(134, 134, 1), "=", ""))).build();
         CommonTableExpressionSegment firstUpdateCTE = new CommonTableExpressionSegment(0, 90, new AliasSegment(0, 0, new IdentifierValue("foo_updated")), null, firstUpdate);
         CommonTableExpressionSegment secondUpdateCTE = new CommonTableExpressionSegment(95, 134, new AliasSegment(95, 95, new IdentifierValue("bar_updated")), null, secondUpdate);
         SelectStatement modifyingCommonTables = SelectStatement.builder().projections(new ProjectionsSegment(0, 0))
                 .with(new WithSegment(0, 134, Arrays.asList(firstUpdateCTE, secondUpdateCTE), false)).build();
-        SelectStatement scopedModifyingCommonTable = SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).from(parentJoin)
+        SelectStatement scopedModifyingCommonTable = SelectStatement.builder().databaseType(new MockedDatabaseType()).projections(new ProjectionsSegment(0, 0)).from(parentJoin)
                 .with(new WithSegment(95, 134, Collections.singletonList(secondUpdateCTE), false)).build();
-        InsertStatement firstInsert = InsertStatement.builder().table(updateTarget).insertSelect(innerSubquery).build();
+        InsertStatement firstInsert = InsertStatement.builder().databaseType(new MockedDatabaseType()).table(updateTarget).insertSelect(innerSubquery).build();
         CommonTableExpressionSegment firstInsertCTE = new CommonTableExpressionSegment(0, 90, new AliasSegment(0, 0, new IdentifierValue("foo_inserted")), null, firstInsert);
         SelectStatement insertingCommonTables = SelectStatement.builder().projections(new ProjectionsSegment(0, 0))
                 .with(new WithSegment(0, 134, Arrays.asList(firstInsertCTE, secondUpdateCTE), false)).build();
         SimpleTableSegment inheritedAlias = createScopeTable("foo_inherited", 200);
         inheritedAlias.setAlias(new AliasSegment(214, 214, new IdentifierValue("f")));
         ProjectionsSegment inheritedProjections = createScopeProjections(new ColumnProjectionSegment(createScopeColumn("f", 20)));
-        SelectStatement inheritedUsingSelect = SelectStatement.builder().projections(inheritedProjections).from(innerJoin).build();
+        SelectStatement inheritedUsingSelect = SelectStatement.builder().databaseType(new MockedDatabaseType()).projections(inheritedProjections).from(innerJoin).build();
         SimpleTableSegment inheritedPhysical = createScopeTable("f", 150);
         SimpleTableSegment descendantAlias = createScopeTable("foo_shadow", 100);
         descendantAlias.setAlias(new AliasSegment(114, 114, new IdentifierValue("f")));
         SelectStatement descendantSelect = SelectStatement.builder().projections(createScopeProjections(new ShorthandProjectionSegment(0, 0))).from(descendantAlias).build();
-        SelectStatement inheritedPhysicalSelect = SelectStatement.builder().projections(inheritedProjections).from(innerJoin)
+        SelectStatement inheritedPhysicalSelect = SelectStatement.builder().databaseType(new MockedDatabaseType()).projections(inheritedProjections).from(innerJoin)
                 .where(new WhereSegment(95, 115, new ExistsSubqueryExpression(95, 115, new SubquerySegment(100, 115, descendantSelect, "")))).build();
         SimpleTableSegment differentlyAliased = createScopeTable("foo_outer", 100);
         differentlyAliased.setAlias(new AliasSegment(112, 122, new IdentifierValue("local_alias")));
@@ -688,7 +703,8 @@ class TableExtractorTest {
     }
     
     private static SelectStatement createScopeOuterSelect(final TableSegment from, final SelectStatement child) {
-        return SelectStatement.builder().projections(createScopeProjections(new SubqueryProjectionSegment(new SubquerySegment(0, 130, child, ""), ""))).from(from).build();
+        return SelectStatement.builder().databaseType(new MockedDatabaseType())
+                .projections(createScopeProjections(new SubqueryProjectionSegment(new SubquerySegment(0, 130, child, ""), ""))).from(from).build();
     }
     
     @Test

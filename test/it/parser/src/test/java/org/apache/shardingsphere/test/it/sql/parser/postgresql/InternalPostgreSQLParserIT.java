@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
@@ -364,6 +365,81 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     
     private static Stream<String> getDeleteUsingJoinAliasPrefixes() {
         return Stream.of("PREPARE foo_stmt AS ", "EXPLAIN ");
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getUsingAliasTableMetadataCases")
+    void assertUsingAliasTableMetadata(final String name, final String prefix, final String sql, final Collection<String> expectedTables) {
+        SQLStatement actual = new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(prefix + sql, false));
+        Collection<String> actualTables = actual.getAttributes().getAttribute(TableSQLStatementAttribute.class).getTables().stream()
+                .map(each -> each.getTableName().getIdentifier().getValue() + "@" + (each.getStartIndex() - prefix.length()) + ":" + (each.getStopIndex() - prefix.length()))
+                .collect(Collectors.toList());
+        assertThat(actualTables, is(expectedTables));
+    }
+    
+    private static Stream<Arguments> getUsingAliasTableMetadataCases() {
+        return Stream.of(
+                Arguments.of("correlated LATERAL", "SELECT x.id FROM foo_left JOIN foo_right USING (id) AS merged, LATERAL (SELECT merged.id) AS x",
+                        Arrays.asList("foo_left@17:24", "foo_right@31:39")),
+                Arguments.of("quoted USING alias", "SELECT foo_outer.id FROM foo_outer, foo_left JOIN foo_right USING (id) AS \"FOO_OUTER\"",
+                        Arrays.asList("foo_outer@25:33", "foo_left@36:43", "foo_right@50:58", "foo_outer@7:15")),
+                Arguments.of("nested USING activation", "SELECT (SELECT foo_outer.id FROM foo_outer, foo_left JOIN foo_right USING (id) AS \"FOO_OUTER\")",
+                        Arrays.asList("foo_outer@33:41", "foo_left@44:51", "foo_right@58:66", "foo_outer@15:23")),
+                Arguments.of("USING below MERGE", "MERGE INTO foo_target USING foo_source ON EXISTS ("
+                        + "SELECT foo_outer.id FROM foo_outer, foo_left JOIN foo_right USING (id) AS \"FOO_OUTER\") WHEN MATCHED THEN DO NOTHING",
+                        Arrays.asList("foo_target@11:20", "foo_source@28:37", "foo_outer@75:83", "foo_left@86:93", "foo_right@100:108", "foo_outer@57:65")),
+                Arguments.of("UPDATE FROM USING", "UPDATE foo_outer SET id = 1 FROM foo_left JOIN foo_right USING (id) AS \"FOO_OUTER\" WHERE foo_outer.id = 1",
+                        Arrays.asList("foo_outer@7:15", "foo_left@33:40", "foo_right@47:55", "foo_outer@89:97")),
+                Arguments.of("DELETE USING", "DELETE FROM foo_target USING foo_outer, foo_left JOIN foo_right USING (id) AS \"FOO_OUTER\" WHERE foo_target.id = foo_outer.id",
+                        Arrays.asList("foo_target@12:21", "foo_target@12:21", "foo_outer@29:37", "foo_left@40:47", "foo_right@54:62", "foo_target@96:105", "foo_outer@112:120")),
+                Arguments.of("regular JOIN alias", "SELECT u.id FROM u, (foo_left JOIN foo_right USING (id) AS u) AS j",
+                        Arrays.asList("u@17:17", "foo_left@21:28", "foo_right@35:43", "u@7:7")),
+                Arguments.of("enclosing JOIN alias", "SELECT u.id FROM u, (foo_left JOIN foo_right USING (id) AS u JOIN foo_third ON u.id = foo_third.id) AS j",
+                        Arrays.asList("u@17:17", "foo_left@21:28", "foo_right@35:43", "foo_third@66:74", "foo_third@86:94", "u@7:7")),
+                Arguments.of("wildcard hidden USING alias", "SELECT u.* FROM u, (foo_left JOIN foo_right USING (id) AS u) AS j",
+                        Arrays.asList("u@16:16", "foo_left@20:27", "foo_right@34:42", "u@7:7")),
+                Arguments.of("JOIN alias outside own ON scope", "SELECT (SELECT count(*) FROM ((foo_left JOIN foo_right USING (id) AS u) JOIN foo_third ON foo_third.id = j.id) AS j) FROM j",
+                        Arrays.asList("j@122:122", "foo_left@31:38", "foo_right@45:53", "foo_third@77:85", "foo_third@90:98", "j@105:105")),
+                Arguments.of("USING alias outside left ON scope", "SELECT * FROM foo_outer WHERE EXISTS (SELECT 1 FROM "
+                        + "(foo_left JOIN bar_right ON foo_outer.id = bar_right.id) JOIN baz_right USING (id) AS foo_outer)",
+                        Arrays.asList("foo_outer@14:22", "foo_left@53:60", "bar_right@67:75", "foo_outer@80:88", "bar_right@95:103", "baz_right@114:122")),
+                Arguments.of("USING alias outside right LATERAL scope", "SELECT * FROM foo_outer WHERE EXISTS (SELECT 1 FROM "
+                        + "foo_left JOIN LATERAL (SELECT foo_outer.id AS id) AS x USING (id) AS foo_outer)",
+                        Arrays.asList("foo_outer@14:22", "foo_left@52:59", "foo_outer@82:90")),
+                Arguments.of("derived alias outside own body", "SELECT * FROM foo_outer WHERE EXISTS (SELECT 1 FROM "
+                        + "foo_left JOIN foo_right USING (id) AS merged, LATERAL (SELECT foo_outer.id) AS foo_outer)",
+                        Arrays.asList("foo_outer@14:22", "foo_left@52:59", "foo_right@66:74", "foo_outer@114:122")))
+                .flatMap(each -> Stream.of("PREPARE foo_stmt AS ", "EXPLAIN ").map(prefix -> Arguments.of(prefix + each.get()[0], prefix, each.get()[1], each.get()[2])));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getUsingAliasRewriteCases")
+    void assertUsingAliasRewriteDecision(final String name, final String sql, final boolean expectedRewrite) {
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        TableExtractor extractor = new TableExtractor();
+        extractor.extractTablesFromSelect(actual);
+        ColumnSegment column = ((ColumnProjectionSegment) actual.getProjections().getProjections().iterator().next()).getColumn();
+        assertThat(extractor.needRewrite(column.getOwner().get()), is(expectedRewrite));
+    }
+    
+    private static Stream<Arguments> getUsingAliasRewriteCases() {
+        return Stream.of(
+                Arguments.of("distinct quoted alias", "SELECT foo_outer.id FROM foo_outer, foo_left JOIN foo_right USING (id) AS \"FOO_OUTER\"", true),
+                Arguments.of("quoted alias match", "SELECT \"FOO_OUTER\".id FROM foo_left JOIN foo_right USING (id) AS \"FOO_OUTER\"", false),
+                Arguments.of("unquoted alias folding", "SELECT FOO_OUTER.id FROM foo_left JOIN foo_right USING (id) AS foo_outer", false),
+                Arguments.of("quoted lowercase alias", "SELECT foo_outer.id FROM foo_left JOIN foo_right USING (id) AS \"foo_outer\"", false),
+                Arguments.of("regular JOIN alias hiding", "SELECT u.id FROM u, (foo_left JOIN foo_right USING (id) AS u) AS j", true),
+                Arguments.of("enclosing JOIN alias hiding", "SELECT u.id FROM u, (foo_left JOIN foo_right USING (id) AS u JOIN foo_third ON u.id = foo_third.id) AS j", true));
+    }
+    
+    @Test
+    void assertUsingAliasAfterUnscopedStatement() {
+        TableExtractor extractor = new TableExtractor();
+        for (String each : Arrays.asList("SELECT j.id FROM (foo_left JOIN foo_right USING (id) AS u) AS j", "SELECT u.id FROM u")) {
+            SelectStatement selectStatement = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(each, false));
+            extractor.extractTablesFromSelect(selectStatement);
+        }
+        assertThat(extractor.getRewriteTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), contains("foo_left", "foo_right", "u", "u"));
     }
     
     @ParameterizedTest(name = "{0}")

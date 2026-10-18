@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
@@ -98,6 +99,10 @@ public final class TableExtractor {
     
     private final Collection<JoinTableSegment> joinTables = new LinkedList<>();
     
+    @Nullable
+    @Getter(AccessLevel.NONE)
+    private IdentifierCasePolicy identifierCasePolicy;
+    
     /**
      * Extract table that should be rewritten from select statement.
      *
@@ -105,7 +110,7 @@ public final class TableExtractor {
      */
     public void extractTablesFromSelect(final SelectStatement selectStatement) {
         TableSegment from = selectStatement.getFrom().orElse(null);
-        extractTablesFromSelect(selectStatement, from, containsUsingAlias(from) ? new TableScope(null, tableContext) : null);
+        extractTablesFromSelect(selectStatement, from, createTableScope(selectStatement));
     }
     
     private void extractTablesFromSelect(final SelectStatement selectStatement, final TableSegment from, final TableScope tableScope) {
@@ -146,9 +151,14 @@ public final class TableExtractor {
      */
     private TableScope createTableScope(final SQLStatement sqlStatement) {
         if (!containsUsingAlias(sqlStatement)) {
+            identifierCasePolicy = null;
             return null;
         }
-        return new TableScope(null, tableContext);
+        identifierCasePolicy = IdentifierNormalizeEngine.resolvePolicy(sqlStatement.getDatabaseType(), null, IdentifierScope.TABLE);
+        TableScope result = new TableScope(null, tableContext);
+        result.identifierCasePolicy = identifierCasePolicy;
+        result.usingAliasScope = true;
+        return result;
     }
     
     private boolean containsUsingAlias(final SQLStatement sqlStatement) {
@@ -186,13 +196,20 @@ public final class TableExtractor {
     }
     
     private void extractTablesFromNestedStatement(final SQLStatement sqlStatement, final TableScope tableScope) {
+        boolean usingAlias = containsUsingAlias(sqlStatement);
+        TableScope nestedScope = createNestedTableScope(tableScope, null != tableScope || usingAlias);
+        if (usingAlias) {
+            nestedScope.usingAliasScope = true;
+            if (null == nestedScope.identifierCasePolicy) {
+                nestedScope.identifierCasePolicy = IdentifierNormalizeEngine.resolvePolicy(sqlStatement.getDatabaseType(), null, IdentifierScope.TABLE);
+            }
+        }
         if (sqlStatement instanceof SelectStatement) {
             SelectStatement selectStatement = (SelectStatement) sqlStatement;
             TableSegment from = selectStatement.getFrom().orElse(null);
-            extractTablesFromSelect(selectStatement, from, createNestedTableScope(tableScope, null != tableScope || containsUsingAlias(from)));
+            extractTablesFromSelect(selectStatement, from, nestedScope);
             return;
         }
-        TableScope nestedScope = createNestedTableScope(tableScope, null != tableScope || containsUsingAlias(sqlStatement));
         if (sqlStatement instanceof MergeStatement) {
             extractTablesFromMerge((MergeStatement) sqlStatement, nestedScope);
         } else if (sqlStatement instanceof InsertStatement) {
@@ -224,15 +241,15 @@ public final class TableExtractor {
             rewriteTables.add((SimpleTableSegment) tableSegment);
         }
         if (tableSegment instanceof SubqueryTableSegment) {
-            addTableContext(tableSegment, tableScope);
             TableExtractor tableExtractor = new TableExtractor();
-            if (null != tableScope && null != tableScope.identifierCasePolicy) {
+            if (null != tableScope) {
                 tableExtractor.extractTablesFromNestedStatement(((SubqueryTableSegment) tableSegment).getSubquery().getSelect(), tableScope);
             } else {
                 tableExtractor.extractTablesFromSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
             }
             rewriteTables.addAll(tableExtractor.rewriteTables);
             joinTables.addAll(tableExtractor.joinTables);
+            addTableContext(tableSegment, tableScope);
         }
         if (tableSegment instanceof JoinTableSegment) {
             joinTables.add((JoinTableSegment) tableSegment);
@@ -250,21 +267,25 @@ public final class TableExtractor {
     }
     
     private void addTableContext(final TableSegment tableSegment, final TableScope tableScope) {
-        if (!(tableSegment instanceof JoinTableSegment) || null == tableScope.parent) {
-            tableContext.add(tableSegment);
-        }
+        tableContext.add(tableSegment);
         if (null != tableScope) {
             tableScope.tables.add(tableSegment);
         }
     }
     
     private void extractTablesFromJoinTableSegment(final JoinTableSegment tableSegment, final TableScope tableScope) {
-        if (tableSegment.getUsingAliasSegment().isPresent()) {
-            addTableContext(tableSegment, tableScope);
+        boolean scopedAlias = null != tableScope && tableScope.usingAliasScope && tableSegment.getAlias().isPresent();
+        boolean registerAlias = scopedAlias || tableSegment.getUsingAliasSegment().isPresent();
+        if (registerAlias && null == tableScope.parent) {
+            tableContext.add(tableSegment);
         }
-        extractTablesFromTableSegment(tableSegment.getLeft(), tableScope);
-        extractTablesFromTableSegment(tableSegment.getRight(), tableScope);
-        extractTablesFromExpression(tableSegment.getCondition(), tableScope);
+        TableScope joinScope = scopedAlias ? new TableScope(tableScope, null) : tableScope;
+        extractTablesFromTableSegment(tableSegment.getLeft(), joinScope);
+        extractTablesFromTableSegment(tableSegment.getRight(), joinScope);
+        extractTablesFromExpression(tableSegment.getCondition(), joinScope);
+        if (registerAlias) {
+            tableScope.tables.add(tableSegment);
+        }
     }
     
     private void extractTablesFromExpression(final ExpressionSegment expressionSegment, final TableScope tableScope) {
@@ -539,9 +560,8 @@ public final class TableExtractor {
      * @return boolean
      */
     public boolean needRewrite(final OwnerSegment owner) {
-        String ownerName = owner.getIdentifier().getValue();
         for (TableSegment each : tableContext) {
-            if (isAlias(ownerName, each)) {
+            if (isAlias(owner.getIdentifier(), each, identifierCasePolicy)) {
                 return false;
             }
         }
@@ -549,7 +569,7 @@ public final class TableExtractor {
     }
     
     private boolean needRewrite(final OwnerSegment owner, final TableScope tableScope) {
-        return null == tableScope || null == tableScope.parent ? needRewrite(owner) : needRewriteFromLocalTableContext(owner.getIdentifier(), tableScope);
+        return null == tableScope ? needRewrite(owner) : needRewriteFromLocalTableContext(owner.getIdentifier(), tableScope);
     }
     
     private boolean needRewriteFromLocalTableContext(final IdentifierValue owner, final TableScope scope) {
@@ -587,14 +607,12 @@ public final class TableExtractor {
             return isAlias(owner.getValue(), tableSegment);
         }
         return tableSegment.getAlias().filter(alias -> matchesIdentifier(owner, alias, identifierCasePolicy)).isPresent()
-                || tableSegment instanceof JoinTableSegment && ((JoinTableSegment) tableSegment).getUsingAliasSegment()
+                || tableSegment instanceof JoinTableSegment && !tableSegment.getAlias().isPresent() && ((JoinTableSegment) tableSegment).getUsingAliasSegment()
                         .filter(usingAlias -> matchesIdentifier(owner, usingAlias.getIdentifier(), identifierCasePolicy)).isPresent();
     }
     
     private boolean isAlias(final String ownerName, final TableSegment tableSegment) {
-        return ownerName.equalsIgnoreCase(tableSegment.getAliasName().orElse(null))
-                || tableSegment instanceof JoinTableSegment && ownerName.equalsIgnoreCase(
-                        ((JoinTableSegment) tableSegment).getUsingAliasSegment().map(optional -> optional.getIdentifier().getValue()).orElse(null));
+        return ownerName.equalsIgnoreCase(tableSegment.getAliasName().orElse(null));
     }
     
     private boolean matchesIdentifier(final IdentifierValue owner, final IdentifierValue declared, @Nullable final IdentifierCasePolicy identifierCasePolicy) {
@@ -711,11 +729,14 @@ public final class TableExtractor {
         
         private IdentifierCasePolicy identifierCasePolicy;
         
+        private boolean usingAliasScope;
+        
         private TableScope(final TableScope parent, final Collection<TableSegment> inheritedTables) {
             this.parent = parent;
             this.inheritedTables = inheritedTables;
             inheritedTableCount = null == inheritedTables ? 0 : inheritedTables.size();
             identifierCasePolicy = null == parent ? null : parent.identifierCasePolicy;
+            usingAliasScope = null != parent && parent.usingAliasScope;
         }
     }
 }

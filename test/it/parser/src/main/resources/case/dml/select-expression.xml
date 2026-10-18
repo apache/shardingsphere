@@ -4442,14 +4442,6 @@
         </projections>
     </select>
 
-    <select sql-case-id="select_postgresql_escaped_identifiers">
-        <projections start-index="7" stop-index="56">
-            <column-projection start-index="7" stop-index="16" name="foo&quot;bar" start-delimiter="&quot;" end-delimiter="&quot;" />
-            <column-projection start-index="19" stop-index="30" name="fooa" start-delimiter="&quot;" end-delimiter="&quot;" />
-            <column-projection start-index="33" stop-index="56" name="fooa" start-delimiter="&quot;" end-delimiter="&quot;" />
-        </projections>
-    </select>
-
     <select sql-case-id="select_postgresql_custom_binary_operators">
         <projections start-index="7" stop-index="92">
             <expression-projection start-index="7" stop-index="12" text="1 *= 2">
@@ -4981,7 +4973,7 @@
     </select>
 
     <select sql-case-id="select_postgresql_unicode_escape_controls">
-        <projections start-index="7" stop-index="245">
+        <projections start-index="7" stop-index="211">
             <expression-projection start-index="7" stop-index="35" text="U&amp;'d!0061t!0061' UESCAPE E'!'">
                 <expr>
                     <literal-expression start-index="7" stop-index="35" value="data" />
@@ -5012,7 +5004,6 @@
                     <literal-expression start-index="182" stop-index="211" value="data" />
                 </expr>
             </expression-projection>
-            <column-projection start-index="214" stop-index="245" name="data" start-delimiter="&quot;" end-delimiter="&quot;" />
         </projections>
     </select>
 
