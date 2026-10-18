@@ -18,9 +18,9 @@
 
 # Usage: generate-e2e-sql-matrix.sh '<json-with-all-18-filter-labels>'
 # Environment:
-#   FULL_MATRIX_ALGORITHM_INPUT: auto|cartesian|pairwise (optional, default auto)
-# Output: writes smoke-matrix=<JSON>, full-matrix=<JSON>, matrix=<JSON>(alias for full), has-jobs=<true|false>,
-#         full-matrix-algorithm=<cartesian|pairwise|auto>, full-smoke-overlap-count=<N>, estimated-stage2-jobs=<N>,
+#   TARGET_MATRIX_ALGORITHM_INPUT: auto|cartesian|pairwise (optional, default auto)
+# Output: writes smoke-matrix=<JSON>, target-matrix=<JSON>, matrix=<JSON>(alias for target), has-jobs=<true|false>,
+#         target-matrix-algorithm=<cartesian|pairwise|auto>, target-smoke-overlap-count=<N>, estimated-remaining-tests-jobs=<N>,
 #         total-two-stage-jobs=<N>, and effective-reduction-ratio=<0..1> to $GITHUB_OUTPUT
 
 set -euo pipefail
@@ -277,13 +277,13 @@ if [ "${GITHUB_EVENT_NAME:-}" = "workflow_dispatch" ]; then
   echo "::notice::workflow_dispatch detected"
 fi
 
-requested_full_matrix_algorithm="${FULL_MATRIX_ALGORITHM_INPUT:-auto}"
-case "$requested_full_matrix_algorithm" in
+requested_target_matrix_algorithm="${TARGET_MATRIX_ALGORITHM_INPUT:-auto}"
+case "$requested_target_matrix_algorithm" in
   auto|cartesian|pairwise)
     ;;
   *)
-    echo "::warning::Invalid FULL_MATRIX_ALGORITHM_INPUT=$requested_full_matrix_algorithm, fallback to auto"
-    requested_full_matrix_algorithm="auto"
+    echo "::warning::Invalid TARGET_MATRIX_ALGORITHM_INPUT=$requested_target_matrix_algorithm, fallback to auto"
+    requested_target_matrix_algorithm="auto"
     ;;
 esac
 
@@ -310,8 +310,8 @@ if [ "$any_relevant_change" = "false" ]; then
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-jobs=false" >> "$GITHUB_OUTPUT"
   echo "smoke-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
-  echo "full-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
-  echo "full-matrix-algorithm=auto" >> "$GITHUB_OUTPUT"
+  echo "target-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
+  echo "target-matrix-algorithm=auto" >> "$GITHUB_OUTPUT"
   echo "::notice::No relevant filters triggered, skipping job generation"
   exit 0
 fi
@@ -453,18 +453,18 @@ if [ "$manual_dispatch" = "true" ]; then
   echo "::notice::workflow_dispatch uses all adapters, modes, and databases"
 fi
 
-effective_full_matrix_algorithm="$requested_full_matrix_algorithm"
-if [ "$effective_full_matrix_algorithm" = "auto" ]; then
+effective_target_matrix_algorithm="$requested_target_matrix_algorithm"
+if [ "$effective_target_matrix_algorithm" = "auto" ]; then
   if [ "$manual_dispatch" = "true" ]; then
-    effective_full_matrix_algorithm="cartesian"
+    effective_target_matrix_algorithm="cartesian"
   elif [ "$any_base_change" = "true" ] || [ "$any_feature_triggered" = "true" ]; then
-    effective_full_matrix_algorithm="pairwise"
+    effective_target_matrix_algorithm="pairwise"
   else
-    effective_full_matrix_algorithm="cartesian"
+    effective_target_matrix_algorithm="cartesian"
   fi
 fi
 
-echo "::notice::any_base_change=$any_base_change, any_feature_triggered=$any_feature_triggered, dimensions adapters=$adapters modes=$modes databases=$databases, full-matrix-algorithm(requested=$requested_full_matrix_algorithm,effective=$effective_full_matrix_algorithm)"
+echo "::notice::any_base_change=$any_base_change, any_feature_triggered=$any_feature_triggered, dimensions adapters=$adapters modes=$modes databases=$databases, target-matrix-algorithm(requested=$requested_target_matrix_algorithm,effective=$effective_target_matrix_algorithm)"
 
 # Generate smoke-matrix from default or feature-mapped smoke scenarios, and DO NOT add the extra passthrough job
 if [ "$any_feature_triggered" = "true" ]; then
@@ -482,45 +482,45 @@ fi
 SMOKE_MATRIX=$(build_matrix "$adapters" "$modes" "$databases" "$smoke_scenarios_json" false)
 log_counts "smoke-matrix" "$SMOKE_MATRIX"
 
-# Build full-matrix scenarios
+# Build target-matrix scenarios
 if [ "$manual_dispatch" = "true" ]; then
-  full_scenarios_json="$ALL_SCENARIOS"
-  echo "::notice::full-matrix reason=workflow-dispatch, use all scenarios: $full_scenarios_json"
+  target_scenarios_json="$ALL_SCENARIOS"
+  echo "::notice::target-matrix reason=workflow-dispatch, use all scenarios: $target_scenarios_json"
 elif [ "$any_base_change" = "true" ]; then
-  full_scenarios_json="$ALL_SCENARIOS"
-  echo "::notice::full-matrix reason=base-change, use all scenarios: $full_scenarios_json"
+  target_scenarios_json="$ALL_SCENARIOS"
+  echo "::notice::target-matrix reason=base-change, use all scenarios: $target_scenarios_json"
 else
   if [ "$any_feature_triggered" = "false" ]; then
-    # When no feature triggered, full-matrix is limited to smoke scenario set
-    full_scenarios_json="$SMOKE_SCENARIOS"
-    echo "::notice::full-matrix reason=no-feature-triggered, use smoke scenarios: $full_scenarios_json"
+    # When no feature triggered, target-matrix is limited to smoke scenario set
+    target_scenarios_json="$SMOKE_SCENARIOS"
+    echo "::notice::target-matrix reason=no-feature-triggered, use smoke scenarios: $target_scenarios_json"
   else
-    full_scenarios_json=$(printf '%s\n' "${scenarios_set[@]}" | jq -R . | jq -sc .)
-    echo "::notice::full-matrix reason=feature-triggered, scenarios: $full_scenarios_json"
+    target_scenarios_json=$(printf '%s\n' "${scenarios_set[@]}" | jq -R . | jq -sc .)
+    echo "::notice::target-matrix reason=feature-triggered, scenarios: $target_scenarios_json"
   fi
 fi
 
-FULL_MATRIX_CANDIDATE=$(build_matrix "$adapters" "$modes" "$databases" "$full_scenarios_json" true)
-FULL_MATRIX_CANDIDATE_COUNT=$(echo "$FULL_MATRIX_CANDIDATE" | jq '.include | length')
-if [ "$effective_full_matrix_algorithm" = "pairwise" ]; then
-  if [ "$FULL_MATRIX_CANDIDATE_COUNT" -le 20 ]; then
-    FULL_MATRIX="$FULL_MATRIX_CANDIDATE"
-    echo "::notice::full-matrix pairwise skipped due to small candidate set: candidate=$FULL_MATRIX_CANDIDATE_COUNT"
+TARGET_MATRIX_CANDIDATE=$(build_matrix "$adapters" "$modes" "$databases" "$target_scenarios_json" true)
+TARGET_MATRIX_CANDIDATE_COUNT=$(echo "$TARGET_MATRIX_CANDIDATE" | jq '.include | length')
+if [ "$effective_target_matrix_algorithm" = "pairwise" ]; then
+  if [ "$TARGET_MATRIX_CANDIDATE_COUNT" -le 20 ]; then
+    TARGET_MATRIX="$TARGET_MATRIX_CANDIDATE"
+    echo "::notice::target-matrix pairwise skipped due to small candidate set: candidate=$TARGET_MATRIX_CANDIDATE_COUNT"
   else
-    FULL_MATRIX=$(build_pairwise_matrix "$FULL_MATRIX_CANDIDATE" "$full_scenarios_json")
-    echo "::notice::full-matrix reduction applied: candidate=$FULL_MATRIX_CANDIDATE_COUNT, reduced=$(echo "$FULL_MATRIX" | jq '.include | length')"
+    TARGET_MATRIX=$(build_pairwise_matrix "$TARGET_MATRIX_CANDIDATE" "$target_scenarios_json")
+    echo "::notice::target-matrix reduction applied: candidate=$TARGET_MATRIX_CANDIDATE_COUNT, reduced=$(echo "$TARGET_MATRIX" | jq '.include | length')"
   fi
 else
-  FULL_MATRIX="$FULL_MATRIX_CANDIDATE"
+  TARGET_MATRIX="$TARGET_MATRIX_CANDIDATE"
 fi
-log_counts "full-matrix" "$FULL_MATRIX"
+log_counts "target-matrix" "$TARGET_MATRIX"
 
-# Determine whether there are any jobs at all (based on full-matrix)
-FULL_JOB_COUNT=$(echo "$FULL_MATRIX" | jq '.include | length')
+# Determine whether there are any jobs at all (based on target-matrix)
+TARGET_JOB_COUNT=$(echo "$TARGET_MATRIX" | jq '.include | length')
 SMOKE_JOB_COUNT=$(echo "$SMOKE_MATRIX" | jq '.include | length')
-FULL_SMOKE_OVERLAP_COUNT=$(jq -n --argjson full "$FULL_MATRIX" --argjson smoke "$SMOKE_MATRIX" '
+TARGET_SMOKE_OVERLAP_COUNT=$(jq -n --argjson target "$TARGET_MATRIX" --argjson smoke "$SMOKE_MATRIX" '
   [
-    $full.include[] as $job |
+    $target.include[] as $job |
     select(
       [$smoke.include[] | select(
         .adapter == $job.adapter and
@@ -532,22 +532,22 @@ FULL_SMOKE_OVERLAP_COUNT=$(jq -n --argjson full "$FULL_MATRIX" --argjson smoke "
     )
   ] | length
 ')
-ESTIMATED_STAGE2_JOBS=$((FULL_JOB_COUNT - FULL_SMOKE_OVERLAP_COUNT))
-TOTAL_TWO_STAGE_JOBS=$((SMOKE_JOB_COUNT + ESTIMATED_STAGE2_JOBS))
-if [ "$FULL_MATRIX_CANDIDATE_COUNT" -eq 0 ]; then
+ESTIMATED_REMAINING_TESTS_JOBS=$((TARGET_JOB_COUNT - TARGET_SMOKE_OVERLAP_COUNT))
+TOTAL_TWO_STAGE_JOBS=$((SMOKE_JOB_COUNT + ESTIMATED_REMAINING_TESTS_JOBS))
+if [ "$TARGET_MATRIX_CANDIDATE_COUNT" -eq 0 ]; then
   EFFECTIVE_REDUCTION_RATIO="0"
 else
-  EFFECTIVE_REDUCTION_RATIO=$(jq -cn --argjson candidate "$FULL_MATRIX_CANDIDATE_COUNT" --argjson total "$TOTAL_TWO_STAGE_JOBS" '1 - ($total / $candidate)')
+  EFFECTIVE_REDUCTION_RATIO=$(jq -cn --argjson candidate "$TARGET_MATRIX_CANDIDATE_COUNT" --argjson total "$TOTAL_TWO_STAGE_JOBS" '1 - ($total / $candidate)')
 fi
-echo "::notice::matrix-breakdown full=$FULL_JOB_COUNT smoke=$SMOKE_JOB_COUNT overlap=$FULL_SMOKE_OVERLAP_COUNT estimated-stage2=$ESTIMATED_STAGE2_JOBS total-two-stage=$TOTAL_TWO_STAGE_JOBS effective-reduction-ratio=$EFFECTIVE_REDUCTION_RATIO"
-if [ "$FULL_JOB_COUNT" -eq 0 ]; then
+echo "::notice::matrix-breakdown target=$TARGET_JOB_COUNT smoke=$SMOKE_JOB_COUNT overlap=$TARGET_SMOKE_OVERLAP_COUNT estimated-remaining-tests=$ESTIMATED_REMAINING_TESTS_JOBS total-two-stage=$TOTAL_TWO_STAGE_JOBS effective-reduction-ratio=$EFFECTIVE_REDUCTION_RATIO"
+if [ "$TARGET_JOB_COUNT" -eq 0 ]; then
   echo "smoke-matrix=$(echo "$SMOKE_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
-  echo "full-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
+  echo "target-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-jobs=false" >> "$GITHUB_OUTPUT"
-  echo "full-matrix-algorithm=$effective_full_matrix_algorithm" >> "$GITHUB_OUTPUT"
-  echo "full-smoke-overlap-count=0" >> "$GITHUB_OUTPUT"
-  echo "estimated-stage2-jobs=0" >> "$GITHUB_OUTPUT"
+  echo "target-matrix-algorithm=$effective_target_matrix_algorithm" >> "$GITHUB_OUTPUT"
+  echo "target-smoke-overlap-count=0" >> "$GITHUB_OUTPUT"
+  echo "estimated-remaining-tests-jobs=0" >> "$GITHUB_OUTPUT"
   echo "total-two-stage-jobs=0" >> "$GITHUB_OUTPUT"
   echo "effective-reduction-ratio=0" >> "$GITHUB_OUTPUT"
   echo "::notice::No jobs generated after applying all filters and rules, skipping job execution"
@@ -555,14 +555,14 @@ if [ "$FULL_JOB_COUNT" -eq 0 ]; then
 fi
 
 echo "smoke-matrix=$(echo "$SMOKE_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
-echo "full-matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
-echo "matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
+echo "target-matrix=$(echo "$TARGET_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
+echo "matrix=$(echo "$TARGET_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
 echo "has-jobs=true" >> "$GITHUB_OUTPUT"
-echo "full-matrix-algorithm=$effective_full_matrix_algorithm" >> "$GITHUB_OUTPUT"
-echo "full-smoke-overlap-count=$FULL_SMOKE_OVERLAP_COUNT" >> "$GITHUB_OUTPUT"
-echo "estimated-stage2-jobs=$ESTIMATED_STAGE2_JOBS" >> "$GITHUB_OUTPUT"
+echo "target-matrix-algorithm=$effective_target_matrix_algorithm" >> "$GITHUB_OUTPUT"
+echo "target-smoke-overlap-count=$TARGET_SMOKE_OVERLAP_COUNT" >> "$GITHUB_OUTPUT"
+echo "estimated-remaining-tests-jobs=$ESTIMATED_REMAINING_TESTS_JOBS" >> "$GITHUB_OUTPUT"
 echo "total-two-stage-jobs=$TOTAL_TWO_STAGE_JOBS" >> "$GITHUB_OUTPUT"
 echo "effective-reduction-ratio=$EFFECTIVE_REDUCTION_RATIO" >> "$GITHUB_OUTPUT"
-echo "::notice::Generated $SMOKE_JOB_COUNT smoke jobs, $FULL_JOB_COUNT full jobs, overlap=$FULL_SMOKE_OVERLAP_COUNT, estimated stage2 jobs=$ESTIMATED_STAGE2_JOBS, total two-stage jobs=$TOTAL_TWO_STAGE_JOBS, effective reduction ratio=$EFFECTIVE_REDUCTION_RATIO"
+echo "::notice::Generated $SMOKE_JOB_COUNT smoke jobs, $TARGET_JOB_COUNT target jobs, overlap=$TARGET_SMOKE_OVERLAP_COUNT, estimated remaining-tests jobs=$ESTIMATED_REMAINING_TESTS_JOBS, total two-stage jobs=$TOTAL_TWO_STAGE_JOBS, effective reduction ratio=$EFFECTIVE_REDUCTION_RATIO"
 
 exit 0

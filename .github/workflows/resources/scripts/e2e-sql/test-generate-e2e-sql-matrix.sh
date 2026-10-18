@@ -43,10 +43,10 @@ build_filters() {
 run_script() {
   local filters="$1"
   local event_name="${2:-pull_request}"
-  local full_matrix_algorithm_input="${3:-auto}"
+  local target_matrix_algorithm_input="${3:-auto}"
   local output_file
   output_file=$(mktemp)
-  GITHUB_OUTPUT="$output_file" GITHUB_EVENT_NAME="$event_name" FULL_MATRIX_ALGORITHM_INPUT="$full_matrix_algorithm_input" \
+  GITHUB_OUTPUT="$output_file" GITHUB_EVENT_NAME="$event_name" TARGET_MATRIX_ALGORITHM_INPUT="$target_matrix_algorithm_input" \
     bash "$TARGET_SCRIPT" "$filters" > /dev/null 2>&1
   local rc=$?
   cat "$output_file"
@@ -164,37 +164,37 @@ assert_less_than() {
 
 assert_matrix_breakdown_consistency() {
   local desc="$1" outputs="$2"
-  local smoke_matrix full_matrix overlap stage2 total
-  local smoke_count full_count expected_stage2 expected_total
+  local smoke_matrix target_matrix overlap remaining_tests total
+  local smoke_count target_count expected_remaining_tests expected_total
   smoke_matrix=$(get_output "$outputs" "smoke-matrix")
-  full_matrix=$(get_output "$outputs" "full-matrix")
-  overlap=$(get_output "$outputs" "full-smoke-overlap-count")
-  stage2=$(get_output "$outputs" "estimated-stage2-jobs")
+  target_matrix=$(get_output "$outputs" "target-matrix")
+  overlap=$(get_output "$outputs" "target-smoke-overlap-count")
+  remaining_tests=$(get_output "$outputs" "estimated-remaining-tests-jobs")
   total=$(get_output "$outputs" "total-two-stage-jobs")
   smoke_count=$(echo "$smoke_matrix" | jq '.include | length')
-  full_count=$(echo "$full_matrix" | jq '.include | length')
-  expected_stage2=$((full_count - overlap))
-  expected_total=$((smoke_count + stage2))
-  assert_eq "$desc: stage2=full-overlap" "$expected_stage2" "$stage2"
-  assert_eq "$desc: total=smoke+stage2" "$expected_total" "$total"
+  target_count=$(echo "$target_matrix" | jq '.include | length')
+  expected_remaining_tests=$((target_count - overlap))
+  expected_total=$((smoke_count + remaining_tests))
+  assert_eq "$desc: remaining-tests=target-overlap" "$expected_remaining_tests" "$remaining_tests"
+  assert_eq "$desc: total=smoke+remaining-tests" "$expected_total" "$total"
 }
 
 # Common assertions for full-trigger tests (base change / workflow_dispatch)
 assert_full_trigger() {
   local label="$1" outputs="$2" expected_algorithm="$3"
   assert_eq "$label: has-jobs" "true" "$(get_output "$outputs" "has-jobs")"
-  assert_eq "$label: full-matrix-algorithm" "$expected_algorithm" "$(get_output "$outputs" "full-matrix-algorithm")"
+  assert_eq "$label: target-matrix-algorithm" "$expected_algorithm" "$(get_output "$outputs" "target-matrix-algorithm")"
   local smoke_matrix
   smoke_matrix=$(get_output "$outputs" "smoke-matrix")
   assert_scenarios "$label: smoke-matrix uses default scenarios" "$smoke_matrix" '["db","tbl"]'
-  local full_matrix
-  full_matrix=$(get_output "$outputs" "full-matrix")
-  assert_all_scenarios "$label: full-matrix has all 22 scenarios" "$full_matrix"
-  assert_distsql_bootstrap_job "$label: full-matrix" "$full_matrix" "1"
-  assert_no_excludes "$label: full-matrix has no excluded combinations" "$full_matrix"
-  assert_extra_passthrough_job "$label: full-matrix has extra passthrough job" "$full_matrix"
-  assert_not_empty "$label: full-smoke-overlap-count exists" "$(get_output "$outputs" "full-smoke-overlap-count")"
-  assert_not_empty "$label: estimated-stage2-jobs exists" "$(get_output "$outputs" "estimated-stage2-jobs")"
+  local target_matrix
+  target_matrix=$(get_output "$outputs" "target-matrix")
+  assert_all_scenarios "$label: target-matrix has all 22 scenarios" "$target_matrix"
+  assert_distsql_bootstrap_job "$label: target-matrix" "$target_matrix" "1"
+  assert_no_excludes "$label: target-matrix has no excluded combinations" "$target_matrix"
+  assert_extra_passthrough_job "$label: target-matrix has extra passthrough job" "$target_matrix"
+  assert_not_empty "$label: target-smoke-overlap-count exists" "$(get_output "$outputs" "target-smoke-overlap-count")"
+  assert_not_empty "$label: estimated-remaining-tests-jobs exists" "$(get_output "$outputs" "estimated-remaining-tests-jobs")"
   assert_not_empty "$label: total-two-stage-jobs exists" "$(get_output "$outputs" "total-two-stage-jobs")"
   assert_not_empty "$label: effective-reduction-ratio exists" "$(get_output "$outputs" "effective-reduction-ratio")"
   assert_matrix_breakdown_consistency "$label: matrix-breakdown consistency" "$outputs"
@@ -229,19 +229,19 @@ echo ""
 echo "--- #2: core_infra=true ---"
 outputs=$(run_script "$(build_filters core_infra=true)")
 assert_full_trigger "#2" "$outputs" "pairwise"
-assert_less_than "#2: pairwise full-matrix is reduced" "$(echo "$(get_output "$outputs" "full-matrix")" | jq '.include | length')" "119"
+assert_less_than "#2: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "119"
 
 echo ""
 echo "--- #3: test_framework=true ---"
 outputs=$(run_script "$(build_filters test_framework=true)")
 assert_full_trigger "#3" "$outputs" "pairwise"
-assert_less_than "#3: pairwise full-matrix is reduced" "$(echo "$(get_output "$outputs" "full-matrix")" | jq '.include | length')" "119"
+assert_less_than "#3: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "119"
 
 echo ""
 echo "--- #4: pom_changes=true ---"
 outputs=$(run_script "$(build_filters pom_changes=true)")
 assert_full_trigger "#4" "$outputs" "pairwise"
-assert_less_than "#4: pairwise full-matrix is reduced" "$(echo "$(get_output "$outputs" "full-matrix")" | jq '.include | length')" "119"
+assert_less_than "#4: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "119"
 
 # ============================================================
 # B. workflow_dispatch
@@ -258,7 +258,7 @@ echo ""
 echo "--- #6: workflow_dispatch with pairwise ---"
 outputs=$(run_script "$(build_filters)" "workflow_dispatch" "pairwise")
 assert_full_trigger "#6" "$outputs" "pairwise"
-assert_less_than "#6: workflow_dispatch pairwise full-matrix is reduced" "$(echo "$(get_output "$outputs" "full-matrix")" | jq '.include | length')" "119"
+assert_less_than "#6: workflow_dispatch pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "119"
 
 echo ""
 echo "--- #7: workflow_dispatch with invalid algorithm falls back to auto(cartesian) ---"
@@ -276,7 +276,7 @@ echo "--- #8: adapter_proxy only ---"
 outputs=$(run_script "$(build_filters adapter_proxy=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_all_field_eq "#8: smoke all adapter=proxy" "$smoke" "adapter" "proxy"
-assert_distsql_bootstrap_job "#8: proxy-only full-matrix" "$(get_output "$outputs" "full-matrix")" "0"
+assert_distsql_bootstrap_job "#8: proxy-only target-matrix" "$(get_output "$outputs" "target-matrix")" "0"
 
 echo ""
 echo "--- #9: adapter_jdbc only ---"
@@ -307,7 +307,7 @@ echo "--- #13: mode_cluster only ---"
 outputs=$(run_script "$(build_filters mode_cluster=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_all_field_eq "#13: smoke all mode=Cluster" "$smoke" "mode" "Cluster"
-assert_distsql_bootstrap_job "#13: Cluster-only full-matrix" "$(get_output "$outputs" "full-matrix")" "0"
+assert_distsql_bootstrap_job "#13: Cluster-only target-matrix" "$(get_output "$outputs" "target-matrix")" "0"
 
 echo ""
 echo "--- #14: mode_core only ---"
@@ -326,62 +326,62 @@ echo "--- #15: feature_sharding ---"
 outputs=$(run_script "$(build_filters feature_sharding=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_scenarios "#15: sharding smoke scenarios" "$smoke" '["db","tbl"]'
-full=$(get_output "$outputs" "full-matrix")
+target=$(get_output "$outputs" "target-matrix")
 expected_sharding='["db","tbl","dbtbl_with_readwrite_splitting","dbtbl_with_readwrite_splitting_and_encrypt","sharding_and_encrypt","sharding_and_shadow","sharding_encrypt_shadow","mask_sharding","mask_encrypt_sharding","db_tbl_sql_federation"]'
-assert_scenarios "#15: sharding scenarios" "$full" "$expected_sharding"
-assert_all_dimensions "#15" "$full"
-assert_eq "#15: full-matrix-algorithm" "pairwise" "$(get_output "$outputs" "full-matrix-algorithm")"
+assert_scenarios "#15: sharding scenarios" "$target" "$expected_sharding"
+assert_all_dimensions "#15" "$target"
+assert_eq "#15: target-matrix-algorithm" "pairwise" "$(get_output "$outputs" "target-matrix-algorithm")"
 
 echo ""
 echo "--- #16: feature_encrypt ---"
 outputs=$(run_script "$(build_filters feature_encrypt=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_scenarios "#16: encrypt smoke scenarios" "$smoke" '["encrypt"]'
-full=$(get_output "$outputs" "full-matrix")
+target=$(get_output "$outputs" "target-matrix")
 expected_encrypt='["encrypt","dbtbl_with_readwrite_splitting_and_encrypt","sharding_and_encrypt","encrypt_and_readwrite_splitting","encrypt_shadow","sharding_encrypt_shadow","mask_encrypt","mask_encrypt_sharding"]'
-assert_scenarios "#16: encrypt scenarios" "$full" "$expected_encrypt"
-assert_all_dimensions "#16" "$full"
-assert_eq "#16: full-matrix-algorithm" "pairwise" "$(get_output "$outputs" "full-matrix-algorithm")"
+assert_scenarios "#16: encrypt scenarios" "$target" "$expected_encrypt"
+assert_all_dimensions "#16" "$target"
+assert_eq "#16: target-matrix-algorithm" "pairwise" "$(get_output "$outputs" "target-matrix-algorithm")"
 
 echo ""
 echo "--- #17: feature_readwrite_splitting ---"
 outputs=$(run_script "$(build_filters feature_readwrite_splitting=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_scenarios "#17: readwrite_splitting smoke scenarios" "$smoke" '["readwrite_splitting"]'
-full=$(get_output "$outputs" "full-matrix")
+target=$(get_output "$outputs" "target-matrix")
 expected_rws='["readwrite_splitting","dbtbl_with_readwrite_splitting","dbtbl_with_readwrite_splitting_and_encrypt","encrypt_and_readwrite_splitting","readwrite_splitting_and_shadow"]'
-assert_scenarios "#17: readwrite_splitting scenarios" "$full" "$expected_rws"
-assert_all_dimensions "#17" "$full"
+assert_scenarios "#17: readwrite_splitting scenarios" "$target" "$expected_rws"
+assert_all_dimensions "#17" "$target"
 
 echo ""
 echo "--- #18: feature_shadow ---"
 outputs=$(run_script "$(build_filters feature_shadow=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_scenarios "#18: shadow smoke scenarios" "$smoke" '["shadow"]'
-full=$(get_output "$outputs" "full-matrix")
+target=$(get_output "$outputs" "target-matrix")
 expected_shadow='["shadow","encrypt_shadow","readwrite_splitting_and_shadow","sharding_and_shadow","sharding_encrypt_shadow"]'
-assert_scenarios "#18: shadow scenarios" "$full" "$expected_shadow"
-assert_all_dimensions "#18" "$full"
+assert_scenarios "#18: shadow scenarios" "$target" "$expected_shadow"
+assert_all_dimensions "#18" "$target"
 
 echo ""
 echo "--- #19: feature_mask ---"
 outputs=$(run_script "$(build_filters feature_mask=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_scenarios "#19: mask smoke scenarios" "$smoke" '["mask"]'
-full=$(get_output "$outputs" "full-matrix")
+target=$(get_output "$outputs" "target-matrix")
 expected_mask='["mask","mask_encrypt","mask_sharding","mask_encrypt_sharding"]'
-assert_scenarios "#19: mask scenarios" "$full" "$expected_mask"
-assert_all_dimensions "#19" "$full"
+assert_scenarios "#19: mask scenarios" "$target" "$expected_mask"
+assert_all_dimensions "#19" "$target"
 
 echo ""
 echo "--- #20: feature_distsql ---"
 outputs=$(run_script "$(build_filters feature_distsql=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_scenarios "#20: distsql smoke scenarios" "$smoke" '["distsql_rdl"]'
-full=$(get_output "$outputs" "full-matrix")
-assert_scenarios "#20: distsql scenarios" "$full" '["distsql_rdl","distsql_rdl_empty"]'
-assert_all_dimensions "#20" "$full" "3"
-assert_distsql_bootstrap_job "#20: DistSQL full-matrix" "$full" "1"
+target=$(get_output "$outputs" "target-matrix")
+assert_scenarios "#20: distsql scenarios" "$target" '["distsql_rdl","distsql_rdl_empty"]'
+assert_all_dimensions "#20" "$target" "3"
+assert_distsql_bootstrap_job "#20: DistSQL target-matrix" "$target" "1"
 assert_distsql_bootstrap_job "#20: DistSQL smoke-matrix" "$smoke" "0"
 
 echo ""
@@ -389,18 +389,18 @@ echo "--- #21: feature_sql_federation ---"
 outputs=$(run_script "$(build_filters feature_sql_federation=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_scenarios "#21: sql_federation smoke scenarios" "$smoke" '["db_tbl_sql_federation"]'
-full=$(get_output "$outputs" "full-matrix")
-assert_scenarios "#21: sql_federation scenarios" "$full" '["db_tbl_sql_federation"]'
-assert_all_dimensions "#21" "$full"
+target=$(get_output "$outputs" "target-matrix")
+assert_scenarios "#21: sql_federation scenarios" "$target" '["db_tbl_sql_federation"]'
+assert_all_dimensions "#21" "$target"
 
 echo ""
 echo "--- #22: feature_broadcast ---"
 outputs=$(run_script "$(build_filters feature_broadcast=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_scenarios "#22: broadcast smoke scenarios" "$smoke" '["empty_rules"]'
-full=$(get_output "$outputs" "full-matrix")
-assert_scenarios "#22: broadcast scenarios" "$full" '["empty_rules"]'
-assert_all_dimensions "#22" "$full"
+target=$(get_output "$outputs" "target-matrix")
+assert_scenarios "#22: broadcast scenarios" "$target" '["empty_rules"]'
+assert_all_dimensions "#22" "$target"
 
 # ============================================================
 # E. Mixed dimensions
@@ -412,9 +412,9 @@ echo ""
 echo "--- #23: base change overrides dimension filters ---"
 outputs_mixed=$(run_script "$(build_filters adapter_proxy=true mode_standalone=true database_mysql=true core_infra=true)")
 outputs_base=$(run_script "$(build_filters core_infra=true)")
-assert_eq "#23: same full-matrix as core_infra only" \
-  "$(get_output "$outputs_base" "full-matrix")" \
-  "$(get_output "$outputs_mixed" "full-matrix")"
+assert_eq "#23: same target-matrix as core_infra only" \
+  "$(get_output "$outputs_base" "target-matrix")" \
+  "$(get_output "$outputs_mixed" "target-matrix")"
 assert_eq "#23: same smoke-matrix as core_infra only" \
   "$(get_output "$outputs_base" "smoke-matrix")" \
   "$(get_output "$outputs_mixed" "smoke-matrix")"
@@ -423,9 +423,9 @@ echo ""
 echo "--- #24: feature trigger overrides dimension filters ---"
 outputs_mixed=$(run_script "$(build_filters adapter_jdbc=true feature_sharding=true)")
 outputs_feature=$(run_script "$(build_filters feature_sharding=true)")
-assert_eq "#24: same full-matrix as feature_sharding only" \
-  "$(get_output "$outputs_feature" "full-matrix")" \
-  "$(get_output "$outputs_mixed" "full-matrix")"
+assert_eq "#24: same target-matrix as feature_sharding only" \
+  "$(get_output "$outputs_feature" "target-matrix")" \
+  "$(get_output "$outputs_mixed" "target-matrix")"
 assert_eq "#24: same smoke-matrix as feature_sharding only" \
   "$(get_output "$outputs_feature" "smoke-matrix")" \
   "$(get_output "$outputs_mixed" "smoke-matrix")"
@@ -437,14 +437,14 @@ smoke=$(get_output "$outputs" "smoke-matrix")
 assert_scenarios "#25: smoke scenarios are merged and deduplicated" "$smoke" '["db","encrypt","tbl"]'
 
 echo ""
-echo "--- #26: DistSQL bootstrap remains in Stage 2 ---"
+echo "--- #26: DistSQL bootstrap remains in Remaining Tests ---"
 filters=$(build_filters feature_distsql=true)
 outputs=$(run_script "$filters" "pull_request" "cartesian")
-full=$(get_output "$outputs" "full-matrix")
+target=$(get_output "$outputs" "target-matrix")
 smoke=$(get_output "$outputs" "smoke-matrix")
-assert_distsql_bootstrap_job "#26: cartesian full-matrix" "$full" "1"
+assert_distsql_bootstrap_job "#26: cartesian target-matrix" "$target" "1"
 output_file=$(mktemp)
-GITHUB_OUTPUT="$output_file" bash "$SCRIPT_DIR/generate-remaining-matrix.sh" "$filters" "$full" "$smoke"
+GITHUB_OUTPUT="$output_file" bash "$SCRIPT_DIR/generate-remaining-matrix.sh" "$filters" "$target" "$smoke"
 remaining=$(get_output "$(cat "$output_file")" "matrix")
 rm -f "$output_file"
 assert_distsql_bootstrap_job "#26: remaining-matrix" "$remaining" "1"
