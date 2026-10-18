@@ -25,7 +25,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,18 +37,12 @@ class PostgreSQLTimestampValueParserTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("parseSuccessArguments")
     void assertParse(final String name, final String input, final Timestamp expected) {
-        assertThat(new PostgreSQLTimestampValueParser(false).parse(input), is(expected));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("parseWithTimeZoneArguments")
-    void assertParseWithTimeZone(final String name, final String input, final Timestamp expected) {
-        assertThat(new PostgreSQLTimestampValueParser(true).parse(input), is(expected));
+        assertThat(new PostgreSQLTimestampValueParser().parse(input), is(expected));
     }
     
     @Test
     void assertParseWithTimestampUtilsException() {
-        assertThat(assertThrows(SQLWrapperException.class, () -> new PostgreSQLTimestampValueParser(false).parse("bad")).getCause(), isA(SQLException.class));
+        assertThat(assertThrows(SQLWrapperException.class, () -> new PostgreSQLTimestampValueParser().parse("bad")).getCause(), isA(SQLException.class));
     }
     
     private static Stream<Arguments> parseSuccessArguments() {
@@ -67,13 +60,5 @@ class PostgreSQLTimestampValueParserTest {
                 Arguments.of("single-digit month and day", "2021-3-3 23:23:23.123456", Timestamp.valueOf("2021-03-03 23:23:23.123456")),
                 Arguments.of("positive infinity fallback", "infinity", new Timestamp(9223372036825200000L)),
                 Arguments.of("negative infinity fallback", "-infinity", new Timestamp(-9223372036832400000L)));
-    }
-    
-    private static Stream<Arguments> parseWithTimeZoneArguments() {
-        return Stream.of(
-                Arguments.of("positive offset", "2026-01-01 00:00:00+02", Timestamp.from(Instant.parse("2025-12-31T22:00:00Z"))),
-                Arguments.of("zero offset", "2026-01-01 00:00:00+00", Timestamp.from(Instant.parse("2026-01-01T00:00:00Z"))),
-                Arguments.of("negative offset with spacing", "2026-01-01 00:00:00.123 -08:00", Timestamp.from(Instant.parse("2026-01-01T08:00:00.123Z"))),
-                Arguments.of("without offset", "2026-01-01 00:00:00", Timestamp.valueOf("2026-01-01 00:00:00")));
     }
 }

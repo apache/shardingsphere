@@ -162,7 +162,7 @@ class PostgreSQLComBindExecutorTest {
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
         when(bindPacket.getStatementId()).thenReturn(statementId);
         when(bindPacket.getPortal()).thenReturn("C_1");
-        when(bindPacket.readParameters(Collections.singletonList(PostgreSQLBinaryColumnType.INT4))).thenReturn(Collections.singletonList(1));
+        when(bindPacket.readParameters(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED))).thenReturn(Collections.singletonList(1));
         when(bindPacket.readResultFormats()).thenReturn(Collections.emptyList());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

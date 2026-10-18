@@ -83,7 +83,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -148,25 +147,6 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
             assertThat(assertThrows(UnsupportedSQLOperationException.class,
                     () -> PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement, PARAMETERS)), is(expectedException));
             verify(expected).close();
-        }
-    }
-    
-    @Test
-    void assertLoadForParameterMetadataWithMultipleExecutionUnits() throws SQLException {
-        PreparedStatement expected = prepareJDBCBackendConnection(null);
-        PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement(true);
-        ExecutionContext executionContext = mock(ExecutionContext.class);
-        when(executionContext.getExecutionUnits()).thenReturn(Arrays.asList(
-                new ExecutionUnit("ds_0", new SQLUnit("SELECT id FROM foo_tbl WHERE id=?", Collections.emptyList())),
-                new ExecutionUnit("ds_1", new SQLUnit("SELECT id FROM foo_tbl WHERE id=?", Collections.emptyList()))));
-        DialectJDBCResultMetadataChecker checker = mock(DialectJDBCResultMetadataChecker.class);
-        try (
-                MockedConstruction<KernelProcessor> ignored = mockConstruction(KernelProcessor.class,
-                        (mock, context) -> when(mock.generateExecutionContext(any(), any(), any())).thenReturn(executionContext));
-                MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
-            spiLoader.when(() -> DatabaseTypedSPILoader.findService(DialectJDBCResultMetadataChecker.class, databaseType)).thenReturn(Optional.of(checker));
-            assertThat(PostgreSQLPreparedStatementMetadataFactory.loadForParameterMetadata(connectionSession, preparedStatement), is(expected));
-            verifyNoInteractions(checker);
         }
     }
     

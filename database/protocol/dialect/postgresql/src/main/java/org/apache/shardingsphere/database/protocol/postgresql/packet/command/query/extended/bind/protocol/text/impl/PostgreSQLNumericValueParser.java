@@ -20,33 +20,14 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * Numeric value parser of PostgreSQL.
  */
 public final class PostgreSQLNumericValueParser implements PostgreSQLTextValueParser<Number> {
     
-    private static final Map<String, Double> SPECIAL_VALUES = new HashMap<>(7, 1F);
-    
-    static {
-        SPECIAL_VALUES.put("nan", Double.NaN);
-        SPECIAL_VALUES.put("infinity", Double.POSITIVE_INFINITY);
-        SPECIAL_VALUES.put("+infinity", Double.POSITIVE_INFINITY);
-        SPECIAL_VALUES.put("inf", Double.POSITIVE_INFINITY);
-        SPECIAL_VALUES.put("+inf", Double.POSITIVE_INFINITY);
-        SPECIAL_VALUES.put("-infinity", Double.NEGATIVE_INFINITY);
-        SPECIAL_VALUES.put("-inf", Double.NEGATIVE_INFINITY);
-    }
-    
     @Override
     public Number parse(final String value) {
-        Double specialValue = SPECIAL_VALUES.get(value.trim().toLowerCase(Locale.ROOT));
-        if (null != specialValue) {
-            return specialValue;
-        }
         try {
             return Integer.parseInt(value);
         } catch (final NumberFormatException ignored) {

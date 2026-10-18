@@ -96,11 +96,11 @@ public enum PostgreSQLBinaryColumnType implements BinaryColumnType {
     
     TIMETZ_ARRAY(1270, new PostgreSQLVarcharValueParser()),
     
-    TIMESTAMP(1114, new PostgreSQLTimestampValueParser(false)),
+    TIMESTAMP(1114, new PostgreSQLTimestampValueParser()),
     
     TIMESTAMP_ARRAY(1115, new PostgreSQLVarcharValueParser()),
     
-    TIMESTAMPTZ(1184, new PostgreSQLTimestampValueParser(true)),
+    TIMESTAMPTZ(1184, new PostgreSQLTimestampValueParser()),
     
     TIMESTAMPTZ_ARRAY(1185, new PostgreSQLVarcharValueParser()),
     
