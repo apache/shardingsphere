@@ -28,6 +28,8 @@ import org.apache.shardingsphere.distsql.statement.type.ral.queryable.convert.Co
 import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -46,7 +48,6 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -250,12 +251,12 @@ class ConvertYamlConfigurationExecutorTest {
         return createYamlConfig("without_max_pool_size_db", dataSourceConfig);
     }
     
-    private static YamlDatabaseConfiguration createYamlConfigWithCustomPoolPropsOnly() {
-        YamlDataSourceConfiguration dataSourceConfig = createConnectionOnlyDataSourceConfig();
-        Properties customPoolProps = new Properties();
-        customPoolProps.setProperty("foo_1", "bar_1");
-        dataSourceConfig.setCustomPoolProps(customPoolProps);
-        return createYamlConfig("custom_pool_props_only_db", dataSourceConfig);
+    private static YamlDataSourceConfiguration createConnectionOnlyDataSourceConfig() {
+        YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
+        result.setUrl("jdbc:mysql://127.0.0.1:3306/demo_convert_ds_0?useSSL=false");
+        result.setUsername("root");
+        result.setPassword("12345678");
+        return result;
     }
     
     private static YamlDatabaseConfiguration createYamlConfig(final String databaseName, final YamlDataSourceConfiguration dataSourceConfig) {
@@ -266,12 +267,10 @@ class ConvertYamlConfigurationExecutorTest {
         return result;
     }
     
-    private static YamlDataSourceConfiguration createConnectionOnlyDataSourceConfig() {
-        YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
-        result.setUrl("jdbc:mysql://127.0.0.1:3306/demo_convert_ds_0?useSSL=false");
-        result.setUsername("root");
-        result.setPassword("12345678");
-        return result;
+    private static YamlDatabaseConfiguration createYamlConfigWithCustomPoolPropsOnly() {
+        YamlDataSourceConfiguration dataSourceConfig = createConnectionOnlyDataSourceConfig();
+        dataSourceConfig.setCustomPoolProps(PropertiesBuilder.build(new Property("foo_1", "bar_1")));
+        return createYamlConfig("custom_pool_props_only_db", dataSourceConfig);
     }
     
     private static Stream<Arguments> invalidInputCases() {
