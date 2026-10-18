@@ -92,31 +92,8 @@ def print_rule_baseline(scan_result: dict) -> None:
             print(quality_rules.describe_candidate(each))
     else:
         print("[R8-CANDIDATES] no candidates")
-    for rule in quality_rules.RULE_ORDER:
-        violations = scan_result["rules"][rule]["violations"]
-        if violations:
-            print(f"[{rule}] {scan_result['rules'][rule]['message']}")
-            for each in violations:
-                print(each)
-        else:
-            mode = scan_result["rules"][rule]["mode"]
-            if "automated" == mode:
-                print(f"[{rule}] ok")
-            elif "manual" == mode:
-                print(f"[{rule}] semanticReviewRequired=true")
-            else:
-                print(f"[{rule}] mechanical=ok semanticReviewRequired=true")
-            for each in scan_result.get("reviews", {}).get(rule, []):
-                print(f"review: {each}")
-    prechecks = scan_result.get("prechecks", {})
-    for name in sorted(prechecks):
-        violations = prechecks[name]["violations"]
-        if not violations:
-            print(f"[precheck:{name}] ok")
-            continue
-        print(f"[precheck:{name}] {prechecks[name]['message']}")
-        for each in violations:
-            print(each)
+    quality_rules.print_rule_summary(scan_result)
+    quality_rules.print_precheck_summary(scan_result)
 
 
 def print_coverage_baseline(jacoco_xml_path: Path, target_classes: list[str], minimum_ratio: float | None) -> bool:
