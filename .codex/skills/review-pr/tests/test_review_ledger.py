@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+import hashlib
 import json
 import os
 import subprocess
@@ -640,6 +641,282 @@ class ReviewLedgerTest(unittest.TestCase):
         finding["anchors"] = []
         actual["findings"] = [finding]
         self.assertIn("G1 incomplete gap is missing real unavailability-proof anchors", ledger.validate_ledger(actual, incomplete_result=True))
+
+    def test_session_requires_each_report_evidence_review(self):
+        original = self.create_session([[], []])
+        self.assertEqual([], ledger.validate_session(original))
+        for missing in ("report", "reason", "counter_evidence", "evidence", "current_anchor", "own_evidence", "valid_range"):
+            with self.subTest(missing=missing):
+                actual = json.loads(json.dumps(original))
+                report_reviews = actual["rounds"][0]["report_reviews"]
+                if "report" == missing:
+                    report_reviews.pop()
+                elif "current_anchor" == missing:
+                    report_reviews[0]["evidence"][0]["anchor"]["range_sha256"] = "0" * 64
+                elif "own_evidence" == missing:
+                    report_reviews[0]["evidence"][0]["reviewer"] = "review-2"
+                elif "valid_range" == missing:
+                    report_reviews[0]["evidence"][0]["anchor"]["end_line"] = 99
+                else:
+                    report_reviews[0][missing] = [] if "evidence" == missing else " "
+                if missing in {"reason", "counter_evidence", "evidence", "valid_range"}:
+                    self.assert_session_cli_rejected(actual)
+                else:
+                    self.assertTrue(ledger.validate_session(actual))
+
+    def test_session_normalizes_matching_root_causes(self):
+        actual = self.create_session([[("F1", "confirmed")], [("F2", "confirmed")]])
+        findings = actual["rounds"][0]["findings"]
+        findings[0]["members"].extend(findings.pop()["members"])
+        self.assertEqual([], ledger.validate_session(actual))
+
+    def test_session_accepts_verified_maintainer_decision(self):
+        (self.repo / "Rules.md").write_text("The candidate's project commitment requires an explicit maintainer decision before merge.\n", encoding="utf-8")
+        actual = self.create_session([[("F1", "confirmed")], [("F2", "confirmed")]])
+        for index, reference in enumerate(actual["reviews"]):
+            report = json.loads(Path(reference["path"]).read_text(encoding="utf-8"))
+            actual_ledger = ledger.read_ledger(report["ledger"])
+            rule_anchor = ledger.capture_anchor({"side": "source", "origin": "repository:Rules.md", "path": "Rules.md", "start_line": 1, "end_line": 1}, actual_ledger)
+            actual_ledger["findings"][0].update({
+                "origin": "repository:Rules.md", "fix_boundary": "maintainer-decision:project-commitment",
+                "reason": "The evidenced project commitment needs a maintainer decision.",
+                "necessity": "The project rule reserves acceptance of this commitment to maintainers.",
+                "evidence": ["Rules.md explicitly requires a maintainer decision before merge."],
+                "full_path": ["Reviewed candidate to project commitment to required maintainer decision."],
+                "counter_evidence": ["No existing project rule delegates this decision to the reviewer."],
+                "scope_proof": "The reviewed candidate is governed by the project commitment rule.", "anchors": [rule_anchor],
+            })
+            ledger_file = Path(report["ledger"])
+            ledger.write_ledger(ledger_file, actual_ledger)
+            report.update({"ledger_sha256": hashlib.sha256(ledger_file.read_bytes()).hexdigest(), "feedback_mode": "Needs Discussion"})
+            self.save_session_report(actual, index, report)
+        findings = actual["rounds"][0]["findings"]
+        findings[0]["members"].extend(findings.pop()["members"])
+        findings[0].update({"id": "project-commitment-decision", "reason": "The confirmed project rule requires a maintainer decision.",
+                            "counter_evidence": "Reviewer agreement cannot replace the required maintainer decision.",
+                            "evidence": [{"reviewer": "review-2", "anchor": rule_anchor}]})
+        actual["feedback_mode"] = "Needs Discussion"
+        self.assertEqual([], ledger.validate_session(actual))
+
+    def test_session_preserves_all_candidate_dispositions(self):
+        original = self.create_session([[("F1", "withdrawn"), ("F2", "non-blocking"), ("F3", "out-of-scope")], []])
+        self.assertEqual([], ledger.validate_session(original))
+        for missing in ("member", "finding", "disposition"):
+            with self.subTest(missing=missing):
+                actual = json.loads(json.dumps(original))
+                findings = actual["rounds"][0]["findings"]
+                if "member" == missing:
+                    findings[0]["members"] = []
+                elif "finding" == missing:
+                    findings.pop()
+                else:
+                    findings[0]["status"] = "candidate"
+                self.assertTrue(ledger.validate_session(actual))
+
+    def test_session_rejects_same_count_with_different_findings_or_feedback(self):
+        actual = self.create_session([[("F1", "confirmed")], [("F2", "confirmed")]])
+        self.assertTrue(ledger.validate_session(actual))
+        actual["rounds"][0]["findings"][0]["members"].extend(actual["rounds"][0]["findings"].pop()["members"])
+        report = json.loads(Path(actual["reviews"][1]["path"]).read_text(encoding="utf-8"))
+        report["feedback_mode"] = "Needs Discussion"
+        self.save_session_report(actual, 1, report)
+        self.assertTrue(ledger.validate_session(actual))
+
+    def test_session_allows_second_pair_after_disagreement(self):
+        actual = self.create_session([[("F1", "confirmed")], [], [("F1", "confirmed")], [("F1", "confirmed")]])
+        self.assertEqual([], ledger.validate_session(actual))
+
+    def test_session_preserves_finding_discovered_during_result_review(self):
+        original = self.create_session([[], [], [("F1", "confirmed")], [("F1", "confirmed")]])
+        original["rounds"][0]["findings"].append({
+            "id": "normalized-F1", "members": [], "status": "confirmed",
+            "reason": "The report evidence review found an unsupported triggering path.",
+            "counter_evidence": "The supported alternative does not protect this path.",
+            "evidence": original["rounds"][0]["report_reviews"][0]["evidence"],
+        })
+        first_pair = json.loads(json.dumps(original))
+        first_pair.update({"reviews": first_pair["reviews"][:2], "rounds": first_pair["rounds"][:1], "result": "Mergeable", "feedback_mode": ""})
+        self.assertTrue(ledger.validate_session(first_pair))
+        missing_identity = json.loads(json.dumps(original))
+        missing_identity["rounds"][1]["findings"][0]["id"] = "replacement-F1"
+        self.assertTrue(ledger.validate_session(missing_identity))
+        self.assertEqual([], ledger.validate_session(original))
+
+    def test_session_requires_historical_findings_in_final_pair(self):
+        original = self.create_session([[("F1", "confirmed")], [("F1", "confirmed"), ("F2", "confirmed")],
+                                        [("F1", "confirmed")], [("F1", "confirmed")]])
+        self.assertTrue(ledger.validate_session(original))
+        actual = json.loads(json.dumps(original))
+        actual["rounds"][-1]["findings"].pop()
+        self.assertTrue(ledger.validate_session(actual))
+        actual = json.loads(json.dumps(original))
+        actual["rounds"][-1]["findings"][-1]["status"] = "withdrawn"
+        self.assertEqual([], ledger.validate_session(actual))
+
+    def test_session_limits_complete_review_pairs(self):
+        original = self.create_session([[("F1", "confirmed")], [], [("F1", "confirmed")], [("F1", "confirmed")]])
+        self.assertEqual([], ledger.validate_session(original))
+        for count in (0, 1, 3, 6):
+            with self.subTest(count=count):
+                actual = json.loads(json.dumps(original))
+                actual["reviews"] = (actual["reviews"] * 2)[:count]
+                with self.assertRaises(RuntimeError):
+                    ledger.validate_session(actual)
+
+    def test_session_rejects_reused_or_modified_original_records(self):
+        original = self.create_session([[], []])
+        original_report = Path(original["reviews"][1]["path"]).read_text(encoding="utf-8")
+        for invalid in ("report_path", "reviewer", "ledger_path", "report_hash", "ledger_hash"):
+            with self.subTest(invalid=invalid):
+                actual = json.loads(json.dumps(original))
+                report = json.loads(original_report)
+                if "report_path" == invalid:
+                    actual["reviews"][1] = actual["reviews"][0]
+                elif "report_hash" == invalid:
+                    actual["reviews"][1]["sha256"] = "0" * 64
+                else:
+                    if "reviewer" == invalid:
+                        report["reviewer"] = "review-1"
+                        actual["rounds"][0]["report_reviews"][1]["reviewer"] = "review-1"
+                        actual["rounds"][0]["report_reviews"][1]["evidence"][0]["reviewer"] = "review-1"
+                    elif "ledger_path" == invalid:
+                        report["ledger"] = json.loads(Path(actual["reviews"][0]["path"]).read_text(encoding="utf-8"))["ledger"]
+                        report["ledger_sha256"] = hashlib.sha256(Path(report["ledger"]).read_bytes()).hexdigest()
+                    else:
+                        report["ledger_sha256"] = "0" * 64
+                    self.save_session_report(actual, 1, report)
+                self.assert_session_cli_rejected(actual)
+                Path(original["reviews"][1]["path"]).write_text(original_report, encoding="utf-8")
+
+    def test_session_requires_same_current_review_basis(self):
+        actual = self.create_session([[], []])
+        report = json.loads(Path(actual["reviews"][1]["path"]).read_text(encoding="utf-8"))
+        original = ledger.read_ledger(report["ledger"])
+        for changed in ("focus", "rule", "requirement", "evidence_origin"):
+            with self.subTest(changed=changed):
+                actual_ledger = json.loads(json.dumps(original))
+                basis = json.loads(self.basis_file.read_text(encoding="utf-8"))
+                if "focus" == changed:
+                    basis["focus"] = "CI Review"
+                else:
+                    role = "evidence" if "evidence_origin" == changed else changed
+                    source = next(each for each in basis["sources"] if role == each["role"])
+                    alternate = self.private_root / (changed + ".txt")
+                    alternate.write_text("A different reviewed source contract.\n", encoding="utf-8")
+                    source["path"] = str(alternate)
+                self.update_session_basis(actual, 1, actual_ledger, basis)
+                self.assertEqual([], ledger.validate_ledger(actual_ledger))
+                self.assertTrue(ledger.validate_session(actual))
+        self.update_session_basis(actual, 1, original, json.loads(self.basis_file.read_text(encoding="utf-8")))
+        (self.repo / self.source_path).write_text("first\nchanged_after_review\nthird\nfourth\nfifth\nnew_second\nlast\n", encoding="utf-8")
+        self.assertTrue(ledger.validate_session(actual))
+
+    def test_session_accepts_different_discovered_evidence(self):
+        actual = self.create_session([[], []])
+        report = json.loads(Path(actual["reviews"][1]["path"]).read_text(encoding="utf-8"))
+        actual_ledger = ledger.read_ledger(report["ledger"])
+        basis = json.loads(self.basis_file.read_text(encoding="utf-8"))
+        evidence = self.private_root / "additional-evidence.txt"
+        evidence.write_text("Additional independent discovery evidence.\n", encoding="utf-8")
+        basis["sources"].append({"role": "evidence", "origin": "discovery:second-review", "path": str(evidence)})
+        self.update_session_basis(actual, 1, actual_ledger, basis)
+        self.assertEqual([], ledger.validate_session(actual))
+
+    def test_session_preserves_real_incomplete_evidence(self):
+        actual = self.create_session([[("G1", "review-incomplete-gap")], [("G1", "review-incomplete-gap")]])
+        self.assertEqual([], ledger.validate_session(actual))
+        actual = self.create_session([[], []])
+        actual["result"] = "Review Incomplete"
+        self.assertTrue(ledger.validate_session(actual))
+
+    def test_session_cli_validates_without_writing_and_preserves_legacy_validation(self):
+        actual = self.create_session([[], []])
+        session_file = self.private_root / "session.json"
+        session_file.write_text(json.dumps(actual), encoding="utf-8")
+        original_files = {path: path.read_bytes() for path in self.private_root.rglob("*.json")}
+        for command in (["validate-session", "--session", str(session_file)],
+                        ["validate", "--ledger", json.loads(Path(actual["reviews"][0]["path"]).read_text(encoding="utf-8"))["ledger"]]):
+            with self.subTest(command=command[0]), patch.object(sys, "argv", ["review_ledger.py", *command]), redirect_stdout(StringIO()):
+                self.assertEqual(0, ledger.main())
+        self.assertEqual(original_files, {path: path.read_bytes() for path in original_files})
+        original = json.loads(json.dumps(actual))
+        for invalid in ("unfinished", "shape", "result", "feedback_mode", "finding_status"):
+            with self.subTest(invalid=invalid):
+                actual = json.loads(json.dumps(original))
+                if "unfinished" == invalid:
+                    actual["rounds"][0]["report_reviews"] = []
+                elif "shape" == invalid:
+                    actual = {"reviews": "invalid"}
+                elif "finding_status" == invalid:
+                    actual["rounds"][0]["findings"] = [{"id": "invalid", "members": [], "status": []}]
+                else:
+                    actual[invalid] = []
+                session_file.write_text(json.dumps(actual), encoding="utf-8")
+                with patch.object(sys, "argv", ["review_ledger.py", "validate-session", "--session", str(session_file)]), \
+                        redirect_stdout(StringIO()), redirect_stderr(StringIO()):
+                    self.assertEqual(1, ledger.main())
+
+    def create_session(self, review_findings):
+        original = self.create_valid_ledger()
+        actual = {"reviews": [], "rounds": [], "result": "Mergeable", "feedback_mode": ""}
+        findings = {}
+        report_reviews = []
+        for index, each in enumerate(review_findings):
+            reviewer = "review-" + str(index + 1)
+            actual_ledger = json.loads(json.dumps(original))
+            for finding_id, status in each:
+                finding = self.create_incomplete_gap() if "review-incomplete-gap" == status else self.create_confirmed_finding(finding_id)
+                finding.update({"id": finding_id, "status": status, "fix_boundary": finding_id})
+                actual_ledger["findings"].append(finding)
+            ledger_file = ledger.ledger_root() / reviewer / ledger.LEDGER_FILE_NAME
+            ledger_file.parent.mkdir(exist_ok=True)
+            ledger.write_ledger(ledger_file, actual_ledger)
+            statuses = {finding["status"] for finding in actual_ledger["findings"]}
+            result = "Not Mergeable" if "confirmed" in statuses else "Review Incomplete" if "review-incomplete-gap" in statuses else "Mergeable"
+            report = {"reviewer": reviewer, "ledger": str(ledger_file), "ledger_sha256": hashlib.sha256(ledger_file.read_bytes()).hexdigest(),
+                      "result": result, "feedback_mode": "Change Request" if "Not Mergeable" == result else ""}
+            actual["reviews"].append({"path": str(self.private_root / (reviewer + ".json")), "sha256": ""})
+            self.save_session_report(actual, index, report)
+            evidence = [{"reviewer": reviewer, "anchor": actual_ledger["files"][0]["coverage"][0]["anchors"][0]}]
+            report_reviews.append({"reviewer": reviewer, "reason": "Checked the report against its owning source contract.",
+                                   "counter_evidence": "Checked the supported alternative behavior.", "evidence": evidence})
+            for finding in actual_ledger["findings"]:
+                disposition = findings.setdefault(finding["id"], {"id": "normalized-" + finding["id"], "members": [], "status": finding["status"],
+                                                                  "reason": "Checked the triggering path and independent fix boundary.",
+                                                                  "counter_evidence": "Checked the strongest supported counterexample.", "evidence": evidence})
+                disposition["members"].append({"reviewer": reviewer, "finding": finding["id"]})
+            if index % 2:
+                actual["rounds"].append({"report_reviews": report_reviews, "findings": json.loads(json.dumps(list(findings.values())))})
+                report_reviews = []
+            actual.update({"result": report["result"], "feedback_mode": report["feedback_mode"]})
+        return actual
+
+    def save_session_report(self, session, index, report):
+        path = Path(session["reviews"][index]["path"])
+        path.write_text(json.dumps(report), encoding="utf-8")
+        session["reviews"][index]["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+
+    def assert_session_cli_rejected(self, session):
+        session_file = self.private_root / "rejected-session.json"
+        session_file.write_text(json.dumps(session), encoding="utf-8")
+        output = StringIO()
+        with patch.object(sys, "argv", ["review_ledger.py", "validate-session", "--session", str(session_file)]), \
+                redirect_stdout(output), redirect_stderr(StringIO()):
+            self.assertEqual(1, ledger.main())
+        self.assertNotIn("OK:", output.getvalue())
+
+    def update_session_basis(self, session, index, actual_ledger, basis):
+        basis_file = self.private_root / ("independent-basis-" + str(index) + ".json")
+        basis_file.write_text(json.dumps(basis), encoding="utf-8")
+        actual_ledger["scope"]["review_basis_file"] = str(basis_file)
+        actual_ledger["basis"], _ = ledger.capture_basis(actual_ledger["scope"])
+        for review_pass in actual_ledger["passes"]:
+            review_pass["basis_fingerprint"] = ledger.basis_fingerprint(actual_ledger)
+        report = json.loads(Path(session["reviews"][index]["path"]).read_text(encoding="utf-8"))
+        ledger_file = Path(report["ledger"])
+        ledger.write_ledger(ledger_file, actual_ledger)
+        report["ledger_sha256"] = hashlib.sha256(ledger_file.read_bytes()).hexdigest()
+        self.save_session_report(session, index, report)
 
     def initialize_ledger(self, committed=False):
         arguments = ["init", "--repo-root", str(self.repo), "--pr", "synthetic-review", "--base-ref", self.base_sha,
