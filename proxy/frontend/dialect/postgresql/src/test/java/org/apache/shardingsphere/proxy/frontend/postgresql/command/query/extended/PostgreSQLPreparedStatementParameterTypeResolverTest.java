@@ -103,6 +103,25 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
     }
     
     @Test
+    void assertResolveUnspecifiedParameterValuesWithManyOrConditions() {
+        int orConditionCount = 16;
+        List<Integer> actualParameterMarkerIndexes = new ArrayList<>(orConditionCount * 2);
+        List<Object> params = new ArrayList<>(orConditionCount * 2);
+        List<Object> expected = new ArrayList<>(orConditionCount * 2);
+        for (int i = 0; i < orConditionCount; i++) {
+            actualParameterMarkerIndexes.add(i * 2);
+            actualParameterMarkerIndexes.add(i * 2 + 1);
+            params.add(new PostgreSQLTypeUnspecifiedSQLParameter("1"));
+            params.add(new PostgreSQLTypeUnspecifiedSQLParameter("2"));
+            expected.add(1);
+            expected.add(2L);
+        }
+        String sql = "SELECT id FROM foo_tbl WHERE " + String.join(" AND ", Collections.nCopies(orConditionCount, "(id=? OR k=?)"));
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement(sql, actualParameterMarkerIndexes);
+        assertThat(PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, params), is(expected));
+    }
+    
+    @Test
     void assertResolveUnspecifiedParameterValuesWithSetAssignment() {
         PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("UPDATE foo_tbl SET k=? WHERE id=?", Arrays.asList(0, 1));
         List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement,
@@ -160,8 +179,8 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
     @Test
     void assertResolveUnspecifiedParameterValuesWithoutUnspecified() {
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
-        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
-                SQL, sqlStatementContext, new HintValueContext(), Collections.singletonList(PostgreSQLBinaryColumnType.INT4), Collections.singletonList(0));
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(SQL, sqlStatementContext, new HintValueContext(),
+                Collections.singletonList(PostgreSQLBinaryColumnType.INT4), Collections.singletonList(0));
         assertThat(PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, PARAMETERS), sameInstance(PARAMETERS));
         verifyNoInteractions(connectionSession);
     }
@@ -195,9 +214,8 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
     @Test
     void assertResolveParameterTypesWithConnectionSessionWithRepeatedParameter() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
-        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
-                "SELECT id FROM foo_tbl WHERE id=? OR id=?", sqlStatementContext, new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED),
-                Arrays.asList(0, 0));
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("SELECT id FROM foo_tbl WHERE id=? OR id=?", sqlStatementContext, new HintValueContext(),
+                Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED), Arrays.asList(0, 0));
         PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement, Arrays.asList(1, 1));
         verifyNoInteractions(connectionSession);
     }
@@ -230,8 +248,8 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         when(parameterMetaData.getParameterTypeName(2)).thenReturn("int4");
         PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
         when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
-        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("SELECT id FROM foo_tbl WHERE id=? AND k=?",
-                sqlStatementContext, new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.UNSPECIFIED), Arrays.asList(1, 0));
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("SELECT id FROM foo_tbl WHERE id=? AND k=?", sqlStatementContext, new HintValueContext(),
+                Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.UNSPECIFIED), Arrays.asList(1, 0));
         PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement);
         assertThat(preparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.INT2)));
     }
