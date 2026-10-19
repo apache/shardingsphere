@@ -638,7 +638,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return new SubqueryExpressionSegment((SubquerySegment) astNode);
         }
         if (astNode instanceof OtherLiteralValue) {
-            return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(), context.getText());
+            return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(), context.getText(), Collections.emptyList());
         }
         return astNode;
     }
@@ -698,7 +698,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             visit(each);
         }
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text, Collections.emptyList());
     }
     
     @Override
@@ -1287,7 +1287,8 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         for (CteClauseContext each : ctx.cteClause()) {
             SubquerySegment subquery = new SubquerySegment(each.subquery().aggregationClause().start.getStartIndex(),
                     each.subquery().aggregationClause().stop.getStopIndex(), (SelectStatement) visit(each.subquery()), getOriginalText(each.subquery()));
-            CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), (AliasSegment) visit(each.alias()), subquery);
+            CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), (AliasSegment) visit(each.alias()), subquery,
+                    null);
             if (null != each.columnNames()) {
                 ColumnNamesContext columnNames = each.columnNames();
                 CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(columnNames);
@@ -1862,7 +1863,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != expr) {
             return visit(expr);
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList());
     }
     
     @Override

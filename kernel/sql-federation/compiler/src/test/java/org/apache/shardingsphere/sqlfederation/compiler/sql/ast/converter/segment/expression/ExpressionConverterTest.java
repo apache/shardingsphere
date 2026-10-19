@@ -219,7 +219,7 @@ class ExpressionConverterTest {
     
     @Test
     void assertConvertThrowsUnsupportedForCommonExpression() {
-        CommonExpressionSegment expressionSegment = new CommonExpressionSegment(0, 0, "text");
+        CommonExpressionSegment expressionSegment = new CommonExpressionSegment(0, 0, "text", Collections.emptyList());
         UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class, () -> ExpressionConverter.convert(expressionSegment));
         assertThat(actualException.getMessage(), is("Unsupported SQL operation: unsupported CommonExpressionSegment."));
     }

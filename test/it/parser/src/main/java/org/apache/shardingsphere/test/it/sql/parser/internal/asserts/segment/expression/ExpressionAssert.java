@@ -174,6 +174,18 @@ public final class ExpressionAssert {
             String expectedText = SQLCaseType.LITERAL == assertContext.getCaseType() && null != expected.getLiteralText() ? expected.getLiteralText() : expected.getText();
             assertThat(assertContext.getText("Common expression text assertion error: "), actual.getText(), is(expectedText));
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
+            if (null != expected.getChildren()) {
+                assertCommonExpressionChildren(assertContext, actual, expected);
+            }
+        }
+    }
+    
+    private static void assertCommonExpressionChildren(final SQLCaseAssertContext assertContext, final ComplexExpressionSegment actual, final ExpectedCommonExpression expected) {
+        CommonExpressionSegment expression = (CommonExpressionSegment) (actual instanceof ExpressionProjectionSegment ? ((ExpressionProjectionSegment) actual).getExpr() : actual);
+        assertThat(assertContext.getText("Common expression children size assertion error: "), expression.getChildren().size(), is(expected.getChildren().size()));
+        Iterator<ExpressionSegment> actualChildren = expression.getChildren().iterator();
+        for (ExpectedExpression each : expected.getChildren()) {
+            assertExpression(assertContext, actualChildren.next(), each);
         }
     }
     

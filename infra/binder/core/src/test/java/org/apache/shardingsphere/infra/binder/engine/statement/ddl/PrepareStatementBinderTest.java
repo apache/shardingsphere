@@ -25,11 +25,15 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionWithParamsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.PrepareStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -41,6 +45,7 @@ import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
@@ -85,6 +90,7 @@ class PrepareStatementBinderTest {
         assertFalse(actual.getInsert().isPresent());
         assertFalse(actual.getUpdate().isPresent());
         assertFalse(actual.getDelete().isPresent());
+        assertFalse(actual.getMerge().isPresent());
     }
     
     @Test
@@ -95,6 +101,26 @@ class PrepareStatementBinderTest {
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db_1", hintValueContext, prepareStatement);
         PrepareStatement actual = new PrepareStatementBinder().bind(prepareStatement, binderContext);
         assertThat(actual.getDatabaseType(), is(databaseType));
+        assertFalse(actual.getSelect().isPresent());
+        assertFalse(actual.getInsert().isPresent());
+        assertFalse(actual.getUpdate().isPresent());
+        assertFalse(actual.getDelete().isPresent());
+        assertFalse(actual.getMerge().isPresent());
+    }
+    
+    @Test
+    void assertBindWithMerge() {
+        SimpleTableSegment target = new SimpleTableSegment(new TableNameSegment(10, 19, new IdentifierValue("foo_target")));
+        SimpleTableSegment source = new SimpleTableSegment(new TableNameSegment(26, 35, new IdentifierValue("bar_source")));
+        ExpressionWithParamsSegment condition = new ExpressionWithParamsSegment(40, 43, new LiteralExpressionSegment(40, 43, true));
+        MergeStatement mergeStatement = MergeStatement.builder().databaseType(databaseType).target(target).source(source).expression(condition).build();
+        PrepareStatement prepareStatement = PrepareStatement.builder().databaseType(databaseType).merge(mergeStatement).build();
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db_1", new HintValueContext(), prepareStatement);
+        PrepareStatement actual = new PrepareStatementBinder().bind(prepareStatement, binderContext);
+        assertThat(actual.getDatabaseType(), is(databaseType));
+        assertThat(actual.getMerge().orElse(null), sameInstance(mergeStatement));
+        assertThat(actual.getAttributes().findAttribute(TableSQLStatementAttribute.class).get().getTables(),
+                is(prepareStatement.getAttributes().findAttribute(TableSQLStatementAttribute.class).get().getTables()));
         assertFalse(actual.getSelect().isPresent());
         assertFalse(actual.getInsert().isPresent());
         assertFalse(actual.getUpdate().isPresent());

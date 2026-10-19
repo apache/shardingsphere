@@ -3878,6 +3878,49 @@
         </table-rollback>
     </alter-table>
 
+    <alter-table sql-case-id="alter_table_reset_option_pg">
+        <table name="t" start-index="12" stop-index="12" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_reset_options_namespace_pg">
+        <table name="t" start-index="12" stop-index="12" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_column_reset_option_pg">
+        <table name="t" start-index="12" stop-index="12" />
+        <modify-column>
+            <column-definition start-index="14" stop-index="46" not-null="false">
+                <column name="c" start-index="27" stop-index="27" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_column_reset_without_column_pg">
+        <table name="t" start-index="12" stop-index="12" />
+        <modify-column>
+            <column-definition start-index="14" stop-index="49" not-null="false">
+                <column name="c" start-index="20" stop-index="20" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_reset_set_control_pg">
+        <table name="t" start-index="12" stop-index="12" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_reset_value_control_pg">
+        <table name="t" start-index="12" stop-index="12" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_column_reset_value_control_pg">
+        <table name="t" start-index="12" stop-index="12" />
+        <modify-column>
+            <column-definition start-index="14" stop-index="52" not-null="false">
+                <column name="c" start-index="27" stop-index="27" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
     <alter-table sql-case-id="alter_table_add_not_enforced_pg">
         <table name="foo_table" start-index="12" stop-index="20" />
         <add-constraint constraint-name="positive" start-index="26" stop-index="71" />

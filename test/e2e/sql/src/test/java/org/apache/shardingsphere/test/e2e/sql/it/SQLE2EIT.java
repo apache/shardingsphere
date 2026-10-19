@@ -46,22 +46,54 @@ public interface SQLE2EIT {
      */
     class SQLE2EITEnvironmentExtension implements InvocationInterceptor {
         
+        private static final Object ENV_LOCK = new Object();
+        
+        private static String currentEnvKey;
+        
+        private static int activeInvocations;
+        
         @Override
         public void interceptTestTemplateMethod(final Invocation<Void> invocation, final ReflectiveInvocationContext<Method> invocationContext,
                                                 final ExtensionContext extensionContext) throws Throwable {
             for (Object each : invocationContext.getArguments()) {
                 if (each instanceof E2ETestParameter) {
                     E2ETestParameter testParameter = (E2ETestParameter) each;
-                    setEnvironmentEngine(extensionContext, testParameter);
+                    acquireEnvironment(testParameter.getKey());
+                    try {
+                        setEnvironmentEngine(extensionContext, testParameter);
+                        invocation.proceed();
+                    } finally {
+                        releaseEnvironment();
+                    }
+                    return;
                 }
             }
             invocation.proceed();
+        }
+        
+        private static void acquireEnvironment(final String key) throws InterruptedException {
+            synchronized (ENV_LOCK) {
+                while (activeInvocations > 0 && !key.equals(currentEnvKey)) {
+                    ENV_LOCK.wait();
+                }
+                currentEnvKey = key;
+                activeInvocations++;
+            }
         }
         
         private void setEnvironmentEngine(final ExtensionContext extensionContext, final E2ETestParameter testParam) {
             SQLE2EEnvironmentEngine environmentEngine = new SQLE2EEnvironmentEngine(
                     testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), Adapter.valueOf(testParam.getAdapter().toUpperCase()));
             ((SQLE2EIT) extensionContext.getRequiredTestInstance()).setEnvironmentEngine(environmentEngine);
+        }
+        
+        private static void releaseEnvironment() {
+            synchronized (ENV_LOCK) {
+                activeInvocations--;
+                if (0 == activeInvocations) {
+                    ENV_LOCK.notifyAll();
+                }
+            }
         }
     }
 }
