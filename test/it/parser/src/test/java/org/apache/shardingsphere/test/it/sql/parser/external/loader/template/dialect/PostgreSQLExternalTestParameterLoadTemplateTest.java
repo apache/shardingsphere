@@ -40,7 +40,7 @@ class PostgreSQLExternalTestParameterLoadTemplateTest {
     private final PostgreSQLExternalTestParameterLoadTemplate template = new PostgreSQLExternalTestParameterLoadTemplate();
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource({"sqlCases", "expectedCases"})
+    @MethodSource({"sqlCases", "expectedCases", "conditionalCases"})
     void assertLoadSQL(final String name, final String source, final String expectedEcho, final Collection<String> expectedSQL) {
         List<String> expectedFileContent = expectedEcho.isEmpty() ? Collections.emptyList() : Arrays.asList(expectedEcho.split("\n", -1));
         Collection<ExternalSQLTestParameter> actual = template.load("sample", Arrays.asList(source.split("\n", -1)), expectedFileContent, "PostgreSQL", "CSV");
@@ -263,6 +263,78 @@ class PostgreSQLExternalTestParameterLoadTemplateTest {
                         Arrays.asList("CREATE TABLE foo() USING missing_am;", "SELECT 2;")),
                 Arguments.of("copy error without payload echo", "COPY foo FROM STDIN;\nfoo';\n$x$;\n\\.\nSELECT 2;", "COPY foo FROM STDIN;\nERROR: bar\nCONTEXT: COPY foo\nSELECT 2;",
                         Collections.singletonList("SELECT 2;")));
+    }
+    
+    private static Stream<Arguments> conditionalCases() {
+        return Stream.of(
+                Arguments.of("inactive psql regression branch", "\\if true\n  select 'okay';\n  select 'still okay';\n\\else\n  not okay;\n  still not okay\n\\endif\nSELECT 2;", "",
+                        Arrays.asList("select 'okay';", "select 'still okay';", "SELECT 2;")),
+                Arguments.of("inactive unmatched parentheses", "\\if false\nSELECT ((1;\n\\else\nSELECT 2;\n\\endif\nSELECT 3;", "", Arrays.asList("SELECT 2;", "SELECT 3;")),
+                Arguments.of("inactive atomic block", "\\if false\nBEGIN ATOMIC SELECT 1;\n\\endif\nSELECT 2;", "", Collections.singletonList("SELECT 2;")),
+                Arguments.of("inactive copy without payload marker", "\\if false\nCOPY foo FROM STDIN;\n\\endif\nSELECT 2;", "", Collections.singletonList("SELECT 2;")),
+                Arguments.of("inactive client copy without payload marker", "\\if false\n\\copy foo FROM STDIN\n\\endif\nSELECT 2;", "", Collections.singletonList("SELECT 2;")),
+                Arguments.of("inactive command in pending SQL", "\\if false\nSELECT 1 \\g\n\\endif\nSELECT 2;", "", Collections.singletonList("SELECT 2;")),
+                Arguments.of("inactive quoted conditional text", "\\if false\nSELECT 'foo\n\\else\n\\endif\nbar';\n\\else\nSELECT 2;\n\\endif", "", Collections.singletonList("SELECT 2;")),
+                Arguments.of("inactive dollar conditional text", "\\if false\nDO $$\n\\else\n\\endif\n$$;\n\\else\nSELECT 2;\n\\endif", "", Collections.singletonList("SELECT 2;")),
+                Arguments.of("inactive comment conditional text", "\\if false\n/*\n\\else\n\\endif\n*/\n\\else\nSELECT 2;\n\\endif", "", Collections.singletonList("SELECT 2;")),
+                Arguments.of("inactive quoted identifier conditional text", "\\if false\nSELECT \"foo\n\\else\n\\endif\nbar\";\n\\else\nSELECT 2;\n\\endif", "",
+                        Collections.singletonList("SELECT 2;")),
+                Arguments.of("nested inactive branch", "\\if true\n\\if false\nSELECT 1;\n\\else\nSELECT 2;\n\\endif\n\\else\n\\if true\nSELECT 3;\n\\endif\n\\endif\nSELECT 4;", "",
+                        Arrays.asList("SELECT 2;", "SELECT 4;")),
+                Arguments.of("elif selection", "\\if false\nSELECT 1;\n\\elif false\nSELECT 2;\n\\elif true\nSELECT 3;\n\\elif true\nSELECT 4;\n\\else\nSELECT 5;\n\\endif", "",
+                        Collections.singletonList("SELECT 3;")),
+                Arguments.of("unknown variable condition", "\\if :foo\nSELECT 1;\n\\else\nSELECT 2;\n\\endif", "", Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("unknown backtick condition", "\\if `foo`\nSELECT 1;\n\\else\nSELECT 2;\n\\endif", "", Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("ambiguous boolean condition", "\\if o\nSELECT 1;\n\\else\nSELECT 2;\n\\endif", "", Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("missing boolean condition", "\\if\nSELECT 1;\n\\else\nSELECT 2;\n\\endif", "", Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("unrecognized boolean condition", "\\if foo\nSELECT 1;\n\\else\nSELECT 2;\n\\endif", "", Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("unknown elif condition", "\\if false\nSELECT 1;\n\\elif :foo\nSELECT 2;\n\\else\nSELECT 3;\n\\endif", "", Arrays.asList("SELECT 2;", "SELECT 3;")),
+                Arguments.of("static condition inside unknown block", "\\if :foo\n\\if false\nSELECT 1;\n\\endif\n\\else\nSELECT 2;\n\\endif", "", Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("unknown condition inside inactive block", "\\if false\n\\if :foo\nSELECT 1;\n\\else\nSELECT 2;\n\\endif\n\\else\nSELECT 3;\n\\endif", "",
+                        Collections.singletonList("SELECT 3;")),
+                Arguments.of("unknown condition inside active block", "\\if true\n\\if :foo\nSELECT 1;\n\\else\nSELECT 2;\n\\endif\n\\else\nSELECT 3;\n\\endif", "",
+                        Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("query interior conditional", "SELECT\n\\if true\n1\n\\else\n2\n\\endif\n;\nSELECT 3;", "", Collections.singletonList("SELECT 3;")),
+                Arguments.of("pending SQL across endif", "\\if true\nSELECT 1\n\\endif\n+ 2;\nSELECT 3;", "", Collections.singletonList("SELECT 3;")),
+                Arguments.of("pending SQL across else", "\\if true\nSELECT 1\n\\else\n+ 2;\n\\endif\nSELECT 3;", "", Collections.singletonList("SELECT 3;")),
+                Arguments.of("compound conditional command", "\\if false \\else\nSELECT 1;\n\\endif\nSELECT 2;", "", Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("compound inactive command", "\\if false\n\\echo ignored \\else\nSELECT 1;\n\\endif\nSELECT 2;", "", Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("compound active command", "\\if true\n\\echo ignored \\if false\n\\else\nSELECT 1;\n\\endif\n\\endif\nSELECT 2;", "", Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("compound command hides nesting", "\\if false\n\\echo ignored \\if true\n\\endif\n\\if false\nSELECT 1;\n\\endif\n\\endif\nSELECT 2;", "",
+                        Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("compound command inside unknown block", "\\if :foo\n\\echo ignored \\if true\n\\endif\n\\if false\nSELECT 1;\n\\endif\n\\endif\nSELECT 2;", "",
+                        Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("compound root hides nesting", "\\if :foo \\if true\n\\endif\n\\if false\nSELECT 1;\n\\endif\n\\endif\nSELECT 2;", "", Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("compound command hides unknown root", "\\echo ignored \\if :foo\n\\if false\nSELECT 1;\n\\endif\n\\endif\nSELECT 2;", "", Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("conditional after same line SQL", "SELECT 1; \\if false\nSELECT 2;\n\\endif\nSELECT 3;", "", Arrays.asList("SELECT 1;", "SELECT 2;", "SELECT 3;")),
+                Arguments.of("unterminated conditional block", "\\if false\nSELECT 1;\nSELECT 2;", "", Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("client buffer before unterminated conditional", "\\;\n\\if false\nSELECT 1;", "", Collections.emptyList()),
+                Arguments.of("client buffer before conditional", "\\;\n\\if true\nSELECT 1;\n\\else\nSELECT 2;\n\\endif", "", Collections.singletonList("SELECT 2;")),
+                Arguments.of("client buffer inside conditional", "\\if true\n\\;\n\\else\nSELECT 1;\nSELECT 2;\n\\endif\nSELECT 3;", "", Arrays.asList("SELECT 2;", "SELECT 3;")),
+                Arguments.of("repeated else", "\\if false\nSELECT 1;\n\\else\nSELECT 2;\n\\else\nSELECT 3;\n\\endif\nSELECT 4;", "", Arrays.asList("SELECT 1;", "SELECT 2;", "SELECT 3;", "SELECT 4;")),
+                Arguments.of("elif after else", "\\if true\nSELECT 1;\n\\else\nSELECT 2;\n\\elif true\nSELECT 3;\n\\endif", "", Arrays.asList("SELECT 1;", "SELECT 2;", "SELECT 3;")),
+                Arguments.of("unexpected conditional arguments", "\\if false\nSELECT 1;\n\\else foo\nSELECT 2;\n\\endif", "", Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("unmatched conditional commands", "\\else\nSELECT 1;\n\\endif\nSELECT 2;", "", Arrays.asList("SELECT 1;", "SELECT 2;")),
+                Arguments.of("inactive echo anchor", "SELECT\n  1;\n\\if false\nSELECT\n  1;\n\\endif\nSELECT 2;",
+                        "SELECT\n  1;\nERROR: foo\n\\if false\nSELECT\n  1;\n\\endif\nSELECT 2;", Collections.singletonList("SELECT 2;")),
+                Arguments.of("error filtering stays conservative after endif", "\\if false\n\\set ECHO all\n\\endif\nSELECT 'ERROR: foo';",
+                        "\\if false\n\\set ECHO all\n\\endif\nSELECT 'ERROR: foo';\nERROR: foo", Collections.singletonList("SELECT 'ERROR: foo';")),
+                Arguments.of("fallback before another independent block", "\\if true\nSELECT 1\n\\endif\n+ 2;\n\\if false\nSELECT 3;\n\\endif\nSELECT 4;", "", Collections.singletonList("SELECT 4;")),
+                Arguments.of("fallback copy payload with quoted empty lines", "\\if true\nCOPY foo FROM STDIN;\n'foo\n\nbar';\n\\.\nSELECT 1\n\\endif\n+ 2;\nSELECT 3;", "",
+                        Arrays.asList("COPY foo FROM STDIN;", "SELECT 3;")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("conditionValues")
+    void assertLoadConditionValues(final String expression, final boolean active) {
+        Collection<ExternalSQLTestParameter> actual = template.load("sample", Arrays.asList("\\if " + expression, "SELECT 1;", "\\else", "SELECT 2;", "\\endif"),
+                Collections.emptyList(), "PostgreSQL", "CSV");
+        assertThat(actual.stream().map(ExternalSQLTestParameter::getSql).collect(Collectors.toList()), is(Collections.singletonList(active ? "SELECT 1;" : "SELECT 2;")));
+    }
+    
+    private static Stream<Arguments> conditionValues() {
+        return Stream.concat(Stream.of("true", "TRUE", "t", "tr", "tru", "1", "on", "yes", "y", "ye").map(value -> Arguments.of(value, true)),
+                Stream.of("false", "FALSE", "f", "fa", "fal", "fals", "0", "off", "of", "no", "n").map(value -> Arguments.of(value, false)));
     }
     
     @Test
