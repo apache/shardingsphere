@@ -87,8 +87,7 @@ final class DistSQLStatementExecutor {
     
     private DistSQLConnectionContext createConnectionContext(final QueryContext queryContext) {
         DistSQLConnectionContext result = new DistSQLConnectionContext(queryContext, connection.getDatabaseConnectionManager().getConnectionSize(),
-                connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getCurrentDatabaseName()).getProtocolType(),
-                connection.getDatabaseConnectionManager(), statementManager);
+                connection.getContextManager().getDatabase(connection.getCurrentDatabaseName()).getProtocolType(), connection.getDatabaseConnectionManager(), statementManager);
         result.setProcessId(connection.getProcessId());
         return result;
     }
