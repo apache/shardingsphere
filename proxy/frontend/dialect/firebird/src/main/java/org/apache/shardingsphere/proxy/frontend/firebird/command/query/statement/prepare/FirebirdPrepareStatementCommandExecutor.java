@@ -69,11 +69,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
@@ -93,13 +95,16 @@ import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.stream.Collectors;
 
 /**
  * Firebird prepare transaction command executor.
@@ -249,23 +254,24 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         Collection<Projection> projections = getProjections(sqlStatementContext, schema);
         int columnCount = 0;
         for (Projection each : projections) {
-            if (each instanceof ColumnProjection) {
-                String tableName = ((ColumnProjection) each).getOriginalTable().getValue();
-                ShardingSphereTable table = schema.getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
+            Optional<Projection> commonTableExpressionProjection = findCommonTableExpressionProjection(sqlStatementContext, each);
+            Projection projection = commonTableExpressionProjection.orElse(each);
+            IdentifierValue columnAlias = commonTableExpressionProjection.isPresent() ? new IdentifierValue(each.getColumnLabel()) : each.getAlias().orElse(null);
+            if (projection instanceof ColumnProjection) {
+                String tableName = getTableName(sqlStatementContext, (ColumnProjection) projection);
+                ShardingSphereTable table = schema.getTable(tableName);
                 if (null == table) {
-                    table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema("system_tables")
-                            .getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
+                    table = database.getSchema("system_tables").getTable(tableName);
                 }
-                ShardingSphereColumn column = table.getColumn(((ColumnProjection) each).getOriginalColumn().getValue());
-                processColumn(describeColumns, requestedItems, table, column, ((ColumnProjection) each).getOwner().orElse(null), each.getAlias().orElse(null), ++columnCount);
-            } else if (each instanceof ExpressionProjection) {
-                processExpressionProjection((ExpressionProjection) each, describeColumns, requestedItems, ++columnCount);
-            } else if (each instanceof AggregationProjection) {
-                String functionName = ((AggregationProjection) each).getType().name();
-                processCustomColumn(null, functionName, each.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, ++columnCount);
-            } else if (each instanceof SubqueryProjection) {
-                SubqueryProjection subquery = (SubqueryProjection) each;
-                processCustomColumn(null, subquery.getColumnName(), subquery.getAlias().orElse(null), Types.INTEGER, describeColumns, requestedItems, ++columnCount);
+                ShardingSphereColumn column = table.getColumn(((ColumnProjection) projection).getOriginalColumn().getValue());
+                processColumn(describeColumns, requestedItems, table, column, ((ColumnProjection) projection).getOwner().orElse(null), columnAlias, ++columnCount);
+            } else if (projection instanceof ExpressionProjection) {
+                processExpressionProjection((ExpressionProjection) projection, columnAlias, describeColumns, requestedItems, ++columnCount);
+            } else if (projection instanceof AggregationProjection) {
+                String functionName = ((AggregationProjection) projection).getType().name();
+                processCustomColumn(null, functionName, columnAlias, getFunctionType(functionName), describeColumns, requestedItems, ++columnCount);
+            } else if (projection instanceof SubqueryProjection) {
+                processCustomColumn(null, ((SubqueryProjection) projection).getColumnName(), columnAlias, Types.INTEGER, describeColumns, requestedItems, ++columnCount);
             }
         }
     }
@@ -322,6 +328,55 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             }
         }
         return result;
+    }
+    
+    private Optional<Projection> findCommonTableExpressionProjection(final SQLStatementContext sqlStatementContext, final Projection projection) {
+        if (!(projection instanceof ColumnProjection) || !isTemporaryColumnWithoutTable((ColumnProjection) projection) || !(sqlStatementContext.getSqlStatement() instanceof SelectStatement)) {
+            return Optional.empty();
+        }
+        Optional<WithSegment> with = ((SelectStatement) sqlStatementContext.getSqlStatement()).getWith();
+        if (!with.isPresent()) {
+            return Optional.empty();
+        }
+        ProjectionEngine projectionEngine = new ProjectionEngine(sqlStatementContext.getSqlStatement().getDatabaseType());
+        for (CommonTableExpressionSegment each : with.get().getCommonTableExpressions()) {
+            Optional<ProjectionSegment> result = findCommonTableExpressionProjectionSegment(each, (ColumnProjection) projection);
+            if (result.isPresent()) {
+                return projectionEngine.createProjection(result.get());
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private boolean isTemporaryColumnWithoutTable(final ColumnProjection projection) {
+        return null != projection.getColumnBoundInfo() && TableSourceType.TEMPORARY_TABLE == projection.getColumnBoundInfo().getTableSourceType() && projection.getOriginalTable().getValue().isEmpty();
+    }
+    
+    private Optional<ProjectionSegment> findCommonTableExpressionProjectionSegment(final CommonTableExpressionSegment commonTableExpression, final ColumnProjection projection) {
+        if (projection.getOwner().isPresent() && !projection.getOwner().get().getValue().equalsIgnoreCase(commonTableExpression.getAliasName().orElse(""))) {
+            return Optional.empty();
+        }
+        SelectStatement select = commonTableExpression.getSubquery().getSelect();
+        SelectStatement anchorSelect = select.getCombine().map(optional -> optional.getLeft().getSelect()).orElse(select);
+        List<ProjectionSegment> anchorProjections = new ArrayList<>(anchorSelect.getProjections().getProjections());
+        List<String> columnNames = commonTableExpression.getColumns().isEmpty()
+                ? anchorProjections.stream().map(ProjectionSegment::getColumnLabel).collect(Collectors.toList())
+                : commonTableExpression.getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
+        for (int i = 0; i < Math.min(columnNames.size(), anchorProjections.size()); i++) {
+            if (columnNames.get(i).equalsIgnoreCase(projection.getName().getValue())) {
+                return Optional.of(anchorProjections.get(i));
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private String getTableName(final SQLStatementContext sqlStatementContext, final ColumnProjection projection) {
+        String result = projection.getOriginalTable().getValue();
+        return result.isEmpty() || isReturningContextName(result) ? getTableNames(sqlStatementContext).iterator().next() : result;
+    }
+    
+    private boolean isReturningContextName(final String tableName) {
+        return null != returningSegment && ("OLD".equalsIgnoreCase(tableName) || "NEW".equalsIgnoreCase(tableName));
     }
     
     private void processParameters(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final Collection<FirebirdReturnColumnPacket> describeColumns,
@@ -411,16 +466,16 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return false;
     }
     
-    private void processExpressionProjection(final ExpressionProjection expr, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,
-                                             final int columnCount) {
+    private void processExpressionProjection(final ExpressionProjection expr, final IdentifierValue columnAlias, final Collection<FirebirdReturnColumnPacket> describeColumns,
+                                             final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
         ExpressionSegment exprSegment = expr.getExpressionSegment().getExpr();
         if (exprSegment instanceof FunctionSegment) {
             String functionName = ((FunctionSegment) exprSegment).getFunctionName();
-            processCustomColumn(null, functionName, expr.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, columnCount);
+            processCustomColumn(null, functionName, columnAlias, getFunctionType(functionName), describeColumns, requestedItems, columnCount);
         } else if (exprSegment instanceof BinaryOperationExpression) {
             String operationName = getOperationName(((BinaryOperationExpression) exprSegment).getOperator());
             int operationType = getOperationType(((BinaryOperationExpression) exprSegment).getOperator());
-            processCustomColumn(null, operationName, expr.getAlias().orElse(null), operationType, describeColumns, requestedItems, columnCount);
+            processCustomColumn(null, operationName, columnAlias, operationType, describeColumns, requestedItems, columnCount);
         } else if (exprSegment instanceof LiteralExpressionSegment) {
             Object value = ((LiteralExpressionSegment) exprSegment).getLiterals();
             int type = Types.NULL;
@@ -433,7 +488,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             } else if (value instanceof Number) {
                 type = Types.NUMERIC;
             }
-            processLiteralColumn(value, expr.getAlias().orElse(null), type, describeColumns, requestedItems, columnCount);
+            processLiteralColumn(value, columnAlias, type, describeColumns, requestedItems, columnCount);
         }
     }
     
