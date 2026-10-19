@@ -82,11 +82,10 @@ Create a new exact-name test class only when none exists.
 
 For each target public method, record `R8-CANDIDATES` with the method, candidate count, decision, and evidence. A candidate is high-fit only when all are true:
 
-1. target method and branch skeleton are consistent;
+1. target method is the same;
 2. differences are mainly input data;
-3. execution and assertion flow is shared;
-4. the group meets the minimum scenario count in `CODE_OF_CONDUCT.md`;
-5. argument sources contain no test steps or assertion callbacks.
+3. the same form of assertion is used;
+4. the group meets the minimum scenario count in `CODE_OF_CONDUCT.md`.
 
 Collaborator-owned differences are not high-fit. Refactor high-fit candidates; otherwise record the concrete reason.
 Use `KEEP` only when a genuinely high-fit refactor would materially reduce readability or diagnosis.
@@ -144,12 +143,12 @@ Apply the Boolean assertion standard in `CODE_OF_CONDUCT.md` to literal, constan
   untracked or Git-ignored verification outputs.
 - `R15-D`: verify each parameterized test's argument source and actual case count against `CODE_OF_CONDUCT.md`; inspect external, unresolved, or dynamic sources manually.
 - `R15-E`: verify the first parameter against the parameterized-test signature rule in `CODE_OF_CONDUCT.md`.
-- `R15-F`: inspect each `switch` candidate against the shared execution and assertion flow requirement in `CODE_OF_CONDUCT.md`.
-- `R15-G`: inspect each new nested-type candidate's role; a data-only holder or test grouping is not a violation by itself.
-  When a type is used in argument sets, verify that it does not carry test steps or assertion callbacks under `CODE_OF_CONDUCT.md`.
-  Unresolved role keeps the task at `R10-D`.
-- `R15-H`: review Boolean assertions under `R14` and resolve assertion-dispatch candidates against `CODE_OF_CONDUCT.md`.
-- `R15-I`: inspect callback candidates and argument sources for test steps or assertion callbacks under `CODE_OF_CONDUCT.md`; business callback inputs are permitted.
+- `R15-F`: inspect each `switch` candidate in a parameterized test against the grouping rule in `CODE_OF_CONDUCT.md`.
+- `R15-G`: inspect each new nested-type candidate used in argument sets against the grouping rule in `CODE_OF_CONDUCT.md`.
+  A nested type is not a violation by itself.
+  Unresolved grouping keeps the task at `R10-D`.
+- `R15-H`: review Boolean assertions under `R14`; for assertion-dispatch candidates in parameterized tests, compare the assertion forms against the grouping rule in `CODE_OF_CONDUCT.md`.
+- `R15-I`: inspect callback candidates used in argument sets against the grouping rule in `CODE_OF_CONDUCT.md`.
   Inspect external, unresolved, or dynamic argument sources manually.
 - `R15-J`: helpers and providers do not invoke target public methods. Treat scanner results as partial evidence and inspect unresolved ownership manually.
 

@@ -66,10 +66,10 @@ RULE_SPECS = (
     RuleSpec("R15-B", "test value and owned or external contracts require source review", "manual"),
     RuleSpec("R15-C", "out-of-scope worktree mutation detected", "automated"),
     RuleSpec("R15-D", "each parameterized test requires at least three actual argument sets", "manual"),
-    RuleSpec("R15-F", "switch candidates require shared execution and assertion flow review", "manual"),
-    RuleSpec("R15-G", "added nested types require data or test behavior role review", "manual"),
-    RuleSpec("R15-H", "boolean assertion control flow requires purpose review", "manual"),
-    RuleSpec("R15-I", "Consumer candidates require business-input or test-behavior review", "manual"),
+    RuleSpec("R15-F", "switch candidates require method and assertion grouping review when parameterized", "manual"),
+    RuleSpec("R15-G", "added nested types require method and assertion grouping review when used in argument sets", "manual"),
+    RuleSpec("R15-H", "boolean assertions and parameterized grouping require source review", "manual"),
+    RuleSpec("R15-I", "Consumer candidates require method and assertion grouping review when used in argument sets", "manual"),
     RuleSpec("R15-J", "helper and provider target invocations require semantic ownership review", "hybrid"),
 )
 CONSUMER_TOKEN_PATTERN = re.compile(r"\bConsumer\s*(?:<|\b)")

@@ -93,7 +93,7 @@ class ScanQualityRulesTest(unittest.TestCase):
             (
                 "assertion-callback-case",
                 "final FooCase value",
-                "value.assertion().accept(target.run(value.input()))",
+                "int actual = target.run(value.input()); value.assertion().accept(actual)",
                 "private record FooCase(int input, Consumer<Integer> assertion) {}",
                 "+    private record FooCase(int input, Consumer<Integer> assertion) {}",
                 "module/src/test/java/foo/TargetTest.java: private record FooCase(int input, Consumer<Integer> assertion) {}",
@@ -146,6 +146,7 @@ class ScanQualityRulesTest(unittest.TestCase):
                 self.assertEqual([], rules.failed_rule_names(actual))
 
     def test_boolean_dispatch_rule_reports_switch_review_candidate(self):
+        path = Path("TargetTest.java")
         source = '''
             class TargetTest {
                 @Test void assertRun() {
@@ -156,7 +157,13 @@ class ScanQualityRulesTest(unittest.TestCase):
                 }
             }
         '''
-        self.assertEqual(["TargetTest.java:3 method=assertRun"], rules.find_boolean_dispatch_candidates(Path("TargetTest.java"), source))
+        context = rules.FileScanContext(path=path, source=source, method_bodies={}, method_blocks={}, candidates=[],
+                                        target_type_name="Target", target_public_methods={"run"}, added_lines=[])
+        with patch.object(rules, "create_file_scan_context", return_value=context), patch.object(rules, "check_scope_baseline", return_value=[]):
+            actual = rules.collect_scan_result([path], Path("scope.json"))
+        self.assertEqual(["TargetTest.java:3 method=assertRun"], actual["reviews"]["R15-H"])
+        self.assertEqual("manual", actual["rules"]["R15-H"]["mode"])
+        self.assertEqual([], rules.failed_rule_names(actual))
 
     def test_standard_argument_sources_require_actual_row_count_review(self):
         for annotation in ('@CsvSource({"foo,1", "bar,2", "baz,3"})', '@ValueSource(strings = {"foo", "bar", "baz"})', '@MethodSource("cases")'):
