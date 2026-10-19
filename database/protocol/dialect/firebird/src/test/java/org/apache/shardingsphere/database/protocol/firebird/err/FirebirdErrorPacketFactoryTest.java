@@ -48,8 +48,8 @@ class FirebirdErrorPacketFactoryTest {
     @Test
     void assertNewInstanceWithUnknownDatabaseException() {
         FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(new UnknownDatabaseException("logic_db"));
-        assertThat(actual.getErrorCode(), is(335544375));
-        assertThat(actual.getErrorMessage(), is("logic_db"));
+        assertThat(actual.getErrorCode(), is(335544344));
+        assertThat(actual.getErrorMessage(), is("I/O error during \"open\" operation for file \"logic_db\"; Error while trying to open file; No such file or directory"));
     }
     
     @Test
