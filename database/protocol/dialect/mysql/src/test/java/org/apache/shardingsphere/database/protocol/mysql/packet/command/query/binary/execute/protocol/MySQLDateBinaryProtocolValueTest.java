@@ -17,24 +17,25 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.protocol;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,7 +43,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -84,23 +84,25 @@ class MySQLDateBinaryProtocolValueTest {
     @MethodSource("writeArguments")
     void assertWrite(final String name, final Object value, final int expectedLength, final int year, final int month,
                      final int dayOfMonth, final int hour, final int minute, final int second, final Integer expectedMicroseconds) {
-        new MySQLDateBinaryProtocolValue().write(payload, value);
-        verify(payload).writeInt2(year);
-        List<Integer> expectedValues = new LinkedList<>();
-        expectedValues.add(expectedLength);
-        expectedValues.add(month);
-        expectedValues.add(dayOfMonth);
-        if (4 != expectedLength) {
-            expectedValues.add(hour);
-            expectedValues.add(minute);
-            expectedValues.add(second);
+        ByteBuf buffer = Unpooled.buffer();
+        try {
+            new MySQLDateBinaryProtocolValue().write(new MySQLPacketPayload(buffer, StandardCharsets.UTF_8), value);
+            assertThat(buffer.readUnsignedByte(), is((short) expectedLength));
+            assertThat(buffer.readUnsignedShortLE(), is(year));
+            assertThat(buffer.readUnsignedByte(), is((short) month));
+            assertThat(buffer.readUnsignedByte(), is((short) dayOfMonth));
+            if (4 != expectedLength) {
+                assertThat(buffer.readUnsignedByte(), is((short) hour));
+                assertThat(buffer.readUnsignedByte(), is((short) minute));
+                assertThat(buffer.readUnsignedByte(), is((short) second));
+            }
+            if (11 == expectedLength) {
+                assertThat(buffer.readUnsignedIntLE(), is(expectedMicroseconds.longValue()));
+            }
+            assertThat(buffer.readableBytes(), is(0));
+        } finally {
+            buffer.release();
         }
-        ArgumentCaptor<Integer> int1Captor = ArgumentCaptor.forClass(Integer.class);
-        verify(payload, times(expectedValues.size())).writeInt1(int1Captor.capture());
-        if (11 == expectedLength) {
-            verify(payload).writeInt4(expectedMicroseconds);
-        }
-        assertThat(int1Captor.getAllValues(), is(expectedValues));
     }
     
     @Test
@@ -159,12 +161,19 @@ class MySQLDateBinaryProtocolValueTest {
     private static Stream<Arguments> writeArguments() {
         return Stream.of(
                 Arguments.of("local-date", LocalDate.of(1970, 1, 14), 4, 1970, 1, 14, 0, 0, 0, null),
+                Arguments.of("sql-date", Date.valueOf("1970-01-14"), 4, 1970, 1, 14, 0, 0, 0, null),
                 Arguments.of("local-date-time-date-only", LocalDateTime.of(1970, 1, 14, 0, 0, 0), 4, 1970, 1, 14, 0, 0, 0, null),
                 Arguments.of("local-date-time-minute-only", LocalDateTime.of(1970, 1, 14, 0, 1, 0), 7, 1970, 1, 14, 0, 1, 0, null),
                 Arguments.of("local-date-time-second-only", LocalDateTime.of(1970, 1, 14, 0, 0, 1), 7, 1970, 1, 14, 0, 0, 1, null),
                 Arguments.of("local-date-time-with-time", LocalDateTime.of(1970, 1, 14, 12, 10, 30), 7, 1970, 1, 14, 12, 10, 30, null),
+                Arguments.of("local-date-time-with-microseconds", LocalDateTime.of(1970, 1, 14, 12, 10, 30, 123456000), 11, 1970, 1, 14, 12, 10, 30, 123456),
+                Arguments.of("timestamp-date-only", Timestamp.valueOf("1970-01-14 00:00:00"), 4, 1970, 1, 14, 0, 0, 0, null),
                 Arguments.of("timestamp-with-time", Timestamp.valueOf("1970-01-14 12:10:30"), 7, 1970, 1, 14, 12, 10, 30, null),
-                Arguments.of("timestamp-with-microseconds", Timestamp.valueOf("1970-01-14 12:10:30.123"), 11, 1970, 1, 14, 12, 10, 30, 123000),
+                Arguments.of("timestamp-with-milliseconds", Timestamp.valueOf("1970-01-14 12:10:30.123"), 11, 1970, 1, 14, 12, 10, 30, 123000),
+                Arguments.of("timestamp-with-microseconds", Timestamp.valueOf("1970-01-14 12:10:30.123456"), 11, 1970, 1, 14, 12, 10, 30, 123456),
+                Arguments.of("timestamp-with-single-microsecond", Timestamp.valueOf("1970-01-14 12:10:30.000001"), 11, 1970, 1, 14, 12, 10, 30, 1),
+                Arguments.of("timestamp-with-fractional-trailing-zero", Timestamp.valueOf("1970-01-14 12:10:30.123450"), 11, 1970, 1, 14, 12, 10, 30, 123450),
+                Arguments.of("timestamp-midnight-with-microsecond", Timestamp.valueOf("1970-01-14 00:00:00.000001"), 11, 1970, 1, 14, 0, 0, 0, 1),
                 Arguments.of("time-absent-with-nanos", LocalDateTime.of(1970, 1, 14, 0, 0, 0, 1_000), 11, 1970, 1, 14, 0, 0, 0, 1));
     }
 }
