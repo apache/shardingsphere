@@ -161,7 +161,7 @@ Do not use boolean `assertEquals`, boolean literals inside Hamcrest `is`, or con
 1. Complete the `R1` source loading, then read this Skill's [verification commands](references/verification.md) through EOF.
 2. Resolve targets, related tests, editable files, modules, and input-blocked state.
 3. Create a task-specific temporary directory and capture `Task scope baseline` for the resolved file set.
-4. Run focused baseline coverage through the repository command wrapper, then use `collect_quality_baseline.py` to report coverage and mechanical risks.
+4. Run focused baseline coverage and the full scanner through the repository command wrapper, retaining native JaCoCo reports and scanner diagnostics under the verification commands.
 5. Decide `R12`; otherwise record the SUT/collaborator ownership boundary and `R4` branch map.
 6. Review scanner candidates against every `R8` condition and record candidate-level decisions.
 7. Check `R9`, then implement the smallest tests allowed by `R2-R7`.
@@ -178,7 +178,7 @@ Final coverage must include executed tests for the effective candidate; use the 
 Include:
 
 - `R10=<state>`;
-- aggregated CLASS/LINE/BRANCH counters and ratios for every target plus inner classes;
+- native JaCoCo report paths and raw CLASS/LINE/BRANCH counters for every target and inner class, with per-class ratios for each requested numeric metric;
 - `R8-CANDIDATES` with candidate decisions and evidence;
 - branch/ownership mapping, or the `R12` exemption;
 - executed commands, exit codes, and bounded log paths/summaries;

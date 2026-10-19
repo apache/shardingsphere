@@ -24,6 +24,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementBaseVisitor;
@@ -116,6 +117,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -454,7 +456,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         if (null != ctx.variable()) {
             return visit(ctx.variable());
         }
-        return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText());
+        return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText(), Collections.emptyList());
     }
     
     @Override
@@ -604,18 +606,27 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     @Override
     public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
         OrderDirection orderDirection = null == ctx.DESC() ? OrderDirection.ASC : OrderDirection.DESC;
+        NullsOrderType nullsOrderType = generateNullsOrderType(ctx);
         if (null != ctx.numberLiterals()) {
             return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
-                    SQLUtils.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, null);
+                    SQLUtils.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, nullsOrderType);
         } else {
             ASTNode expr = visitExpr(ctx.expr());
             if (expr instanceof ColumnSegment) {
-                return new ColumnOrderByItemSegment((ColumnSegment) expr, orderDirection, null);
+                return new ColumnOrderByItemSegment((ColumnSegment) expr, orderDirection, nullsOrderType);
             } else {
                 return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(),
-                        ctx.expr().getStop().getStopIndex(), getOriginalText(ctx.expr()), orderDirection, null, (ExpressionSegment) expr);
+                        ctx.expr().getStop().getStopIndex(), getOriginalText(ctx.expr()), orderDirection, nullsOrderType, (ExpressionSegment) expr);
             }
         }
+    }
+    
+    @Nullable
+    private NullsOrderType generateNullsOrderType(final OrderByItemContext ctx) {
+        if (null == ctx.FIRST() && null == ctx.LAST()) {
+            return null;
+        }
+        return null == ctx.FIRST() ? NullsOrderType.LAST : NullsOrderType.FIRST;
     }
     
     @Override
@@ -691,7 +702,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     @Override
     public ASTNode visitCteClause(final CteClauseContext ctx) {
         CommonTableExpressionSegment result = new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (AliasSegment) visit(ctx.alias()),
-                new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())));
+                new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())), null);
         if (null != ctx.columnNames()) {
             CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(ctx.columnNames());
             result.getColumns().addAll(columns.getValue());

@@ -55,8 +55,8 @@ public final class FirebirdFetchResponsePacket extends FirebirdPacket {
         }
         int nullBitsStartIndex = payload.getByteBuf().writerIndex();
         int nullBits = (row.getCells().size() + 7) / 8;
-        nullBits += (4 - nullBits) & 3;
         payload.getByteBuf().writeZero(nullBits);
+        payload.writePadding(nullBits);
         int i = 0;
         for (BinaryCell cell : row.getCells()) {
             if (null != cell.getData()) {

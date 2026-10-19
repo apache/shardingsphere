@@ -23,10 +23,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.limit.ExpectedLimitClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.limit.ExpectedPaginationValue;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -37,6 +38,18 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LimitClauseAssert {
+    
+    /**
+     * Assert FETCH mode and implicit row count.
+     *
+     * @param assertContext assert context
+     * @param actual actual limit
+     * @param expected expected limit
+     */
+    public static void assertFetch(final SQLCaseAssertContext assertContext, final LimitSegment actual, final ExpectedLimitClause expected) {
+        assertThat(assertContext.getText("FETCH WITH TIES assertion error: "), actual.isWithTies(), is(expected.isWithTies()));
+        assertThat(assertContext.getText("FETCH implicit row count assertion error: "), actual.isImplicitRowCount(), is(expected.isImplicitRowCount()));
+    }
     
     /**
      * Assert actual offset segment is correct with expected offset.
@@ -73,7 +86,7 @@ public final class LimitClauseAssert {
             assertNull(expected, assertContext.getText("Row count should not exist."));
             return;
         }
-        if (SQLCaseType.PLACEHOLDER == assertContext.getCaseType()) {
+        if (actual instanceof ParameterMarkerPaginationValueSegment) {
             assertThat(assertContext.getText("Row count index assertion error: "),
                     ((ParameterMarkerPaginationValueSegment) actual).getParameterIndex(), is(expected.getParameterIndex()));
         } else if (actual instanceof ExpressionPaginationValueSegment) {

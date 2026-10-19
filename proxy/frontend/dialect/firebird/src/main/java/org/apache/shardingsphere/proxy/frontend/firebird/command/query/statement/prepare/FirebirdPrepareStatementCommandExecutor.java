@@ -89,6 +89,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Co
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -105,6 +106,8 @@ import java.util.OptionalInt;
  */
 @RequiredArgsConstructor
 public final class FirebirdPrepareStatementCommandExecutor implements CommandExecutor {
+    
+    private static final ShardingSphereTable LITERAL_TABLE = new ShardingSphereTable(null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     
     private final FirebirdPrepareStatementPacket packet;
     
@@ -430,7 +433,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             } else if (value instanceof Number) {
                 type = Types.NUMERIC;
             }
-            processCustomColumn(null, null, expr.getAlias().orElse(null), type, describeColumns, requestedItems, columnCount);
+            processLiteralColumn(value, expr.getAlias().orElse(null), type, describeColumns, requestedItems, columnCount);
         }
     }
     
@@ -468,6 +471,21 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             default:
                 return 4;
         }
+    }
+    
+    @HighFrequencyInvocation
+    private void processLiteralColumn(@Nullable final Object value, @Nullable final IdentifierValue columnAlias, final int dataType, final Collection<FirebirdReturnColumnPacket> describeColumns,
+                                      final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
+        ShardingSphereColumn column = new ShardingSphereColumn("CONSTANT", dataType, false, false, true, true, false, false);
+        String columnAliasString = null == columnAlias ? column.getName() : columnAlias.getValue();
+        String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
+        Integer columnLength = value instanceof String ? getStringLiteralLength((String) value) : null;
+        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, columnCount, LITERAL_TABLE, column, null, columnAliasString, owner, columnLength, false, null));
+    }
+    
+    private int getStringLiteralLength(final String value) {
+        String text = value.replace("''", "'");
+        return text.codePointCount(0, text.length());
     }
     
     private void processCustomColumn(final String tableName, final String columnName, final IdentifierValue columnAlias, final int dataType,

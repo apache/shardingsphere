@@ -449,6 +449,7 @@
     <sql-case id="select_having_firebird" value="SELECT user_id, COUNT(*) AS cnt FROM t_order GROUP BY user_id HAVING COUNT(*) > 1" db-types="Firebird"/>
     <sql-case id="select_function_table_firebird" value="SELECT * FROM foo(1)" db-types="Firebird"/>
     <sql-case id="select_cast_int_firebird" value="SELECT CAST(user_id AS INT) FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_string_literal_projection_firebird" value="SELECT 'x', order_id FROM t_order" db-types="Firebird"/>
     <sql-case id="select_gen_id_with_identifier_firebird" value="SELECT GEN_ID(seq, 1) FROM t_order" db-types="Firebird"/>
     <sql-case id="select_gen_id_with_parameters_firebird" value="SELECT GEN_ID(?, ?) FROM t_order" db-types="Firebird" case-types="Placeholder"/>
     <sql-case id="select_variable_default_firebird" value="SELECT DEFAULT FROM t_order" db-types="Firebird"/>

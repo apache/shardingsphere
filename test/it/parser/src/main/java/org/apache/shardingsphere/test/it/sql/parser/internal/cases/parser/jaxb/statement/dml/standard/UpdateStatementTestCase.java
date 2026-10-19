@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.error.ExpectedErrorLoggingClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.hint.ExpectedOptionHint;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedReturningClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.limit.ExpectedLimitClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.orderby.ExpectedOrderByClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.output.ExpectedOutputClause;
@@ -38,6 +39,9 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class UpdateStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "returning")
+    private ExpectedReturningClause returningClause;
     
     @XmlElement(name = "with")
     private ExpectedWithClause withClause;

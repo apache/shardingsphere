@@ -19,11 +19,17 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.SQLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.standard.ExplainStatementTestCase;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
@@ -52,9 +58,15 @@ public final class ExplainStatementAssert {
         } else if (null != expected.getDeleteClause()) {
             assertNotNull(actual.getExplainableSQLStatement(), assertContext.getText("Actual statement should exist."));
             SQLStatementAssert.assertIs(assertContext, actual.getExplainableSQLStatement(), expected.getDeleteClause());
+        } else if (null != expected.getMergeClause()) {
+            assertThat(assertContext.getText("Actual statement type assertion error: "), actual.getExplainableSQLStatement(), isA(MergeStatement.class));
+            SQLStatementAssert.assertIs(assertContext, actual.getExplainableSQLStatement(), expected.getMergeClause());
         } else if (null != expected.getCreateTableAsSelectClause()) {
-            assertNotNull(actual.getExplainableSQLStatement(), assertContext.getText("Actual statement should exist."));
+            assertThat(assertContext.getText("Actual statement type assertion error: "), actual.getExplainableSQLStatement(), isA(CreateTableStatement.class));
             SQLStatementAssert.assertIs(assertContext, actual.getExplainableSQLStatement(), expected.getCreateTableAsSelectClause());
+        }
+        if (!expected.getTables().isEmpty()) {
+            TableAssert.assertIs(assertContext, actual.getAttributes().getAttribute(TableSQLStatementAttribute.class).getTables(), expected.getTables());
         }
     }
 }

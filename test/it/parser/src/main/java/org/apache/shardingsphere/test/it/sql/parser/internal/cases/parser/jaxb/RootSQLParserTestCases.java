@@ -272,6 +272,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLDropOwnedStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLDropTypeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLDropUserMappingStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLImportForeignSchemaStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLListenStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLNotifyStmtStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLOpenStatementTestCase;
@@ -1081,6 +1082,48 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "create-dimension")
     private final List<OracleCreateDimensionStatementTestCase> createDimensionTestCases = new LinkedList<>();
     
+    @XmlElement(name = "postgresql-alter-system")
+    private final List<PostgreSQLAlterSystemStatementTestCase> postgresqlAlterSystemTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-statistics")
+    private final List<PostgreSQLCreateStatisticsStatementTestCase> createStatisticsTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-subscription")
+    private final List<PostgreSQLCreateSubscriptionStatementTestCase> createSubscriptionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-user-mapping")
+    private final List<PostgreSQLCreateUserMappingStatementTestCase> createUserMappingTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-user-mapping")
+    private final List<PostgreSQLAlterUserMappingStatementTestCase> alterUserMappingTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-user-mapping")
+    private final List<PostgreSQLDropUserMappingStatementTestCase> dropUserMappingTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-transform")
+    private final List<PostgreSQLCreateTransformStatementTestCase> createTransformTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-large-object")
+    private final List<PostgreSQLAlterLargeObjectStatementTestCase> alterLargeObjectTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-operator-class")
+    private final List<PostgreSQLCreateOperatorClassStatementTestCase> createOperatorClassTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-operator-class")
+    private final List<PostgreSQLAlterOperatorClassStatementTestCase> alterOperatorClassTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-operator-family")
+    private final List<PostgreSQLCreateOperatorFamilyStatementTestCase> createOperatorFamilyTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-operator-family")
+    private final List<PostgreSQLAlterOperatorFamilyStatementTestCase> alterOperatorFamilyTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-event-trigger")
+    private final List<PostgreSQLAlterEventTriggerStatementTestCase> alterEventTriggerTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "import-foreign-schema")
+    private final List<PostgreSQLImportForeignSchemaStatementTestCase> importForeignSchemaTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-function")
     private final List<CreateFunctionStatementTestCase> createFunctionTestCases = new LinkedList<>();
     
@@ -1089,39 +1132,6 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "plsql-block")
     private final List<OraclePLSQLBlockStatementTestCase> plsqlBlockTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "alter-event-trigger")
-    private final List<PostgreSQLAlterEventTriggerStatementTestCase> alterEventTriggerTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "alter-large-object")
-    private final List<PostgreSQLAlterLargeObjectStatementTestCase> alterLargeObjectTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "postgresql-alter-system")
-    private final List<PostgreSQLAlterSystemStatementTestCase> postgresqlAlterSystemTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "alter-user-mapping")
-    private final List<PostgreSQLAlterUserMappingStatementTestCase> alterUserMappingTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "create-subscription")
-    private final List<PostgreSQLCreateSubscriptionStatementTestCase> createSubscriptionTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "create-transform")
-    private final List<PostgreSQLCreateTransformStatementTestCase> createTransformTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "create-user-mapping")
-    private final List<PostgreSQLCreateUserMappingStatementTestCase> createUserMappingTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "drop-user-mapping")
-    private final List<PostgreSQLDropUserMappingStatementTestCase> dropUserMappingTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "create-operator-class")
-    private final List<PostgreSQLCreateOperatorClassStatementTestCase> createOperatorClassTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "create-operator-family")
-    private final List<PostgreSQLCreateOperatorFamilyStatementTestCase> createOperatorFamilyTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "create-statistics")
-    private final List<PostgreSQLCreateStatisticsStatementTestCase> createStatisticsTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-server")
     private final List<CreateServerStatementTestCase> createServerTestCases = new LinkedList<>();
@@ -1959,12 +1969,6 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "drop-type")
     private final List<PostgreSQLDropTypeStatementTestCase> dropTypeTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "alter-operator-class")
-    private final List<PostgreSQLAlterOperatorClassStatementTestCase> alterOperatorClassTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "alter-operator-family")
-    private final List<PostgreSQLAlterOperatorFamilyStatementTestCase> alterOperatorFamilyTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-operator-class")
     private final List<PostgreSQLDropOperatorClassStatementTestCase> dropOperatorClassTestCases = new LinkedList<>();
