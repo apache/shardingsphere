@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
@@ -88,10 +87,14 @@ public final class ProjectionsContextEngine {
         Collection<Projection> result = new LinkedList<>();
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderItems) {
-            if (!containsProjection(each.getSegment(), projections)) {
-                result.add(new DerivedProjection(((TextOrderByItemSegment) each.getSegment()).getText(), new IdentifierValue(derivedColumn.getDerivedColumnAlias(derivedColumnOffset++)),
-                        each.getSegment()));
+            if (containsProjection(each.getSegment(), projections)) {
+                continue;
             }
+            String expression = ((TextOrderByItemSegment) each.getSegment()).getText();
+            if (null == expression) {
+                continue;
+            }
+            result.add(new DerivedProjection(expression, new IdentifierValue(derivedColumn.getDerivedColumnAlias(derivedColumnOffset++)), each.getSegment()));
         }
         return result;
     }
@@ -101,7 +104,9 @@ public final class ProjectionsContextEngine {
             return true;
         }
         String normalizedText = SQLUtils.getExactlyValue(((TextOrderByItemSegment) orderByItem).getText());
-        ShardingSpherePreconditions.checkNotNull(normalizedText, () -> new IllegalStateException("Order item text must not be null."));
+        if (null == normalizedText) {
+            return false;
+        }
         for (Projection each : projections) {
             if (orderByItem instanceof ColumnOrderByItemSegment && isSameColumn(each, ((ColumnOrderByItemSegment) orderByItem).getColumn(), normalizedText)) {
                 return true;
