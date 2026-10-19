@@ -68,10 +68,11 @@ public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolVa
         LocalDateTime dateTime;
         if (value instanceof LocalDate) {
             dateTime = ((LocalDate) value).atStartOfDay();
-        } else if (value instanceof Timestamp) {
-            dateTime = ((Timestamp) value).toLocalDateTime();
+        } else if (value instanceof LocalDateTime) {
+            dateTime = (LocalDateTime) value;
         } else {
-            dateTime = value instanceof LocalDateTime ? (LocalDateTime) value : new Timestamp(((Date) value).getTime()).toLocalDateTime();
+            Timestamp timestamp = value instanceof Timestamp ? (Timestamp) value : new Timestamp(((Date) value).getTime());
+            dateTime = timestamp.toLocalDateTime();
         }
         DateTimeValues values = buildDateTimeValues(dateTime);
         boolean isTimeAbsent = 0 == values.hours && 0 == values.minutes && 0 == values.seconds;
