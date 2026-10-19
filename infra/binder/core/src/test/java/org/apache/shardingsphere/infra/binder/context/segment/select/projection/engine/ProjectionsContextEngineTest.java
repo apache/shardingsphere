@@ -46,7 +46,7 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProjectionsContextEngineTest {
     
@@ -186,8 +186,7 @@ class ProjectionsContextEngineTest {
         OrderByItem orderByItem = new OrderByItem(new ExpressionOrderByItemSegment(0, 0, null, OrderDirection.ASC, NullsOrderType.FIRST));
         ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
         ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.singleton(orderByItem), false));
-        assertThat(actual.getProjections().size(), is(2));
-        assertNull(Iterables.getLast(actual.getProjections()).getExpression());
+        assertThat(Iterables.getOnlyElement(actual.getProjections()).getExpression(), is("*"));
     }
     
     @Test
@@ -197,8 +196,7 @@ class ProjectionsContextEngineTest {
         OrderByItem groupByItem = new OrderByItem(new ExpressionOrderByItemSegment(0, 0, null, OrderDirection.ASC, NullsOrderType.FIRST));
         ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
         ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.singleton(groupByItem)), new OrderByContext(Collections.emptyList(), false));
-        assertThat(actual.getProjections().size(), is(2));
-        assertNull(Iterables.getLast(actual.getProjections()).getExpression());
+        assertThat(Iterables.getOnlyElement(actual.getProjections()).getExpression(), is("*"));
     }
     
     @Test
@@ -207,8 +205,7 @@ class ProjectionsContextEngineTest {
         OrderByItem orderByItem = new OrderByItem(new ExpressionOrderByItemSegment(0, 0, null, OrderDirection.ASC, NullsOrderType.FIRST));
         ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
         ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.singleton(orderByItem), false));
-        assertThat(actual.getProjections().size(), is(1));
-        assertNull(Iterables.getLast(actual.getProjections()).getExpression());
+        assertTrue(actual.getProjections().isEmpty());
     }
     
     @Test
