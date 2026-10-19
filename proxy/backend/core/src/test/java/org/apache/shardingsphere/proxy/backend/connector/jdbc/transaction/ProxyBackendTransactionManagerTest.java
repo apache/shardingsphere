@@ -315,15 +315,15 @@ class ProxyBackendTransactionManagerTest {
     }
     
     @Test
-    void assertCommitNotRefreshesDeferredMetaDataWhenUnderlyingCommitFailed() throws SQLException {
+    void assertCommitStillReconciliesDeferredMetaDataWhenUnderlyingCommitPartiallyFailed() throws SQLException {
         when(transactionStatus.isInTransaction()).thenReturn(true);
         when(ConnectionSavepointManager.getInstance()).thenReturn(mock(ConnectionSavepointManager.class));
         mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
         ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
         setLocalTransactionManager(transactionManager);
-        doThrow(new SQLException("commit failed")).when(localTransactionManager).commit();
+        doThrow(new SQLException("commit failed on one of several connections")).when(localTransactionManager).commit();
         assertThrows(SQLException.class, transactionManager::commit);
-        verify(deferredMetaDataRefreshContext, never()).reconcile(any());
+        verify(deferredMetaDataRefreshContext).reconcile(ProxyContext.getInstance().getContextManager());
         verify(deferredMetaDataRefreshContext).clear();
     }
     
