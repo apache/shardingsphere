@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.command.query.b
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -62,10 +63,13 @@ public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolVa
     }
     
     @Override
+    @HighFrequencyInvocation
     public void write(final MySQLPacketPayload payload, final Object value) {
         LocalDateTime dateTime;
         if (value instanceof LocalDate) {
             dateTime = ((LocalDate) value).atStartOfDay();
+        } else if (value instanceof Timestamp) {
+            dateTime = ((Timestamp) value).toLocalDateTime();
         } else {
             dateTime = value instanceof LocalDateTime ? (LocalDateTime) value : new Timestamp(((Date) value).getTime()).toLocalDateTime();
         }
