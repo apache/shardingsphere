@@ -433,7 +433,7 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
                     block.inactive = block.parentInactive || !block.unknown && block.matched;
                     block.elseBranch = true;
                 } else {
-                    int condition = readCondition(command.substring(name.length()).trim());
+                    int condition = block.matched ? 0 : readCondition(command.substring(name.length()).trim());
                     block.unknown |= condition < 0;
                     block.inactive = block.parentInactive || !block.unknown && (block.matched || 0 == condition);
                     block.matched |= !block.unknown && 1 == condition;
