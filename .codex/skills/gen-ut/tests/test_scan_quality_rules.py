@@ -83,12 +83,20 @@ class ScanQualityRulesTest(unittest.TestCase):
                 "module/src/test/java/foo/TargetTest.java: final class FooGroup {",
             ),
             (
-                "scenario-carrier",
+                "data-only-case",
                 "final FooCase value",
                 "target.run(value.input())",
                 "private record FooCase(int input, int expected) {}",
                 "+    private record FooCase(int input, int expected) {}",
                 "module/src/test/java/foo/TargetTest.java: private record FooCase(int input, int expected) {}",
+            ),
+            (
+                "assertion-callback-case",
+                "final FooCase value",
+                "value.assertion().accept(target.run(value.input()))",
+                "private record FooCase(int input, Consumer<Integer> assertion) {}",
+                "+    private record FooCase(int input, Consumer<Integer> assertion) {}",
+                "module/src/test/java/foo/TargetTest.java: private record FooCase(int input, Consumer<Integer> assertion) {}",
             ),
         )
         for name, parameter, invocation, declaration, added_line, expected_review in fixtures:
@@ -121,15 +129,21 @@ class ScanQualityRulesTest(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertEqual([], rules.check_r15_g(Path("TargetTest.java"), candidate_source, added_lines))
 
-    def test_ordinary_get_type_is_not_metadata_accessor_violation(self):
-        source = """
-            class TargetTest {
-                @Test void assertRecord() {
-                    assertThat(record.getType(), is(OperationType.INSERT));
-                }
-            }
-        """
-        self.assertEqual([], rules.find_metadata_accessor_test_candidates(Path("TargetTest.java"), source))
+    def test_test_value_review_is_independent_of_method_name(self):
+        path = Path("TargetTest.java")
+        for method_name in ("assertGetType", "assertGetOrder", "assertGetTypeClass", "assertRun"):
+            with self.subTest(method_name=method_name):
+                source = f"class TargetTest {{ @Test void {method_name}() {{ assertTrue(target.run()); }} }}"
+                context = rules.FileScanContext(
+                    path=path, source=source, method_bodies={}, method_blocks={}, candidates=[],
+                    target_type_name="Target", target_public_methods={"run"}, added_lines=[],
+                )
+                with patch.object(rules, "create_file_scan_context", return_value=context), patch.object(rules, "check_scope_baseline", return_value=[]):
+                    actual = rules.collect_scan_result([path], Path("scope.json"))
+                self.assertEqual("manual", actual["rules"]["R15-B"]["mode"])
+                self.assertEqual([], actual["rules"]["R15-B"]["violations"])
+                self.assertEqual([str(path)], actual["reviews"]["R15-B"])
+                self.assertEqual([], rules.failed_rule_names(actual))
 
     def test_boolean_dispatch_rule_reports_switch_review_candidate(self):
         source = '''
@@ -152,7 +166,7 @@ class ScanQualityRulesTest(unittest.TestCase):
                 self.assertEqual(1, len(actual))
                 self.assertIn("verify at least three actual argument sets", actual[0])
 
-    def test_business_switch_and_consumer_require_review_without_mechanical_rejection(self):
+    def test_branch_and_business_callback_candidates_require_review_without_mechanical_rejection(self):
         path = Path("TargetTest.java")
         source = '''
             class TargetTest {
@@ -169,8 +183,11 @@ class ScanQualityRulesTest(unittest.TestCase):
         with patch.object(rules, "create_file_scan_context", return_value=context), patch.object(rules, "check_scope_baseline", return_value=[]):
             actual = rules.collect_scan_result([path], Path("scope.json"))
         self.assertEqual([], rules.failed_rule_names(actual))
-        self.assertTrue(actual["reviews"]["R15-F"])
-        self.assertTrue(actual["reviews"]["R15-I"])
+        for rule in ("R15-F", "R15-I"):
+            with self.subTest(rule=rule):
+                self.assertEqual("manual", actual["rules"][rule]["mode"])
+                self.assertEqual([], actual["rules"][rule]["violations"])
+                self.assertTrue(actual["reviews"][rule])
 
     def test_repeated_test_is_an_entry_but_helper_still_fails_ownership_gate(self):
         source = '''

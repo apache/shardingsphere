@@ -3585,12 +3585,12 @@ required_actions = []
 allowed_actions = []
 forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "run_local_checks", "run_pre_handoff_review", "expand_frozen_boundary", "propose_commit_message"]
 required_reasons = ["read_only_request"]
-required_summary_terms = ["[NON_TRANSPORT]=allow", "[TRANSPORT]=reject", "[UNKNOWN]=review"]
-required_summary_prefix = "[NON_TRANSPORT]=allow; [TRANSPORT]=reject; [UNKNOWN]=review"
-max_summary_chars = 59
+required_summary_terms = ["[NON_TRANSPORT]=allow", "[TRANSPORT]=allow", "[UNKNOWN]=review"]
+required_summary_prefix = "[NON_TRANSPORT]=allow; [TRANSPORT]=allow; [UNKNOWN]=review"
+max_summary_chars = 58
 critical = true
 policy_binding_profile = "gen-ut"
-policy_assertions = [{source = "gen-ut", statements = ["`R15-G`: parameterized test changes add no nested transport type.", "Inspect each new nested-type candidate's purpose; a confirmed non-transport type is permitted, a transport type is prohibited, and unresolved purpose keeps the task at `R10-D`."]}, {source = "gen-ut-verification", statements = ["The scanner labels semantic or partly semantic rules as `semanticReviewRequired=true`. Resolve them through source inspection and record evidence; zero mechanical violations alone is not `R10-A`."]}]
+policy_assertions = [{source = "gen-ut", statements = ["`R15-G`: inspect each new nested-type candidate's role; a data-only holder or test grouping is not a violation by itself.", "When a type is used in argument sets, verify that it does not carry test steps or assertion callbacks under `CODE_OF_CONDUCT.md`.", "Unresolved role keeps the task at `R10-D`."]}, {source = "gen-ut-verification", statements = ["The scanner labels semantic or partly semantic rules as `semanticReviewRequired=true`. Resolve them through source inspection and record evidence; zero mechanical violations alone is not `R10-A`."]}]
 
 [[cases]]
 id = "issue_uses_applicable_component_first_party_evidence"
@@ -3695,7 +3695,7 @@ required_summary_prefix = "[MISSING_SCOPE_BASELINE]=block; [OUTSIDE_SCOPE_WRITE]
 max_summary_chars = 107
 critical = true
 policy_binding_profile = "gen-ut"
-policy_assertions = [{source = "gen-ut", statements = ["Edit only `<ResolvedTestFileSet>` under `src/test/java` or `src/test/resources`.", "Do not edit production, generated output, unrelated tests, or another file type.", "Capture `Task scope baseline` after resolving the file set and before editing.", "Any candidate-relevant changed path outside that set is a failure, including further mutation of a path already dirty at task start.", "Exclude only untracked or ignored reproducible verification outputs such as Maven `target/` and Python `__pycache__/`; they are not editable scope and must not be modified intentionally.", "Obtain explicit approval before expanding scope. Never use destructive Git operations.", "`R15-C`: compare the final worktree with `Task scope baseline`; any candidate-relevant out-of-scope mutation fails. Ignore only reproducible, untracked or Git-ignored verification outputs.", "`R10-A`: scope is clean; focused tests execute at least one test for the effective candidate; declared target coverage is met for every target and inner class; repository formatting/checkstyle gates pass; the full mechanical scan has no blocking violations under `R11`; semantic reviews and `R8` decisions are complete.", "`R15-G`: parameterized test changes add no nested transport type.", "Inspect each new nested-type candidate's purpose; a confirmed non-transport type is permitted, a transport type is prohibited, and unresolved purpose keeps the task at `R10-D`."]}, {source = "gen-ut-verification", statements = ["The scanner labels semantic or partly semantic rules as `semanticReviewRequired=true`. Resolve them through source inspection and record evidence; zero mechanical violations alone is not `R10-A`.", "Reuse a complete scan or focused coverage result only within the current task while its relevant sources, providers, configuration, tool version, execution filters, scope baseline, and required semantic evidence remain unchanged.", "Rerun checks invalidated by a relevant write, scope change, failure, or new evidence.", "A lightweight precheck is not a full scan and cannot establish scope compliance or `R10-A`.", "Use current focused coverage evidence for the effective candidate."]}]
+policy_assertions = [{source = "gen-ut", statements = ["Edit only `<ResolvedTestFileSet>` under `src/test/java` or `src/test/resources`.", "Do not edit production, generated output, unrelated tests, or another file type.", "Capture `Task scope baseline` after resolving the file set and before editing.", "Any candidate-relevant changed path outside that set is a failure, including further mutation of a path already dirty at task start.", "Exclude only untracked or ignored reproducible verification outputs such as Maven `target/` and Python `__pycache__/`; they are not editable scope and must not be modified intentionally.", "Obtain explicit approval before expanding scope. Never use destructive Git operations.", "`R15-C`: compare the final worktree with `Task scope baseline`; any candidate-relevant out-of-scope mutation fails. Ignore only reproducible, untracked or Git-ignored verification outputs.", "`R10-A`: scope is clean; focused tests execute at least one test for the effective candidate; declared target coverage is met for every target and inner class; repository formatting/checkstyle gates pass; the full mechanical scan has no blocking violations under `R11`; semantic reviews and `R8` decisions are complete.", "`R15-G`: inspect each new nested-type candidate's role; a data-only holder or test grouping is not a violation by itself.", "When a type is used in argument sets, verify that it does not carry test steps or assertion callbacks under `CODE_OF_CONDUCT.md`.", "Unresolved role keeps the task at `R10-D`."]}, {source = "gen-ut-verification", statements = ["The scanner labels semantic or partly semantic rules as `semanticReviewRequired=true`. Resolve them through source inspection and record evidence; zero mechanical violations alone is not `R10-A`.", "Reuse a complete scan or focused coverage result only within the current task while its relevant sources, providers, configuration, tool version, execution filters, scope baseline, and required semantic evidence remain unchanged.", "Rerun checks invalidated by a relevant write, scope change, failure, or new evidence.", "A lightweight precheck is not a full scan and cannot establish scope compliance or `R10-A`.", "Use current focused coverage evidence for the effective candidate."]}]
 
 [[cases]]
 id = "same_review_basis_has_same_assessment_across_candidate_types"
@@ -4462,7 +4462,7 @@ prompt = "Classify repository-wide Boolean assertions using only the bound rules
 required_summary_terms = ["[A]=allow", "[B]=reject", "[C]=reject"]
 required_summary_prefix = "[A]=allow; [B]=reject; [C]=reject"
 max_summary_chars = 33
-policy_assertions = [{source = "code-of-conduct", statements = ["Boolean assertions, including comparisons with variable expectations, must use `assertTrue` or `assertFalse`."]}]
+policy_assertions = [{source = "code-of-conduct", statements = ["Boolean assertions must use `assertTrue` or `assertFalse`."]}]
 
 [[cases]]
 group = "unit-test policy"
@@ -4483,7 +4483,7 @@ prompt = "Classify repository tests using only the bound rules. A has @Parameter
 required_summary_terms = ["[A]=allow", "[B]=reject", "[C]=reject", "[D]=allow"]
 required_summary_prefix = "[A]=allow; [B]=reject; [C]=reject; [D]=allow"
 max_summary_chars = 44
-policy_assertions = [{source = "code-of-conduct", statements = ["Use JUnit 5 `@Test` for standalone scenarios.", "For parameterized tests, provide display names via parameters and use `\"{0}\"` as the display-name template.", "Declare the first parameter of each parameterized test exactly as `final String name`.", "Provide at least three meaningful argument sets for each parameterized test.", "Use any standard JUnit argument source that supplies those argument sets."]}]
+policy_assertions = [{source = "code-of-conduct", statements = ["For parameterized tests, provide display names via parameters and use `\"{0}\"` as the display-name template.", "Declare the first parameter of each parameterized test exactly as `final String name`.", "Provide at least three meaningful argument sets for each parameterized test.", "Use any standard JUnit argument source that supplies those argument sets."]}]
 
 [[cases]]
 group = "unit-test policy"
@@ -4499,12 +4499,12 @@ required_reasons = ["read_only_request"]
 critical = true
 policy_binding_profile = "gen-ut"
 id = "repository_scenario_dispatch_and_repetition_purpose"
-description = "Distinguishes scenario dispatch from production inputs, necessary nested types and purposeful repetition."
-prompt = "Classify repository tests using only the bound rules. A passes a Consumer callback as the actual production API input. B uses Consumer callbacks from rows to choose assertions. C passes switch-containing source text as actual production parser input. D adds a nested record carrying scenario inputs and expected values. E adds a necessary nested type only to group test execution, carrying no scenario values or callbacks. F uses @RepeatedTest for an explicitly documented repeated-execution regression. G uses @RepeatedTest with no repeated-execution purpose. H adds if/else solely to select assertTrue versus assertFalse from a Boolean expected value. Do not inspect, execute checks or change anything. Return exactly eight assignments [A]=<allow|reject>; [B]=<allow|reject>; [C]=<allow|reject>; [D]=<allow|reject>; [E]=<allow|reject>; [F]=<allow|reject>; [G]=<allow|reject>; [H]=<allow|reject> in that order and no other text."
-required_summary_terms = ["[A]=allow", "[B]=reject", "[C]=allow", "[D]=reject", "[E]=allow", "[F]=allow", "[G]=reject", "[H]=reject"]
-required_summary_prefix = "[A]=allow; [B]=reject; [C]=allow; [D]=reject; [E]=allow; [F]=allow; [G]=reject; [H]=reject"
-max_summary_chars = 90
-policy_assertions = [{source = "code-of-conduct", statements = ["Use `@RepeatedTest` only when the test has an explicit purpose that requires repeated execution.", "Do not use `switch` or `Consumer` to dispatch test scenarios or assertions.", "Their use as actual inputs to the production behavior under test is permitted.", "Do not add nested types to transport test-scenario inputs, expected values, or assertion callbacks.", "Other nested types are permitted when they serve a required purpose.", "Do not add control flow whose only purpose is selecting `assertTrue` versus `assertFalse`."]}]
+description = "Keeps parameterized test flow common and distinguishes data holders from executable test steps and assertions."
+prompt = "Classify independent repository test changes using only the bound rules. A supplies a Consumer as an actual production API input; the test uses the same direct execution and assertion flow for every row, and the Consumer contains no test steps or assertions. B puts Runnable callbacks in argument rows to choose the production method invoked by each row. C passes switch-containing source text as actual production parser input. D adds a nested record carrying only scenario inputs and expected values for a common direct test flow. E adds a necessary nested type only to group tests; it is not used as an argument source or row value. F supplies three meaningful argument rows that share the same direct production call and assertion structure. G adds a nested row holder containing assertion callbacks that each row executes. H adds if/else solely to select assertNull versus a value-equality assertion. All other requirements are satisfied. Do not inspect, execute checks or change anything. Return exactly eight assignments [A]=<allow|reject>; [B]=<allow|reject>; [C]=<allow|reject>; [D]=<allow|reject>; [E]=<allow|reject>; [F]=<allow|reject>; [G]=<allow|reject>; [H]=<allow|reject> in that order and no other text."
+required_summary_terms = ["[A]=allow", "[B]=reject", "[C]=allow", "[D]=allow", "[E]=allow", "[F]=allow", "[G]=reject", "[H]=reject"]
+required_summary_prefix = "[A]=allow; [B]=reject; [C]=allow; [D]=allow; [E]=allow; [F]=allow; [G]=reject; [H]=reject"
+max_summary_chars = 89
+policy_assertions = [{source = "code-of-conduct", statements = ["Use the same execution and assertion flow for each argument set.", "Separate scenarios that require different test flows.", "Argument sources must not contain test steps or assertion callbacks.", "Do not add conditional branches whose only purpose is selecting an assertion method."]}]
 
 [[cases]]
 group = "unit-test policy"
@@ -4520,9 +4520,9 @@ required_reasons = ["read_only_request"]
 critical = true
 policy_binding_profile = "gen-ut"
 id = "repository_metadata_exclusions_precede_coverage"
-description = "Requires explicit requests for restricted method names even when they own behavior."
-prompt = "Classify new repository tests using only the bound rules. A adds a test for a behavior-owning public getType method solely to satisfy general coverage obligations; the user has not explicitly requested that method. B adds a getOrder test after the user explicitly requests that method. C adds a getTypeClass test without an explicit request. All other gates are satisfied. Do not inspect, execute checks or change anything. Return exactly three assignments [A]=<allow|reject>; [B]=<allow|reject>; [C]=<allow|reject> in that order and no other text."
-required_summary_terms = ["[A]=reject", "[B]=allow", "[C]=reject"]
-required_summary_prefix = "[A]=reject; [B]=allow; [C]=reject"
-max_summary_chars = 33
-policy_assertions = [{source = "code-of-conduct", statements = ["Do not add tests for `getType`, `getOrder`, or `getTypeClass` unless explicitly requested."]}, {source = "testing-rules", statements = ["Apply the test-target exclusions in `CODE_OF_CONDUCT.md` before planning coverage; coverage obligations do not override those exclusions without the required explicit user request."]}]
+description = "Requires added tests to protect uncovered business rules or external contracts regardless of method name."
+prompt = "Classify new repository tests using only the bound rules. A adds a test for a getType method whose business rule chooses among types; that rule has no existing coverage and the user did not request the method by name. B tests a constant getOrder value that defines an otherwise uncovered documented external ordering contract. C only checks a generated getTypeClass field accessor with no business rule or uncovered external contract. D only checks that forward delegates to a collaborator; no business rule or uncovered external contract is protected. E checks an unrelated constant-returning method whose externally visible contract is already protected by another test. All other gates are satisfied. Do not inspect, execute checks or change anything. Return exactly five assignments [A]=<allow|reject>; [B]=<allow|reject>; [C]=<allow|reject>; [D]=<allow|reject>; [E]=<allow|reject> in that order and no other text."
+required_summary_terms = ["[A]=allow", "[B]=allow", "[C]=reject", "[D]=reject", "[E]=reject"]
+required_summary_prefix = "[A]=allow; [B]=allow; [C]=reject; [D]=reject; [E]=reject"
+max_summary_chars = 56
+policy_assertions = [{source = "code-of-conduct", statements = ["Add tests for constant returns, direct field access, or simple delegation only when they protect business rules or externally visible contracts that other tests do not cover."]}, {source = "testing-rules", statements = ["Apply the test-value guidance in `CODE_OF_CONDUCT.md` before planning coverage."]}]

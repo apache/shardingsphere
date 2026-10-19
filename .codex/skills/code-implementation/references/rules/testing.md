@@ -17,7 +17,7 @@
 
 # Testing Rules
 
-- Apply the test-target exclusions in `CODE_OF_CONDUCT.md` before planning coverage; coverage obligations do not override those exclusions without the required explicit user request.
+- Apply the test-value guidance in `CODE_OF_CONDUCT.md` before planning coverage.
 - For Maven source trees, only code under `src/main/**` may be the subject of a new or updated test.
 - Never create or update a test to cover code under `src/test/**`.
 - A change confined to `src/test/**` still requires applicable compilation and test execution, but it does not require additional test coverage.

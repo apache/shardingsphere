@@ -63,13 +63,13 @@ class FileScanContext:
 RULE_SPECS = (
     RuleSpec("R14", "boolean assertions require repository-standard source review", "manual"),
     RuleSpec("R15-A", "parameterization suitability requires semantic evidence", "manual"),
-    RuleSpec("R15-B", "metadata accessor candidates require request-scope review", "manual"),
+    RuleSpec("R15-B", "test value and owned or external contracts require source review", "manual"),
     RuleSpec("R15-C", "out-of-scope worktree mutation detected", "automated"),
     RuleSpec("R15-D", "each parameterized test requires at least three actual argument sets", "manual"),
-    RuleSpec("R15-F", "switch candidates require scenario-dispatch review", "manual"),
-    RuleSpec("R15-G", "added type declarations require nested scenario-transport review", "manual"),
+    RuleSpec("R15-F", "switch candidates require shared execution and assertion flow review", "manual"),
+    RuleSpec("R15-G", "added nested types require data or test behavior role review", "manual"),
     RuleSpec("R15-H", "boolean assertion control flow requires purpose review", "manual"),
-    RuleSpec("R15-I", "Consumer candidates require scenario-transport review", "manual"),
+    RuleSpec("R15-I", "Consumer candidates require business-input or test-behavior review", "manual"),
     RuleSpec("R15-J", "helper and provider target invocations require semantic ownership review", "hybrid"),
 )
 CONSUMER_TOKEN_PATTERN = re.compile(r"\bConsumer\s*(?:<|\b)")
@@ -617,16 +617,6 @@ def find_boolean_dispatch_candidates(path: Path, source: str) -> list[str]:
     return violations
 
 
-def find_metadata_accessor_test_candidates(path: Path, source: str) -> list[str]:
-    source = mask_java_non_code(source, False)
-    result = []
-    for match in TEST_METHOD_DECL_PATTERN.finditer(source):
-        method_name = match.group(2)
-        if any(method_name.startswith(f"assert{each}") for each in ("GetType", "GetOrder", "GetTypeClass")):
-            result.append(f"{path}:{line_number(source, match.start())} method={method_name}")
-    return result
-
-
 def create_file_scan_context(path: Path, scope_baseline: dict | None = None) -> FileScanContext:
     source = path.read_text(encoding="utf-8")
     method_blocks = parse_method_blocks(source)
@@ -680,7 +670,7 @@ def collect_scan_result(paths: list[Path], scope_baseline_path: Path | None) -> 
         "reviews": {
             "R14": [str(context.path) for context in contexts],
             "R15-A": [str(context.path) for context in contexts if not context.target_public_methods],
-            "R15-B": [each for context in contexts for each in find_metadata_accessor_test_candidates(context.path, context.source)],
+            "R15-B": [str(context.path) for context in contexts],
             "R15-D": [each for context in contexts for each in find_argument_source_reviews(context.path, context.source)],
             "R15-F": [each for context in contexts for each in find_switch_dispatch_candidates(context.path, context.source)],
             "R15-G": [each for context in contexts for each in check_r15_g(context.path, context.source, context.added_lines)],

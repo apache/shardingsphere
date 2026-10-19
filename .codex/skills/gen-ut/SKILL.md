@@ -71,7 +71,6 @@ Apply the Unit Testing Standards in [CODE_OF_CONDUCT.md](../../../CODE_OF_CONDUC
 
 - Exercise interface default methods with Mockito `CALLS_REAL_METHODS`.
 - Obtain SPI targets through the applicable project loader and keep the resolved instance as a test-class field by default. Record a concrete reason before bypassing the loader.
-- Check permission to add tests for the restricted method names in `CODE_OF_CONDUCT.md`.
 - Mock heavy dependencies and collaborator-owned decisions. Allow real simple values and explicitly scoped integration, contract, or E2E behavior.
 
 ### R7: Related tests
@@ -85,9 +84,9 @@ For each target public method, record `R8-CANDIDATES` with the method, candidate
 
 1. target method and branch skeleton are consistent;
 2. differences are mainly input data;
-3. assertion skeleton is consistent or differences are explicitly declared;
+3. execution and assertion flow is shared;
 4. the group meets the minimum scenario count in `CODE_OF_CONDUCT.md`;
-5. no `switch` dispatch is required.
+5. argument sources contain no test steps or assertion callbacks.
 
 Collaborator-owned differences are not high-fit. Refactor high-fit candidates; otherwise record the concrete reason.
 Use `KEEP` only when a genuinely high-fit refactor would materially reduce readability or diagnosis.
@@ -140,16 +139,18 @@ Apply the Boolean assertion standard in `CODE_OF_CONDUCT.md` to literal, constan
 ### R15: Delivery gates
 
 - `R15-A`: complete the semantic `R8` decision; the scanner cannot infer high-fit.
-- `R15-B`: confirm any metadata-accessor candidate was explicitly requested; the scanner only reports likely candidates.
+- `R15-B`: review every test against the test-value rule in `CODE_OF_CONDUCT.md`; method names do not decide whether a test is permitted.
 - `R15-C`: compare the final worktree with `Task scope baseline`; any candidate-relevant out-of-scope mutation fails. Ignore only reproducible,
   untracked or Git-ignored verification outputs.
 - `R15-D`: verify each parameterized test's argument source and actual case count against `CODE_OF_CONDUCT.md`; inspect external, unresolved, or dynamic sources manually.
 - `R15-E`: verify the first parameter against the parameterized-test signature rule in `CODE_OF_CONDUCT.md`.
-- `R15-F`: inspect each `switch` candidate under the scenario-dispatch rule in `CODE_OF_CONDUCT.md`.
-- `R15-G`: parameterized test changes add no nested transport type.
-  Inspect each new nested-type candidate's purpose; a confirmed non-transport type is permitted, a transport type is prohibited, and unresolved purpose keeps the task at `R10-D`.
+- `R15-F`: inspect each `switch` candidate against the shared execution and assertion flow requirement in `CODE_OF_CONDUCT.md`.
+- `R15-G`: inspect each new nested-type candidate's role; a data-only holder or test grouping is not a violation by itself.
+  When a type is used in argument sets, verify that it does not carry test steps or assertion callbacks under `CODE_OF_CONDUCT.md`.
+  Unresolved role keeps the task at `R10-D`.
 - `R15-H`: review Boolean assertions under `R14` and resolve assertion-dispatch candidates against `CODE_OF_CONDUCT.md`.
-- `R15-I`: inspect `Consumer` uses against the scenario-dispatch rule in `CODE_OF_CONDUCT.md`; inspect external, unresolved, or dynamic argument sources manually.
+- `R15-I`: inspect callback candidates and argument sources for test steps or assertion callbacks under `CODE_OF_CONDUCT.md`; business callback inputs are permitted.
+  Inspect external, unresolved, or dynamic argument sources manually.
 - `R15-J`: helpers and providers do not invoke target public methods. Treat scanner results as partial evidence and inspect unresolved ownership manually.
 
 ## Workflow
