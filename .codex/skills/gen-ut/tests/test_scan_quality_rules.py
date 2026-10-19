@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+import io
 import json
 import subprocess
 import sys
@@ -202,6 +203,39 @@ class ScanQualityRulesTest(unittest.TestCase):
         source = "class TargetTest {}"
         actual = rules.resolve_target_source_path(Path("src/test/java/sample/TargetTest.java"), source)
         self.assertEqual(Path("src/main/java/sample/Target.java"), actual)
+
+    def test_json_precedes_summary(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "TargetTest.java"
+            path.write_text("class TargetTest {}", encoding="utf-8")
+            with (
+                patch.object(sys, "argv", ["scan", "--json", "--summary-only", str(path)]),
+                patch.object(sys, "stdout", new_callable=io.StringIO) as stdout,
+            ):
+                actual = rules.main()
+        result = json.loads(stdout.getvalue())
+        self.assertEqual(1, actual)
+        self.assertEqual(["candidates", "java_file_count", "reviews", "rules"], list(result))
+        self.assertEqual(["missing scope baseline"], result["rules"]["R15-C"]["violations"])
+        self.assertEqual(1, result["java_file_count"])
+        self.assertEqual(json.dumps(result, indent=2, sort_keys=True) + "\n", stdout.getvalue())
+
+    def test_capture_precedes_report_flags(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            baseline = repo_root / "scope.json"
+            path = repo_root / "TargetTest.java"
+            with (
+                patch.object(sys, "argv", ["scan", "--capture-scope-baseline", str(baseline), "--json", "--summary-only", str(path)]),
+                patch.object(sys, "stdout", new_callable=io.StringIO) as stdout,
+                patch.object(rules, "get_repo_root", return_value=repo_root),
+                patch.object(rules, "write_scope_baseline") as write_baseline,
+                patch.object(rules, "collect_scan_result", side_effect=AssertionError("scan requested")),
+            ):
+                actual = rules.main()
+            write_baseline.assert_called_once_with(baseline, repo_root, [path])
+        self.assertEqual(0, actual)
+        self.assertEqual(f"[scope-baseline] path={baseline.resolve()} allowedPathCount=1\n", stdout.getvalue())
 
     def test_scope_baseline_detects_change_to_preexisting_dirty_file(self):
         with tempfile.TemporaryDirectory() as temp_dir:

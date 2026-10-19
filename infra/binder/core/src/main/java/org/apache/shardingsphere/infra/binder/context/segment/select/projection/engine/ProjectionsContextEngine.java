@@ -87,10 +87,14 @@ public final class ProjectionsContextEngine {
         Collection<Projection> result = new LinkedList<>();
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderItems) {
-            if (!containsProjection(each.getSegment(), projections)) {
-                result.add(new DerivedProjection(((TextOrderByItemSegment) each.getSegment()).getText(), new IdentifierValue(derivedColumn.getDerivedColumnAlias(derivedColumnOffset++)),
-                        each.getSegment()));
+            if (containsProjection(each.getSegment(), projections)) {
+                continue;
             }
+            String expression = ((TextOrderByItemSegment) each.getSegment()).getText();
+            if (null == expression) {
+                continue;
+            }
+            result.add(new DerivedProjection(expression, new IdentifierValue(derivedColumn.getDerivedColumnAlias(derivedColumnOffset++)), each.getSegment()));
         }
         return result;
     }
