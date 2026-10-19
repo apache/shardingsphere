@@ -45,6 +45,12 @@ class ShardingPlanningRequestBinderTest {
     }
     
     @Test
+    void assertBindTableRuleWithAuditorSeparators() {
+        ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindTableRule(Map.of("auditors", " , foo_auditor, ,bar_auditor, "));
+        assertThat(actual.getAuditorNames(), is(List.of("foo_auditor", "bar_auditor")));
+    }
+    
+    @Test
     void assertBindTableReferenceRule() {
         ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindTableReferenceRule(Map.of(
                 "database", "logic_db", "rule", "ref_rule", "reference_tables", "t_order,t_order_item"));

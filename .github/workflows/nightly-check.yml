@@ -193,7 +193,10 @@ jobs:
           name: jacoco-report
           path: ${{ github.workspace }}/target/mergeReport/jacoco
       - name: Verify MCP Coverage
-        run: ./mvnw -f mcp/pom.xml jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false -Djacoco.check.class.pattern='org.apache.shardingsphere.mcp.*'
+        run: |
+          test -s '${{ github.workspace }}/target/mergeExecFile/merge.exec' &&
+          ./mvnw -f mcp/pom.xml jacoco:check@jacoco-check -Pcoverage-check -Djacoco.skip=false \
+            -Djacoco.dataFile='${{ github.workspace }}/target/mergeExecFile/merge.exec' -Djacoco.check.class.pattern='org.apache.shardingsphere.mcp.*'
 
   check-and-report-sonarcloud:
     if: ${{ !cancelled() && github.repository == 'apache/shardingsphere' && needs.check-and-report-jacoco.outputs.report-outcome == 'success' }}
