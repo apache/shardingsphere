@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
@@ -57,6 +58,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Al
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterSubscriptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterSystemContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTablespaceContext;
@@ -76,6 +78,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Cl
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnrefContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommentContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CountContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateAccessMethodContext;
@@ -221,7 +224,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Ren
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.NameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
@@ -295,6 +297,7 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLA
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterLargeObjectStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterOperatorClassStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterOperatorFamilyStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterUserMappingStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLClusterStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateOperatorClassStatement;
@@ -768,20 +771,20 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
                 result.getValue().add(new ColumnSegment(each.colId().start.getStartIndex(), each.colId().stop.getStopIndex(), createIdentifierValue(each.colId().getText())));
             }
             if (null != each.functionExprWindowless()) {
-                ExpressionSegment expression = (ExpressionSegment) visit(each.functionExprWindowless());
-                if (expression instanceof TypeCastExpression) {
-                    result.getValue().addAll(ColumnExtractor.extract(expression));
-                    continue;
-                }
-                FunctionSegment functionSegment = (FunctionSegment) expression;
-                functionSegment.getParameters().forEach(param -> {
-                    if (param instanceof ColumnSegment) {
-                        result.getValue().add((ColumnSegment) param);
-                    }
-                });
+                appendIndexExpressionColumns(each.functionExprWindowless(), result.getValue());
             }
         }
         return result;
+    }
+    
+    private void appendIndexExpressionColumns(final ParseTree expression, final Collection<ColumnSegment> columns) {
+        if (expression instanceof ColumnrefContext) {
+            columns.addAll(ColumnExtractor.extract((ExpressionSegment) visit(expression)));
+            return;
+        }
+        for (int index = 0; index < expression.getChildCount(); index++) {
+            appendIndexExpressionColumns(expression.getChild(index), columns);
+        }
     }
     
     @Override
@@ -926,6 +929,11 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     }
     
     @Override
+    public ASTNode visitAlterSystem(final AlterSystemContext ctx) {
+        return new PostgreSQLAlterSystemStatement(getDatabaseType());
+    }
+    
+    @Override
     public ASTNode visitAlterUserMapping(final AlterUserMappingContext ctx) {
         return new PostgreSQLAlterUserMappingStatement(getDatabaseType());
     }
@@ -1004,7 +1012,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         DropDatabaseStatement result = new DropDatabaseStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.name())).getValue(), null != ctx.ifExists());
-        result.setForce(null != ctx.FORCE());
+        result.setForce(null != ctx.LP_());
         return result;
     }
     

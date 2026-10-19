@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLA
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterLargeObjectStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterOperatorClassStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterOperatorFamilyStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterUserMappingStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLClusterStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateOperatorClassStatement;
@@ -78,6 +79,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLAlterLargeObjectStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLAlterOperatorClassStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLAlterOperatorFamilyStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLAlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLAlterUserMappingStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLClusterStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLCreateOperatorClassStatementTestCase;
@@ -175,6 +177,8 @@ public final class PostgreSQLDDLStatementAssert {
             assertThat(assertContext.getText("Create transform statement type assertion error."), actual, isA(PostgreSQLCreateTransformStatement.class));
         } else if (expected instanceof PostgreSQLAlterLargeObjectStatementTestCase) {
             assertThat(assertContext.getText("Alter large object statement type assertion error."), actual, isA(PostgreSQLAlterLargeObjectStatement.class));
+        } else if (expected instanceof PostgreSQLAlterSystemStatementTestCase) {
+            assertThat(assertContext.getText("Alter system statement type assertion error."), actual, isA(PostgreSQLAlterSystemStatement.class));
         } else if (expected instanceof PostgreSQLCreateStatisticsStatementTestCase) {
             assertThat(assertContext.getText("Create statistics statement type assertion error."), actual, isA(PostgreSQLCreateStatisticsStatement.class));
         } else if (expected instanceof PostgreSQLCreateSubscriptionStatementTestCase) {

@@ -332,4 +332,32 @@
     <grant sql-case-id="grant_role_option_keyword_postgresql" />
     <grant sql-case-id="grant_global_spaced_wildcard" />
     <grant sql-case-id="grant_database_spaced_wildcard" />
+
+    <grant sql-case-id="grant_maintain_pg">
+        <table name="t" start-index="18" stop-index="18" />
+    </grant>
+
+    <grant sql-case-id="grant_maintain_multiple_pg">
+        <table name="t" start-index="32" stop-index="34">
+            <owner name="s" start-index="32" stop-index="32" />
+        </table>
+    </grant>
+
+    <grant sql-case-id="grant_named_privilege_pg">
+        <table name="t" start-index="26" stop-index="26" />
+    </grant>
+
+    <grant sql-case-id="grant_granted_by_pg">
+        <table name="t" start-index="16" stop-index="16" />
+    </grant>
+
+    <grant sql-case-id="grant_select_privilege_control_pg">
+        <table name="t" start-index="16" stop-index="16" />
+    </grant>
+    <grant sql-case-id="grant_role_privilege_control_pg" />
+    <grant sql-case-id="grant_role_admin_true_pg" />
+    <grant sql-case-id="grant_role_admin_false_pg" />
+    <grant sql-case-id="grant_role_inherit_set_pg" />
+    <grant sql-case-id="grant_role_options_grantor_pg" />
+    <grant sql-case-id="grant_role_admin_option_control_pg" />
 </sql-parser-test-cases>

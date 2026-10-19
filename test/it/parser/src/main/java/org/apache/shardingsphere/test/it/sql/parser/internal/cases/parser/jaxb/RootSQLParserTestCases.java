@@ -257,6 +257,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLAlterLargeObjectStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLAlterOperatorClassStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLAlterOperatorFamilyStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLAlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLAlterUserMappingStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLClusterStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLCreateOperatorClassStatementTestCase;
@@ -1080,6 +1081,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "create-dimension")
     private final List<OracleCreateDimensionStatementTestCase> createDimensionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "postgresql-alter-system")
+    private final List<PostgreSQLAlterSystemStatementTestCase> postgresqlAlterSystemTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-statistics")
     private final List<PostgreSQLCreateStatisticsStatementTestCase> createStatisticsTestCases = new LinkedList<>();

@@ -196,6 +196,16 @@ execute
     | alterTrigger
     | createPublication
     | checkpoint
+    | alterEventTrigger
+    | alterLargeObject
+    | alterSystem
+    | alterUserMapping
+    | createSubscription
+    | createTransform
+    | createUserMapping
+    | dropUserMapping
+    | createOperatorClass
+    | createOperatorFamily
     | emptyStatement
     | open
     ) SEMI_? EOF

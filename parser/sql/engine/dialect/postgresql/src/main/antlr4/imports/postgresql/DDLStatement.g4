@@ -128,7 +128,7 @@ columnElem
     ;
 
 dropDatabase
-    : DROP DATABASE ifExists? name (WITH? LP_ FORCE RP_)?
+    : DROP DATABASE ifExists? name (WITH? LP_ FORCE (COMMA_ FORCE)* RP_)?
     ;
 
 dropGroup
@@ -445,7 +445,7 @@ modifyColumnSpecification
     | modifyColumn DROP IDENTITY ifExists?
     | modifyColumn SET STATISTICS NUMBER_
     | modifyColumn SET LP_ attributeOptions RP_
-    | modifyColumn RESET LP_ attributeOptions RP_
+    | modifyColumn RESET reloptions
     | modifyColumn SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN | DEFAULT)
     ;
 
@@ -1051,7 +1051,8 @@ alterPublication
     ( RENAME TO name
     | OWNER TO roleSpec
     | SET definition
-    | (ADD | SET | DROP) publicationObjectList)
+    | (ADD | DROP) publicationObjectList
+    | SET (publicationObjectList | publicationAllObjectList))
     ;
 
 alterRoutine
@@ -1511,11 +1512,11 @@ sqlRoutineBodyStatement
     ;
 
 createPublication
-    : CREATE PUBLICATION name publicationForTables?	(WITH definition)?
+    : CREATE PUBLICATION name publicationForTables? (WITH definition)?
     ;
 
 publicationForTables
-    : FOR publicationObjectList | FOR ALL TABLES
+    : FOR (publicationObjectList | publicationAllObjectList)
     ;
 
 publicationObjectList
@@ -1533,6 +1534,15 @@ publicationTable
 
 publicationSchema
     : colId | CURRENT_SCHEMA
+    ;
+
+publicationAllObjectList
+    : publicationAllObject (COMMA_ publicationAllObject)*
+    ;
+
+publicationAllObject
+    : ALL TABLES (EXCEPT LP_ TABLE relationExpr (COMMA_ TABLE? relationExpr)* RP_)?
+    | ALL SEQUENCES
     ;
 
 createRule
@@ -1636,7 +1646,7 @@ createStatistics
     ;
 
 createSubscription
-    : CREATE SUBSCRIPTION name CONNECTION STRING_ PUBLICATION publicationNameList (WITH definition)?
+    : CREATE SUBSCRIPTION name (CONNECTION STRING_ | SERVER name) PUBLICATION publicationNameList (WITH definition)?
     ;
 
 createTablespace
@@ -2068,6 +2078,7 @@ privilegeType
     | EXECUTE
     | USAGE
     | ALL PRIVILEGES?
+    | colId
     ;
 
 alterSchema

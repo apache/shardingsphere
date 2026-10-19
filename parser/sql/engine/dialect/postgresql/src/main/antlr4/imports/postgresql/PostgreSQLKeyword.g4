@@ -1521,6 +1521,14 @@ DESCRIPTOR
     : D E S C R I P T O R
     ;
 
+ATOMIC
+    : A T O M I C
+    ;
+
+RETURN
+    : R E T U R N
+    ;
+
 SOURCE
     : S O U R C E
     ;

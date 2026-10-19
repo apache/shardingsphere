@@ -138,6 +138,7 @@ unreservedWord
     | ASSIGNMENT
     | AT
     | ATTACH
+    | ATOMIC
     | ATTRIBUTE
     | BACKWARD
     | BEFORE
@@ -377,6 +378,7 @@ unreservedWord
     | REPLACE
     | REPLICA
     | RESET
+    | RETURN
     | RESTART
     | RESTRICT
     | RETURN
@@ -507,6 +509,7 @@ unreservedWord
     | TABLE
     | CONSTRAINT
     | COLLATION
+    | USAGE
     | SOURCE
     | TARGET
     ;
