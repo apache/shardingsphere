@@ -78,6 +78,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -103,6 +104,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -312,11 +314,39 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     
     private void deferMetaDataRefresh(final Collection<RouteUnit> routeUnits) {
         String defaultSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(database.getDefaultSchemaName()));
+        Map<SimpleTableSegment, SimpleTableSegment> renameSchemaSources = getRenameSchemaSources();
         for (SimpleTableSegment each : queryContext.getSqlStatementContext().getTablesContext().getSimpleTables()) {
             IdentifierValue tableName = each.getTableName().getIdentifier();
-            String schemaName = getBoundSchemaName(each).map(optional -> SchemaRefreshUtils.getActualSchemaName(database, optional)).orElse(defaultSchemaName);
+            SimpleTableSegment schemaSource = renameSchemaSources.getOrDefault(each, each);
+            String schemaName = getBoundSchemaName(schemaSource).map(optional -> SchemaRefreshUtils.getActualSchemaName(database, optional)).orElse(defaultSchemaName);
             databaseConnectionManager.getDeferredMetaDataRefreshContext().add(database.getName(), schemaName, findLogicDataSourceName(routeUnits, tableName), tableName);
         }
+    }
+    
+    /**
+     * Get the rename-destination segments mapped to the table whose schema they inherit.
+     *
+     * <p>Renaming a table never changes its schema, but the parsed destination identifier is bound like any other
+     * unqualified table reference, which resolves it to the database's default schema instead of the source table's
+     * actual schema. The destination must therefore be reconciled under the source table's schema, not its own.</p>
+     *
+     * @return rename-destination segments mapped to their schema-defining source segment
+     */
+    private Map<SimpleTableSegment, SimpleTableSegment> getRenameSchemaSources() {
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+        if (sqlStatement instanceof AlterTableStatement) {
+            AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
+            return alterTableStatement.getRenameTable().<Map<SimpleTableSegment, SimpleTableSegment>>map(
+                    optional -> Collections.singletonMap(optional, alterTableStatement.getTable())).orElseGet(Collections::emptyMap);
+        }
+        if (sqlStatement instanceof RenameTableStatement) {
+            Map<SimpleTableSegment, SimpleTableSegment> result = new HashMap<>();
+            for (RenameTableDefinitionSegment each : ((RenameTableStatement) sqlStatement).getRenameTables()) {
+                result.put(each.getRenameTable(), each.getTable());
+            }
+            return result;
+        }
+        return Collections.emptyMap();
     }
     
     private Optional<IdentifierValue> getBoundSchemaName(final SimpleTableSegment tableSegment) {

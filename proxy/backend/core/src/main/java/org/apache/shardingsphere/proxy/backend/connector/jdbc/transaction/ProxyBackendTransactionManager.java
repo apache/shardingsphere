@@ -130,8 +130,8 @@ public final class ProxyBackendTransactionManager {
             } else {
                 distributedTransactionManager.commit(transactionContext.isExceptionOccur());
             }
-            connection.getDeferredMetaDataRefreshContext().reconcile(ProxyContext.getInstance().getContextManager());
         } finally {
+            connection.getDeferredMetaDataRefreshContext().reconcile(ProxyContext.getInstance().getContextManager());
             clear();
         }
     }
