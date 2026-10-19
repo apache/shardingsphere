@@ -87,14 +87,25 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Unit tests must exercise behavior through public APIs only. Reflection-based invocation of private members is forbidden. If tests must access fields via reflection, use `Plugins.getMemberAccessor()` and limit reflection to `Field` access only.
 - Tests that modify static state must restore the original state after each test.
 - Obtain SPI implementations through the project loader by default. If the class under test implements `TypedSPI` or `DatabaseTypedSPI`, instantiate it through `TypedSPILoader` or `DatabaseTypedSPILoader`, not with `new`.
+- Do not add tests for `getType`, `getOrder`, or `getTypeClass` unless explicitly requested.
 - Every unit-test class must directly test a corresponding production class and be named `<ProductionClassName>Test`, using the exact simple name of the production class. This class-name rule is mandatory and is independent of scenario-focused test-method naming.
 - When a production method is covered by only one test case, name that test method `assert<MethodName>` without extra suffixes, and prefer isolating one public production method per dedicated test method; when practical, keep test method ordering aligned with the corresponding production methods.
+- Use JUnit 5 `@Test` for standalone scenarios.
+- Use `@RepeatedTest` only when the test has an explicit purpose that requires repeated execution.
 - For parameterized tests, provide display names via parameters and use `"{0}"` as the display-name template.
+- Declare the first parameter of each parameterized test exactly as `final String name`.
+- Provide at least three meaningful argument sets for each parameterized test.
+- Use any standard JUnit argument source that supplies those argument sets.
+- Do not use `switch` or `Consumer` to dispatch test scenarios or assertions.
+  Their use as actual inputs to the production behavior under test is permitted.
+- Do not add nested types to transport test-scenario inputs, expected values, or assertion callbacks.
+  Other nested types are permitted when they serve a required purpose.
 - Keep test names concise and scenario-focused; avoid `ReturnsXXX` and wording that restates the expected result instead of naming the scenario.
 - Assertions must directly express the tested contract. Use `not` or `containsString` only when the contract requires inequality or substring matching; do not use them when an exact value or a more specific matcher is available.
 - Default to direct Mockito mocks. Use a private helper only for repeated local setup and a standalone fixture only for a stable external or packaged test boundary. Give fixtures the narrowest practical visibility, keep them in the nearest owning test package or module, and do not create cross-module test APIs for convenience. Delete or inline thin mock wrappers.
 - Data assertion standards should follow:
-   - Boolean type assertions should use `assertTrue` and `assertFalse`;
+   - Boolean assertions, including comparisons with variable expectations, must use `assertTrue` or `assertFalse`.
+   - Do not add control flow whose only purpose is selecting `assertTrue` versus `assertFalse`.
    - Null value assertions should use `assertNull` and `assertNotNull`;
    - Non-boolean, non-null value equality assertions must use `assertThat(actual, is(expected))`;
    - Type assertions must use `assertThat(actual, isA(ExpectedType.class))`;

@@ -67,9 +67,7 @@ class ScanQualityRulesTest(unittest.TestCase):
                 }
             }
         """
-        method_bodies = {name: body for name, (_, body) in rules.parse_method_blocks(source).items()}
-        self.assertEqual([], rules.check_r15_d(Path("TargetTest.java"), source, method_bodies))
-        reviews = rules.find_unresolved_method_sources(Path("TargetTest.java"), source, method_bodies)
+        reviews = rules.find_argument_source_reviews(Path("TargetTest.java"), source)
         self.assertEqual(1, len(reviews))
 
     def test_nested_type_declarations_require_manual_review(self):
@@ -132,24 +130,7 @@ class ScanQualityRulesTest(unittest.TestCase):
         """
         self.assertEqual([], rules.find_metadata_accessor_test_candidates(Path("TargetTest.java"), source))
 
-    def test_boolean_rule_ignores_comments_and_literals(self):
-        source = '''
-            class TargetTest {
-                // assertEquals(true, target.run());
-                String example = "assertThat(value, is(false))";
-            }
-        '''
-        self.assertEqual([], rules.check_r14(Path("TargetTest.java"), source))
-
-    def test_boolean_rule_detects_code(self):
-        source = "class TargetTest { @Test void assertRun() { assertEquals(true, target.run()); } }"
-        self.assertEqual(["TargetTest.java:1"], rules.check_r14(Path("TargetTest.java"), source))
-
-    def test_parameterized_name_rule_ignores_comment(self):
-        source = "// @ParameterizedTest\nclass TargetTest {}"
-        self.assertEqual([], rules.check_parameterized_name(Path("TargetTest.java"), source))
-
-    def test_boolean_dispatch_rule_detects_switch(self):
+    def test_boolean_dispatch_rule_reports_switch_review_candidate(self):
         source = '''
             class TargetTest {
                 @Test void assertRun() {
@@ -160,7 +141,62 @@ class ScanQualityRulesTest(unittest.TestCase):
                 }
             }
         '''
-        self.assertEqual(["TargetTest.java:3 method=assertRun"], rules.check_r15_h(Path("TargetTest.java"), source))
+        self.assertEqual(["TargetTest.java:3 method=assertRun"], rules.find_boolean_dispatch_candidates(Path("TargetTest.java"), source))
+
+    def test_standard_argument_sources_require_actual_row_count_review(self):
+        for annotation in ('@CsvSource({"foo,1", "bar,2", "baz,3"})', '@ValueSource(strings = {"foo", "bar", "baz"})', '@MethodSource("cases")'):
+            with self.subTest(annotation=annotation):
+                source = f'@ParameterizedTest(name = "{{0}}") {annotation} void assertRun(final String name) {{ target.run(name); }}'
+                actual = rules.find_argument_source_reviews(Path("TargetTest.java"), source)
+                self.assertEqual(1, len(actual))
+                self.assertIn("verify at least three actual argument sets", actual[0])
+
+    def test_business_switch_and_consumer_require_review_without_mechanical_rejection(self):
+        path = Path("TargetTest.java")
+        source = '''
+            class TargetTest {
+                @ParameterizedTest(name = "{0}")
+                @MethodSource("cases")
+                void assertRun(final String name, final Consumer<String> callback) {
+                    switch (name) { case "foo" -> target.run(callback); default -> target.close(); }
+                }
+            }
+        '''
+        blocks = rules.parse_method_blocks(source)
+        context = rules.FileScanContext(path=path, source=source, method_bodies={name: body for name, (_, body) in blocks.items()},
+                                        method_blocks=blocks, candidates=[], target_type_name="Target", target_public_methods={"run", "close"}, added_lines=[])
+        with patch.object(rules, "create_file_scan_context", return_value=context), patch.object(rules, "check_scope_baseline", return_value=[]):
+            actual = rules.collect_scan_result([path], Path("scope.json"))
+        self.assertEqual([], rules.failed_rule_names(actual))
+        self.assertTrue(actual["reviews"]["R15-F"])
+        self.assertTrue(actual["reviews"]["R15-I"])
+
+    def test_repeated_test_is_an_entry_but_helper_still_fails_ownership_gate(self):
+        source = '''
+            class TargetTest {
+                @RepeatedTest(3)
+                void assertRepeatedExecution() {
+                    final Target target = new Target();
+                    assertTrue(target.run());
+                }
+                private boolean runHelper() {
+                    final Target target = new Target();
+                    return target.run();
+                }
+            }
+        '''
+        with tempfile.TemporaryDirectory() as temp_dir:
+            test_path = Path(temp_dir) / "module/src/test/java/sample/TargetTest.java"
+            target_path = Path(temp_dir) / "module/src/main/java/sample/Target.java"
+            test_path.parent.mkdir(parents=True)
+            target_path.parent.mkdir(parents=True)
+            test_path.write_text(source, encoding="utf-8")
+            target_path.write_text("class Target {\n    public boolean run() { return true; }\n}\n", encoding="utf-8")
+            with patch.object(rules, "check_scope_baseline", return_value=[]):
+                actual = rules.collect_scan_result([test_path], Path(temp_dir) / "scope.json")
+            violations = actual["rules"]["R15-J"]["violations"]
+            self.assertEqual(1, len(violations))
+            self.assertIn("method=runHelper reason=helperInvokesTargetPublicMethod", violations[0])
 
     def test_resolve_target_source_path_for_root_module(self):
         source = "class TargetTest {}"

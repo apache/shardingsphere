@@ -339,7 +339,7 @@ id = "gen-ut-verification"
 path = ".codex/skills/gen-ut/references/verification.md"
 kind = "verification"
 semantic = true
-references = [".codex/context/token-efficiency.md", ".codex/skills/code-implementation/references/verification.md"]
+references = [".codex/context/token-efficiency.md", ".codex/skills/code-implementation/references/verification.md", "CODE_OF_CONDUCT.md"]
 
 [[sources]]
 id = "review-pr"

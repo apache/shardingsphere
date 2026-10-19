@@ -4442,3 +4442,87 @@ forbidden_summary_terms = ["A=start-code-fix", "B=skip-confirmation-after-fix", 
 critical = true
 policy_binding_profile = "review-pr"
 policy_assertions = [{source = "review-pr-coordination", statements = ["This procedure is the shared review-confirmation route for read-only reviews and the Formal Review invoked by [change-completion.md](../../../context/change-completion.md).", "That outer loop alone owns code changes, their verification and coding-task completion.", "A confirmed `Mergeable` or `Not Mergeable` completes a read-only review; the caller determines any further authorized action."]}, {source = "review-pr", statements = ["Keep this Skill review-only. The outer active implementation loop fixes safe in-scope findings and reruns Formal Review; scope expansion, architecture choices, and high-risk actions return to their existing authorization gates. This Skill never activates that loop.", "Record the current round's authorized files and change intents separately from the full cumulative task-owned candidate and affected behavior and contracts to review.", "A narrow fix authorization limits writes without shrinking that review scope or treating earlier task-owned changes as unrelated existing code."]}]
+
+[[cases]]
+group = "unit-test policy"
+phase = "read-only policy assessment"
+ordinary_loop = false
+profile = "gen-ut"
+semantic_policy_assertions = true
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "run_local_checks", "run_pre_handoff_review", "expand_frozen_boundary", "propose_commit_message"]
+required_reasons = ["read_only_request"]
+critical = true
+policy_binding_profile = "gen-ut"
+id = "repository_boolean_assertions_include_variable_expectations"
+description = "Applies Boolean assertion rules beyond the unit-test generation skill."
+prompt = "Classify repository-wide Boolean assertions using only the bound rules. A uses assertTrue(expected == actual), where expected and actual are primitive booleans. B uses assertThat(actual, is(expected)) with the same booleans. C uses assertEquals(false, actual). Do not inspect, execute checks or change anything. Return exactly three assignments [A]=<allow|reject>; [B]=<allow|reject>; [C]=<allow|reject> in that order and no other text."
+required_summary_terms = ["[A]=allow", "[B]=reject", "[C]=reject"]
+required_summary_prefix = "[A]=allow; [B]=reject; [C]=reject"
+max_summary_chars = 33
+policy_assertions = [{source = "code-of-conduct", statements = ["Boolean assertions, including comparisons with variable expectations, must use `assertTrue` or `assertFalse`."]}]
+
+[[cases]]
+group = "unit-test policy"
+phase = "read-only policy assessment"
+ordinary_loop = false
+profile = "gen-ut"
+semantic_policy_assertions = true
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "run_local_checks", "run_pre_handoff_review", "expand_frozen_boundary", "propose_commit_message"]
+required_reasons = ["read_only_request"]
+critical = true
+policy_binding_profile = "gen-ut"
+id = "repository_parameterized_source_and_signature_contract"
+description = "Keeps standard JUnit sources while requiring meaningful rows, display names and the exact first parameter."
+prompt = "Classify repository tests using only the bound rules. A has @ParameterizedTest(name = \"{0}\"), first parameter final String name, and @CsvSource with three meaningful argument sets. B has the same declaration with only two meaningful rows. C has three meaningful rows but first parameter String name without final. D keeps two meaningful standalone JUnit 5 @Test cases instead of inventing a third row. Do not inspect, execute checks or change anything. Return exactly four assignments [A]=<allow|reject>; [B]=<allow|reject>; [C]=<allow|reject>; [D]=<allow|reject> in that order and no other text."
+required_summary_terms = ["[A]=allow", "[B]=reject", "[C]=reject", "[D]=allow"]
+required_summary_prefix = "[A]=allow; [B]=reject; [C]=reject; [D]=allow"
+max_summary_chars = 44
+policy_assertions = [{source = "code-of-conduct", statements = ["Use JUnit 5 `@Test` for standalone scenarios.", "For parameterized tests, provide display names via parameters and use `\"{0}\"` as the display-name template.", "Declare the first parameter of each parameterized test exactly as `final String name`.", "Provide at least three meaningful argument sets for each parameterized test.", "Use any standard JUnit argument source that supplies those argument sets."]}]
+
+[[cases]]
+group = "unit-test policy"
+phase = "read-only policy assessment"
+ordinary_loop = false
+profile = "gen-ut"
+semantic_policy_assertions = true
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "run_local_checks", "run_pre_handoff_review", "expand_frozen_boundary", "propose_commit_message"]
+required_reasons = ["read_only_request"]
+critical = true
+policy_binding_profile = "gen-ut"
+id = "repository_scenario_dispatch_and_repetition_purpose"
+description = "Distinguishes scenario dispatch from production inputs, necessary nested types and purposeful repetition."
+prompt = "Classify repository tests using only the bound rules. A passes a Consumer callback as the actual production API input. B uses Consumer callbacks from rows to choose assertions. C passes switch-containing source text as actual production parser input. D adds a nested record carrying scenario inputs and expected values. E adds a necessary nested type only to group test execution, carrying no scenario values or callbacks. F uses @RepeatedTest for an explicitly documented repeated-execution regression. G uses @RepeatedTest with no repeated-execution purpose. H adds if/else solely to select assertTrue versus assertFalse from a Boolean expected value. Do not inspect, execute checks or change anything. Return exactly eight assignments [A]=<allow|reject>; [B]=<allow|reject>; [C]=<allow|reject>; [D]=<allow|reject>; [E]=<allow|reject>; [F]=<allow|reject>; [G]=<allow|reject>; [H]=<allow|reject> in that order and no other text."
+required_summary_terms = ["[A]=allow", "[B]=reject", "[C]=allow", "[D]=reject", "[E]=allow", "[F]=allow", "[G]=reject", "[H]=reject"]
+required_summary_prefix = "[A]=allow; [B]=reject; [C]=allow; [D]=reject; [E]=allow; [F]=allow; [G]=reject; [H]=reject"
+max_summary_chars = 90
+policy_assertions = [{source = "code-of-conduct", statements = ["Use `@RepeatedTest` only when the test has an explicit purpose that requires repeated execution.", "Do not use `switch` or `Consumer` to dispatch test scenarios or assertions.", "Their use as actual inputs to the production behavior under test is permitted.", "Do not add nested types to transport test-scenario inputs, expected values, or assertion callbacks.", "Other nested types are permitted when they serve a required purpose.", "Do not add control flow whose only purpose is selecting `assertTrue` versus `assertFalse`."]}]
+
+[[cases]]
+group = "unit-test policy"
+phase = "read-only policy assessment"
+ordinary_loop = false
+profile = "gen-ut"
+semantic_policy_assertions = true
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "run_local_checks", "run_pre_handoff_review", "expand_frozen_boundary", "propose_commit_message"]
+required_reasons = ["read_only_request"]
+critical = true
+policy_binding_profile = "gen-ut"
+id = "repository_metadata_exclusions_precede_coverage"
+description = "Requires explicit requests for restricted method names even when they own behavior."
+prompt = "Classify new repository tests using only the bound rules. A adds a test for a behavior-owning public getType method solely to satisfy general coverage obligations; the user has not explicitly requested that method. B adds a getOrder test after the user explicitly requests that method. C adds a getTypeClass test without an explicit request. All other gates are satisfied. Do not inspect, execute checks or change anything. Return exactly three assignments [A]=<allow|reject>; [B]=<allow|reject>; [C]=<allow|reject> in that order and no other text."
+required_summary_terms = ["[A]=reject", "[B]=allow", "[C]=reject"]
+required_summary_prefix = "[A]=reject; [B]=allow; [C]=reject"
+max_summary_chars = 33
+policy_assertions = [{source = "code-of-conduct", statements = ["Do not add tests for `getType`, `getOrder`, or `getTypeClass` unless explicitly requested."]}, {source = "testing-rules", statements = ["Apply the test-target exclusions in `CODE_OF_CONDUCT.md` before planning coverage; coverage obligations do not override those exclusions without the required explicit user request."]}]

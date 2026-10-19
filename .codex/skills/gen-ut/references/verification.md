@@ -65,16 +65,17 @@ python3 .codex/skills/gen-ut/scripts/scan_quality_rules.py --json \
   <ResolvedTestFileSet>
 ```
 
+Retain the applicable repository Checkstyle report alongside the scanner baseline; Checkstyle owns Boolean-literal assertions and parameterized-test display-name and first-parameter syntax.
 Apply `R11` to baseline diagnostics rather than treating every nonzero scanner exit as a new blocking failure.
+New or task-relevant Checkstyle warnings block completion; only baseline-proven unchanged, unrelated diagnostics may remain non-blocking under `R11`.
 Read coverage counters and missed branch locations from the native JaCoCo XML and HTML reports.
 
 ## Edit-loop checks
 
-Run the structural precheck before an expensive build when signatures or parameterized-test structure changed:
+When signatures or parameterized-test structure change, run the owning module's repository Checkstyle check through the command wrapper:
 
 ```bash
-python3 .codex/skills/gen-ut/scripts/scan_quality_rules.py \
-  --precheck-only <ResolvedTestFileSet>
+./mvnw -pl <ResolvedTestModule> checkstyle:check -Pcheck
 ```
 
 Run focused tests after each coherent edit:
@@ -94,6 +95,9 @@ python3 .codex/skills/gen-ut/scripts/scan_quality_rules.py --json \
 
 The scanner labels semantic or partly semantic rules as `semanticReviewRequired=true`. Resolve them through source inspection and record evidence; zero mechanical violations alone is not `R10-A`.
 In JSON output, review the `manual` and `hybrid` rules and their `reviews` entries.
+Inspect actual argument sets for every standard JUnit source, including external or dynamic providers; source-code call counts do not prove executed row counts.
+Resolve `switch`, `Consumer`, nested-type, and assertion-control-flow candidates by their purpose under `CODE_OF_CONDUCT.md`.
+Review Boolean assertions with variable expectations from source because syntax-only checks cannot infer every expression's type.
 
 ## Final coverage
 

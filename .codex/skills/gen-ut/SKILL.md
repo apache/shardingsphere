@@ -44,10 +44,7 @@ Reading either Skill does not expand the user-authorized scope, file types, Git 
 
 ### R2: Test form and naming
 
-- Use JUnit 5 `@Test` for standalone scenarios.
-- Use `@ParameterizedTest(name = "{0}")`, `@MethodSource`, and `Arguments` for data-driven scenarios. Declare `final String name` first and provide at least three rows.
-- Do not use `@RepeatedTest`, `Consumer` as scenario transport, `switch` dispatch inside parameterized tests, or new nested transport types.
-- Follow repository test naming. A single test uniquely covering one public method is `assert<MethodName>`.
+Apply the Unit Testing Standards in [CODE_OF_CONDUCT.md](../../../CODE_OF_CONDUCT.md#unit-testing-standards) to test forms, naming, parameter sources, scenario dispatch, and nested types.
 
 ### R3: Change boundary
 
@@ -74,7 +71,7 @@ Reading either Skill does not expand the user-authorized scope, file types, Git 
 
 - Exercise interface default methods with Mockito `CALLS_REAL_METHODS`.
 - Obtain SPI targets through the applicable project loader and keep the resolved instance as a test-class field by default. Record a concrete reason before bypassing the loader.
-- Do not add tests for `getType`, `getOrder`, or `getTypeClass` unless explicitly requested.
+- Check permission to add tests for the restricted method names in `CODE_OF_CONDUCT.md`.
 - Mock heavy dependencies and collaborator-owned decisions. Allow real simple values and explicitly scoped integration, contract, or E2E behavior.
 
 ### R7: Related tests
@@ -89,7 +86,7 @@ For each target public method, record `R8-CANDIDATES` with the method, candidate
 1. target method and branch skeleton are consistent;
 2. differences are mainly input data;
 3. assertion skeleton is consistent or differences are explicitly declared;
-4. at least three scenarios exist;
+4. the group meets the minimum scenario count in `CODE_OF_CONDUCT.md`;
 5. no `switch` dispatch is required.
 
 Collaborator-owned differences are not high-fit. Refactor high-fit candidates; otherwise record the concrete reason.
@@ -138,8 +135,7 @@ Mark `R4=N/A (triggered by R12)` and retain the coverage command and report path
 
 ### R14: Boolean assertions
 
-Use `assertTrue`/`assertFalse` for literal or constant expectations and `assertThat(actual, is(expected))` for variable expectations.
-Do not use boolean `assertEquals`, boolean literals inside Hamcrest `is`, or control flow whose only purpose is selecting `assertTrue` versus `assertFalse`.
+Apply the Boolean assertion standard in `CODE_OF_CONDUCT.md` to literal, constant, and variable expectations.
 
 ### R15: Delivery gates
 
@@ -147,13 +143,13 @@ Do not use boolean `assertEquals`, boolean literals inside Hamcrest `is`, or con
 - `R15-B`: confirm any metadata-accessor candidate was explicitly requested; the scanner only reports likely candidates.
 - `R15-C`: compare the final worktree with `Task scope baseline`; any candidate-relevant out-of-scope mutation fails. Ignore only reproducible,
   untracked or Git-ignored verification outputs.
-- `R15-D`: every parameterized test uses `@MethodSource` with at least three `Arguments` rows. Inspect external providers manually.
-- `R15-E`: the first parameter is exactly `final String name`.
-- `R15-F`: parameterized bodies contain no `switch`.
+- `R15-D`: verify each parameterized test's argument source and actual case count against `CODE_OF_CONDUCT.md`; inspect external, unresolved, or dynamic sources manually.
+- `R15-E`: verify the first parameter against the parameterized-test signature rule in `CODE_OF_CONDUCT.md`.
+- `R15-F`: inspect each `switch` candidate under the scenario-dispatch rule in `CODE_OF_CONDUCT.md`.
 - `R15-G`: parameterized test changes add no nested transport type.
   Inspect each new nested-type candidate's purpose; a confirmed non-transport type is permitted, a transport type is prohibited, and unresolved purpose keeps the task at `R10-D`.
-- `R15-H`: boolean assertions obey `R14` without assertion-dispatch control flow.
-- `R15-I`: parameterized signatures and provider rows contain no `Consumer`; inspect external providers manually.
+- `R15-H`: review Boolean assertions under `R14` and resolve assertion-dispatch candidates against `CODE_OF_CONDUCT.md`.
+- `R15-I`: inspect `Consumer` uses against the scenario-dispatch rule in `CODE_OF_CONDUCT.md`; inspect external, unresolved, or dynamic argument sources manually.
 - `R15-J`: helpers and providers do not invoke target public methods. Treat scanner results as partial evidence and inspect unresolved ownership manually.
 
 ## Workflow
@@ -165,7 +161,7 @@ Do not use boolean `assertEquals`, boolean literals inside Hamcrest `is`, or con
 5. Decide `R12`; otherwise record the SUT/collaborator ownership boundary and `R4` branch map.
 6. Review scanner candidates against every `R8` condition and record candidate-level decisions.
 7. Check `R9`, then implement the smallest tests allowed by `R2-R7`.
-8. After each coherent edit, use the lightweight precheck for repair feedback and run invalidated focused tests.
+8. After each coherent edit, run invalidated focused tests and relevant repository Checkstyle checks.
 9. Apply `R13` and inspect semantic `R15-A/B/D/G/I/J` obligations.
 10. Complete missing or invalidated final coverage, repository formatting/checkstyle, and full mechanical checks under the [verification commands](references/verification.md).
 11. Confirm final scope against the baseline and decide `R10` once from current evidence before delivery.
