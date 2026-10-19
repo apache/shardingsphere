@@ -53,7 +53,7 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
     @Override
     public SQLException convert(final SQLDialectException sqlDialectException) {
         if (sqlDialectException instanceof UnknownDatabaseException) {
-            return toSQLException(FirebirdVendorError.UNAVAILABLE_DATABASE, ((UnknownDatabaseException) sqlDialectException).getDatabaseName());
+            return toSQLException(FirebirdVendorError.IO_OPEN_ERROR, ((UnknownDatabaseException) sqlDialectException).getDatabaseName());
         }
         if (sqlDialectException instanceof DatabaseCreateExistsException) {
             return toSQLException(FirebirdVendorError.DATABASE_ALREADY_EXISTS, ((DatabaseCreateExistsException) sqlDialectException).getDatabaseName());

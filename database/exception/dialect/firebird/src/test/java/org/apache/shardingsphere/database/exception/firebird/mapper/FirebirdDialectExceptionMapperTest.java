@@ -60,7 +60,7 @@ class FirebirdDialectExceptionMapperTest {
     
     @Test
     void assertConvertWithUnknownDatabase() {
-        assertSQLException(mapper.convert(new UnknownDatabaseException("logic_db")), FirebirdVendorError.UNAVAILABLE_DATABASE, "logic_db");
+        assertSQLException(mapper.convert(new UnknownDatabaseException("logic_db")), FirebirdVendorError.IO_OPEN_ERROR, "logic_db");
     }
     
     @Test

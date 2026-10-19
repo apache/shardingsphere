@@ -32,6 +32,8 @@ public enum FirebirdState implements SQLState {
     
     UNAVAILABLE_DATABASE("08001"),
     
+    IO_ERROR("08001"),
+    
     INVALID_BATCH_HANDLE("08003"),
     
     BATCH_TOO_BIG("54000"),
