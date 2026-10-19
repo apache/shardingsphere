@@ -253,10 +253,6 @@ sequenceOption
     | OWNED BY
     ;
 
-nullsDistinct
-    : NULLS NOT? DISTINCT
-    ;
-
 indexParameters
     : (USING INDEX TABLESPACE ignoredIdentifier)?
     | INCLUDE columnNames
@@ -286,6 +282,10 @@ tableConstraintOption
     | primaryKey keyColumnNames indexParameters
     | EXCLUDE (USING ignoredIdentifier)? LP_ exclusionConstraintList RP_ indexParameters exclusionWhereClause?
     | FOREIGN KEY foreignKeyColumnNames REFERENCES tableName foreignKeyColumnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action | ON DELETE SET (NULL | DEFAULT) columnNames)*
+    ;
+
+nullsDistinct
+    : NULLS NOT? DISTINCT
     ;
 
 keyColumnNames
