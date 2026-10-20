@@ -78,8 +78,8 @@ class FirebirdNonFixedLengthColumnSizeLoaderTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("emptyColumnMetadataArguments")
-    void assertLoadWithEmptyColumnMetadata(final String name, final String tableName, final Integer dataType, final boolean stubColumnName, final String columnName, final Integer columnSize,
-                                           final Boolean wasNull) throws SQLException {
+    void assertLoadWithEmptyColumnMetadata(final String name, final String tableName, final Integer dataType, final boolean stubColumnName, final String columnName,
+                                           final boolean stubColumnSize, final Integer columnSize, final boolean stubWasNull, final Boolean wasNull) throws SQLException {
         mockLoadPrerequisites();
         when(columnsResultSet.next()).thenReturn(true, false);
         when(columnsResultSet.getString("TABLE_NAME")).thenReturn(tableName);
@@ -89,10 +89,10 @@ class FirebirdNonFixedLengthColumnSizeLoaderTest {
         if (stubColumnName) {
             when(columnsResultSet.getString("COLUMN_NAME")).thenReturn(columnName);
         }
-        if (null != columnSize) {
+        if (stubColumnSize) {
             when(columnsResultSet.getInt("COLUMN_SIZE")).thenReturn(columnSize);
         }
-        if (null != wasNull) {
+        if (stubWasNull) {
             when(columnsResultSet.wasNull()).thenReturn(wasNull);
         }
         MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("FOO_TBL"), "logic_ds", dataSource, databaseType, "schema");
@@ -124,10 +124,10 @@ class FirebirdNonFixedLengthColumnSizeLoaderTest {
     
     private static Stream<Arguments> emptyColumnMetadataArguments() {
         return Stream.of(
-                Arguments.of("skips mismatched table metadata", "BAR_TBL", null, false, null, null, null),
-                Arguments.of("skips fixed length type", "FOO_TBL", Types.BIGINT, false, null, null, null),
-                Arguments.of("skips null column name", "FOO_TBL", Types.CHAR, true, null, null, null),
-                Arguments.of("skips null column size", "FOO_TBL", Types.CHAR, true, "char_col", 128, true),
-                Arguments.of("skips non-positive column size", "FOO_TBL", Types.CHAR, true, "char_col", 0, false));
+                Arguments.of("skips mismatched table metadata", "BAR_TBL", null, false, null, false, null, false, null),
+                Arguments.of("skips fixed length type", "FOO_TBL", Types.BIGINT, false, null, false, null, false, null),
+                Arguments.of("skips null column name", "FOO_TBL", Types.CHAR, true, null, false, null, false, null),
+                Arguments.of("skips null column size", "FOO_TBL", Types.CHAR, true, "char_col", true, 128, true, true),
+                Arguments.of("skips non-positive column size", "FOO_TBL", Types.CHAR, true, "char_col", true, 0, true, false));
     }
 }
