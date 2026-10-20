@@ -408,14 +408,14 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private void appendCombineWhereSegments(final SelectStatement selectStatement, final Collection<WhereSegment> whereSegments) {
-        selectStatement.getCombine().ifPresent(optional -> {
-            appendBranchWhereSegments(optional.getLeft().getSelect(), whereSegments);
-            appendBranchWhereSegments(optional.getRight().getSelect(), whereSegments);
+        selectStatement.getCombine().ifPresent(combine -> {
+            appendBranchWhereSegments(combine.getLeft().getSelect(), whereSegments);
+            appendBranchWhereSegments(combine.getRight().getSelect(), whereSegments);
         });
     }
     
     private void appendBranchWhereSegments(final SelectStatement branch, final Collection<WhereSegment> whereSegments) {
-        branch.getWhere().filter(optional -> !whereSegments.contains(optional)).ifPresent(whereSegments::add);
+        branch.getWhere().filter(whereSegment -> !whereSegments.contains(whereSegment)).ifPresent(whereSegments::add);
         appendCombineWhereSegments(branch, whereSegments);
     }
     

@@ -185,16 +185,6 @@ class FirebirdPrepareStatementCommandExecutorTest {
         assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.LONG);
     }
     
-    @Test
-    void assertDescribeParametersOfUnionWithThreeBranches() throws Exception {
-        String sql = "SELECT id FROM foo_tbl WHERE id = ? UNION ALL SELECT id FROM foo_tbl WHERE content = ? UNION ALL SELECT id FROM foo_tbl WHERE id = ?";
-        FirebirdPrepareStatementReturnPacket actual = describeBind(sql);
-        assertThat(actual.getDescribeBind().size(), is(3));
-        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
-        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.BLOB);
-        assertParameterType(actual.getDescribeBind().get(2), FirebirdBinaryColumnType.LONG);
-    }
-    
     private FirebirdPrepareStatementReturnPacket describeBind(final String sql) throws Exception {
         when(packet.getSQL()).thenReturn(sql);
         when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
@@ -213,6 +203,16 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         actual.write(payload);
         verify(payload).writeInt4LE(expected.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeParametersOfUnionWithThreeBranches() throws Exception {
+        String sql = "SELECT id FROM foo_tbl WHERE id = ? UNION ALL SELECT id FROM foo_tbl WHERE content = ? UNION ALL SELECT id FROM foo_tbl WHERE id = ?";
+        FirebirdPrepareStatementReturnPacket actual = describeBind(sql);
+        assertThat(actual.getDescribeBind().size(), is(3));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.BLOB);
+        assertParameterType(actual.getDescribeBind().get(2), FirebirdBinaryColumnType.LONG);
     }
     
     @Test
