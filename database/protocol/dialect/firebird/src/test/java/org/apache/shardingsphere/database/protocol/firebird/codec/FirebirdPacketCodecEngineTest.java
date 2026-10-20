@@ -26,6 +26,7 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdArchType;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
@@ -306,6 +307,23 @@ class FirebirdPacketCodecEngineTest {
             assertThat(actual.getInt(0), is(FirebirdCommandPacketType.COMMIT.getValue()));
             actual.release();
         }
+        assertNull(channel.readInbound());
+        assertTrue(channel.isOpen());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("handshakeShortTailReadCases")
+    void assertDecodeHandshakePacketCompletedByShortTailRead(final String name, final ByteBuf handshakePacket, final int tailLength) {
+        EmbeddedChannel channel = new EmbeddedChannel(new PacketCodec(new FirebirdPacketCodecEngine()));
+        channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
+        channel.attr(FirebirdConstant.CURRENT_CONNECTION).set(BATCH_CONNECTION_ID);
+        int headLength = handshakePacket.readableBytes() - tailLength;
+        channel.writeInbound(handshakePacket.copy(0, headLength));
+        assertNull(channel.readInbound());
+        channel.writeInbound(handshakePacket.copy(headLength, tailLength));
+        ByteBuf actual = channel.readInbound();
+        assertThat(actual, is(handshakePacket));
+        actual.release();
         assertNull(channel.readInbound());
         assertTrue(channel.isOpen());
     }
@@ -636,6 +654,22 @@ class FirebirdPacketCodecEngineTest {
         return Stream.of(
                 Arguments.of("body completed by short read", new ByteBuf[]{commit.copy(0, 6), commit.copy(6, 2)}, 1),
                 Arguments.of("header completed by short reads", new ByteBuf[]{Unpooled.wrappedBuffer(commit.copy(), commit.copy(0, 2)), commit.copy(2, 3), commit.copy(5, 3)}, 2));
+    }
+    
+    private static Stream<Arguments> handshakeShortTailReadCases() {
+        ByteBuf connectPacket = Unpooled.buffer(60).writeInt(FirebirdCommandPacketType.CONNECT.getValue()).writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(3)
+                .writeInt(FirebirdArchType.ARCH_GENERIC.getCode()).writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2).writeInt(1)
+                .writeInt(3).writeBytes(new byte[]{9, 1, 'x'}).writeZero(1)
+                .writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION13.getCode()).writeInt(FirebirdArchType.ARCH_GENERIC.getCode()).writeInt(0).writeInt(5).writeInt(2);
+        ByteBuf attachPacket = Unpooled.buffer(28).writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(0)
+                .writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2).writeInt(1).writeByte(1).writeZero(3);
+        return Stream.of(
+                Arguments.of("connect completed by one byte", connectPacket, 1),
+                Arguments.of("connect completed by two bytes", connectPacket, 2),
+                Arguments.of("connect completed by three bytes", connectPacket, 3),
+                Arguments.of("attach completed by one byte", attachPacket, 1),
+                Arguments.of("attach completed by two bytes", attachPacket, 2),
+                Arguments.of("attach completed by three bytes", attachPacket, 3));
     }
     
     private static Stream<Arguments> fixedLengthCommandCases() {
