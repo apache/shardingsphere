@@ -69,7 +69,8 @@ class FirebirdRollbackTransactionCommandExecutorTest {
     @Test
     void assertExecute() throws SQLException {
         when(packet.getTransactionId()).thenReturn(1);
-        try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
+        try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class, (mock, context) -> {
+        })) {
             Collection<DatabasePacket> actual = new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute();
             assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
             verify(mocked.constructed().get(0)).rollback();

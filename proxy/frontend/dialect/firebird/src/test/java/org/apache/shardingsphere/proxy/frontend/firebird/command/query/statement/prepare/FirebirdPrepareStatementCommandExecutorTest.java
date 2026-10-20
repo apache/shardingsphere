@@ -188,8 +188,8 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        FirebirdReturnColumnPacket columnPacket = actualReturnPacket.getDescribeSelect().get(0);
-        columnPacket.write(payload);
+        FirebirdReturnColumnPacket actualColumnPacket = actualReturnPacket.getDescribeSelect().get(0);
+        actualColumnPacket.write(payload);
         verify(payload).writeInt4LE(FirebirdBinaryColumnType.INT64.getValue() + 1);
     }
     
@@ -236,8 +236,8 @@ class FirebirdPrepareStatementCommandExecutorTest {
         assertThat(actualReturnPacket.getType(), is(FirebirdSQLInfoReturnValue.SELECT));
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        FirebirdReturnColumnPacket columnPacket = actualReturnPacket.getDescribeSelect().get(0);
-        columnPacket.write(payload);
+        FirebirdReturnColumnPacket actualColumnPacket = actualReturnPacket.getDescribeSelect().get(0);
+        actualColumnPacket.write(payload);
         verify(payload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
     }
     

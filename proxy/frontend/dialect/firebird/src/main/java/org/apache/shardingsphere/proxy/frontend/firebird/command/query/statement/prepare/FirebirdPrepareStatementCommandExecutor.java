@@ -247,10 +247,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 processExpressionProjection((ExpressionProjection) each, describeColumns, requestedItems, ++columnCount);
             } else if (each instanceof AggregationProjection) {
                 String functionName = ((AggregationProjection) each).getType().name();
-                processCustomColumn(functionName, each.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, ++columnCount);
+                processCustomColumn(null, functionName, each.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, ++columnCount);
             } else if (each instanceof SubqueryProjection) {
                 SubqueryProjection subquery = (SubqueryProjection) each;
-                processCustomColumn(subquery.getColumnName(), subquery.getAlias().orElse(null), Types.INTEGER, describeColumns, requestedItems, ++columnCount);
+                processCustomColumn(null, subquery.getColumnName(), subquery.getAlias().orElse(null), Types.INTEGER, describeColumns, requestedItems, ++columnCount);
             }
         }
     }
@@ -327,22 +327,24 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), ++columnCount);
         }
         for (int i = 0; i < parametersCount - affectedColumns.size(); i++) {
-            processCustomColumn(null, null, Types.VARCHAR, describeColumns, requestedItems, ++columnCount);
+            processCustomColumn(null, null, null, 12, describeColumns, requestedItems, ++columnCount);
         }
     }
     
     private void processInsertStatement(final InsertStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                         final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
                                         final Collection<FirebirdSQLInfoPacketType> requestedItems) {
+        Collection<String> tableNames = getTableNames(sqlStatementContext);
         Collection<String> affectedColumns = new LinkedList<>();
         for (InsertValueContext context : sqlStatementContext.getInsertValueContexts()) {
             affectedColumns.addAll(processInsertValueContext(sqlStatementContext, context));
         }
         int columnCount = 0;
-        for (String tableName : getTableNames(sqlStatementContext)) {
+        for (String tableName : tableNames) {
             ShardingSphereTable table = getTable(tableName, database, schema);
             for (String columnName : affectedColumns) {
-                processColumn(describeColumns, requestedItems, table, table.getColumn(columnName), null, null, ++columnCount);
+                ShardingSphereColumn column = table.getColumn(columnName);
+                processColumn(describeColumns, requestedItems, table, column, null, null, ++columnCount);
             }
         }
     }
@@ -397,10 +399,11 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         ExpressionSegment exprSegment = expr.getExpressionSegment().getExpr();
         if (exprSegment instanceof FunctionSegment) {
             String functionName = ((FunctionSegment) exprSegment).getFunctionName();
-            processCustomColumn(functionName, expr.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, columnCount);
+            processCustomColumn(null, functionName, expr.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, columnCount);
         } else if (exprSegment instanceof BinaryOperationExpression) {
-            String operator = ((BinaryOperationExpression) exprSegment).getOperator();
-            processCustomColumn(getOperationName(operator), expr.getAlias().orElse(null), getOperationType(operator), describeColumns, requestedItems, columnCount);
+            String operationName = getOperationName(((BinaryOperationExpression) exprSegment).getOperator());
+            int operationType = getOperationType(((BinaryOperationExpression) exprSegment).getOperator());
+            processCustomColumn(null, operationName, expr.getAlias().orElse(null), operationType, describeColumns, requestedItems, columnCount);
         } else if (exprSegment instanceof LiteralExpressionSegment) {
             Object value = ((LiteralExpressionSegment) exprSegment).getLiterals();
             int type = Types.NULL;
@@ -458,10 +461,11 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return text.codePointCount(0, text.length());
     }
     
-    private void processCustomColumn(final String columnName, final IdentifierValue columnAlias, final int dataType, final Collection<FirebirdReturnColumnPacket> describeColumns,
-                                     final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
+    private void processCustomColumn(final String tableName, final String columnName, final IdentifierValue columnAlias, final int dataType,
+                                     final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
+        ShardingSphereTable table = new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereColumn column = new ShardingSphereColumn(columnName, dataType, false, false, true, true, false, false);
-        processColumn(describeColumns, requestedItems, LITERAL_TABLE, column, null, columnAlias, columnCount);
+        processColumn(describeColumns, requestedItems, table, column, null, columnAlias, columnCount);
     }
     
     private void processColumn(final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final ShardingSphereTable table,
@@ -476,7 +480,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private boolean isBlobColumn(final ShardingSphereTable table, final ShardingSphereColumn column) {
-        if (null == column) {
+        if (null == table || null == column) {
             return false;
         }
         if (null != table.getName() && FirebirdBlobInfoRegistry.isBlobColumn(connectionSession.getCurrentDatabaseName(), getActualTableName(table.getName()), column.getName())) {
@@ -503,7 +507,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private Integer resolveColumnLength(final ShardingSphereTable table, final ShardingSphereColumn column) {
-        if (null == column || !isDynamicLengthType(column.getDataType())) {
+        if (null == table || null == column || !isDynamicLengthType(column.getDataType())) {
             return null;
         }
         OptionalInt columnSize = FirebirdNonFixedLengthColumnSizeRegistry.findColumnSize(connectionSession.getCurrentDatabaseName(), table.getName(), column.getName());

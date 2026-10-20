@@ -153,15 +153,15 @@ public final class FirebirdBatchedStatementsExecutor {
         }
     }
     
-    private QueryContext createQueryContext(final SQLStatementContext sqlStatementContext, final List<Object> params) {
-        return new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(), connectionSession.getConnectionContext(),
-                metaDataContexts.getMetaData());
-    }
-    
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
         ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(connectionSession.getCurrentDatabaseName());
         SQLAuditEngine.audit(queryContext, currentDatabase);
         return kernelProcessor.generateExecutionContext(queryContext, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
+    }
+    
+    private QueryContext createQueryContext(final SQLStatementContext sqlStatementContext, final List<Object> params) {
+        return new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(), connectionSession.getConnectionContext(),
+                metaDataContexts.getMetaData());
     }
     
     /**
@@ -173,12 +173,15 @@ public final class FirebirdBatchedStatementsExecutor {
     public FirebirdBatchCompletion executeBatch() throws SQLException {
         connectionSession.getDatabaseConnectionManager().handleAutoCommit();
         prepareBatchedStatements();
+        List<BatchExecution> batchExecutions;
+        List<BatchExecutionUnitResult> executeResults;
         try {
-            List<BatchExecution> batchExecutions = createBatchExecutionPlan();
-            return createBatchCompletion(batchExecutions, executeBatchedPreparedStatements(batchExecutions));
+            batchExecutions = createBatchExecutionPlan();
+            executeResults = executeBatchedPreparedStatements(batchExecutions);
         } finally {
             closePreparedStatements();
         }
+        return createBatchCompletion(batchExecutions, executeResults);
     }
     
     private void prepareBatchedStatements() throws SQLException {

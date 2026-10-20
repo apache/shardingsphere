@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import java.util.Collection;
 import java.util.Collections;
 
-public final class FirebirdBatchSyncCommandExecutor implements CommandExecutor {
+public class FirebirdBatchSyncCommandExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {

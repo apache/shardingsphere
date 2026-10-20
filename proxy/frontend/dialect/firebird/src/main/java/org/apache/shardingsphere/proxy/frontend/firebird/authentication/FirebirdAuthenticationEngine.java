@@ -102,7 +102,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         FirebirdAuthenticationMethod plugin = FirebirdAuthenticationMethod.valueOf(getPluginName(rule, user));
         if (plugin != connectPacket.getPlugin()) {
             acceptPacket.setAcceptDataPacket(new byte[0], "", plugin, 0, "");
-        } else if (plugin != FirebirdAuthenticationMethod.LEGACY_AUTH) {
+        } else if (FirebirdAuthenticationMethod.LEGACY_AUTH != plugin) {
             authData = new FirebirdSRPAuthenticationData(plugin.getHashAlgorithm(), username, user.getPassword(), connectPacket.getAuthData());
             acceptPacket.setAcceptDataPacket(authData.getSalt(), authData.getPublicKeyHex(), plugin, 0, "");
         }
