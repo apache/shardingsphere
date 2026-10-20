@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
+import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
@@ -71,6 +72,9 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -133,6 +137,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, 1);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobInfoRegistry.refreshTable("foo_db", "foo_tbl", Collections.emptyMap());
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("foo_db", "foo_tbl", Collections.emptyMap());
     }
     
     private MetaDataContexts createMetaDataContexts() {
@@ -140,7 +145,9 @@ class FirebirdPrepareStatementCommandExecutorTest {
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(parserRule));
         ShardingSphereColumn column = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
         ShardingSphereColumn blobColumn = new ShardingSphereColumn("content", Types.BLOB, false, false, true, true, false, true);
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(column, blobColumn), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereColumn binaryColumn = new ShardingSphereColumn("binary_content", Types.BINARY, false, false, true, true, false, true);
+        ShardingSphereColumn varbinaryColumn = new ShardingSphereColumn("varbinary_content", Types.VARBINARY, false, false, true, true, false, true);
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(column, blobColumn, binaryColumn, varbinaryColumn), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList());
         ShardingSphereDatabase database = spy(new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
@@ -267,6 +274,38 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPrepareStatementReturnPacket returnPacket = (FirebirdPrepareStatementReturnPacket) responsePacket.getData();
         assertThat(returnPacket.getDescribeSelect().size(), is(1));
         return returnPacket.getDescribeSelect().get(0);
+    }
+    
+    @Test
+    void assertDescribeOctetsColumnLength() throws Exception {
+        Map<String, Integer> columnSizes = new HashMap<>(2, 1F);
+        columnSizes.put("binary_content", 16);
+        columnSizes.put("varbinary_content", 32);
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("foo_db", "foo_tbl", columnSizes);
+        when(packet.getSQL()).thenReturn("SELECT binary_content, varbinary_content FROM foo_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.SELECT,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        List<FirebirdReturnColumnPacket> actualColumns = ((FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData()).getDescribeSelect();
+        assertThat(actualColumns.size(), is(2));
+        assertColumnTypeAndLength(actualColumns.get(0), 16);
+        assertColumnTypeAndLength(actualColumns.get(1), 32);
+    }
+    
+    private void assertColumnTypeAndLength(final FirebirdReturnColumnPacket actual, final int expectedLength) {
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actual.write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        verify(payload).writeInt4LE(expectedLength);
     }
     
     @Test
