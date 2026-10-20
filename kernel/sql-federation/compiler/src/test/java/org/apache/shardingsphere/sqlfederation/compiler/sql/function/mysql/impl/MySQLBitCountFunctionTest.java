@@ -36,22 +36,22 @@ class MySQLBitCountFunctionTest {
         assertDoesNotThrow(MySQLBitCountFunction::new);
     }
     
-    @ParameterizedTest(name = "bitCount({0}) -> {1}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("bitCountTestCases")
-    void assertBitCountCoversAllBranches(final Object input, final Object expected) {
+    void assertBitCountCoversAllBranches(final String name, final Object input, final Object expected) {
         assertThat(MySQLBitCountFunction.bitCount(input), is(expected));
     }
     
     private static Stream<Arguments> bitCountTestCases() {
         return Stream.of(
-                Arguments.of(null, null),
-                Arguments.of(new byte[]{(byte) 0b00001111}, 4L),
-                Arguments.of("7", 3),
-                Arguments.of("", 0),
-                Arguments.of("abc", 0),
-                Arguments.of(new BigInteger("15"), 4),
-                Arguments.of(3, 2),
-                Arguments.of(1L, 1),
-                Arguments.of(new Object(), 0));
+                Arguments.of("null input", null, null),
+                Arguments.of("byte array", new byte[]{(byte) 0b00001111}, 4L),
+                Arguments.of("numeric text", "7", 3),
+                Arguments.of("empty text", "", 0),
+                Arguments.of("nonnumeric text", "abc", 0),
+                Arguments.of("big integer", new BigInteger("15"), 4),
+                Arguments.of("integer", 3, 2),
+                Arguments.of("long", 1L, 1),
+                Arguments.of("unsupported object", new Object(), 0));
     }
 }
