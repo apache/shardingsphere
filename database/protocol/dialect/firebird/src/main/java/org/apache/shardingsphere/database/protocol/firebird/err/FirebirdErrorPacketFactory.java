@@ -25,7 +25,6 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacke
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
-
 /**
  * Error packet factory for Firebird.
  */
