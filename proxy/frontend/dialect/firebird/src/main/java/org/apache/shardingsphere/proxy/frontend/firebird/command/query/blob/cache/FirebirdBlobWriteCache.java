@@ -128,10 +128,7 @@ public final class FirebirdBlobWriteCache {
      */
     public OptionalLong getBlobId(final int connectionId, final int blobHandle) {
         FirebirdBlobWrite write = getHandleMap(connectionId).get(blobHandle);
-        if (null == write) {
-            return OptionalLong.empty();
-        }
-        return OptionalLong.of(write.getBlobId());
+        return null == write ? OptionalLong.empty() : OptionalLong.of(write.getBlobId());
     }
     
     /**
@@ -143,10 +140,7 @@ public final class FirebirdBlobWriteCache {
      */
     public Optional<byte[]> getBlobData(final int connectionId, final long blobId) {
         FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
-        if (null == write) {
-            return Optional.empty();
-        }
-        return Optional.of(write.getBytes());
+        return null == write ? Optional.empty() : Optional.of(write.getBytes());
     }
     
     /**

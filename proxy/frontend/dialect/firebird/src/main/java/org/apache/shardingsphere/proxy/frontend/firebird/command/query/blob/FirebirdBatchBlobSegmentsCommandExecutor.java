@@ -28,7 +28,6 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.gene
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.OptionalLong;
 
 /**
  * Batch segments with blob command executor for Firebird.
@@ -49,8 +48,7 @@ public final class FirebirdBatchBlobSegmentsCommandExecutor implements CommandEx
         for (byte[] each : packet.getSegments()) {
             FirebirdBlobWriteCache.getInstance().appendSegment(connectionSession.getConnectionId(), blobHandle, each);
         }
-        OptionalLong blobId = FirebirdBlobWriteCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
-        long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;
-        return Collections.singleton(new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(responseBlobId));
+        long blobId = FirebirdBlobWriteCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle).orElse(0L);
+        return Collections.singleton(new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(blobId));
     }
 }
