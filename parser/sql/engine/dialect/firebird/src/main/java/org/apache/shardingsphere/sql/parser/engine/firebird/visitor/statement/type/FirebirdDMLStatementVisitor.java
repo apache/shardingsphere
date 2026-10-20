@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.From
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.HavingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.InsertContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.InsertSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.JoinedTableContext;
@@ -136,38 +137,39 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        InsertStatement insertValuesStatement = (InsertStatement) visit(ctx.insertValuesClause());
+        InsertStatement insertStatement = (InsertStatement) (null == ctx.insertValuesClause() ? visit(ctx.insertSelectClause()) : visit(ctx.insertValuesClause()));
         InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()))
-                .insertColumns(insertValuesStatement.getInsertColumns().orElse(null)).insertSelect(insertValuesStatement.getInsertSelect().orElse(null))
-                .setAssignment(insertValuesStatement.getSetAssignment().orElse(null)).onDuplicateKeyColumns(insertValuesStatement.getOnDuplicateKeyColumns().orElse(null))
-                .valueReference(insertValuesStatement.getValueReference().orElse(null))
-                .returning(null == ctx.returningClause() ? insertValuesStatement.getReturning().orElse(null) : (ReturningSegment) visit(ctx.returningClause()))
-                .output(insertValuesStatement.getOutput().orElse(null)).with(insertValuesStatement.getWith().orElse(null))
-                .multiTableInsertType(insertValuesStatement.getMultiTableInsertType().orElse(null))
-                .multiTableInsertInto(insertValuesStatement.getMultiTableInsertInto().orElse(null))
-                .multiTableConditionalInto(insertValuesStatement.getMultiTableConditionalInto().orElse(null)).where(insertValuesStatement.getWhere().orElse(null))
-                .exec(insertValuesStatement.getExec().orElse(null)).withTableHint(insertValuesStatement.getWithTableHint().orElse(null))
-                .rowSetFunction(insertValuesStatement.getRowSetFunction().orElse(null)).ignore(insertValuesStatement.isIgnore()).replace(insertValuesStatement.isReplace())
-                .values(new LinkedList<>(insertValuesStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertValuesStatement.getDerivedInsertColumns())).build();
-        result.addParameterMarkers(insertValuesStatement.getParameterMarkers());
-        result.getVariableNames().addAll(insertValuesStatement.getVariableNames());
-        result.getComments().addAll(insertValuesStatement.getComments());
+                .insertColumns(insertStatement.getInsertColumns().orElse(null)).insertSelect(insertStatement.getInsertSelect().orElse(null))
+                .setAssignment(insertStatement.getSetAssignment().orElse(null)).onDuplicateKeyColumns(insertStatement.getOnDuplicateKeyColumns().orElse(null))
+                .valueReference(insertStatement.getValueReference().orElse(null))
+                .returning(null == ctx.returningClause() ? insertStatement.getReturning().orElse(null) : (ReturningSegment) visit(ctx.returningClause()))
+                .output(insertStatement.getOutput().orElse(null)).with(insertStatement.getWith().orElse(null))
+                .multiTableInsertType(insertStatement.getMultiTableInsertType().orElse(null))
+                .multiTableInsertInto(insertStatement.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(insertStatement.getMultiTableConditionalInto().orElse(null)).where(insertStatement.getWhere().orElse(null))
+                .exec(insertStatement.getExec().orElse(null)).withTableHint(insertStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(insertStatement.getRowSetFunction().orElse(null)).ignore(insertStatement.isIgnore()).replace(insertStatement.isReplace())
+                .values(new LinkedList<>(insertStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertStatement.getDerivedInsertColumns())).build();
+        result.addParameterMarkers(insertStatement.getParameterMarkers());
+        result.getVariableNames().addAll(insertStatement.getVariableNames());
+        result.getComments().addAll(insertStatement.getComments());
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertColumnsSegment insertColumns;
-        if (null != ctx.columnNames()) {
-            ColumnNamesContext columnNames = ctx.columnNames();
-            CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
-            insertColumns = new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
-        } else {
-            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
+        return InsertStatement.builder().databaseType(getDatabaseType())
+                .insertColumns(createInsertColumnsSegment(ctx, ctx.columnNames())).values(createInsertValuesSegments(ctx.assignmentValues())).build();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private InsertColumnsSegment createInsertColumnsSegment(final ParserRuleContext ctx, final ColumnNamesContext columnNames) {
+        if (null == columnNames) {
+            return new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
+        CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
+        return new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
@@ -176,6 +178,13 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
             result.add((InsertValuesSegment) visit(each));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
+        SelectContext select = ctx.select();
+        SubquerySegment insertSelect = new SubquerySegment(select.start.getStartIndex(), select.stop.getStopIndex(), (SelectStatement) visit(select), getOriginalText(select));
+        return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(createInsertColumnsSegment(ctx, ctx.columnNames())).insertSelect(insertSelect).build();
     }
     
     @Override
