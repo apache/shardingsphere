@@ -487,10 +487,6 @@ MATCH
     : M A T C H
     ;
 
-MATCHING
-    : M A T C H I N G
-    ;
-
 MODULE
     : M O D U L E
     ;
