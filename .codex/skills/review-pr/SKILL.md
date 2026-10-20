@@ -45,6 +45,9 @@ confirmed findings consolidated by fix boundary, needs-discussion conditions,
 incomplete-evidence gaps, and Completion Gate state.
 
 Record each applicable requirement's source, content version, scope and valid exceptions in readable basis source material; a task-only requirement applies only to its authorized task candidate and must not become a universal repository or public-PR rule.
+Reconstruct those requirements from original user requests and maintained contracts before checking the author's proposed solution, distinguishing author choices and unverified assumptions from confirmed constraints.
+Do not promote an unverified inference into a requirement for a new interface, SPI, behavior, or test.
+Preserve later user approvals with their actual provenance instead of treating approval of an implementation choice as proof of an original version requirement or of its necessity.
 Keep effective content and delta identity separate from Git revision lineage so equal local and public candidates retain one code-correctness basis.
 
 Output mode must not affect candidate discovery, proof, classification,
@@ -170,6 +173,11 @@ Map every substantive file to the smallest meaningful behavior cluster and ident
 
 Triage functional boundaries, ownership and shared contracts, compatibility and rollback, test validity, concurrency and performance, security and operations, dependencies, packaging, and generated artifacts. Read only the triggered sections of [high-risk-review.md](references/high-risk-review.md). Also read [sql-parser-review.md](references/sql-parser-review.md) for SQL grammar, visitors, parser tests, syntax documentation, dialect behavior, or parser baselines.
 
+## Independent Review Coordination
+
+Read [review-coordination.md](references/review-coordination.md) through EOF for every top-level Formal Review, discussion reply that makes or changes an overall readiness conclusion, and assigned independent assessment.
+That reference owns reviewer roles, cross-round confirmation, session records and review-material lifecycle; the single-assessment rules remain below.
+
 ## Review Workflow
 
 Apply this workflow to the canonical review basis without letting output mode or a previous result influence the assessment:
@@ -178,9 +186,6 @@ Start every Formal Review round with fresh coverage of the complete effective ca
 Reuse only facts and verification results whose current-candidate validity is established; do not inherit reviewed-file statuses, discovery passes, proof conclusions, or convergence results.
 Before repeating evidence acquisition, consult the current ledger's sources, block coverage, candidate findings and verification material, and reuse facts only while their supporting inputs and applicable coverage remain valid.
 All three discovery lenses may share the same current source material, but each must still cover the complete candidate and sharing material does not replace the convergence pass.
-
-For a proven previous-review miss, contradictory assessments on an unchanged basis, a triggered high-risk review criterion, or an explicit user request for independent review, obtain an independent read-only assessment through this workflow and the Completion Gate using the current basis and complete effective candidate without the previous verdict or an expected finding count.
-Give the independent reviewer the current requirements and their provenance, complete candidate inventory and relevant raw evidence rather than the author's full session history.
 
 1. Complete `Repository Code Policy References`, then establish the authoritative effective-candidate scope and applicable requirements.
 2. Complete the Problem and Project Commitment Gate and establish the accepted behavior boundary.
@@ -208,21 +213,19 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 - Complete the Mandatory Style Verification Gate against the latest effective candidate for every public PR or PR-backed local candidate.
 - Leave no unresolved gap that could change the blocker set and require a latest-candidate convergence pass with zero new independent candidates.
 - Use `scripts/build_review_inventory.py --format json` when local refs are available; its Markdown is only a bounded summary.
-- Use `scripts/review_ledger.py` for multi-file, high-risk, or omission-prone review; it accounts for review state but does not judge correctness.
+- Use `scripts/review_ledger.py` for each independent assessment; it accounts for review state but does not judge correctness.
 - Initialize a new ledger for each round that requires one, from the full current inventory with pending file statuses and no inherited review passes.
 - Use the existing private system temporary directory and record the exact ledger path returned by initialization for this review.
 - Initialize with `--review-basis <JSON>` containing the selected focus and readable sources identified by role and origin, so the ledger binds their actual content versions to the effective candidate, original baseline and authoritative files.
 - Record each substantive changed block's behavior, applicable risk axes and requirement origins, strongest counter-evidence and current source anchors with `mark-file --coverage <JSON>`, and attach finding anchors with `add-finding --anchors <JSON>`.
+- Record each evidenced `Needs Discussion` condition as a `confirmed` ledger issue about the project commitment or required decision, using `origin`, `evidence`, `full_path`, `necessity` and `scope_proof` to prove that requirement and `fix_boundary` for its specific decision boundary; do not invent a code defect.
+- For each newly introduced local override, compatibility exception or parallel mechanism, use the existing basis sources and block `requirements`, `counter_evidence` and `anchors` to record its constraint origins, verified limits of direct reuse and necessity conclusion separately from behavior correctness.
+- Keep author-only choices and unverified assumptions as `evidence` sources.
 - Record partial coverage with pending files and keep unproved findings as candidates; recording evidence does not establish a completed review.
 - Rebuild ledgers with an older schema or stale inputs without inheriting their completion state.
 - Validate the current basis and coverage before selecting a result; a passing ledger proves mechanical coverage and evidence freshness, while the reviewer must still establish semantic proof under the existing gates.
 - For a standalone local candidate with index or working-tree changes, provide the same exact task-path file to both scripts with `--candidate-files <path>`. The scripts resolve those paths from the computed merge-base through the working tree, include matching untracked files, and fail when a listed path is unchanged.
 - Mutate one ledger sequentially; do not run ledger commands concurrently.
-- Keep ledger data private and remove only the exact current-review ledger.
-- Before returning a completed review result, form a self-contained report and automatically run `scripts/review_ledger.py cleanup --ledger <recorded-ledger>` for the recorded current-review instance, including Mergeable, Not Mergeable and Review Incomplete results.
-- Before cleaning the ledger, remove only temporary input materials created and explicitly recorded for this review, preserving declared sources owned by the repository, the user or another review.
-- On a handled failure or cancellation, attempt the same cleanup for resources whose ownership is established, preserve the original failure and report any cleanup failure or remaining resources.
-- Keep the report independent of temporary files and report cleanup failures without changing the review assessment.
 
 Use these JSON shapes in local files passed to the arguments, replacing the example values with current evidence and block IDs from the initialized ledger:
 Sources use `rule`, `requirement` or `evidence` roles; `--anchors` takes an anchor-array file shaped like `anchors` below.
@@ -249,7 +252,7 @@ When confirmed blockers coexist with a proven gap that could hide more blockers,
 ## Formal Decision Contract
 
 Map the canonical assessment to Formal Review only after the Completion Gate
-evaluation:
+evaluation and Independent Review Coordination:
 
 1. If the gate fails because a gap satisfies the Review Incomplete Proof Gate, use `Review Incomplete`, even when some blockers are already confirmed.
 2. If the Mandatory Style Verification Gate is incomplete for any applicable PR-impact file, use `Review Incomplete`, even when some blockers are already confirmed.
@@ -268,6 +271,8 @@ unclear.
 
 - First classify the local candidate as standalone or as targeting an existing public PR.
 - For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate. Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.
+- Record the current round's authorized files and change intents separately from the full cumulative task-owned candidate and affected behavior and contracts to review.
+  A narrow fix authorization limits writes without shrinking that review scope or treating earlier task-owned changes as unrelated existing code.
 - For a local candidate targeting an existing PR, use the latest public PR head plus authorized local commits, index changes, and working-tree changes as the effective candidate. Verify with read-only Git that local `HEAD` equals or descends from the public head; if that relationship cannot be established, record the unavailable lineage as an incomplete gap, and if the refs prove divergence, resolve the correct review basis before selecting a verdict.
 - Review a PR-backed local candidate from the public PR merge-base through the working tree, use the union of GitHub files and the authorized local delta, and exclude unrelated local changes.
 - Apply Code Correctness Review through the canonical assessment, including the same proof and completion gates, triggered high-risk criteria, convergence loop, and Formal Decision Contract.
@@ -276,7 +281,8 @@ unclear.
 
 ## Multi-Round and Challenged Findings
 
-Read [review-corrections.md](references/review-corrections.md) for previous feedback, finding-fix commits, or challenged findings. Re-evaluate the latest head, test prior findings against challenger evidence, withdraw unsupported blockers, and classify later findings under that reference.
+Read [review-corrections.md](references/review-corrections.md) for previous feedback, finding-fix commits, challenged findings, or a disputed overall readiness conclusion.
+Re-evaluate the latest head, test prior findings against challenger evidence, withdraw unsupported blockers, and classify later findings under that reference.
 
 ## Output Contract
 
@@ -309,6 +315,7 @@ For each blocking issue include:
 Do not add patch-level changes after selecting Needs Discussion.
 Do not include placeholder headings.
 In `### Coverage`, report the candidate type, reviewed baseline or head, authoritative requirements and files accounted for, accepted behavior and project-commitment basis, behavior clusters, completed discovery lenses, unresolved gaps, and CI scope.
+Also report the completed independent-review pairs, result-review outcome and resolution of any differences without exposing private reviewer materials.
 For every public PR or PR-backed local candidate, also report the effective candidate SHA, each style-verification scope and command, each exit code, every covered applicable PR-impact file, and every `Not Applicable` check with its basis.
 For a standalone local candidate, identify the task baseline and attributed local delta; for a PR-backed candidate, identify authorized local commits, index changes, or working-tree changes separately from the public PR state.
 In Code Correctness Review, state that the result is code-scope only and CI was not reviewed while distinguishing the completed local style verification from CI.
@@ -321,7 +328,5 @@ Do not force a formal verdict.
 
 ### Correction
 
-Begin with `### Correction`, then `Previous Finding`, `Current Status`
-(`Retained`, `Withdrawn`, or `Changed to Review Incomplete`), and `Reason`.
-Follow with the applicable current result while keeping exactly one formal
-`Review Result` line when a formal result is requested.
+Begin with `### Correction`, then `Previous Finding or Conclusion`, `Current Status` (`Retained`, `Withdrawn`, or `Changed to Review Incomplete`), and `Reason`.
+Follow with the applicable current result while keeping exactly one formal `Review Result` line when a formal result is requested.

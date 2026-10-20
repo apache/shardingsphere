@@ -63,6 +63,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         SqlNodeList orderBy = selectStatement.getOrderBy().flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = selectStatement.getLimit();
         if (limit.isPresent()) {
+            ShardingSpherePreconditions.checkState(!limit.get().isImplicitRowCount(), () -> new UnsupportedSQLOperationException("Implicit FETCH row count in SQL Federation"));
             SqlNode offset = limit.get().getOffset().flatMap(PaginationValueSQLConverter::convert).orElse(null);
             SqlNode rowCount = limit.get().getRowCount().flatMap(PaginationValueSQLConverter::convert).orElse(null);
             return new SqlOrderBy(SqlParserPos.ZERO, sqlCombine, orderBy, offset, rowCount);

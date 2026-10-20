@@ -99,7 +99,7 @@
         <json-smart.version>2.6.0</json-smart.version>
         <accessors-smart.version>2.6.0</accessors-smart.version>
         <asm.version>9.7.1</asm.version>
-        <groovy.version>4.0.22</groovy.version>
+        <groovy.version>4.0.33</groovy.version>
         <freemarker.version>2.3.35</freemarker.version>
         <bytebuddy.version>1.18.8</bytebuddy.version>
         
@@ -1511,6 +1511,7 @@
             <id>coverage-check</id>
             <properties>
                 <jacoco.check.class.pattern>**/*</jacoco.check.class.pattern>
+                <jacoco.check.counter>INSTRUCTION</jacoco.check.counter>
                 <jacoco.minimum.coverage>0.95</jacoco.minimum.coverage>
             </properties>
             <build>
@@ -1541,6 +1542,7 @@
                                     <goal>check</goal>
                                 </goals>
                                 <configuration>
+                                    <dataFile>${jacoco.dataFile}</dataFile>
                                     <rules>
                                         <rule>
                                             <element>CLASS</element>
@@ -1549,7 +1551,7 @@
                                             </includes>
                                             <limits>
                                                 <limit>
-                                                    <counter>INSTRUCTION</counter>
+                                                    <counter>${jacoco.check.counter}</counter>
                                                     <value>COVEREDRATIO</value>
                                                     <minimum>${jacoco.minimum.coverage}</minimum>
                                                 </limit>

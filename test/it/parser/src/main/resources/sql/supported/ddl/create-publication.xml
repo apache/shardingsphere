@@ -20,4 +20,7 @@
     <sql-case id="create_publication" value="CREATE PUBLICATION mypublication FOR TABLE users, departments;" db-types="openGauss, PostgreSQL" />
     <sql-case id="create_publication_for_all_tables" value="CREATE PUBLICATION alltables FOR ALL TABLES;" db-types="openGauss, PostgreSQL" />
     <sql-case id="create_publication_with_statement" value="CREATE PUBLICATION insert_only FOR TABLE mydata WITH (publish = 'insert');" db-types="openGauss, PostgreSQL" />
+    <sql-case id="create_publication_row_filter_pg" value="CREATE PUBLICATION foo_pub FOR TABLE foo_table (a, b) WHERE (a &gt; 1), bar_table WHERE (b IS NOT NULL) WITH (publish = 'insert')" db-types="PostgreSQL" />
+    <sql-case id="create_publication_schema_pg" value="CREATE PUBLICATION foo_pub FOR TABLES IN SCHEMA foo, CURRENT_SCHEMA, TABLE bar.foo_table" db-types="PostgreSQL" />
+    <sql-case id="create_publication_all_except_pg" value="CREATE PUBLICATION foo_pub FOR ALL TABLES EXCEPT (TABLE foo_table, TABLE ONLY bar_table), ALL SEQUENCES" db-types="PostgreSQL" />
 </sql-cases>

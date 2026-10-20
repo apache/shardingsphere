@@ -54,4 +54,15 @@
     <sql-case id="merge_pg_with_condition_and_multiple_whens" value="MERGE INTO t_merge_target USING t_merge_source ON t_merge_target.order_id = t_merge_source.order_id WHEN MATCHED AND t_merge_target.status = t_merge_source.status THEN UPDATE SET status = t_merge_source.status WHEN NOT MATCHED THEN DO NOTHING" db-types="PostgreSQL" />
     <sql-case id="merge_pg_with_returning" value="MERGE INTO t_merge_target USING t_merge_source ON t_merge_target.order_id = t_merge_source.order_id WHEN MATCHED THEN UPDATE SET status = t_merge_source.status RETURNING t_merge_target.order_id" db-types="PostgreSQL" />
     <sql-case id="merge_pg_using_subquery" value="MERGE INTO t_merge_target USING (SELECT order_id FROM t_merge_source) AS src ON t_merge_target.order_id = src.order_id WHEN MATCHED THEN DELETE" db-types="PostgreSQL" />
+
+    <sql-case id="merge_by_source_parameters_postgresql_regression" value="MERGE INTO foo USING bar ON foo.id = ? WHEN NOT MATCHED BY SOURCE AND foo.id &gt; ? THEN UPDATE SET id = ?" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="merge_by_target_parameters_postgresql_regression" value="MERGE INTO foo USING bar ON foo.id = ? WHEN NOT MATCHED BY TARGET THEN INSERT (id) VALUES (?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="merge_not_matched_source_delete_pg" value="MERGE INTO t USING s ON t.id = s.id WHEN NOT MATCHED BY SOURCE THEN DELETE" db-types="PostgreSQL" />
+    <sql-case id="merge_not_matched_source_update_pg" value="MERGE INTO t USING s ON t.id = s.id WHEN NOT MATCHED BY SOURCE AND t.id &gt; 0 THEN UPDATE SET v = 1" db-types="PostgreSQL" />
+    <sql-case id="merge_not_matched_source_nothing_pg" value="MERGE INTO t USING s ON t.id = s.id WHEN NOT MATCHED BY SOURCE THEN DO NOTHING" db-types="PostgreSQL" />
+    <sql-case id="merge_not_matched_target_insert_pg" value="MERGE INTO t USING s ON t.id = s.id WHEN NOT MATCHED BY TARGET THEN INSERT (id) VALUES (s.id)" db-types="PostgreSQL" />
+    <sql-case id="merge_not_matched_target_nothing_pg" value="MERGE INTO t USING s ON t.id = s.id WHEN NOT MATCHED BY TARGET THEN DO NOTHING" db-types="PostgreSQL" />
+    <sql-case id="merge_mixed_match_modes_pg" value="MERGE INTO t USING s ON t.id = s.id WHEN MATCHED THEN UPDATE SET v = 1 WHEN NOT MATCHED BY SOURCE THEN DELETE WHEN NOT MATCHED BY TARGET THEN INSERT (id) VALUES (s.id)" db-types="PostgreSQL" />
+    <sql-case id="merge_not_matched_insert_control_pg" value="MERGE INTO t USING s ON t.id = s.id WHEN NOT MATCHED THEN INSERT (id) VALUES (s.id)" db-types="PostgreSQL" />
+    <sql-case id="merge_source_target_identifiers_pg" value="MERGE INTO target USING source ON target.id = source.id WHEN NOT MATCHED BY SOURCE THEN DELETE" db-types="PostgreSQL" />
 </sql-cases>
