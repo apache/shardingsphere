@@ -63,7 +63,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
         if (columnLayout.useExpandedProjections) {
             return columnLayout.expandedProjections.size();
         }
-        return columnLayout.passthrough ? resultSetMetaData.getColumnCount() : columnLayout.visibleColumnIndexes.length;
+        return columnLayout.passthrough ? resultSetMetaData.getColumnCount() : columnLayout.columnNames.length;
     }
     
     @Override
@@ -108,10 +108,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
             checkColumnIndex(column);
             return columnLayout.expandedProjections.get(column - 1).getColumnLabel();
         }
-        int returnedColumnIndex = getReturnedColumnIndex(columnLayout, column);
-        return columnLayout.aggregationDistinctColumnLabels.containsKey(returnedColumnIndex)
-                ? columnLayout.aggregationDistinctColumnLabels.get(returnedColumnIndex)
-                : resultSetMetaData.getColumnLabel(returnedColumnIndex);
+        return columnLayout.passthrough ? resultSetMetaData.getColumnLabel(column) : columnLayout.columnLabels[columnLayout.getVisibleColumnIndex(column)];
     }
     
     private void checkColumnIndex(final int column) throws SQLException {
@@ -121,11 +118,6 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
         }
     }
     
-    @HighFrequencyInvocation
-    private int getReturnedColumnIndex(final ClientVisibleColumnLayout columnLayout, final int column) throws SQLException {
-        return columnLayout.passthrough ? column : columnLayout.getVisibleColumnIndex(column);
-    }
-    
     @Override
     public String getColumnName(final int column) throws SQLException {
         ClientVisibleColumnLayout columnLayout = clientVisibleColumnLayout;
@@ -133,10 +125,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
             checkColumnIndex(column);
             return columnLayout.expandedProjections.get(column - 1).getColumnName();
         }
-        int returnedColumnIndex = getReturnedColumnIndex(columnLayout, column);
-        return columnLayout.aggregationDistinctColumnLabels.containsKey(returnedColumnIndex)
-                ? columnLayout.aggregationDistinctColumnLabels.get(returnedColumnIndex)
-                : resultSetMetaData.getColumnName(returnedColumnIndex);
+        return columnLayout.passthrough ? resultSetMetaData.getColumnName(column) : columnLayout.columnNames[columnLayout.getVisibleColumnIndex(column)];
     }
     
     @Override
@@ -213,35 +202,43 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
         
         private final boolean passthrough;
         
-        private final int[] visibleColumnIndexes;
+        private final String[] columnNames;
         
-        private final Map<Integer, String> aggregationDistinctColumnLabels;
+        private final String[] columnLabels;
         
         @HighFrequencyInvocation
         private static ClientVisibleColumnLayout create(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
             if (ShardingSphereResultSetUtils.useExpandedProjections(sqlStatementContext, resultSetMetaData)) {
-                return new ClientVisibleColumnLayout(true, ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections(), false, new int[0], Collections.emptyMap());
+                return new ClientVisibleColumnLayout(true, ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections(), false, new String[0], new String[0]);
             }
             if (!ShardingSphereResultSetUtils.mayAppendDerivedColumns(sqlStatementContext)) {
-                return new ClientVisibleColumnLayout(false, Collections.emptyList(), true, new int[0], Collections.emptyMap());
+                return new ClientVisibleColumnLayout(false, Collections.emptyList(), true, new String[0], new String[0]);
             }
             int columnCount = resultSetMetaData.getColumnCount();
             Set<Integer> appendedDerivedColumnIndexes = ShardingSphereResultSetUtils.getAppendedDerivedColumnIndexes(sqlStatementContext, resultSetMetaData);
-            int[] result = new int[columnCount];
+            Map<Integer, String> aggregationDistinctColumnLabels = ShardingSphereResultSetUtils.createAggregationDistinctColumnLabels(sqlStatementContext, resultSetMetaData);
+            String[] columnNames = new String[columnCount];
+            String[] columnLabels = new String[columnCount];
             int visibleColumnCount = 0;
             for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
                 if (!appendedDerivedColumnIndexes.contains(columnIndex)) {
-                    result[visibleColumnCount++] = columnIndex;
+                    if (aggregationDistinctColumnLabels.containsKey(columnIndex)) {
+                        columnNames[visibleColumnCount] = aggregationDistinctColumnLabels.get(columnIndex);
+                        columnLabels[visibleColumnCount] = aggregationDistinctColumnLabels.get(columnIndex);
+                    } else {
+                        columnNames[visibleColumnCount] = resultSetMetaData.getColumnName(columnIndex);
+                        columnLabels[visibleColumnCount] = resultSetMetaData.getColumnLabel(columnIndex);
+                    }
+                    visibleColumnCount++;
                 }
             }
-            return new ClientVisibleColumnLayout(false, Collections.emptyList(), false, Arrays.copyOf(result, visibleColumnCount),
-                    ShardingSphereResultSetUtils.createAggregationDistinctColumnLabels(sqlStatementContext, resultSetMetaData));
+            return new ClientVisibleColumnLayout(false, Collections.emptyList(), false, Arrays.copyOf(columnNames, visibleColumnCount), Arrays.copyOf(columnLabels, visibleColumnCount));
         }
         
         @HighFrequencyInvocation
         private int getVisibleColumnIndex(final int column) throws SQLException {
-            ShardingSpherePreconditions.checkState(column >= 1 && column <= visibleColumnIndexes.length, () -> new ColumnIndexOutOfRangeException(column).toSQLException());
-            return visibleColumnIndexes[column - 1];
+            ShardingSpherePreconditions.checkState(column >= 1 && column <= columnNames.length, () -> new ColumnIndexOutOfRangeException(column).toSQLException());
+            return column - 1;
         }
     }
 }

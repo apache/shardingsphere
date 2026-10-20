@@ -82,6 +82,8 @@ class QueryHeaderBuilderEngineTest {
         when(returnedMetadata.getColumnLabel(1)).thenReturn("order_id");
         when(returnedMetadata.getColumnLabel(2)).thenReturn("user_id");
         when(returnedMetadata.getColumnLabel(3)).thenReturn("ORDER_BY_DERIVED_0");
+        when(returnedMetadata.getColumnName(1)).thenReturn("order_id");
+        when(returnedMetadata.getColumnName(2)).thenReturn("user_id");
         when(returnedMetadata.getColumnName(3)).thenReturn("ORDER_BY_DERIVED_0");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ShardingSphereResultSetMetaData metadata = new ShardingSphereResultSetMetaData(returnedMetadata, database, context);
@@ -135,6 +137,8 @@ class QueryHeaderBuilderEngineTest {
         when(returnedMetadata.getColumnLabel(2)).thenReturn("add_test");
         when(returnedMetadata.getColumnLabel(3)).thenReturn("ORDER_BY_DERIVED_9");
         when(returnedMetadata.getColumnLabel(4)).thenReturn("ORDER_BY_DERIVED_0");
+        when(returnedMetadata.getColumnName(1)).thenReturn("order_id");
+        when(returnedMetadata.getColumnName(2)).thenReturn("add_test");
         when(returnedMetadata.getColumnName(3)).thenReturn("ORDER_BY_DERIVED_9");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ShardingSphereResultSetMetaData metadata = new ShardingSphereResultSetMetaData(returnedMetadata, database, context);

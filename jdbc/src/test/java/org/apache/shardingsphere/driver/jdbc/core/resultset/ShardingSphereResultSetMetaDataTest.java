@@ -147,7 +147,9 @@ class ShardingSphereResultSetMetaDataTest {
                 Arguments.of("multiple to multiple routes", 1, 1, "user_id", new String[]{"user_id"}),
                 Arguments.of("explicit alias", 1, 0, "user_id AS foo_user", new String[]{"foo_user"}),
                 Arguments.of("derived-like alias", 1, 0, "user_id AS ORDER_BY_DERIVED_9", new String[]{"ORDER_BY_DERIVED_9"}),
-                Arguments.of("wildcard schema drift", 1, 0, "*", new String[]{"order_id", "add_test", "user_id"}));
+                Arguments.of("wildcard schema drift", 1, 0, "*", new String[]{"order_id", "add_test", "user_id"}),
+                Arguments.of("wildcard schema drift on same single route", 0, 0, "*", new String[]{"order_id", "add_test", "user_id"}),
+                Arguments.of("wildcard schema drift on same multiple routes", 1, 1, "*", new String[]{"order_id", "add_test", "user_id"}));
     }
     
     @Test
@@ -250,15 +252,27 @@ class ShardingSphereResultSetMetaDataTest {
     }
     
     @Test
-    void assertGetColumnNameAndLabelFallBackToResultSetMetaDataWhenProjectionCountMismatches() throws SQLException {
+    void assertColumnNameAndLabelPassthrough() throws SQLException {
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnName(1)).thenReturn("foo_column");
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("foo_label");
+        ShardingSphereResultSetMetaData actual = new ShardingSphereResultSetMetaData(resultSetMetaData, null, null);
+        assertThat(actual.getColumnName(1), is("foo_column"));
+        assertThat(actual.getColumnLabel(1), is("foo_label"));
+    }
+    
+    @Test
+    void assertFallbackColumnNameAndLabelSnapshot() throws SQLException {
         SelectStatementContext sqlStatementContext = createSelectStatementContext(Arrays.asList("order_id", "user_id", "status", "create_time"));
         assertTrue(sqlStatementContext.containsDerivedProjections());
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(5);
         stubBackendColumnLabels(resultSetMetaData, "order_id", "add_test", "user_id", "status", "create_time");
-        when(resultSetMetaData.getColumnName(2)).thenReturn("add_test");
+        when(resultSetMetaData.getColumnName(2)).thenReturn("foo_added");
         ShardingSphereResultSetMetaData metaData = new ShardingSphereResultSetMetaData(resultSetMetaData, null, sqlStatementContext);
-        assertThat(metaData.getColumnName(2), is("add_test"));
+        when(resultSetMetaData.getColumnName(2)).thenThrow(new SQLException("Backend result set is closed"));
+        when(resultSetMetaData.getColumnLabel(2)).thenThrow(new SQLException("Backend result set is closed"));
+        assertThat(metaData.getColumnName(2), is("foo_added"));
         assertThat(metaData.getColumnLabel(2), is("add_test"));
     }
     
