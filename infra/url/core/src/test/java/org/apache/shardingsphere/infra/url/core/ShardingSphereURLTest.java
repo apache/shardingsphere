@@ -36,8 +36,8 @@ class ShardingSphereURLTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertParse(final String url, final String expectedSourceType, final String expectedConfigurationSubject, final Map<String, String> expectedProps) {
-        ShardingSphereURL actual = ShardingSphereURL.parse(url);
+    void assertParse(final String name, final String expectedSourceType, final String expectedConfigurationSubject, final Map<String, String> expectedProps) {
+        ShardingSphereURL actual = ShardingSphereURL.parse(name);
         assertThat(actual.getSourceType(), is(expectedSourceType));
         assertThat(actual.getConfigurationSubject(), is(expectedConfigurationSubject));
         assertThat(actual.getQueryProps(), is(expectedProps));

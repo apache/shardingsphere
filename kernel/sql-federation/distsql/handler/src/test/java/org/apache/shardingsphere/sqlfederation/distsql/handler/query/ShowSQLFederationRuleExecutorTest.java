@@ -42,10 +42,10 @@ import static org.mockito.Mockito.when;
 @DistSQLRuleQueryExecutorSettings("cases/show-sql-federation-rule.xml")
 class ShowSQLFederationRuleExecutorTest {
     
-    @ParameterizedTest(name = "DistSQL -> {0}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(DistSQLRuleQueryExecutorTestCaseArgumentsProvider.class)
-    void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
-                            final GlobalRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(final String name, final DistSQLStatement sqlStatement, final GlobalRuleConfiguration currentRuleConfig,
+                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         SQLFederationRule rule = mock(SQLFederationRule.class);
         SQLFederationProvider provider = mock(SQLFederationProvider.class);
         when(provider.getType()).thenReturn("NONE");

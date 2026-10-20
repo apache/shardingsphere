@@ -218,8 +218,8 @@ class PostgreSQLComDescribeExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideInsertMetaDataCases")
-    void assertDescribePreparedStatementInsertByMetaData(final String testName, final String statementId, final String sql,
-                                                         final int expectedParamCount, final int expectedInt4Count, final int expectedCharCount) throws SQLException {
+    void assertDescribePreparedStatementInsertByMetaData(final String name, final String statementId, final String sql, final int expectedParamCount, final int expectedInt4Count,
+                                                         final int expectedCharCount) throws SQLException {
         when(packet.getType()).thenReturn('S');
         when(packet.getName()).thenReturn(statementId);
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
@@ -385,8 +385,8 @@ class PostgreSQLComDescribeExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideReturningCases")
-    void assertDescribePreparedStatementInsertWithReturning(final String testName, final String statementId, final String sql,
-                                                            final List<PostgreSQLBinaryColumnType> expectedParamTypes, final List<PostgreSQLColumnDescription> expectedColumns) throws SQLException {
+    void assertDescribePreparedStatementInsertWithReturning(final String name, final String statementId, final String sql, final List<PostgreSQLBinaryColumnType> expectedParamTypes,
+                                                            final List<PostgreSQLColumnDescription> expectedColumns) throws SQLException {
         when(packet.getType()).thenReturn('S');
         when(packet.getName()).thenReturn(statementId);
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
@@ -399,7 +399,7 @@ class PostgreSQLComDescribeExecutorTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         prepareJDBCBackendConnectionForResultMetaData(sql, expectedColumns.size());
-        if ("returning complex columns".equals(testName)) {
+        if ("returning complex columns".equals(name)) {
             columnTypeOIDs = new HashMap<>(2, 1F);
             columnTypeOIDs.put(12, 2249);
             columnTypeOIDs.put(13, 2249);

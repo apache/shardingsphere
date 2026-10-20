@@ -65,7 +65,7 @@ class DataConsistencyCheckUtilsTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("matchedPreEpochTimestampCases")
-    void assertTimestampMatchedBeforeEpoch(final String scenario, final long thisMillis, final long thatMillis) {
+    void assertTimestampMatchedBeforeEpoch(final String name, final long thisMillis, final long thatMillis) {
         assertTrue(DataConsistencyCheckUtils.isMatched(new EqualsBuilder(), new Timestamp(thisMillis), new Timestamp(thatMillis)));
     }
     
@@ -77,7 +77,7 @@ class DataConsistencyCheckUtilsTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("notMatchedPreEpochTimestampCases")
-    void assertTimestampNotMatchedBeforeEpoch(final String scenario, final long thisMillis, final long thatMillis) {
+    void assertTimestampNotMatchedBeforeEpoch(final String name, final long thisMillis, final long thatMillis) {
         assertFalse(DataConsistencyCheckUtils.isMatched(new EqualsBuilder(), new Timestamp(thisMillis), new Timestamp(thatMillis)));
     }
     

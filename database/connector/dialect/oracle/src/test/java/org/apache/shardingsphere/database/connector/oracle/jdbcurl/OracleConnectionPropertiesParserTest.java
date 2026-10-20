@@ -57,13 +57,13 @@ class OracleConnectionPropertiesParserTest {
         assertThat(actual.getQueryProperties(), is(queryProps));
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @ValueSource(strings = {"jdbc:oracle:xxxxxxxx", "jdbc:oracle:thin:@host:123/", "jdbc:oracle:thin:@host/service:INVALID",
             "jdbc:oracle:thin:@host/service/instance/extra", "jdbc:oracle:thin:@host/service!invalid",
             "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(HOST=host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=service)))invalid",
             "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(HOST=host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=service)))invalid)"})
-    void assertNewConstructorFailure(final String url) {
-        assertThrows(UnrecognizedDatabaseURLException.class, () -> parser.parse(url, "test", null));
+    void assertNewConstructorFailure(final String name) {
+        assertThrows(UnrecognizedDatabaseURLException.class, () -> parser.parse(name, "test", null));
     }
     
     private static final class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {

@@ -83,12 +83,12 @@ class PipelineProcessConfigurationPersistServiceTest {
         PipelineContextUtils.initPipelineContextManager();
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @ValueSource(strings = {"MIGRATION", "STREAMING"})
-    void assertPersistAndLoad(final String jobType) {
+    void assertPersistAndLoad(final String name) {
         for (Entry<String, BiConsumer<YamlPipelineProcessConfiguration, YamlPipelineProcessConfiguration>> entry : typesAssertionMap.entrySet()) {
             YamlPipelineProcessConfiguration expected = createYamlPipelineProcessConfiguration(entry.getKey());
-            entry.getValue().accept(persistAndLoad(jobType, expected), expected);
+            entry.getValue().accept(persistAndLoad(name, expected), expected);
         }
     }
     

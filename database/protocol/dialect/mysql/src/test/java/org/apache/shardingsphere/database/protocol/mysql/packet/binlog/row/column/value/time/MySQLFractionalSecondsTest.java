@@ -32,19 +32,19 @@ import static org.hamcrest.Matchers.is;
 
 class MySQLFractionalSecondsTest {
     
-    @ParameterizedTest(name = "precision={0}, expectedNanos={2}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("fractionalSecondsArguments")
-    void assertNanosWithVariousPrecision(final int precision, final ByteBuf buf, final int expectedNanos, final int expectedRemaining) {
+    void assertNanosWithVariousPrecision(final String name, final int precision, final ByteBuf buf, final int expectedNanos, final int expectedRemaining) {
         assertThat(new MySQLFractionalSeconds(precision, new MySQLPacketPayload(buf, StandardCharsets.UTF_8)).getNanos(), is(expectedNanos));
         assertThat(buf.readableBytes(), is(expectedRemaining));
     }
     
     private static Stream<Arguments> fractionalSecondsArguments() {
         return Stream.of(
-                Arguments.of(1, writeByte(10), 100000000, 0),
-                Arguments.of(3, writeShort(2), 200000, 0),
-                Arguments.of(5, writeMedium(3), 3000, 0),
-                Arguments.of(0, writeByte(1), 0, 1));
+                Arguments.of("one digit precision", 1, writeByte(10), 100000000, 0),
+                Arguments.of("three digit precision", 3, writeShort(2), 200000, 0),
+                Arguments.of("five digit precision", 5, writeMedium(3), 3000, 0),
+                Arguments.of("zero precision preserves buffer", 0, writeByte(1), 0, 1));
     }
     
     private static ByteBuf writeByte(final int value) {

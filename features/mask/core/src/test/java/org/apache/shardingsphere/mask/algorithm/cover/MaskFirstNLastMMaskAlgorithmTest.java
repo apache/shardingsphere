@@ -33,21 +33,21 @@ import java.util.Properties;
 
 class MaskFirstNLastMMaskAlgorithmTest {
     
-    @ParameterizedTest(name = "{0}: {1}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(AlgorithmInitArgumentsProvider.class)
-    void assertInit(final String type, @SuppressWarnings("unused") final String name, final Properties props) {
+    void assertInit(final String name, final String type, final Properties props) {
         MaskAlgorithmAssertions.assertInitFailedWithInvalidProperties(type, props);
     }
     
-    @ParameterizedTest(name = "{0}: {1}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(AlgorithmMaskExecuteArgumentsProvider.class)
-    void assertMask(final String type, @SuppressWarnings("unused") final String name, final Properties props, final Object plainValue, final Object maskedValue) {
+    void assertMask(final String name, final String type, final Properties props, final Object plainValue, final Object maskedValue) {
         MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     
-    @ParameterizedTest(name = "{0}: {1}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(AlgorithmMaskExecuteWithSameNMArgumentsProvider.class)
-    void assertMaskWithSameNM(final String type, @SuppressWarnings("unused") final String name, final Properties props, final Object plainValue, final Object maskedValue) {
+    void assertMaskWithSameNM(final String name, final String type, final Properties props, final Object plainValue, final Object maskedValue) {
         MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     

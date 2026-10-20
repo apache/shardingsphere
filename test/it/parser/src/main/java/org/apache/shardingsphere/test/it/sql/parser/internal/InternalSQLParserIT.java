@@ -50,13 +50,13 @@ public abstract class InternalSQLParserIT {
     
     private static final SQLParserTestCases SQL_PARSER_TEST_CASES = SQLParserTestCasesRegistry.getInstance().getCases();
     
-    @ParameterizedTest(name = "{0} ({1}) -> {2}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertSupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
-        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
-        SQLParserTestCase expected = SQL_PARSER_TEST_CASES.get(sqlCaseId);
+    void assertSupportedSQL(final String name, final SQLCaseType sqlCaseType, final String databaseType) {
+        String sql = SQL_CASES.getSQL(name, sqlCaseType, SQL_PARSER_TEST_CASES.get(name).getParameters());
+        SQLParserTestCase expected = SQL_PARSER_TEST_CASES.get(name);
         SQLStatement actual = parseSQLStatement("H2".equals(databaseType) ? "MySQL" : databaseType, sql);
-        SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sql, expected.getParameters(), sqlCaseType), actual, expected);
+        SQLStatementAssert.assertIs(new SQLCaseAssertContext(name, sql, expected.getParameters(), sqlCaseType), actual, expected);
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {

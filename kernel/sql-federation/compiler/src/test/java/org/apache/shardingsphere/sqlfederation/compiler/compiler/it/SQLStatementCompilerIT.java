@@ -254,7 +254,7 @@ class SQLStatementCompilerIT {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertCompile(final TestCase testcase) {
+    void assertCompile(final String name, final TestCase testcase) {
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(testcase.getSql(), false);
         String actual = sqlStatementCompiler.compile(sqlStatement, "MySQL").getPhysicalPlan().explain().replaceAll(System.lineSeparator(), " ");
         assertThat(actual, is(testcase.getAssertion().iterator().next().getExpectedResult()));
@@ -264,7 +264,7 @@ class SQLStatementCompilerIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) throws IOException {
-            return TestCasesLoader.getInstance().generate().stream().map(Arguments::of);
+            return TestCasesLoader.getInstance().generate().stream().map(each -> Arguments.of(each.getSql(), each));
         }
     }
 }

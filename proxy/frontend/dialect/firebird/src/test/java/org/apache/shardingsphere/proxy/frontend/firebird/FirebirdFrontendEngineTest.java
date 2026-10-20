@@ -88,7 +88,7 @@ class FirebirdFrontendEngineTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideHandleExceptionParameters")
-    void assertHandleException(final String testName, final boolean inTransaction, final boolean exceptionOccur, final Exception exception, final boolean expectedExceptionOccur) {
+    void assertHandleException(final String name, final boolean inTransaction, final boolean exceptionOccur, final Exception exception, final boolean expectedExceptionOccur) {
         ConnectionContext connectionContext = mockConnectionSession(inTransaction, exceptionOccur);
         engine.handleException(connectionSession, exception);
         assertThat(connectionContext.getTransactionContext().isExceptionOccur(), is(expectedExceptionOccur));

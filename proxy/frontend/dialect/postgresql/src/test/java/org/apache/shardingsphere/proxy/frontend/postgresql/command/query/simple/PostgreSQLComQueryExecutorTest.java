@@ -148,8 +148,8 @@ class PostgreSQLComQueryExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("updateScenarios")
-    void assertExecuteUpdate(final String testName, final SQLStatement sqlStatement, final Class<? extends DatabasePacket> expectedPacketType,
-                             final String expectedTag, final boolean expectCloseAll) throws SQLException, ReflectiveOperationException {
+    void assertExecuteUpdate(final String name, final SQLStatement sqlStatement, final Class<? extends DatabasePacket> expectedPacketType, final String expectedTag,
+                             final boolean expectCloseAll) throws SQLException, ReflectiveOperationException {
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(sqlStatement));
         Collection<DatabasePacket> actual = queryExecutor.execute();
         DatabasePacket packet = actual.iterator().next();

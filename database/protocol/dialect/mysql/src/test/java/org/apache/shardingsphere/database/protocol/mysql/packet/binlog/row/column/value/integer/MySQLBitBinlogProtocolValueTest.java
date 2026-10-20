@@ -52,9 +52,9 @@ class MySQLBitBinlogProtocolValueTest {
         actual = new MySQLBitBinlogProtocolValue();
     }
     
-    @ParameterizedTest(name = "withLength{1}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertRead(final int columnMeta, final int length, final long expected) {
+    void assertRead(final String name, final int columnMeta, final int length, final long expected) {
         when(columnDef.getColumnMeta()).thenReturn(columnMeta);
         when(payload.readLong(length)).thenReturn(expected);
         assertThat(actual.read(columnDef, payload), is(expected));
@@ -65,10 +65,10 @@ class MySQLBitBinlogProtocolValueTest {
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
-                    Arguments.of(1, 1, 1L),
-                    Arguments.of(516, 3, 1L),
-                    Arguments.of(1280, 5, 1L),
-                    Arguments.of(2048, 8, -1L));
+                    Arguments.of("one byte", 1, 1, 1L),
+                    Arguments.of("three bytes", 516, 3, 1L),
+                    Arguments.of("five bytes", 1280, 5, 1L),
+                    Arguments.of("eight bytes", 2048, 8, -1L));
         }
     }
 }

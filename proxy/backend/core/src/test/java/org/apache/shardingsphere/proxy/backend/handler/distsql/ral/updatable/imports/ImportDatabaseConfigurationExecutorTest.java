@@ -64,7 +64,7 @@ class ImportDatabaseConfigurationExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("importSuccessCases")
-    void assertImportDatabaseExecutor(final String caseName, final String databaseName, final String filePath) {
+    void assertImportDatabaseExecutor(final String name, final String databaseName, final String filePath) {
         assertExecute(mockContextManager(databaseName), filePath);
     }
     
@@ -77,7 +77,7 @@ class ImportDatabaseConfigurationExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("importFailureCases")
-    void assertImportFailure(final String caseName, final String databaseName, final String filePath, final Class<? extends Throwable> expected) {
+    void assertImportFailure(final String name, final String databaseName, final String filePath, final Class<? extends Throwable> expected) {
         assertThrows(expected, () -> assertExecute(mockContextManager(databaseName), filePath));
     }
     

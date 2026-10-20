@@ -38,6 +38,6 @@ public abstract class AgentE2ETestCaseArgumentsProvider implements ArgumentsProv
     
     @Override
     public final Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
-        return new AgentE2ETestCasesLoader(agentE2ETestCasesClass).loadTestCases(AgentE2ETestConfiguration.getInstance().getAdapter()).stream().map(Arguments::of);
+        return new AgentE2ETestCasesLoader(agentE2ETestCasesClass).loadTestCases(AgentE2ETestConfiguration.getInstance().getAdapter()).stream().map(each -> Arguments.of(each.toString(), each));
     }
 }

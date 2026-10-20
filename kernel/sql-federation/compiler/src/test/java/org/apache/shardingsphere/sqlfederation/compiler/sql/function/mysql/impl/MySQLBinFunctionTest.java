@@ -29,23 +29,23 @@ import static org.hamcrest.Matchers.is;
 
 class MySQLBinFunctionTest {
     
-    @ParameterizedTest(name = "bin({0}) -> {1}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("binTestCases")
-    void assertBin(final Object input, final String expected) {
+    void assertBin(final String name, final Object input, final String expected) {
         assertThat(MySQLBinFunction.bin(input), is(expected));
     }
     
     private static Stream<Arguments> binTestCases() {
         String expectedNegative = "1111111111111111111111111111111111111111111111111111111111110100";
         return Stream.of(
-                Arguments.of(null, null),
-                Arguments.of("", null),
-                Arguments.of(5, "101"),
-                Arguments.of(BigInteger.valueOf(2), "10"),
-                Arguments.of("abc", "0"),
-                Arguments.of("34xyz", "100010"),
-                Arguments.of("-abc", "0"),
-                Arguments.of("-", "0"),
-                Arguments.of("-12abc", expectedNegative));
+                Arguments.of("null input", null, null),
+                Arguments.of("empty text", "", null),
+                Arguments.of("positive integer", 5, "101"),
+                Arguments.of("big integer", BigInteger.valueOf(2), "10"),
+                Arguments.of("nonnumeric text", "abc", "0"),
+                Arguments.of("numeric prefix", "34xyz", "100010"),
+                Arguments.of("negative nonnumeric text", "-abc", "0"),
+                Arguments.of("minus sign", "-", "0"),
+                Arguments.of("negative numeric prefix", "-12abc", expectedNegative));
     }
 }

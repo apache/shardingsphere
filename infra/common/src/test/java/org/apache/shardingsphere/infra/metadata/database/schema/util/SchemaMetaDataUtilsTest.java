@@ -40,8 +40,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -164,8 +164,8 @@ class SchemaMetaDataUtilsTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @ValueSource(booleans = {true, false})
-    void assertGetMetaDataLoaderMaterialsPreservesActualTableNameFromDataNode(final boolean checkMetaDataEnabled) {
+    @CsvSource({"metadata check enabled, true", "metadata check disabled, false"})
+    void assertGetMetaDataLoaderMaterialsPreservesActualTableNameFromDataNode(final String name, final boolean checkMetaDataEnabled) {
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(1, 1F);
         storageUnits.put("ds_0", mockStorageUnit(ORACLE_DATABASE_TYPE, mock(DataSource.class)));
         ConfigurationProperties props = createIdentifierCaseProperties(checkMetaDataEnabled);
@@ -178,8 +178,8 @@ class SchemaMetaDataUtilsTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @ValueSource(booleans = {true, false})
-    void assertGetMetaDataLoaderMaterialsNormalizesConfiguredDataNodeTableName(final boolean checkMetaDataEnabled) {
+    @CsvSource({"metadata check enabled, true", "metadata check disabled, false"})
+    void assertGetMetaDataLoaderMaterialsNormalizesConfiguredDataNodeTableName(final String name, final boolean checkMetaDataEnabled) {
         Map<String, StorageUnit> storageUnits = Collections.singletonMap("ds_0", mockStorageUnit(ORACLE_DATABASE_TYPE, mock(DataSource.class)));
         ConfigurationProperties props = createIdentifierCaseProperties(checkMetaDataEnabled);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits,

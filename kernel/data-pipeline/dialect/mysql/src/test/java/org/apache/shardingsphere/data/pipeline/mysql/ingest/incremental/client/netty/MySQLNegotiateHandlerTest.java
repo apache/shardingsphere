@@ -91,9 +91,9 @@ class MySQLNegotiateHandlerTest {
         mysqlNegotiateHandler = new MySQLNegotiateHandler(USER_NAME, PASSWORD, authResultCallback);
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("handshakeParams")
-    void assertChannelReadHandshakeInitPacket(final String password, final boolean expectEmptyAuth) throws ReflectiveOperationException {
+    void assertChannelReadHandshakeInitPacket(final String name, final String password, final boolean expectEmptyAuth) throws ReflectiveOperationException {
         MySQLNegotiateHandler handler = new MySQLNegotiateHandler(USER_NAME, password, authResultCallback);
         MySQLHandshakePacket handshakePacket = new MySQLHandshakePacket(0, false, new MySQLAuthenticationPluginData(new byte[8], new byte[12]));
         handshakePacket.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
@@ -153,18 +153,18 @@ class MySQLNegotiateHandlerTest {
         assertFalse((Boolean) Plugins.getMemberAccessor().get(MySQLNegotiateHandler.class.getDeclaredField("publicKeyRequested"), mysqlNegotiateHandler));
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("authSwitchParams")
-    void assertChannelReadAuthSwitchRequestForPlugin(final String pluginName, final byte[] expectedResponse) {
-        mysqlNegotiateHandler.channelRead(channelHandlerContext, new MySQLAuthSwitchRequestPacket(pluginName, new MySQLAuthenticationPluginData(seedBytesPart1(), seedBytesPart2())));
+    void assertChannelReadAuthSwitchRequestForPlugin(final String name, final byte[] expectedResponse) {
+        mysqlNegotiateHandler.channelRead(channelHandlerContext, new MySQLAuthSwitchRequestPacket(name, new MySQLAuthenticationPluginData(seedBytesPart1(), seedBytesPart2())));
         assertThat(captureAuthSwitchResponse().getAuthPluginResponse(), is(expectedResponse));
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("publicKeyEncryptParams")
-    void assertHandleCachingSha2EncryptWithPublicKey(final String serverVersion) throws ReflectiveOperationException {
+    void assertHandleCachingSha2EncryptWithPublicKey(final String name) throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("publicKeyRequested"), mysqlNegotiateHandler, true);
-        Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("serverVersion"), mysqlNegotiateHandler, new MySQLServerVersion(serverVersion));
+        Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("serverVersion"), mysqlNegotiateHandler, new MySQLServerVersion(name));
         Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("seed"), mysqlNegotiateHandler, authenticationPluginSeed());
         mysqlNegotiateHandler.channelRead(channelHandlerContext, new MySQLAuthMoreDataPacket(publicKey().getBytes()));
         MySQLAuthSwitchResponsePacket response = captureAuthSwitchResponse();
@@ -185,7 +185,7 @@ class MySQLNegotiateHandlerTest {
     }
     
     private static Stream<Arguments> handshakeParams() {
-        return Stream.of(Arguments.of(PASSWORD, false), Arguments.of("", true));
+        return Stream.of(Arguments.of("password provided", PASSWORD, false), Arguments.of("empty password", "", true));
     }
     
     @SneakyThrows(NoSuchAlgorithmException.class)

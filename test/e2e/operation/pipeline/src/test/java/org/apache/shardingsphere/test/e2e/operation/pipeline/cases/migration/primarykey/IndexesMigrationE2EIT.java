@@ -79,7 +79,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertNoUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+    void assertNoUniqueKeyMigrationSuccess(final String name, final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql;
             String consistencyCheckAlgorithmType;
@@ -162,7 +162,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertMultiPrimaryKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+    void assertMultiPrimaryKeyMigrationSuccess(final String name, final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql;
             String consistencyCheckAlgorithmType;
@@ -184,7 +184,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertMultiUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+    void assertMultiUniqueKeyMigrationSuccess(final String name, final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql;
             String consistencyCheckAlgorithmType;
@@ -206,7 +206,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertSpecialTypeSingleColumnUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+    void assertSpecialTypeSingleColumnUniqueKeyMigrationSuccess(final String name, final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql;
             String consistencyCheckAlgorithmType;

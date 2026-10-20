@@ -58,7 +58,7 @@ class ShowProcessListE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertShowProcessList(final ShowProcessListTestParameter testParam) throws SQLException {
+    void assertShowProcessList(final String name, final ShowProcessListTestParameter testParam) throws SQLException {
         try (ClusterShowProcessListContainerComposer containerComposer = new ClusterShowProcessListContainerComposer(testParam)) {
             containerComposer.start();
             CompletableFuture<Void> executeSelectSleep = CompletableFuture.runAsync(getExecuteSleepThread("proxy", containerComposer));
@@ -125,7 +125,9 @@ class ShowProcessListE2EIT {
             Collection<Arguments> result = new LinkedList<>();
             for (String each : ENV.getScenarios()) {
                 for (Mode mode : ENV.getArtifactEnvironment().getModes()) {
-                    result.add(Arguments.of(new ShowProcessListTestParameter(TypedSPILoader.getService(DatabaseType.class, "MySQL"), each, mode, ENV.getArtifactEnvironment().getRegCenterType())));
+                    ShowProcessListTestParameter testParam =
+                            new ShowProcessListTestParameter(TypedSPILoader.getService(DatabaseType.class, "MySQL"), each, mode, ENV.getArtifactEnvironment().getRegCenterType());
+                    result.add(Arguments.of(testParam.toString(), testParam));
                 }
             }
             return result.stream();

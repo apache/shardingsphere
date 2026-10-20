@@ -97,8 +97,7 @@ class BinaryOperationExpressionConverterTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideIsOperatorCases")
-    void assertConvertIsOperatorVariants(final String displayName, final String rightLiteral, final Supplier<SqlNode> leftSupplier,
-                                         final SqlOperator expectedOperator, final Boolean expectedBoolean) {
+    void assertConvertIsOperatorVariants(final String name, final String rightLiteral, final Supplier<SqlNode> leftSupplier, final SqlOperator expectedOperator, final Boolean expectedBoolean) {
         LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 1);
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, rightLiteral);
         SqlNode leftNode = leftSupplier.get();
@@ -113,16 +112,16 @@ class BinaryOperationExpressionConverterTest {
         }
     }
     
-    @ParameterizedTest(name = "{0} {1}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideQuantifyOperators")
-    void assertConvertQuantifySubquery(final String operator, final String quantifyOperator, final SqlOperator expectedOperator) {
+    void assertConvertQuantifySubquery(final String name, final String quantifyOperator, final SqlOperator expectedOperator) {
         LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 1);
         QuantifySubqueryExpression right = new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "sub"), quantifyOperator);
         SqlNode leftNode = mock(SqlNode.class);
         SqlNode rightNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
         when(ExpressionConverter.convert(right)).thenReturn(Optional.of(rightNode));
-        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, operator, ""));
+        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, name, ""));
         assertThat(actual.getOperator(), is(expectedOperator));
         assertThat(actual.getOperandList(), is(Arrays.asList(leftNode, rightNode)));
     }

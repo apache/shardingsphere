@@ -81,7 +81,7 @@ class OpenGaussFrontendEngineTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("handleExceptionTestCases")
-    void assertHandleException(final String testName, final boolean inTransaction, final boolean exceptionOccur, final Exception exception, final boolean expectedExceptionOccur) {
+    void assertHandleException(final String name, final boolean inTransaction, final boolean exceptionOccur, final Exception exception, final boolean expectedExceptionOccur) {
         ConnectionContext connectionContext = mockConnectionContext(inTransaction, exceptionOccur);
         ConnectionSession connectionSession = mockConnectionSession(connectionContext);
         databaseProtocolFrontendEngine.handleException(connectionSession, exception);

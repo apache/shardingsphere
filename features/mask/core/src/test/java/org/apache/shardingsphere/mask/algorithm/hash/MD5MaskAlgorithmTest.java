@@ -32,15 +32,15 @@ import java.util.Properties;
 
 class MD5MaskAlgorithmTest {
     
-    @ParameterizedTest(name = "{0}: {1}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(AlgorithmMaskExecuteArgumentsProvider.class)
-    void assertMask(final String type, @SuppressWarnings("unused") final String name, final Properties props, final Object plainValue, final Object maskedValue) {
+    void assertMask(final String name, final String type, final Properties props, final Object plainValue, final Object maskedValue) {
         MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     
-    @ParameterizedTest(name = "{0}: {1}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(AlgorithmMaskExecuteWithSaltArgumentsProvider.class)
-    void assertMaskWithSalt(final String type, @SuppressWarnings("unused") final String name, final Properties props, final Object plainValue, final Object maskedValue) {
+    void assertMaskWithSalt(final String name, final String type, final Properties props, final Object plainValue, final Object maskedValue) {
         MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     

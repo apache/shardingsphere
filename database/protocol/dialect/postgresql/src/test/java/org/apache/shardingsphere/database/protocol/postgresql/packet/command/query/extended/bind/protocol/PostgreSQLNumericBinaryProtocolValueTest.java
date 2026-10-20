@@ -38,14 +38,14 @@ class PostgreSQLNumericBinaryProtocolValueTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertGetColumnLength(final BigDecimal bigDecimal, final byte[] expected) {
+    void assertGetColumnLength(final String name, final BigDecimal bigDecimal, final byte[] expected) {
         PostgreSQLNumericBinaryProtocolValue binaryProtocolValue = new PostgreSQLNumericBinaryProtocolValue();
         assertThat(binaryProtocolValue.getColumnLength(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), bigDecimal), is(expected.length));
     }
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertRead(final BigDecimal bigDecimal, final byte[] expected) {
+    void assertRead(final String name, final BigDecimal bigDecimal, final byte[] expected) {
         PostgreSQLNumericBinaryProtocolValue binaryProtocolValue = new PostgreSQLNumericBinaryProtocolValue();
         int expectedLength = expected.length;
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
@@ -58,7 +58,7 @@ class PostgreSQLNumericBinaryProtocolValueTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertWrite(final BigDecimal bigDecimal, final byte[] expected) {
+    void assertWrite(final String name, final BigDecimal bigDecimal, final byte[] expected) {
         PostgreSQLNumericBinaryProtocolValue binaryProtocolValue = new PostgreSQLNumericBinaryProtocolValue();
         int columnLength = binaryProtocolValue.getColumnLength(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), bigDecimal);
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(columnLength);
@@ -73,12 +73,12 @@ class PostgreSQLNumericBinaryProtocolValueTest {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
-            return Stream.of(Arguments.of(new BigDecimal("0"), new byte[]{0, 0, -1, -1, 0, 0, 0, 0}),
-                    Arguments.of(new BigDecimal("0.00"), new byte[]{0, 0, -1, -1, 0, 0, 0, 2}),
-                    Arguments.of(new BigDecimal("0.0001"), new byte[]{0, 1, -1, -1, 0, 0, 0, 4, 0, 1}),
-                    Arguments.of(new BigDecimal("9999"), new byte[]{0, 1, 0, 0, 0, 0, 0, 0, 39, 15}),
-                    Arguments.of(new BigDecimal("9999.0"), new byte[]{0, 1, 0, 0, 0, 0, 0, 1, 39, 15}),
-                    Arguments.of(new BigDecimal("9999.9999"), new byte[]{0, 2, 0, 0, 0, 0, 0, 4, 39, 15, 39, 15}));
+            return Stream.of(Arguments.of("integer zero", new BigDecimal("0"), new byte[]{0, 0, -1, -1, 0, 0, 0, 0}),
+                    Arguments.of("scaled zero", new BigDecimal("0.00"), new byte[]{0, 0, -1, -1, 0, 0, 0, 2}),
+                    Arguments.of("fractional value", new BigDecimal("0.0001"), new byte[]{0, 1, -1, -1, 0, 0, 0, 4, 0, 1}),
+                    Arguments.of("integer maximum digit", new BigDecimal("9999"), new byte[]{0, 1, 0, 0, 0, 0, 0, 0, 39, 15}),
+                    Arguments.of("scaled integer", new BigDecimal("9999.0"), new byte[]{0, 1, 0, 0, 0, 0, 0, 1, 39, 15}),
+                    Arguments.of("maximum fractional digit", new BigDecimal("9999.9999"), new byte[]{0, 2, 0, 0, 0, 0, 0, 4, 39, 15, 39, 15}));
         }
     }
 }

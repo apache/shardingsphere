@@ -287,7 +287,7 @@ class ProxyDatabaseConnectionManagerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("closeConnectionsWithForceRollbackArguments")
-    void assertCloseConnectionsWithForceRollback(final String scenario, final boolean inTransaction, final boolean rollbackFailed, final int expectedRollbackCount) throws SQLException {
+    void assertCloseConnectionsWithForceRollback(final String name, final boolean inTransaction, final boolean rollbackFailed, final int expectedRollbackCount) throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(inTransaction);
         Connection connection = prepareCachedConnections();
         if (rollbackFailed) {
@@ -301,7 +301,7 @@ class ProxyDatabaseConnectionManagerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("closeConnectionsWithCloseExceptionArguments")
-    void assertCloseConnectionsWithCloseException(final String scenario, final boolean connectionClosed, final boolean checkClosedFailed, final int expectedExceptionCount) throws SQLException {
+    void assertCloseConnectionsWithCloseException(final String name, final boolean connectionClosed, final boolean checkClosedFailed, final int expectedExceptionCount) throws SQLException {
         Connection connection = prepareCachedConnections();
         SQLException expectedException = new SQLException("");
         doThrow(expectedException).when(connection).close();
@@ -498,7 +498,7 @@ class ProxyDatabaseConnectionManagerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("handleAutoCommitArguments")
-    void assertHandleAutoCommit(final String scenario, final boolean autoCommit, final boolean inTransaction, final int expectedTransactionManagerCount) {
+    void assertHandleAutoCommit(final String name, final boolean autoCommit, final boolean inTransaction, final int expectedTransactionManagerCount) {
         when(connectionSession.isAutoCommit()).thenReturn(autoCommit);
         connectionSession.getTransactionStatus().setInTransaction(inTransaction);
         try (MockedConstruction<ProxyBackendTransactionManager> mockedConstruction = mockConstruction(ProxyBackendTransactionManager.class)) {

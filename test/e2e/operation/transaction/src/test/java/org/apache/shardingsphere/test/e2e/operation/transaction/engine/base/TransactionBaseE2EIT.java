@@ -99,7 +99,7 @@ public abstract class TransactionBaseE2EIT {
     @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertTransaction(final TransactionTestParameter testParam) throws SQLException {
+    void assertTransaction(final String name, final TransactionTestParameter testParam) throws SQLException {
         try (TransactionContainerComposer containerComposer = new TransactionContainerComposer(testParam)) {
             try {
                 callTestCases(testParam, containerComposer);
@@ -338,7 +338,7 @@ public abstract class TransactionBaseE2EIT {
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             TransactionE2ESettings settings = context.getRequiredTestClass().getAnnotation(TransactionE2ESettings.class);
             Preconditions.checkNotNull(settings, "Annotation TransactionE2ESettings is required.");
-            return getTransactionTestParameters(settings.value()).stream().map(Arguments::of);
+            return getTransactionTestParameters(settings.value()).stream().map(each -> Arguments.of(each.toString(), each));
         }
         
         private Collection<TransactionTestParameter> getTransactionTestParameters(final Class<? extends TransactionBaseE2EIT> testCaseClass) {

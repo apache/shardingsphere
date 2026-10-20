@@ -46,11 +46,11 @@ import java.util.stream.Stream;
 
 public abstract class ExternalSQLParserIT {
     
-    @ParameterizedTest(name = "{0} ({1}) -> {2}")
+    @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     @Execution(ExecutionMode.CONCURRENT)
-    void assertParseSQL(final String sqlCaseId, final String databaseType, final String sql, final String reportType) throws IOException {
+    void assertParseSQL(final String name, final String databaseType, final String sql, final String reportType) throws IOException {
         boolean isSuccess = false;
         try (
                 SQLParseResultReporter resultReporter = TypedSPILoader.getService(SQLParseResultReporterCreator.class, reportType)
@@ -60,7 +60,7 @@ public abstract class ExternalSQLParserIT {
                 new SQLStatementVisitorEngine(databaseType).visit(parseASTNode);
                 isSuccess = true;
             } finally {
-                resultReporter.printResult(sqlCaseId, databaseType, isSuccess, sql);
+                resultReporter.printResult(name, databaseType, isSuccess, sql);
             }
         }
     }

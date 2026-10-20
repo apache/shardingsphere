@@ -104,7 +104,7 @@ public abstract class SQLRewriterIT {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertRewrite(final SQLRewriteEngineTestParameters testParams) throws IOException, SQLException {
+    void assertRewrite(final String name, final SQLRewriteEngineTestParameters testParams) throws IOException, SQLException {
         Collection<SQLRewriteUnit> actual = createSQLRewriteUnits(testParams);
         assertThat(actual.size(), is(testParams.getOutputSQLs().size()));
         int count = 0;
@@ -269,7 +269,8 @@ public abstract class SQLRewriterIT {
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             SQLRewriterITSettings settings = context.getRequiredTestClass().getAnnotation(SQLRewriterITSettings.class);
             Preconditions.checkNotNull(settings, "Annotation SQLRewriterITSettings is required.");
-            return SQLRewriteEngineTestParametersBuilder.loadTestParameters(settings.value().toUpperCase(), settings.value(), SQLRewriterIT.class).stream().map(Arguments::of);
+            return SQLRewriteEngineTestParametersBuilder.loadTestParameters(settings.value().toUpperCase(), settings.value(), SQLRewriterIT.class).stream()
+                    .map(each -> Arguments.of(each.toString(), each));
         }
     }
 }

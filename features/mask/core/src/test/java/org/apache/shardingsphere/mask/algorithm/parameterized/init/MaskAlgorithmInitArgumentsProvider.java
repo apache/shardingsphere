@@ -33,7 +33,7 @@ public abstract class MaskAlgorithmInitArgumentsProvider implements ArgumentsPro
     
     @Override
     public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
-        return getCaseAsserts().stream().map(each -> Arguments.of(type, each.getName(), each.getProps()));
+        return getCaseAsserts().stream().map(each -> Arguments.of(each.getName(), type, each.getProps()));
     }
     
     protected abstract Collection<MaskAlgorithmInitCaseAssert> getCaseAsserts();

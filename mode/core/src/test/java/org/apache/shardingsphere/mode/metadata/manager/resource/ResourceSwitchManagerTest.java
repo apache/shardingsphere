@@ -129,9 +129,9 @@ class ResourceSwitchManagerTest {
         assertThat(resourceMetaData.getStorageUnits(), hasKey("drop"));
     }
     
-    @ParameterizedTest(name = "Register storage units with {0} existing units and {1} new units")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideRegisterStorageUnitArguments")
-    void assertSwitchByRegisterStorageUnitWithVariousScenarios(final int existingUnitsCount, final int newUnitsCount) {
+    void assertSwitchByRegisterStorageUnitWithVariousScenarios(final String name, final int existingUnitsCount, final int newUnitsCount) {
         ResourceMetaData resourceMetaData = createResourceMetaDataWithMultipleUnits(existingUnitsCount);
         Map<String, DataSourcePoolProperties> toBeRegistered = createDataSourcePoolPropertiesMap(newUnitsCount, "new_");
         DataSource newDataSource = mock(DataSource.class);
@@ -146,9 +146,9 @@ class ResourceSwitchManagerTest {
         }
     }
     
-    @ParameterizedTest(name = "Alter storage units with {0} total units and alter {1} units")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideAlterStorageUnitArguments")
-    void assertSwitchByAlterStorageUnitWithVariousScenarios(final int totalUnits, final int alterUnitsCount) {
+    void assertSwitchByAlterStorageUnitWithVariousScenarios(final String name, final int totalUnits, final int alterUnitsCount) {
         ResourceMetaData resourceMetaData = createResourceMetaDataWithMultipleUnits(totalUnits);
         Map<String, DataSourcePoolProperties> toBeAltered = createDataSourcePoolPropertiesMap(alterUnitsCount, "");
         DataSource newDataSource = mock(DataSource.class);
@@ -161,9 +161,9 @@ class ResourceSwitchManagerTest {
         }
     }
     
-    @ParameterizedTest(name = "Unregister storage units with {0} total units and remove {1} units")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideUnregisterStorageUnitArguments")
-    void assertSwitchByUnregisterStorageUnitWithVariousScenarios(final int totalUnits, final int removeUnitsCount) {
+    void assertSwitchByUnregisterStorageUnitWithVariousScenarios(final String name, final int totalUnits, final int removeUnitsCount) {
         ResourceMetaData resourceMetaData = createResourceMetaDataWithMultipleUnits(totalUnits);
         Collection<String> toBeRemoved =
                 Arrays.asList(String.valueOf(0), String.valueOf(1), String.valueOf(2), String.valueOf(3), String.valueOf(4)).subList(0, Math.min(removeUnitsCount, totalUnits));
@@ -252,28 +252,28 @@ class ResourceSwitchManagerTest {
     
     private static Stream<Arguments> provideRegisterStorageUnitArguments() {
         return Stream.of(
-                Arguments.of(0, 1),
-                Arguments.of(1, 1),
-                Arguments.of(1, 2),
-                Arguments.of(3, 1),
-                Arguments.of(3, 3));
+                Arguments.of("register one into empty resources", 0, 1),
+                Arguments.of("register one into one existing unit", 1, 1),
+                Arguments.of("register two into one existing unit", 1, 2),
+                Arguments.of("register one into three existing units", 3, 1),
+                Arguments.of("register three into three existing units", 3, 3));
     }
     
     private static Stream<Arguments> provideAlterStorageUnitArguments() {
         return Stream.of(
-                Arguments.of(1, 1),
-                Arguments.of(3, 1),
-                Arguments.of(3, 2),
-                Arguments.of(5, 3));
+                Arguments.of("alter only storage unit", 1, 1),
+                Arguments.of("alter one of three storage units", 3, 1),
+                Arguments.of("alter two of three storage units", 3, 2),
+                Arguments.of("alter three of five storage units", 5, 3));
     }
     
     private static Stream<Arguments> provideUnregisterStorageUnitArguments() {
         return Stream.of(
-                Arguments.of(1, 0),
-                Arguments.of(1, 1),
-                Arguments.of(3, 1),
-                Arguments.of(3, 2),
-                Arguments.of(5, 5));
+                Arguments.of("remove no storage units", 1, 0),
+                Arguments.of("remove only storage unit", 1, 1),
+                Arguments.of("remove one of three storage units", 3, 1),
+                Arguments.of("remove two of three storage units", 3, 2),
+                Arguments.of("remove all five storage units", 5, 5));
     }
     
     private ResourceMetaData createResourceMetaDataWithMultipleUnits(final int count) {

@@ -40,6 +40,6 @@ public final class SQLE2EITArgumentsProvider implements ArgumentsProvider {
         Collection<? extends E2ETestParameter> testParams = settings.batch()
                 ? E2ETestParameterFactory.getCaseTestParameters(settings.value())
                 : E2ETestParameterFactory.getAssertionTestParameters(settings.value());
-        return testParams.stream().map(Arguments::of);
+        return testParams.stream().map(each -> Arguments.of(each.toString(), each));
     }
 }

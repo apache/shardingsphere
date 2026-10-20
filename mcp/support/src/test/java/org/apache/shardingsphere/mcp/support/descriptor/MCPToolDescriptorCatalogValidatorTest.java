@@ -48,11 +48,11 @@ class MCPToolDescriptorCatalogValidatorTest {
     
     @ParameterizedTest(name = "{0}")
     @ValueSource(strings = {"$defs", "definitions"})
-    void assertValidateWithUnsupportedDefinitionField(final String fieldName) {
+    void assertValidateWithUnsupportedDefinitionField(final String name) {
         Map<String, Object> inputSchema = new LinkedHashMap<>(createInputSchema());
-        inputSchema.put(fieldName, Map.of("query", Map.of("type", "string")));
+        inputSchema.put(name, Map.of("query", Map.of("type", "string")));
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPToolDescriptorCatalogValidator.validate(createCatalog(inputSchema)));
-        assertThat(actual.getMessage(), is(String.format("Tool `database_gateway_test_tool` inputSchema contains unsupported top-level field `%s`.", fieldName)));
+        assertThat(actual.getMessage(), is(String.format("Tool `database_gateway_test_tool` inputSchema contains unsupported top-level field `%s`.", name)));
     }
     
     @Test

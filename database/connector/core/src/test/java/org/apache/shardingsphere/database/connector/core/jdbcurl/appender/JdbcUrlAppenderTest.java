@@ -34,8 +34,8 @@ class JdbcUrlAppenderTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("appendQueryPropertiesProvider")
-    void assertAppendQueryProperties(final String url, final Properties properties, final String expectedPrefix, final String[] expectedFragments) {
-        String actual = new JdbcUrlAppender().appendQueryProperties(url, properties);
+    void assertAppendQueryProperties(final String name, final Properties properties, final String expectedPrefix, final String[] expectedFragments) {
+        String actual = new JdbcUrlAppender().appendQueryProperties(name, properties);
         assertThat(actual, startsWith(expectedPrefix));
         for (String each : expectedFragments) {
             assertThat(actual, containsString(each));

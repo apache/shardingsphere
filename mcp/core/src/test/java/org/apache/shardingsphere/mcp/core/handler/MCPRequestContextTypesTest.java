@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
@@ -34,12 +35,12 @@ class MCPRequestContextTypesTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getSupportedContextTypes")
-    void assertValidateContextType(final Class<?> contextType) {
+    void assertValidateContextType(final String name, final Class<?> contextType) {
         assertDoesNotThrow(() -> MCPRequestContextTypes.validateContextType(contextType, MCPRequestContextTypesTest.class));
     }
     
-    private static Stream<Class<?>> getSupportedContextTypes() {
-        return Stream.of(MCPRequestContext.class, MCPFeatureRequestContext.class);
+    private static Stream<Arguments> getSupportedContextTypes() {
+        return Stream.of(Arguments.of("request context", MCPRequestContext.class), Arguments.of("feature request context", MCPFeatureRequestContext.class));
     }
     
     @Test

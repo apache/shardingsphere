@@ -198,8 +198,8 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getUnsupportedFilterExpressions")
-    void assertUnsupportedFilter(final String expression) {
-        String sql = "SELECT " + expression;
+    void assertUnsupportedFilter(final String name) {
+        String sql = "SELECT " + name;
         assertThrows(SQLParsingException.class, () -> new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false)));
     }
     
@@ -472,8 +472,8 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getDeleteUsingJoinAliasPrefixes")
-    void assertDeleteUsingJoinAliasAttributes(final String prefix) {
-        String sql = prefix + "DELETE FROM foo_target USING JSON_TABLE(?, '$' COLUMNS (id int PATH '$')) AS jt JOIN foo_source USING (id) AS joined WHERE foo_target.id = joined.id";
+    void assertDeleteUsingJoinAliasAttributes(final String name) {
+        String sql = name + "DELETE FROM foo_target USING JSON_TABLE(?, '$' COLUMNS (id int PATH '$')) AS jt JOIN foo_source USING (id) AS joined WHERE foo_target.id = joined.id";
         SQLStatement actual = new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
         Collection<String> actualTables = actual.getAttributes().getAttribute(TableSQLStatementAttribute.class).getTables().stream()
                 .map(each -> each.getTableName().getIdentifier().getValue()).distinct().collect(Collectors.toList());
@@ -605,8 +605,8 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getUnsupportedAssignmentTargets")
-    void assertUnsupportedAssignmentTarget(final String target) {
-        String sql = "UPDATE foo_table SET " + target + " = ?";
+    void assertUnsupportedAssignmentTarget(final String name) {
+        String sql = "UPDATE foo_table SET " + name + " = ?";
         assertThrows(SQLParsingException.class, () -> new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false)));
     }
     
@@ -622,8 +622,8 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getArrayAssignmentTargetCases")
-    void assertArrayAssignmentTarget(final String target, final Collection<String> expectedFields, final Collection<Integer> expectedParams) {
-        String sql = "UPDATE foo_table SET " + target + " = ? WHERE foo_id = ?";
+    void assertArrayAssignmentTarget(final String name, final Collection<String> expectedFields, final Collection<Integer> expectedParams) {
+        String sql = "UPDATE foo_table SET " + name + " = ? WHERE foo_id = ?";
         UpdateStatement actual = (UpdateStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
         ColumnAssignmentSegment actualAssignment = actual.getSetAssignment().getAssignments().iterator().next();
         ColumnSegment actualColumn = actualAssignment.getColumns().get(0);
@@ -633,8 +633,8 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
         } else {
             assertThat(actualColumn.getNestedObjectAttributes().stream().map(IdentifierValue::getValue).collect(Collectors.toList()), is(expectedFields));
         }
-        assertThat(actualColumn.getStartIndex(), is(sql.indexOf(target)));
-        assertThat(actualColumn.getStopIndex(), is(sql.indexOf(target) + target.length() - 1));
+        assertThat(actualColumn.getStartIndex(), is(sql.indexOf(name)));
+        assertThat(actualColumn.getStopIndex(), is(sql.indexOf(name) + name.length() - 1));
         ParameterMarkerExpressionSegment actualValue = (ParameterMarkerExpressionSegment) actualAssignment.getValue();
         assertThat(actualValue.getParameterMarkerIndex(), is(expectedParams.size() - 2));
         assertThat(actualValue.getStartIndex(), is(sql.indexOf(" = ?") + 3));

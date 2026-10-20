@@ -101,7 +101,7 @@ class EncryptRuleTest {
     }
     
     @SuppressWarnings("unused")
-    @ParameterizedTest(name = "Wrong{0}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertNewEncryptRuleWhenConfigureWrongEncryptorType(final String name, final String encryptorName, final String assistedQueryEncryptorName, final String likeEncryptorName) {
         EncryptColumnRuleConfiguration pwdColumnConfig = createEncryptColumnRuleConfiguration(encryptorName, assistedQueryEncryptorName, likeEncryptorName);

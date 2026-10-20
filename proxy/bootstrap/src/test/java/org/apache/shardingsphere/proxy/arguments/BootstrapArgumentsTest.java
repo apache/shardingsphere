@@ -40,32 +40,31 @@ class BootstrapArgumentsTest {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideBootstrapArguments")
-    void assertBootstrapArguments(final String scenario, final String[] args, final Optional<Integer> expectedPort, final Optional<String> expectedPortErrorMessage,
-                                  final String expectedConfigPath, final List<String> expectedAddresses, final Optional<String> expectedSocketPath,
-                                  final Optional<String> expectedSocketPathErrorMessage) {
+    void assertBootstrapArguments(final String name, final String[] args, final Optional<Integer> expectedPort, final Optional<String> expectedPortErrorMessage, final String expectedConfigPath,
+                                  final List<String> expectedAddresses, final Optional<String> expectedSocketPath, final Optional<String> expectedSocketPathErrorMessage) {
         BootstrapArguments arguments = new BootstrapArguments(args);
         if (expectedPortErrorMessage.isPresent()) {
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, arguments::getPort);
-            assertThat(scenario + ": port error message", ex.getMessage(), is(expectedPortErrorMessage.get()));
+            assertThat(name + ": port error message", ex.getMessage(), is(expectedPortErrorMessage.get()));
         } else {
             Optional<Integer> actualPort = arguments.getPort();
             if (expectedPort.isPresent()) {
                 assertTrue(actualPort.isPresent());
-                assertThat(scenario + ": port value", actualPort.get(), is(expectedPort.get()));
+                assertThat(name + ": port value", actualPort.get(), is(expectedPort.get()));
             } else {
                 assertFalse(actualPort.isPresent());
             }
         }
-        assertThat(scenario + ": configuration path", arguments.getConfigurationPath(), is(expectedConfigPath));
-        assertThat(scenario + ": addresses", arguments.getAddresses(), is(expectedAddresses));
+        assertThat(name + ": configuration path", arguments.getConfigurationPath(), is(expectedConfigPath));
+        assertThat(name + ": addresses", arguments.getAddresses(), is(expectedAddresses));
         if (expectedSocketPathErrorMessage.isPresent()) {
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, arguments::getSocketPath);
-            assertThat(scenario + ": socket path error message", ex.getMessage(), is(expectedSocketPathErrorMessage.get()));
+            assertThat(name + ": socket path error message", ex.getMessage(), is(expectedSocketPathErrorMessage.get()));
         } else {
             Optional<String> actualSocketPath = arguments.getSocketPath();
             if (expectedSocketPath.isPresent()) {
                 assertTrue(actualSocketPath.isPresent());
-                assertThat(scenario + ": socket path", actualSocketPath.get(), is(expectedSocketPath.get()));
+                assertThat(name + ": socket path", actualSocketPath.get(), is(expectedSocketPath.get()));
             } else {
                 assertFalse(actualSocketPath.isPresent());
             }

@@ -91,7 +91,7 @@ class CDCE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertCDCDataImportSuccess(final PipelineTestParameter testParam) throws SQLException {
+    void assertCDCDataImportSuccess(final String name, final PipelineTestParameter testParam) throws SQLException {
         // If run on NATIVE mode and database timezone is UTC, then: 1) set `e2e.timezone=UTC` in e2e-env.properties, 2) add this line of code in proxy Bootstrap main method.
         // TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {

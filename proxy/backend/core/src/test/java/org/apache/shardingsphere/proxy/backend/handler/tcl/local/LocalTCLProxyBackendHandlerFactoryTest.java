@@ -128,9 +128,9 @@ class LocalTCLProxyBackendHandlerFactoryTest {
         assertThat(LocalTCLProxyBackendHandlerFactory.newInstance(queryContext, connectionSession), is(expected));
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("assertNewInstanceArguments")
-    void assertNewInstance(final TCLStatement sqlStatement, final Class<? extends ProxyBackendHandler> expectedClass) {
+    void assertNewInstance(final String name, final TCLStatement sqlStatement, final Class<? extends ProxyBackendHandler> expectedClass) {
         assertThat(LocalTCLProxyBackendHandlerFactory.newInstance(mockQueryContext(sqlStatement), connectionSession), isA(expectedClass));
     }
     
@@ -142,14 +142,14 @@ class LocalTCLProxyBackendHandlerFactoryTest {
     
     private static Stream<Arguments> assertNewInstanceArguments() {
         return Stream.of(
-                Arguments.of(new BeginTransactionStatement(DATABASE_TYPE), BeginTransactionProxyBackendHandler.class),
-                Arguments.of(new StartTransactionStatement(DATABASE_TYPE), BeginTransactionProxyBackendHandler.class),
-                Arguments.of(new SetAutoCommitStatement(DATABASE_TYPE, false), SetAutoCommitProxyBackendHandler.class),
-                Arguments.of(new CommitStatement(DATABASE_TYPE), CommitProxyBackendHandler.class),
-                Arguments.of(new RollbackStatement(DATABASE_TYPE, "sp"), RollbackSavepointProxyBackendHandler.class),
-                Arguments.of(new RollbackStatement(DATABASE_TYPE), RollbackProxyBackendHandler.class),
-                Arguments.of(new SavepointStatement(DATABASE_TYPE, "sp"), SetSavepointProxyBackendHandler.class),
-                Arguments.of(new ReleaseSavepointStatement(DATABASE_TYPE, "sp"), ReleaseSavepointProxyBackendHandler.class),
-                Arguments.of(new SetTransactionStatement(DATABASE_TYPE, OperationScope.SESSION, null, null), SetTransactionProxyBackendHandler.class));
+                Arguments.of("begin transaction", new BeginTransactionStatement(DATABASE_TYPE), BeginTransactionProxyBackendHandler.class),
+                Arguments.of("start transaction", new StartTransactionStatement(DATABASE_TYPE), BeginTransactionProxyBackendHandler.class),
+                Arguments.of("disable autocommit", new SetAutoCommitStatement(DATABASE_TYPE, false), SetAutoCommitProxyBackendHandler.class),
+                Arguments.of("commit", new CommitStatement(DATABASE_TYPE), CommitProxyBackendHandler.class),
+                Arguments.of("rollback to savepoint", new RollbackStatement(DATABASE_TYPE, "sp"), RollbackSavepointProxyBackendHandler.class),
+                Arguments.of("rollback", new RollbackStatement(DATABASE_TYPE), RollbackProxyBackendHandler.class),
+                Arguments.of("set savepoint", new SavepointStatement(DATABASE_TYPE, "sp"), SetSavepointProxyBackendHandler.class),
+                Arguments.of("release savepoint", new ReleaseSavepointStatement(DATABASE_TYPE, "sp"), ReleaseSavepointProxyBackendHandler.class),
+                Arguments.of("set session transaction", new SetTransactionStatement(DATABASE_TYPE, OperationScope.SESSION, null, null), SetTransactionProxyBackendHandler.class));
     }
 }

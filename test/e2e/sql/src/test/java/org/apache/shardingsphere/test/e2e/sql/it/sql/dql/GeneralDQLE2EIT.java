@@ -50,7 +50,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     @Execution(ExecutionMode.CONCURRENT)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertExecuteQuery(final AssertionTestParameter testParam) throws SQLException, IOException, JAXBException {
+    void assertExecuteQuery(final String name, final AssertionTestParameter testParam) throws SQLException, IOException, JAXBException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         executeDQLWithLifecycleSQL(testParam, context, () -> assertExecuteQuery(testParam, context));
     }
@@ -147,7 +147,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     @Execution(ExecutionMode.CONCURRENT)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertExecute(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
+    void assertExecute(final String name, final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         executeDQLWithLifecycleSQL(testParam, context, () -> assertExecute(testParam, context));
     }

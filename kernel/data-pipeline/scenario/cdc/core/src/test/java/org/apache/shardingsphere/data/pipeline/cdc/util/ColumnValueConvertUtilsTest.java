@@ -171,7 +171,7 @@ class ColumnValueConvertUtilsTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("preEpochInstantCases")
-    void assertConvertPreEpochSqlTimestampToTimestampMessage(final String scenario, final long millis) {
+    void assertConvertPreEpochSqlTimestampToTimestampMessage(final String name, final long millis) {
         com.google.protobuf.Timestamp actual = (com.google.protobuf.Timestamp) ColumnValueConvertUtils.convertToProtobufMessage(new Timestamp(millis));
         assertThat(actual.getNanos(), allOf(greaterThanOrEqualTo(0), lessThan(1_000_000_000)));
         assertThat(actual.getSeconds() * 1000L + actual.getNanos() / 1_000_000L, is(millis));
@@ -179,7 +179,7 @@ class ColumnValueConvertUtilsTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("preEpochInstantCases")
-    void assertConvertPreEpochUtilDateToTimestampMessage(final String scenario, final long millis) {
+    void assertConvertPreEpochUtilDateToTimestampMessage(final String name, final long millis) {
         com.google.protobuf.Timestamp actual = (com.google.protobuf.Timestamp) ColumnValueConvertUtils.convertToProtobufMessage(new Date(millis));
         assertThat(actual.getNanos(), allOf(greaterThanOrEqualTo(0), lessThan(1_000_000_000)));
         assertThat(actual.getSeconds() * 1000L + actual.getNanos() / 1_000_000L, is(millis));

@@ -68,11 +68,11 @@ class MySQLDialectSaneQueryResultEngineTest {
     
     @ParameterizedTest(name = "{0}")
     @ValueSource(strings = {"expression_projections", "unsupported_projection"})
-    void assertGetSaneQueryResultForSelectStatementWithoutFrom(final String scenario) {
+    void assertGetSaneQueryResultForSelectStatementWithoutFrom(final String name) {
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@session.transaction_read_only", new VariableSegment(0, 0, "transaction_read_only")));
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "unknown_variable"));
-        if ("unsupported_projection".equals(scenario)) {
+        if ("unsupported_projection".equals(name)) {
             selectStatement.getProjections().getProjections().add(new ShorthandProjectionSegment(0, 0));
             assertThat(new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(selectStatement, new SQLException("")), is(Optional.empty()));
             return;

@@ -56,7 +56,7 @@ class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertNoRuleMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+    void assertNoRuleMigrationSuccess(final String name, final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             assertMigrationSuccess(containerComposer, null);
         }
@@ -65,7 +65,7 @@ class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertOnlyEncryptRuleMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+    void assertOnlyEncryptRuleMigrationSuccess(final String name, final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             assertMigrationSuccess(containerComposer, () -> {
                 createTargetOrderTableEncryptRule(containerComposer);

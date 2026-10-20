@@ -643,7 +643,7 @@ class StandardDatabaseProxyConnectorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("implicitCommitSkippedCases")
-    void assertExecuteWithoutImplicitCommit(final String scenario, final SQLStatement sqlStatement, final String transactionType, final boolean inTransaction,
+    void assertExecuteWithoutImplicitCommit(final String name, final SQLStatement sqlStatement, final String transactionType, final boolean inTransaction,
                                             final int executionUnitCount) throws SQLException {
         assertThat(executeWithImplicitCommitCondition(sqlStatement, transactionType, inTransaction, executionUnitCount), isA(UpdateResponseHeader.class));
     }

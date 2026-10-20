@@ -93,28 +93,28 @@ class RecordTableInventoryCheckCalculatorTest {
         preparedStatement.executeUpdate();
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @CsvSource({"SMALL", "LARGE"})
-    void assertCalculateOfRangeQueryFromBeginWithOrderIdUniqueKey(final String streamingRangeType) {
-        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(4, StreamingRangeType.valueOf(streamingRangeType));
+    void assertCalculateOfRangeQueryFromBeginWithOrderIdUniqueKey(final String name) {
+        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(4, StreamingRangeType.valueOf(name));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildOrderIdUniqueKey(), QueryType.RANGE_QUERY, null);
         assertRangeQueryCalculatedResult(calculator, param, Range.openClosed(0, null), 4, 4);
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @CsvSource({"SMALL", "LARGE"})
-    void assertCalculateOfRangeQueryFromMiddleWithOrderIdUniqueKey(final String streamingRangeType) {
-        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(4, StreamingRangeType.valueOf(streamingRangeType));
+    void assertCalculateOfRangeQueryFromMiddleWithOrderIdUniqueKey(final String name) {
+        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(4, StreamingRangeType.valueOf(name));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildOrderIdUniqueKey(), QueryType.RANGE_QUERY, null);
         assertRangeQueryCalculatedResult(calculator, param, Range.openClosed(4, null), 4, 8);
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @CsvSource({"SMALL", "LARGE"})
-    void assertCalculateOfRangeQueryWithMultiColumnUniqueKeys(final String streamingRangeType) {
-        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(1000, StreamingRangeType.valueOf(streamingRangeType));
+    void assertCalculateOfRangeQueryWithMultiColumnUniqueKeys(final String name) {
+        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(1000, StreamingRangeType.valueOf(name));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY, null);
         assertRangeQueryCalculatedResult(calculator, param, Range.closed(3, 6), 8, 6);
@@ -133,16 +133,16 @@ class RecordTableInventoryCheckCalculatorTest {
         assertThat(actual.getMaxUniqueKeyValue().get(), is(expectedMaxUniqueKeyValue));
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @CsvSource({"SMALL", "LARGE"})
-    void assertCalculateOfRangeQueryWithMultiColumnUniqueKeys2(final String streamingRangeType) throws SQLException {
+    void assertCalculateOfRangeQueryWithMultiColumnUniqueKeys2(final String name) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             connection.createStatement().execute("DROP TABLE IF EXISTS test3");
             connection.createStatement().execute("CREATE TABLE test3 (user_id INT NOT NULL, order_id INT, status VARCHAR(12))");
             connection.createStatement().execute(
                     "INSERT INTO test3 (user_id,order_id,status) VALUES (3,1,'ok'),(3,2,'ok'),(4,3,'ok'),(4,4,'ok'),(5,5,'ok'),(5,6,'ok'),(6,7,'ok'),(6,8,'ok'),(7,9,'ok')");
         }
-        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(1000, StreamingRangeType.valueOf(streamingRangeType));
+        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(1000, StreamingRangeType.valueOf(name));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "test3"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY, null);
         assertRangeQueryCalculatedResult(calculator, param, Range.closed(3, 4), 4, 4);
@@ -150,10 +150,10 @@ class RecordTableInventoryCheckCalculatorTest {
         assertRangeQueryCalculatedResult(calculator, param, Range.closed(5, 7), 5, 7);
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @CsvSource({"SMALL", "LARGE"})
-    void assertCalculateOfReservedRangeQueryWithMultiColumnUniqueKeys(final String streamingRangeType) {
-        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(1000, StreamingRangeType.valueOf(streamingRangeType));
+    void assertCalculateOfReservedRangeQueryWithMultiColumnUniqueKeys(final String name) {
+        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(1000, StreamingRangeType.valueOf(name));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY, null);
         param.setRange(Range.closed(3, 2));
@@ -162,9 +162,9 @@ class RecordTableInventoryCheckCalculatorTest {
         assertFalse(calculatedResult.isPresent());
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @CsvSource({"SMALL", "LARGE"})
-    void assertCalculateOfRangeQueryOnEmptyTableWithSingleColumnUniqueKey(final String streamingRangeType) throws SQLException {
+    void assertCalculateOfRangeQueryOnEmptyTableWithSingleColumnUniqueKey(final String name) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             connection.createStatement().execute("DROP TABLE IF EXISTS test1");
             connection.createStatement().execute("CREATE TABLE test1 (user_id INT NOT NULL, order_id INT, status VARCHAR(12), PRIMARY KEY (user_id))");
@@ -172,15 +172,15 @@ class RecordTableInventoryCheckCalculatorTest {
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "test1"),
                 Collections.emptyList(), buildUserIdUniqueKey(), QueryType.RANGE_QUERY, null);
         param.setRange(Range.openClosed(0, null));
-        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(5, StreamingRangeType.valueOf(streamingRangeType));
+        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(5, StreamingRangeType.valueOf(name));
         Optional<TableInventoryCheckCalculatedResult> calculateResult = calculator.calculateChunk(param);
         QuietlyCloser.close(param.getCalculationContext());
         assertFalse(calculateResult.isPresent());
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @CsvSource({"SMALL", "LARGE"})
-    void assertCalculateOfRangeQueryOnEmptyTableWithMultiColumnUniqueKeys(final String streamingRangeType) throws SQLException {
+    void assertCalculateOfRangeQueryOnEmptyTableWithMultiColumnUniqueKeys(final String name) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             connection.createStatement().execute("DROP TABLE IF EXISTS test2");
             connection.createStatement().execute("CREATE TABLE test2 (user_id INT NOT NULL, order_id INT, status VARCHAR(12), PRIMARY KEY (user_id, order_id))");
@@ -188,15 +188,15 @@ class RecordTableInventoryCheckCalculatorTest {
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "test2"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY, null);
         param.setRange(Range.openClosed(null, null));
-        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(5, StreamingRangeType.valueOf(streamingRangeType));
+        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(5, StreamingRangeType.valueOf(name));
         Optional<TableInventoryCheckCalculatedResult> calculateResult = calculator.calculateChunk(param);
         QuietlyCloser.close(param.getCalculationContext());
         assertFalse(calculateResult.isPresent());
     }
     
-    @ParameterizedTest
-    @CsvSource({"100,SMALL", "2,SMALL", "3,SMALL", "100,LARGE", "2,LARGE", "3,LARGE"})
-    void assertCalculateOfRangeQueryAllWithOrderIdUniqueKeyWith3x(final int streamingChunkCount, final String streamingRangeType) {
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"SMALL 100 chunks,100,SMALL", "SMALL 2 chunks,2,SMALL", "SMALL 3 chunks,3,SMALL", "LARGE 100 chunks,100,LARGE", "LARGE 2 chunks,2,LARGE", "LARGE 3 chunks,3,LARGE"})
+    void assertCalculateOfRangeQueryAllWithOrderIdUniqueKeyWith3x(final String name, final int streamingChunkCount, final String streamingRangeType) {
         RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(3, streamingChunkCount, StreamingRangeType.valueOf(streamingRangeType));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildOrderIdUniqueKey(), QueryType.RANGE_QUERY, null);
@@ -232,10 +232,10 @@ class RecordTableInventoryCheckCalculatorTest {
         QuietlyCloser.close(param.getCalculationContext());
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @CsvSource({"SMALL", "LARGE"})
-    void assertCalculateOfRangeQueryAllWithMultiColumnUniqueKeysWith50x100(final String streamingRangeType) {
-        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(50, 100, StreamingRangeType.valueOf(streamingRangeType));
+    void assertCalculateOfRangeQueryAllWithMultiColumnUniqueKeysWith50x100(final String name) {
+        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(50, 100, StreamingRangeType.valueOf(name));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY, null);
         param.setRange(Range.openClosed(null, null));
@@ -258,9 +258,9 @@ class RecordTableInventoryCheckCalculatorTest {
         QuietlyCloser.close(param.getCalculationContext());
     }
     
-    @ParameterizedTest
-    @CsvSource({"100,SMALL", "2,SMALL", "3,SMALL", "100,LARGE", "2,LARGE", "3,LARGE"})
-    void assertCalculateOfRangeQueryAllWithMultiColumnUniqueKeysWith3x(final int streamingChunkCount, final String streamingRangeType) {
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"SMALL 100 chunks,100,SMALL", "SMALL 2 chunks,2,SMALL", "SMALL 3 chunks,3,SMALL", "LARGE 100 chunks,100,LARGE", "LARGE 2 chunks,2,LARGE", "LARGE 3 chunks,3,LARGE"})
+    void assertCalculateOfRangeQueryAllWithMultiColumnUniqueKeysWith3x(final String name, final int streamingChunkCount, final String streamingRangeType) {
         RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(3, streamingChunkCount, StreamingRangeType.valueOf(streamingRangeType));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY, null);
@@ -296,9 +296,9 @@ class RecordTableInventoryCheckCalculatorTest {
         QuietlyCloser.close(param.getCalculationContext());
     }
     
-    @ParameterizedTest
-    @CsvSource({"100,SMALL", "3,SMALL", "4,SMALL", "100,LARGE", "3,LARGE", "4,LARGE"})
-    void assertCalculateOfRangeQueryAllWithMultiColumnUniqueKeysWith2x(final int streamingChunkCount, final String streamingRangeType) {
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"SMALL 100 chunks,100,SMALL", "SMALL 3 chunks,3,SMALL", "SMALL 4 chunks,4,SMALL", "LARGE 100 chunks,100,LARGE", "LARGE 3 chunks,3,LARGE", "LARGE 4 chunks,4,LARGE"})
+    void assertCalculateOfRangeQueryAllWithMultiColumnUniqueKeysWith2x(final String name, final int streamingChunkCount, final String streamingRangeType) {
         RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(2, streamingChunkCount, StreamingRangeType.valueOf(streamingRangeType));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY, null);
@@ -343,10 +343,10 @@ class RecordTableInventoryCheckCalculatorTest {
         assertThat(recordMap.get("order_id"), is(orderId));
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @CsvSource({"SMALL", "LARGE"})
-    void assertCalculateOfPointQuery(final String streamingRangeType) {
-        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(3, StreamingRangeType.valueOf(streamingRangeType));
+    void assertCalculateOfPointQuery(final String name) {
+        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(3, StreamingRangeType.valueOf(name));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.POINT_QUERY, null);
         param.setUniqueKeysValues(Arrays.asList(3, 3));
@@ -359,10 +359,10 @@ class RecordTableInventoryCheckCalculatorTest {
         assertThat(actual.getMaxUniqueKeyValue().get(), is(3));
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @CsvSource({"SMALL", "LARGE"})
-    void assertCalculateOfPointRangeQuery(final String streamingRangeType) {
-        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(3, StreamingRangeType.valueOf(streamingRangeType));
+    void assertCalculateOfPointRangeQuery(final String name) {
+        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(3, StreamingRangeType.valueOf(name));
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildUserIdUniqueKey(), QueryType.POINT_QUERY, null);
         param.setUniqueKeysValues(Collections.singleton(3));

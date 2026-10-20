@@ -64,12 +64,12 @@ public abstract class SQLNodeConverterEngineIT {
     
     private static final String MERGE_STATEMENT_PREFIX = "MERGE";
     
-    @ParameterizedTest(name = "{0} ({1}) -> {2}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertConvert(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
-        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_NODE_CONVERTER_TEST_CASES.get(sqlCaseId, sqlCaseType, databaseType).getParameters());
+    void assertConvert(final String name, final SQLCaseType sqlCaseType, final String databaseType) {
+        String sql = SQL_CASES.getSQL(name, sqlCaseType, SQL_NODE_CONVERTER_TEST_CASES.get(name, sqlCaseType, databaseType).getParameters());
         String actual = SQLNodeConverterEngine.convert(parseSQLStatement(databaseType, sql)).toSqlString(SQLDialectFactory.getSQLDialect(databaseType)).getSql().replace("\n", " ").replace("\r", "");
-        String expected = SQL_NODE_CONVERTER_TEST_CASES.get(sqlCaseId, sqlCaseType, databaseType).getExpectedSQL();
+        String expected = SQL_NODE_CONVERTER_TEST_CASES.get(name, sqlCaseType, databaseType).getExpectedSQL();
         assertThat(actual, is(expected));
     }
     

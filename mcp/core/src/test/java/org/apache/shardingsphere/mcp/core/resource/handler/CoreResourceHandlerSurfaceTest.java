@@ -41,6 +41,7 @@ import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collection;
@@ -63,7 +64,7 @@ class CoreResourceHandlerSurfaceTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
-    void assertGetResourceDescriptor(final HandlerCase handlerCase) {
+    void assertGetResourceDescriptor(final String name, final HandlerCase handlerCase) {
         MCPResourceDescriptor actual = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handlerCase.getHandler().getResourceUriTemplate());
         assertThat(actual.getUriTemplate(), is(handlerCase.getExpectedUriTemplate()));
         assertFalse(actual.getDescription().isBlank());
@@ -71,7 +72,7 @@ class CoreResourceHandlerSurfaceTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
-    void assertHandle(final HandlerCase handlerCase) {
+    void assertHandle(final String name, final HandlerCase handlerCase) {
         try (RequestContextFixture requestContextFixture = ResourceTestDataFactory.createRequestContextFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
             MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPSuccessPayload actual = handle(handlerCase.getHandler(), requestContext, parseUriVariables(handlerCase.getExpectedUriTemplate(), handlerCase.getResourceUri()));
@@ -232,7 +233,7 @@ class CoreResourceHandlerSurfaceTest {
         return (List<Object>) payload.get("items");
     }
     
-    private static Stream<HandlerCase> handlerCases() {
+    private static Stream<Arguments> handlerCases() {
         return Stream.of(
                 new HandlerCase("server capabilities", new ServerCapabilitiesHandler(), "shardingsphere://capabilities",
                         "shardingsphere://capabilities", HandlerResultType.SERVICE_CAPABILITY, "", List.of()),
@@ -355,7 +356,8 @@ class CoreResourceHandlerSurfaceTest {
                                 uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table"), uriVariables.getValue("index"))
                                 .map(CoreResourceHandlerSurfaceTest::createSingletonList).orElse(Collections.emptyList())),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
-                        "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes/order_idx", HandlerResultType.METADATA, "", List.of("order_idx")));
+                        "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes/order_idx", HandlerResultType.METADATA, "", List.of("order_idx")))
+                .map(each -> Arguments.of(each.toString(), each));
     }
     
     private static List<?> createSingletonList(final Object metadata) {

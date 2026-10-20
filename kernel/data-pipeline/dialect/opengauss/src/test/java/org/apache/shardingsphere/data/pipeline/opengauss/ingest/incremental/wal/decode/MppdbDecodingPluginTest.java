@@ -428,15 +428,15 @@ class MppdbDecodingPluginTest {
         }
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("invalidHexValueProvider")
-    void assertDecodeByteaWithInvalidHexValue(final String hexValue) {
+    void assertDecodeByteaWithInvalidHexValue(final String name) {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"bytea"});
-        tableData.setColumnsVal(new String[]{hexValue});
+        tableData.setColumnsVal(new String[]{name});
         ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         assertThrows(IllegalArgumentException.class, () -> new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber));
     }

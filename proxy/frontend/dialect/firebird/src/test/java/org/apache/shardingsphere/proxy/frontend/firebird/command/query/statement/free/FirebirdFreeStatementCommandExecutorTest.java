@@ -93,7 +93,7 @@ class FirebirdFreeStatementCommandExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("preparedStatementFreeOptions")
-    void assertExecuteWithPreparedStatementFreeOption(final String scenario, final int option) throws Exception {
+    void assertExecuteWithPreparedStatementFreeOption(final String name, final int option) throws Exception {
         when(packet.getOption()).thenReturn(option);
         FirebirdFreeStatementCommandExecutor executor = new FirebirdFreeStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
@@ -116,7 +116,7 @@ class FirebirdFreeStatementCommandExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("preparedStatementFreeOptions")
-    void assertExecuteWithPreparedStatementFreeOptionWithoutFetchHandler(final String scenario, final int option) throws Exception {
+    void assertExecuteWithPreparedStatementFreeOptionWithoutFetchHandler(final String name, final int option) throws Exception {
         FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
         when(packet.getOption()).thenReturn(option);
         new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();

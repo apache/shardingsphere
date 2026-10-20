@@ -166,8 +166,8 @@ class DatabaseMetaDataExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @ValueSource(strings = {"filtered_rows", "aligned_rows"})
-    void assertExecuteWithPreProcessedRows(final String scenario) throws SQLException {
-        if ("filtered_rows".equals(scenario)) {
+    void assertExecuteWithPreProcessedRows(final String name) throws SQLException {
+        if ("filtered_rows".equals(name)) {
             Map<String, String> expectedResultSetMap = Collections.singletonMap("foo_column", "foo_value");
             ShardingSphereDatabase database = new ShardingSphereDatabase("auth_db",
                     databaseType, new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))), mock(), Collections.emptyList(),

@@ -82,8 +82,10 @@ class CheckstyleRulesTest(unittest.TestCase):
             "varargs": ("final String... name", True),
             "correct": ("final String name", False),
             "later_parameters": ("final String name, final int value", False),
-            "annotation": ("@Deprecated final String name", False),
-            "qualified_type": ("final java.lang.String name", False),
+            "annotation": ("@Deprecated final String name", True),
+            "type_annotation": ("final @Deprecated String name", True),
+            "qualified_type": ("final java.lang.String name", True),
+            "multiline": ("final String\n            name", False),
         }
         cls.fixture_paths = {}
         for name, (statement, _) in cls.boolean_cases.items():
@@ -156,13 +158,13 @@ class CheckstyleRulesTest(unittest.TestCase):
     def test_parameterized_tests_use_argument_display_names(self) -> None:
         for name, (_, violates) in self.display_name_cases.items():
             with self.subTest(name=name):
-                expected = [(DISPLAY_NAME_MESSAGE, "warning")] if violates else []
+                expected = [(DISPLAY_NAME_MESSAGE, "error")] if violates else []
                 self.assertEqual(expected, self.actual_diagnostics[self.fixture_paths[f"display_{name}"]])
 
     def test_parameterized_tests_start_with_a_named_string(self) -> None:
         for name, (_, violates) in self.name_parameter_cases.items():
             with self.subTest(name=name):
-                expected = [(NAME_PARAMETER_MESSAGE, "warning")] if violates else []
+                expected = [(NAME_PARAMETER_MESSAGE, "error")] if violates else []
                 self.assertEqual(expected, self.actual_diagnostics[self.fixture_paths[f"parameter_{name}"]])
         self.assertEqual([], self.actual_diagnostics[self.fixture_paths["ordinary_helper"]])
 

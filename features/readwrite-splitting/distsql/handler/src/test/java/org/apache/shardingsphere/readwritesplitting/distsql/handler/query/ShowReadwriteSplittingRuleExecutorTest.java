@@ -42,10 +42,10 @@ import static org.mockito.Mockito.when;
 @DistSQLRuleQueryExecutorSettings("cases/show-readwrite-splitting-rule.xml")
 class ShowReadwriteSplittingRuleExecutorTest {
     
-    @ParameterizedTest(name = "DistSQL -> {0}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(DistSQLRuleQueryExecutorTestCaseArgumentsProvider.class)
-    void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
-                            final DatabaseRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(final String name, final DistSQLStatement sqlStatement, final DatabaseRuleConfiguration currentRuleConfig,
+                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         new DistSQLDatabaseRuleQueryExecutorAssert(mockRule()).assertQueryResultRows(currentRuleConfig, sqlStatement, expected);
     }
     

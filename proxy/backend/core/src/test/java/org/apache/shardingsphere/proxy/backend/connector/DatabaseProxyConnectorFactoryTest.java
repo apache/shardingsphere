@@ -111,9 +111,9 @@ class DatabaseProxyConnectorFactoryTest {
                 isA(DatabaseProxyConnector.class));
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("driverTypeProvider")
-    void assertDriverTypeSelection(final boolean preferPreparedStatement, final List<Object> parameters, final JDBCDriverType expected) throws ReflectiveOperationException {
+    void assertDriverTypeSelection(final String name, final boolean preferPreparedStatement, final List<Object> parameters, final JDBCDriverType expected) throws ReflectiveOperationException {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class, RETURNS_DEEP_STUBS);
         when(databaseConnectionManager.getConnectionSession().getUsedDatabaseName()).thenReturn("foo_db");
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
@@ -155,7 +155,7 @@ class DatabaseProxyConnectorFactoryTest {
     
     private static Stream<Arguments> driverTypeProvider() {
         return Stream.of(
-                Arguments.of(true, Collections.emptyList(), JDBCDriverType.PREPARED_STATEMENT),
-                Arguments.of(false, Collections.singletonList(1), JDBCDriverType.PREPARED_STATEMENT));
+                Arguments.of("prefer prepared statement without parameters", true, Collections.emptyList(), JDBCDriverType.PREPARED_STATEMENT),
+                Arguments.of("parameters require prepared statement", false, Collections.singletonList(1), JDBCDriverType.PREPARED_STATEMENT));
     }
 }

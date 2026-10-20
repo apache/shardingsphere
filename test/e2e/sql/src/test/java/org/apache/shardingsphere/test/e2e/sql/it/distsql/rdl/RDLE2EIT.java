@@ -61,7 +61,7 @@ class RDLE2EIT implements SQLE2EIT {
     @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertExecute(final AssertionTestParameter testParam) throws SQLException {
+    void assertExecute(final String name, final AssertionTestParameter testParam) throws SQLException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         init(context);
         try {

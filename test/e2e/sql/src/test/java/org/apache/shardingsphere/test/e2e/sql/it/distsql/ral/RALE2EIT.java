@@ -75,7 +75,7 @@ class RALE2EIT implements SQLE2EIT {
     @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertExecute(final AssertionTestParameter testParam) throws SQLException, IOException {
+    void assertExecute(final String name, final AssertionTestParameter testParam) throws SQLException, IOException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         Throwable primaryException = null;
         try {
