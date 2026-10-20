@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.connector.firebird.metadata.data;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -35,6 +36,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class FirebirdNonFixedLengthColumnSizeRegistry {
     
     private static final Map<String, Map<String, Integer>> COLUMN_SIZES = new ConcurrentHashMap<>();
+    
+    private static final Collection<String> SYSTEM_TABLE_REFRESHED_SCHEMAS = ConcurrentHashMap.newKeySet();
     
     /**
      * Refresh column sizes for a table.
@@ -64,6 +67,29 @@ public final class FirebirdNonFixedLengthColumnSizeRegistry {
             return;
         }
         COLUMN_SIZES.put(tableKey, Collections.unmodifiableMap(normalizedColumnSizes));
+    }
+    
+    /**
+     * Refresh column sizes of system tables.
+     *
+     * @param schemaName schema name
+     * @param systemTableColumnSizes column sizes keyed by system table name
+     */
+    public static void refreshSystemTables(final String schemaName, final Map<String, Map<String, Integer>> systemTableColumnSizes) {
+        for (Entry<String, Map<String, Integer>> entry : systemTableColumnSizes.entrySet()) {
+            refreshTable(schemaName, entry.getKey(), entry.getValue());
+        }
+        SYSTEM_TABLE_REFRESHED_SCHEMAS.add(toKey(schemaName));
+    }
+    
+    /**
+     * Judge whether column sizes of system tables are refreshed.
+     *
+     * @param schemaName schema name
+     * @return whether column sizes of system tables are refreshed
+     */
+    public static boolean isSystemTablesRefreshed(final String schemaName) {
+        return SYSTEM_TABLE_REFRESHED_SCHEMAS.contains(toKey(schemaName));
     }
     
     /**

@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
+import org.apache.shardingsphere.database.connector.firebird.metadata.data.loader.FirebirdSystemTableColumnSizeLoader;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
@@ -89,6 +90,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Ro
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
@@ -140,7 +142,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return packet.isValidStatementHandle() ? packet.getStatementId() : FirebirdStatementIdGenerator.getInstance().getStatementId(connectionSession.getConnectionId());
     }
     
-    private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts) {
+    private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts) throws SQLException {
         FirebirdSQLInfoReturnValue statementType = getFirebirdStatementType(sqlStatementContext.getSqlStatement());
         FirebirdPrepareStatementReturnPacket returnPacket = new FirebirdPrepareStatementReturnPacket();
         while (packet.nextItem()) {
@@ -219,7 +221,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private void processDescribe(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final Collection<FirebirdReturnColumnPacket> describeColumns,
-                                 final boolean returnAll) {
+                                 final boolean returnAll) throws SQLException {
         // TODO add exception if the first item is not DESCRIBE_VARS
         packet.nextItem();
         Collection<FirebirdSQLInfoPacketType> requestedItems = new LinkedList<>();
@@ -237,7 +239,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private void processReturnValues(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final Collection<FirebirdReturnColumnPacket> describeColumns,
-                                     final Collection<FirebirdSQLInfoPacketType> requestedItems) {
+                                     final Collection<FirebirdSQLInfoPacketType> requestedItems) throws SQLException {
         String databaseName = connectionSession.getCurrentDatabaseName();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         ShardingSphereSchema schema = database.findDefaultSchema().orElse(null);
@@ -316,13 +318,24 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     @HighFrequencyInvocation
-    private ShardingSphereTable getTable(final ShardingSphereDatabase database, final ShardingSphereSchema schema, final String tableName) {
+    private ShardingSphereTable getTable(final ShardingSphereDatabase database, final ShardingSphereSchema schema, final String tableName) throws SQLException {
         ShardingSphereTable result = schema.getTable(tableName);
-        return null == result ? database.getSchema("system_tables").getTable(tableName) : result;
+        if (null != result) {
+            return result;
+        }
+        if (!FirebirdNonFixedLengthColumnSizeRegistry.isSystemTablesRefreshed(database.getName()) && !database.getResourceMetaData().getStorageUnits().isEmpty()) {
+            refreshSystemTableColumnSizes(database);
+        }
+        return database.getSchema("system_tables").getTable(tableName);
+    }
+    
+    private void refreshSystemTableColumnSizes(final ShardingSphereDatabase database) throws SQLException {
+        DataSource dataSource = database.getResourceMetaData().getStorageUnits().values().iterator().next().getDataSource();
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshSystemTables(database.getName(), new FirebirdSystemTableColumnSizeLoader(dataSource).load());
     }
     
     private void processParameters(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final Collection<FirebirdReturnColumnPacket> describeColumns,
-                                   final Collection<FirebirdSQLInfoPacketType> requestedItems) {
+                                   final Collection<FirebirdSQLInfoPacketType> requestedItems) throws SQLException {
         if (sqlStatementContext instanceof InsertStatementContext) {
             processInsertStatement((InsertStatementContext) sqlStatementContext, metaDataContexts, describeColumns, requestedItems);
             return;
