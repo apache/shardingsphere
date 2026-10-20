@@ -399,10 +399,10 @@ alterTableActions
     ;
 
 alterTableAction
-    : addColumnSpecification
+    : addConstraintSpecification
+    | addColumnSpecification
     | dropColumnSpecification
     | modifyColumnSpecification
-    | addConstraintSpecification
     | modifyConstraintSpecification
     | validateConstraintSpecification
     | dropConstraintSpecification

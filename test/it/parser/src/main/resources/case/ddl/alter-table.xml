@@ -3923,7 +3923,7 @@
 
     <alter-table sql-case-id="alter_table_add_not_enforced_pg">
         <table name="foo_table" start-index="12" stop-index="20" />
-        <add-constraint constraint-name="positive" start-index="26" stop-index="71" />
+        <add-constraint constraint-name="positive" start-index="26" stop-index="81" />
     </alter-table>
 
     <alter-table sql-case-id="alter_table_constraint_enforced_pg">
@@ -4039,7 +4039,7 @@
 
     <alter-table sql-case-id="alter_table_add_not_null_validation_pg" add-constraint-count="1">
         <table name="t" start-index="12" stop-index="12" />
-        <add-constraint primary-key-column-count="0" start-index="18" stop-index="41" constraint-name="nn" />
+        <add-constraint primary-key-column-count="0" start-index="18" stop-index="62" constraint-name="nn" />
     </alter-table>
 
     <alter-table sql-case-id="alter_table_modify_constraint_validation_pg" add-constraint-count="0">
