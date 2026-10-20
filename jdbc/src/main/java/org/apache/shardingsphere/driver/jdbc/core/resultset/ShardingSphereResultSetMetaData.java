@@ -97,7 +97,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
         }
         return resultSetMetaData.getColumnLabel(column);
     }
-
+    
     @Override
     public String getColumnName(final int column) throws SQLException {
         if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
@@ -110,7 +110,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
         }
         return resultSetMetaData.getColumnName(column);
     }
-
+    
     private void checkColumnIndex(final int column) throws SQLException {
         if (sqlStatementContext instanceof SelectStatementContext) {
             int visibleCount = ShardingSphereResultSetUtils.getVisibleColumnCount((SelectStatementContext) sqlStatementContext, resultSetMetaData);

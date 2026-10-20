@@ -59,7 +59,7 @@ public final class ShardingSphereResultSetUtils {
         }
         return result;
     }
-
+    
     /**
      * Get visible column count.
      *
@@ -81,7 +81,7 @@ public final class ShardingSphereResultSetUtils {
         }
         return resultSetMetaData.getColumnCount();
     }
-
+    
     private static Map<String, Integer> buildFromPhysicalMetaData(final ResultSetMetaData resultSetMetaData, final ProjectionsContext projectionsContext) throws SQLException {
         int visibleCount = resultSetMetaData.getColumnCount() - countInternalDerivedColumns(projectionsContext);
         Map<String, Integer> result = new CaseInsensitiveMap<>(visibleCount, 1F);
@@ -90,7 +90,7 @@ public final class ShardingSphereResultSetUtils {
         }
         return result;
     }
-
+    
     /**
      * Count internally generated derived columns (ORDER_BY_DERIVED, GROUP_BY_DERIVED, AVG_DERIVED_COUNT, AVG_DERIVED_SUM).
      *

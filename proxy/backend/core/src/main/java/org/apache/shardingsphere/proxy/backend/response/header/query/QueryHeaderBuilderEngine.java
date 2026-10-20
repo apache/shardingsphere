@@ -105,7 +105,7 @@ public final class QueryHeaderBuilderEngine {
         checkColumnIndex(sqlStatementContext, columnIndex);
         return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(columnIndex - 1);
     }
-
+    
     private void checkColumnIndex(final SQLStatementContext sqlStatementContext, final int columnIndex) {
         if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()
                 && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().containsUnexpandedShorthandProjection()) {

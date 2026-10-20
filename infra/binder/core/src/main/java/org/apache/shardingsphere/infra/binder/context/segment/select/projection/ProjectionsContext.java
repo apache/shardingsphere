@@ -109,7 +109,7 @@ public final class ProjectionsContext {
         }
         return false;
     }
-
+    
     /**
      * Judge is unqualified shorthand projection or not.
      *
