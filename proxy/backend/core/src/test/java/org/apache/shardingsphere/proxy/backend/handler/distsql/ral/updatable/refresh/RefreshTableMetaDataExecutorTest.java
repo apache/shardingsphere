@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.refresh;
 
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.executor.metadata.RefreshTableMetaDataExecutor;
 import org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.RefreshTableMetaDataStatement;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
@@ -29,7 +27,6 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storag
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -37,10 +34,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -102,21 +97,14 @@ class RefreshTableMetaDataExecutorTest {
     
     @Test
     void assertExecuteUpdateWhenSchemaDropped() {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-        StorageUnit storageUnit = mock(StorageUnit.class);
-        when(storageUnit.getStorageType()).thenReturn(databaseType);
+        ShardingSphereDatabase database = mockDatabase(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getName()).thenReturn("Foo_Schema");
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.singletonMap("ds_0", storageUnit)),
-                new RuleMetaData(Collections.emptyList()), Collections.singleton(schema), new ConfigurationProperties(new Properties()));
-        when(schema.containsTable(new IdentifierValue("foo_table"))).thenAnswer(invocation -> {
-            database.dropSchema("Foo_Schema");
-            return true;
-        });
+        when(schema.containsTable(new IdentifierValue("foo_table"))).thenReturn(true);
+        when(database.getSchema(new IdentifierValue("foo_schema"))).thenReturn(schema, null);
         ContextManager contextManager = mock(ContextManager.class);
         executor.setDatabase(database);
         executor.executeUpdate(new RefreshTableMetaDataStatement(new IdentifierValue("foo_table"), null, new IdentifierValue("foo_schema")), contextManager);
-        assertTrue(database.getAllSchemas().isEmpty());
         verify(contextManager).reloadTable(database, "Foo_Schema", new IdentifierValue("foo_table"));
     }
     

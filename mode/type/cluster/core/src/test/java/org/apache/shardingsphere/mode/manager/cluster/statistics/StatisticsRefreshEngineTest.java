@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
@@ -80,7 +79,6 @@ class StatisticsRefreshEngineTest {
         Properties props = PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED.getKey(), Boolean.TRUE.toString()));
         when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(props));
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        when(contextManager.getMetaDataContexts().getStatistics()).thenReturn(new ShardingSphereStatistics());
         when(metaData.getAllDatabases()).thenReturn(Collections.singleton(database));
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(databaseType);
@@ -98,7 +96,6 @@ class StatisticsRefreshEngineTest {
     void assertRefreshWithDatabaseRemovedAfterEnumeration() {
         ShardingSphereTable table = new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
-        when(collector.collectRowColumnValues("foo_db", "public", "foo_table", metaData)).thenReturn(Optional.empty());
         new StatisticsRefreshEngine(contextManager).refresh();
         verify(collector).collectRowColumnValues("foo_db", "public", "foo_table", metaData);
         verify(contextManager, never()).getPersistServiceFacade();
@@ -110,7 +107,6 @@ class StatisticsRefreshEngineTest {
         ShardingSphereTable secondTable = new ShardingSphereTable("second_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         when(schema.getAllTables()).thenReturn(Arrays.asList(firstTable, secondTable));
         when(collector.collectRowColumnValues("foo_db", "public", "first_table", metaData)).thenThrow(new IllegalStateException("Collection failed."));
-        when(collector.collectRowColumnValues("foo_db", "public", "second_table", metaData)).thenReturn(Optional.empty());
         new StatisticsRefreshEngine(contextManager).refresh();
         verify(collector).collectRowColumnValues("foo_db", "public", "first_table", metaData);
         verify(collector).collectRowColumnValues("foo_db", "public", "second_table", metaData);

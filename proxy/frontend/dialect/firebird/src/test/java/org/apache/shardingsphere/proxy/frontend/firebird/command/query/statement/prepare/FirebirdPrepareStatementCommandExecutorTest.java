@@ -364,8 +364,8 @@ class FirebirdPrepareStatementCommandExecutorTest {
     
     private void mockDescribeRequest(final FirebirdSQLInfoPacketType describeType) {
         when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
-        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, describeType, FirebirdSQLInfoPacketType.TYPE,
-                FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, describeType, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
     }
     
     @Test
