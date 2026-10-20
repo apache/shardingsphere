@@ -71,8 +71,7 @@ class FirebirdParameterBufferTest {
         parameterBuffer.parseBuffer(buffer);
         assertThat(parameterBuffer.getVersion(), is(1));
         assertThat(parameterBuffer.<Integer>getValue(intType), is(123));
-        boolean actualBoolean = parameterBuffer.getValue(booleanType);
-        assertTrue(actualBoolean);
+        assertTrue(parameterBuffer.<Boolean>getValue(booleanType));
         assertThat(parameterBuffer.getValue(stringType), is(expectedString));
     }
     
