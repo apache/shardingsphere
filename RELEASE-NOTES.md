@@ -9,7 +9,9 @@
 ### New Features
 
 1. MCP: Add standalone ShardingSphere-MCP Server - [#38541](https://github.com/apache/shardingsphere/pull/38541)
+1. JDBC: Support executing DistSQL - [#37761](https://github.com/apache/shardingsphere/issues/37761)
 1. Transaction: Add optional module for Jakarta Transactions impl of Jakarta EE 9 Spec - [#26041](https://github.com/apache/shardingsphere/issues/26041)
+1. Proxy: Support `op_seek_blob` operation for stream BLOBs in Firebird - [#39984](https://github.com/apache/shardingsphere/pull/39984)
 
 ### CVE
 
@@ -22,6 +24,8 @@
 1. Infra: Fix invalid target selection after counter overflow in `RoundRobinLoadBalanceAlgorithm` - [#39340](https://github.com/apache/shardingsphere/pull/39340)
 1. Infra: Reject incomplete WEIGHT load balancer properties during rule configuration validation - [#39378](https://github.com/apache/shardingsphere/pull/39378)
 1. Infra: Fix stale weights in WEIGHT load balancer after same-size read data source changes - [#39995](https://github.com/apache/shardingsphere/pull/39995)
+1. Infra: Fix false table existence check failures for quoted schema names in `SupportedSQLCheckEngine` - [#40069](https://github.com/apache/shardingsphere/pull/40069)
+1. Infra: Wrap `IllegalStateException` from data source pool properties content validation in `DataSourcePoolPropertiesValidator` - [#40199](https://github.com/apache/shardingsphere/pull/40199)
 1. SQL Parser: Preserve unary NOT as NotExpression for scalar-subquery table extraction in PostgreSQL - [#38187](https://github.com/apache/shardingsphere/pull/38187)
 1. SQL Parser: Fix wrong parameter index parse in MySQL, Doris - [#38624](https://github.com/apache/shardingsphere/pull/38624)
 1. SQL Parser: Fix reversed parameter marker order for openGauss `LIMIT offset, row-count` - [#39242](https://github.com/apache/shardingsphere/pull/39242)
@@ -45,6 +49,8 @@
 1. SQL Binder: Fix wrong bind info when order by refer column from with temporary table - [#38353](https://github.com/apache/shardingsphere/pull/38353)
 1. SQL Binder: Fix wrong column label case for PostgreSQL and openGauss function projections - [#39393](https://github.com/apache/shardingsphere/pull/39393)
 1. SQL Binder: Bind PostgreSQL SYSTEM_USER as a niladic function instead of a column - [#39385](https://github.com/apache/shardingsphere/pull/39385)
+1. SQL Binder: Preserve RETURNING clause when binding UPDATE and DELETE statements - [#40070](https://github.com/apache/shardingsphere/pull/40070)
+1. SQL Binder: Fix recursive CTE binding when anchor query uses shorthand projection - [#40073](https://github.com/apache/shardingsphere/pull/40073)
 1. Metadata: Fix MySQL metadata loading fallback when JDBC catalog is null for named tables - [#38855](https://github.com/apache/shardingsphere/pull/38855)
 1. Metadata: Fix Oracle metadata version comparison skipping identity and collation columns on 18c and later - [#39104](https://github.com/apache/shardingsphere/pull/39104)
 1. Metadata: Fix wrong logic table metadata when config same actual table name in different storage unit - [#39157](https://github.com/apache/shardingsphere/pull/39157)
@@ -57,11 +63,13 @@
 1. DistSQL: Fix shadow DistSQL rejecting unquoted `SQL_HINT` algorithm type - [#39873](https://github.com/apache/shardingsphere/pull/39873)
 1. DistSQL: Fix duplicate key generator check when altering key generate strategy - [#39997](https://github.com/apache/shardingsphere/pull/39997)
 1. DistSQL: Fix `DROP SHARDING TABLE RULE` ignoring tables that differ only in case - [#39996](https://github.com/apache/shardingsphere/pull/39996)
+1. DistSQL: Fix dangling commas in `CONVERT YAML CONFIGURATION` pool properties - [#40200](https://github.com/apache/shardingsphere/pull/40200)
 1. JDBC: Fix stale generated values leaking into prepared statement executeBatch calls without pending batches - [#38160](https://github.com/apache/shardingsphere/pull/38160)
 1. JDBC: Fix MySQL-compatible typed string conversion for `ResultSet#getObject(index, Class<T>)` - [#38444](https://github.com/apache/shardingsphere/pull/38444)
 1. JDBC: Fix statement close invalidating live result sets of other statements on the same connection - [#39503](https://github.com/apache/shardingsphere/pull/39503)
 1. Proxy: Resolve MySQL prepared statement parameter columns for where clause - [#38382](https://github.com/apache/shardingsphere/pull/38382)
 1. Proxy: Resolve PostgreSQL prepared statement parameter types before bind - [#38384](https://github.com/apache/shardingsphere/pull/38384)
+1. Proxy: Exclude derived projections from PostgreSQL prepared statement row descriptions - [#40194](https://github.com/apache/shardingsphere/issues/40194)
 1. Proxy: Resolve openGauss batch bind parameter types before reading values - [#38390](https://github.com/apache/shardingsphere/pull/38390)
 1. Proxy: Fix primary key metadata loss for aliased columns in mysql prepare probe path - [#38517](https://github.com/apache/shardingsphere/pull/38517)
 1. Proxy: Force PostgreSQL backend `client_encoding` to UTF8 and reject non-UTF8 values to keep pgjdbc parameter encoding consistent - [#38645](https://github.com/apache/shardingsphere/pull/38645)
@@ -95,6 +103,7 @@
 1. Sharding: Compute the Snowflake key generator epoch in UTC instead of the JVM default timezone - [#38932](https://github.com/apache/shardingsphere/pull/38932)
 1. Sharding: Fix order-dependent data source intersection in Cartesian routing - [#39407](https://github.com/apache/shardingsphere/pull/39407)
 1. Sharding: Fix incorrect AVG(DISTINCT) merge result across shards - [#39429](https://github.com/apache/shardingsphere/pull/39429)
+1. Sharding: Fix incorrect range routing for right-side sharding columns - [#39534](https://github.com/apache/shardingsphere/pull/39534)
 1. Sharding: Fix MySQL SHOW INDEX stripping table suffix from index names of non-sharding tables - [#39853](https://github.com/apache/shardingsphere/pull/39853)
 1. Sharding: Fix NOT BETWEEN on sharding column being routed as BETWEEN - [#39855](https://github.com/apache/shardingsphere/pull/39855)
 1. Sharding: Use configured sharding column name when checking UPDATE assignments - [#39864](https://github.com/apache/shardingsphere/pull/39864)
@@ -107,6 +116,8 @@
 1. Sharding: Fix NULL ordering when merging ORDER BY results for ClickHouse and Presto - [#40014](https://github.com/apache/shardingsphere/issues/40014)
 1. Sharding: Rewrite generated ORDER BY column owners to actual table names - [#39866](https://github.com/apache/shardingsphere/pull/39866)
 1. Sharding: Reject sharding auto table configured with none sharding strategy - [#39869](https://github.com/apache/shardingsphere/pull/39869)
+1. Sharding: Fix IN predicates with an expression item routing only to the shards of the other items - [#40128](https://github.com/apache/shardingsphere/issues/40128)
+1. Sharding: Fix SQL hint sharding value aliases being ignored during routing - [#40072](https://github.com/apache/shardingsphere/pull/40072)
 1. Readwrite-splitting: Evaluate inline expressions in data source names of rule configuration checker - [#39374](https://github.com/apache/shardingsphere/pull/39374)
 1. SQL Federation: Fix SQL Federation pagination binding for long LIMIT parameters - [#39237](https://github.com/apache/shardingsphere/pull/39237)
 1. Broadcast: Fix case-sensitive table name lookup in broadcast data node rule attribute - [#39153](https://github.com/apache/shardingsphere/pull/39153)
@@ -114,9 +125,11 @@
 1. Shadow: Apply default shadow algorithm to shadow tables when swapping YAML rule configuration - [#39749](https://github.com/apache/shardingsphere/pull/39749)
 1. Shadow: Fix INSERT SELECT statement being routed to shadow data source - [#39751](https://github.com/apache/shardingsphere/pull/39751)
 1. Sharding: Fix logic table lookup for MySQL SHOW CREATE TABLE and SHOW INDEX - [#39856](https://github.com/apache/shardingsphere/pull/39856)
+1. Sharding: Fix duplicate rows in cross-shard SELECT DISTINCT when NULLs sort first by default - [#40001](https://github.com/apache/shardingsphere/issues/40001)
 
 ### Enhancements
 
+1. SQL Parser: Support additional MySQL CREATE TABLE, CREATE FUNCTION, CREATE TRIGGER, INSTALL COMPONENT, LOAD XML, GET DIAGNOSTICS and SELECT syntax
 1. Metadata: Support view table type in openGauss meta data loader - [#39097](https://github.com/apache/shardingsphere/pull/39097)
 1. Build: Support compiling and using ShardingSphere under OpenJDK 26 - [#38625](https://github.com/apache/shardingsphere/issues/38625)
 1. SQL Parser: Support Hive OPTIMIZE Statement about iceberg statement parse - [#38877](https://github.com/apache/shardingsphere/pull/38877)
@@ -149,6 +162,7 @@
 1. SQL Parser: Support Oracle pseudo-record collection index parsing - [#39566](https://github.com/apache/shardingsphere/pull/39566)
 1. SQL Parser: Support Oracle DML error logging parser model and binder - [#39711](https://github.com/apache/shardingsphere/pull/39711)
 1. SQL Parser: Support Oracle PL/SQL syntax parsing and binding - [#39723](https://github.com/apache/shardingsphere/pull/39723)
+1. SQL Parser: Enhance Oracle PL/SQL and database-link parsing and SQL binding - [#40207](https://github.com/apache/shardingsphere/pull/40207)
 1. SQL Parser: Support scalar expressions in Oracle `IN` predicates - [#39876](https://github.com/apache/shardingsphere/pull/39876)
 1. SQL Parser: Support Oracle `ORDER BY` after `FOR UPDATE` and `HAVING` without `GROUP BY` - [#39877](https://github.com/apache/shardingsphere/pull/39877)
 1. SQL Parser: Support Oracle parenthesized `WITH` queries and qualified PL/SQL collection types - [#39914](https://github.com/apache/shardingsphere/pull/39914)

@@ -31,6 +31,9 @@ public final class FirebirdBlobWrite {
     @Getter
     private final long blobId;
     
+    @Getter
+    private final boolean streamBlob;
+    
     private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     
     @Getter

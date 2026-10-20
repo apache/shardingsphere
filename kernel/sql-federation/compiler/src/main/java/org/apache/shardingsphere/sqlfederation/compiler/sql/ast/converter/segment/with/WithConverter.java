@@ -20,11 +20,14 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segme
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlWith;
 import org.apache.calcite.sql.SqlWithItem;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
@@ -55,9 +58,12 @@ public final class WithConverter {
     private static SqlNodeList convertWithItem(final Collection<CommonTableExpressionSegment> commonTableExpressionSegments) {
         SqlNodeList result = new SqlNodeList(SqlParserPos.ZERO);
         for (CommonTableExpressionSegment each : commonTableExpressionSegments) {
+            ShardingSpherePreconditions.checkState(null == each.getDataModification(), () -> new UnsupportedSQLOperationException("Data-modifying common table expressions in SQL Federation"));
+            ShardingSpherePreconditions.checkState(each.getSearchColumns().isEmpty() && each.getCycleColumns().isEmpty(),
+                    () -> new UnsupportedSQLOperationException("SEARCH or CYCLE clauses in SQL Federation"));
             SqlIdentifier name = new SqlIdentifier(each.getAliasName().orElse(""), SqlParserPos.ZERO);
             SqlNodeList columns = each.getColumns().isEmpty() ? null : convertColumns(each.getColumns());
-            result.add(new SqlWithItem(SqlParserPos.ZERO, name, columns, new SelectStatementConverter().convert(each.getSubquery().getSelect())));
+            result.add(new SqlWithItem(SqlParserPos.ZERO, name, columns, new SelectStatementConverter().convert(each.getSubquery().getSelect()), SqlLiteral.createBoolean(false, SqlParserPos.ZERO)));
         }
         return result;
     }

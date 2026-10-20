@@ -36,4 +36,9 @@
     <drop-database sql-case-id="drop_database_doris_force" force="true" />
     <drop-database sql-case-id="drop_database_doris_if_exists_force" force="true" />
     <drop-database sql-case-id="drop_database_doris_without_force" />
+    <drop-database sql-case-id="drop_database_force_pg" force="true" />
+    <drop-database sql-case-id="drop_database_with_force_pg" force="true" />
+    <drop-database sql-case-id="drop_database_if_exists_force_pg" force="true" />
+    <drop-database sql-case-id="drop_database_if_exists_with_force_pg" force="true" />
+    <drop-database sql-case-id="drop_database_force_list_pg" force="true" />
 </sql-parser-test-cases>

@@ -61,7 +61,9 @@ public final class ConditionValueInOperatorGenerator implements ConditionValueGe
             }
             if (ExpressionConditionUtils.isNowExpression(each)) {
                 shardingConditionValues.add(timestampServiceRule.getTimestamp());
+                continue;
             }
+            return Optional.empty();
         }
         return shardingConditionValues.isEmpty() ? Optional.empty()
                 : Optional.of(new ListShardingConditionValue<>(column.getName(), column.getTableName(), shardingConditionValues, parameterMarkerIndexes));

@@ -125,13 +125,25 @@
             <property name="message" value="Consider using special escape sequence instead of octal value or Unicode escaped value." />
         </module>
         <module name="MatchXpath">
-            <property name="query" value="//METHOD_CALL[(./IDENT[@text='assertThat'] or ./DOT/IDENT[@text='assertThat']) and ./ELIST/EXPR[last()]/METHOD_CALL[(./IDENT[@text='is'] or ./DOT/IDENT[@text='is']) and ./ELIST/EXPR/*[self::LITERAL_TRUE or self::LITERAL_FALSE]]]" />
+            <property name="query" value="//METHOD_CALL[(./IDENT[@text='assertThat'] or ./DOT/IDENT[@text='assertThat']) and ./ELIST/EXPR[last()]/METHOD_CALL[(./IDENT[@text='is'] or ./DOT/IDENT[@text='is']) and ./ELIST/EXPR/*[self::LITERAL_TRUE or self::LITERAL_FALSE or self::DOT[./IDENT[@text=('TRUE', 'FALSE')] and (./IDENT[@text='Boolean'] or ./DOT[./IDENT[@text='Boolean'] and ./DOT[./IDENT[@text='java'] and ./IDENT[@text='lang']]])]]]]" />
             <message key="matchxpath.match" value="Use assertTrue/assertFalse instead of assertThat(..., is(true/false))." />
         </module>
         <module name="MatchXpath">
             <property name="query"
                       value="//METHOD_DEF[./MODIFIERS/ANNOTATION[(./IDENT[@text='Test'] or ./DOT/IDENT[@text='Test'] or ./IDENT[@text='ParameterizedTest'] or ./DOT/IDENT[@text='ParameterizedTest'] or ./IDENT[@text='RepeatedTest'] or ./DOT/IDENT[@text='RepeatedTest'] or ./IDENT[@text='TestFactory'] or ./DOT/IDENT[@text='TestFactory'] or ./IDENT[@text='TestTemplate'] or ./DOT/IDENT[@text='TestTemplate'])] and not(./IDENT[starts-with(@text, 'assert')])]" />
             <message key="matchxpath.match" value="Test method names must start with 'assert'." />
+        </module>
+        <module name="MatchXpath">
+            <property name="id" value="ParameterizedTestDisplayName" />
+            <property name="severity" value="warning" />
+            <property name="query" value="//METHOD_DEF/MODIFIERS/ANNOTATION[(./IDENT[@text='ParameterizedTest'] or ./DOT/IDENT[@text='ParameterizedTest']) and not(./ANNOTATION_MEMBER_VALUE_PAIR[./IDENT[@text='name'] and ./EXPR/STRING_LITERAL[@text='{0}']])]" />
+            <message key="matchxpath.match" value="Parameterized tests must use name = &quot;{0}&quot;." />
+        </module>
+        <module name="MatchXpath">
+            <property name="id" value="ParameterizedTestNameParameter" />
+            <property name="severity" value="warning" />
+            <property name="query" value="//METHOD_DEF[./MODIFIERS/ANNOTATION[(./IDENT[@text='ParameterizedTest'] or ./DOT/IDENT[@text='ParameterizedTest'])]]/PARAMETERS[not(./PARAMETER_DEF[1][./MODIFIERS/FINAL and ./IDENT[@text='name'] and not(./ELLIPSIS) and ./TYPE[not(.//ARRAY_DECLARATOR) and (./IDENT[@text='String'] or ./DOT[./IDENT[@text='String'] and ./DOT[./IDENT[@text='java'] and ./IDENT[@text='lang']]])]])]" />
+            <message key="matchxpath.match" value="Declare final String name as the first parameter of parameterized tests." />
         </module>
         <module name="MatchXpath">
             <property name="query" value="//VARIABLE_DEF[./MODIFIERS/FINAL and (parent::FOR_INIT or parent::FOR_EACH_CLAUSE)]" />

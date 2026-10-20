@@ -103,6 +103,49 @@
         <table name="t_merge_target" start-index="55" stop-index="68" />
     </create-trigger>
     <create-trigger sql-case-id="create_trigger_pg_constraint">
-        <table name="t_merge_target" start-index="31" stop-index="44" />
+        <trigger-name name="t_merge_constraint" start-index="26" stop-index="43" />
+        <table name="t_merge_target" start-index="61" stop-index="74" />
+        <table name="t_merge_source" start-index="81" stop-index="94" />
+    </create-trigger>
+    <create-trigger sql-case-id="create_trigger_if_not_exists_mysql" />
+
+    <create-trigger sql-case-id="create_trigger_constraint_named_pg">
+        <trigger-name name="ct" start-index="26" stop-index="27" />
+        <table name="t" start-index="45" stop-index="45" />
+    </create-trigger>
+
+    <create-trigger sql-case-id="create_trigger_constraint_deferred_pg">
+        <trigger-name name="ct" start-index="26" stop-index="27" />
+        <table name="t" start-index="55" stop-index="57">
+            <owner name="s" start-index="55" stop-index="55" />
+        </table>
+    </create-trigger>
+
+    <create-trigger sql-case-id="create_trigger_constraint_from_pg">
+        <trigger-name name="ct" start-index="26" stop-index="27" />
+        <table name="t" start-index="45" stop-index="45" />
+        <table name="ref" start-index="52" stop-index="56">
+            <owner name="s" start-index="52" stop-index="52" />
+        </table>
+    </create-trigger>
+
+    <create-trigger sql-case-id="create_trigger_constraint_when_pg">
+        <trigger-name name="ct" start-index="26" stop-index="27" />
+        <table name="t" start-index="45" stop-index="45" />
+    </create-trigger>
+
+    <create-trigger sql-case-id="create_trigger_replace_regular_pg">
+        <trigger-name name="tr" start-index="26" stop-index="27" />
+        <table name="t" start-index="45" stop-index="45" />
+    </create-trigger>
+
+    <create-trigger sql-case-id="create_trigger_regular_control_pg">
+        <trigger-name name="tr" start-index="15" stop-index="16" />
+        <table name="t" start-index="34" stop-index="34" />
+    </create-trigger>
+
+    <create-trigger sql-case-id="create_trigger_pg_constraint_without_from">
+        <trigger-name name="t_constraint" start-index="26" stop-index="37" />
+        <table name="t_merge_target" start-index="55" stop-index="68" />
     </create-trigger>
 </sql-parser-test-cases>

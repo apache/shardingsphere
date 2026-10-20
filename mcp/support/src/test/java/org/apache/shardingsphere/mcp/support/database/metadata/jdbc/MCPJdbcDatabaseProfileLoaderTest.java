@@ -30,14 +30,18 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,6 +55,149 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MCPJdbcDatabaseProfileLoaderTest {
+    
+    @Test
+    void assertLoadDataSourceWithUnsupportedCredentials() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true);
+        try (
+                MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+                MockedStatic<DatabaseIdentifierContextFactory> mocked = mockStatic(DatabaseIdentifierContextFactory.class)) {
+            mocked.when(() -> DatabaseIdentifierContextFactory.create(any(), any(DataSource.class))).thenAnswer(invocation -> {
+                DataSource actual = invocation.getArgument(1, DataSource.class);
+                assertThrows(SQLFeatureNotSupportedException.class, () -> actual.getConnection("foo_user", "foo_password"));
+                return new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newSensitivePolicySet());
+            });
+            new MCPJdbcDatabaseProfileLoader().load("logic_db", runtimeDatabaseConfig);
+        }
+    }
+    
+    @Test
+    void assertLoadDataSourceWithUnsupportedLogWriter() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true);
+        try (
+                MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+                MockedStatic<DatabaseIdentifierContextFactory> mocked = mockStatic(DatabaseIdentifierContextFactory.class)) {
+            mocked.when(() -> DatabaseIdentifierContextFactory.create(any(), any(DataSource.class))).thenAnswer(invocation -> {
+                DataSource actual = invocation.getArgument(1, DataSource.class);
+                assertThrows(SQLFeatureNotSupportedException.class, actual::getLogWriter);
+                return new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newSensitivePolicySet());
+            });
+            new MCPJdbcDatabaseProfileLoader().load("logic_db", runtimeDatabaseConfig);
+        }
+    }
+    
+    @Test
+    void assertLoadDataSourceWithUnsupportedSetLogWriter() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true);
+        try (
+                MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+                MockedStatic<DatabaseIdentifierContextFactory> mocked = mockStatic(DatabaseIdentifierContextFactory.class)) {
+            mocked.when(() -> DatabaseIdentifierContextFactory.create(any(), any(DataSource.class))).thenAnswer(invocation -> {
+                DataSource actual = invocation.getArgument(1, DataSource.class);
+                assertThrows(SQLFeatureNotSupportedException.class, () -> actual.setLogWriter(new PrintWriter(Writer.nullWriter())));
+                return new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newSensitivePolicySet());
+            });
+            new MCPJdbcDatabaseProfileLoader().load("logic_db", runtimeDatabaseConfig);
+        }
+    }
+    
+    @Test
+    void assertLoadDataSourceWithUnsupportedLoginTimeout() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true);
+        try (
+                MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+                MockedStatic<DatabaseIdentifierContextFactory> mocked = mockStatic(DatabaseIdentifierContextFactory.class)) {
+            mocked.when(() -> DatabaseIdentifierContextFactory.create(any(), any(DataSource.class))).thenAnswer(invocation -> {
+                DataSource actual = invocation.getArgument(1, DataSource.class);
+                assertThrows(SQLFeatureNotSupportedException.class, actual::getLoginTimeout);
+                return new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newSensitivePolicySet());
+            });
+            new MCPJdbcDatabaseProfileLoader().load("logic_db", runtimeDatabaseConfig);
+        }
+    }
+    
+    @Test
+    void assertLoadDataSourceWithUnsupportedSetLoginTimeout() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true);
+        try (
+                MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+                MockedStatic<DatabaseIdentifierContextFactory> mocked = mockStatic(DatabaseIdentifierContextFactory.class)) {
+            mocked.when(() -> DatabaseIdentifierContextFactory.create(any(), any(DataSource.class))).thenAnswer(invocation -> {
+                DataSource actual = invocation.getArgument(1, DataSource.class);
+                assertThrows(SQLFeatureNotSupportedException.class, () -> actual.setLoginTimeout(1));
+                return new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newSensitivePolicySet());
+            });
+            new MCPJdbcDatabaseProfileLoader().load("logic_db", runtimeDatabaseConfig);
+        }
+    }
+    
+    @Test
+    void assertLoadDataSourceWithUnsupportedParentLogger() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true);
+        try (
+                MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+                MockedStatic<DatabaseIdentifierContextFactory> mocked = mockStatic(DatabaseIdentifierContextFactory.class)) {
+            mocked.when(() -> DatabaseIdentifierContextFactory.create(any(), any(DataSource.class))).thenAnswer(invocation -> {
+                DataSource actual = invocation.getArgument(1, DataSource.class);
+                assertThrows(SQLFeatureNotSupportedException.class, actual::getParentLogger);
+                return new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newSensitivePolicySet());
+            });
+            new MCPJdbcDatabaseProfileLoader().load("logic_db", runtimeDatabaseConfig);
+        }
+    }
+    
+    @Test
+    void assertLoadDataSourceWrapper() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true);
+        try (
+                MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+                MockedStatic<DatabaseIdentifierContextFactory> mocked = mockStatic(DatabaseIdentifierContextFactory.class)) {
+            mocked.when(() -> DatabaseIdentifierContextFactory.create(any(), any(DataSource.class))).thenAnswer(invocation -> {
+                DataSource actual = invocation.getArgument(1, DataSource.class);
+                assertTrue(actual.isWrapperFor(DataSource.class));
+                assertFalse(actual.isWrapperFor(Connection.class));
+                assertThat(actual.unwrap(DataSource.class), sameInstance(actual));
+                return new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newSensitivePolicySet());
+            });
+            new MCPJdbcDatabaseProfileLoader().load("logic_db", runtimeDatabaseConfig);
+        }
+    }
+    
+    @Test
+    void assertLoadDataSourceWithUnsupportedWrapper() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true);
+        try (
+                MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+                MockedStatic<DatabaseIdentifierContextFactory> mocked = mockStatic(DatabaseIdentifierContextFactory.class)) {
+            mocked.when(() -> DatabaseIdentifierContextFactory.create(any(), any(DataSource.class))).thenAnswer(invocation -> {
+                DataSource actual = invocation.getArgument(1, DataSource.class);
+                SQLException actualException = assertThrows(SQLException.class, () -> actual.unwrap(Connection.class));
+                assertThat(actualException.getMessage(), is("Unable to unwrap runtime database data source to `java.sql.Connection`."));
+                return new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newSensitivePolicySet());
+            });
+            new MCPJdbcDatabaseProfileLoader().load("logic_db", runtimeDatabaseConfig);
+        }
+    }
+    
+    @Test
+    void assertLoadDataSourceWithNonSQLConnectionFailure() throws SQLException {
+        IllegalStateException expectedCause = new IllegalStateException("foo_invalid_config");
+        RuntimeDatabaseConnectionException expected = RuntimeDatabaseConnectionException.invalidConfiguration("logic_db", expectedCause);
+        Connection connection = mock(Connection.class);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = createRuntimeDatabaseConfiguration(SupportDatabaseTypeFactoryMocker.createJdbcUrl("FixtureDB"), "1.0", true, true, connection);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection).thenThrow(expected);
+        try (
+                MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+                MockedStatic<DatabaseIdentifierContextFactory> mocked = mockStatic(DatabaseIdentifierContextFactory.class)) {
+            mocked.when(() -> DatabaseIdentifierContextFactory.create(any(), any(DataSource.class))).thenAnswer(invocation -> {
+                DataSource dataSource = invocation.getArgument(1, DataSource.class);
+                SQLException actual = assertThrows(SQLException.class, dataSource::getConnection);
+                assertThat(actual.getCause(), sameInstance(expected));
+                return new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newSensitivePolicySet());
+            });
+            new MCPJdbcDatabaseProfileLoader().load("logic_db", runtimeDatabaseConfig);
+        }
+    }
     
     @Test
     void assertLoad() throws SQLException {

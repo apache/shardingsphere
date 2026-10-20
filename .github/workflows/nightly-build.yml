@@ -28,14 +28,15 @@ on:
         description: 'Commit ID to build. Default is the latest commit on the default branch.'
 
 concurrency:
-  group: nightly-build-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -DskipITs -DskipTests
+  MAVEN_ARGS: -B -ntp -fae -e
+  MAVEN_OPTS: -Dhttp.keepAlive=false
   HUB: ghcr.io/apache/shardingsphere
   PROXY: ghcr.io/apache/shardingsphere-proxy
   PROXY_NATIVE: ghcr.io/apache/shardingsphere-proxy-native
@@ -46,31 +47,28 @@ jobs:
     name: Import Global Environment
     uses: ./.github/workflows/reusable-global-environment.yml
 
-  upload-to-nightlies:
+  build-and-upload-proxy-tarball:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    name: Upload to Nightly Builds
+    name: Build and Upload Proxy Tarball
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
-        with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Build Project
-        run: |
-          ./mvnw -B clean install -Prelease,default-dep
+        run: ./mvnw clean install -Prelease,default-dep
       - name: Upload Proxy Tarball Artifact
         uses: actions/upload-artifact@v6
         with:
           name: proxy-tarball-${{ github.run_id }}
           path: distribution/proxy/target/apache-shardingsphere-*.tar.gz
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 2
 
-  build-proxy-image:
+  build-and-push-proxy-image:
     if: github.repository == 'apache/shardingsphere'
-    name: Build Proxy Image
+    name: Build and Push Proxy Image
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     permissions:
@@ -78,26 +76,24 @@ jobs:
       packages: write
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ inputs.commit-id }}
       - uses: ./.github/actions/setup-build-environment
-        with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Login Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ${{ env.HUB }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - name: Push Docker Image
-        run: ./mvnw -am -pl distribution/proxy -B -Prelease,default-dep,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.run_id }} clean install
+        run: ./mvnw -am -pl distribution/proxy -Prelease,default-dep,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.run_id }} clean install
 
-  build-proxy-native-image:
+  build-and-push-proxy-native-image:
     if: github.repository == 'apache/shardingsphere'
-    name: Build Proxy Native Image
+    name: Build and Push Proxy Native Image
     needs: global-environment
     timeout-minutes: 90
     permissions:
@@ -108,32 +104,27 @@ jobs:
         os: [ 'ubuntu-latest', 'ubuntu-24.04-arm' ]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ inputs.commit-id }}
       - uses: ./.github/actions/setup-build-environment
-        with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ${{ env.HUB }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push dynamic linked Docker Image by x64 or arm64
-        run: |
-          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }} "-DskipTests" clean package
+        run: ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }} "-DskipTests" clean package
       - name: Push mostly static linked Docker Image by x64
         if: matrix.os == 'ubuntu-latest'
-        run: |
-          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }}-mostly "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-DskipTests" clean package
+        run: ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }}-mostly "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-DskipTests" clean package
       - name: Push fully static linked Docker Image by x64
         if: matrix.os == 'ubuntu-latest'
-        run: |
-          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }}-static "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-DskipTests" clean package
+        run: ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }}-static "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-DskipTests" clean package
 
-  build-agent-image:
+  build-and-push-agent-image:
     if: github.repository == 'apache/shardingsphere'
-    name: Build Agent Image
+    name: Build and Push Agent Image
     needs: global-environment
     timeout-minutes: 90
     permissions:
@@ -141,39 +132,34 @@ jobs:
       packages: write
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ inputs.commit-id }}
       - uses: ./.github/actions/setup-build-environment
-        with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ${{ env.HUB }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Docker Image
-        run: |
-          ./mvnw -am -pl distribution/agent -Prelease,default-dep,docker.buildx.push -B -T1C -DskipTests -Dagent.image.repository=${{ env.AGENT }} -Dagent.image.tag=${{ github.run_id }} clean package
+        run: ./mvnw -am -pl distribution/agent -Prelease,default-dep,docker.buildx.push -T1C -DskipTests -Dagent.image.repository=${{ env.AGENT }} -Dagent.image.tag=${{ github.run_id }} clean package
 
-  build-cache:
+  build-project:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    name: Build Project Cache
+    name: Build Project
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
-        with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Build with Maven
-        run: ./mvnw clean install -B -ntp -T1C -DskipTests
+        run: ./mvnw clean install -T1C -DskipTests
 
   generate-and-test-examples:
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    needs: [ build-cache, global-environment ]
+    needs: [ build-project, global-environment ]
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 90
     strategy:
@@ -217,15 +203,14 @@ jobs:
           - 2181:2181
         options: --health-cmd="echo ruok | nc localhost 2181" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
         with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
           enable-docker-setup: 'true'
       - name: Build with Maven
-        run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
+        run: ./mvnw -T1C clean install -DskipITs -DskipTests
       - name: Generate Examples
-        run: ./mvnw -B install -f examples/shardingsphere-jdbc-example-generator/pom.xml -Pexample-generator -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
+        run: ./mvnw install -f examples/shardingsphere-jdbc-example-generator/pom.xml -Pexample-generator -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
       - name: Prepare Environments
         run: |
           INIT_SQL_PATH="examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/init.sql"
@@ -237,7 +222,7 @@ jobs:
             exit 1
           fi
       - name: Test Examples
-        run : ./mvnw -B test -f examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/pom.xml -Pexample-generator -Dexec.cleanupDaemonThreads=false
+        run : ./mvnw test -f examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/pom.xml -Pexample-generator -Dexec.cleanupDaemonThreads=false
       - name: Package Examples
         run: |
           cd examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/
@@ -248,4 +233,4 @@ jobs:
           name: example-${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}--${{ github.run_id }}
           path: examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 2

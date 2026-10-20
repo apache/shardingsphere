@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -36,7 +37,7 @@ class FirebirdDateTimeUtilsTest {
         FirebirdDateTimeUtils decoded = new FirebirdDateTimeUtils().setDate(actualEncodedDate);
         assertThat(decoded.getYear(), is(2024));
         assertThat(decoded.getMonth(), is(4));
-        assertThat(decoded.getDay(), is(6));
+        assertThat(decoded.getDay(), is(15));
     }
     
     @Test
@@ -45,9 +46,9 @@ class FirebirdDateTimeUtilsTest {
         int actualEncodedDate = FirebirdDateTimeUtils.getEncodedDate(sourceDateTime);
         assertThat(actualEncodedDate, is(60341));
         FirebirdDateTimeUtils decoded = new FirebirdDateTimeUtils().setDate(actualEncodedDate);
-        assertThat(decoded.getYear(), is(2023));
-        assertThat(decoded.getMonth(), is(11));
-        assertThat(decoded.getDay(), is(25));
+        assertThat(decoded.getYear(), is(2024));
+        assertThat(decoded.getMonth(), is(2));
+        assertThat(decoded.getDay(), is(1));
     }
     
     @Test
@@ -74,28 +75,19 @@ class FirebirdDateTimeUtilsTest {
         LocalDateTime sourceDateTime = LocalDateTime.of(2023, 7, 1, 0, 0);
         int encodedDate = FirebirdDateTimeUtils.getEncodedDate(sourceDateTime);
         Timestamp actualDate = FirebirdDateTimeUtils.getDate(encodedDate);
-        LocalDateTime expectedDateTime = LocalDateTime.of(2023, 6, 6, 0, 0);
+        LocalDateTime expectedDateTime = LocalDateTime.of(2023, 7, 1, 0, 0);
         assertThat(actualDate.toLocalDateTime(), is(expectedDateTime));
     }
     
     @Test
     void assertGetTime() {
-        LocalDateTime sourceDateTime = LocalDateTime.of(2024, 1, 1, 5, 6, 7, 100_000);
-        int encodedTime = new FirebirdDateTimeUtils(sourceDateTime).getEncodedTime();
-        Timestamp actualTime = FirebirdDateTimeUtils.getTime(encodedTime);
-        LocalDateTime expectedDateTime = LocalDateTime.of(1, 1, 1, sourceDateTime.getHour(), sourceDateTime.getMinute(), sourceDateTime.getSecond(),
-                (sourceDateTime.getNano() / FirebirdDateTimeUtils.NANOSECONDS_PER_FRACTION) % FirebirdDateTimeUtils.FRACTIONS_PER_SECOND);
-        assertThat(actualTime.toLocalDateTime(), is(expectedDateTime));
+        assertThat(FirebirdDateTimeUtils.getTime(452967891), is(LocalTime.of(12, 34, 56, 789_100_000)));
     }
     
     @Test
     void assertGetDateTime() {
-        LocalDateTime sourceDateTime = LocalDateTime.of(2024, 12, 31, 23, 59, 58);
-        int encodedDate = FirebirdDateTimeUtils.getEncodedDate(sourceDateTime);
-        int encodedTime = new FirebirdDateTimeUtils(sourceDateTime).getEncodedTime();
-        Timestamp actualDateTime = FirebirdDateTimeUtils.getDateTime(encodedDate, encodedTime);
-        LocalDateTime expectedDateTime = LocalDateTime.of(2024, 10, 31, sourceDateTime.getHour(), sourceDateTime.getMinute(), sourceDateTime.getSecond(), 0);
-        assertThat(actualDateTime.toLocalDateTime(), is(expectedDateTime));
+        Timestamp actualDateTime = FirebirdDateTimeUtils.getDateTime(61315, 452967890);
+        assertThat(actualDateTime.toLocalDateTime(), is(LocalDateTime.of(2026, 10, 2, 12, 34, 56, 789_000_000)));
     }
     
     @Test
@@ -104,15 +96,15 @@ class FirebirdDateTimeUtilsTest {
         int encodedDate = FirebirdDateTimeUtils.getEncodedDate(sourceDateTime);
         int encodedTime = new FirebirdDateTimeUtils(sourceDateTime).getEncodedTime();
         Timestamp actualDateTime = FirebirdDateTimeUtils.getDateTimeWithOffset(encodedDate, encodedTime, 60);
-        LocalDateTime expectedDateTime = LocalDateTime.of(2024, 11, 1, sourceDateTime.getHour(), sourceDateTime.getMinute(), sourceDateTime.getSecond(), 0);
+        LocalDateTime expectedDateTime = LocalDateTime.of(2025, 1, 1, sourceDateTime.getHour(), sourceDateTime.getMinute(), sourceDateTime.getSecond(), 0);
         assertThat(actualDateTime.toLocalDateTime(), is(expectedDateTime));
     }
     
     @Test
     void assertDecodeDateForJanFebBranch() {
-        FirebirdDateTimeUtils decoded = new FirebirdDateTimeUtils().setDate(-1999715);
-        assertThat(decoded.getMonth(), is(1));
-        assertThat(decoded.getYear(), is(-3616));
-        assertThat(decoded.getDay(), is(-29));
+        FirebirdDateTimeUtils decoded = new FirebirdDateTimeUtils().setDate(60369);
+        assertThat(decoded.getYear(), is(2024));
+        assertThat(decoded.getMonth(), is(2));
+        assertThat(decoded.getDay(), is(29));
     }
 }

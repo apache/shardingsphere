@@ -367,4 +367,16 @@
         <valid-statement type="UpdateStatement" />
         <valid-statement type="RollbackStatement" />
     </create-procedure>
+    <create-procedure sql-case-id="create_procedure_flush_kill" />
+    <create-procedure sql-case-id="create_procedure_atomic_empty_pg" />
+    <create-procedure sql-case-id="create_procedure_atomic_dml_pg" />
+    <create-procedure sql-case-id="create_procedure_body_string_control_pg" />
+    <plsql-block sql-case-id="create_plsql_block_with_schema_qualified_type_attribute">
+        <table name="foo_table" start-index="18" stop-index="37" table-name-start-index="29" table-name-stop-index="37">
+            <owner name="foo_schema" start-index="18" stop-index="27" />
+        </table>
+        <column name="foo_id" start-index="39" stop-index="44">
+            <owner name="foo_table" start-index="29" stop-index="37" />
+        </column>
+    </plsql-block>
 </sql-parser-test-cases>

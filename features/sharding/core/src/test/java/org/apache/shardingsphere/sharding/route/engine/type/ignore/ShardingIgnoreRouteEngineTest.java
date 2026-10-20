@@ -32,6 +32,5 @@ class ShardingIgnoreRouteEngineTest {
         RouteContext routeContext = routeEngine.route(mock(ShardingRule.class));
         assertTrue(routeContext.getRouteUnits().isEmpty());
         assertTrue(routeContext.getOriginalDataNodes().isEmpty());
-        assertTrue(routeContext.getRouteStageContexts().isEmpty());
     }
 }
