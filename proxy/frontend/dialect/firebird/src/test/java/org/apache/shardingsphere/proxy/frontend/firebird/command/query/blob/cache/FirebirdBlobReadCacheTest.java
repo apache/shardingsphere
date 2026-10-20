@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cac
 
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache.BlobSegment;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -47,6 +48,11 @@ class FirebirdBlobReadCacheTest {
     
     private static final int SEEK_MODE_FROM_TAIL = 2;
     
+    @BeforeEach
+    void setUp() {
+        CACHE.registerConnection(CONNECTION_ID);
+    }
+    
     @AfterEach
     void tearDown() {
         CACHE.unregisterConnection(CONNECTION_ID);
@@ -55,7 +61,6 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertUnregisterConnectionRemovesBlobs() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1}, true);
         CACHE.unregisterConnection(CONNECTION_ID);
         assertFalse(CACHE.getTotalSize(CONNECTION_ID, BLOB_HANDLE).isPresent());
@@ -63,7 +68,6 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertRegisterBlobKeepsContentReference() {
-        CACHE.registerConnection(CONNECTION_ID);
         byte[] content = new byte[]{1, 2};
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, content, true);
         content[0] = 9;
@@ -75,20 +79,17 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertReadMissingBlob() {
-        CACHE.registerConnection(CONNECTION_ID);
         assertFalse(CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 1).isPresent());
     }
     
     @Test
     void assertReadEmptyBlob() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[0], true);
         assertFalse(CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 1).isPresent());
     }
     
     @Test
     void assertReadPartialSegmentAdvancesCursor() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3}, true);
         Optional<BlobSegment> actual = CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 2);
         assertTrue(actual.isPresent());
@@ -99,7 +100,6 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertReadCompleteSegmentKeepsCursor() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2}, true);
         Optional<BlobSegment> actual = CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 2);
         assertTrue(actual.isPresent());
@@ -111,7 +111,6 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertReadZeroLengthDoesNotAdvanceCursor() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2}, true);
         Optional<BlobSegment> actual = CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 0);
         assertTrue(actual.isPresent());
@@ -122,7 +121,6 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertGetTotalSize() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3}, true);
         CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 2);
         OptionalInt actual = CACHE.getTotalSize(CONNECTION_ID, BLOB_HANDLE);
@@ -132,33 +130,28 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertGetTotalSizeOfMissingBlob() {
-        CACHE.registerConnection(CONNECTION_ID);
         assertFalse(CACHE.getTotalSize(CONNECTION_ID, BLOB_HANDLE).isPresent());
     }
     
     @Test
     void assertIsStreamBlob() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1}, true);
         assertThat(CACHE.isStreamBlob(CONNECTION_ID, BLOB_HANDLE), is(Optional.of(true)));
     }
     
     @Test
     void assertIsStreamBlobWithSegmentedBlob() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1}, false);
         assertThat(CACHE.isStreamBlob(CONNECTION_ID, BLOB_HANDLE), is(Optional.of(false)));
     }
     
     @Test
     void assertIsStreamBlobWithMissingBlob() {
-        CACHE.registerConnection(CONNECTION_ID);
         assertThat(CACHE.isStreamBlob(CONNECTION_ID, BLOB_HANDLE), is(Optional.empty()));
     }
     
     @Test
     void assertSeekFromHead() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3, 4}, true);
         assertThat(CACHE.seek(CONNECTION_ID, BLOB_HANDLE, SEEK_MODE_FROM_HEAD, 2).getAsInt(), is(2));
         assertThat(CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 4).get().getData(), is(new byte[]{3, 4}));
@@ -166,7 +159,6 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertSeekRelativeToCurrentPosition() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3, 4}, true);
         CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 1);
         assertThat(CACHE.seek(CONNECTION_ID, BLOB_HANDLE, SEEK_MODE_RELATIVE, 2).getAsInt(), is(3));
@@ -175,7 +167,6 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertSeekFromTail() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3, 4}, true);
         assertThat(CACHE.seek(CONNECTION_ID, BLOB_HANDLE, SEEK_MODE_FROM_TAIL, -1).getAsInt(), is(3));
         assertThat(CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 4).get().getData(), is(new byte[]{4}));
@@ -183,7 +174,6 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertSeekBeyondContent() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2}, true);
         assertThat(CACHE.seek(CONNECTION_ID, BLOB_HANDLE, SEEK_MODE_FROM_HEAD, 5).getAsInt(), is(2));
         assertFalse(CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 2).isPresent());
@@ -191,7 +181,6 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertSeekBeforeContent() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2}, true);
         assertThat(CACHE.seek(CONNECTION_ID, BLOB_HANDLE, SEEK_MODE_FROM_TAIL, -5).getAsInt(), is(0));
         assertThat(CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 2).get().getData(), is(new byte[]{1, 2}));
@@ -199,7 +188,6 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertSeekWithUnknownModePositionsFromHead() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3}, true);
         CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 2);
         assertThat(CACHE.seek(CONNECTION_ID, BLOB_HANDLE, 3, 1).getAsInt(), is(1));
@@ -207,7 +195,6 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertSeekAfterFullReadAllowsReadingAgain() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2}, true);
         CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 2);
         assertThat(CACHE.seek(CONNECTION_ID, BLOB_HANDLE, SEEK_MODE_FROM_HEAD, 0).getAsInt(), is(0));
@@ -216,13 +203,11 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertSeekMissingBlob() {
-        CACHE.registerConnection(CONNECTION_ID);
         assertFalse(CACHE.seek(CONNECTION_ID, BLOB_HANDLE, SEEK_MODE_FROM_HEAD, 0).isPresent());
     }
     
     @Test
     void assertRemoveBlob() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1}, true);
         CACHE.removeBlob(CONNECTION_ID, BLOB_HANDLE);
         assertFalse(CACHE.getTotalSize(CONNECTION_ID, BLOB_HANDLE).isPresent());
@@ -230,7 +215,6 @@ class FirebirdBlobReadCacheTest {
     
     @Test
     void assertConnectionsAndHandlesAreIsolated() {
-        CACHE.registerConnection(CONNECTION_ID);
         CACHE.registerConnection(OTHER_CONNECTION_ID);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1}, true);
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE + 1, new byte[]{2, 3}, true);
