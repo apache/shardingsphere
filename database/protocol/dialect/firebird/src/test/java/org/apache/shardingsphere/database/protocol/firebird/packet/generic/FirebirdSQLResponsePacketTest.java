@@ -54,7 +54,6 @@ class FirebirdSQLResponsePacketTest {
     void assertWriteWithRow() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.writerIndex()).thenReturn(0);
-        when(byteBuf.writeZero(4)).thenReturn(byteBuf);
         BinaryRow row = new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.LONG, 5)));
         try (MockedStatic<FirebirdBinaryProtocolValueFactory> mocked = mockStatic(FirebirdBinaryProtocolValueFactory.class)) {
             mocked.when(() -> FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.LONG)).thenReturn(protocolValue);
@@ -62,7 +61,8 @@ class FirebirdSQLResponsePacketTest {
             packet.write(payload);
             verify(payload).writeInt4(FirebirdCommandPacketType.SQL_RESPONSE.getValue());
             verify(payload).writeInt4(1);
-            verify(byteBuf).writeZero(4);
+            verify(byteBuf).writeZero(1);
+            verify(payload).writePadding(1);
             verify(protocolValue).write(payload, 5);
         }
     }

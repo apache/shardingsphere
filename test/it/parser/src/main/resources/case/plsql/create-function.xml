@@ -18,4 +18,5 @@
 
 <sql-parser-test-cases>
     <create-function sql-case-id="pl_sql_create_function" />
+    <create-function sql-case-id="pl_sql_create_function_with_in_variable" />
 </sql-parser-test-cases>

@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.nio.charset.Charset;
 
@@ -209,7 +210,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
     public void writeBuffer(final byte[] value) {
         byteBuf.writeInt(value.length);
         byteBuf.writeBytes(value);
-        byteBuf.writeBytes(new byte[(4 - value.length) & 3]);
+        writePadding(value.length);
     }
     
     /**
@@ -220,7 +221,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
     public void writeBuffer(final ByteBuf buffer) {
         byteBuf.writeInt(buffer.writerIndex());
         byteBuf.writeBytes(buffer);
-        byteBuf.writeBytes(new byte[(4 - buffer.writerIndex()) & 3]);
+        writePadding(buffer.writerIndex());
     }
     
     /**
@@ -257,6 +258,16 @@ public final class FirebirdPacketPayload implements PacketPayload {
      */
     public void skipPadding(final int length) {
         byteBuf.skipBytes(getPadding(length));
+    }
+    
+    /**
+     * Write padding to byte buffers.
+     *
+     * @param length length of byte array that needs padding
+     */
+    @HighFrequencyInvocation
+    public void writePadding(final int length) {
+        byteBuf.writeZero(getPadding(length));
     }
     
     /**

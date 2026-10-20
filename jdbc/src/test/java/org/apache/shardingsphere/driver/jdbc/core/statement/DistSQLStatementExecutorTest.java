@@ -17,18 +17,23 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.handler.context.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.RQLStatement;
 import org.apache.shardingsphere.distsql.statement.type.rul.sql.ParseStatement;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorEngine;
 import org.apache.shardingsphere.mode.exclusive.callback.ExclusiveOperationVoidCallback;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -50,6 +55,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,6 +74,10 @@ class DistSQLStatementExecutorTest {
     void assertExecuteQuery() throws SQLException {
         QueryContext queryContext = createQueryContext(new ParseStatement("SELECT 1"));
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
+        DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        when(connection.getCurrentDatabaseName()).thenReturn("foo_db");
+        when(connection.getContextManager().getDatabase("foo_db").getProtocolType()).thenReturn(protocolType);
+        when(connection.getContextManager().getMetaDataContexts().getMetaData().getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(connection.getProcessId()).thenReturn("foo_process_id");
         Statement statement = mock(Statement.class);
         when(statement.getResultSetType()).thenReturn(ResultSet.TYPE_FORWARD_ONLY);
@@ -82,6 +92,8 @@ class DistSQLStatementExecutorTest {
                 verify(mockedEngines.constructed().get(0)).executeQuery();
                 assertThat(actualConnectionContext.get().getQueryContext(), sameInstance(queryContext));
                 assertThat(actualConnectionContext.get().getProcessId(), is("foo_process_id"));
+                assertThat(actualConnectionContext.get().getProtocolType(), sameInstance(protocolType));
+                assertNull(queryContext.getSqlStatementContext().getSqlStatement().getDatabaseType());
                 assertTrue(actual.next());
                 assertThat(actual.getString(1), is("foo_value"));
             }
@@ -92,10 +104,51 @@ class DistSQLStatementExecutorTest {
     void assertExecuteUpdate() throws SQLException {
         QueryContext queryContext = createQueryContext(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false));
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
-        try (MockedConstruction<DistSQLUpdateExecuteEngine> mockedEngines = mockConstruction(DistSQLUpdateExecuteEngine.class)) {
+        DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        when(connection.getCurrentDatabaseName()).thenReturn("foo_db");
+        when(connection.getContextManager().getDatabase("foo_db").getProtocolType()).thenReturn(protocolType);
+        AtomicReference<DistSQLConnectionContext> actualConnectionContext = new AtomicReference<>();
+        try (
+                MockedConstruction<DistSQLUpdateExecuteEngine> mockedEngines = mockConstruction(DistSQLUpdateExecuteEngine.class,
+                        (mock, context) -> actualConnectionContext.set((DistSQLConnectionContext) context.arguments().get(3)))) {
             new DistSQLStatementExecutor(connection, mock(StatementManager.class), mock(Statement.class)).executeUpdate(queryContext);
             verify(mockedEngines.constructed().get(0)).executeUpdate();
+            assertThat(actualConnectionContext.get().getProtocolType(), sameInstance(protocolType));
+            assertNull(queryContext.getSqlStatementContext().getSqlStatement().getDatabaseType());
         }
+    }
+    
+    @Test
+    void assertExecuteQueryWithoutDatabase() {
+        ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
+        when(connection.getCurrentDatabaseName()).thenReturn("foo_db");
+        when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(null);
+        UnknownDatabaseException expected = new UnknownDatabaseException("foo_db");
+        when(connection.getContextManager().getDatabase("foo_db")).thenThrow(expected);
+        DistSQLStatementExecutor executor = new DistSQLStatementExecutor(connection, mock(StatementManager.class), mock(Statement.class));
+        assertThat(assertThrows(UnknownDatabaseException.class, () -> executor.executeQuery(createQueryContext(new ParseStatement("SELECT 1")))), sameInstance(expected));
+    }
+    
+    @Test
+    void assertExecuteUpdateWithoutDatabase() {
+        ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
+        when(connection.getCurrentDatabaseName()).thenReturn("foo_db");
+        when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(null);
+        UnknownDatabaseException expected = new UnknownDatabaseException("foo_db");
+        when(connection.getContextManager().getDatabase("foo_db")).thenThrow(expected);
+        DistSQLStatementExecutor executor = new DistSQLStatementExecutor(connection, mock(StatementManager.class), mock(Statement.class));
+        QueryContext queryContext = createQueryContext(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false));
+        assertThat(assertThrows(UnknownDatabaseException.class, () -> executor.executeUpdate(queryContext)), sameInstance(expected));
+    }
+    
+    @Test
+    void assertExecuteUpdateInTransaction() {
+        ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
+        when(connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()).thenReturn(true);
+        DistSQLStatementExecutor executor = new DistSQLStatementExecutor(connection, mock(StatementManager.class), mock(Statement.class));
+        QueryContext queryContext = createQueryContext(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false));
+        UnsupportedSQLOperationException actual = assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(queryContext));
+        assertThat(actual.getMessage(), is("Unsupported SQL operation: Non-query DistSQL is not supported within a transaction."));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -130,6 +183,22 @@ class DistSQLStatementExecutorTest {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         DistSQLStatementExecutor executor = new DistSQLStatementExecutor(connection, mock(StatementManager.class), mock(Statement.class));
         assertThrows(UnsupportedSQLOperationException.class, () -> executor.isQuery(queryContext));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideQueriesInTransaction")
+    void assertIsQueryInTransaction(final String name, final DistSQLStatement sqlStatement) throws SQLException {
+        ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
+        when(connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()).thenReturn(true);
+        DistSQLStatementExecutor executor = new DistSQLStatementExecutor(connection, mock(StatementManager.class), mock(Statement.class));
+        assertTrue(executor.isQuery(createQueryContext(sqlStatement)));
+    }
+    
+    private static Stream<Arguments> provideQueriesInTransaction() {
+        return Stream.of(
+                Arguments.of("RQL query", mock(RQLStatement.class)),
+                Arguments.of("RUL query", new ParseStatement("SELECT 1")),
+                Arguments.of("queryable RAL", mock(QueryableRALStatement.class)));
     }
     
     private QueryContext createQueryContext(final DistSQLStatement sqlStatement) {

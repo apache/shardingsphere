@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -40,7 +42,12 @@ public final class FirebirdBatchReleaseCommandExecutor implements CommandExecuto
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
+        FirebirdBatchStatementManager batchStatementManager = FirebirdBatchStatementManager.getInstance();
+        // TODO restore checkNotNull when FirebirdFrontendEngine stops marking the transaction as failed for InvalidBatchHandleException
+        if (null == batchStatementManager.getBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle())) {
+            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidBatchHandleException(packet.getStatementHandle())));
+        }
+        batchStatementManager.unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }

@@ -40,7 +40,7 @@ public final class FirebirdBlobInfoRegistry {
      * Refresh blob column metadata for a table.
      *
      * @param schemaName schema name
-     * @param tableName table name
+     * @param tableName actual table name
      * @param blobColumns blob column name to subtype mapping
      */
     public static void refreshTable(final String schemaName, final String tableName, final Map<String, Integer> blobColumns) {
@@ -69,7 +69,7 @@ public final class FirebirdBlobInfoRegistry {
      * Determine whether column is a Firebird blob column.
      *
      * @param schemaName schema name
-     * @param tableName table name
+     * @param tableName actual table name
      * @param columnName column name
      * @return whether column is a blob column
      */
@@ -85,7 +85,7 @@ public final class FirebirdBlobInfoRegistry {
      * Find blob subtype for a column.
      *
      * @param schemaName schema name
-     * @param tableName table name
+     * @param tableName actual table name
      * @param columnName column name
      * @return blob subtype if present
      */
@@ -103,16 +103,7 @@ public final class FirebirdBlobInfoRegistry {
     
     private static String buildTableKey(final String schemaName, final String tableName) {
         String schemaKey = null == schemaName ? "" : toKey(schemaName);
-        String logicTable = trimToLogicTableName(tableName);
-        return schemaKey + "." + toKey(logicTable);
-    }
-    
-    private static String trimToLogicTableName(final String tableName) {
-        int end = tableName.length() - 1;
-        while (end >= 0 && !Character.isLetter(tableName.charAt(end))) {
-            end--;
-        }
-        return end < 0 ? tableName : tableName.substring(0, end + 1);
+        return schemaKey + "." + toKey(tableName);
     }
     
     private static String toKey(final String value) {

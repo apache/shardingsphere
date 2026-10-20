@@ -70,10 +70,17 @@ class FirebirdBlobInfoRegistryTest {
     }
     
     @Test
+    void assertRefreshTableWhenOtherTableDiffersOnlyBySuffix() {
+        FirebirdBlobInfoRegistry.refreshTable("schema_a", "t1", Collections.singletonMap("blob_col", 1));
+        FirebirdBlobInfoRegistry.refreshTable("schema_a", "t2", Collections.emptyMap());
+        assertTrue(FirebirdBlobInfoRegistry.isBlobColumn("schema_a", "t1", "blob_col"));
+    }
+    
+    @Test
     void assertRefreshTable() {
         Map<String, Integer> newColumns = createColumnsWithMixedNames();
         FirebirdBlobInfoRegistry.refreshTable(null, "table_1", newColumns);
-        Map<String, Integer> actual = blobColumns.get(".TABLE");
+        Map<String, Integer> actual = blobColumns.get(".TABLE_1");
         assertTrue(actual.containsKey("BLOB_COL"));
         assertThat(actual.get("BLOB_COL"), is(2));
         assertThat(actual.size(), is(1));

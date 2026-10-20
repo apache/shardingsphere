@@ -19,4 +19,7 @@
 <sql-parser-test-cases>
 <!--    <create-server sql-case-id="create_server" />-->
     <create-server sql-case-id="create_server_doris_basic" />
+    <create-server sql-case-id="create_server_basic_pg" />
+    <create-server sql-case-id="create_server_options_pg" />
+    <create-server sql-case-id="create_server_version_pg" />
 </sql-parser-test-cases>

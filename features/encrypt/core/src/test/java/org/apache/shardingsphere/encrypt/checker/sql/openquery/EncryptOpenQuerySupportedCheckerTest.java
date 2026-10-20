@@ -549,7 +549,7 @@ class EncryptOpenQuerySupportedCheckerTest {
     
     private WithSegment createWithSegmentContainingOpenQuery() {
         SubquerySegment cteSubquery = mockSubqueryWithOpenQueryFrom();
-        CommonTableExpressionSegment cteSeg = new CommonTableExpressionSegment(0, 80, new AliasSegment(0, 3, new IdentifierValue("foo_cte")), cteSubquery);
+        CommonTableExpressionSegment cteSeg = new CommonTableExpressionSegment(0, 80, new AliasSegment(0, 3, new IdentifierValue("foo_cte")), cteSubquery, null);
         return new WithSegment(0, 80, Collections.singletonList(cteSeg));
     }
     

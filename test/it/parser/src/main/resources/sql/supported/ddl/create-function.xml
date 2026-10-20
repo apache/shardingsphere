@@ -143,4 +143,16 @@
     <sql-case id="create_function_gtid_intersection" value="CREATE FUNCTION GTID_INTERSECTION(gs1 LONGTEXT, gs2 LONGTEXT) RETURNS LONGTEXT RETURN GTID_SUBTRACT(gs1, GTID_SUBTRACT(gs1, gs2));" db-types="MySQL" />
     <sql-case id="create_function_gtid_intersection_with_uuid" value="CREATE FUNCTION GTID_INTERSECTION_WITH_UUID(gs LONGTEXT, uuid TEXT) RETURNS LONGTEXT RETURN GTID_SUBTRACT(gs, GTID_SUBTRACT_UUID(gs, uuid));" db-types="MySQL" />
     <sql-case id="create_function_with_nested_exception_block_in_if_statement" value="CREATE OR REPLACE FUNCTION AF_GETWBANDTYPE(in_Telnum varchar2) return varchar2 as Result varchar2(10); v_hastv varchar2(1) := ''; begin Result := ''; if v_hastv is not null then begin select count(1) into Result from subs_product a where a.subsid = (select subsid from subscriber c where c.servnumber = in_Telnum) and a.startdate &lt;> nvl(a.enddate, sysdate + 1); EXCEPTION WHEN OTHERS THEN NULL; end; end if; return Result; end AF_GETWBANDTYPE;" db-types="Oracle" />
+    <sql-case id="create_function_if_not_exists_mysql" value="CREATE FUNCTION IF NOT EXISTS f() RETURNS INT RETURN 1" db-types="MySQL,Doris" />
+
+
+    <sql-case id="create_function_return_expression_pg" value="CREATE FUNCTION f(a int) RETURNS int RETURN a + 1" db-types="PostgreSQL" />
+    <sql-case id="create_function_return_subquery_pg" value="CREATE FUNCTION f() RETURNS bigint LANGUAGE sql RETURN (SELECT count(*) FROM t)" db-types="PostgreSQL" />
+    <sql-case id="create_function_atomic_empty_pg" value="CREATE FUNCTION f() RETURNS void BEGIN ATOMIC END" db-types="PostgreSQL" />
+    <sql-case id="create_function_atomic_return_pg" value="CREATE FUNCTION f() RETURNS boolean BEGIN ATOMIC ;;RETURN false;; END" db-types="PostgreSQL" />
+    <sql-case id="create_function_atomic_select_pg" value="CREATE FUNCTION f(a int) RETURNS int LANGUAGE sql BEGIN ATOMIC SELECT CASE WHEN a &gt; 0 THEN a ELSE 0 END; END" db-types="PostgreSQL" />
+    <sql-case id="create_function_atomic_dml_pg" value="CREATE FUNCTION f() RETURNS void BEGIN ATOMIC INSERT INTO t VALUES (1); UPDATE t SET a = a + 1; DELETE FROM t WHERE a = 2; END" db-types="PostgreSQL" />
+    <sql-case id="create_function_atomic_merge_pg" value="CREATE FUNCTION f() RETURNS void BEGIN ATOMIC MERGE INTO t USING s ON t.id = s.id WHEN MATCHED THEN DELETE; END" db-types="PostgreSQL" />
+    <sql-case id="create_function_atomic_table_pg" value="CREATE FUNCTION f() RETURNS TABLE (a int) BEGIN ATOMIC SELECT 1; END" db-types="PostgreSQL" />
+    <sql-case id="create_function_body_string_control_pg" value="CREATE FUNCTION f() RETURNS int LANGUAGE sql AS 'SELECT 1'" db-types="PostgreSQL" />
 </sql-cases>

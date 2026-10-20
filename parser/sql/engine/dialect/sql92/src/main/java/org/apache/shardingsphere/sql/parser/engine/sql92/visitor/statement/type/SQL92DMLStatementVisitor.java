@@ -193,7 +193,7 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
         if (null != expr) {
             return visit(expr);
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList());
     }
     
     @Override

@@ -41,4 +41,4 @@ Tasks with side effects should create or preview a plan first, then run only aft
   - Data Encryption: plan, apply, and validate data encryption rule changes through MCP feature plugins.
   - Data Masking: plan, apply, and validate data masking rule changes through MCP feature plugins.
 
-For custom integration or protocol debugging, see the [Custom Integration Appendix](developer-appendix/).
+For custom integration or protocol debugging, see the [Custom Integration Appendix](/en/user-manual/shardingsphere-mcp/developer-appendix/).

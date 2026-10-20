@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationVa
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -87,6 +88,24 @@ class ShadowRuleConfigurationTest {
                 Arguments.of("Null shadow algorithm type before SPI", null, "Property `shadowAlgorithms[foo_shadow_algorithm].type` Type is required."),
                 Arguments.of("Empty shadow algorithm type before SPI", "", "Property `shadowAlgorithms[foo_shadow_algorithm].type` Type is required."),
                 Arguments.of("Whitespace shadow algorithm type reaches SPI", " ", "Property `shadowAlgorithms` does not match an available SPI implementation."));
+    }
+    
+    @Test
+    void assertValidateUnconfiguredDataSourceWithTemplateNames() {
+        ShadowRuleConfiguration ruleConfig = createRuleConfiguration(Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "foo_primary", "foo_shadow")),
+                Collections.singletonMap("foo_{message}", new ShadowTableConfiguration(Collections.singleton("bar_{message}"), Collections.singleton("foo_shadow_algorithm"))),
+                Collections.singletonMap("foo_shadow_algorithm", new AlgorithmConfiguration("FIXTURE", new Properties())));
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'ShadowRuleConfiguration' rule, error message is: Property `tables` references an unconfigured shadow data source."));
+    }
+    
+    @Test
+    void assertValidateUnconfiguredAlgorithmWithTemplateNames() {
+        ShadowRuleConfiguration ruleConfig = createRuleConfiguration(Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "foo_primary", "foo_shadow")),
+                Collections.singletonMap("foo_{message}", new ShadowTableConfiguration(Collections.singleton("foo_ds"), Collections.singleton("bar_{message}"))),
+                Collections.singletonMap("foo_shadow_algorithm", new AlgorithmConfiguration("FIXTURE", new Properties())));
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'ShadowRuleConfiguration' rule, error message is: Property `tables` references an unconfigured shadow algorithm."));
     }
     
     @ParameterizedTest(name = "{0}")

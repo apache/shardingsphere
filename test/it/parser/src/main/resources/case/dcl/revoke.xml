@@ -266,4 +266,33 @@
         <table name="t_order" start-index="28" stop-index="34" />
         <column name="order_id" start-index="14" stop-index="21" />
     </revoke>
+
+    <revoke sql-case-id="revoke_maintain_pg">
+        <table name="t" start-index="19" stop-index="19" />
+    </revoke>
+
+    <revoke sql-case-id="revoke_granted_by_pg">
+        <table name="t" start-index="17" stop-index="17" />
+    </revoke>
+    <revoke sql-case-id="revoke_role_inherit_pg" />
+    <revoke sql-case-id="revoke_role_set_grantor_pg" />
+    <revoke sql-case-id="revoke_role_admin_option_control_pg" />
+
+    <revoke sql-case-id="revoke_object_grant_option_control_pg">
+        <table name="t" start-index="34" stop-index="34" />
+    </revoke>
+    <revoke sql-case-id="revoke_maintain_on_table_postgresql">
+        <table name="foo" start-index="19" stop-index="32">
+            <owner name="foo_schema" start-index="19" stop-index="28" />
+        </table>
+    </revoke>
+    <revoke sql-case-id="revoke_privileges_granted_by_role_postgresql">
+        <table name="foo" start-index="25" stop-index="27" />
+    </revoke>
+    <revoke sql-case-id="revoke_grant_option_granted_by_postgresql">
+        <table name="foo" start-index="34" stop-index="36" />
+    </revoke>
+    <revoke sql-case-id="revoke_role_admin_option_for_postgresql" />
+    <revoke sql-case-id="revoke_role_inherit_option_for_postgresql" />
+    <revoke sql-case-id="revoke_role_set_option_for_postgresql" />
 </sql-parser-test-cases>
