@@ -39,7 +39,7 @@ public final class UniqueTableNamesValidator implements ConstraintValidator<Uniq
             return true;
         }
         context.disableDefaultConstraintViolation();
-        context.buildConstraintViolationWithTemplate(String.format("must not contain duplicate table names `%s`", String.join(", ", duplicatedTableNames))).addConstraintViolation();
+        context.buildConstraintViolationWithTemplate(context.getDefaultConstraintMessageTemplate()).addConstraintViolation();
         return false;
     }
     
