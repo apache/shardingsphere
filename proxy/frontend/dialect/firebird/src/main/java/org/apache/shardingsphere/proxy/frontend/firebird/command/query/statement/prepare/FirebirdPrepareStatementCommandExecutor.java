@@ -89,14 +89,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Co
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalInt;
 
 /**
@@ -104,6 +107,8 @@ import java.util.OptionalInt;
  */
 @RequiredArgsConstructor
 public final class FirebirdPrepareStatementCommandExecutor implements CommandExecutor {
+    
+    private static final int LIKE_PARAMETER_LENGTH = 30;
     
     private final FirebirdPrepareStatementPacket packet;
     
@@ -326,17 +331,15 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             processInsertStatement((InsertStatementContext) sqlStatementContext, metaDataContexts, describeColumns, requestedItems);
             return;
         }
-        Collection<ColumnSegment> affectedColumns = findAffectedColumns(sqlStatementContext);
+        Collection<ParameterType> parameterTypes = findParameterTypes(sqlStatementContext);
         int parametersCount = sqlStatementContext.getSqlStatement().getParameterMarkers().size();
         String databaseName = connectionSession.getCurrentDatabaseName();
         ShardingSphereSchema schema = metaDataContexts.getMetaData().getDatabase(databaseName).findDefaultSchema().orElse(null);
         int columnCount = 0;
-        for (ColumnSegment columnSegment : affectedColumns) {
-            ShardingSphereTable table = schema.getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
-            ShardingSphereColumn column = table.getColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue());
-            processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), ++columnCount);
+        for (ParameterType each : parameterTypes) {
+            processParameterType(each, schema, describeColumns, requestedItems, ++columnCount);
         }
-        for (int i = 0; i < parametersCount - affectedColumns.size(); i++) {
+        for (int i = 0; i < parametersCount - parameterTypes.size(); i++) {
             processCustomColumn(null, null, null, 12, describeColumns, requestedItems, ++columnCount);
         }
     }
@@ -376,12 +379,13 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return null == tablesContext ? Collections.emptyList() : tablesContext.getTableNames();
     }
     
-    private Collection<ColumnSegment> findAffectedColumns(final SQLStatementContext sqlStatementContext) {
-        Collection<ColumnSegment> result = new LinkedList<>();
+    @HighFrequencyInvocation
+    private Collection<ParameterType> findParameterTypes(final SQLStatementContext sqlStatementContext) {
+        Collection<ParameterType> result = new LinkedList<>();
         if (sqlStatementContext instanceof UpdateStatementContext) {
             for (ColumnAssignmentSegment segment : ((UpdateStatementContext) sqlStatementContext).getSqlStatement().getSetAssignment().getAssignments()) {
                 if (segment.getValue() instanceof ParameterMarkerExpressionSegment) {
-                    result.add(segment.getColumns().get(0));
+                    result.add(new ParameterType(segment.getColumns().get(0), false, 0));
                 }
             }
         }
@@ -394,43 +398,87 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return result;
     }
     
-    private boolean processExpr(final ExpressionSegment expr, final Collection<ColumnSegment> affectedColumns) {
+    private boolean processExpr(final ExpressionSegment expr, final Collection<ParameterType> parameterTypes) {
         if (!(expr instanceof BinaryOperationExpression)) {
             return expr instanceof ParameterMarkerExpressionSegment;
         }
         BinaryOperationExpression binary = (BinaryOperationExpression) expr;
         if (binary.getRight() instanceof ListExpression) {
-            processPatternExpression(binary.getLeft(), (ListExpression) binary.getRight(), affectedColumns);
+            processPatternExpression(binary.getLeft(), (ListExpression) binary.getRight(), parameterTypes);
             return false;
         }
-        processExpr(binary.getLeft(), affectedColumns);
-        boolean rightIsParam = processExpr(binary.getRight(), affectedColumns);
+        processExpr(binary.getLeft(), parameterTypes);
+        boolean rightIsParam = processExpr(binary.getRight(), parameterTypes);
         if (rightIsParam && binary.getLeft() instanceof ColumnSegment) {
-            affectedColumns.add((ColumnSegment) binary.getLeft());
+            parameterTypes.add(new ParameterType((ColumnSegment) binary.getLeft(), false, 0));
         }
         return false;
     }
     
     @HighFrequencyInvocation
-    private void processPatternExpression(final ExpressionSegment value, final ListExpression pattern, final Collection<ColumnSegment> affectedColumns) {
-        ExpressionSegment patternValue = pattern.getItems().iterator().next();
-        ColumnSegment typeColumn = null;
-        if (value instanceof ColumnSegment) {
-            typeColumn = (ColumnSegment) value;
-        } else if (patternValue instanceof ColumnSegment) {
-            typeColumn = (ColumnSegment) patternValue;
+    private void processPatternExpression(final ExpressionSegment value, final ListExpression pattern, final Collection<ParameterType> parameterTypes) {
+        Iterator<ExpressionSegment> patternItems = pattern.getItems().iterator();
+        ExpressionSegment patternValue = patternItems.next();
+        processLikeOperand(value, patternValue, value, parameterTypes);
+        processLikeOperand(patternValue, value, patternValue, parameterTypes);
+        if (patternItems.hasNext()) {
+            processLikeOperand(patternItems.next(), patternValue, value, parameterTypes);
         }
-        if (null == typeColumn) {
+    }
+    
+    private void processLikeOperand(final ExpressionSegment operand, final ExpressionSegment typeOperand, final ExpressionSegment otherOperand, final Collection<ParameterType> parameterTypes) {
+        Optional<ParameterType> parameterType = findLikeOperandType(typeOperand, otherOperand);
+        if (parameterType.isPresent()) {
+            assignParameterType(operand, parameterType.get(), parameterTypes);
+        } else {
+            processExpr(operand, parameterTypes);
+        }
+    }
+    
+    private Optional<ParameterType> findLikeOperandType(final ExpressionSegment operand, final ExpressionSegment otherOperand) {
+        if (operand instanceof ColumnSegment) {
+            return Optional.of(new ParameterType((ColumnSegment) operand, true, 0));
+        }
+        if (operand instanceof LiteralExpressionSegment) {
+            Object value = ((LiteralExpressionSegment) operand).getLiterals();
+            return Optional.of(new ParameterType(null, true, value instanceof String ? ((String) value).codePointCount(0, ((String) value).length()) : LIKE_PARAMETER_LENGTH));
+        }
+        if (operand instanceof ParameterMarkerExpressionSegment) {
+            return otherOperand instanceof ParameterMarkerExpressionSegment ? Optional.of(new ParameterType(null, true, LIKE_PARAMETER_LENGTH)) : findLikeOperandType(otherOperand, operand);
+        }
+        return Optional.empty();
+    }
+    
+    private void assignParameterType(final ExpressionSegment expr, final ParameterType parameterType, final Collection<ParameterType> parameterTypes) {
+        if (expr instanceof ParameterMarkerExpressionSegment) {
+            parameterTypes.add(parameterType);
+        } else if (expr instanceof BinaryOperationExpression) {
+            assignParameterType(((BinaryOperationExpression) expr).getLeft(), parameterType, parameterTypes);
+            assignParameterType(((BinaryOperationExpression) expr).getRight(), parameterType, parameterTypes);
+        }
+    }
+    
+    @HighFrequencyInvocation
+    private void processParameterType(final ParameterType parameterType, final ShardingSphereSchema schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
+                                      final Collection<FirebirdSQLInfoPacketType> requestedItems, final int idx) {
+        if (null == parameterType.column) {
+            processVarcharColumn(parameterType.varcharLength, describeColumns, requestedItems, idx);
             return;
         }
-        if (value instanceof ParameterMarkerExpressionSegment) {
-            affectedColumns.add(typeColumn);
+        ShardingSphereTable table = schema.getTable(parameterType.column.getColumnBoundInfo().getOriginalTable().getValue());
+        ShardingSphereColumn column = table.getColumn(parameterType.column.getColumnBoundInfo().getOriginalColumn().getValue());
+        if (parameterType.likeOperand && !isDynamicLengthType(column.getDataType()) && !isBlobColumn(table, column)) {
+            processVarcharColumn(LIKE_PARAMETER_LENGTH, describeColumns, requestedItems, idx);
+            return;
         }
-        for (ExpressionSegment each : pattern.getItems()) {
-            if (each instanceof ParameterMarkerExpressionSegment) {
-                affectedColumns.add(typeColumn);
-            }
-        }
+        processColumn(describeColumns, requestedItems, table, column, parameterType.column.getOwner().map(OwnerSegment::getIdentifier).orElse(null), parameterType.column.getIdentifier(), idx);
+    }
+    
+    private void processVarcharColumn(final int length, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final int idx) {
+        ShardingSphereTable table = new ShardingSphereTable(null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereColumn column = new ShardingSphereColumn(null, Types.VARCHAR, false, false, true, true, false, false);
+        String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
+        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, null, null, owner, length, false, null));
     }
     
     private void processExpressionProjection(final ExpressionProjection expr, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,
@@ -551,5 +599,19 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             default:
                 return false;
         }
+    }
+    
+    /**
+     * Type of parameter: the type of the column, or VARCHAR of the length when the column is absent; a non-text column operand of LIKE gives VARCHAR as well.
+     */
+    @RequiredArgsConstructor
+    private static final class ParameterType {
+        
+        @Nullable
+        private final ColumnSegment column;
+        
+        private final boolean likeOperand;
+        
+        private final int varcharLength;
     }
 }
