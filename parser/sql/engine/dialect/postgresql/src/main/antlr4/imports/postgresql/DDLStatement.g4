@@ -193,11 +193,19 @@ createDefinitionClause
     ;
 
 createDefinition
-    : columnDefinition | tableConstraint | LIKE tableName likeOption*
+    : createTableConstraint | columnDefinition | LIKE tableName likeOption*
+    ;
+
+createTableConstraint
+    : constraintClause? tableConstraintOption constraintAttributeSpec
     ;
 
 columnDefinition
-    : columnName dataType (STORAGE colId)? columnCompression? collateClause? columnConstraint*
+    : columnName dataType columnStorage? columnCompression? collateClause? columnConstraint*
+    ;
+
+columnStorage
+    : STORAGE (colId | DEFAULT)
     ;
 
 columnConstraint
@@ -209,7 +217,8 @@ constraintClause
     ;
 
 columnConstraintOption
-    : NOT? NULL
+    : NULL
+    | NOT NULL (NO INHERIT)?
     | checkOption
     | DEFAULT defaultExpr
     | GENERATED ALWAYS AS LP_ aExpr RP_ (STORED | VIRTUAL)?
@@ -263,7 +272,7 @@ likeOption
     ;
 
 tableConstraint
-    : constraintClause? tableConstraintOption constraintOptionalParam
+    : constraintClause? tableConstraintOption constraintOptionalParam (NO INHERIT constraintOptionalParam)*
     ;
 
 tableConstraintOption
@@ -390,10 +399,10 @@ alterTableActions
     ;
 
 alterTableAction
-    : addColumnSpecification
+    : addConstraintSpecification
+    | addColumnSpecification
     | dropColumnSpecification
     | modifyColumnSpecification
-    | addConstraintSpecification
     | modifyConstraintSpecification
     | validateConstraintSpecification
     | dropConstraintSpecification
@@ -466,7 +475,7 @@ attributeOption
     ;
 
 addConstraintSpecification
-    : ADD (tableConstraint (NOT VALID)? | tableConstraintUsingIndex)
+    : ADD (tableConstraint (NOT VALID constraintAttributeSpec)? | tableConstraintUsingIndex)
     ;
 
 tableConstraintUsingIndex

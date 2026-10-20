@@ -251,6 +251,10 @@ public final class AlterTableStatementAssert {
     }
     
     private static void assertAddConstraintDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        if (null != expected.getAddConstraintCount()) {
+            assertThat(assertContext.getText("Expected add constraint definitions size assertion error: "), expected.getAddConstraints().size(), is(expected.getAddConstraintCount()));
+            assertThat(assertContext.getText("Add constraint definitions size assertion error: "), actual.getAddConstraintDefinitions().size(), is(expected.getAddConstraintCount()));
+        }
         int count = 0;
         for (AddConstraintDefinitionSegment each : actual.getAddConstraintDefinitions()) {
             ConstraintDefinitionAssert.assertIs(assertContext, each.getConstraintDefinition(), expected.getAddConstraints().get(count));
