@@ -34,6 +34,8 @@ public final class FirebirdStatementIdGenerator {
     
     private static final FirebirdStatementIdGenerator INSTANCE = new FirebirdStatementIdGenerator();
     
+    private static final int LAZY_STATEMENT_HANDLE = 0xFFFF;
+    
     private final Map<Integer, AtomicInteger> connectionRegistry = new ConcurrentHashMap<>();
     
     private final Map<Integer, Collection<Integer>> allocatedStatementIds = new ConcurrentHashMap<>();
@@ -78,6 +80,21 @@ public final class FirebirdStatementIdGenerator {
      */
     public int getStatementId(final int connectionId) {
         return getStatementCounter(connectionId).get();
+    }
+    
+    /**
+     * Resolve statement ID for connection.
+     *
+     * <p>A client that sends a statement request without waiting for the response of {@code op_allocate_statement} uses the lazy handle {@code 0xFFFF},
+     * which refers to the latest allocated statement.</p>
+     *
+     * @param connectionId connection ID
+     * @param statementHandle statement handle received from the client
+     * @return latest allocated statement ID for the lazy handle, otherwise the statement handle
+     */
+    @HighFrequencyInvocation
+    public int resolveStatementId(final int connectionId, final int statementHandle) {
+        return LAZY_STATEMENT_HANDLE == (statementHandle & LAZY_STATEMENT_HANDLE) ? getStatementId(connectionId) : statementHandle;
     }
     
     /**

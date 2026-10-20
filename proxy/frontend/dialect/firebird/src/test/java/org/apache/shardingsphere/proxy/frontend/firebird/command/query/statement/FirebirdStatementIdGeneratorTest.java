@@ -19,9 +19,13 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -55,6 +59,16 @@ class FirebirdStatementIdGeneratorTest {
         GENERATOR.registerConnection(1);
         registeredConnectionIds.add(1);
         assertThat(GENERATOR.getStatementId(1), is(0));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("resolveStatementIdArguments")
+    void assertResolveStatementId(final String name, final int statementHandle, final int expectedStatementId) {
+        GENERATOR.registerConnection(1);
+        registeredConnectionIds.add(1);
+        GENERATOR.nextStatementId(1);
+        GENERATOR.nextStatementId(1);
+        assertThat(GENERATOR.resolveStatementId(1, statementHandle), is(expectedStatementId));
     }
     
     @Test
@@ -91,5 +105,9 @@ class FirebirdStatementIdGeneratorTest {
         registeredConnectionIds.remove(1);
         assertThrows(IllegalStateException.class, () -> GENERATOR.getStatementId(1));
         assertFalse(GENERATOR.isAllocated(1, 1));
+    }
+    
+    private static Stream<Arguments> resolveStatementIdArguments() {
+        return Stream.of(Arguments.of("explicit handle", 1, 1), Arguments.of("lazy handle", 0xFFFF, 2), Arguments.of("sign-extended lazy handle", -1, 2));
     }
 }

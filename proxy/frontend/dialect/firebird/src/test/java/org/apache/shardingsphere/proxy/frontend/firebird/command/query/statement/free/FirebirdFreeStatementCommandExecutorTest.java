@@ -180,6 +180,16 @@ class FirebirdFreeStatementCommandExecutorTest {
         assertTrue(FirebirdStatementIdGenerator.getInstance().isAllocated(CONNECTION_ID, STATEMENT_ID));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("lazyStatementHandles")
+    void assertExecuteWithLazyStatementHandle(final String name, final int lazyStatementHandle) throws SQLException {
+        when(packet.getStatementId()).thenReturn(lazyStatementHandle);
+        when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.DROP);
+        new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
+        verify(registry).removePreparedStatement(STATEMENT_ID);
+        assertFalse(FirebirdStatementIdGenerator.getInstance().isAllocated(CONNECTION_ID, STATEMENT_ID));
+    }
+    
     @Test
     void assertExecuteWithNotAllocatedStatement() throws SQLException {
         when(packet.getStatementId()).thenReturn(STATEMENT_ID + 1);
@@ -225,6 +235,10 @@ class FirebirdFreeStatementCommandExecutorTest {
     void assertExecuteWithUnknownOption() {
         when(packet.getOption()).thenReturn(999);
         assertThrows(DatabaseProtocolException.class, new FirebirdFreeStatementCommandExecutor(packet, connectionSession)::execute);
+    }
+    
+    private static Stream<Arguments> lazyStatementHandles() {
+        return Stream.of(Arguments.of("lazy handle", 0xFFFF), Arguments.of("sign-extended lazy handle", -1));
     }
     
     private static Stream<Arguments> nonDropOptions() {

@@ -49,12 +49,13 @@ public final class FirebirdSQLInfoExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        if (!FirebirdStatementIdGenerator.getInstance().isAllocated(connectionSession.getConnectionId(), packet.getHandle())) {
-            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidStatementStateException(packet.getHandle(), false)));
+        int statementId = FirebirdStatementIdGenerator.getInstance().resolveStatementId(connectionSession.getConnectionId(), packet.getHandle());
+        if (!FirebirdStatementIdGenerator.getInstance().isAllocated(connectionSession.getConnectionId(), statementId)) {
+            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidStatementStateException(statementId, false)));
         }
-        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getHandle());
+        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
         if (null == preparedStatement) {
-            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidStatementStateException(packet.getHandle(), true)));
+            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidStatementStateException(statementId, true)));
         }
         return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdSQLInfoReturnPacket(packet.getInfoItems(), getRecordsInfo(preparedStatement))));
     }

@@ -46,22 +46,23 @@ public final class FirebirdFreeStatementCommandExecutor implements CommandExecut
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        if (!FirebirdStatementIdGenerator.getInstance().isAllocated(connectionSession.getConnectionId(), packet.getStatementId())) {
-            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidStatementStateException(packet.getStatementId(), false)));
+        int statementId = FirebirdStatementIdGenerator.getInstance().resolveStatementId(connectionSession.getConnectionId(), packet.getStatementId());
+        if (!FirebirdStatementIdGenerator.getInstance().isAllocated(connectionSession.getConnectionId(), statementId)) {
+            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidStatementStateException(statementId, false)));
         }
         switch (packet.getOption()) {
             case FirebirdFreeStatementPacket.DROP:
             case FirebirdFreeStatementPacket.UNPREPARE:
-                connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
-                FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementId());
-                FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), true);
+                connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(statementId);
+                FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), statementId);
+                FirebirdStatementResourceCleaner.clean(connectionSession, statementId, true);
                 if (FirebirdFreeStatementPacket.DROP == packet.getOption()) {
-                    FirebirdStatementIdGenerator.getInstance().releaseStatementId(connectionSession.getConnectionId(), packet.getStatementId());
+                    FirebirdStatementIdGenerator.getInstance().releaseStatementId(connectionSession.getConnectionId(), statementId);
                 }
                 break;
             case FirebirdFreeStatementPacket.CLOSE:
-                FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementId());
-                FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), false);
+                FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), statementId);
+                FirebirdStatementResourceCleaner.clean(connectionSession, statementId, false);
                 break;
             default:
                 throw new DatabaseProtocolException("Unknown DSQL option type %d", packet.getOption());

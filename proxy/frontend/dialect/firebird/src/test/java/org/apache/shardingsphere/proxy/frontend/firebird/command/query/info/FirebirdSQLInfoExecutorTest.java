@@ -150,6 +150,22 @@ class FirebirdSQLInfoExecutorTest {
         assertThat(returnPacket.getRecordsInfo().getDeleteCount(), is(expectedDeleteCount));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("lazyStatementHandles")
+    void assertExecuteWithLazyStatementHandle(final String name, final int lazyStatementHandle) {
+        when(packet.getInfoItems()).thenReturn(Collections.emptyList());
+        when(packet.getHandle()).thenReturn(lazyStatementHandle);
+        ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(InsertStatement.class));
+        FirebirdServerPreparedStatement preparedStatement = new FirebirdServerPreparedStatement("DML", sqlStatementContext, new HintValueContext());
+        preparedStatement.setAffectedRows(3L);
+        registry.addPreparedStatement(STATEMENT_ID, preparedStatement);
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
+        Collection<DatabasePacket> actual = new FirebirdSQLInfoExecutor(packet, connectionSession).execute();
+        assertThat(((FirebirdSQLInfoReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData()).getRecordsInfo().getInsertCount(), is(3L));
+    }
+    
     @Test
     void assertExecuteWithNotAllocatedStatement() {
         when(packet.getHandle()).thenReturn(STATEMENT_ID + 1);
@@ -198,6 +214,10 @@ class FirebirdSQLInfoExecutorTest {
         result.getDatabaseConnectionManager().getCachedConnections().put("foo_db.foo_ds", backendConnection);
         FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         return result;
+    }
+    
+    private static Stream<Arguments> lazyStatementHandles() {
+        return Stream.of(Arguments.of("lazy handle", 0xFFFF), Arguments.of("sign-extended lazy handle", -1));
     }
     
     private static Stream<Arguments> sqlStatementProvider() {
