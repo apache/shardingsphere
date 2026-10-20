@@ -20,11 +20,12 @@ package org.apache.shardingsphere.database.connector.firebird.jdbcurl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
+import org.firebirdsql.gds.GDSException;
 import org.firebirdsql.gds.impl.DbAttachInfo;
 import org.firebirdsql.gds.impl.GDSFactory;
-import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.jdbc.FBDriver;
 
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -32,14 +33,11 @@ import java.util.Properties;
  */
 public final class FirebirdConnectionPropertiesParser implements ConnectionPropertiesParser {
     
-    @SneakyThrows(Exception.class)
+    @SneakyThrows({GDSException.class, SQLException.class})
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
-        GDSType type = GDSFactory.getTypeForProtocol(url);
-        String databaseURL = GDSFactory.getDatabasePath(type, url);
-        DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(databaseURL);
-        String attachObjectName = dbAttachInfo.getAttachObjectName();
-        String databaseName = attachObjectName.contains("?") ? attachObjectName.split("\\?")[0] : attachObjectName;
+        DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(GDSFactory.getDatabasePath(GDSFactory.getTypeForProtocol(url), url));
+        String databaseName = dbAttachInfo.getAttachObjectName().split("\\?")[0];
         Properties queryProps = new Properties();
         queryProps.putAll(FBDriver.normalizeProperties(url, new Properties()));
         return new ConnectionProperties(dbAttachInfo.getServerName(), dbAttachInfo.getPortNumber(), databaseName, null, queryProps);
