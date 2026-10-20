@@ -111,9 +111,9 @@ class FirebirdExecuteStatementPacketTest {
         when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1);
         when(payload.readInt1()).thenReturn(0);
         when(payload.readBuffer()).thenReturn(blr, Unpooled.wrappedBuffer(new byte[]{1, 2, (byte) 0xFF}));
-        FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
-        assertThat(packet.getParameterTypes(), is(Collections.singletonList(FirebirdBinaryColumnType.VARYING)));
-        assertThat(packet.getParameterValues().get(0), is(new byte[]{1, 2, (byte) 0xFF}));
+        FirebirdExecuteStatementPacket actual = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
+        assertThat(actual.getParameterTypes(), is(Collections.singletonList(FirebirdBinaryColumnType.VARYING)));
+        assertThat(actual.getParameterValues().get(0), is(new byte[]{1, 2, (byte) 0xFF}));
     }
     
     @Test
