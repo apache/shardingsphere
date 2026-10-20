@@ -80,5 +80,4 @@ class FirebirdAdminExecutorCreatorTest {
         when(result.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(DATABASE_TYPE).build());
         return result;
     }
-    
 }
