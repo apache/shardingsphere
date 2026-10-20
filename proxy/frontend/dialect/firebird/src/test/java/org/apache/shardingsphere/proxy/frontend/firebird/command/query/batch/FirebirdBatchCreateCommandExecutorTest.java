@@ -46,7 +46,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
-
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
