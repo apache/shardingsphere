@@ -1370,7 +1370,7 @@ allowed_actions = []
 forbidden_actions = ["edit_code", "add_meaningless_test", "mutate_git", "mutate_remote"]
 required_reasons = ["meaningful_test_required"]
 policy_binding_profile = "test-write"
-policy_assertions = [{source = "testing-rules", statements = ["Test a pass-through, constant, accessor, delegation, wiring path, or contract literal only when it expresses documented behavior owned by the production type or a public or externally visible contract that no broader behavior test protects.", "Never add a test solely to increase a coverage number or duplicate an existing scenario unless it covers a new branch, input class, edge case, contract, calculation path, or failure mode."]}]
+policy_assertions = [{source = "code-of-conduct", statements = ["Do not write separate tests for methods that only return constants, directly return fields, or simply delegate calls."]}, {source = "testing-rules", statements = ["Never add a test solely to increase a coverage number or duplicate an existing scenario unless it covers a new branch, input class, edge case, contract, calculation path, or failure mode."]}]
 critical = true
 
 [[cases]]
@@ -4520,9 +4520,9 @@ required_reasons = ["read_only_request"]
 critical = true
 policy_binding_profile = "gen-ut"
 id = "repository_metadata_exclusions_precede_coverage"
-description = "Requires added tests to protect uncovered business rules or external contracts regardless of method name."
+description = "Excludes separate tests for trivial methods while retaining tests of business decisions, regardless of method name."
 prompt = "Classify new repository tests using only the bound rules. A adds a test for a getType method whose business rule chooses among types; that rule has no existing coverage and the user did not request the method by name. B tests a constant getOrder value that defines an otherwise uncovered documented external ordering contract. C only checks a generated getTypeClass field accessor with no business rule or uncovered external contract. D only checks that forward delegates to a collaborator; no business rule or uncovered external contract is protected. E checks an unrelated constant-returning method whose externally visible contract is already protected by another test. All other gates are satisfied. Do not inspect, execute checks or change anything. Return exactly five assignments [A]=<allow|reject>; [B]=<allow|reject>; [C]=<allow|reject>; [D]=<allow|reject>; [E]=<allow|reject> in that order and no other text."
-required_summary_terms = ["[A]=allow", "[B]=allow", "[C]=reject", "[D]=reject", "[E]=reject"]
-required_summary_prefix = "[A]=allow; [B]=allow; [C]=reject; [D]=reject; [E]=reject"
-max_summary_chars = 56
-policy_assertions = [{source = "code-of-conduct", statements = ["Methods that only return constants, directly return fields, or simply delegate calls usually do not need separate tests.", "Add tests when their return values or delegation behavior have explicit business or interface requirements that existing tests do not verify."]}, {source = "testing-rules", statements = ["Apply the test-value guidance in `CODE_OF_CONDUCT.md` before planning coverage."]}]
+required_summary_terms = ["[A]=allow", "[B]=reject", "[C]=reject", "[D]=reject", "[E]=reject"]
+required_summary_prefix = "[A]=allow; [B]=reject; [C]=reject; [D]=reject; [E]=reject"
+max_summary_chars = 57
+policy_assertions = [{source = "code-of-conduct", statements = ["Do not write separate tests for methods that only return constants, directly return fields, or simply delegate calls."]}, {source = "testing-rules", statements = ["Apply the test-value guidance in `CODE_OF_CONDUCT.md` before planning coverage."]}]
