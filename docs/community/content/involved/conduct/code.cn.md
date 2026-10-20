@@ -109,7 +109,7 @@ chapter = true
  - 断言必须直接表达被测契约。 仅当被测契约是不相等或包含指定子串时，才可使用 `not` 或 `containsString`；可断言完整值或使用更具体的 matcher 时，不得使用这两个 matcher。
  - 默认直接使用 Mockito mock。 仅对重复的局部准备使用私有辅助方法，仅对稳定的外部测试边界或打包测试边界使用独立测试夹具。 测试夹具应采用实际可行的最小可见性，并放在最近的所属测试包或模块中；不要为了方便而创建跨模块测试 API。 删除或内联内容单薄的 mock 包装器。
  - 数据断言规范应遵循：
-    - 布尔断言必须使用 `assertTrue` 或 `assertFalse`。
+    - 布尔断言必须使用 `assertTrue` 或 `assertFalse`；
     - 空值断言应使用 `assertNull` 和 `assertNotNull`；
     - 非布尔值、非空值的相等断言必须使用 `assertThat(actual, is(expected))`；
     - 类型断言必须使用 `assertThat(actual, isA(ExpectedType.class))`；
@@ -127,9 +127,9 @@ chapter = true
  - 测试数据应使用标准化前缀（如 `foo_`/`bar_`）明确标识其测试用途。
  - 使用 `PropertiesBuilder` 简化 `Properties` 构造。
  - 参数化测试：
-    - 参数化测试需通过参数提供显示名，并使用 `"{0}"` 作为展示名模板。
-    - 参数化测试的首个参数必须声明为 `final String name`。
-    - 每个参数化测试必须提供至少三组有意义的参数数据。
+    - 参数化测试需通过参数提供显示名，并使用 `"{0}"` 作为展示名模板；
+    - 参数化测试的首个参数必须声明为 `final String name`；
+    - 每个参数化测试必须提供至少三组有意义的参数数据；
     - 只合并调用相同被测方法、使用相同断言方式的用例。
 
 ## SQL 解析规范

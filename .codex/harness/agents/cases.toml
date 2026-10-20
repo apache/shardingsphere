@@ -4462,7 +4462,7 @@ prompt = "Classify repository-wide Boolean assertions using only the bound rules
 required_summary_terms = ["[A]=allow", "[B]=reject", "[C]=reject"]
 required_summary_prefix = "[A]=allow; [B]=reject; [C]=reject"
 max_summary_chars = 33
-policy_assertions = [{source = "code-of-conduct", statements = ["Boolean assertions must use `assertTrue` or `assertFalse`."]}]
+policy_assertions = [{source = "code-of-conduct", statements = ["Boolean assertions must use `assertTrue` or `assertFalse`;"]}]
 
 [[cases]]
 group = "unit-test policy"
@@ -4483,7 +4483,7 @@ prompt = "Classify repository tests using only the bound rules. A has @Parameter
 required_summary_terms = ["[A]=allow", "[B]=reject", "[C]=reject", "[D]=allow"]
 required_summary_prefix = "[A]=allow; [B]=reject; [C]=reject; [D]=allow"
 max_summary_chars = 44
-policy_assertions = [{source = "code-of-conduct", statements = ["For parameterized tests, provide display names via parameters and use `\"{0}\"` as the display-name template.", "Declare the first parameter of each parameterized test exactly as `final String name`.", "Provide at least three meaningful argument sets for each parameterized test."]}]
+policy_assertions = [{source = "code-of-conduct", statements = ["For parameterized tests, provide display names via parameters and use `\"{0}\"` as the display-name template;", "Declare the first parameter of each parameterized test exactly as `final String name`;", "Provide at least three meaningful argument sets for each parameterized test;"]}]
 
 [[cases]]
 group = "unit-test policy"

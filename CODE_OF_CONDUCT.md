@@ -95,7 +95,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Assertions must directly express the tested contract. Use `not` or `containsString` only when the contract requires inequality or substring matching; do not use them when an exact value or a more specific matcher is available.
 - Default to direct Mockito mocks. Use a private helper only for repeated local setup and a standalone fixture only for a stable external or packaged test boundary. Give fixtures the narrowest practical visibility, keep them in the nearest owning test package or module, and do not create cross-module test APIs for convenience. Delete or inline thin mock wrappers.
 - Data assertion standards should follow:
-   - Boolean assertions must use `assertTrue` or `assertFalse`.
+   - Boolean assertions must use `assertTrue` or `assertFalse`;
    - Null value assertions should use `assertNull` and `assertNotNull`;
    - Non-boolean, non-null value equality assertions must use `assertThat(actual, is(expected))`;
    - Type assertions must use `assertThat(actual, isA(ExpectedType.class))`;
@@ -113,9 +113,9 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Test data should use standardized prefixes (e.g., `foo_`/`bar_`) to clearly identify their test purpose
 - Use `PropertiesBuilder` simplify `Properties` building.
 - Parameterized tests:
-   - For parameterized tests, provide display names via parameters and use `"{0}"` as the display-name template.
-   - Declare the first parameter of each parameterized test exactly as `final String name`.
-   - Provide at least three meaningful argument sets for each parameterized test.
+   - For parameterized tests, provide display names via parameters and use `"{0}"` as the display-name template;
+   - Declare the first parameter of each parameterized test exactly as `final String name`;
+   - Provide at least three meaningful argument sets for each parameterized test;
    - Only combine cases that invoke the same method under test and use the same form of assertion.
 
 ## SQL Parsing Standards
