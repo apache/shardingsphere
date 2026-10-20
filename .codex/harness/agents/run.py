@@ -697,7 +697,7 @@ def normalize_case_policy_bindings(
             if len(statements) != len(set(statements)):
                 raise ValueError(f"Case policy assertion statements must be unique: {case['id']}:{source_id}")
             normalized_statements = [normalize_policy_statement(each) for each in statements]
-            if any(len(each) < 25 or each[-1] not in ".!?" for each in normalized_statements):
+            if any(len(each) < 25 or each[-1] not in ".!?;" for each in normalized_statements):
                 raise ValueError(f"Case policy assertions must bind complete normative sentences: {case['id']}:{source_id}")
             source_text = normalize_policy_statement(source["data"].decode("utf-8"))
             missing = [each for each in normalized_statements if each not in source_text]

@@ -2210,19 +2210,21 @@ references = []
                 self.assertTrue(required_sources.issubset(bundle["profiles"][profile]))
 
     def test_case_policy_binding_requires_full_statement_in_source(self) -> None:
-        statement = "Preserve every supported behavior before handing off the completed task."
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            manifest_path = self.create_bundle(root)
-            (root / ".codex" / "rules.md").write_text(f"{statement}\n", encoding="utf-8")
-            bundle = run.load_policy_manifest(root, manifest_path)
-            binding = run.normalize_case_policy_bindings([self.create_bound_case(statement)], bundle)[0]
-            self.assertEqual(".codex/rules.md", binding["assertions"][0]["source_path"])
-            with self.assertRaisesRegex(ValueError, "absent from its source"):
-                run.normalize_case_policy_bindings(
-                    [self.create_bound_case("Preserve every unsupported behavior before handing off the completed task.")],
-                    bundle,
-                )
+        for punctuation in (".", ";"):
+            with self.subTest(punctuation=punctuation), tempfile.TemporaryDirectory() as directory:
+                statement = f"Preserve every supported behavior before handing off the completed task{punctuation}"
+                root = Path(directory)
+                manifest_path = self.create_bundle(root)
+                (root / ".codex" / "rules.md").write_text(f"{statement}\n", encoding="utf-8")
+                bundle = run.load_policy_manifest(root, manifest_path)
+                binding = run.normalize_case_policy_bindings([self.create_bound_case(statement)], bundle)[0]
+                self.assertEqual(".codex/rules.md", binding["assertions"][0]["source_path"])
+                for invalid_statement in (
+                        f"Preserve every unsupported behavior before handing off the completed task{punctuation}",
+                        statement[:-1] + (";" if punctuation == "." else "."),
+                ):
+                    with self.assertRaisesRegex(ValueError, "absent from its source"):
+                        run.normalize_case_policy_bindings([self.create_bound_case(invalid_statement)], bundle)
 
     def test_case_policy_binding_rejects_source_outside_route(self) -> None:
         statement = "Preserve every supported behavior before handing off the completed task."
