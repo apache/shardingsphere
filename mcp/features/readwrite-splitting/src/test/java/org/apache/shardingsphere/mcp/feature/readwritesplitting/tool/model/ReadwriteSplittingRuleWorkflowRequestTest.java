@@ -25,6 +25,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ReadwriteSplittingRuleWorkflowRequestTest {
     
@@ -33,6 +34,14 @@ class ReadwriteSplittingRuleWorkflowRequestTest {
         ReadwriteSplittingRuleWorkflowRequest actual = new ReadwriteSplittingRuleWorkflowRequest();
         actual.setReadStorageUnits("read_ds_0, read_ds_1");
         assertThat(actual.getReadStorageUnits(), is(List.of("read_ds_0", "read_ds_1")));
+    }
+    
+    @Test
+    void assertSetReadStorageUnitsWithNullString() {
+        ReadwriteSplittingRuleWorkflowRequest actual = new ReadwriteSplittingRuleWorkflowRequest();
+        actual.setReadStorageUnits(List.of("foo_read"));
+        actual.setReadStorageUnits((String) null);
+        assertThat(actual.getReadStorageUnits(), is(List.of("foo_read")));
     }
     
     @Test
@@ -57,6 +66,11 @@ class ReadwriteSplittingRuleWorkflowRequestTest {
         previous.setDatabase("logic_db");
         ReadwriteSplittingRuleWorkflowRequest actual = ReadwriteSplittingRuleWorkflowRequest.merge(previous, new ReadwriteSplittingRuleWorkflowRequest());
         assertThat(actual.getDatabase(), is("logic_db"));
+    }
+    
+    @Test
+    void assertMergeWithNullRequests() {
+        assertNull(ReadwriteSplittingRuleWorkflowRequest.merge(null, null));
     }
     
     @Test
