@@ -33,9 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.Sh
 
 import java.sql.Types;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -43,13 +41,6 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public final class FirebirdShowVariableExecutor implements DatabaseAdminQueryExecutor {
-    
-    private static final Map<String, VariableRowDataGenerator> VARIABLE_ROW_DATA_GENERATORS = new LinkedHashMap<>(7, 1);
-    
-    static {
-        VARIABLE_ROW_DATA_GENERATORS.put("server_version", connectionSession -> new String[]{"server_version", ShardingSphereVersion.VERSION, "Shows the server version."});
-        // TODO add SHOW statements support
-    }
     
     private final ShowStatement showStatement;
     
@@ -63,18 +54,7 @@ public final class FirebirdShowVariableExecutor implements DatabaseAdminQueryExe
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         String name = Optional.ofNullable(showStatement.getName()).orElse("").toLowerCase(Locale.ROOT);
         queryResultMetaData = new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", "", name, Types.VARCHAR, "VARCHAR", -1, 0)));
-        VariableRowDataGenerator variableRowDataGenerator = VARIABLE_ROW_DATA_GENERATORS.getOrDefault(name, unused -> new String[]{"", "", ""});
-        mergedResult = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow(variableRowDataGenerator.getVariable(connectionSession)[1])));
-    }
-    
-    private interface VariableRowDataGenerator {
-        
-        /**
-         * Get variable.
-         *
-         * @param connectionSession connection session
-         * @return variable
-         */
-        Object[] getVariable(ConnectionSession connectionSession);
+        // TODO add SHOW statements support
+        mergedResult = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow("server_version".equals(name) ? ShardingSphereVersion.VERSION : "")));
     }
 }
