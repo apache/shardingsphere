@@ -19,8 +19,12 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.Collection;
 
 /**
  * Expected common expression.
@@ -31,4 +35,11 @@ public final class ExpectedCommonExpression extends ExpectedBaseComplexExpressio
     
     @XmlAttribute(name = "literal-text")
     private String literalText;
+    
+    /**
+     * Child expressions to assert, or {@code null} to retain the existing text and span assertions.
+     */
+    @XmlElementWrapper(name = "children")
+    @XmlElement(name = "expression")
+    private Collection<ExpectedExpression> children;
 }

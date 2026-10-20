@@ -46,9 +46,7 @@ import java.util.Properties;
 class MySQLTest {
     
     @Container
-    private final GenericContainer<?> mysqlContainer = new GenericContainer<>("mysql:9.7.1-oraclelinux9")
-            .withEnv("MYSQL_ROOT_PASSWORD", "yourStrongPassword123!")
-            .withExposedPorts(3306);
+    private final GenericContainer<?> mysqlContainer = new GenericContainer<>("mysql:8.0.40").withEnv("MYSQL_ROOT_PASSWORD", "yourStrongPassword123!").withExposedPorts(3306);
     
     private ProxyTestingServer proxyTestingServer;
     

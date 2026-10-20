@@ -17,10 +17,18 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard;
 
+import lombok.Getter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.MergeStatementTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Prepared statement test case.
  */
+@Getter
 public final class PreparedStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "merge")
+    private MergeStatementTestCase merge;
 }

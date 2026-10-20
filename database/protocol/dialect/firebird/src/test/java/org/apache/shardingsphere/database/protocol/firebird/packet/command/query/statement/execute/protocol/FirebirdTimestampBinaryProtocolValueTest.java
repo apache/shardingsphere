@@ -26,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -51,6 +52,22 @@ class FirebirdTimestampBinaryProtocolValueTest {
     void assertWriteWithDate() {
         LocalDateTime dateTime = LocalDateTime.of(2024, 1, 1, 12, 0);
         new FirebirdTimestampBinaryProtocolValue().write(payload, Timestamp.valueOf(dateTime));
+        verify(payload).writeInt4(FirebirdDateTimeUtils.getEncodedDate(dateTime));
+        verify(payload).writeInt4(new FirebirdDateTimeUtils(dateTime).getEncodedTime());
+    }
+    
+    @Test
+    void assertWriteWithSubMillisecondTimestamp() {
+        LocalDateTime dateTime = LocalDateTime.of(2024, 2, 29, 23, 59, 59, 999_900_000);
+        new FirebirdTimestampBinaryProtocolValue().write(payload, Timestamp.valueOf(dateTime));
+        verify(payload).writeInt4(FirebirdDateTimeUtils.getEncodedDate(dateTime));
+        verify(payload).writeInt4(new FirebirdDateTimeUtils(dateTime).getEncodedTime());
+    }
+    
+    @Test
+    void assertWriteWithJavaUtilDate() {
+        LocalDateTime dateTime = LocalDateTime.of(2024, 1, 3, 14, 0, 0, 123_000_000);
+        new FirebirdTimestampBinaryProtocolValue().write(payload, new Date(Timestamp.valueOf(dateTime).getTime()));
         verify(payload).writeInt4(FirebirdDateTimeUtils.getEncodedDate(dateTime));
         verify(payload).writeInt4(new FirebirdDateTimeUtils(dateTime).getEncodedTime());
     }

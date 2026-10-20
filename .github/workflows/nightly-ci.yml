@@ -23,13 +23,14 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: nightly-ci-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 env:
+  MAVEN_ARGS: -B -ntp -fae -e
   MAVEN_OPTS: -Dhttp.keepAlive=false
 
 jobs:
@@ -53,12 +54,11 @@ jobs:
       - name: Support Long Paths in Windows
         if: matrix.os == 'windows-latest'
         run: git config --global core.longpaths true
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
         with:
           java-version: ${{ matrix.java-version }}
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Build Project with Maven
-        run: ./mvnw clean install -B -ntp -T1C
+        run: ./mvnw clean install -T1C
       - name: Build Examples with Maven
-        run: ./mvnw clean package -B -f examples/pom.xml -T1C
+        run: ./mvnw clean package -f examples/pom.xml -T1C

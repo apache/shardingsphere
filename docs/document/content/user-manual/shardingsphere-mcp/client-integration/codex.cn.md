@@ -13,7 +13,7 @@ weight = 1
 
 ## 前置条件
 
-- 已按[快速开始](../../quick-start/)启动 HTTP MCP Server。
+- 已按[快速开始](/cn/user-manual/shardingsphere-mcp/quick-start/)启动 HTTP MCP Server。
 - Codex CLI 或 Codex IDE 扩展可用。
 - Codex 所在环境可以访问 `http://127.0.0.1:18088/mcp`，或访问你实际配置的 MCP Server 地址。
 
@@ -59,7 +59,7 @@ url = "http://127.0.0.1:18088/mcp"
 ## 注意事项
 
 - 本页只说明通过已经启动的 HTTP MCP Server 接入 Codex，不覆盖本地 `STDIO` 进程拉起模式。
-- 具体可用任务和使用边界见[能力清单](../../capabilities/)。
+- 具体可用任务和使用边界见[能力清单](/cn/user-manual/shardingsphere-mcp/capabilities/)。
 - 涉及 SQL 执行或规则变更时，应先审查预览内容，再确认执行。
 - 如果希望在 OpenAI API 或 ChatGPT 产品中接入 ShardingSphere-MCP，请分别参考平台与 API 接入文档，而不要直接复用本页步骤。
 
@@ -67,11 +67,11 @@ url = "http://127.0.0.1:18088/mcp"
 
 ### 相关文档
 
-- [快速开始](../../quick-start/)
-- [能力清单](../../capabilities/)
-- [配置说明](../../configuration/)
-- [OpenAI Responses API](../openai-responses-api/)
-- [ChatGPT Developer Mode](../chatgpt-developer-mode/)
+- [快速开始](/cn/user-manual/shardingsphere-mcp/quick-start/)
+- [能力清单](/cn/user-manual/shardingsphere-mcp/capabilities/)
+- [配置说明](/cn/user-manual/shardingsphere-mcp/configuration/)
+- [OpenAI Responses API](/cn/user-manual/shardingsphere-mcp/client-integration/openai-responses-api/)
+- [ChatGPT Developer Mode](/cn/user-manual/shardingsphere-mcp/client-integration/chatgpt-developer-mode/)
 
 ### 官方参考
 

@@ -19,7 +19,11 @@ package org.apache.shardingsphere.mcp.support.resource;
 
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,9 +36,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPUriTemplateTest {
     
-    @Test
-    void assertCreateWithUnsupportedScheme() {
-        assertThrows(IllegalArgumentException.class, () -> new MCPUriTemplate("unsupported://capabilities"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidTemplates")
+    void assertCreateWithInvalidPath(final String name, final String template, final String expectedMessage) {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new MCPUriTemplate(template));
+        assertThat(actual.getMessage(), is(expectedMessage));
+    }
+    
+    private static Collection<Arguments> invalidTemplates() {
+        return List.of(
+                Arguments.of("unsupported scheme", "unsupported://capabilities", "Invalid URI `unsupported://capabilities`."),
+                Arguments.of("missing scheme separator", "invalid-template", "Invalid URI `invalid-template`."),
+                Arguments.of("embedded variable", "shardingsphere://databases/prefix-{database}",
+                        "URI template variables must occupy a complete path segment in `shardingsphere://databases/prefix-{database}`."),
+                Arguments.of("empty path", "shardingsphere://", "URI path is required for `shardingsphere://`."),
+                Arguments.of("empty segment", "shardingsphere://databases//schemas", "URI segment is required for `shardingsphere://databases//schemas`."),
+                Arguments.of("nested variable marker", "shardingsphere://databases/{{database}}", "Invalid URI template variable `{database}` in `shardingsphere://databases/{{database}}`."),
+                Arguments.of("duplicate variable", "shardingsphere://databases/{database}/{database}",
+                        "Duplicate URI template variable `database` in `shardingsphere://databases/{database}/{database}`."));
     }
     
     @Test
@@ -84,13 +103,4 @@ class MCPUriTemplateTest {
         assertTrue(new MCPUriTemplate("shardingsphere://databases/{database}").overlaps(new MCPUriTemplate("shardingsphere://databases/logic_db")));
     }
     
-    @Test
-    void assertCreateWithEmbeddedVariable() {
-        assertThrows(IllegalArgumentException.class, () -> new MCPUriTemplate("shardingsphere://databases/prefix-{database}"));
-    }
-    
-    @Test
-    void assertCreateWithInvalidTemplate() {
-        assertThrows(IllegalArgumentException.class, () -> new MCPUriTemplate("invalid-template"));
-    }
 }

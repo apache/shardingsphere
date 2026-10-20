@@ -22,6 +22,7 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
  * Firebird date and time utility class.
@@ -123,12 +124,17 @@ public final class FirebirdDateTimeUtils {
         day = sqlDate / 4;
         sqlDate = (4 * day + 3) / 1461;
         day = 4 * day + 3 - 1461 * sqlDate;
-        day = (day + 5) / 5;
+        day = (day + 4) / 4;
         month = (5 * day - 3) / 153;
         day = 5 * day - 3 - 153 * month;
         day = (day + 5) / 5;
         year = 100 * century + sqlDate;
-        month += 3;
+        if (month < 10) {
+            month += 3;
+        } else {
+            month -= 9;
+            year += 1;
+        }
         return this;
     }
     
@@ -162,7 +168,7 @@ public final class FirebirdDateTimeUtils {
      * @return timestamp representation of the current date-time fields
      */
     public Timestamp asTimestamp() {
-        return Timestamp.valueOf(LocalDateTime.of(year, month, day, hour, minute, second, fractions));
+        return Timestamp.valueOf(LocalDateTime.of(year, month, day, hour, minute, second, fractions * NANOSECONDS_PER_FRACTION));
     }
     
     /**
@@ -176,13 +182,13 @@ public final class FirebirdDateTimeUtils {
     }
     
     /**
-     * Convert encoded time value to {@link Timestamp}.
+     * Convert encoded time value to {@link LocalTime}.
      *
      * @param encodedTime encoded time as integer
-     * @return timestamp representation of the encoded time
+     * @return local time representation of the encoded time
      */
-    public static Timestamp getTime(final int encodedTime) {
-        return new FirebirdDateTimeUtils().setTime(encodedTime).asTimestamp();
+    public static LocalTime getTime(final int encodedTime) {
+        return LocalTime.ofNanoOfDay((long) encodedTime * NANOSECONDS_PER_FRACTION);
     }
     
     /**

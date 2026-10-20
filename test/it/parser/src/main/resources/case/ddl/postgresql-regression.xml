@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <create-table sql-case-id="create_table_generated_virtual_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column-definition type="int" start-index="18" stop-index="23">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="int" start-index="26" stop-index="73">
+            <column name="doubled" />
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_generated_implicit_virtual_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column-definition type="int" start-index="18" stop-index="23">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="int" start-index="26" stop-index="65">
+            <column name="doubled" />
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_generated_stored_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column-definition type="int" start-index="18" stop-index="23">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="int" start-index="26" stop-index="72">
+            <column name="doubled" />
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_check_enforced_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column-definition type="int" start-index="18" stop-index="23">
+            <column name="id" />
+        </column-definition>
+        <constraint-definition start-index="26" stop-index="48" />
+    </create-table>
+    <create-table sql-case-id="create_table_check_not_enforced_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column-definition type="int" start-index="18" stop-index="23">
+            <column name="id" />
+        </column-definition>
+        <constraint-definition start-index="26" stop-index="52" />
+    </create-table>
+    <create-table sql-case-id="create_table_unique_nulls_not_distinct_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column-definition type="int" start-index="18" stop-index="23">
+            <column name="id" />
+        </column-definition>
+        <constraint-definition start-index="26" stop-index="55" />
+    </create-table>
+    <create-table sql-case-id="create_table_column_unique_nulls_not_distinct_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column-definition type="int" start-index="18" stop-index="49">
+            <column name="id" />
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_not_null_no_inherit_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column-definition type="int" start-index="18" stop-index="23">
+            <column name="id" />
+        </column-definition>
+        <constraint-definition start-index="26" stop-index="47" />
+    </create-table>
+    <create-table sql-case-id="create_table_temporal_primary_key_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column-definition type="int" start-index="18" stop-index="23">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="int4range" start-index="26" stop-index="43">
+            <column name="valid_at" />
+        </column-definition>
+        <constraint-definition start-index="46" stop-index="88">
+            <primary-key-column name="id" start-index="59" stop-index="60" />
+            <primary-key-column name="valid_at" start-index="63" stop-index="70" />
+        </constraint-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_temporal_unique_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column-definition type="int" start-index="18" stop-index="23">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="int4range" start-index="26" stop-index="43">
+            <column name="valid_at" />
+        </column-definition>
+        <constraint-definition start-index="46" stop-index="83" />
+    </create-table>
+    <create-table sql-case-id="create_table_temporal_foreign_key_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column-definition type="int" start-index="18" stop-index="23">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="int4range" start-index="26" stop-index="43">
+            <column name="valid_at" />
+        </column-definition>
+        <constraint-definition start-index="46" stop-index="115">
+            <referenced-table name="bar" start-index="91" stop-index="93" />
+        </constraint-definition>
+    </create-table>
+    <alter-table sql-case-id="alter_table_set_expression_postgresql">
+        <table name="foo" start-index="12" stop-index="14" />
+        <modify-column>
+            <column-definition start-index="16" stop-index="62">
+                <column name="doubled" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    <alter-table sql-case-id="alter_table_add_not_null_no_inherit_postgresql">
+        <table name="foo" start-index="12" stop-index="14" />
+        <add-constraint start-index="20" stop-index="41" />
+    </alter-table>
+    <create-publication sql-case-id="create_publication_columns_where_postgresql" />
+    <create-publication sql-case-id="create_publication_schemas_postgresql" />
+    <create-publication sql-case-id="create_publication_mixed_objects_postgresql" />
+    <alter-publication sql-case-id="alter_publication_add_schema_postgresql" />
+    <alter-publication sql-case-id="alter_publication_set_schema_postgresql" />
+    <alter-publication sql-case-id="alter_publication_drop_schema_postgresql" />
+    <alter-publication sql-case-id="alter_publication_table_filter_postgresql" />
+    <create-function sql-case-id="create_function_return_body_postgresql" />
+    <create-function sql-case-id="create_function_atomic_body_postgresql" />
+    <create-function sql-case-id="create_function_atomic_empty_statements_postgresql" />
+    <create-function sql-case-id="create_function_atomic_table_body_postgresql" />
+    <create-procedure sql-case-id="create_procedure_atomic_body_postgresql" />
+    <create-procedure sql-case-id="create_procedure_atomic_ddl_body_postgresql" />
+    <create-procedure sql-case-id="create_procedure_atomic_empty_body_postgresql" />
+    <create-trigger sql-case-id="create_or_replace_trigger_postgresql">
+        <trigger-name name="foo_trigger" start-index="26" stop-index="36" />
+        <table name="foo" start-index="55" stop-index="57" />
+    </create-trigger>
+    <create-trigger sql-case-id="create_constraint_trigger_postgresql">
+        <trigger-name name="foo_trigger" start-index="26" stop-index="36" />
+        <table name="foo" start-index="54" stop-index="56" />
+        <table name="bar" start-index="63" stop-index="65" />
+    </create-trigger>
+    <create-trigger sql-case-id="create_constraint_trigger_optional_clauses_postgresql">
+        <trigger-name name="foo_trigger" start-index="26" stop-index="36" />
+        <table name="foo" start-index="54" stop-index="56" />
+    </create-trigger>
+    <create-statistics sql-case-id="create_statistics_named_postgresql" />
+    <create-statistics sql-case-id="create_statistics_unnamed_postgresql" />
+    <create-subscription sql-case-id="create_subscription_postgresql" />
+    <create-operator-class sql-case-id="create_operator_class_postgresql" />
+    <alter-operator-class sql-case-id="alter_operator_class_postgresql" />
+    <create-operator-family sql-case-id="create_operator_family_postgresql" />
+    <alter-operator-family sql-case-id="alter_operator_family_add_postgresql" />
+    <alter-operator-family sql-case-id="alter_operator_family_drop_postgresql" />
+    <alter-operator-family sql-case-id="alter_operator_family_rename_postgresql" />
+    <alter-event-trigger sql-case-id="alter_event_trigger_enable_postgresql" />
+    <alter-event-trigger sql-case-id="alter_event_trigger_enable_replica_postgresql" />
+    <alter-event-trigger sql-case-id="alter_event_trigger_enable_always_postgresql" />
+    <import-foreign-schema sql-case-id="import_foreign_schema_postgresql" />
+    <create-index sql-case-id="create_index_zero_argument_function_postgresql">
+        <table>
+            <simple-table name="foo" start-index="24" stop-index="26" />
+        </table>
+        <index name="foo_idx" start-index="13" stop-index="19" />
+    </create-index>
+    <create-index sql-case-id="create_index_coalesce_postgresql">
+        <table>
+            <simple-table name="foo" start-index="24" stop-index="26" />
+        </table>
+        <index name="foo_idx" start-index="13" stop-index="19" />
+        <column name="id" start-index="38" stop-index="39" />
+    </create-index>
+    <create-index sql-case-id="create_index_function_column_postgresql">
+        <table>
+            <simple-table name="foo" start-index="24" stop-index="26" />
+        </table>
+        <index name="foo_idx" start-index="13" stop-index="19" />
+        <column name="name" start-index="35" stop-index="38" />
+    </create-index>
+    <create-index sql-case-id="create_index_cast_postgresql">
+        <table>
+            <simple-table name="foo" start-index="24" stop-index="26" />
+        </table>
+        <index name="foo_idx" start-index="13" stop-index="19" />
+        <column name="a" start-index="34" stop-index="34" />
+    </create-index>
+    <create-index sql-case-id="create_index_nested_cast_postgresql">
+        <table>
+            <simple-table name="foo" start-index="24" stop-index="26" />
+        </table>
+        <index name="foo_idx" start-index="13" stop-index="19" />
+        <column name="a" start-index="34" stop-index="34" />
+        <column name="b" start-index="43" stop-index="43" />
+    </create-index>
+    <prepared sql-case-id="prepare_merge_postgresql">
+        <merge>
+            <target>
+                <simple-table name="foo" start-index="34" stop-index="36" />
+            </target>
+            <source>
+                <simple-table name="bar" start-index="44" stop-index="46" />
+            </source>
+            <expr>
+                <binary-operation-expression start-index="51" stop-index="65">
+                    <left>
+                        <column name="id" start-index="51" stop-index="56">
+                            <owner name="foo" start-index="51" stop-index="53" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <column name="id" start-index="60" stop-index="65">
+                            <owner name="bar" start-index="60" stop-index="62" />
+                        </column>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+            <merge-items />
+        </merge>
+    </prepared>
+    <create-table sql-case-id="create_table_as_select_columns_parameter_postgresql" parameters="1" parameter-marker-count="1">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column name="id" start-index="18" stop-index="19" />
+        <column name="name" start-index="22" stop-index="25" />
+        <select>
+            <from>
+                <simple-table name="bar" start-index="52" stop-index="54" />
+            </from>
+            <projections start-index="38" stop-index="45">
+                <column-projection name="id" start-index="38" stop-index="39" />
+                <column-projection name="name" start-index="42" stop-index="45" />
+            </projections>
+            <where start-index="56" stop-index="67">
+                <expr>
+                    <binary-operation-expression start-index="62" stop-index="67">
+                        <left>
+                            <column name="id" start-index="62" stop-index="63" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <parameter-marker-expression parameter-index="0" start-index="67" stop-index="67" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_as_values_columns_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column name="id" start-index="18" stop-index="19" />
+        <select>
+            <projections start-index="25" stop-index="34">
+                <expression-projection text="1" start-index="33" stop-index="33">
+                    <expr>
+                        <literal-expression value="1" start-index="33" stop-index="33" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_as_execute_parameters_postgresql" parameters="1,2" parameter-marker-count="2">
+        <table name="foo" start-index="13" stop-index="15" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_as_execute_columns_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column name="id" start-index="18" stop-index="19" />
+        <column name="name" start-index="22" stop-index="25" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_storage_compression_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column-definition type="int" start-index="18" stop-index="37">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="text" start-index="40" stop-index="65">
+            <column name="name" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_like_generated_compression_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_foreign_key_delete_set_columns_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column-definition type="int" start-index="18" stop-index="67">
+            <column name="id" />
+            <referenced-table name="bar" start-index="36" stop-index="38" />
+        </column-definition>
+        <column-definition type="int" start-index="70" stop-index="81">
+            <column name="other_id" />
+        </column-definition>
+        <constraint-definition start-index="84" stop-index="158">
+            <referenced-table name="bar" start-index="118" stop-index="120" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_typed_column_constraints_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_generated_with_options_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_primary_unique_postgresql">
+        <table name="foo" start-index="13" stop-index="15" />
+    </create-table>
+
+    <create-view sql-case-id="create_view_cascaded_check_option_postgresql" view-definition="SELECT * FROM bar">
+        <view name="foo_view" start-index="12" stop-index="19" />
+        <select>
+            <from>
+                <simple-table name="bar" start-index="38" stop-index="40" />
+            </from>
+            <projections start-index="31" stop-index="31">
+                <shorthand-projection start-index="31" stop-index="31" />
+            </projections>
+        </select>
+    </create-view>
+
+    <alter-table sql-case-id="alter_table_constraint_inheritance_postgresql">
+        <table name="foo" start-index="12" stop-index="14" />
+        <modify-constraint constraint-name="foo_check" start-index="16" stop-index="49" />
+        <modify-constraint constraint-name="bar_check" start-index="52" stop-index="88" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_storage_default_postgresql">
+        <table name="foo" start-index="12" stop-index="14" />
+        <modify-column>
+            <column-definition start-index="16" stop-index="50">
+                <column name="id" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_access_method_default_postgresql">
+        <table name="foo" start-index="12" stop-index="14" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_reloptions_qualified_postgresql">
+        <table name="foo" start-index="12" stop-index="14" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_reset_reloptions_postgresql">
+        <table name="foo" start-index="12" stop-index="14" />
+    </alter-table>
+
+    <create-index sql-case-id="create_index_nulls_distinct_postgresql">
+        <table>
+            <simple-table name="foo" start-index="31" stop-index="33" />
+        </table>
+        <index name="foo_idx" start-index="20" stop-index="26" />
+        <column name="id" start-index="36" stop-index="37" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_nulls_not_distinct_postgresql">
+        <table>
+            <simple-table name="foo" start-index="31" stop-index="33" />
+        </table>
+        <index name="foo_idx" start-index="20" stop-index="26" />
+        <column name="id" start-index="36" stop-index="37" />
+    </create-index>
+
+    <alter-foreign-table sql-case-id="alter_foreign_table_serial_aliases_postgresql" />
+
+    <create-user-mapping sql-case-id="create_user_mapping_without_options_postgresql" />
+
+    <create-user-mapping sql-case-id="create_user_mapping_options_postgresql" />
+
+    <alter-user-mapping sql-case-id="alter_user_mapping_options_postgresql" />
+
+    <drop-user-mapping sql-case-id="drop_user_mapping_postgresql" />
+
+    <create-server sql-case-id="create_server_without_options_postgresql" />
+
+    <create-transform sql-case-id="create_transform_postgresql" />
+
+    <alter-large-object sql-case-id="alter_large_object_owner_postgresql" />
+
+    <alter-domain sql-case-id="alter_domain_add_not_null_postgresql" />
+
+    <drop-collation sql-case-id="drop_collation_qualified_list_postgresql" />
+
+    <drop-conversion sql-case-id="drop_conversion_qualified_postgresql" />
+
+    <drop-domain sql-case-id="drop_domain_qualified_list_postgresql" />
+
+    <alter-materialized-view sql-case-id="alter_materialized_view_access_method_postgresql" />
+
+    <alter-materialized-view sql-case-id="alter_materialized_view_all_tablespace_postgresql" />
+
+    <alter-type sql-case-id="alter_type_definition_postgresql" />
+
+    <alter-sequence sql-case-id="alter_sequence_logged_postgresql" />
+
+    <alter-sequence sql-case-id="alter_sequence_unlogged_postgresql" />
+
+    <alter-operator sql-case-id="alter_operator_definition_postgresql" />
+
+    <alter-default-privileges sql-case-id="alter_default_privileges_schemas_grant_postgresql" />
+
+    <alter-default-privileges sql-case-id="alter_default_privileges_schemas_revoke_postgresql" />
+
+    <alter-default-privileges sql-case-id="alter_default_privileges_large_objects_postgresql" />
+
+    <alter-default-privileges sql-case-id="alter_default_privileges_types_role_postgresql" />
+
+    <alter-default-privileges sql-case-id="alter_default_privileges_types_schema_postgresql" />
+
+    <create-aggregate sql-case-id="create_aggregate_negative_initcond_postgresql" />
+
+    <create-event-trigger sql-case-id="create_event_trigger_login_postgresql" />
+
+    <create-function sql-case-id="create_function_single_transform_type_postgresql" />
+
+    <alter-subscription sql-case-id="alter_subscription_skip_lsn_postgresql" />
+
+    <alter-subscription sql-case-id="alter_subscription_skip_none_postgresql" />
+
+    <reindex sql-case-id="reindex_options_postgresql" />
+
+    <alter-tablespace sql-case-id="alter_tablespace_reloptions_postgresql" />
+
+    <cluster sql-case-id="cluster_index_on_table_postgresql">
+        <table name="foo" start-index="19" stop-index="21" />
+        <index name="foo_idx" start-index="8" stop-index="14" />
+    </cluster>
+
+    <drop-database sql-case-id="drop_database_force_postgresql" force="true" />
+
+    <drop-database sql-case-id="drop_database_force_without_with_postgresql" force="true" />
+</sql-parser-test-cases>

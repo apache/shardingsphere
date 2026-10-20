@@ -45,6 +45,10 @@ public final class ConstraintDefinitionAssert {
      * @param expected expected constraint definition
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ConstraintDefinitionSegment actual, final ExpectedConstraintDefinition expected) {
+        if (null != expected.getPrimaryKeyColumnCount()) {
+            assertThat(assertContext.getText("Expected primary key columns size assertion error: "), expected.getPrimaryKeyColumns().size(), is(expected.getPrimaryKeyColumnCount()));
+            assertThat(assertContext.getText("Primary key columns size assertion error: "), actual.getPrimaryKeyColumns().size(), is(expected.getPrimaryKeyColumnCount()));
+        }
         int count = 0;
         for (ColumnSegment each : actual.getPrimaryKeyColumns()) {
             ColumnAssert.assertIs(assertContext, each, expected.getPrimaryKeyColumns().get(count));

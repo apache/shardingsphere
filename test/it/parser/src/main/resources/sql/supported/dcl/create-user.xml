@@ -105,4 +105,8 @@
     <sql-case id="create_user_with_user_auth_option" value="CREATE USER 'mateo'@'localhost' IDENTIFIED BY 'password'
        AND IDENTIFIED WITH authentication_ldap_simple
        AND IDENTIFIED WITH authentication_fido" db-types="MySQL" />
+    <sql-case id="create_user_unquoted_dotted_host" value="CREATE USER u@host.example.com DEFAULT ROLE r@host.example.com" db-types="MySQL,Doris" />
+
+    <sql-case id="create_user_empty_host" value="CREATE USER u@" db-types="MySQL,Doris" />
+
 </sql-cases>

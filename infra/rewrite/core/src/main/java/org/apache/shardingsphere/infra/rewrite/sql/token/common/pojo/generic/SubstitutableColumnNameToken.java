@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Substitutable column name token.
@@ -112,13 +113,17 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         if (columnProjection.getOwner().isPresent()) {
             IdentifierValue owner = columnProjection.getOwner().get();
             String actualTableOwner = logicActualTableNames.getOrDefault(owner.getValue(), owner.getValue());
-            builder.append(getValueWithQuoteCharacters(new IdentifierValue(actualTableOwner, owner.getQuoteCharacter()))).append('.');
+            IdentifierValue actualOwner = Objects.equals(actualTableOwner, owner.getValue()) ? owner : new IdentifierValue(actualTableOwner, owner.getQuoteCharacter());
+            builder.append(getValueWithQuoteCharacters(actualOwner)).append('.');
         }
         builder.append(getValueWithQuoteCharacters(columnProjection.getName()));
         columnProjection.getRightParentheses().ifPresent(optional -> builder.append(")"));
     }
     
     private String getValueWithQuoteCharacters(final IdentifierValue identifierValue) {
-        return QuoteCharacter.NONE == identifierValue.getQuoteCharacter() ? identifierValue.getValue() : quoteCharacter.wrap(identifierValue.getValue());
+        if (QuoteCharacter.NONE == identifierValue.getQuoteCharacter()) {
+            return identifierValue.getValue();
+        }
+        return quoteCharacter == identifierValue.getQuoteCharacter() ? identifierValue.getValueWithQuoteCharacters() : quoteCharacter.wrap(identifierValue.getValue());
     }
 }

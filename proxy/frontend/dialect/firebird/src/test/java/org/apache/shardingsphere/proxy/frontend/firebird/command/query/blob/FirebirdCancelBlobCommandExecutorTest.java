@@ -72,7 +72,7 @@ class FirebirdCancelBlobCommandExecutorTest {
     void assertExecute() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
         long blobId = 9L;
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
         FirebirdCancelBlobCommandExecutor executor = new FirebirdCancelBlobCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();

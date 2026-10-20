@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cac
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.Map;
 import java.util.Optional;
@@ -75,9 +76,10 @@ public final class FirebirdBlobWriteCache {
      * @param connectionId connection id
      * @param blobHandle blob handle
      * @param blobId blob id
+     * @param streamBlob whether the BLOB is a stream BLOB
      */
-    public void registerBlob(final int connectionId, final int blobHandle, final long blobId) {
-        FirebirdBlobWrite write = new FirebirdBlobWrite(blobHandle, blobId);
+    public void registerBlob(final int connectionId, final int blobHandle, final long blobId, final boolean streamBlob) {
+        FirebirdBlobWrite write = new FirebirdBlobWrite(blobHandle, blobId, streamBlob);
         getHandleMap(connectionId).put(blobHandle, write);
         getIdMap(connectionId).put(blobId, write);
     }
@@ -169,6 +171,19 @@ public final class FirebirdBlobWriteCache {
     public boolean isClosed(final int connectionId, final long blobId) {
         FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
         return null != write && write.isClosed();
+    }
+    
+    /**
+     * Judge whether a buffered BLOB is a stream BLOB.
+     *
+     * @param connectionId connection id
+     * @param blobId blob id
+     * @return whether the BLOB is a stream BLOB
+     */
+    @HighFrequencyInvocation
+    public boolean isStreamBlob(final int connectionId, final long blobId) {
+        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
+        return null != write && write.isStreamBlob();
     }
     
     /**

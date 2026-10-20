@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptArgumentDescriptor;
 import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptDescriptor;
@@ -24,21 +25,136 @@ import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceAnnotati
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedStatic;
 
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 class MCPDescriptorCatalogLoaderTest {
+    
+    private static final String DESCRIPTOR_DIRECTORY = "META-INF/shardingsphere-mcp/mcp-descriptors";
+    
+    @TempDir
+    private Path tempDir;
+    
+    @Test
+    void assertLoadYmlResourceFiltersNonYamlFiles() throws IOException {
+        Path descriptor = createDescriptorResource("foo-public-loader.yml", """
+                tools:
+                  - name: foo_tool
+                    title: Foo Tool
+                    description: Read the foo tool.
+                    inputSchema:
+                      type: object
+                      properties: {}
+                      required: []
+                      additionalProperties: false
+                    outputSchema:
+                      type: object
+                      properties:
+                        foo_value:
+                          type: string
+                          description: Foo value.
+                      examples:
+                        - foo_value: foo_value
+                    annotations:
+                      readOnlyHint: true
+                      destructiveHint: false
+                      idempotentHint: true
+                      openWorldHint: true
+                """);
+        Files.writeString(descriptor.resolveSibling("foo.txt"), "foo_ignored");
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        try (
+                URLClassLoader classLoader = new URLClassLoader(new URL[]{tempDir.toUri().toURL()}, originalClassLoader);
+                MockedStatic<ClasspathResourceDirectoryReader> mocked = mockStatic(ClasspathResourceDirectoryReader.class)) {
+            mocked.when(() -> ClasspathResourceDirectoryReader.read(DESCRIPTOR_DIRECTORY)).thenReturn(Stream.of(DESCRIPTOR_DIRECTORY + "/foo-public-loader.yml", DESCRIPTOR_DIRECTORY + "/foo.txt"));
+            Thread.currentThread().setContextClassLoader(classLoader);
+            MCPDescriptorCatalog actual = MCPDescriptorCatalogLoader.load();
+            assertThat(actual.getProtocolDescriptors().getToolDescriptors().stream().map(MCPToolDescriptor::getName).toList(), is(List.of("foo_tool")));
+        } finally {
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
+        }
+    }
+    
+    private Path createDescriptorResource(final String fileName, final String yaml) throws IOException {
+        Path result = tempDir.resolve(DESCRIPTOR_DIRECTORY).resolve(fileName);
+        Files.createDirectories(result.getParent());
+        Files.writeString(result, yaml);
+        return result;
+    }
+    
+    @Test
+    void assertLoadWithResourceReadFailure() throws IOException {
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        ClassLoader classLoader = mock(ClassLoader.class);
+        URL resource = mock(URL.class);
+        IOException expectedCause = new IOException("foo_read_failure");
+        when(resource.toExternalForm()).thenReturn("file:/foo.yaml");
+        when(resource.openStream()).thenThrow(expectedCause);
+        when(classLoader.resources(DESCRIPTOR_DIRECTORY + "/foo.yaml")).thenReturn(Stream.of(resource));
+        try (MockedStatic<ClasspathResourceDirectoryReader> mocked = mockStatic(ClasspathResourceDirectoryReader.class)) {
+            mocked.when(() -> ClasspathResourceDirectoryReader.read(DESCRIPTOR_DIRECTORY)).thenReturn(Stream.of(DESCRIPTOR_DIRECTORY + "/foo.yaml"));
+            Thread.currentThread().setContextClassLoader(classLoader);
+            IllegalStateException actual = assertThrows(IllegalStateException.class, MCPDescriptorCatalogLoader::load);
+            assertThat(actual.getMessage(), is("Failed to load MCP descriptor resource `file:/foo.yaml`."));
+            assertThat(actual.getCause(), sameInstance(expectedCause));
+        } finally {
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidValueTypes")
+    void assertLoadWithInvalidValueType(final String name, final String yaml, final String expectedMessage) throws IOException {
+        Path descriptor = createDescriptorResource("foo-public-loader.yaml", yaml);
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        try (
+                URLClassLoader classLoader = new URLClassLoader(new URL[]{tempDir.toUri().toURL()}, originalClassLoader);
+                MockedStatic<ClasspathResourceDirectoryReader> mocked = mockStatic(ClasspathResourceDirectoryReader.class)) {
+            mocked.when(() -> ClasspathResourceDirectoryReader.read(DESCRIPTOR_DIRECTORY)).thenReturn(Stream.of(DESCRIPTOR_DIRECTORY + "/foo-public-loader.yaml"));
+            Thread.currentThread().setContextClassLoader(classLoader);
+            IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, MCPDescriptorCatalogLoader::load);
+            assertThat(actual.getMessage(), is(String.format(expectedMessage, descriptor.toUri().toURL().toExternalForm())));
+        } finally {
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
+        }
+    }
+    
+    private static Stream<Arguments> invalidValueTypes() {
+        return Stream.of(
+                Arguments.of("audience type", "resources: [{annotations: {audience: assistant}}]", "MCP descriptor resource `%s` expects list at `$.resources[0].annotations.audience`."),
+                Arguments.of("audience member", "resources: [{annotations: {audience: [1]}}]", "MCP descriptor resource `%s` expects string at `$.resources[0].annotations.audience[0]`."),
+                Arguments.of("priority type", "resources: [{annotations: {priority: foo}}]", "MCP descriptor resource `%s` expects number at `$.resources[0].annotations.priority`."),
+                Arguments.of("lastModified type", "resources: [{annotations: {lastModified: 1}}]", "MCP descriptor resource `%s` expects string at `$.resources[0].annotations.lastModified`."),
+                Arguments.of("tool title type", "tools: [{annotations: {title: 1, readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true}}]",
+                        "MCP descriptor resource `%s` expects string at `$.tools[0].annotations.title`."),
+                Arguments.of("tools collection type", "tools: foo", "MCP descriptor resource `%s` expects list at `$.tools`."));
+    }
     
     @Test
     void assertLoadValidatesDescriptorQuality() {

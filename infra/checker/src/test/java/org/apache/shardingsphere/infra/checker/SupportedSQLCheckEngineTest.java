@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.infra.checker;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -48,7 +50,7 @@ class SupportedSQLCheckEngineTest {
     void assertCheckSQL() {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
+        when(sqlStatementContext.getTablesContext().getIdentifierSchemaName()).thenReturn(Optional.empty());
         SupportedSQLChecker supportedSQLChecker = mock(SupportedSQLChecker.class);
         when(supportedSQLChecker.isCheck(sqlStatementContext)).thenReturn(true);
         SupportedSQLChecker unsupportedSQLChecker = mock(SupportedSQLChecker.class);
@@ -62,5 +64,27 @@ class SupportedSQLCheckEngineTest {
         new SupportedSQLCheckEngine().checkSQL(Collections.singleton(rule), sqlStatementContext, database);
         verify(supportedSQLChecker).check(rule, database, defaultSchema, sqlStatementContext);
         verify(unsupportedSQLChecker, never()).check(eq(rule), eq(database), eq(defaultSchema), eq(sqlStatementContext));
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Test
+    void assertCheckSQLWithQuotedSchemaName() {
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        IdentifierValue schemaName = new IdentifierValue("MySchema", QuoteCharacter.QUOTE);
+        when(sqlStatementContext.getTablesContext().getIdentifierSchemaName()).thenReturn(Optional.of(schemaName));
+        SupportedSQLChecker supportedSQLChecker = mock(SupportedSQLChecker.class);
+        when(supportedSQLChecker.isCheck(sqlStatementContext)).thenReturn(true);
+        SupportedSQLCheckersBuilder supportedSQLCheckersBuilder = mock(SupportedSQLCheckersBuilder.class);
+        when(supportedSQLCheckersBuilder.getSupportedSQLCheckers()).thenReturn(Collections.singleton(supportedSQLChecker));
+        Map<ShardingSphereRule, SupportedSQLCheckersBuilder> services = Collections.singletonMap(rule, supportedSQLCheckersBuilder);
+        when(OrderedSPILoader.getServices(SupportedSQLCheckersBuilder.class, Collections.singleton(rule))).thenReturn(services);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        ShardingSphereSchema defaultSchema = mock(ShardingSphereSchema.class);
+        when(database.findDefaultSchema()).thenReturn(Optional.of(defaultSchema));
+        ShardingSphereSchema quotedSchema = mock(ShardingSphereSchema.class);
+        when(database.getSchema(schemaName)).thenReturn(quotedSchema);
+        new SupportedSQLCheckEngine().checkSQL(Collections.singleton(rule), sqlStatementContext, database);
+        verify(supportedSQLChecker).check(rule, database, quotedSchema, sqlStatementContext);
     }
 }

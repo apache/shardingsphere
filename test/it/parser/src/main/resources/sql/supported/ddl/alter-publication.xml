@@ -23,4 +23,9 @@
     <sql-case id="alter_publication_add_table" value="ALTER PUBLICATION mypublication ADD TABLE stores, cities;" db-types="PostgreSQL" />
     <sql-case id="alter_publication_drop_table" value="ALTER PUBLICATION mypublication DROP TABLE users;" db-types="PostgreSQL" />
     <sql-case id="alter_publication_set_definition" value="ALTER PUBLICATION noinsert SET (publish = 'update, delete');" db-types="PostgreSQL" />
+    <sql-case id="alter_publication_add_schema_pg" value="ALTER PUBLICATION foo_pub ADD TABLES IN SCHEMA foo, bar" db-types="PostgreSQL" />
+    <sql-case id="alter_publication_set_filter_pg" value="ALTER PUBLICATION foo_pub SET TABLE ONLY foo_table (a) WHERE (a &gt; 0)" db-types="PostgreSQL" />
+    <sql-case id="alter_publication_drop_schema_pg" value="ALTER PUBLICATION foo_pub DROP TABLES IN SCHEMA CURRENT_SCHEMA" db-types="PostgreSQL" />
+    <sql-case id="alter_publication_all_sequences_pg" value="ALTER PUBLICATION foo_pub SET ALL TABLES, ALL SEQUENCES" db-types="PostgreSQL" />
+    <sql-case id="alter_publication_all_except_pg" value="ALTER PUBLICATION foo_pub SET ALL TABLES EXCEPT (TABLE foo_table)" db-types="PostgreSQL" />
 </sql-cases>

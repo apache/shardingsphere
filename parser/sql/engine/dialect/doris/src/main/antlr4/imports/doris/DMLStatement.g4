@@ -323,7 +323,7 @@ loadXmlStatement
       (REPLACE | IGNORE)?
       INTO TABLE tableName
       (CHARACTER SET identifier)?
-      (ROWS IDENTIFIED BY LT_ string_ GT_)?
+      (ROWS IDENTIFIED BY string_)?
       ( IGNORE numberLiterals (LINES | ROWS) )?
       fieldOrVarSpec?
       (setAssignmentsClause)?
@@ -438,7 +438,7 @@ unqualifiedShorthand
     ;
 
 qualifiedShorthand
-    : (identifier DOT_)? identifier DOT_ASTERISK_
+    : (identifier DOT_)? identifier (DOT_ASTERISK_ | DOT_ ASTERISK_)
     ;
 
 fromClause

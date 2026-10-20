@@ -238,7 +238,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     private boolean isSchemaSupportedDatabaseType() {
-        DatabaseType databaseType = contextManager.getMetaDataContexts().getMetaData().getDatabase(currentDatabaseName).getProtocolType();
+        DatabaseType databaseType = contextManager.getDatabase(currentDatabaseName).getProtocolType();
         return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema().isPresent();
     }
     

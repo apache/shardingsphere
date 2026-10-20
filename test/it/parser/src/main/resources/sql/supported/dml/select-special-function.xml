@@ -374,4 +374,78 @@
     <sql-case id="select_bitcount_doris" value="SELECT BITCOUNT(7)" db-types="Doris" />
     <sql-case id="select_bitnot_doris" value="SELECT BITNOT(1)" db-types="Doris" />
     <sql-case id="select_bitmap_or_count_doris" value="SELECT BITMAP_OR_COUNT(BITMAP_FROM_STRING('1,2,3'), BITMAP_EMPTY())" db-types="Doris" />
+
+    <sql-case id="select_postgresql_interval_year_month" value="SELECT INTERVAL '1' YEAR TO MONTH" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_interval_second_precision" value="SELECT INTERVAL(3) '1.123' SECOND(2)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_interval_day_second" value="SELECT INTERVAL '1 01:02:03' DAY TO SECOND(3)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_named_argument_arrow" value="SELECT make_interval(years =&gt; ?)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_named_argument_assignment" value="SELECT make_interval(years := ?)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_type_alias_function" value="SELECT float8(1)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_format_function" value="SELECT format('%s', ?)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_substring_similar" value="SELECT SUBSTRING('foobar' SIMILAR 'f#&quot;(o+)#&quot;%' ESCAPE '#')" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_extract_microsecond" value="SELECT EXTRACT(MICROSECOND FROM ?)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_position_bit_literals" value="SELECT POSITION(B'10' IN B'1010')" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_json_object_empty" value="SELECT JSON_OBJECT()" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_json_object_value" value="SELECT JSON_OBJECT('foo' VALUE ? ABSENT ON NULL WITH UNIQUE KEYS RETURNING jsonb)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_object_colon" value="SELECT JSON_OBJECT('foo': ? FORMAT JSON ENCODING UTF8 NULL ON NULL WITHOUT UNIQUE RETURNING text FORMAT JSON)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_array_values" value="SELECT JSON_ARRAY(? FORMAT JSON, NULL ABSENT ON NULL RETURNING jsonb)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_array_empty" value="SELECT JSON_ARRAY(RETURNING jsonb)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_json_convert" value="SELECT JSON(? FORMAT JSON ENCODING UTF8 WITH UNIQUE KEYS)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_scalar" value="SELECT JSON_SCALAR(?)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_serialize" value="SELECT JSON_SERIALIZE(? FORMAT JSON RETURNING text FORMAT JSON ENCODING UTF8)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_exists_passing" value="SELECT JSON_EXISTS(?, '$.foo ? (@ &gt; $bar)' PASSING ? AS bar TRUE ON ERROR)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_exists_unknown" value="SELECT JSON_EXISTS(?, '$' UNKNOWN ON ERROR)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_exists_false" value="SELECT JSON_EXISTS(?, '$' FALSE ON ERROR)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_exists_error" value="SELECT JSON_EXISTS(?, '$' ERROR ON ERROR)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_value_defaults" value="SELECT JSON_VALUE(?, '$.foo' PASSING ? AS bar RETURNING int DEFAULT ? ON EMPTY DEFAULT ? ON ERROR)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_value_null_error" value="SELECT JSON_VALUE(?, '$' NULL ON EMPTY ERROR ON ERROR)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_query_wrapper" value="SELECT JSON_QUERY(?, '$.foo' RETURNING jsonb WITH CONDITIONAL ARRAY WRAPPER KEEP QUOTES ON SCALAR STRING EMPTY ARRAY ON EMPTY EMPTY OBJECT ON ERROR)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_query_without" value="SELECT JSON_QUERY(?, '$' WITHOUT ARRAY WRAPPER OMIT QUOTES NULL ON EMPTY ERROR ON ERROR)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_query_unconditional" value="SELECT JSON_QUERY(?, '$' WITH UNCONDITIONAL WRAPPER DEFAULT ? ON EMPTY DEFAULT ? ON ERROR)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_arrayagg" value="SELECT JSON_ARRAYAGG(foo_order_id ORDER BY foo_order_id ABSENT ON NULL RETURNING jsonb) FROM t_order" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_json_objectagg" value="SELECT JSON_OBJECTAGG('foo' VALUE foo_order_id NULL ON NULL WITH UNIQUE KEYS RETURNING jsonb) FROM t_order" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_xmlserialize_indent" value="SELECT XMLSERIALIZE(CONTENT '&lt;foo/&gt;' AS text INDENT)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_xmlserialize_no_indent" value="SELECT XMLSERIALIZE(CONTENT '&lt;foo/&gt;' AS text NO INDENT)" db-types="PostgreSQL" case-types="literal" />
+
+    <sql-case id="select_postgresql_tsvector_literal" value="SELECT tsvector 'foo'" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_cidr_literal" value="SELECT cidr '10.0.0.0/8'" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_interval_precision" value="SELECT INTERVAL(3) '1.123'" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_json_array_subquery" value="SELECT JSON_ARRAY(SELECT ? FROM t_order)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_query_default_wrapper" value="SELECT JSON_QUERY(?, '$' WITH WRAPPER EMPTY ON EMPTY NULL ON ERROR)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_objectagg_colon" value="SELECT JSON_OBJECTAGG('foo': ? ABSENT ON NULL WITHOUT UNIQUE RETURNING jsonb)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_table_nested" value="SELECT * FROM JSON_TABLE(?, '$' AS foo_path PASSING ? AS foo_value COLUMNS (foo_id FOR ORDINALITY, foo_value int PATH '$.value' DEFAULT ? ON EMPTY NULL ON ERROR, foo_exists boolean EXISTS PATH '$.found' FALSE ON ERROR, NESTED PATH '$.items[*]' AS foo_nested COLUMNS (foo_item text FORMAT JSON PATH '$' WITHOUT ARRAY WRAPPER OMIT QUOTES EMPTY ARRAY ON EMPTY EMPTY OBJECT ON ERROR)) EMPTY ARRAY ON ERROR) AS foo" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_table_query_column" value="SELECT * FROM JSON_TABLE(?, '$' COLUMNS (foo_value text PATH '$' WITH CONDITIONAL WRAPPER KEEP QUOTES DEFAULT ? ON ERROR) ERROR ON ERROR) AS foo" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_xml_table_columns" value="SELECT * FROM XMLTABLE('/foo' PASSING ? COLUMNS foo_id int PATH '@id' DEFAULT ? NOT NULL, foo_ord FOR ORDINALITY) AS foo" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_xml_table_namespaces" value="SELECT * FROM XMLTABLE(XMLNAMESPACES('urn:foo' AS foo_namespace), '/foo:root' PASSING BY VALUE ? BY REF COLUMNS foo_value text PATH '.') AS foo" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_rows_from_functions" value="SELECT * FROM ROWS FROM (foo_values(?), generate_series(1, ?) AS (foo_number int)) WITH ORDINALITY AS foo" db-types="PostgreSQL" case-types="placeholder" />
+
+    <sql-case id="select_postgresql_json_value_returning_typmod" value="SELECT JSON_VALUE(?, '$' RETURNING numeric(10,2))" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_table_typmod_nested" value="SELECT * FROM JSON_TABLE(?, '$' COLUMNS (NESTED '$.items' COLUMNS (foo_value numeric(10,2) PATH '$'))) AS foo" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_rows_from_partial_column_aliases" value="SELECT * FROM ROWS FROM (foo_values(?) AS (foo_old int, foo_tail text)) AS foo(foo_new)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_rows_from_all_column_aliases" value="SELECT * FROM ROWS FROM (foo_values(?) AS (foo_old int, foo_tail text)) AS foo(foo_new, foo_next)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_table_partial_column_aliases" value="SELECT * FROM JSON_TABLE(?, '$' COLUMNS (foo_old int PATH '$.id', foo_tail text PATH '$.text')) AS foo(foo_new)" db-types="PostgreSQL" case-types="placeholder" />
+
+    <sql-case id="select_postgresql_json_array_subquery_format" value="SELECT JSON_ARRAY(SELECT foo_json FROM t_order FORMAT JSON)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_json_array_subquery_format_returning" value="SELECT JSON_ARRAY(SELECT foo_json FROM t_order WHERE id = ? FORMAT JSON RETURNING jsonb)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_object_empty_returning" value="SELECT JSON_OBJECT(RETURNING jsonb)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_json_array_empty_without_returning" value="SELECT JSON_ARRAY()" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_json_table_string_paths" value="SELECT * FROM JSON_TABLE('{}', '$' COLUMNS (foo_id int PATH U&amp;'$!002Eid' UESCAPE '!', NESTED $p$$.items$p$ COLUMNS (foo_item text PATH '$')))" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_json_qualified_and_quoted_functions" value="SELECT foo.json_arrayagg(?, ?), &quot;json_arrayagg&quot;(?, ?)" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_json_object_legacy_arrays" value="SELECT JSON_OBJECT('{foo, bar}'), JSON_OBJECT('{foo}', '{bar}')" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="timestampadd_sql_tsi_unit" value="SELECT TIMESTAMPADD(SQL_TSI_SECOND, 1, order_date) FROM t_order" db-types="MySQL" />
+    <sql-case id="timestampdiff_sql_tsi_unit" value="SELECT TIMESTAMPDIFF(SQL_TSI_MINUTE, start_time, end_time) FROM t_order" db-types="MySQL" />
+    <sql-case id="select_cast_float_precision" value="SELECT CAST(1 AS FLOAT(24))" db-types="MySQL,Doris" />
+
+    <sql-case id="select_variance_all" value="SELECT VARIANCE(ALL 1)" db-types="MySQL,Doris" />
+
+    <sql-case id="select_trailing_decimal" value="SELECT 8." db-types="MySQL,Doris" />
+
+    <sql-case id="select_spaced_qualified_shorthand" value="SELECT t . * FROM t" db-types="MySQL,Doris" />
+
+    <sql-case id="select_json_table_exists_path" value="SELECT * FROM JSON_TABLE('[]', '$[*]' COLUMNS (id FOR ORDINALITY, p INT EXISTS PATH '$.a')) AS t" db-types="MySQL" />
+
+    <sql-case id="select_qualified_digit_identifier" value="SELECT event.1a20 FROM event" db-types="MySQL,Doris" />
+    <sql-case id="select_leading_decimal_alias" value="SELECT .0$p, .1a20, .2_" db-types="MySQL,Doris" />
+    <sql-case id="select_qualified_scientific_identifier" value="SELECT event.1e1a20 FROM event" db-types="MySQL,Doris" />
+    <sql-case id="select_leading_scientific_alias" value="SELECT .1e1a20" db-types="MySQL,Doris" />
 </sql-cases>
