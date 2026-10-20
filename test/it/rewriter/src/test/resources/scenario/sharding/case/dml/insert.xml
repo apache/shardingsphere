@@ -37,6 +37,16 @@
         <output sql="INSERT INTO t_account_0 (ACCOUNT_ID, amount, status) VALUES (100, 1000, 'OK') ON DUPLICATE KEY UPDATE amount = VALUES(amount)" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="insert_values_with_string_literal_introducer_for_literals" db-types="Firebird">
+        <input sql="INSERT INTO t_account (account_id, amount, status) VALUES (100, 1000, _ISO8859_1 'é')" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) VALUES (100, 1000, _ISO8859_1 'é')" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_with_string_literal_collation_for_literals" db-types="Firebird">
+        <input sql="INSERT INTO t_account (account_id, amount, status) VALUES (101, 1000, 'é' COLLATE UNICODE)" />
+        <output sql="INSERT INTO t_account_1 (account_id, amount, status) VALUES (101, 1000, 'é' COLLATE UNICODE)" />
+    </rewrite-assertion>
+    
     <rewrite-assertion id="insert_values_with_columns_without_id_for_parameters" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="INSERT INTO t_account (amount, status) VALUES (?, ?)" parameters="1000, OK" />
         <output sql="INSERT INTO t_account_1 (amount, status, account_id) VALUES (?, ?, ?)" parameters="1000, OK, 1" />

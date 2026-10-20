@@ -168,6 +168,7 @@
     <sql-case id="insert_default_firebird" value="INSERT INTO t_order (id) VALUES (DEFAULT)" db-types="Firebird"/>
     <sql-case id="insert_string_literal_with_introducer_firebird" value="INSERT INTO t_order (order_id, status) VALUES (1, _UTF8 'abc')" db-types="Firebird"/>
     <sql-case id="insert_string_literal_with_collate_firebird" value="INSERT INTO t_order (order_id, status) VALUES (1, 'abc' COLLATE UNICODE)" db-types="Firebird"/>
+    <sql-case id="insert_non_ascii_string_literal_with_introducer_firebird" value="INSERT INTO t_order (order_id, status) VALUES (1, _ISO8859_1 'é')" db-types="Firebird"/>
     <sql-case id="insert_hexadecimal_literal_with_introducer_firebird" value="INSERT INTO t_order (order_id, status) VALUES (1, _OCTETS x'4142')" db-types="Firebird"/>
     <sql-case id="insert_with_geom_collection_function" value="INSERT INTO t1 VALUES (GEOMCOLLECTION(POINT(0, 0)))" db-types="MySQL" />
     <sql-case id="insert_select_with_brackets" value="insert into t_order (order_id) (select order_id from t_order_item)" db-types="MySQL" />
