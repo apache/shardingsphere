@@ -25,6 +25,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.where.ExpectedWhereClause;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 /**
  * Where clause assert.
  */
@@ -39,6 +41,7 @@ public final class WhereClauseAssert {
      * @param expected expected where clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final WhereSegment actual, final ExpectedWhereClause expected) {
+        assertNotNull(actual, assertContext.getText("Actual where clause should exist."));
         ExpressionAssert.assertExpression(assertContext, actual.getExpr(), expected.getExpr());
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }

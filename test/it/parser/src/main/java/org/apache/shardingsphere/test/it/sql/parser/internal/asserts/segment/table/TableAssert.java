@@ -133,6 +133,7 @@ public final class TableAssert {
      * @param expected expected table
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SimpleTableSegment actual, final ExpectedSimpleTable expected) {
+        assertNotNull(actual, assertContext.getText("Actual table should exist."));
         assertTableNameSegment(assertContext, actual, expected);
         assertThat(assertContext.getText("Table alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
         if (null != expected.getDbLink()) {
