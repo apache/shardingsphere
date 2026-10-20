@@ -153,14 +153,14 @@ class MySQLNegotiateHandlerTest {
         assertFalse((Boolean) Plugins.getMemberAccessor().get(MySQLNegotiateHandler.class.getDeclaredField("publicKeyRequested"), mysqlNegotiateHandler));
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest
     @MethodSource("authSwitchParams")
     void assertChannelReadAuthSwitchRequestForPlugin(final String pluginName, final byte[] expectedResponse) {
         mysqlNegotiateHandler.channelRead(channelHandlerContext, new MySQLAuthSwitchRequestPacket(pluginName, new MySQLAuthenticationPluginData(seedBytesPart1(), seedBytesPart2())));
         assertThat(captureAuthSwitchResponse().getAuthPluginResponse(), is(expectedResponse));
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest
     @MethodSource("publicKeyEncryptParams")
     void assertHandleCachingSha2EncryptWithPublicKey(final String serverVersion) throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("publicKeyRequested"), mysqlNegotiateHandler, true);

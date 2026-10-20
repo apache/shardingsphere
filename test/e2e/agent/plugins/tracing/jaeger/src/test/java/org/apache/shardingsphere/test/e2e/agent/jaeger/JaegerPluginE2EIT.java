@@ -33,7 +33,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 class JaegerPluginE2EIT {
     
     @EnabledIf("isEnabled")
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertTraceAgent(final JaegerE2ETestCase testCase) {
         JaegerSpanAssert.assertIs(AgentE2ETestEnvironment.getInstance().getAgentPluginURL(), testCase);

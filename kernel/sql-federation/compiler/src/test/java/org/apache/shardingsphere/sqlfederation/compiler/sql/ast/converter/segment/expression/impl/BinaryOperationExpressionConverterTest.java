@@ -97,7 +97,8 @@ class BinaryOperationExpressionConverterTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideIsOperatorCases")
-    void assertConvertIsOperatorVariants(final String name, final String rightLiteral, final Supplier<SqlNode> leftSupplier, final SqlOperator expectedOperator, final Boolean expectedBoolean) {
+    void assertConvertIsOperatorVariants(final String displayName, final String rightLiteral, final Supplier<SqlNode> leftSupplier,
+                                         final SqlOperator expectedOperator, final Boolean expectedBoolean) {
         LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 1);
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, rightLiteral);
         SqlNode leftNode = leftSupplier.get();
@@ -112,7 +113,7 @@ class BinaryOperationExpressionConverterTest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0} {1}")
     @MethodSource("provideQuantifyOperators")
     void assertConvertQuantifySubquery(final String operator, final String quantifyOperator, final SqlOperator expectedOperator) {
         LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 1);

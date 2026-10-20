@@ -83,7 +83,7 @@ class OpenGaussCommandExecutorFactoryTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("newInstanceTestCases")
-    void assertNewInstance(final String name, final CommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,
+    void assertNewInstance(final String ignoredName, final CommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,
                            final Class<? extends CommandExecutor> expectedType) throws SQLException {
         CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(commandPacketType, commandPacket, connectionSession, portalContext);
         assertThat(actual, isA(expectedType));

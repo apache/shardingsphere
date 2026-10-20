@@ -35,10 +35,10 @@ import static org.mockito.Mockito.mock;
 @DistSQLRuleQueryExecutorSettings("cases/show-sql-parser-rule.xml")
 class ShowSQLParserRuleExecutorTest {
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "DistSQL -> {0}")
     @ArgumentsSource(DistSQLRuleQueryExecutorTestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DistSQLStatement sqlStatement, final GlobalRuleConfiguration currentRuleConfig,
-                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
+                            final GlobalRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         new DistSQLGlobalRuleQueryExecutorAssert(mock(SQLParserRule.class)).assertQueryResultRows(sqlStatement, currentRuleConfig, expected);
     }
 }

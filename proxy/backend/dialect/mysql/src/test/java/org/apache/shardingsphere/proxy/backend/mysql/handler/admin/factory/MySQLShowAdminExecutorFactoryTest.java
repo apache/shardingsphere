@@ -49,9 +49,9 @@ class MySQLShowAdminExecutorFactoryTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("statementProvider")
-    void assertCreateExecutor(final String name, final SQLStatement statement, final Class<? extends DatabaseAdminExecutor> expectedType) {
+    void assertCreateExecutor(final String caseName, final SQLStatement statement, final Class<? extends DatabaseAdminExecutor> expectedType) {
         Optional<DatabaseAdminExecutor> actual = MySQLShowAdminExecutorFactory.newInstance(statement);
-        assertTrue(actual.isPresent(), name);
+        assertTrue(actual.isPresent(), caseName);
         assertThat(actual.get(), isA(expectedType));
     }
     

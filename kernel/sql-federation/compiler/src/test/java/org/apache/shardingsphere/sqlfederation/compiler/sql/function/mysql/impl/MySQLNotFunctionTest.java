@@ -35,19 +35,19 @@ class MySQLNotFunctionTest {
         assertThat(new MySQLNotFunction().getSyntax(), is(SqlSyntax.PREFIX));
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "not({0}) -> {1}")
     @MethodSource("notTestCases")
-    void assertNotCoversAllBranches(final String name, final Object input, final Long expected) {
+    void assertNotCoversAllBranches(final Object input, final Long expected) {
         assertThat(MySQLNotFunction.not(input), is(expected));
     }
     
     private static Stream<Arguments> notTestCases() {
         return Stream.of(
-                Arguments.of("null input", null, null),
-                Arguments.of("zero", 0, 1L),
-                Arguments.of("nonzero integer", 5, 0L),
-                Arguments.of("true", true, 0L),
-                Arguments.of("false", false, 1L),
-                Arguments.of("unsupported text", "foo", null));
+                Arguments.of(null, null),
+                Arguments.of(0, 1L),
+                Arguments.of(5, 0L),
+                Arguments.of(true, 0L),
+                Arguments.of(false, 1L),
+                Arguments.of("foo", null));
     }
 }

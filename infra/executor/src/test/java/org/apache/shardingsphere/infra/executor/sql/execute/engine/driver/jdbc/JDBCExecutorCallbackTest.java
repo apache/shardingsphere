@@ -31,7 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
@@ -72,8 +72,8 @@ class JDBCExecutorCallbackTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @CsvSource({"trunk thread, true", "nontrunk thread, false"})
-    void assertExecuteWithSaneResult(final String name, final boolean isTrunkThread) throws SQLException {
+    @ValueSource(booleans = {true, false})
+    void assertExecuteWithSaneResult(final boolean isTrunkThread) throws SQLException {
         Object saneResult = new Object();
         SQLException expectedException = new SQLException("foo_failure");
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);

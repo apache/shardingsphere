@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -72,8 +72,8 @@ class StandardPipelineTableMetaDataLoaderTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @CsvSource({"stored lowercase table names, 1", "case insensitive table names, 2"})
-    void assertGetTableMetaDataWithCaseInsensitiveMySQLTableCacheIdentity(final String name, final int lowerCaseTableNames) throws SQLException {
+    @ValueSource(ints = {1, 2})
+    void assertGetTableMetaDataWithCaseInsensitiveMySQLTableCacheIdentity(final int lowerCaseTableNames) throws SQLException {
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         setUpTableMetaData(databaseMetaData, null, "T_USER", "USER_ID");
         StandardPipelineTableMetaDataLoader loader = new StandardPipelineTableMetaDataLoader(createMySQLPipelineDataSource(databaseMetaData, lowerCaseTableNames));

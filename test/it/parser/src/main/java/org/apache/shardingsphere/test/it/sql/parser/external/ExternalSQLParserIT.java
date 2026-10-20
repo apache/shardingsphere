@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 
 public abstract class ExternalSQLParserIT {
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     @Execution(ExecutionMode.CONCURRENT)

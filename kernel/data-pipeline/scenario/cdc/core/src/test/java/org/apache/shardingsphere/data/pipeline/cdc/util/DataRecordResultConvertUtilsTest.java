@@ -37,7 +37,7 @@ import static org.hamcrest.Matchers.is;
 
 class DataRecordResultConvertUtilsTest {
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest
     @MethodSource("dataChangeTypeTestCases")
     void assertConvertDataRecordToRecordWithNonInsertTypes(final PipelineSQLOperationType operationType, final Record.DataChangeType expectedDataChangeType) throws InvalidProtocolBufferException {
         DataRecord dataRecord = new DataRecord(operationType, "test_schema", "t_user", UniqueKeyIngestPosition.ofInteger(Range.closed(BigInteger.valueOf(5L), BigInteger.valueOf(10L))), 1);

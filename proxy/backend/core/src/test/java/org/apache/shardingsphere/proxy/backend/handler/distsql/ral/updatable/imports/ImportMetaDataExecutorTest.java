@@ -99,7 +99,7 @@ class ImportMetaDataExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("importFailureCases")
-    void assertExecuteUpdateFailure(final String name, final ImportMetaDataStatement sqlStatement, final ContextManager contextManager, final Class<? extends Throwable> expectedException) {
+    void assertExecuteUpdateFailure(final String caseName, final ImportMetaDataStatement sqlStatement, final ContextManager contextManager, final Class<? extends Throwable> expectedException) {
         assertThrows(expectedException, () -> executor.executeUpdate(sqlStatement, contextManager));
     }
     

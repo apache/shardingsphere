@@ -35,10 +35,10 @@ import static org.mockito.Mockito.mock;
 @DistSQLRuleQueryExecutorSettings("cases/show-default-single-table-storage-unit.xml")
 class ShowDefaultSingleTableStorageUnitExecutorTest {
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "DistSQL -> {0}")
     @ArgumentsSource(DistSQLRuleQueryExecutorTestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DistSQLStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig,
-                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
+                            final SingleRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         new DistSQLDatabaseRuleQueryExecutorAssert(mock(SingleRule.class)).assertQueryResultRows(currentRuleConfig, sqlStatement, expected);
     }
 }

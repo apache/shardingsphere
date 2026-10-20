@@ -162,26 +162,26 @@ class ProxyBackendHandlerFactoryTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("newInstanceWithDistSQLArguments")
-    void assertNewInstanceWithDistSQL(final String name, final String sql, final Class<? extends ProxyBackendHandler> expectedHandlerType) throws SQLException {
+    void assertNewInstanceWithDistSQL(final String caseName, final String sql, final Class<? extends ProxyBackendHandler> expectedHandlerType) throws SQLException {
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(name, actual, isA(expectedHandlerType));
+        assertThat(caseName, actual, isA(expectedHandlerType));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("newInstanceWithTCLArguments")
-    void assertNewInstanceWithTCL(final String name, final String sql, final Class<? extends ProxyBackendHandler> expectedHandlerType) throws SQLException {
+    void assertNewInstanceWithTCL(final String caseName, final String sql, final Class<? extends ProxyBackendHandler> expectedHandlerType) throws SQLException {
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(name, actual, isA(expectedHandlerType));
+        assertThat(caseName, actual, isA(expectedHandlerType));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("newInstanceWithShowArguments")
-    void assertNewInstanceWithShow(final String name, final String sql, final Class<? extends ProxyBackendHandler> expectedHandlerType) throws SQLException {
+    void assertNewInstanceWithShow(final String caseName, final String sql, final Class<? extends ProxyBackendHandler> expectedHandlerType) throws SQLException {
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(name, actual, isA(expectedHandlerType));
+        assertThat(caseName, actual, isA(expectedHandlerType));
     }
     
     @Test
@@ -284,16 +284,17 @@ class ProxyBackendHandlerFactoryTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("newInstanceWhenTransactionFailedWithPostgreSQLArguments")
-    void assertNewInstanceWhenTransactionFailedWithPostgreSQL(final String name, final String sql, final Optional<Class<? extends ProxyBackendHandler>> expectedHandlerType) throws SQLException {
+    void assertNewInstanceWhenTransactionFailedWithPostgreSQL(final String caseName, final String sql,
+                                                              final Optional<Class<? extends ProxyBackendHandler>> expectedHandlerType) throws SQLException {
         when(connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur()).thenReturn(true);
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, postgreSQLDatabaseType, connectionSession);
         if (expectedHandlerType.isPresent()) {
             ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(postgreSQLDatabaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-            assertThat(name, actual, isA(expectedHandlerType.get()));
+            assertThat(caseName, actual, isA(expectedHandlerType.get()));
             return;
         }
         assertThrows(SQLFeatureNotSupportedException.class,
-                () -> ProxyBackendHandlerFactory.newInstance(postgreSQLDatabaseType, sql, sqlStatement, connectionSession, new HintValueContext()), name);
+                () -> ProxyBackendHandlerFactory.newInstance(postgreSQLDatabaseType, sql, sqlStatement, connectionSession, new HintValueContext()), caseName);
     }
     
     @Test
@@ -316,16 +317,16 @@ class ProxyBackendHandlerFactoryTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("newInstanceWithDistSQLInTransactionArguments")
-    void assertNewInstanceWithDistSQLInTransaction(final String name, final String sql, final Optional<Class<? extends ProxyBackendHandler>> expectedHandlerType) throws SQLException {
+    void assertNewInstanceWithDistSQLInTransaction(final String caseName, final String sql, final Optional<Class<? extends ProxyBackendHandler>> expectedHandlerType) throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         if (expectedHandlerType.isPresent()) {
             ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-            assertThat(name, actual, isA(expectedHandlerType.get()));
+            assertThat(caseName, actual, isA(expectedHandlerType.get()));
             return;
         }
         assertThrows(UnsupportedSQLOperationException.class,
-                () -> ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext()), name);
+                () -> ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext()), caseName);
     }
     
     private static Stream<Arguments> newInstanceWithDistSQLArguments() {

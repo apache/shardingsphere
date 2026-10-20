@@ -70,8 +70,8 @@ class FirebirdBlobWriteCacheTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("missingWriteProvider")
-    void assertMissingWriteReturnsEmpty(final String name, final BooleanSupplier invocation) {
-        assertFalse(invocation.getAsBoolean(), name);
+    void assertMissingWriteReturnsEmpty(final String caseName, final BooleanSupplier invocation) {
+        assertFalse(invocation.getAsBoolean(), caseName);
     }
     
     @Test

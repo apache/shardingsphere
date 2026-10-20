@@ -64,7 +64,7 @@ public abstract class SQLNodeConverterEngineIT {
     
     private static final String MERGE_STATEMENT_PREFIX = "MERGE";
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertConvert(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_NODE_CONVERTER_TEST_CASES.get(sqlCaseId, sqlCaseType, databaseType).getParameters());

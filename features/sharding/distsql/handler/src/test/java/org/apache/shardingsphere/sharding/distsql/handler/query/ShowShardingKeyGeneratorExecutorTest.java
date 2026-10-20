@@ -42,10 +42,10 @@ import static org.mockito.Mockito.when;
 @DistSQLRuleQueryExecutorSettings("cases/show-sharding-key-generator.xml")
 class ShowShardingKeyGeneratorExecutorTest {
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "DistSQL -> {0}")
     @ArgumentsSource(DistSQLRuleQueryExecutorTestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DistSQLStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig,
-                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
+                            final ShardingRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         new DistSQLDatabaseRuleQueryExecutorAssert(mock(ShardingRule.class)).assertQueryResultRows(currentRuleConfig, sqlStatement, expected);
     }
     

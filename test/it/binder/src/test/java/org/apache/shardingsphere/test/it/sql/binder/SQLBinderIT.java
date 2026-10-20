@@ -76,7 +76,7 @@ public abstract class SQLBinderIT {
     private static final ConfigurationProperties IDENTIFIER_INSENSITIVE_PROPS = new ConfigurationProperties(
             PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name())));
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertBind(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_BINDER_TEST_CASES.get(sqlCaseId).getParameters());

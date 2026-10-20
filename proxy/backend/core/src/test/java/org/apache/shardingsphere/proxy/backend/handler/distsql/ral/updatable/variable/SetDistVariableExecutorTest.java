@@ -58,7 +58,7 @@ class SetDistVariableExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteUpdateSuccessArguments")
-    void assertExecuteUpdateSuccess(final String name, final SetDistVariableStatement statement, final Consumer<ContextManager> assertion) {
+    void assertExecuteUpdateSuccess(final String caseName, final SetDistVariableStatement statement, final Consumer<ContextManager> assertion) {
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);
         assertDoesNotThrow(() -> assertion.accept(contextManager));
@@ -82,7 +82,7 @@ class SetDistVariableExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteUpdateFailureArguments")
-    void assertExecuteUpdateFailure(final String name, final SetDistVariableStatement statement, final Class<? extends Throwable> expectedExceptionType) {
+    void assertExecuteUpdateFailure(final String caseName, final SetDistVariableStatement statement, final Class<? extends Throwable> expectedExceptionType) {
         assertThrows(expectedExceptionType, () -> executor.executeUpdate(statement, mockContextManager()));
     }
     

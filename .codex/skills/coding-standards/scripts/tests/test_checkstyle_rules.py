@@ -29,8 +29,7 @@ from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[5]
 BOOLEAN_MESSAGE = "Use assertTrue/assertFalse instead of assertThat(..., is(true/false))."
-DISPLAY_NAME_MESSAGE = 'Parameterized tests must use name = "{0}".'
-RULE_MESSAGES = {BOOLEAN_MESSAGE, DISPLAY_NAME_MESSAGE}
+RULE_MESSAGES = {BOOLEAN_MESSAGE}
 
 
 class CheckstyleRulesTest(unittest.TestCase):
@@ -58,23 +57,9 @@ class CheckstyleRulesTest(unittest.TestCase):
             "comment": ("// assertThat(actual, is(Boolean.TRUE));", False),
             "string_content": ('String example = "assertThat(actual, is(Boolean.TRUE));";', False),
         }
-        cls.display_name_cases = {
-            "default": ("@ParameterizedTest", True),
-            "wrong_template": ('@ParameterizedTest(name = "{index}")', True),
-            "prefix": ('@ParameterizedTest(name = "foo {0}")', True),
-            "constant": ("@ParameterizedTest(name = DISPLAY_NAME)", True),
-            "concatenation": ('@ParameterizedTest(name = "{" + "0}")', True),
-            "correct": ('@ParameterizedTest(name = "{0}")', False),
-            "multiline": ('@ParameterizedTest(\n        name = "{0}"\n    )', False),
-            "other_annotation": ('@ParameterizedTest(name = "{0}")\n    @MethodSource("scenarios")', False),
-            "qualified": ('@org.junit.jupiter.params.ParameterizedTest(name = "{0}")', False),
-            "ordinary_test": ("@Test", False),
-        }
         cls.fixture_paths = {}
         for name, (statement, _) in cls.boolean_cases.items():
             cls.write_fixture(directory, f"boolean_{name}", f"void assertScenario() {{\n        {statement}\n    }}")
-        for name, (annotation, _) in cls.display_name_cases.items():
-            cls.write_fixture(directory, f"display_{name}", f"{annotation}\n    void assertScenario(final String name) {{\n    }}")
         properties = ET.parse(REPOSITORY_ROOT / "pom.xml").getroot().find("{*}properties")
         cls.engine_version = properties.findtext("{*}checkstyle.version")
         cls.write_pom(directory, properties.findtext("{*}maven-checkstyle-plugin.version"))
@@ -134,12 +119,6 @@ class CheckstyleRulesTest(unittest.TestCase):
             with self.subTest(name=name):
                 expected = [(BOOLEAN_MESSAGE, "error")] if violates else []
                 self.assertEqual(expected, self.actual_diagnostics[self.fixture_paths[f"boolean_{name}"]])
-
-    def test_parameterized_tests_use_argument_display_names(self) -> None:
-        for name, (_, violates) in self.display_name_cases.items():
-            with self.subTest(name=name):
-                expected = [(DISPLAY_NAME_MESSAGE, "error")] if violates else []
-                self.assertEqual(expected, self.actual_diagnostics[self.fixture_paths[f"display_{name}"]])
 
 
 if __name__ == "__main__":

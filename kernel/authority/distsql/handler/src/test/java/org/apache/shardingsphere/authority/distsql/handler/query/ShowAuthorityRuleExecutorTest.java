@@ -38,10 +38,10 @@ import static org.mockito.Mockito.when;
 @DistSQLRuleQueryExecutorSettings("cases/show-authority-rule.xml")
 class ShowAuthorityRuleExecutorTest {
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "DistSQL -> {0}")
     @ArgumentsSource(DistSQLRuleQueryExecutorTestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DistSQLStatement sqlStatement, final GlobalRuleConfiguration currentRuleConfig,
-                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
+                            final GlobalRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         new DistSQLGlobalRuleQueryExecutorAssert(mockRule()).assertQueryResultRows(sqlStatement, currentRuleConfig, expected);
     }
     

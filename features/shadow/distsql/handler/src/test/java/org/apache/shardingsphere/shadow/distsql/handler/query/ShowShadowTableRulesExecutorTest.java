@@ -35,10 +35,10 @@ import static org.mockito.Mockito.mock;
 @DistSQLRuleQueryExecutorSettings("cases/show-shadow-table-rules.xml")
 class ShowShadowTableRulesExecutorTest {
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "DistSQL -> {0}")
     @ArgumentsSource(DistSQLRuleQueryExecutorTestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DistSQLStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig,
-                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
+                            final ShadowRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         new DistSQLDatabaseRuleQueryExecutorAssert(mock(ShadowRule.class)).assertQueryResultRows(currentRuleConfig, sqlStatement, expected);
     }
 }

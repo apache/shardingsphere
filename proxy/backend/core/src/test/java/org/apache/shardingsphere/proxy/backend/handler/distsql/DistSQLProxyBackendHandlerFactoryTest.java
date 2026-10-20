@@ -102,7 +102,7 @@ class DistSQLProxyBackendHandlerFactoryTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("newInstanceSupportedStatements")
-    void assertNewInstanceWithSupportedStatements(final String name, final Class<? extends DistSQLStatement> statementClass, final Class<?> expectedHandlerClass) {
+    void assertNewInstanceWithSupportedStatements(final String caseName, final Class<? extends DistSQLStatement> statementClass, final Class<?> expectedHandlerClass) {
         assertThat(DistSQLProxyBackendHandlerFactory.newInstance(mock(statementClass, RETURNS_DEEP_STUBS), mock(), connectionSession), isA(expectedHandlerClass));
     }
     

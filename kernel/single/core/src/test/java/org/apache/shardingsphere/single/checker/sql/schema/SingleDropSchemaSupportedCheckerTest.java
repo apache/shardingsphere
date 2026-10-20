@@ -69,8 +69,8 @@ class SingleDropSchemaSupportedCheckerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("checkCases")
-    void assertCheck(final String name, final String schemaName, final boolean containsCascade, final boolean schemaExisted, final boolean schemaEmpty,
-                     final Class<? extends Throwable> expectedThrowableType) {
+    void assertCheck(final String scenario, final String schemaName, final boolean containsCascade, final boolean schemaExisted,
+                     final boolean schemaEmpty, final Class<? extends Throwable> expectedThrowableType) {
         ShardingSphereDatabase database = mockDatabase(schemaName, schemaExisted, containsCascade, schemaEmpty);
         SQLStatementContext sqlStatementContext = createSQLStatementContext(schemaName, containsCascade);
         if (null == expectedThrowableType) {

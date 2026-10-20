@@ -33,7 +33,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 class MetricsPluginE2EIT {
     
     @EnabledIf("isEnabled")
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertWithAgent(final MetricE2ETestCase metricTestCase) {
         MetricAssert.assertIs(AgentE2ETestEnvironment.getInstance().getAgentPluginURL(), metricTestCase);

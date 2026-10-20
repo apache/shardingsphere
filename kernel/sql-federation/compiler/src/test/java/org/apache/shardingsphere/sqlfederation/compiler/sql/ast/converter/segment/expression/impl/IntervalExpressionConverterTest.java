@@ -55,7 +55,7 @@ class IntervalExpressionConverterTest {
         assertThrows(UnsupportedOperationException.class, () -> IntervalExpressionConverter.convert(intervalExpression));
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "convert interval unit {0}")
     @MethodSource("provideIntervalUnits")
     void assertConvertIntervalUnits(final IntervalUnit intervalUnit, final TimeUnit expectedTimeUnit) {
         LiteralExpressionSegment value = new LiteralExpressionSegment(0, 0, 1);

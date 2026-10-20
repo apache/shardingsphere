@@ -57,7 +57,7 @@ class OracleConnectionPropertiesParserTest {
         assertThat(actual.getQueryProperties(), is(queryProps));
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest
     @ValueSource(strings = {"jdbc:oracle:xxxxxxxx", "jdbc:oracle:thin:@host:123/", "jdbc:oracle:thin:@host/service:INVALID",
             "jdbc:oracle:thin:@host/service/instance/extra", "jdbc:oracle:thin:@host/service!invalid",
             "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(HOST=host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=service)))invalid",

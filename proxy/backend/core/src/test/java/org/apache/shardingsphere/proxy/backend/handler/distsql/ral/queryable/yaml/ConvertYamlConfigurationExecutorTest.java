@@ -75,7 +75,7 @@ class ConvertYamlConfigurationExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("resourceExpectedCases")
-    void assertExecuteWithExpectedResource(final String name, final String configFilePath, final String expectedFilePath) {
+    void assertExecuteWithExpectedResource(final String caseName, final String configFilePath, final String expectedFilePath) {
         Collection<LocalDataQueryResultRow> actual = executor.getRows(
                 new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationExecutorTest.class.getResource(configFilePath)).getPath()), mock());
         assertRowData(actual, loadExpectedRow(expectedFilePath));
@@ -83,7 +83,7 @@ class ConvertYamlConfigurationExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("inlineExpectedCases")
-    void assertExecuteWithInlineExpected(final String name, final String configFilePath, final String expectedRow) {
+    void assertExecuteWithInlineExpected(final String caseName, final String configFilePath, final String expectedRow) {
         Collection<LocalDataQueryResultRow> actual = executor.getRows(
                 new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationExecutorTest.class.getResource(configFilePath)).getPath()), mock());
         assertRowData(actual, expectedRow);
@@ -91,7 +91,7 @@ class ConvertYamlConfigurationExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("mockedYamlCases")
-    void assertExecuteWithMockedYamlConfiguration(final String name, final YamlDatabaseConfiguration yamlConfig, final String expectedRow) {
+    void assertExecuteWithMockedYamlConfiguration(final String caseName, final YamlDatabaseConfiguration yamlConfig, final String expectedRow) {
         try (MockedStatic<YamlEngine> mockedYamlEngine = mockStatic(YamlEngine.class)) {
             mockedYamlEngine.when(() -> YamlEngine.unmarshal(any(File.class), eq(YamlDatabaseConfiguration.class))).thenReturn(yamlConfig);
             Collection<LocalDataQueryResultRow> actual = executor.getRows(new ConvertYamlConfigurationStatement("mocked-path.yaml"), mock());
@@ -101,8 +101,8 @@ class ConvertYamlConfigurationExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidInputCases")
-    void assertExecuteWithInvalidInput(final String name, final String filePath, final boolean classPathResource, final Class<? extends Throwable> expectedExceptionType,
-                                       final String expectedMessage) {
+    void assertExecuteWithInvalidInput(final String caseName, final String filePath, final boolean classPathResource,
+                                       final Class<? extends Throwable> expectedExceptionType, final String expectedMessage) {
         Throwable actual = assertThrows(expectedExceptionType,
                 () -> executor.getRows(new ConvertYamlConfigurationStatement(resolveFilePath(filePath, classPathResource)), mock()));
         assertThat(actual.getMessage(), is(expectedMessage));

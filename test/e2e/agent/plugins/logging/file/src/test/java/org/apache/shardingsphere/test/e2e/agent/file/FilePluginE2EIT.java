@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class FilePluginE2EIT {
     
     @EnabledIf("isEnabled")
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertLogAgent(final LogE2ETestCase testCase) {
         assertFalse(AgentE2ETestEnvironment.getInstance().getContainerLogs().isEmpty(), "The actual log is empty");

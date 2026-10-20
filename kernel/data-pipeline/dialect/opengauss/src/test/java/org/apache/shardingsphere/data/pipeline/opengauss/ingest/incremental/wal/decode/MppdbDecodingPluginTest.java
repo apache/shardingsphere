@@ -428,7 +428,7 @@ class MppdbDecodingPluginTest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest
     @MethodSource("invalidHexValueProvider")
     void assertDecodeByteaWithInvalidHexValue(final String hexValue) {
         MppTableData tableData = new MppTableData();
