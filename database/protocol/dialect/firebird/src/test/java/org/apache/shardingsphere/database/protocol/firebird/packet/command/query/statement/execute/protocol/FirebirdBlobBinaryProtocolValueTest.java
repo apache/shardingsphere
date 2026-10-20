@@ -81,28 +81,19 @@ class FirebirdBlobBinaryProtocolValueTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("writeRegisterArguments")
     void assertWriteWithRegister(final String name, final Object value, final byte[] expected) {
-        ByteBuf byteBuf = Unpooled.buffer();
-        FirebirdPacketPayload payload = createPayload(byteBuf);
-        new FirebirdBlobBinaryProtocolValue().write(payload, value);
-        long blobId = byteBuf.getLong(0);
+        long blobId = writeAndGetBlobId(value);
         assertTrue(blobId < 0);
         assertThat(FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobId), is(expected));
     }
     
     @Test
     void assertWriteWithNull() {
-        ByteBuf byteBuf = Unpooled.buffer();
-        FirebirdPacketPayload payload = createPayload(byteBuf);
-        new FirebirdBlobBinaryProtocolValue().write(payload, null);
-        assertThat(byteBuf.getLong(0), is(0L));
+        assertThat(writeAndGetBlobId(null), is(0L));
     }
     
     @Test
     void assertWriteWithBlobId() {
-        ByteBuf byteBuf = Unpooled.buffer();
-        FirebirdPacketPayload payload = createPayload(byteBuf);
-        new FirebirdBlobBinaryProtocolValue().write(payload, 7L);
-        assertThat(byteBuf.getLong(0), is(7L));
+        assertThat(writeAndGetBlobId(7L), is(7L));
     }
     
     @Test
@@ -111,10 +102,7 @@ class FirebirdBlobBinaryProtocolValueTest {
         InputStream inputStream = mock(InputStream.class);
         when(inputStream.read(any(byte[].class))).thenReturn(0, 2, -1);
         when(blob.getBinaryStream()).thenReturn(inputStream);
-        ByteBuf byteBuf = Unpooled.buffer();
-        FirebirdPacketPayload payload = createPayload(byteBuf);
-        new FirebirdBlobBinaryProtocolValue().write(payload, blob);
-        long blobId = byteBuf.getLong(0);
+        long blobId = writeAndGetBlobId(blob);
         assertTrue(blobId < 0);
         assertThat(FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobId), is(new byte[]{0, 0}));
     }
@@ -144,10 +132,7 @@ class FirebirdBlobBinaryProtocolValueTest {
         Clob clob = mock(Clob.class);
         when(clob.length()).thenReturn(3L);
         when(clob.getSubString(1L, 3)).thenReturn("xyz");
-        ByteBuf byteBuf = Unpooled.buffer();
-        FirebirdPacketPayload payload = createPayload(byteBuf);
-        new FirebirdBlobBinaryProtocolValue().write(payload, clob);
-        long blobId = byteBuf.getLong(0);
+        long blobId = writeAndGetBlobId(clob);
         assertTrue(blobId < 0);
         assertThat(FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobId), is(new byte[]{120, 121, 122}));
     }
@@ -168,10 +153,10 @@ class FirebirdBlobBinaryProtocolValueTest {
         assertThat(new FirebirdBlobBinaryProtocolValue().getLength(payload), is(8));
     }
     
-    private long writeAndGetBlobId(final byte[] content) {
+    private long writeAndGetBlobId(final Object value) {
         ByteBuf byteBuf = Unpooled.buffer();
         FirebirdPacketPayload payload = createPayload(byteBuf);
-        new FirebirdBlobBinaryProtocolValue().write(payload, content);
+        new FirebirdBlobBinaryProtocolValue().write(payload, value);
         return byteBuf.getLong(0);
     }
     
