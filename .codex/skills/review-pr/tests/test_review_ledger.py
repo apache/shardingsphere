@@ -750,6 +750,15 @@ class ReviewLedgerTest(unittest.TestCase):
                                                    "evidence": actual["rounds"][-1]["report_reviews"][0]["evidence"]})
         self.assertEqual([], ledger.validate_session(actual))
 
+    def test_session_rejects_more_than_three_complete_pairs(self):
+        actual = self.create_session([[]] * 8)
+        self.assertIn("The current review basis exceeds six independent original assessments", ledger.validate_session(actual))
+
+    def test_session_stops_after_third_unconfirmed_pair(self):
+        actual = self.create_session([[("F1", "confirmed")]] * 6)
+        actual["rounds"][-1]["findings"][0]["classification"] = "performance"
+        self.assertIn("The latest complete adjudication differs from the previous round; stop and report Review Status: Not Converged", ledger.validate_session(actual))
+
     def test_session_requires_confirmation_after_first_round(self):
         actual = self.create_session([[], []])
         actual.update({"reviews": actual["reviews"][:2], "rounds": actual["rounds"][:1]})
