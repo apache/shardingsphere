@@ -107,7 +107,7 @@ public final class FirebirdCommandExecutorFactory {
             case BATCH_SEGMENTS:
                 return new FirebirdBatchBlobSegmentsCommandExecutor((FirebirdBatchBlobSegmentsCommandPacket) commandPacket, connectionSession);
             case SEEK_BLOB:
-                return new FirebirdSeekBlobCommandExecutor((FirebirdSeekBlobCommandPacket) commandPacket);
+                return new FirebirdSeekBlobCommandExecutor((FirebirdSeekBlobCommandPacket) commandPacket, connectionSession);
             case CANCEL_BLOB:
                 return new FirebirdCancelBlobCommandExecutor((FirebirdCancelBlobCommandPacket) commandPacket, connectionSession);
             case CLOSE_BLOB:

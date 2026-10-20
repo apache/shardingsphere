@@ -499,7 +499,7 @@ class ProxySQLExecutorTest {
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
                 when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_id"));
                 InsertValueContext insertValueContext = mock(InsertValueContext.class);
-                when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new CommonExpressionSegment(0, 0, "DEFAULT")));
+                when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new CommonExpressionSegment(0, 0, "DEFAULT", Collections.emptyList())));
                 when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
             } else if ("execute-with-driver-and-no-column-list-special-default".equals(name)) {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
@@ -507,7 +507,7 @@ class ProxySQLExecutorTest {
                 when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.emptyList());
                 when(insertStatementContext.getColumnNames()).thenReturn(Arrays.asList("foo_id", "name"));
                 InsertValueContext insertValueContext = mock(InsertValueContext.class);
-                when(insertValueContext.getValueExpressions()).thenReturn(Arrays.asList(new CommonExpressionSegment(0, 0, "DEFAULT"), mock(LiteralExpressionSegment.class)));
+                when(insertValueContext.getValueExpressions()).thenReturn(Arrays.asList(new CommonExpressionSegment(0, 0, "DEFAULT", Collections.emptyList()), mock(LiteralExpressionSegment.class)));
                 when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
             } else if ("execute-with-driver-and-no-column-list-special-null".equals(name)) {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
@@ -530,7 +530,7 @@ class ProxySQLExecutorTest {
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
                 when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_id"));
                 InsertValueContext insertValueContext = mock(InsertValueContext.class);
-                when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new CommonExpressionSegment(0, 0, "DEFAULT")));
+                when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new CommonExpressionSegment(0, 0, "DEFAULT", Collections.emptyList())));
                 when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
             } else {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", isReturnGeneratedKeys);

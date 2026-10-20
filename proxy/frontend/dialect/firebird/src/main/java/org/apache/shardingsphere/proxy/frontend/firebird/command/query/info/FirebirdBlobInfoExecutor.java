@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
@@ -44,16 +45,22 @@ public final class FirebirdBlobInfoExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdBlobInfoReturnPacket(packet.getInfoItems(), getBlobLength())));
-    }
-    
-    private int getBlobLength() {
         int connectionId = connectionSession.getConnectionId();
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionId, packet.getHandle());
-        OptionalInt remainingSize = FirebirdBlobReadCache.getInstance().getRemainingSize(connectionId, blobHandle);
-        if (remainingSize.isPresent()) {
-            return remainingSize.getAsInt();
+        FirebirdBlobInfoReturnPacket returnPacket = new FirebirdBlobInfoReturnPacket(packet.getInfoItems(), getBlobLength(connectionId, blobHandle), isStreamBlob(connectionId, blobHandle));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(returnPacket));
+    }
+    
+    private int getBlobLength(final int connectionId, final int blobHandle) {
+        OptionalInt totalSize = FirebirdBlobReadCache.getInstance().getTotalSize(connectionId, blobHandle);
+        if (totalSize.isPresent()) {
+            return totalSize.getAsInt();
         }
         return FirebirdBlobWriteCache.getInstance().getBlobSizeByHandle(connectionId, blobHandle).orElse(0);
+    }
+    
+    @HighFrequencyInvocation
+    private boolean isStreamBlob(final int connectionId, final int blobHandle) {
+        return FirebirdBlobReadCache.getInstance().isStreamBlob(connectionId, blobHandle).orElse(false);
     }
 }

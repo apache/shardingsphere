@@ -97,7 +97,7 @@ public final class ExternalTestParameterLoader {
         if (!Strings.isNullOrEmpty(githubToken)) {
             urlConnection.setRequestProperty("Authorization", "Bearer " + githubToken);
         }
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), loadTemplate.getContentCharset()))) {
             return reader.lines().collect(Collectors.toList());
         }
     }

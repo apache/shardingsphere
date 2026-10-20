@@ -21,4 +21,6 @@
     <alter-default-privileges sql-case-id="alter_default_privileges_revoke_delete" />
     <alter-default-privileges sql-case-id="alter_default_privileges_grant_insert" />
     <alter-default-privileges sql-case-id="alter_default_privileges_revoke_insert" />
+    <alter-default-privileges sql-case-id="alter_default_usage_schemas_pg" />
+    <alter-default-privileges sql-case-id="alter_default_usage_types_pg" />
 </sql-parser-test-cases>

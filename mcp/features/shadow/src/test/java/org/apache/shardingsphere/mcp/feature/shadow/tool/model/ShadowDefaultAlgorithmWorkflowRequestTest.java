@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.model;
 
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -35,5 +36,23 @@ class ShadowDefaultAlgorithmWorkflowRequestTest {
         ShadowDefaultAlgorithmWorkflowRequest actual = ShadowDefaultAlgorithmWorkflowRequest.merge(previous, current);
         assertThat(actual.getAlgorithmType(), is("SQL_HINT"));
         assertThat(actual.getAlgorithmProperties().get("k"), is("v"));
+    }
+    
+    @Test
+    void assertMergeFromBaseRequest() {
+        WorkflowRequest previous = new WorkflowRequest();
+        previous.setDatabase("foo_db");
+        ShadowDefaultAlgorithmWorkflowRequest current = new ShadowDefaultAlgorithmWorkflowRequest();
+        current.setAlgorithmType("SQL_HINT");
+        ShadowDefaultAlgorithmWorkflowRequest actual = ShadowDefaultAlgorithmWorkflowRequest.merge(previous, current);
+        assertThat(actual.getDatabase(), is("foo_db"));
+        assertThat(actual.getAlgorithmType(), is("SQL_HINT"));
+    }
+    
+    @Test
+    void assertGetAlgorithmProperties() {
+        ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
+        request.putAlgorithmProperties(Map.of("foo_key", "foo_value"));
+        assertThat(request.getAlgorithmProperties("primary"), is(Map.of("foo_key", "foo_value")));
     }
 }

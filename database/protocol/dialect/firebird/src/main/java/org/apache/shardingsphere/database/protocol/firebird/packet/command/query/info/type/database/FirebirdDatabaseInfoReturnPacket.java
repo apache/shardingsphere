@@ -48,6 +48,10 @@ public final class FirebirdDatabaseInfoReturnPacket extends FirebirdPacket {
     
     private static final int BUILD_NO = 0;
     
+    private static final int ODS_MAJOR_VERSION = 13;
+    
+    private static final int ODS_MINOR_VERSION = 1;
+    
     private static final String SERVER_NAME = String.format("Firebird %d.%d (ShardingSphere-Proxy)", MAJOR_VERSION, MINOR_VERSION);
     
     private static final String FB_VERSION = String.format("%s-%s%d.%d.%d.%d %s",
@@ -83,12 +87,12 @@ public final class FirebirdDatabaseInfoReturnPacket extends FirebirdPacket {
             case ODS_VERSION:
                 data.writeInt1(FirebirdDatabaseInfoPacketType.ODS_VERSION.getCode());
                 data.writeInt2LE(4);
-                data.writeInt4LE(MAJOR_VERSION);
+                data.writeInt4LE(ODS_MAJOR_VERSION);
                 break;
             case ODS_MINOR_VERSION:
                 data.writeInt1(FirebirdDatabaseInfoPacketType.ODS_MINOR_VERSION.getCode());
                 data.writeInt2LE(4);
-                data.writeInt4LE(MINOR_VERSION);
+                data.writeInt4LE(ODS_MINOR_VERSION);
                 break;
             case FIREBIRD_VERSION:
                 data.writeInt1(FirebirdDatabaseInfoPacketType.FIREBIRD_VERSION.getCode());

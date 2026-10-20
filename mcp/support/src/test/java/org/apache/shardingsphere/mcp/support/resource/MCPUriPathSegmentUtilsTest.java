@@ -18,13 +18,28 @@
 package org.apache.shardingsphere.mcp.support.resource;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 class MCPUriPathSegmentUtilsTest {
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidEncodings")
+    void assertDecodePathSegmentWithMalformedEncoding(final String name, final String pathSegment) {
+        assertThat(MCPUriPathSegmentUtils.decodePathSegment(pathSegment), is(Optional.empty()));
+    }
+    
+    private static Collection<Arguments> invalidEncodings() {
+        return List.of(Arguments.of("truncated escape", "foo%2"), Arguments.of("invalid hexadecimal", "logic%ZZdb"), Arguments.of("invalid UTF-8", "%FF"));
+    }
     
     @Test
     void assertEncodePathSegment() {
@@ -43,9 +58,4 @@ class MCPUriPathSegmentUtilsTest {
         assertThat(actualPathSegment, is(Optional.of("logic+db")));
     }
     
-    @Test
-    void assertDecodePathSegmentWithMalformedPercentEncoding() {
-        Optional<String> actualPathSegment = MCPUriPathSegmentUtils.decodePathSegment("logic%ZZdb");
-        assertThat(actualPathSegment, is(Optional.empty()));
-    }
 }

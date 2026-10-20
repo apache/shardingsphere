@@ -192,6 +192,25 @@ class MCPResourceSpecificationFactoryTest {
         assertNotNull(actualSpecification.readHandler());
     }
     
+    @Test
+    void assertCreateResourceTemplateSpecificationsWithAnnotations() {
+        MCPResourceDescriptor descriptor = new MCPResourceDescriptor("shardingsphere://foo/{database}", "foo_resource", "Foo Resource", "Foo description.", "application/json",
+                new MCPResourceAnnotations(List.of("user"), 0.6D, "2025-01-01T00:00:00Z"), Map.of("foo_key", "foo_value"));
+        try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
+            mocked.when(ResourceDefinitionRegistry::getSupportedResourceDescriptors).thenReturn(List.of(descriptor));
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("shardingsphere://foo/foo_db")))
+                    .thenReturn(Optional.of(new MCPMapPayload(Map.of("foo_field", "foo_value"))));
+            SyncResourceTemplateSpecification actualSpecification = new MCPResourceSpecificationFactory(createRuntimeContext()).createResourceTemplateSpecifications().getFirst();
+            assertThat(actualSpecification.resourceTemplate().annotations().priority(), is(0.6D));
+            assertThat(actualSpecification.resourceTemplate().meta(), is(Map.of("foo_key", "foo_value")));
+            ReadResourceResult actual = actualSpecification.readHandler().apply(createExchange(), new ReadResourceRequest("shardingsphere://foo/foo_db"));
+            assertThat(actual.contents().getFirst().uri(), is("shardingsphere://foo/foo_db"));
+            ArgumentCaptor<MCPFeatureRuntimeRequestContext> requestContextCaptor = ArgumentCaptor.forClass(MCPFeatureRuntimeRequestContext.class);
+            mocked.verify(() -> ResourceDefinitionRegistry.dispatch(requestContextCaptor.capture(), eq("shardingsphere://foo/foo_db")));
+            assertThat(requestContextCaptor.getValue().getSessionIdentity().getSessionId(), is("session-1"));
+        }
+    }
+    
     private SyncResourceSpecification findResourceSpecification(final Collection<SyncResourceSpecification> specifications, final String uri) {
         return specifications.stream().filter(each -> uri.equals(each.resource().uri())).findFirst().orElseThrow();
     }

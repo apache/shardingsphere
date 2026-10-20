@@ -21,13 +21,18 @@ import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -75,13 +80,85 @@ class MCPRegistryMetadataCommandTest {
     }
     
     @Test
-    void assertExecuteRejectsMissingHttpUrl() throws IOException {
+    void assertExecuteRejectsUnknownArgument() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPRegistryMetadataCommand.execute("--unknown"));
+        assertThat(actual.getMessage(), is("Unknown argument: --unknown"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertExecuteRejectsServerFieldsCases")
+    void assertExecuteRejectsServerFields(final String name, final Map<String, Object> fields, final String expectedMessage) throws IOException {
         Map<String, Object> server = createServerMetadata();
-        getPackages(server).get(1).put("transport", Map.of("type", "streamable-http"));
+        server.putAll(fields);
         Path serverPath = createServerJson(server);
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
-        assertThat(actual.getMessage(), is("streamable-http transport must define a URL."));
+        assertThat(actual.getMessage(), is(expectedMessage));
+    }
+    
+    private static Stream<Arguments> assertExecuteRejectsServerFieldsCases() {
+        return Stream.of(
+                Arguments.of("schema", Map.of("$schema", "unsupported"), "server.json must use the official MCP Registry schema."),
+                Arguments.of("name", Map.of("name", "io.github.apache/other-mcp"), "server.json name must match the published ShardingSphere MCP server name."),
+                Arguments.of("description type", Map.of("description", 1), "server.json field description must be a non-empty string."),
+                Arguments.of("description length", Map.of("description", "x".repeat(101)), "server.json field description must be at most 100 characters."),
+                Arguments.of("null version", Map.of("version", "null"), "server version must be a non-empty string."),
+                Arguments.of("latest version", Map.of("version", "latest"), "server version must not use latest."),
+                Arguments.of("version range", Map.of("version", "5.5.x"), "server version must be a specific version, not a range."),
+                Arguments.of("packages type", Map.of("packages", "invalid"), "server.json packages must be a non-empty array."),
+                Arguments.of("package type", Map.of("packages", List.of("invalid")), "MCP Registry package must be an object."));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertExecuteRejectsPackageFieldsCases")
+    void assertExecuteRejectsPackageFields(final String name, final Map<String, Object> fields, final String expectedMessage) throws IOException {
+        Map<String, Object> server = createServerMetadata();
+        getPackages(server).get(0).putAll(fields);
+        Path serverPath = createServerJson(server);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
+        assertThat(actual.getMessage(), is(expectedMessage));
+    }
+    
+    private static Stream<Arguments> assertExecuteRejectsPackageFieldsCases() {
+        return Stream.of(
+                Arguments.of("registry type", Map.of("registryType", "npm"), "MCP Registry package registryType must be oci."),
+                Arguments.of("identifier repository", Map.of("identifier", "ghcr.io/apache/other-mcp:5.5.4-SNAPSHOT"), "OCI identifier must target ghcr.io/apache/shardingsphere-mcp:<tag>."),
+                Arguments.of("identifier version", Map.of("identifier", "ghcr.io/apache/shardingsphere-mcp:5.5.3"), "OCI identifier tag must match the server version."),
+                Arguments.of("transport type", Map.of("transport", Map.of("type", "unsupported")), "MCP Registry package transport type must be stdio or streamable-http."),
+                Arguments.of("environment variables type", Map.of("environmentVariables", "invalid"), "MCP Registry package must define SHARDINGSPHERE_MCP_TRANSPORT."),
+                Arguments.of("missing config environment variable", Map.of("environmentVariables",
+                        List.of(Map.of("name", "SHARDINGSPHERE_MCP_TRANSPORT", "description", "Transport mode", "isRequired", false, "isSecret", false, "format", "string"))),
+                        "MCP Registry package must define SHARDINGSPHERE_MCP_CONFIG."));
+    }
+    
+    @Test
+    void assertExecuteRejectsEmptyRuntimeArguments() throws IOException {
+        Map<String, Object> server = createServerMetadata();
+        getPackages(server).get(1).put("runtimeArguments", List.of());
+        Path serverPath = createServerJson(server);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
+        assertThat(actual.getMessage(), is("streamable-http OCI package must define one Docker port runtime argument."));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertExecuteRejectsHttpUrlCases")
+    void assertExecuteRejectsHttpUrl(final String name, final Map<String, Object> transport, final String expectedMessage, final boolean expectedCause) throws IOException {
+        Map<String, Object> server = createServerMetadata();
+        getPackages(server).get(1).put("transport", transport);
+        Path serverPath = createServerJson(server);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> MCPRegistryMetadataCommand.execute("--path", serverPath.toString(), "--validate-only", "--allow-snapshot"));
+        assertThat(actual.getMessage(), is(expectedMessage));
+        assertThat(actual.getCause() instanceof URISyntaxException, is(expectedCause));
+    }
+    
+    private static Stream<Arguments> assertExecuteRejectsHttpUrlCases() {
+        return Stream.of(
+                Arguments.of("missing URL", Map.of("type", "streamable-http"), "streamable-http transport must define a URL.", false),
+                Arguments.of("unsupported scheme", Map.of("type", "streamable-http", "url", "ftp://127.0.0.1"), "streamable-http transport URL must be an HTTP URL.", false),
+                Arguments.of("invalid URI", Map.of("type", "streamable-http", "url", "http://["), "streamable-http transport URL must be an HTTP URL.", true));
     }
     
     @Test

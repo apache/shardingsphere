@@ -133,6 +133,7 @@ class FirebirdGenericResponsePacketTest {
         FirebirdPacket data = mock(FirebirdPacket.class);
         new FirebirdGenericResponsePacket().setData(data).setHandle(1).setId(2L).setErrorStatusVector(ex).write(payload);
         verify(data).write(payload);
+        verify(payload).writePadding(4);
         verify(payload, atLeastOnce()).writeInt4(ISCConstants.isc_arg_gds);
         verify(payload, atLeastOnce()).writeInt4(ISCConstants.isc_arg_string);
         verify(payload).writeString("foo_error");

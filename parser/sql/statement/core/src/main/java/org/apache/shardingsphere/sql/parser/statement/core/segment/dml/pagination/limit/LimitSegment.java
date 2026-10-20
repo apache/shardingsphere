@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginati
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
 
@@ -38,6 +39,15 @@ public final class LimitSegment implements SQLSegment {
     private final PaginationValueSegment offset;
     
     private final PaginationValueSegment rowCount;
+    
+    @Setter
+    private boolean withTies;
+    
+    /**
+     * Whether FETCH omits its row count and therefore defaults to one.
+     */
+    @Setter
+    private boolean implicitRowCount;
     
     /**
      * Get offset.

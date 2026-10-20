@@ -147,7 +147,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
             data.write(payload);
             int length = payload.getByteBuf().readableBytes() - index;
             payload.getByteBuf().setInt(index - 4, length);
-            payload.getByteBuf().writeBytes(new byte[(4 - length) & 3]);
+            payload.writePadding(length);
         } else {
             payload.writeInt4(0);
         }

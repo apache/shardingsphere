@@ -75,8 +75,7 @@ class ShardingRuleConfigurationTest {
     void assertValidateMultipleSchemasForSameDataSource() {
         ShardingRuleConfiguration ruleConfig = createRuleConfiguration(new ShardingTableRuleConfiguration("foo_tbl", "ds_0.foo_schema_${0..1}.foo_tbl_${0..1}"));
         InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
-        assertThat(actual.getMessage(), is("Invalid 'ShardingRuleConfiguration' rule, error message is: "
-                + "Property `tables[0].actualDataNodes` contains multiple schemas for storage unit `ds_0` in sharding table `foo_tbl`."));
+        assertThat(actual.getMessage(), is("Invalid 'ShardingRuleConfiguration' rule, error message is: Property `tables[0].actualDataNodes` contains multiple schemas for a storage unit."));
     }
     
     @Test
@@ -84,9 +83,24 @@ class ShardingRuleConfigurationTest {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration tableConfig = new ShardingTableRuleConfiguration("foo_tbl", "ds_0.foo_schema_${0..1}.foo_tbl_${0..1}");
         InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validateRuleItem(ruleConfig, tableConfig));
-        assertThat(actual.getMessage(), is("Invalid 'ShardingRuleConfiguration' rule, error message is: "
-                + "Property `actualDataNodes` contains multiple schemas for storage unit `ds_0` in sharding table `foo_tbl`."));
+        assertThat(actual.getMessage(), is("Invalid 'ShardingRuleConfiguration' rule, error message is: Property `actualDataNodes` contains multiple schemas for a storage unit."));
         assertTrue(ruleConfig.getTables().isEmpty());
+    }
+    
+    @Test
+    void assertValidateWithTemplateNames() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration(
+                new ShardingTableRuleConfiguration("foo_{message}", "<LITERAL>ds_{message}.foo_schema.foo_tbl_0,ds_{message}.bar_schema.foo_tbl_1"));
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'ShardingRuleConfiguration' rule, error message is: Property `tables[0].actualDataNodes` contains multiple schemas for a storage unit."));
+    }
+    
+    @Test
+    void assertValidateRuleItemWithTemplateNames() {
+        ShardingTableRuleConfiguration tableConfig = new ShardingTableRuleConfiguration("foo_{message}", "<LITERAL>ds_{message}.foo_schema.foo_tbl_0,ds_{message}.bar_schema.foo_tbl_1");
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class,
+                () -> RuleConfigurationValidator.validateRuleItem(new ShardingRuleConfiguration(), tableConfig));
+        assertThat(actual.getMessage(), is("Invalid 'ShardingRuleConfiguration' rule, error message is: Property `actualDataNodes` contains multiple schemas for a storage unit."));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -115,7 +129,7 @@ class ShardingRuleConfigurationTest {
     void assertValidateMalformedDataNodes() {
         ShardingRuleConfiguration ruleConfig = createRuleConfiguration(new ShardingTableRuleConfiguration("foo_tbl", "malformed"));
         RuleConfigurationValidationException actual = assertThrows(RuleConfigurationValidationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
-        assertThat(actual.getMessage(), is("Can not validate 'ShardingRuleConfiguration' rule configuration.\n"
+        assertThat(actual.getMessage(), is("Can not validate 'ShardingRuleConfiguration' rule configuration." + System.lineSeparator()
                 + "More details: javax.validation.ValidationException: org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException: "
                 + "Invalid format for actual data node 'malformed'."));
         assertThat(actual.getCause(), isA(ValidationException.class));
@@ -332,14 +346,14 @@ class ShardingRuleConfigurationTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidReferenceRuleConfigurationArguments")
-    void assertValidateInvalidReferenceRuleConfiguration(final String name, final ShardingRuleConfiguration ruleConfig) {
-        assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+    void assertValidateInvalidReferenceRuleConfiguration(final String name, final ShardingRuleConfiguration ruleConfig, final String expectedMessage) {
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'ShardingRuleConfiguration' rule, error message is: " + expectedMessage));
     }
     
     private static Stream<Arguments> invalidReferenceRuleConfigurationArguments() {
         ShardingRuleConfiguration unconfiguredTableDatabaseShardingAlgorithm = createValidRuleConfiguration();
-        unconfiguredTableDatabaseShardingAlgorithm.getTables().iterator().next()
-                .setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "bar_standard"));
+        unconfiguredTableDatabaseShardingAlgorithm.getTables().iterator().next().setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "foo_{message}"));
         ShardingRuleConfiguration unconfiguredTableShardingAlgorithm = createValidRuleConfiguration();
         unconfiguredTableShardingAlgorithm.getTables().iterator().next()
                 .setTableShardingStrategy(new ComplexShardingStrategyConfiguration("order_id,user_id", "bar_complex"));
@@ -350,30 +364,32 @@ class ShardingRuleConfigurationTest {
         ShardingRuleConfiguration unconfiguredDefaultTableShardingAlgorithm = createValidRuleConfiguration();
         unconfiguredDefaultTableShardingAlgorithm.setDefaultTableShardingStrategy(new ComplexShardingStrategyConfiguration("order_id,user_id", "bar_complex"));
         ShardingRuleConfiguration unconfiguredTableAuditor = createValidRuleConfiguration();
-        unconfiguredTableAuditor.getTables().iterator().next().setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("bar_auditor"), false));
+        unconfiguredTableAuditor.getTables().iterator().next().setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("foo_{message}"), false));
         ShardingRuleConfiguration unconfiguredAutoTableAuditor = createValidRuleConfiguration();
         unconfiguredAutoTableAuditor.getAutoTables().iterator().next().setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("bar_auditor"), false));
         ShardingRuleConfiguration unconfiguredDefaultAuditor = createValidRuleConfiguration();
         unconfiguredDefaultAuditor.setDefaultAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("bar_auditor"), false));
         ShardingRuleConfiguration unconfiguredDefaultKeyGenerator = createValidRuleConfiguration();
-        unconfiguredDefaultKeyGenerator.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "bar_key_generator"));
+        unconfiguredDefaultKeyGenerator.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "foo_{message}"));
         ShardingRuleConfiguration unconfiguredKeyGenerateStrategiesKeyGenerator = createValidRuleConfiguration();
-        unconfiguredKeyGenerateStrategiesKeyGenerator.getKeyGenerateStrategies().put(
-                "bar_column", new ColumnKeyGenerateStrategiesRuleConfiguration("bar_key_generator", "foo_tbl", "order_id"));
+        unconfiguredKeyGenerateStrategiesKeyGenerator.getKeyGenerateStrategies().put("foo_{message}", new ColumnKeyGenerateStrategiesRuleConfiguration("bar_{message}", "foo_tbl", "order_id"));
         ShardingRuleConfiguration unsupportedKeyGenerateStrategies = createValidRuleConfiguration();
-        unsupportedKeyGenerateStrategies.getKeyGenerateStrategies().put("bar_strategy", new UnsupportedKeyGenerateStrategiesConfiguration());
+        unsupportedKeyGenerateStrategies.getKeyGenerateStrategies().put("foo_{message}", new UnsupportedKeyGenerateStrategiesConfiguration());
         return Stream.of(
-                Arguments.of("Unconfigured table database sharding algorithm", unconfiguredTableDatabaseShardingAlgorithm),
-                Arguments.of("Unconfigured table sharding algorithm", unconfiguredTableShardingAlgorithm),
-                Arguments.of("Unconfigured auto table sharding algorithm", unconfiguredAutoTableShardingAlgorithm),
-                Arguments.of("Unconfigured default database sharding algorithm", unconfiguredDefaultDatabaseShardingAlgorithm),
-                Arguments.of("Unconfigured default table sharding algorithm", unconfiguredDefaultTableShardingAlgorithm),
-                Arguments.of("Unconfigured table auditor", unconfiguredTableAuditor),
-                Arguments.of("Unconfigured auto table auditor", unconfiguredAutoTableAuditor),
-                Arguments.of("Unconfigured default auditor", unconfiguredDefaultAuditor),
-                Arguments.of("Unconfigured default key generator", unconfiguredDefaultKeyGenerator),
-                Arguments.of("Unconfigured key generate strategies key generator", unconfiguredKeyGenerateStrategiesKeyGenerator),
-                Arguments.of("Unsupported key generate strategies type", unsupportedKeyGenerateStrategies));
+                Arguments.of("Unconfigured table database sharding algorithm", unconfiguredTableDatabaseShardingAlgorithm, "Property `tables` references an unconfigured sharding algorithm."),
+                Arguments.of("Unconfigured table sharding algorithm", unconfiguredTableShardingAlgorithm, "Property `tables` references an unconfigured sharding algorithm."),
+                Arguments.of("Unconfigured auto table sharding algorithm", unconfiguredAutoTableShardingAlgorithm, "Property `autoTables` references an unconfigured sharding algorithm."),
+                Arguments.of("Unconfigured default database sharding algorithm", unconfiguredDefaultDatabaseShardingAlgorithm,
+                        "Property `defaultDatabaseShardingStrategy` references an unconfigured sharding algorithm."),
+                Arguments.of("Unconfigured default table sharding algorithm", unconfiguredDefaultTableShardingAlgorithm,
+                        "Property `defaultTableShardingStrategy` references an unconfigured sharding algorithm."),
+                Arguments.of("Unconfigured table auditor", unconfiguredTableAuditor, "Property `tables` references an unconfigured auditor."),
+                Arguments.of("Unconfigured auto table auditor", unconfiguredAutoTableAuditor, "Property `autoTables` references an unconfigured auditor."),
+                Arguments.of("Unconfigured default auditor", unconfiguredDefaultAuditor, "Property `defaultAuditStrategy` references an unconfigured auditor."),
+                Arguments.of("Unconfigured default key generator", unconfiguredDefaultKeyGenerator, "Property `defaultKeyGenerateStrategy` references an unconfigured key generator."),
+                Arguments.of("Unconfigured key generate strategies key generator", unconfiguredKeyGenerateStrategiesKeyGenerator,
+                        "Property `keyGenerateStrategies` references an unconfigured key generator."),
+                Arguments.of("Unsupported key generate strategies type", unsupportedKeyGenerateStrategies, "Property `keyGenerateStrategies` must use column or sequence key generation."));
     }
     
     private static ShardingAutoTableRuleConfiguration createValidAutoTableRuleConfiguration() {

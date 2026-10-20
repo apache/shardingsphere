@@ -63,4 +63,10 @@ public final class ExpectedColumnDefinition extends AbstractExpectedSQLSegment {
     
     @XmlAttribute(name = "agg-type")
     private String aggType;
+    
+    @XmlAttribute(name = "charset-name")
+    private String charsetName;
+    
+    @XmlAttribute(name = "collate-name")
+    private String collateName;
 }

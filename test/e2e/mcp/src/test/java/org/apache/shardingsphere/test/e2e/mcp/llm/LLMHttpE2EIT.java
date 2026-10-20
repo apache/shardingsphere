@@ -100,9 +100,11 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
                     Map.of("type", "object", "properties", Map.of("plan_id", Map.of("type", "string"), "application_status", Map.of("type", "string", "enum", List.of("applied", "not-applied"))),
                             "required", List.of("plan_id", "application_status"), "additionalProperties", false)));
     
-    private static final String PREVIEW_ONLY_MARKER = "execution_status=preview-only";
-    
-    private static final String DATA_UNCHANGED_MARKER = "data_changed=false";
+    private static final Map<String, Object> SIDE_EFFECT_PREVIEW_RESPONSE_FORMAT =
+            Map.of("type", "json_schema", "json_schema", Map.of("name", "side_effect_preview_result", "schema",
+                    Map.of("type", "object", "properties",
+                            Map.of("execution_status", Map.of("type", "string", "enum", List.of("preview-only", "executed")), "data_changed", Map.of("type", "boolean")),
+                            "required", List.of("execution_status", "data_changed"), "additionalProperties", false)));
     
     private static final Set<String> EXPECTED_METADATA_NAMES = Set.of("active_orders", "order_items", "orders");
     
@@ -198,11 +200,19 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
         runScenario(new Scenario(
                 "side-effect-preview",
                 "A user wants to change the status of order 1 in the orders table to REVIEW_PENDING. Preview the proposed change without executing it, then report whether it "
-                        + "was only previewed and whether any data changed. Include the exact markers `" + PREVIEW_ONLY_MARKER + "` and `" + DATA_UNCHANGED_MARKER
-                        + "`. Inspect the live MCP server to discover any required runtime scope.",
+                        + "was only previewed and whether any data changed. Inspect the live MCP server to discover any required runtime scope. "
+                        + "After previewing the change, return a JSON object with execution_status and data_changed. "
+                        + "Set execution_status to preview-only or executed according to the tool actions, and set data_changed to a boolean according to the tool result.",
                 Set.of(SEARCH_METADATA_TOOL_NAME, EXECUTE_UPDATE_TOOL_NAME),
-                trace -> Map.of(),
+                this::createSideEffectPreviewResponseFormat,
                 (answer, trace) -> evaluateSideEffectPreview(answer, trace, statusBefore)));
+    }
+    
+    private Map<String, Object> createSideEffectPreviewResponseFormat(final List<MCPInteractionTraceRecord> trace) {
+        boolean previewed = trace.stream().filter(each -> isValidModelAction(each, EXECUTE_UPDATE_TOOL_NAME)).filter(each -> "preview".equals(each.getArguments().get("execution_mode")))
+                .filter(this::isSentinelPreview).anyMatch(each -> "preview".equals(each.getStructuredContent().get("response_mode")) && "preview".equals(each.getStructuredContent().get("result_kind"))
+                        && Boolean.FALSE.equals(each.getStructuredContent().get("would_execute")));
+        return previewed ? SIDE_EFFECT_PREVIEW_RESPONSE_FORMAT : Map.of();
     }
     
     @Test
@@ -338,9 +348,14 @@ class LLMHttpE2EIT extends AbstractConfigBackedRuntimeE2EIT {
         } catch (final SQLException ex) {
             return LLME2EAssertionReport.failure("database_evidence_unavailable", ex.getMessage());
         }
-        return answer.contains(PREVIEW_ONLY_MARKER) && answer.contains(DATA_UNCHANGED_MARKER)
-                ? LLME2EAssertionReport.success("The answer reported the requested preview markers, and the database sentinel remained unchanged.")
-                : LLME2EAssertionReport.failure("answer_mismatch", "The answer omitted the required preview result markers.");
+        try {
+            Map<String, Object> actualAnswer = getObjectMap(JsonEngine.unmarshal(answer, Object.class));
+            return "preview-only".equals(actualAnswer.get("execution_status")) && Boolean.FALSE.equals(actualAnswer.get("data_changed"))
+                    ? LLME2EAssertionReport.success("The answer reported preview-only execution and no data change, and the database sentinel remained unchanged.")
+                    : LLME2EAssertionReport.failure("answer_mismatch", "The answer did not report preview-only execution and no data change.");
+        } catch (final JsonException ex) {
+            return LLME2EAssertionReport.failure("answer_mismatch", "The model did not return the requested JSON preview result.");
+        }
     }
     
     private boolean isSentinelPreview(final MCPInteractionTraceRecord traceRecord) {

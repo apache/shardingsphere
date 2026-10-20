@@ -20,4 +20,7 @@
     <create-publication sql-case-id="create_publication" />
     <create-publication sql-case-id="create_publication_for_all_tables" />
     <create-publication sql-case-id="create_publication_with_statement" />
+    <create-publication sql-case-id="create_publication_row_filter_pg" />
+    <create-publication sql-case-id="create_publication_schema_pg" />
+    <create-publication sql-case-id="create_publication_all_except_pg" />
 </sql-parser-test-cases>

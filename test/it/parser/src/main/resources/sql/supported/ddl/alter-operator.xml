@@ -23,4 +23,12 @@
     <sql-case id="alter_operator_set_restrict_join" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = customcontsel, JOIN = contjoinsel);" db-types="PostgreSQL" />
     <sql-case id="alter_operator_compile" value="ALTER OPERATOR eq_op COMPILE;" db-types="Oracle" />
     <sql-case id="alter_operator_add_binding_return_number_using" value="ALTER OPERATOR Contains ADD BINDING (music.artist, music.artist) RETURN NUMBER USING music.contains" db-types="Oracle" />
+    <sql-case id="alter_operator_class_owner_pg" value="ALTER OPERATOR CLASS foo_class USING btree OWNER TO foo_user" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_class_rename_pg" value="ALTER OPERATOR CLASS foo_class USING btree RENAME TO bar_class" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_class_schema_pg" value="ALTER OPERATOR CLASS foo_class USING btree SET SCHEMA foo_schema" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_family_owner_pg" value="ALTER OPERATOR FAMILY foo_family USING hash OWNER TO foo_user" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_family_rename_pg" value="ALTER OPERATOR FAMILY foo_family USING btree RENAME TO bar_family" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_family_schema_pg" value="ALTER OPERATOR FAMILY foo_family USING btree SET SCHEMA foo_schema" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_family_add_pg" value="ALTER OPERATOR FAMILY foo_family USING btree ADD OPERATOR 1 &lt; (integer, integer), FUNCTION 1 btint4cmp(integer, integer)" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_family_drop_pg" value="ALTER OPERATOR FAMILY foo_family USING btree DROP OPERATOR 1 (integer, integer), FUNCTION 1 (integer, integer)" db-types="PostgreSQL" />
 </sql-cases>

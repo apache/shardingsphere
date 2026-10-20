@@ -101,4 +101,14 @@
     <sql-case id="create_index_doris_full_syntax" value="CREATE INDEX IF NOT EXISTS index1 ON table1 (column1) USING INVERTED PROPERTIES ('parser' = 'standard') COMMENT 'full syntax'" db-types="Doris" />
     <sql-case id="create_index_with_domain_index_type" value="CREATE INDEX doc_idx on docs(document) indextype is ctxsys.context FILTER BY category, author ORDER BY pub_date desc, docid PARAMETERS ('memory 500M')" db-types="Oracle" />
     <sql-case id="create_index_with_indextype_and_parameters" value="CREATE INDEX Test_indx ON Test_tab(col_a) INDEXTYPE IS indtype PARAMETERS('example')" db-types="Oracle" />
+    <sql-case id="create_index_empty_function_pg" value="CREATE INDEX foo_idx ON foo_table (foo())" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="create_index_common_function_pg" value="CREATE INDEX foo_idx ON foo_table (coalesce(a, 0), lower(b))" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="create_index_cast_expression_pg" value="CREATE INDEX foo_idx ON foo_table (CAST(a AS integer))" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="create_index_nested_cast_pg" value="CREATE INDEX foo_idx ON foo_table (CAST(CAST(a AS integer) AS bigint))" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="create_index_function_cast_pg" value="CREATE INDEX foo_idx ON foo_table (coalesce(CAST(a AS integer), 0))" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="create_index_cast_binary_pg" value="CREATE INDEX foo_idx ON foo_table (CAST(a + CAST(b AS integer) AS integer))" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="create_index_nested_function_cast_pg" value="CREATE INDEX foo_idx ON foo_table (coalesce(abs(CAST(b AS integer)), CAST(a AS integer), b))" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="create_index_array_subscript_function_pg" value="CREATE INDEX foo_idx ON foo_table (abs(a[1]))" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="create_index_nulls_distinct_pg" value="CREATE UNIQUE INDEX idx ON foo_table (a) INCLUDE (b) NULLS DISTINCT" db-types="PostgreSQL" />
+    <sql-case id="create_index_nulls_not_distinct_pg" value="CREATE UNIQUE INDEX idx ON foo_table (a) NULLS NOT DISTINCT" db-types="PostgreSQL" />
 </sql-cases>
