@@ -27,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
@@ -41,7 +40,6 @@ class FirebirdDatabaseInfoExecutorTest {
     
     @Test
     void assertExecute() {
-        when(packet.getInfoItems()).thenReturn(Collections.emptyList());
         FirebirdDatabaseInfoExecutor executor = new FirebirdDatabaseInfoExecutor(packet);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
