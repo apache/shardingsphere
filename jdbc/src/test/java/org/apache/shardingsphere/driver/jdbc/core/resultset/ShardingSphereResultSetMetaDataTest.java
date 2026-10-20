@@ -19,9 +19,13 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -30,6 +34,11 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -49,13 +58,18 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,6 +90,65 @@ import static org.mockito.Mockito.when;
 class ShardingSphereResultSetMetaDataTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("metadataReexecutions")
+    void assertMetadataAfterPreparedStatementReexecution(final String name, final int firstRoute, final int secondRoute, final String projection, final String[] expectedLabels) throws SQLException {
+        JdbcDataSource backend = new JdbcDataSource();
+        backend.setURL("jdbc:h2:mem:foo_metadata_reexecution;MODE=MySQL;DATABASE_TO_UPPER=false");
+        try (Connection backendConnection = backend.getConnection(); Statement backendStatement = backendConnection.createStatement()) {
+            backendStatement.execute("CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT)");
+            backendStatement.execute("CREATE TABLE t_order_1 (order_id INT PRIMARY KEY, user_id INT)");
+            backendStatement.execute("INSERT INTO t_order_0 VALUES (0, 8)");
+            backendStatement.execute("INSERT INTO t_order_1 VALUES (1, 9)");
+            ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
+            ShardingTableRuleConfiguration tableRule = new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..1}");
+            tableRule.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "foo_inline"));
+            rule.getTables().add(tableRule);
+            rule.getShardingAlgorithms().put("foo_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
+            try (
+                    ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
+                            Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties());
+                    Connection connection = dataSource.getConnection();
+                    PreparedStatement statement = connection.prepareStatement(String.format("SELECT %s FROM t_order WHERE order_id IN (?, ?) ORDER BY order_id", projection))) {
+                if ("*".equals(projection)) {
+                    backendStatement.execute("ALTER TABLE t_order_0 ADD add_test INT DEFAULT 99 BEFORE user_id");
+                    backendStatement.execute("ALTER TABLE t_order_1 ADD add_test INT DEFAULT 99 BEFORE user_id");
+                }
+                statement.setInt(1, 0);
+                statement.setInt(2, firstRoute);
+                ResultSetMetaData actual = statement.executeQuery().getMetaData();
+                statement.setInt(1, 0);
+                statement.setInt(2, secondRoute);
+                ResultSet current = statement.executeQuery();
+                assertThat(actual.getColumnCount(), is(expectedLabels.length));
+                for (int columnIndex = 1; columnIndex <= expectedLabels.length; columnIndex++) {
+                    assertThat(actual.getColumnName(columnIndex), is(expectedLabels[columnIndex - 1]));
+                    assertThat(actual.getColumnLabel(columnIndex), is(expectedLabels[columnIndex - 1]));
+                }
+                assertThrows(SQLException.class, () -> actual.getColumnLabel(expectedLabels.length + 1));
+                ResultSetMetaData actualCurrentMetadata = current.getMetaData();
+                assertThat(actualCurrentMetadata.getColumnCount(), is(expectedLabels.length));
+                for (int columnIndex = 1; columnIndex <= expectedLabels.length; columnIndex++) {
+                    assertThat(actualCurrentMetadata.getColumnLabel(columnIndex), is(expectedLabels[columnIndex - 1]));
+                }
+                assertThat(current.findColumn(expectedLabels[expectedLabels.length - 1]), is(expectedLabels.length));
+                assertTrue(current.next());
+                assertThat(current.getInt(expectedLabels[expectedLabels.length - 1]), is(8));
+                current.close();
+            }
+        }
+    }
+    
+    private static Collection<Arguments> metadataReexecutions() {
+        return Arrays.asList(
+                Arguments.of("multiple to single route", 1, 0, "user_id", new String[]{"user_id"}),
+                Arguments.of("single to multiple routes", 0, 1, "user_id", new String[]{"user_id"}),
+                Arguments.of("multiple to multiple routes", 1, 1, "user_id", new String[]{"user_id"}),
+                Arguments.of("explicit alias", 1, 0, "user_id AS foo_user", new String[]{"foo_user"}),
+                Arguments.of("derived-like alias", 1, 0, "user_id AS ORDER_BY_DERIVED_9", new String[]{"ORDER_BY_DERIVED_9"}),
+                Arguments.of("wildcard schema drift", 1, 0, "*", new String[]{"order_id", "add_test", "user_id"}));
+    }
     
     @Test
     void assertGetTableNameWithNullDatabase() throws SQLException {
@@ -367,8 +440,8 @@ class ShardingSphereResultSetMetaDataTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("aggregationDistinctColumns")
-    void assertAggregationDistinctMetadataWithSchemaDrift(final String name, final AggregationType type, final String alias,
-                                                          final String returnedLabel, final String expectedLabel) throws SQLException {
+    void assertAggregationDistinctMetadataWithSchemaDriftAfterRewriteStateReset(final String name, final AggregationType type, final String alias,
+                                                                                final String returnedLabel, final String expectedLabel) throws SQLException {
         AggregationDistinctProjectionSegment aggregation = new AggregationDistinctProjectionSegment(0, 0, type, type.name() + "(DISTINCT user_id)", "user_id");
         if (!alias.isEmpty()) {
             aggregation.setAlias(new AliasSegment(0, 0, new IdentifierValue(alias)));
@@ -393,6 +466,8 @@ class ShardingSphereResultSetMetaDataTest {
         when(returnedMetadata.getColumnName(2)).thenReturn("add_test");
         when(returnedMetadata.getColumnName(3)).thenReturn("user_id");
         ShardingSphereResultSetMetaData actual = new ShardingSphereResultSetMetaData(returnedMetadata, null, context);
+        context.getProjectionsContext().setDerivedColumnsAppended(false);
+        context.getProjectionsContext().setAggregationDistinctColumnsRewritten(false);
         assertThat(actual.getColumnCount(), is(4));
         String[] expected = {"order_id", "add_test", "user_id", expectedLabel};
         for (int columnIndex = 1; columnIndex <= expected.length; columnIndex++) {
