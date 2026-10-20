@@ -837,7 +837,10 @@ def validate_session(session: Any) -> list[str]:
             source_versions = {}
         source_versions.update(pair_versions)
         previous_identity = identity
-    if len(session["rounds"]) - current_start < 2:
+    current_pairs = len(session["rounds"]) - current_start
+    if current_pairs > 3:
+        errors.append("The current review basis exceeds six independent original assessments")
+    if current_pairs < 2:
         errors.append("The current review basis requires at least two consecutive independent pairs")
     for index, record in enumerate(records):
         ledger = record["ledger"]
@@ -902,8 +905,9 @@ def validate_session(session: Any) -> list[str]:
                             frozenset((each["id"], each["status"], each["classification"]) for each in final_groups)))
     if any(each["status"] == "candidate" for each in final_groups):
         errors.append("Result-review candidates remain unresolved")
-    if len(session["rounds"]) - current_start >= 2 and assessments[-2] != assessments[-1]:
-        errors.append("The latest complete adjudication differs from the previous round; obtain a fresh independent pair")
+    if current_pairs >= 2 and assessments[-2] != assessments[-1]:
+        action = "obtain a fresh independent pair" if current_pairs < 3 else "stop and report Review Status: Not Converged"
+        errors.append("The latest complete adjudication differs from the previous round; " + action)
     if (session["result"], session["feedback_mode"]) != assessments[-1][:2]:
         errors.append("The final decision contradicts the latest complete adjudication")
     expected = (session["result"], session["feedback_mode"], confirmed, gaps)
