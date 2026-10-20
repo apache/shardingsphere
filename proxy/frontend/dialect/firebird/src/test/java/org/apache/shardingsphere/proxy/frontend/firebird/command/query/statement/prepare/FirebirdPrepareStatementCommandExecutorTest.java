@@ -56,24 +56,32 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -141,7 +149,10 @@ class FirebirdPrepareStatementCommandExecutorTest {
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(parserRule));
         ShardingSphereColumn column = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
         ShardingSphereColumn blobColumn = new ShardingSphereColumn("content", Types.BLOB, false, false, true, true, false, true);
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(column, blobColumn), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereColumn bigintColumn = new ShardingSphereColumn("foo_bigint", Types.BIGINT, false, false, true, true, false, true);
+        ShardingSphereColumn smallintColumn = new ShardingSphereColumn("foo_smallint", Types.SMALLINT, false, false, true, true, false, true);
+        ShardingSphereColumn dateColumn = new ShardingSphereColumn("foo_date", Types.DATE, false, false, true, true, false, true);
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(column, blobColumn, bigintColumn, smallintColumn, dateColumn), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList());
         ShardingSphereDatabase database = spy(new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
@@ -155,24 +166,31 @@ class FirebirdPrepareStatementCommandExecutorTest {
     
     @Test
     void assertDescribeArithmeticOfIntegerColumns() throws Exception {
-        when(packet.getSQL()).thenReturn("SELECT id + 1, id * 2, id / 2, id || 'x' FROM foo_tbl");
-        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
-        when(packet.getCurrentItem()).thenReturn(
-                FirebirdSQLInfoPacketType.STMT_TYPE,
-                FirebirdSQLInfoPacketType.SELECT,
-                FirebirdSQLInfoPacketType.TYPE,
-                FirebirdSQLInfoPacketType.TYPE,
-                FirebirdSQLInfoPacketType.FIELD,
-                FirebirdSQLInfoPacketType.FIELD,
-                FirebirdSQLInfoPacketType.DESCRIBE_END,
-                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        List<FirebirdReturnColumnPacket> actual = describeSelect("SELECT id + 1, id * 2, id / 2, id || 'x' FROM foo_tbl", FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.FIELD);
+        assertThat(actual.size(), is(4));
+        assertArithmeticColumn(actual.get(0), FirebirdBinaryColumnType.INT64, "ADD");
+        assertArithmeticColumn(actual.get(1), FirebirdBinaryColumnType.INT64, "MULTIPLY");
+        assertArithmeticColumn(actual.get(2), FirebirdBinaryColumnType.INT64, "DIVIDE");
+        assertArithmeticColumn(actual.get(3), FirebirdBinaryColumnType.VARYING, "CONCATENATION");
+    }
+    
+    private List<FirebirdReturnColumnPacket> describeSelect(final String sql, final FirebirdSQLInfoPacketType... describeItems) throws SQLException {
+        when(packet.getSQL()).thenReturn(sql);
+        Boolean[] nextItems = new Boolean[describeItems.length + 4];
+        Arrays.fill(nextItems, Boolean.TRUE);
+        nextItems[nextItems.length - 1] = Boolean.FALSE;
+        when(packet.nextItem()).thenReturn(Boolean.TRUE, nextItems);
+        List<FirebirdSQLInfoPacketType> currentItems = new LinkedList<>();
+        currentItems.add(FirebirdSQLInfoPacketType.SELECT);
+        for (FirebirdSQLInfoPacketType each : describeItems) {
+            currentItems.add(each);
+            currentItems.add(each);
+        }
+        currentItems.add(FirebirdSQLInfoPacketType.DESCRIBE_END);
+        currentItems.add(FirebirdSQLInfoPacketType.DESCRIBE_END);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, currentItems.toArray(new FirebirdSQLInfoPacketType[0]));
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
-        FirebirdPrepareStatementReturnPacket actual = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
-        assertThat(actual.getDescribeSelect().size(), is(4));
-        assertArithmeticColumn(actual.getDescribeSelect().get(0), FirebirdBinaryColumnType.INT64, "ADD");
-        assertArithmeticColumn(actual.getDescribeSelect().get(1), FirebirdBinaryColumnType.INT64, "MULTIPLY");
-        assertArithmeticColumn(actual.getDescribeSelect().get(2), FirebirdBinaryColumnType.INT64, "DIVIDE");
-        assertArithmeticColumn(actual.getDescribeSelect().get(3), FirebirdBinaryColumnType.VARYING, "CONCATENATION");
+        return ((FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData()).getDescribeSelect();
     }
     
     private void assertArithmeticColumn(final FirebirdReturnColumnPacket columnPacket, final FirebirdBinaryColumnType expectedType, final String expectedName) {
@@ -181,6 +199,39 @@ class FirebirdPrepareStatementCommandExecutorTest {
         columnPacket.write(payload);
         verify(payload).writeInt4LE(expectedType.getValue() + 1);
         verify(payload).writeBytes(expectedName.getBytes(StandardCharsets.UTF_8));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("arithmeticExpressionArguments")
+    void assertDescribeArithmeticExpression(final String name, final String sql, final FirebirdBinaryColumnType expectedType, final String expectedName) throws Exception {
+        List<FirebirdReturnColumnPacket> actual = describeSelect(sql, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.FIELD);
+        assertThat(actual.size(), is(1));
+        assertArithmeticColumn(actual.get(0), expectedType, expectedName);
+    }
+    
+    @Test
+    void assertDescribeArithmeticOfSystemTableColumn() throws Exception {
+        ShardingSphereColumn fieldPositionColumn = new ShardingSphereColumn("RDB$FIELD_POSITION", Types.SMALLINT, false, false, false, true, false, true);
+        ShardingSphereTable relationFieldsTable = new ShardingSphereTable("RDB$RELATION_FIELDS", Collections.singleton(fieldPositionColumn), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema systemSchema = new ShardingSphereSchema("system_tables", databaseType, Collections.singleton(relationFieldsTable), Collections.emptyList());
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("foo_db");
+        doReturn(true).when(database).containsSchema(new IdentifierValue("system_tables"));
+        doReturn(systemSchema).when(database).getSchema(new IdentifierValue("system_tables"));
+        List<FirebirdReturnColumnPacket> actual = describeSelect("SELECT RDB$FIELD_POSITION + 1 FROM RDB$RELATION_FIELDS", FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.FIELD);
+        assertThat(actual.size(), is(1));
+        assertArithmeticColumn(actual.get(0), FirebirdBinaryColumnType.INT64, "ADD");
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("derivedTableArguments")
+    void assertDescribeDerivedTableColumnType(final String name, final String sql, final List<FirebirdBinaryColumnType> expectedTypes) throws Exception {
+        List<FirebirdReturnColumnPacket> actual = describeSelect(sql, FirebirdSQLInfoPacketType.TYPE);
+        assertThat(actual.size(), is(expectedTypes.size()));
+        for (int i = 0; i < expectedTypes.size(); i++) {
+            FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+            actual.get(i).write(payload);
+            verify(payload).writeInt4LE(expectedTypes.get(i).getValue() + 1);
+        }
     }
     
     @Test
@@ -316,5 +367,31 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         executor.execute();
         verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(1));
+    }
+    
+    private static Stream<Arguments> arithmeticExpressionArguments() {
+        return Stream.of(
+                Arguments.of("subtract integer column", "SELECT id - 1 FROM foo_tbl", FirebirdBinaryColumnType.INT64, "SUBTRACT"),
+                Arguments.of("add bigint and integer columns", "SELECT foo_bigint + id FROM foo_tbl", FirebirdBinaryColumnType.INT64, "ADD"),
+                Arguments.of("subtract bigint columns", "SELECT foo_bigint - foo_bigint FROM foo_tbl", FirebirdBinaryColumnType.INT64, "SUBTRACT"),
+                Arguments.of("add smallint column", "SELECT foo_smallint + 1 FROM foo_tbl", FirebirdBinaryColumnType.INT64, "ADD"),
+                Arguments.of("add literals", "SELECT 1 + 2 FROM foo_tbl", FirebirdBinaryColumnType.INT64, "ADD"),
+                Arguments.of("add literal beyond integer", "SELECT id + 2147483648 FROM foo_tbl", FirebirdBinaryColumnType.INT64, "ADD"),
+                Arguments.of("multiply integer column by maximum integer", "SELECT id * 2147483647 FROM foo_tbl", FirebirdBinaryColumnType.INT64, "MULTIPLY"),
+                Arguments.of("multiply smallint and integer columns", "SELECT foo_smallint * id FROM foo_tbl", FirebirdBinaryColumnType.INT64, "MULTIPLY"),
+                Arguments.of("divide literals", "SELECT 6 / 3 FROM foo_tbl", FirebirdBinaryColumnType.INT64, "DIVIDE"),
+                Arguments.of("nested addition", "SELECT id + 1 + 2 FROM foo_tbl", FirebirdBinaryColumnType.INT64, "ADD"),
+                Arguments.of("multiplication inside subtraction", "SELECT (id * 2) - 1 FROM foo_tbl", FirebirdBinaryColumnType.INT64, "SUBTRACT"),
+                Arguments.of("subtract date columns", "SELECT foo_date - foo_date FROM foo_tbl", FirebirdBinaryColumnType.LONG, "SUBTRACT"));
+    }
+    
+    private static Stream<Arguments> derivedTableArguments() {
+        return Stream.of(
+                Arguments.of("literal over derived arithmetic", "SELECT 1 FROM (SELECT id + 1 AS x FROM foo_tbl) d", Collections.singletonList(FirebirdBinaryColumnType.LONG)),
+                Arguments.of("derived arithmetic column", "SELECT x FROM (SELECT id + 1 AS x FROM foo_tbl) d", Collections.singletonList(FirebirdBinaryColumnType.INT64)),
+                Arguments.of("all columns of derived arithmetic", "SELECT * FROM (SELECT id + 1 AS x FROM foo_tbl) d", Collections.singletonList(FirebirdBinaryColumnType.INT64)),
+                Arguments.of("derived arithmetic column and literal", "SELECT x, 1 FROM (SELECT id + 1 AS x FROM foo_tbl) d",
+                        Arrays.asList(FirebirdBinaryColumnType.INT64, FirebirdBinaryColumnType.LONG)),
+                Arguments.of("arithmetic over derived arithmetic column", "SELECT x + 1 FROM (SELECT id + 1 AS x FROM foo_tbl) d", Collections.singletonList(FirebirdBinaryColumnType.INT64)));
     }
 }

@@ -96,7 +96,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Locale;
-import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalInt;
 
 /**
@@ -242,7 +242,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         String databaseName = connectionSession.getCurrentDatabaseName();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         ShardingSphereSchema schema = database.findDefaultSchema().orElse(null);
-        Collection<Projection> projections = getProjections(sqlStatementContext, schema);
+        Collection<Projection> derivedTableProjections = getDerivedTableProjections(sqlStatementContext);
+        Collection<Projection> projections = getProjections(sqlStatementContext, schema, derivedTableProjections);
         int columnCount = 0;
         for (Projection each : projections) {
             if (each instanceof ColumnProjection) {
@@ -255,7 +256,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) each).getOriginalColumn().getValue());
                 processColumn(describeColumns, requestedItems, table, column, ((ColumnProjection) each).getOwner().orElse(null), each.getAlias().orElse(null), ++columnCount);
             } else if (each instanceof ExpressionProjection) {
-                processExpressionProjection((ExpressionProjection) each, describeColumns, requestedItems, ++columnCount);
+                processExpressionProjection((ExpressionProjection) each, derivedTableProjections, describeColumns, requestedItems, ++columnCount);
             } else if (each instanceof AggregationProjection) {
                 String functionName = ((AggregationProjection) each).getType().name();
                 processCustomColumn(null, functionName, each.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, ++columnCount);
@@ -266,24 +267,30 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
-    private Collection<Projection> getProjections(final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema) {
+    @HighFrequencyInvocation
+    private Collection<Projection> getDerivedTableProjections(final SQLStatementContext sqlStatementContext) {
+        if (!(sqlStatementContext instanceof SelectStatementContext)) {
+            return Collections.emptyList();
+        }
+        TableSegment from = ((SelectStatement) sqlStatementContext.getSqlStatement()).getFrom().orElse(null);
+        if (!(from instanceof SubqueryTableSegment)) {
+            return Collections.emptyList();
+        }
+        SelectStatementContext derivedTable = ((SelectStatementContext) sqlStatementContext).getSubqueryContexts().get(((SubqueryTableSegment) from).getSubquery().getStartIndex());
+        return null == derivedTable ? Collections.emptyList() : derivedTable.getProjectionsContext().getExpandProjections();
+    }
+    
+    private Collection<Projection> getProjections(final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final Collection<Projection> derivedTableProjections) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            SelectStatementContext selectStatement = (SelectStatementContext) sqlStatementContext;
-            Collection<Projection> expandProjections = selectStatement.getProjectionsContext().getExpandProjections();
-            Map<Integer, SelectStatementContext> subquery = selectStatement.getSubqueryContexts();
-            if (subquery.isEmpty()) {
+            Collection<Projection> expandProjections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
+            if (derivedTableProjections.isEmpty()) {
                 return expandProjections;
             }
-            // workaround for SubqueryTableBindUtils transform Expression and Aggregation projections to Column projection
-            TableSegment from = ((SelectStatement) sqlStatementContext.getSqlStatement()).getFrom().orElse(null);
-            if (!(from instanceof SubqueryTableSegment)) {
-                return expandProjections;
+            Collection<Projection> result = new LinkedList<>();
+            for (Projection each : expandProjections) {
+                result.add(each instanceof ColumnProjection ? findDerivedTableProjection((ColumnProjection) each, derivedTableProjections).orElse(each) : each);
             }
-            Collection<Projection> subqueryProjections = new LinkedList<>();
-            for (SelectStatementContext value : subquery.values()) {
-                subqueryProjections.addAll(value.getProjectionsContext().getExpandProjections());
-            }
-            return subqueryProjections;
+            return result;
         }
         if (null == returningSegment) {
             return Collections.emptyList();
@@ -300,6 +307,19 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             }
         }
         return result;
+    }
+    
+    @HighFrequencyInvocation
+    private Optional<Projection> findDerivedTableProjection(final ColumnProjection projection, final Collection<Projection> derivedTableProjections) {
+        if (!projection.getOriginalTable().getValue().isEmpty()) {
+            return Optional.empty();
+        }
+        for (Projection each : derivedTableProjections) {
+            if (each.getColumnLabel().equalsIgnoreCase(projection.getOriginalColumn().getValue())) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
     private Collection<Projection> processShorthandProjection(final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final ShorthandProjection projection) {
@@ -407,15 +427,15 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return false;
     }
     
-    private void processExpressionProjection(final ExpressionProjection expr, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,
-                                             final int columnCount) {
+    private void processExpressionProjection(final ExpressionProjection expr, final Collection<Projection> derivedTableProjections, final Collection<FirebirdReturnColumnPacket> describeColumns,
+                                             final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
         ExpressionSegment exprSegment = expr.getExpressionSegment().getExpr();
         if (exprSegment instanceof FunctionSegment) {
             String functionName = ((FunctionSegment) exprSegment).getFunctionName();
             processCustomColumn(null, functionName, expr.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, columnCount);
         } else if (exprSegment instanceof BinaryOperationExpression) {
             String operationName = getOperationName(((BinaryOperationExpression) exprSegment).getOperator());
-            int operationType = getOperationType((BinaryOperationExpression) exprSegment);
+            int operationType = getOperationType((BinaryOperationExpression) exprSegment, derivedTableProjections);
             processCustomColumn(null, operationName, expr.getAlias().orElse(null), operationType, describeColumns, requestedItems, columnCount);
         } else if (exprSegment instanceof LiteralExpressionSegment) {
             Object value = ((LiteralExpressionSegment) exprSegment).getLiterals();
@@ -469,19 +489,19 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     @HighFrequencyInvocation
-    private int getOperationType(final BinaryOperationExpression expr) {
+    private int getOperationType(final BinaryOperationExpression expr, final Collection<Projection> derivedTableProjections) {
         if ("||".equals(expr.getOperator())) {
             return 12;
         }
-        return Long.SIZE == getArithmeticResultWidth(expr) ? Types.BIGINT : 4;
+        return Long.SIZE == getArithmeticResultWidth(expr, derivedTableProjections) ? Types.BIGINT : 4;
     }
     
-    private int getArithmeticResultWidth(final BinaryOperationExpression expr) {
+    private int getArithmeticResultWidth(final BinaryOperationExpression expr, final Collection<Projection> derivedTableProjections) {
         if (!isArithmeticOperator(expr.getOperator())) {
             return 0;
         }
-        int leftWidth = getIntegerWidth(expr.getLeft());
-        int rightWidth = getIntegerWidth(expr.getRight());
+        int leftWidth = getIntegerWidth(expr.getLeft(), derivedTableProjections);
+        int rightWidth = getIntegerWidth(expr.getRight(), derivedTableProjections);
         if (0 == leftWidth || 0 == rightWidth) {
             return 0;
         }
@@ -493,7 +513,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return "+".equals(operator) || "-".equals(operator) || "*".equals(operator) || "/".equals(operator);
     }
     
-    private int getIntegerWidth(final ExpressionSegment expr) {
+    private int getIntegerWidth(final ExpressionSegment expr, final Collection<Projection> derivedTableProjections) {
         if (expr instanceof LiteralExpressionSegment) {
             Object value = ((LiteralExpressionSegment) expr).getLiterals();
             if (value instanceof Integer) {
@@ -502,13 +522,25 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             return value instanceof Long ? Long.SIZE : 0;
         }
         if (expr instanceof BinaryOperationExpression) {
-            return getArithmeticResultWidth((BinaryOperationExpression) expr);
+            return getArithmeticResultWidth((BinaryOperationExpression) expr, derivedTableProjections);
         }
         if (expr instanceof ColumnSegment) {
-            ShardingSphereColumn column = findColumn((ColumnSegment) expr);
-            return null == column ? 0 : getIntegerTypeWidth(column.getDataType());
+            return getColumnWidth((ColumnSegment) expr, derivedTableProjections);
         }
         return 0;
+    }
+    
+    private int getColumnWidth(final ColumnSegment columnSegment, final Collection<Projection> derivedTableProjections) {
+        if (columnSegment.getColumnBoundInfo().getOriginalTable().getValue().isEmpty()) {
+            for (Projection each : derivedTableProjections) {
+                if (each instanceof ExpressionProjection && each.getColumnLabel().equalsIgnoreCase(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue())) {
+                    return getIntegerWidth(((ExpressionProjection) each).getExpressionSegment().getExpr(), Collections.emptyList());
+                }
+            }
+            return 0;
+        }
+        ShardingSphereColumn column = findColumn(columnSegment);
+        return null == column ? 0 : getIntegerTypeWidth(column.getDataType());
     }
     
     @Nullable
