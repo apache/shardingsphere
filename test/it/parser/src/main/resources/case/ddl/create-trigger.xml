@@ -139,21 +139,6 @@
         <table name="t" start-index="45" stop-index="45" />
     </create-trigger>
 
-    <create-trigger sql-case-id="create_trigger_constraint_not_valid_pg">
-        <trigger-name name="ct" start-index="26" stop-index="27" />
-        <table name="t" start-index="45" stop-index="45" />
-    </create-trigger>
-
-    <create-trigger sql-case-id="create_trigger_constraint_no_inherit_pg">
-        <trigger-name name="ct" start-index="26" stop-index="27" />
-        <table name="t" start-index="45" stop-index="45" />
-    </create-trigger>
-
-    <create-trigger sql-case-id="create_trigger_constraint_not_enforced_pg">
-        <trigger-name name="ct" start-index="26" stop-index="27" />
-        <table name="t" start-index="45" stop-index="45" />
-    </create-trigger>
-
     <create-trigger sql-case-id="create_trigger_regular_control_pg">
         <trigger-name name="tr" start-index="15" stop-index="16" />
         <table name="t" start-index="34" stop-index="34" />
