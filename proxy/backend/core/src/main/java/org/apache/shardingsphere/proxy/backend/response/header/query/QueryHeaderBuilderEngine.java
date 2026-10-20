@@ -99,12 +99,16 @@ public final class QueryHeaderBuilderEngine {
         if (!(sqlStatementContext instanceof SelectStatementContext) || !((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
             return null;
         }
+        if (((SelectStatementContext) sqlStatementContext).getProjectionsContext().containsUnexpandedShorthandProjection()) {
+            return null;
+        }
         checkColumnIndex(sqlStatementContext, columnIndex);
         return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(columnIndex - 1);
     }
-    
+
     private void checkColumnIndex(final SQLStatementContext sqlStatementContext, final int columnIndex) {
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
+        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()
+                && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().containsUnexpandedShorthandProjection()) {
             ShardingSpherePreconditions.checkState(columnIndex <= ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size(),
                     () -> new ColumnIndexOutOfRangeException(columnIndex));
         }
