@@ -35,20 +35,22 @@ public final class FirebirdInt16BinaryProtocolValue implements FirebirdBinaryPro
     @Override
     public void write(final FirebirdPacketPayload payload, final Object value) {
         if (value instanceof BigDecimal) {
-            byte[] int16 = ((BigDecimal) value).toBigInteger().toByteArray();
-            payload.getByteBuf().writeZero(16 - int16.length);
-            payload.getByteBuf().writeBytes(int16);
+            writeInt128(payload, ((BigDecimal) value).toBigInteger());
         } else if (value instanceof Integer) {
             payload.getByteBuf().writeZero(12);
             payload.writeInt4((Integer) value);
         } else if (value instanceof BigInteger) {
-            byte[] int16 = ((BigInteger) value).toByteArray();
-            payload.getByteBuf().writeZero(16 - int16.length);
-            payload.getByteBuf().writeBytes(int16);
+            writeInt128(payload, (BigInteger) value);
         } else {
             payload.getByteBuf().writeZero(8);
             payload.writeInt8((Long) value);
         }
+    }
+    
+    private void writeInt128(final FirebirdPacketPayload payload, final BigInteger value) {
+        byte[] int16 = value.toByteArray();
+        payload.getByteBuf().writeZero(16 - int16.length);
+        payload.getByteBuf().writeBytes(int16);
     }
     
     @Override

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
@@ -28,12 +27,12 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
  * Firebird prepare statement return data packet.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 public final class FirebirdPrepareStatementReturnPacket extends FirebirdPacket {
@@ -47,17 +46,17 @@ public final class FirebirdPrepareStatementReturnPacket extends FirebirdPacket {
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         writeInt(FirebirdSQLInfoPacketType.STMT_TYPE, type.getCode(), payload);
-        writeCode(FirebirdSQLInfoPacketType.SELECT, payload);
-        writeInt(FirebirdSQLInfoPacketType.DESCRIBE_VARS, describeSelect.size(), payload);
-        for (FirebirdReturnColumnPacket column : describeSelect) {
-            column.write(payload);
-        }
-        writeCode(FirebirdSQLInfoPacketType.BIND, payload);
-        writeInt(FirebirdSQLInfoPacketType.DESCRIBE_VARS, describeBind.size(), payload);
-        for (FirebirdReturnColumnPacket column : describeBind) {
-            column.write(payload);
-        }
+        writeDescribe(FirebirdSQLInfoPacketType.SELECT, describeSelect, payload);
+        writeDescribe(FirebirdSQLInfoPacketType.BIND, describeBind, payload);
         writeCode(FirebirdCommonInfoPacketType.END, payload);
+    }
+    
+    private static void writeDescribe(final FirebirdSQLInfoPacketType describeType, final Collection<FirebirdReturnColumnPacket> columns, final FirebirdPacketPayload payload) {
+        writeCode(describeType, payload);
+        writeInt(FirebirdSQLInfoPacketType.DESCRIBE_VARS, columns.size(), payload);
+        for (FirebirdReturnColumnPacket each : columns) {
+            each.write(payload);
+        }
     }
     
     static void writeCode(final FirebirdInfoPacketType code, final FirebirdPacketPayload payload) {
