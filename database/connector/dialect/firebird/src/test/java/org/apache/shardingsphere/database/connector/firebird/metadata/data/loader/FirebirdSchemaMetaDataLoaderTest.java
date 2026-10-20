@@ -60,21 +60,12 @@ class FirebirdSchemaMetaDataLoaderTest {
                 .thenReturn(tableResultSet);
         when(dataSource.getConnection().getCatalog()).thenReturn("catalog");
         when(dataSource.getConnection().getSchema()).thenReturn("sharding_db");
-        ResultSet schemaResultSet = mockSchemaResultSet();
-        when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
     }
     
     private ResultSet mockTableResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl", "##tbl", "partitioned_tbl", "RDB$RELATIONS", "RDB$REL", "RDB_Relations", "rdb$functions");
-        return result;
-    }
-    
-    private ResultSet mockSchemaResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, true, false);
-        when(result.getString("TABLE_SCHEM")).thenReturn("system_tables", "sharding_db", "schema1", "schema2");
+        when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl", "##tbl", "partitioned_tbl");
         return result;
     }
     
