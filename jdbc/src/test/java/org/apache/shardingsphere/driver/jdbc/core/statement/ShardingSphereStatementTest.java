@@ -59,12 +59,16 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -75,6 +79,26 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ShardingSphereStatementTest {
+    
+    @Test
+    void assertGetGeneratedKeysBeforeExecutionWithoutDialectColumn() throws SQLException {
+        ShardingSphereStatement statement = createStatement(TypedSPILoader.getService(DatabaseType.class, "SQL92"));
+        try (ResultSet actual = statement.getGeneratedKeys()) {
+            assertFalse(actual.next());
+            assertNull(actual.getMetaData().getColumnName(1));
+            assertThat(actual.getStatement(), sameInstance(statement));
+        }
+    }
+    
+    @Test
+    void assertGetGeneratedKeysBeforeExecutionWithDialectColumn() throws SQLException {
+        ShardingSphereStatement statement = createStatement(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        try (ResultSet actual = statement.getGeneratedKeys()) {
+            assertFalse(actual.next());
+            assertThat(actual.getMetaData().getColumnName(1), is("GENERATED_KEY"));
+            assertThat(actual.getStatement(), sameInstance(statement));
+        }
+    }
     
     @Test
     void assertGetGeneratedKeysByColumnIndexWhenColumnNameMissing() throws SQLException {
@@ -131,6 +155,73 @@ class ShardingSphereStatementTest {
         setInsertStatementContext(statement);
         UnknownDatabaseException expected = removeDatabase(statement.getConnection());
         assertThat(assertThrows(UnknownDatabaseException.class, statement::getGeneratedKeys), sameInstance(expected));
+    }
+    
+    @Test
+    void assertGetGeneratedKeysBeforeExecutionAfterDatabaseRemoved() {
+        ShardingSphereStatement statement = createStatement(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        UnknownDatabaseException expected = removeDatabase(statement.getConnection());
+        assertThat(assertThrows(UnknownDatabaseException.class, statement::getGeneratedKeys), sameInstance(expected));
+    }
+    
+    @Test
+    void assertExecuteQueryAfterDatabaseRemoved() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        ShardingSphereStatement statement = createStatement(databaseType);
+        removeDatabase(statement.getConnection());
+        SQLException expected = new SQLException("Unknown database 'foo_db'", "42000", 1049);
+        try (MockedStatic<SQLExceptionTransformEngine> mockedEngine = mockStatic(SQLExceptionTransformEngine.class, CALLS_REAL_METHODS)) {
+            mockedEngine.when(() -> SQLExceptionTransformEngine.toSQLException(
+                    argThat(ex -> ex instanceof UnknownDatabaseException && "foo_db".equals(((UnknownDatabaseException) ex).getDatabaseName())), same(databaseType))).thenReturn(expected);
+            SQLException actual = assertThrows(SQLException.class, () -> statement.executeQuery("SELECT 1"));
+            assertThat(actual, sameInstance(expected));
+            assertThat(actual.getMessage(), is("Unknown database 'foo_db'"));
+            assertThat(actual.getSQLState(), is("42000"));
+            assertThat(actual.getErrorCode(), is(1049));
+        }
+    }
+    
+    @Test
+    void assertExecuteQueryAfterDatabaseRemovedWithoutDialectMapper() {
+        ShardingSphereStatement statement = createStatement(TypedSPILoader.getService(DatabaseType.class, "SQL92"));
+        removeDatabase(statement.getConnection());
+        SQLException actual = assertThrows(SQLException.class, () -> statement.executeQuery("SELECT 1"));
+        assertThat(actual.getCause(), isA(UnknownDatabaseException.class));
+        assertThat(((UnknownDatabaseException) actual.getCause()).getDatabaseName(), is("foo_db"));
+    }
+    
+    @Test
+    void assertExecuteUpdateAfterDatabaseRemoved() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        ShardingSphereStatement statement = createStatement(databaseType);
+        removeDatabase(statement.getConnection());
+        SQLException expected = new SQLException("Unknown database 'foo_db'", "42000", 1049);
+        try (MockedStatic<SQLExceptionTransformEngine> mockedEngine = mockStatic(SQLExceptionTransformEngine.class, CALLS_REAL_METHODS)) {
+            mockedEngine.when(() -> SQLExceptionTransformEngine.toSQLException(
+                    argThat(ex -> ex instanceof UnknownDatabaseException && "foo_db".equals(((UnknownDatabaseException) ex).getDatabaseName())), same(databaseType))).thenReturn(expected);
+            SQLException actual = assertThrows(SQLException.class, () -> statement.executeUpdate("UPDATE foo_table SET id = 1"));
+            assertThat(actual, sameInstance(expected));
+            assertThat(actual.getMessage(), is("Unknown database 'foo_db'"));
+            assertThat(actual.getSQLState(), is("42000"));
+            assertThat(actual.getErrorCode(), is(1049));
+        }
+    }
+    
+    @Test
+    void assertExecuteAfterDatabaseRemoved() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        ShardingSphereStatement statement = createStatement(databaseType);
+        removeDatabase(statement.getConnection());
+        SQLException expected = new SQLException("Unknown database 'foo_db'", "42000", 1049);
+        try (MockedStatic<SQLExceptionTransformEngine> mockedEngine = mockStatic(SQLExceptionTransformEngine.class, CALLS_REAL_METHODS)) {
+            mockedEngine.when(() -> SQLExceptionTransformEngine.toSQLException(
+                    argThat(ex -> ex instanceof UnknownDatabaseException && "foo_db".equals(((UnknownDatabaseException) ex).getDatabaseName())), same(databaseType))).thenReturn(expected);
+            SQLException actual = assertThrows(SQLException.class, () -> statement.execute("SELECT 1"));
+            assertThat(actual, sameInstance(expected));
+            assertThat(actual.getMessage(), is("Unknown database 'foo_db'"));
+            assertThat(actual.getSQLState(), is("42000"));
+            assertThat(actual.getErrorCode(), is(1049));
+        }
     }
     
     @Test

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -65,6 +67,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -77,10 +82,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
@@ -131,6 +138,8 @@ class FirebirdPrepareStatementCommandExecutorTest {
         when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE);
         MetaDataContexts metaDataContexts = createMetaDataContexts();
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenReturn(metaDataContexts.getMetaData().getDatabase("foo_db"));
+        when(ProxyContext.getInstance().getContextManager().getDatabase(null)).thenThrow(NoDatabaseSelectedException.class);
     }
     
     @AfterEach
@@ -339,4 +348,153 @@ class FirebirdPrepareStatementCommandExecutorTest {
         executor.execute();
         verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(1));
     }
+    
+    @Test
+    void assertDescribeLiteralWithoutDatabase() throws Exception {
+        when(connectionSession.getCurrentDatabaseName()).thenReturn(null);
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+    }
+    
+    private void mockDescribeRequest(final FirebirdSQLInfoPacketType describeType) {
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, describeType, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+    }
+    
+    @Test
+    void assertDescribeParameterWithoutDatabase() throws Exception {
+        when(connectionSession.getCurrentDatabaseName()).thenReturn(null);
+        when(packet.getSQL()).thenReturn("SELECT ?");
+        mockDescribeRequest(FirebirdSQLInfoPacketType.BIND);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(1));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(0).write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("describeTableArguments")
+    void assertDescribeTable(final String name, final String sql, final boolean defaultSchemaPresent, final FirebirdBinaryColumnType columnType) throws Exception {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
+        addSystemSchema(database);
+        if (!defaultSchemaPresent) {
+            database.dropSchema("foo_db");
+            doReturn(Optional.empty()).when(database).findDefaultSchema();
+        }
+        when(packet.getSQL()).thenReturn(sql);
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(payload);
+        verify(payload).writeInt4LE(columnType.getValue() + 1);
+    }
+    
+    private void addSystemSchema(final ShardingSphereDatabase database) {
+        ShardingSphereColumn column = new ShardingSphereColumn("RDB$RELATION_ID", Types.SMALLINT, false, false, false, true, false, true);
+        ShardingSphereTable table = new ShardingSphereTable("RDB$DATABASE", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
+        database.addSchema(new ShardingSphereSchema("system_tables", databaseType, Collections.singleton(table), Collections.emptyList()));
+    }
+    
+    private static Stream<Arguments> describeTableArguments() {
+        return Stream.of(
+                Arguments.of("Default schema table", "SELECT id FROM foo_tbl", true, FirebirdBinaryColumnType.LONG),
+                Arguments.of("System table with default schema", "SELECT RDB$RELATION_ID FROM RDB$DATABASE", true, FirebirdBinaryColumnType.SHORT),
+                Arguments.of("System table without default schema", "SELECT RDB$RELATION_ID FROM RDB$DATABASE", false, FirebirdBinaryColumnType.SHORT));
+    }
+    
+    @Test
+    void assertDescribeSystemTableParameterWithoutDefaultSchema() throws Exception {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
+        addSystemSchema(database);
+        database.dropSchema("foo_db");
+        doReturn(Optional.empty()).when(database).findDefaultSchema();
+        when(packet.getSQL()).thenReturn("SELECT RDB$RELATION_ID FROM RDB$DATABASE WHERE RDB$RELATION_ID = ?");
+        mockDescribeRequest(FirebirdSQLInfoPacketType.BIND);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(1));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(0).write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.SHORT.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeInsertParameter() throws Exception {
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) VALUES (?)");
+        mockDescribeRequest(FirebirdSQLInfoPacketType.BIND);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(1));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(0).write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeReturningShorthand() throws Exception {
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) VALUES (1) RETURNING *");
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(idPayload);
+        verify(idPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload contentPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(1).write(contentPayload);
+        verify(contentPayload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeWithDatabaseRemoved() {
+        when(packet.getSQL()).thenReturn("SELECT id FROM foo_tbl");
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        UnknownDatabaseException expected = new UnknownDatabaseException("foo_db");
+        when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenThrow(expected);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        assertThat(assertThrows(UnknownDatabaseException.class, executor::execute), sameInstance(expected));
+    }
+    
+    @Test
+    void assertDescribeBlobWithDatabaseRemoved() {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
+        when(packet.getSQL()).thenReturn("SELECT content FROM foo_tbl");
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        UnknownDatabaseException expected = new UnknownDatabaseException("foo_db");
+        when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenReturn(database).thenThrow(expected);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        assertThat(assertThrows(UnknownDatabaseException.class, executor::execute), sameInstance(expected));
+    }
+    
+    @Test
+    void assertDescribeWithTableRemoved() {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
+        addSystemSchema(database);
+        when(packet.getSQL()).thenReturn("SELECT id FROM foo_tbl");
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenAnswer(invocation -> {
+            database.getSchema("foo_db").removeTable("foo_tbl");
+            return database;
+        });
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        TableNotFoundException actual = assertThrows(TableNotFoundException.class, executor::execute);
+        assertThat(actual.getMessage(), is("Table or view 'foo_tbl' does not exist."));
+    }
+    
 }
