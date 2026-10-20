@@ -37,13 +37,13 @@ class FirebirdErrorSegmentResolverTest {
     
     @Test
     void assertResolveRebuildsDuplicateKeyVectorAsSegments() {
-        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_unique_key_violation, DUPLICATE_KEY_MESSAGE, "23000");
-        assertThat(segments.size(), is(2));
-        assertThat(segments.get(0).getGdsCode(), is(ISCConstants.isc_unique_key_violation));
-        assertThat(segments.get(0).getArguments(), contains("INTEG_2", "MY_TABLE"));
-        assertNull(segments.get(0).getSqlState());
-        assertThat(segments.get(1).getGdsCode(), is(ISCConstants.isc_random));
-        assertThat(segments.get(1).getArguments(), contains("Problematic key value is (\"COL1\" = 1)"));
+        List<Segment> actual = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_unique_key_violation, DUPLICATE_KEY_MESSAGE, "23000");
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0).getGdsCode(), is(ISCConstants.isc_unique_key_violation));
+        assertThat(actual.get(0).getArguments(), contains("INTEG_2", "MY_TABLE"));
+        assertNull(actual.get(0).getSqlState());
+        assertThat(actual.get(1).getGdsCode(), is(ISCConstants.isc_random));
+        assertThat(actual.get(1).getArguments(), contains("Problematic key value is (\"COL1\" = 1)"));
     }
     
     @Test

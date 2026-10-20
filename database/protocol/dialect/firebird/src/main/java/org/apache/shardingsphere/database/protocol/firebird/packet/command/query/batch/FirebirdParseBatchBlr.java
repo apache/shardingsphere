@@ -125,15 +125,17 @@ public final class FirebirdParseBatchBlr {
         return new FirebirdParseBatchBlr(fields, offset, netLength);
     }
     
-    private static int appendNullIndicator(final ByteBuf buffer, final int offset) {
-        int nullType = buffer.readUnsignedByte();
-        buffer.skipBytes(1);
-        ShardingSpherePreconditions.checkState(BlrConstants.blr_short == nullType, () -> new IllegalArgumentException("Expected blr_short NULL indicator, got: " + nullType));
-        return alignTo(offset, Short.BYTES) + Short.BYTES;
-    }
-    
-    private static boolean isVarying(final FirebirdBinaryColumnType type) {
-        return FirebirdBinaryColumnType.VARYING == type || FirebirdBinaryColumnType.LEGACY_VARYING == type;
+    private static int alignmentOf(final int blrType) {
+        if (BlrConstants.blr_text == blrType || BlrConstants.blr_text2 == blrType || BlrConstants.blr_bool == blrType) {
+            return 1;
+        }
+        if (BlrConstants.blr_varying == blrType || BlrConstants.blr_varying2 == blrType || BlrConstants.blr_short == blrType) {
+            return Short.BYTES;
+        }
+        if (BlrConstants.blr_int64 == blrType || BlrConstants.blr_double == blrType || BlrConstants.blr_d_float == blrType) {
+            return Long.BYTES;
+        }
+        return Integer.BYTES;
     }
     
     private static FirebirdBatchColumnDescriptor readDescriptor(final ByteBuf buffer, final int blrType, final int offset) {
@@ -185,17 +187,15 @@ public final class FirebirdParseBatchBlr {
         throw new IllegalArgumentException("Unsupported BLR type: " + blrType);
     }
     
-    private static int alignmentOf(final int blrType) {
-        if (BlrConstants.blr_text == blrType || BlrConstants.blr_text2 == blrType || BlrConstants.blr_bool == blrType) {
-            return 1;
-        }
-        if (BlrConstants.blr_varying == blrType || BlrConstants.blr_varying2 == blrType || BlrConstants.blr_short == blrType) {
-            return Short.BYTES;
-        }
-        if (BlrConstants.blr_int64 == blrType || BlrConstants.blr_double == blrType || BlrConstants.blr_d_float == blrType) {
-            return Long.BYTES;
-        }
-        return Integer.BYTES;
+    private static boolean isVarying(final FirebirdBinaryColumnType type) {
+        return FirebirdBinaryColumnType.VARYING == type || FirebirdBinaryColumnType.LEGACY_VARYING == type;
+    }
+    
+    private static int appendNullIndicator(final ByteBuf buffer, final int offset) {
+        int nullType = buffer.readUnsignedByte();
+        buffer.skipBytes(1);
+        ShardingSpherePreconditions.checkState(BlrConstants.blr_short == nullType, () -> new IllegalArgumentException("Expected blr_short NULL indicator, got: " + nullType));
+        return alignTo(offset, Short.BYTES) + Short.BYTES;
     }
     
     private static int alignTo(final int value, final int alignment) {

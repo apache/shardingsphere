@@ -137,15 +137,6 @@ public final class FirebirdBatchMessageCommandPacket extends FirebirdCommandPack
         return result;
     }
     
-    private static Object readValue(final FirebirdPacketPayload payload, final FirebirdBatchColumnDescriptor descriptor) {
-        if (FirebirdBinaryColumnType.TEXT == descriptor.getType() || FirebirdBinaryColumnType.LEGACY_TEXT == descriptor.getType()) {
-            String result = payload.readBytes(descriptor.getLength()).toString(payload.getCharset());
-            payload.skipPadding(descriptor.getLength());
-            return result;
-        }
-        return FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(descriptor.getType()).read(payload);
-    }
-    
     private static List<Integer> readNullBits(final FirebirdPacketPayload payload, final int columnCount) {
         int nullBitsLength = (columnCount + 7) / 8;
         List<Integer> result = new ArrayList<>(nullBitsLength);
@@ -154,6 +145,15 @@ public final class FirebirdBatchMessageCommandPacket extends FirebirdCommandPack
         }
         payload.skipPadding(nullBitsLength);
         return result;
+    }
+    
+    private static Object readValue(final FirebirdPacketPayload payload, final FirebirdBatchColumnDescriptor descriptor) {
+        if (FirebirdBinaryColumnType.TEXT == descriptor.getType() || FirebirdBinaryColumnType.LEGACY_TEXT == descriptor.getType()) {
+            String result = payload.readBytes(descriptor.getLength()).toString(payload.getCharset());
+            payload.skipPadding(descriptor.getLength());
+            return result;
+        }
+        return FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(descriptor.getType()).read(payload);
     }
     
     @Override

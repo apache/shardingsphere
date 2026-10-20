@@ -88,7 +88,10 @@ class FirebirdBlobBinaryProtocolValueTest {
     
     @Test
     void assertWriteWithNull() {
-        assertThat(writeAndGetBlobId(null), is(0L));
+        ByteBuf byteBuf = Unpooled.buffer();
+        FirebirdPacketPayload payload = createPayload(byteBuf);
+        new FirebirdBlobBinaryProtocolValue().write(payload, null);
+        assertThat(byteBuf.getLong(0), is(0L));
     }
     
     @Test

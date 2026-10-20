@@ -171,7 +171,9 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     }
     
     private List<FirebirdBatchColumnDescriptor> getDeferredBatchFormat(final ByteBuf buffer, final FirebirdCommandPacketType commandType) {
-        return FirebirdCommandPacketType.BATCH_MSG == commandType && buffer.readableBytes() >= 8 ? deferredBatchFormats.get(buffer.getInt(buffer.readerIndex() + MESSAGE_TYPE_LENGTH)) : null;
+        return FirebirdCommandPacketType.BATCH_MSG == commandType && buffer.readableBytes() >= 8
+                ? deferredBatchFormats.get(buffer.getInt(buffer.readerIndex() + MESSAGE_TYPE_LENGTH))
+                : null;
     }
     
     private void rememberBatchFormat(final ByteBuf buffer, final int packetLength, final Charset charset) {
