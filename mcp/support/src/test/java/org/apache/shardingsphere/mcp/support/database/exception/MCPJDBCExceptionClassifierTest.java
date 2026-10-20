@@ -107,8 +107,8 @@ class MCPJDBCExceptionClassifierTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertClassifyDialectCases")
-    void assertClassifyDialect(final String name, final SQLException cause, final MCPJDBCErrorCategory expected) {
-        assertThat(MCPJDBCExceptionClassifier.classify(name, cause), is(expected));
+    void assertClassifyDialect(final String databaseType, final SQLException cause, final MCPJDBCErrorCategory expected) {
+        assertThat(MCPJDBCExceptionClassifier.classify(databaseType, cause), is(expected));
     }
     
     @Test

@@ -62,8 +62,8 @@ class OracleConnectionPropertiesParserTest {
             "jdbc:oracle:thin:@host/service/instance/extra", "jdbc:oracle:thin:@host/service!invalid",
             "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(HOST=host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=service)))invalid",
             "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(HOST=host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=service)))invalid)"})
-    void assertNewConstructorFailure(final String name) {
-        assertThrows(UnrecognizedDatabaseURLException.class, () -> parser.parse(name, "test", null));
+    void assertNewConstructorFailure(final String url) {
+        assertThrows(UnrecognizedDatabaseURLException.class, () -> parser.parse(url, "test", null));
     }
     
     private static final class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {

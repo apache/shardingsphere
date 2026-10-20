@@ -38,8 +38,8 @@ class PrometheusMetricsCollectorFactoryTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideMetricCollectorArguments")
-    void assertCreateCollector(final String name, final MetricCollectorType collectorType, final Class<?> expectedType) {
-        MetricConfiguration config = new MetricConfiguration(name, collectorType, null, Collections.emptyList(), Collections.emptyMap());
+    void assertCreateCollector(final String metricName, final MetricCollectorType collectorType, final Class<?> expectedType) {
+        MetricConfiguration config = new MetricConfiguration(metricName, collectorType, null, Collections.emptyList(), Collections.emptyMap());
         assertThat(new PrometheusMetricsCollectorFactory().create(config), isA(expectedType));
     }
     

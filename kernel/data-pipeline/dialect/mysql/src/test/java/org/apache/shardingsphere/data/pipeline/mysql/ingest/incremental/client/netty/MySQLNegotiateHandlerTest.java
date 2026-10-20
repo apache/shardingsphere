@@ -155,16 +155,16 @@ class MySQLNegotiateHandlerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("authSwitchParams")
-    void assertChannelReadAuthSwitchRequestForPlugin(final String name, final byte[] expectedResponse) {
-        mysqlNegotiateHandler.channelRead(channelHandlerContext, new MySQLAuthSwitchRequestPacket(name, new MySQLAuthenticationPluginData(seedBytesPart1(), seedBytesPart2())));
+    void assertChannelReadAuthSwitchRequestForPlugin(final String pluginName, final byte[] expectedResponse) {
+        mysqlNegotiateHandler.channelRead(channelHandlerContext, new MySQLAuthSwitchRequestPacket(pluginName, new MySQLAuthenticationPluginData(seedBytesPart1(), seedBytesPart2())));
         assertThat(captureAuthSwitchResponse().getAuthPluginResponse(), is(expectedResponse));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("publicKeyEncryptParams")
-    void assertHandleCachingSha2EncryptWithPublicKey(final String name) throws ReflectiveOperationException {
+    void assertHandleCachingSha2EncryptWithPublicKey(final String serverVersion) throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("publicKeyRequested"), mysqlNegotiateHandler, true);
-        Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("serverVersion"), mysqlNegotiateHandler, new MySQLServerVersion(name));
+        Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("serverVersion"), mysqlNegotiateHandler, new MySQLServerVersion(serverVersion));
         Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("seed"), mysqlNegotiateHandler, authenticationPluginSeed());
         mysqlNegotiateHandler.channelRead(channelHandlerContext, new MySQLAuthMoreDataPacket(publicKey().getBytes()));
         MySQLAuthSwitchResponsePacket response = captureAuthSwitchResponse();

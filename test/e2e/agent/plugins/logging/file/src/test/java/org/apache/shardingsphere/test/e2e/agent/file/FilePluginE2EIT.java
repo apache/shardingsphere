@@ -37,7 +37,7 @@ class FilePluginE2EIT {
     @EnabledIf("isEnabled")
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertLogAgent(final String name, final LogE2ETestCase testCase) {
+    void assertLogAgent(final LogE2ETestCase testCase) {
         assertFalse(AgentE2ETestEnvironment.getInstance().getContainerLogs().isEmpty(), "The actual log is empty");
         LogContentAssert.assertIs(AgentE2ETestEnvironment.getInstance().getContainerLogs(), testCase.getLogRegex());
     }

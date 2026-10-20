@@ -66,9 +66,9 @@ class SQLRouteCountAdviceTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("routeContexts")
-    void assertRoute(final String name, final QueryContext queryContext) {
+    void assertRoute(final String type, final QueryContext queryContext) {
         advice.beforeMethod(new TargetAdviceObjectFixture(), mock(TargetAdviceMethod.class), new Object[]{queryContext, new ConnectionContext(Collections::emptySet), mockDatabase()}, "FIXTURE");
-        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is(String.format("foo_db.%s=1", name)));
+        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is(String.format("foo_db.%s=1", type)));
     }
     
     private static Stream<Arguments> routeContexts() {

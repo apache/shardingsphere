@@ -72,7 +72,7 @@ class CreateTableSQLGeneratorE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertGenerateCreateTableSQL(final String name, final PipelineTestParameter testParam) throws SQLException {
+    void assertGenerateCreateTableSQL(final PipelineTestParameter testParam) throws SQLException {
         startStorageContainer(testParam.getDatabaseType(), testParam.getDatabaseContainerImage());
         String resourcePath = String.format("env/scenario/create-table-generator/%s/create-table-sql-generator.xml", testParam.getDatabaseType().getType().toLowerCase());
         CreateTableSQLGeneratorAssertionsRootEntity rootEntity = JAXB.unmarshal(

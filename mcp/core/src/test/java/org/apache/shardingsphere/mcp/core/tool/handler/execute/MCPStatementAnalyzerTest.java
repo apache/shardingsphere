@@ -48,8 +48,8 @@ class MCPStatementAnalyzerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("supportedDatabaseTypes")
-    void assertAnalyzeWithSupportedDatabaseType(final String name, final String sql) {
-        ClassificationResult actual = analyzer.analyze(sql, createCapability(name));
+    void assertAnalyzeWithSupportedDatabaseType(final String databaseType, final String sql) {
+        ClassificationResult actual = analyzer.analyze(sql, createCapability(databaseType));
         assertThat(actual.getStatementClass(), is(SupportedMCPStatement.QUERY));
         assertThat(actual.getStatementType(), is("SELECT"));
     }

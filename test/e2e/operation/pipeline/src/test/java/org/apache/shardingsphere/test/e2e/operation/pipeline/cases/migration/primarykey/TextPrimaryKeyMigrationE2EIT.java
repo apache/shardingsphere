@@ -52,7 +52,7 @@ class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertTextPrimaryMigrationSuccess(final String name, final PipelineTestParameter testParam) throws SQLException {
+    void assertTextPrimaryMigrationSuccess(final PipelineTestParameter testParam) throws SQLException {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             StringPkSmallOrderDAO orderDAO = new StringPkSmallOrderDAO(containerComposer.getSourceDataSource(),
                     containerComposer.getDatabaseType(), new QualifiedTable(null, getSourceTableName(containerComposer)));

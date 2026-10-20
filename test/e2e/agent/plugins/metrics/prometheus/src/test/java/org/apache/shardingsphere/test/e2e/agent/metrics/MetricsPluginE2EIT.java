@@ -35,7 +35,7 @@ class MetricsPluginE2EIT {
     @EnabledIf("isEnabled")
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertWithAgent(final String name, final MetricE2ETestCase metricTestCase) {
+    void assertWithAgent(final MetricE2ETestCase metricTestCase) {
         MetricAssert.assertIs(AgentE2ETestEnvironment.getInstance().getAgentPluginURL(), metricTestCase);
     }
     

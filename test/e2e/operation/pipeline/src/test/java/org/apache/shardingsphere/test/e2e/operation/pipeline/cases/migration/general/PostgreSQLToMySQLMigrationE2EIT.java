@@ -59,7 +59,7 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertMigrationSuccess(final String name, final PipelineTestParameter testParam) throws SQLException {
+    void assertMigrationSuccess(final PipelineTestParameter testParam) throws SQLException {
         PostgreSQLContainer<?> postgresqlContainer = null;
         Type type = E2ETestEnvironment.getInstance().getRunEnvironment().getType();
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {

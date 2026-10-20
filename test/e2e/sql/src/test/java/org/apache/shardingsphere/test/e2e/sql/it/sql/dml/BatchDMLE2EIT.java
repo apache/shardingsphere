@@ -44,7 +44,7 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
     @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertExecuteBatch(final String name, final CaseTestParameter testParam) throws SQLException, JAXBException, IOException {
+    void assertExecuteBatch(final CaseTestParameter testParam) throws SQLException, JAXBException, IOException {
         init(testParam);
         try {
             int[] actualUpdateCounts;
@@ -103,7 +103,7 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
     @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertClearBatch(final String name, final CaseTestParameter testParam) throws SQLException {
+    void assertClearBatch(final CaseTestParameter testParam) throws SQLException {
         try (
                 Connection connection = getTargetDataSource(testParam).getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(testParam.getTestCaseContext().getTestCase().getSql())) {

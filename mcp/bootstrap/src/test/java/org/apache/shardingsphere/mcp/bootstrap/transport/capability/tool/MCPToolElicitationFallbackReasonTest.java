@@ -36,7 +36,7 @@ class MCPToolElicitationFallbackReasonTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getFallbackReasons")
-    void assertGetters(final String name, final MCPToolElicitationFallbackReason fallbackReason, final String expectedValue, final String expectedSelectedInteraction) {
+    void assertGetters(final MCPToolElicitationFallbackReason fallbackReason, final String expectedValue, final String expectedSelectedInteraction) {
         assertThat(fallbackReason.getValue(), is(expectedValue));
         assertThat(fallbackReason.getSelectedInteraction(), is(expectedSelectedInteraction));
     }
@@ -62,16 +62,16 @@ class MCPToolElicitationFallbackReasonTest {
     
     private static Stream<Arguments> getFallbackReasons() {
         return Stream.of(
-                Arguments.of("client unsupported", MCPToolElicitationFallbackReason.CLIENT_UNSUPPORTED, "client_unsupported", "structured_fallback"),
-                Arguments.of("remote identity required", MCPToolElicitationFallbackReason.REMOTE_IDENTITY_REQUIRED, "remote_identity_required", "structured_fallback"),
-                Arguments.of("missing plan id", MCPToolElicitationFallbackReason.MISSING_PLAN_ID, "missing_plan_id", "structured_fallback"),
-                Arguments.of("sensitive form blocked", MCPToolElicitationFallbackReason.SENSITIVE_FORM_BLOCKED, "sensitive_form_blocked", "structured_fallback"),
-                Arguments.of("url mode not implemented", MCPToolElicitationFallbackReason.URL_MODE_NOT_IMPLEMENTED, "url_mode_not_implemented", "structured_fallback"),
-                Arguments.of("ambiguous field binding", MCPToolElicitationFallbackReason.AMBIGUOUS_FIELD_BINDING, "ambiguous_field_binding", "structured_fallback"),
-                Arguments.of("elicitation failed", MCPToolElicitationFallbackReason.ELICITATION_FAILED, "elicitation_failed", "structured_fallback"),
-                Arguments.of("malformed elicitation result", MCPToolElicitationFallbackReason.MALFORMED_ELICITATION_RESULT, "malformed_elicitation_result", "structured_fallback"),
-                Arguments.of("invalid elicited content", MCPToolElicitationFallbackReason.INVALID_ELICITED_CONTENT, "invalid_elicited_content", "structured_fallback"),
-                Arguments.of("stale elicitation", MCPToolElicitationFallbackReason.STALE_ELICITATION, "stale_elicitation", "structured_fallback"));
+                Arguments.of(MCPToolElicitationFallbackReason.CLIENT_UNSUPPORTED, "client_unsupported", "structured_fallback"),
+                Arguments.of(MCPToolElicitationFallbackReason.REMOTE_IDENTITY_REQUIRED, "remote_identity_required", "structured_fallback"),
+                Arguments.of(MCPToolElicitationFallbackReason.MISSING_PLAN_ID, "missing_plan_id", "structured_fallback"),
+                Arguments.of(MCPToolElicitationFallbackReason.SENSITIVE_FORM_BLOCKED, "sensitive_form_blocked", "structured_fallback"),
+                Arguments.of(MCPToolElicitationFallbackReason.URL_MODE_NOT_IMPLEMENTED, "url_mode_not_implemented", "structured_fallback"),
+                Arguments.of(MCPToolElicitationFallbackReason.AMBIGUOUS_FIELD_BINDING, "ambiguous_field_binding", "structured_fallback"),
+                Arguments.of(MCPToolElicitationFallbackReason.ELICITATION_FAILED, "elicitation_failed", "structured_fallback"),
+                Arguments.of(MCPToolElicitationFallbackReason.MALFORMED_ELICITATION_RESULT, "malformed_elicitation_result", "structured_fallback"),
+                Arguments.of(MCPToolElicitationFallbackReason.INVALID_ELICITED_CONTENT, "invalid_elicited_content", "structured_fallback"),
+                Arguments.of(MCPToolElicitationFallbackReason.STALE_ELICITATION, "stale_elicitation", "structured_fallback"));
     }
     
     private MCPClientElicitationCapabilities createClientCapabilities(final McpSchema.ClientCapabilities clientCapabilities) {

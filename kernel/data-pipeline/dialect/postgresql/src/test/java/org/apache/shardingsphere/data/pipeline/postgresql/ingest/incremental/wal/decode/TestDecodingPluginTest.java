@@ -225,8 +225,8 @@ class TestDecodingPluginTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideNullValueWal")
-    void assertDecodeNullValue(final String name, final int expectedSize, final Integer expectedSecond) {
-        WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin(null).decode(ByteBuffer.wrap(name.getBytes(StandardCharsets.UTF_8)), logSequenceNumber);
+    void assertDecodeNullValue(final String wal, final int expectedSize, final Integer expectedSecond) {
+        WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin(null).decode(ByteBuffer.wrap(wal.getBytes(StandardCharsets.UTF_8)), logSequenceNumber);
         assertThat(actual.getAfterRow().size(), is(expectedSize));
         assertNull(actual.getAfterRow().get(0));
         if (null != expectedSecond) {
@@ -236,15 +236,15 @@ class TestDecodingPluginTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideIllegalByteaWal")
-    void assertDecodeByteaIllegalArgument(final String name) {
-        ByteBuffer data = ByteBuffer.wrap(name.getBytes(StandardCharsets.UTF_8));
+    void assertDecodeByteaIllegalArgument(final String wal) {
+        ByteBuffer data = ByteBuffer.wrap(wal.getBytes(StandardCharsets.UTF_8));
         assertThrows(IllegalArgumentException.class, () -> new TestDecodingPlugin(null).decode(data, logSequenceNumber));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideIngestExceptionWal")
-    void assertDecodeIngestException(final String name) {
-        ByteBuffer data = ByteBuffer.wrap(name.getBytes(StandardCharsets.UTF_8));
+    void assertDecodeIngestException(final String wal) {
+        ByteBuffer data = ByteBuffer.wrap(wal.getBytes(StandardCharsets.UTF_8));
         assertThrows(IngestException.class, () -> new TestDecodingPlugin(null).decode(data, logSequenceNumber));
     }
     

@@ -30,8 +30,8 @@ class DistSQLStringEscapeDecoderTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("standardEscapesArguments")
-    void assertDecode(final String name, final String expected) {
-        assertThat(DistSQLStringEscapeDecoder.decode(name), is(expected));
+    void assertDecode(final String input, final String expected) {
+        assertThat(DistSQLStringEscapeDecoder.decode(input), is(expected));
     }
     
     private static Stream<Arguments> standardEscapesArguments() {

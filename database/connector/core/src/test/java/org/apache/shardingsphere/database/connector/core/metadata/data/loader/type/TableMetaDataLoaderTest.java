@@ -140,8 +140,8 @@ class TableMetaDataLoaderTest {
     
     @ParameterizedTest(name = "{0}")
     @ValueSource(strings = {"VIEW", "SYSTEM VIEW"})
-    void assertLoadNormalizedView(final String name) throws SQLException {
-        when(tableExistResultSet.getString("TABLE_TYPE")).thenReturn(name);
+    void assertLoadNormalizedView(final String tableType) throws SQLException {
+        when(tableExistResultSet.getString("TABLE_TYPE")).thenReturn(tableType);
         Optional<TableMetaData> actual = TableMetaDataLoader.loadNormalized(dataSource, TEST_TABLE, databaseType);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getType(), is(TableType.VIEW));

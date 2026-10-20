@@ -57,7 +57,7 @@ class IntervalExpressionConverterTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideIntervalUnits")
-    void assertConvertIntervalUnits(final String name, final IntervalUnit intervalUnit, final TimeUnit expectedTimeUnit) {
+    void assertConvertIntervalUnits(final IntervalUnit intervalUnit, final TimeUnit expectedTimeUnit) {
         LiteralExpressionSegment value = new LiteralExpressionSegment(0, 0, 1);
         SqlNode literalNode = SqlLiteral.createExactNumeric("1", SqlParserPos.ZERO);
         when(ExpressionConverter.convert(value)).thenReturn(Optional.of(literalNode));
@@ -71,14 +71,14 @@ class IntervalExpressionConverterTest {
     
     private static Stream<Arguments> provideIntervalUnits() {
         return Stream.of(
-                Arguments.of("microsecond", IntervalUnit.MICROSECOND, TimeUnit.MICROSECOND),
-                Arguments.of("second", IntervalUnit.SECOND, TimeUnit.SECOND),
-                Arguments.of("minute", IntervalUnit.MINUTE, TimeUnit.MINUTE),
-                Arguments.of("hour", IntervalUnit.HOUR, TimeUnit.HOUR),
-                Arguments.of("day", IntervalUnit.DAY, TimeUnit.DAY),
-                Arguments.of("week", IntervalUnit.WEEK, TimeUnit.WEEK),
-                Arguments.of("month", IntervalUnit.MONTH, TimeUnit.MONTH),
-                Arguments.of("quarter", IntervalUnit.QUARTER, TimeUnit.QUARTER),
-                Arguments.of("year", IntervalUnit.YEAR, TimeUnit.YEAR));
+                Arguments.of(IntervalUnit.MICROSECOND, TimeUnit.MICROSECOND),
+                Arguments.of(IntervalUnit.SECOND, TimeUnit.SECOND),
+                Arguments.of(IntervalUnit.MINUTE, TimeUnit.MINUTE),
+                Arguments.of(IntervalUnit.HOUR, TimeUnit.HOUR),
+                Arguments.of(IntervalUnit.DAY, TimeUnit.DAY),
+                Arguments.of(IntervalUnit.WEEK, TimeUnit.WEEK),
+                Arguments.of(IntervalUnit.MONTH, TimeUnit.MONTH),
+                Arguments.of(IntervalUnit.QUARTER, TimeUnit.QUARTER),
+                Arguments.of(IntervalUnit.YEAR, TimeUnit.YEAR));
     }
 }

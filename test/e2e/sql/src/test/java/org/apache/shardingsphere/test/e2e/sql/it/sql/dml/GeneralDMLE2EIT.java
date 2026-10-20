@@ -44,7 +44,7 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
     @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertExecuteUpdate(final String name, final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
+    void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         init(testParam);
         try {
@@ -88,7 +88,7 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
     @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertExecute(final String name, final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
+    void assertExecute(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         init(testParam);
         try {

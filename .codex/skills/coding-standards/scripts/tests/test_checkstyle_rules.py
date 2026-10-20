@@ -30,8 +30,7 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).resolve().parents[5]
 BOOLEAN_MESSAGE = "Use assertTrue/assertFalse instead of assertThat(..., is(true/false))."
 DISPLAY_NAME_MESSAGE = 'Parameterized tests must use name = "{0}".'
-NAME_PARAMETER_MESSAGE = "Declare final String name as the first parameter of parameterized tests."
-RULE_MESSAGES = {BOOLEAN_MESSAGE, DISPLAY_NAME_MESSAGE, NAME_PARAMETER_MESSAGE}
+RULE_MESSAGES = {BOOLEAN_MESSAGE, DISPLAY_NAME_MESSAGE}
 
 
 class CheckstyleRulesTest(unittest.TestCase):
@@ -71,30 +70,11 @@ class CheckstyleRulesTest(unittest.TestCase):
             "qualified": ('@org.junit.jupiter.params.ParameterizedTest(name = "{0}")', False),
             "ordinary_test": ("@Test", False),
         }
-        cls.name_parameter_cases = {
-            "none": ("", True),
-            "missing_final": ("String name", True),
-            "wrong_name": ("final String description", True),
-            "wrong_type": ("final Object name", True),
-            "wrong_position": ("final int value, final String name", True),
-            "array": ("final String[] name", True),
-            "post_name_array": ("final String name[]", True),
-            "varargs": ("final String... name", True),
-            "correct": ("final String name", False),
-            "later_parameters": ("final String name, final int value", False),
-            "annotation": ("@Deprecated final String name", True),
-            "type_annotation": ("final @Deprecated String name", True),
-            "qualified_type": ("final java.lang.String name", True),
-            "multiline": ("final String\n            name", False),
-        }
         cls.fixture_paths = {}
         for name, (statement, _) in cls.boolean_cases.items():
             cls.write_fixture(directory, f"boolean_{name}", f"void assertScenario() {{\n        {statement}\n    }}")
         for name, (annotation, _) in cls.display_name_cases.items():
             cls.write_fixture(directory, f"display_{name}", f"{annotation}\n    void assertScenario(final String name) {{\n    }}")
-        for name, (parameters, _) in cls.name_parameter_cases.items():
-            cls.write_fixture(directory, f"parameter_{name}", '@ParameterizedTest(name = "{0}")\n    ' + f"void assertScenario({parameters}) {{\n    }}")
-        cls.write_fixture(directory, "ordinary_helper", "void assertScenario(final int value) {\n    }")
         properties = ET.parse(REPOSITORY_ROOT / "pom.xml").getroot().find("{*}properties")
         cls.engine_version = properties.findtext("{*}checkstyle.version")
         cls.write_pom(directory, properties.findtext("{*}maven-checkstyle-plugin.version"))
@@ -160,13 +140,6 @@ class CheckstyleRulesTest(unittest.TestCase):
             with self.subTest(name=name):
                 expected = [(DISPLAY_NAME_MESSAGE, "error")] if violates else []
                 self.assertEqual(expected, self.actual_diagnostics[self.fixture_paths[f"display_{name}"]])
-
-    def test_parameterized_tests_start_with_a_named_string(self) -> None:
-        for name, (_, violates) in self.name_parameter_cases.items():
-            with self.subTest(name=name):
-                expected = [(NAME_PARAMETER_MESSAGE, "error")] if violates else []
-                self.assertEqual(expected, self.actual_diagnostics[self.fixture_paths[f"parameter_{name}"]])
-        self.assertEqual([], self.actual_diagnostics[self.fixture_paths["ordinary_helper"]])
 
 
 if __name__ == "__main__":

@@ -65,7 +65,7 @@ class PostgreSQLMigrationIdentifierCaseE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertMigrationWithUpperCaseSourceIdentifiers(final String name, final PipelineTestParameter testParam) throws SQLException {
+    void assertMigrationWithUpperCaseSourceIdentifiers(final PipelineTestParameter testParam) throws SQLException {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             distSQLFacade.alterPipelineRule();

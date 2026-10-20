@@ -59,7 +59,7 @@ class MySQLMigrationIdentifierCaseE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertMigrationToUpperCaseTargetTable(final String name, final PipelineTestParameter testParam) throws SQLException {
+    void assertMigrationToUpperCaseTargetTable(final PipelineTestParameter testParam) throws SQLException {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             assertCaseSensitiveTableNames(containerComposer);
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());

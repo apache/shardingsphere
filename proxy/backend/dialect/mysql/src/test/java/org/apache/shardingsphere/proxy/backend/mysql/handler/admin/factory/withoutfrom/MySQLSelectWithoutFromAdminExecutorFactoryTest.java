@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -101,8 +101,8 @@ class MySQLSelectWithoutFromAdminExecutorFactoryTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @CsvSource({"one projection, 1", "two projections, 2"})
-    void assertCreateNoResourceExecutorWhenEmptyResource(final String name, final int projectionCount) {
+    @ValueSource(ints = {1, 2})
+    void assertCreateNoResourceExecutorWhenEmptyResource(final int projectionCount) {
         Collection<ProjectionSegment> projections = new LinkedList<>();
         for (int i = 0; i < projectionCount; i++) {
             projections.add(new ExpressionProjectionSegment(0, 0, "col" + i));

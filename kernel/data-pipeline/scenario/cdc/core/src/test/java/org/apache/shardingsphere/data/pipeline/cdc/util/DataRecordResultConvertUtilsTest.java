@@ -39,8 +39,7 @@ class DataRecordResultConvertUtilsTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("dataChangeTypeTestCases")
-    void assertConvertDataRecordToRecordWithNonInsertTypes(final String name, final PipelineSQLOperationType operationType,
-                                                           final Record.DataChangeType expectedDataChangeType) throws InvalidProtocolBufferException {
+    void assertConvertDataRecordToRecordWithNonInsertTypes(final PipelineSQLOperationType operationType, final Record.DataChangeType expectedDataChangeType) throws InvalidProtocolBufferException {
         DataRecord dataRecord = new DataRecord(operationType, "test_schema", "t_user", UniqueKeyIngestPosition.ofInteger(Range.closed(BigInteger.valueOf(5L), BigInteger.valueOf(10L))), 1);
         dataRecord.addColumn(new NormalColumn("id", 1L, 2L, true, true));
         dataRecord.setCommitTime(123L);
@@ -56,9 +55,9 @@ class DataRecordResultConvertUtilsTest {
     
     private static Stream<Arguments> dataChangeTypeTestCases() {
         return Stream.of(
-                Arguments.of("insert", PipelineSQLOperationType.INSERT, Record.DataChangeType.INSERT),
-                Arguments.of("update", PipelineSQLOperationType.UPDATE, Record.DataChangeType.UPDATE),
-                Arguments.of("delete", PipelineSQLOperationType.DELETE, Record.DataChangeType.DELETE),
-                Arguments.of("select", PipelineSQLOperationType.SELECT, Record.DataChangeType.UNKNOWN));
+                Arguments.of(PipelineSQLOperationType.INSERT, Record.DataChangeType.INSERT),
+                Arguments.of(PipelineSQLOperationType.UPDATE, Record.DataChangeType.UPDATE),
+                Arguments.of(PipelineSQLOperationType.DELETE, Record.DataChangeType.DELETE),
+                Arguments.of(PipelineSQLOperationType.SELECT, Record.DataChangeType.UNKNOWN));
     }
 }

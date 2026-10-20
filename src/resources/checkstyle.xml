@@ -140,12 +140,6 @@
             <message key="matchxpath.match" value="Parameterized tests must use name = &quot;{0}&quot;." />
         </module>
         <module name="MatchXpath">
-            <property name="id" value="ParameterizedTestNameParameter" />
-            <property name="severity" value="error" />
-            <property name="query" value="//METHOD_DEF[./MODIFIERS/ANNOTATION[(./IDENT[@text='ParameterizedTest'] or ./DOT/IDENT[@text='ParameterizedTest'])]]/PARAMETERS[not(./PARAMETER_DEF[1][./MODIFIERS[count(*) = 1 and ./FINAL] and ./IDENT[@text='name'] and not(./ELLIPSIS) and ./TYPE[count(*) = 1 and ./IDENT[@text='String']]])]" />
-            <message key="matchxpath.match" value="Declare final String name as the first parameter of parameterized tests." />
-        </module>
-        <module name="MatchXpath">
             <property name="query" value="//VARIABLE_DEF[./MODIFIERS/FINAL and (parent::FOR_INIT or parent::FOR_EACH_CLAUSE)]" />
             <message key="matchxpath.match" value="Do not declare for-loop variables as final." />
         </module>

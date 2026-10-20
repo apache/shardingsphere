@@ -78,11 +78,11 @@ public abstract class SQLBinderIT {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertBind(final String name, final SQLCaseType sqlCaseType, final String databaseType) {
-        String sql = SQL_CASES.getSQL(name, sqlCaseType, SQL_BINDER_TEST_CASES.get(name).getParameters());
-        SQLParserTestCase expected = SQL_BINDER_TEST_CASES.get(name);
+    void assertBind(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
+        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_BINDER_TEST_CASES.get(sqlCaseId).getParameters());
+        SQLParserTestCase expected = SQL_BINDER_TEST_CASES.get(sqlCaseId);
         SQLStatement actual = bindSQLStatement("H2".equals(databaseType) ? "MySQL" : databaseType, sql);
-        SQLStatementAssert.assertIs(new SQLCaseAssertContext(name, sql, expected.getParameters(), sqlCaseType), actual, expected);
+        SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sql, expected.getParameters(), sqlCaseType), actual, expected);
     }
     
     protected final SQLStatement bindSQLStatement(final String databaseType, final String sql) {

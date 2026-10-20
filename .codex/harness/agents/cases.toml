@@ -4478,12 +4478,12 @@ required_reasons = ["read_only_request"]
 critical = true
 policy_binding_profile = "gen-ut"
 id = "repository_parameterized_source_and_signature_contract"
-description = "Keeps standard JUnit sources while requiring meaningful rows, display names and the exact first parameter."
-prompt = "Classify repository tests using only the bound rules. A has @ParameterizedTest(name = \"{0}\"), first parameter final String name, and @CsvSource with three meaningful argument sets. B has the same declaration with only two meaningful rows. C has three meaningful rows but first parameter String name without final. D keeps two meaningful standalone JUnit 5 @Test cases instead of inventing a third row. Do not inspect, execute checks or change anything. Return exactly four assignments [A]=<allow|reject>; [B]=<allow|reject>; [C]=<allow|reject>; [D]=<allow|reject> in that order and no other text."
-required_summary_terms = ["[A]=allow", "[B]=reject", "[C]=reject", "[D]=allow"]
-required_summary_prefix = "[A]=allow; [B]=reject; [C]=reject; [D]=allow"
-max_summary_chars = 44
-policy_assertions = [{source = "code-of-conduct", statements = ["For parameterized tests, provide display names via parameters and use `\"{0}\"` as the display-name template;", "Declare the first parameter of each parameterized test exactly as `final String name`;", "Provide at least three meaningful argument sets for each parameterized test;"]}]
+description = "Keeps standard JUnit sources and meaningful rows while distinguishing display-only parameters from used test inputs."
+prompt = "Classify repository tests using only the bound rules. A has @ParameterizedTest(name = \"{0}\"), first parameter final String name, and @CsvSource with three meaningful argument sets. B has the same declaration with only two meaningful rows. C has three meaningful rows but first parameter String name without final. A-C do not reference their first parameter in the test body. D keeps two meaningful standalone JUnit 5 @Test cases instead of inventing a third row. E uses @ParameterizedTest(name = \"{0}\"), three meaningful URL values, and first parameter final String url passed to parser.parse(url) inside an assertThrows lambda. F uses the same display template and three meaningful integer values, with first parameter final int value passed to target.run(value). G has the same display template and three meaningful rows but leaves first parameter final String description unused in the body. H is like G with first parameter final String url and only a comment and a string literal containing url, with no reference to the parameter. Do not inspect, execute checks or change anything. Return exactly eight assignments [A]=<allow|reject>; [B]=<allow|reject>; [C]=<allow|reject>; [D]=<allow|reject>; [E]=<allow|reject>; [F]=<allow|reject>; [G]=<allow|reject>; [H]=<allow|reject> in that order and no other text."
+required_summary_terms = ["[A]=allow", "[B]=reject", "[C]=reject", "[D]=allow", "[E]=allow", "[F]=allow", "[G]=reject", "[H]=reject"]
+required_summary_prefix = "[A]=allow; [B]=reject; [C]=reject; [D]=allow; [E]=allow; [F]=allow; [G]=reject; [H]=reject"
+max_summary_chars = 90
+policy_assertions = [{source = "code-of-conduct", statements = ["For parameterized tests, provide display names via parameters and use `\"{0}\"` as the display-name template;", "Name the first parameter of a parameterized test according to its purpose when it is used in the test body; otherwise, declare it exactly as `final String name`;", "Provide at least three meaningful argument sets for each parameterized test;"]}]
 
 [[cases]]
 group = "unit-test policy"

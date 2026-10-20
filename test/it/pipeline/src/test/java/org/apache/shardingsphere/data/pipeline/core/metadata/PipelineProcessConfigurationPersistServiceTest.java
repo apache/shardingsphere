@@ -85,10 +85,10 @@ class PipelineProcessConfigurationPersistServiceTest {
     
     @ParameterizedTest(name = "{0}")
     @ValueSource(strings = {"MIGRATION", "STREAMING"})
-    void assertPersistAndLoad(final String name) {
+    void assertPersistAndLoad(final String jobType) {
         for (Entry<String, BiConsumer<YamlPipelineProcessConfiguration, YamlPipelineProcessConfiguration>> entry : typesAssertionMap.entrySet()) {
             YamlPipelineProcessConfiguration expected = createYamlPipelineProcessConfiguration(entry.getKey());
-            entry.getValue().accept(persistAndLoad(name, expected), expected);
+            entry.getValue().accept(persistAndLoad(jobType, expected), expected);
         }
     }
     

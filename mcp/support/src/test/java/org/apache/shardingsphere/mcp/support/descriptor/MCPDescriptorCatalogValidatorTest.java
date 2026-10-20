@@ -202,10 +202,10 @@ class MCPDescriptorCatalogValidatorTest {
     
     @ParameterizedTest(name = "{0}")
     @ValueSource(strings = {"preview", "auto-execute"})
-    void assertValidateRejectsNonDestructiveExecutionMode(final String name) {
-        MCPToolDescriptor descriptor = createExecutionModeTool(false, true, List.of(name), true);
+    void assertValidateRejectsNonDestructiveExecutionMode(final String executionMode) {
+        MCPToolDescriptor descriptor = createExecutionModeTool(false, true, List.of(executionMode), true);
         assertValidationError(createToolRuntimeCatalog(List.of(), List.of(descriptor), List.of()),
-                String.format("Non-destructive tool `database_gateway_test_tool` execution_mode must not expose %s.", name));
+                String.format("Non-destructive tool `database_gateway_test_tool` execution_mode must not expose %s.", executionMode));
     }
     
     @Test
@@ -249,9 +249,9 @@ class MCPDescriptorCatalogValidatorTest {
     
     @ParameterizedTest(name = "{0}")
     @ValueSource(strings = {"columns", "rows"})
-    void assertValidateRejectsExecuteUpdateDescriptorWithoutResultSetField(final String name) {
-        assertValidationError(createCatalog(List.of(), List.of(createExecuteUpdateDescriptorWithout(name))),
-                String.format("Tool `database_gateway_execute_update` outputSchema must declare `%s`.", name));
+    void assertValidateRejectsExecuteUpdateDescriptorWithoutResultSetField(final String fieldName) {
+        assertValidationError(createCatalog(List.of(), List.of(createExecuteUpdateDescriptorWithout(fieldName))),
+                String.format("Tool `database_gateway_execute_update` outputSchema must declare `%s`.", fieldName));
     }
     
     @Test

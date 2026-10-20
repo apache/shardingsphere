@@ -139,8 +139,8 @@ class XAShardingSphereTransactionManagerTest {
     
     @ParameterizedTest(name = "{0}")
     @CsvSource({"Atomikos, true", "atomikos, true", "MISSING, false"})
-    void assertContainsProviderType(final String name, final boolean expected) {
-        assertThat(xaTransactionManager.containsProviderType(name), is(expected));
+    void assertContainsProviderType(final String providerType, final boolean expected) {
+        assertThat(xaTransactionManager.containsProviderType(providerType), is(expected));
     }
     
     @Test

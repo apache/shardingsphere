@@ -114,14 +114,14 @@ class BinaryOperationExpressionConverterTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideQuantifyOperators")
-    void assertConvertQuantifySubquery(final String name, final String quantifyOperator, final SqlOperator expectedOperator) {
+    void assertConvertQuantifySubquery(final String operator, final String quantifyOperator, final SqlOperator expectedOperator) {
         LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 1);
         QuantifySubqueryExpression right = new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "sub"), quantifyOperator);
         SqlNode leftNode = mock(SqlNode.class);
         SqlNode rightNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
         when(ExpressionConverter.convert(right)).thenReturn(Optional.of(rightNode));
-        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, name, ""));
+        SqlBasicCall actual = BinaryOperationExpressionConverter.convert(new BinaryOperationExpression(0, 0, left, right, operator, ""));
         assertThat(actual.getOperator(), is(expectedOperator));
         assertThat(actual.getOperandList(), is(Arrays.asList(leftNode, rightNode)));
     }

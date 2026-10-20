@@ -329,8 +329,8 @@ class PostgreSQLExternalTestParameterLoadTemplateTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("conditionValues")
-    void assertLoadConditionValues(final String name, final boolean active) {
-        Collection<ExternalSQLTestParameter> actual = template.load("sample", Arrays.asList("\\if " + name, "SELECT 1;", "\\else", "SELECT 2;", "\\endif"),
+    void assertLoadConditionValues(final String expression, final boolean active) {
+        Collection<ExternalSQLTestParameter> actual = template.load("sample", Arrays.asList("\\if " + expression, "SELECT 1;", "\\else", "SELECT 2;", "\\endif"),
                 Collections.emptyList(), "PostgreSQL", "CSV");
         assertThat(actual.stream().map(ExternalSQLTestParameter::getSql).collect(Collectors.toList()), is(Collections.singletonList(active ? "SELECT 1;" : "SELECT 2;")));
     }

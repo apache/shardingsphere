@@ -51,7 +51,7 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertIllegalTimeTypesValueMigrationSuccess(final String name, final PipelineTestParameter testParam) throws Exception {
+    void assertIllegalTimeTypesValueMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql = "CREATE TABLE `time_e2e` ( `id` int NOT NULL, `t_timestamp` timestamp NULL DEFAULT NULL, `t_datetime` datetime DEFAULT NULL, `t_date` date DEFAULT NULL, "
                     + "`t_year` year DEFAULT NULL, `t_timestamp_4` timestamp(4) NULL, `t_datetime_4` datetime(4) NULL, "

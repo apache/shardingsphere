@@ -58,7 +58,6 @@ public final class PipelineE2ETestCaseArgumentsProvider implements ArgumentsProv
     
     private Collection<Arguments> provideArguments(final DatabaseType databaseType, final String databaseContainerImage,
                                                    final String[] tableStructures, final int storageContainerCount) {
-        return Arrays.stream(tableStructures).map(each -> new PipelineTestParameter(databaseType, databaseContainerImage, each, storageContainerCount))
-                .map(each -> Arguments.of(each.toString(), each)).toList();
+        return Arrays.stream(tableStructures).map(each -> Arguments.of(new PipelineTestParameter(databaseType, databaseContainerImage, each, storageContainerCount))).toList();
     }
 }

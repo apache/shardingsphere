@@ -49,7 +49,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     @Execution(ExecutionMode.CONCURRENT)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertExecuteQueryWithResultSetTypeAndConcurrency(final String name, final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
+    void assertExecuteQueryWithResultSetTypeAndConcurrency(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         executeDQL(context, () -> assertExecuteQueryWithResultSetTypes(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY));
     }
@@ -58,7 +58,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     @Execution(ExecutionMode.CONCURRENT)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertExecuteQueryWithResultSetTypeAndConcurrencyAndHoldability(final String name, final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
+    void assertExecuteQueryWithResultSetTypeAndConcurrencyAndHoldability(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         executeDQL(context, () -> assertExecuteQueryWithResultSetTypes(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT));
     }
@@ -67,7 +67,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     @Execution(ExecutionMode.CONCURRENT)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertExecuteWithResultSetTypeAndConcurrency(final String name, final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
+    void assertExecuteWithResultSetTypeAndConcurrency(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         executeDQL(context, () -> assertExecuteWithResultSetTypes(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY));
     }
@@ -76,7 +76,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     @Execution(ExecutionMode.CONCURRENT)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertExecuteWithResultSetTypeAndConcurrencyAndHoldability(final String name, final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
+    void assertExecuteWithResultSetTypeAndConcurrencyAndHoldability(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         executeDQL(context, () -> assertExecuteWithResultSetTypes(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT));
     }
