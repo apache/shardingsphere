@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.prepare;
 
+import com.google.common.base.Suppliers;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
@@ -51,6 +52,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -100,6 +102,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.Supplier;
 
 /**
  * Firebird prepare transaction command executor.
@@ -230,24 +233,27 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         while (packet.nextItem()) {
             requestedItems.add(packet.getCurrentItem());
             if (packet.getCurrentItem() == FirebirdSQLInfoPacketType.DESCRIBE_END) {
+                Supplier<ShardingSphereDatabase> database = Suppliers.memoize(() -> ProxyContext.getInstance().getContextManager().getDatabase(connectionSession.getCurrentDatabaseName()));
+                Supplier<Optional<ShardingSphereSchema>> schema = Suppliers.memoize(() -> database.get().findDefaultSchema());
                 if (returnAll) {
-                    processReturnValues(sqlStatementContext, describeColumns, requestedItems);
+                    processReturnValues(sqlStatementContext, database, schema, describeColumns, requestedItems);
                 } else {
-                    processParameters(sqlStatementContext, describeColumns, requestedItems);
+                    processParameters(sqlStatementContext, database, schema, describeColumns, requestedItems);
                 }
                 return;
             }
         }
     }
     
-    private void processReturnValues(final SQLStatementContext sqlStatementContext, final Collection<FirebirdReturnColumnPacket> describeColumns,
+    private void processReturnValues(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                     final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
                                      final Collection<FirebirdSQLInfoPacketType> requestedItems) {
-        Collection<Projection> projections = getProjections(sqlStatementContext);
+        Collection<Projection> projections = getProjections(sqlStatementContext, database, schema);
         int columnCount = 0;
         for (Projection each : projections) {
             if (each instanceof ColumnProjection) {
                 String tableName = ((ColumnProjection) each).getOriginalTable().getValue();
-                ShardingSphereTable table = getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
+                ShardingSphereTable table = getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName, database, schema);
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) each).getOriginalColumn().getValue());
                 processColumn(describeColumns, requestedItems, table, column, ((ColumnProjection) each).getOwner().orElse(null), each.getAlias().orElse(null), ++columnCount);
             } else if (each instanceof ExpressionProjection) {
@@ -262,7 +268,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
-    private Collection<Projection> getProjections(final SQLStatementContext sqlStatementContext) {
+    private Collection<Projection> getProjections(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                                  final Supplier<Optional<ShardingSphereSchema>> schema) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             SelectStatementContext selectStatement = (SelectStatementContext) sqlStatementContext;
             Collection<Projection> expandProjections = selectStatement.getProjectionsContext().getExpandProjections();
@@ -290,7 +297,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         for (ProjectionSegment each : projections) {
             Projection projection = projectionEngine.createProjection(each).orElse(null);
             if (projection instanceof ShorthandProjection) {
-                result.addAll(processShorthandProjection(sqlStatementContext, (ShorthandProjection) projection));
+                result.addAll(processShorthandProjection(sqlStatementContext, database, schema, (ShorthandProjection) projection));
             } else if (!(projection instanceof DerivedProjection) && null != projection) {
                 result.add(projection);
             }
@@ -298,7 +305,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return result;
     }
     
-    private Collection<Projection> processShorthandProjection(final SQLStatementContext sqlStatementContext, final ShorthandProjection projection) {
+    private Collection<Projection> processShorthandProjection(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                                              final Supplier<Optional<ShardingSphereSchema>> schema, final ShorthandProjection projection) {
         if (!projection.getActualColumns().isEmpty()) {
             return projection.getActualColumns();
         }
@@ -306,7 +314,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         TablesContext tablesContext = sqlStatementContext.getTablesContext();
         if (null != tablesContext) {
             for (String tableName : tablesContext.getTableNames()) {
-                ShardingSphereTable table = getTable(tableName);
+                ShardingSphereTable table = getTable(tableName, database, schema);
                 table.getAllColumns().forEach(each -> {
                     ColumnSegmentBoundInfo info = new ColumnSegmentBoundInfo(null, new IdentifierValue(table.getName()), new IdentifierValue(each.getName()), TableSourceType.PHYSICAL_TABLE);
                     result.add(new ColumnProjection(null, new IdentifierValue(each.getName()), null, sqlStatementContext.getSqlStatement().getDatabaseType(), null, null, info));
@@ -317,27 +325,27 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     @HighFrequencyInvocation
-    private ShardingSphereTable getTable(final String tableName) {
-        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase(connectionSession.getCurrentDatabaseName());
-        ShardingSphereTable result = database.findDefaultSchema().map(optional -> optional.getTable(tableName)).orElse(null);
+    private ShardingSphereTable getTable(final String tableName, final Supplier<ShardingSphereDatabase> database, final Supplier<Optional<ShardingSphereSchema>> schema) {
+        ShardingSphereTable result = schema.get().map(optional -> optional.getTable(tableName)).orElse(null);
         if (null == result) {
-            result = database.getSchema("system_tables").getTable(tableName);
+            result = database.get().getSchema("system_tables").getTable(tableName);
         }
         ShardingSpherePreconditions.checkNotNull(result, () -> new TableNotFoundException(tableName));
         return result;
     }
     
-    private void processParameters(final SQLStatementContext sqlStatementContext, final Collection<FirebirdReturnColumnPacket> describeColumns,
+    private void processParameters(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                   final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
                                    final Collection<FirebirdSQLInfoPacketType> requestedItems) {
         if (sqlStatementContext instanceof InsertStatementContext) {
-            processInsertStatement((InsertStatementContext) sqlStatementContext, describeColumns, requestedItems);
+            processInsertStatement((InsertStatementContext) sqlStatementContext, database, schema, describeColumns, requestedItems);
             return;
         }
         Collection<ColumnSegment> affectedColumns = findAffectedColumns(sqlStatementContext);
         int parametersCount = sqlStatementContext.getSqlStatement().getParameterMarkers().size();
         int columnCount = 0;
         for (ColumnSegment columnSegment : affectedColumns) {
-            ShardingSphereTable table = getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
+            ShardingSphereTable table = getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue(), database, schema);
             ShardingSphereColumn column = table.getColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue());
             processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), ++columnCount);
         }
@@ -346,7 +354,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
-    private void processInsertStatement(final InsertStatementContext sqlStatementContext, final Collection<FirebirdReturnColumnPacket> describeColumns,
+    private void processInsertStatement(final InsertStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                        final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
                                         final Collection<FirebirdSQLInfoPacketType> requestedItems) {
         Collection<String> tableNames = getTableNames(sqlStatementContext);
         Collection<String> affectedColumns = new LinkedList<>();
@@ -355,7 +364,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         int columnCount = 0;
         for (String tableName : tableNames) {
-            ShardingSphereTable table = getTable(tableName);
+            ShardingSphereTable table = getTable(tableName, database, schema);
             for (String columnName : affectedColumns) {
                 ShardingSphereColumn column = table.getColumn(columnName);
                 processColumn(describeColumns, requestedItems, table, column, null, null, ++columnCount);

@@ -80,6 +80,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -459,6 +460,49 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPacketPayload contentPayload = mock(FirebirdPacketPayload.class);
         actualReturnPacket.getDescribeSelect().get(1).write(contentPayload);
         verify(contentPayload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("describeWithSchemaReplacementArguments")
+    void assertDescribeWithSchemaReplacement(final String name, final String sql, final FirebirdSQLInfoPacketType describeType) throws Exception {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("foo_db");
+        ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
+        ShardingSphereColumn codeColumn = new ShardingSphereColumn("code", Types.BIGINT, false, false, true, true, false, true);
+        ShardingSphereTable originalTable = new ShardingSphereTable("foo_tbl", Arrays.asList(idColumn, codeColumn), Collections.emptyList(), Collections.emptyList());
+        database.addSchema(new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(originalTable), Collections.emptyList()));
+        when(database.findDefaultSchema()).thenCallRealMethod();
+        ShardingSphereTable replacementTable = new ShardingSphereTable("foo_tbl", Collections.singleton(idColumn), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema replacementSchema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(replacementTable), Collections.emptyList());
+        when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenReturn(database).thenAnswer(invocation -> {
+            database.addSchema(replacementSchema);
+            return database;
+        }).thenReturn(database);
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, describeType, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.FIELD, FirebirdSQLInfoPacketType.FIELD, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        List<FirebirdReturnColumnPacket> actualColumns = FirebirdSQLInfoPacketType.BIND == describeType ? actualReturnPacket.getDescribeBind() : actualReturnPacket.getDescribeSelect();
+        assertThat(actualColumns.size(), is(2));
+        FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
+        when(idPayload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        actualColumns.get(0).write(idPayload);
+        verify(idPayload).writeBytes("id".getBytes(StandardCharsets.UTF_8));
+        verify(idPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload codePayload = mock(FirebirdPacketPayload.class);
+        when(codePayload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        actualColumns.get(1).write(codePayload);
+        verify(codePayload).writeBytes("code".getBytes(StandardCharsets.UTF_8));
+        verify(codePayload).writeInt4LE(FirebirdBinaryColumnType.INT64.getValue() + 1);
+    }
+    
+    private static Stream<Arguments> describeWithSchemaReplacementArguments() {
+        return Stream.of(
+                Arguments.of("Select columns", "SELECT id, code FROM foo_tbl", FirebirdSQLInfoPacketType.SELECT),
+                Arguments.of("Bind parameters", "SELECT id, code FROM foo_tbl WHERE id = ? AND code = ?", FirebirdSQLInfoPacketType.BIND),
+                Arguments.of("Returning shorthand", "INSERT INTO foo_tbl (id, code) VALUES (1, 2) RETURNING *", FirebirdSQLInfoPacketType.SELECT));
     }
     
     @Test
