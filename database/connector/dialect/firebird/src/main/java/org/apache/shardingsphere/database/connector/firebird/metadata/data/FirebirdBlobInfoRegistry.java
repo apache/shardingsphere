@@ -48,7 +48,7 @@ public final class FirebirdBlobInfoRegistry {
             return;
         }
         String tableKey = buildTableKey(schemaName, tableName);
-        if (null == blobColumns) {
+        if (null == blobColumns || blobColumns.isEmpty()) {
             BLOB_COLUMNS.remove(tableKey);
             return;
         }
