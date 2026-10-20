@@ -134,18 +134,6 @@
             <message key="matchxpath.match" value="Test method names must start with 'assert'." />
         </module>
         <module name="MatchXpath">
-            <property name="id" value="ParameterizedTestDisplayName" />
-            <property name="severity" value="warning" />
-            <property name="query" value="//METHOD_DEF/MODIFIERS/ANNOTATION[(./IDENT[@text='ParameterizedTest'] or ./DOT/IDENT[@text='ParameterizedTest']) and not(./ANNOTATION_MEMBER_VALUE_PAIR[./IDENT[@text='name'] and ./EXPR/STRING_LITERAL[@text='{0}']])]" />
-            <message key="matchxpath.match" value="Parameterized tests must use name = &quot;{0}&quot;." />
-        </module>
-        <module name="MatchXpath">
-            <property name="id" value="ParameterizedTestNameParameter" />
-            <property name="severity" value="warning" />
-            <property name="query" value="//METHOD_DEF[./MODIFIERS/ANNOTATION[(./IDENT[@text='ParameterizedTest'] or ./DOT/IDENT[@text='ParameterizedTest'])]]/PARAMETERS[not(./PARAMETER_DEF[1][./MODIFIERS/FINAL and ./IDENT[@text='name'] and not(./ELLIPSIS) and ./TYPE[not(.//ARRAY_DECLARATOR) and (./IDENT[@text='String'] or ./DOT[./IDENT[@text='String'] and ./DOT[./IDENT[@text='java'] and ./IDENT[@text='lang']]])]])]" />
-            <message key="matchxpath.match" value="Declare final String name as the first parameter of parameterized tests." />
-        </module>
-        <module name="MatchXpath">
             <property name="query" value="//VARIABLE_DEF[./MODIFIERS/FINAL and (parent::FOR_INIT or parent::FOR_EACH_CLAUSE)]" />
             <message key="matchxpath.match" value="Do not declare for-loop variables as final." />
         </module>
