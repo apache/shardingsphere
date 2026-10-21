@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.storage.option;
 
+import java.util.Optional;
+
 /**
  * Storage container connect option.
  */
@@ -59,5 +61,14 @@ public interface StorageContainerConnectOption {
      */
     default String getProxyURL(final String host, final int port, final String dataSourceName) {
         return getURL(host, port, dataSourceName);
+    }
+    
+    /**
+     * Get connection test query.
+     *
+     * @return connection test query, empty means JDBC 4 Connection.isValid
+     */
+    default Optional<String> getConnectionTestQuery() {
+        return Optional.empty();
     }
 }
