@@ -302,8 +302,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(contextManager.getMetaDataContexts().getMetaData(), "postgres", new HintValueContext())
-                .bind(sqlParserEngine.parse(sql, false));
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(contextManager.getMetaDataContexts().getMetaData(), "postgres", new HintValueContext()).bind(sqlParserEngine.parse(sql, false));
         List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.nCopies(actualParameterMarkerIndexes.size(), PostgreSQLBinaryColumnType.UNSPECIFIED));
         return new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, actualParameterMarkerIndexes);
     }

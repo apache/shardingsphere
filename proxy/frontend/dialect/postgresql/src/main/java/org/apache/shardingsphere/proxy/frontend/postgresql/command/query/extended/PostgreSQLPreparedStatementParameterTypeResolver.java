@@ -55,6 +55,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -140,11 +141,14 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
     
     private static void putInsertValueColumnTypes(final PostgreSQLServerPreparedStatement preparedStatement, final InsertValuesSegment insertValuesSegment, final ShardingSphereTable table,
                                                   final List<ShardingSphereIdentifier> columnNamesOfInsert, final Map<Integer, Collection<Integer>> parameterColumnTypes) {
-        for (int i = 0; i < insertValuesSegment.getValues().size() && i < columnNamesOfInsert.size(); i++) {
-            ExpressionSegment value = insertValuesSegment.getValues().get(i);
-            String columnName = columnNamesOfInsert.get(i).toString();
-            if (value instanceof ParameterMarkerExpressionSegment && table.containsColumn(columnName)) {
-                putParameterColumnType(preparedStatement, (ParameterMarkerExpressionSegment) value, table.getColumn(columnName).getDataType(), parameterColumnTypes);
+        Iterator<ShardingSphereIdentifier> columnNames = columnNamesOfInsert.iterator();
+        for (ExpressionSegment each : insertValuesSegment.getValues()) {
+            if (!columnNames.hasNext()) {
+                return;
+            }
+            String columnName = columnNames.next().toString();
+            if (each instanceof ParameterMarkerExpressionSegment && table.containsColumn(columnName)) {
+                putParameterColumnType(preparedStatement, (ParameterMarkerExpressionSegment) each, table.getColumn(columnName).getDataType(), parameterColumnTypes);
             }
         }
     }
