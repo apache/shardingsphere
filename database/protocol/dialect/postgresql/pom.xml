@@ -23,7 +23,7 @@
         <artifactId>shardingsphere-database-protocol-dialect</artifactId>
         <version>5.5.4-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-protocol-postgresql</artifactId>
+    <artifactId>shardingsphere-database-protocol-postgresql</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>

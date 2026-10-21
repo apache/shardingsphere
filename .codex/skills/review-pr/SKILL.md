@@ -55,8 +55,9 @@ coverage, or convergence. Never use a previous Formal Review result as
 evidence or as a conclusion to match. Treat previous public findings only as
 hypotheses whose cited facts must be reverified.
 
-Two reviews with the same effective candidate, requirements, focus, and
-evidence must produce the same canonical assessment. Public-PR and local-candidate reviews may resolve different candidates, but they must apply the same code-correctness judgment and Formal Review result mapping. A changed focus, requirement,
+Completed coordinated reviews with the same effective candidate, requirements, focus, and evidence must produce the same canonical overall assessment.
+Individual independent assessments may discover different candidates; the coordinator verifies and adjudicates their cumulative findings under Independent Review Coordination.
+Public-PR and local-candidate reviews may resolve different candidates, but they must apply the same code-correctness judgment and Formal Review result mapping. A changed focus, requirement,
 or external fact changes the review basis and may legitimately change the
 assessment. Mergeability or CI evidence may add external-state findings or
 gaps, but it must not change code-correctness findings derived from an otherwise
@@ -324,7 +325,7 @@ For each blocking issue include:
 Do not add patch-level changes after selecting Needs Discussion.
 Do not include placeholder headings.
 In `### Coverage`, report the candidate type, reviewed baseline or head, authoritative requirements and files accounted for, accepted behavior and project-commitment basis, behavior clusters, completed discovery lenses, unresolved gaps, and CI scope.
-Also report the completed independent-review pairs, result-review outcome and resolution of any differences without exposing private reviewer materials.
+Also report the completed independent assessments and stages, overall adjudication and resolution of any differences without exposing private reviewer materials.
 For every public PR or PR-backed local candidate, also report the effective candidate SHA, each style-verification scope and command, each exit code, every covered applicable PR-impact file, and every `Not Applicable` check with its basis.
 For a standalone local candidate, identify the task baseline and attributed local delta; for a PR-backed candidate, identify authorized local commits, index changes, or working-tree changes separately from the public PR state.
 In Code Correctness Review, state that the result is code-scope only and CI was not reviewed while distinguishing the completed local style verification from CI.

@@ -606,4 +606,10 @@
     <sql-case id="select_where_is_distinct_from_and_equal_firebird" value="SELECT order_id FROM t_order WHERE status IS DISTINCT FROM ? AND order_id = ?" db-types="Firebird" />
     <sql-case id="select_with_schema_database_link_and_alias_oracle" value="SELECT * FROM userinfo.subs_rateplan@PJZW x" db-types="Oracle" />
     <sql-case id="select_with_dotted_database_link_oracle" value="SELECT * FROM userinfo.subs_rateplan@PJZW.EXAMPLE.COM x" db-types="Oracle" />
+    <sql-case id="select_key_alias_with_as_firebird" value="SELECT order_id AS KEY FROM t_order" db-types="Firebird" />
+    <sql-case id="select_text_alias_with_as_firebird" value="SELECT order_id AS TEXT FROM t_order" db-types="Firebird" />
+    <sql-case id="select_comment_alias_with_as_firebird" value="SELECT order_id AS COMMENT FROM t_order" db-types="Firebird" />
+    <sql-case id="select_key_alias_without_as_firebird" value="SELECT order_id KEY FROM t_order" db-types="Firebird" />
+    <sql-case id="select_text_alias_without_as_firebird" value="SELECT order_id TEXT FROM t_order" db-types="Firebird" />
+    <sql-case id="select_comment_alias_without_as_firebird" value="SELECT order_id COMMENT FROM t_order" db-types="Firebird" />
 </sql-cases>
