@@ -44,7 +44,7 @@ import java.util.Map;
  *   <li>When projections are fully expanded, logical {@code expandProjections} are authoritative.</li>
  * </ul>
  */
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class VisibleColumnMapping {
     

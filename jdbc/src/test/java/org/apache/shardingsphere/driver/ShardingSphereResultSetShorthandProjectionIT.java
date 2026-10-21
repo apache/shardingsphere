@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * SQL bind is skipped and shorthand projections remain unexpanded, causing column count
  * and label mismatches in the ResultSet.</p>
  */
-class ShardingSphereResultSetShorthandProjectionIT {
+final class ShardingSphereResultSetShorthandProjectionIT {
     
     private static final String SHARDING_JDBC_URL = "jdbc:shardingsphere:classpath:config/driver/driver-fixture-h2-mysql.yaml";
     
@@ -91,12 +91,12 @@ class ShardingSphereResultSetShorthandProjectionIT {
             try (
                     Statement statement = shardingSphereConnection.createStatement();
                     ResultSet resultSet = statement.executeQuery("SELECT T.*, T.status status_new FROM t_order T WHERE T.order_id = 1000")) {
-                ResultSetMetaData metaData = resultSet.getMetaData();
-                assertThat("column count should be 4", metaData.getColumnCount(), is(4));
-                assertThat(metaData.getColumnLabel(1), is("order_id"));
-                assertThat(metaData.getColumnLabel(2), is("user_id"));
-                assertThat(metaData.getColumnLabel(3), is("status"));
-                assertThat(metaData.getColumnLabel(4), is("status_new"));
+                ResultSetMetaData actualMetaData = resultSet.getMetaData();
+                assertThat("column count should be 4", actualMetaData.getColumnCount(), is(4));
+                assertThat(actualMetaData.getColumnLabel(1), is("order_id"));
+                assertThat(actualMetaData.getColumnLabel(2), is("user_id"));
+                assertThat(actualMetaData.getColumnLabel(3), is("status"));
+                assertThat(actualMetaData.getColumnLabel(4), is("status_new"));
                 assertTrue(resultSet.next());
                 assertThat(resultSet.getString("order_id"), is("1000"));
                 assertThat(resultSet.getString("status_new"), is("ACTIVE"));
@@ -116,10 +116,10 @@ class ShardingSphereResultSetShorthandProjectionIT {
             try (
                     Statement statement = shardingSphereConnection.createStatement();
                     ResultSet resultSet = statement.executeQuery("SELECT T.order_id, T.status status_new FROM t_order T WHERE T.order_id = 1000")) {
-                ResultSetMetaData metaData = resultSet.getMetaData();
-                assertThat("column count should be 2", metaData.getColumnCount(), is(2));
-                assertThat(metaData.getColumnLabel(1), is("order_id"));
-                assertThat(metaData.getColumnLabel(2), is("status_new"));
+                ResultSetMetaData actualMetaData = resultSet.getMetaData();
+                assertThat("column count should be 2", actualMetaData.getColumnCount(), is(2));
+                assertThat(actualMetaData.getColumnLabel(1), is("order_id"));
+                assertThat(actualMetaData.getColumnLabel(2), is("status_new"));
                 assertTrue(resultSet.next());
                 assertThat(resultSet.getString("order_id"), is("1000"));
                 assertThat(resultSet.getString("status_new"), is("ACTIVE"));
@@ -139,9 +139,9 @@ class ShardingSphereResultSetShorthandProjectionIT {
             try (
                     Statement statement = shardingSphereConnection.createStatement();
                     ResultSet resultSet = statement.executeQuery("SELECT t_order.status FROM t_order ORDER BY t_order.order_id ASC")) {
-                ResultSetMetaData metaData = resultSet.getMetaData();
-                assertThat("only status should be visible, ORDER_BY_DERIVED must be hidden", metaData.getColumnCount(), is(1));
-                assertThat(metaData.getColumnLabel(1), is("status"));
+                ResultSetMetaData actualMetaData = resultSet.getMetaData();
+                assertThat("only status should be visible, ORDER_BY_DERIVED must be hidden", actualMetaData.getColumnCount(), is(1));
+                assertThat(actualMetaData.getColumnLabel(1), is("status"));
                 assertTrue(resultSet.next());
             }
         }
@@ -159,9 +159,9 @@ class ShardingSphereResultSetShorthandProjectionIT {
                     Statement statement = shardingSphereConnection.createStatement();
                     ResultSet resultSet = statement.executeQuery(
                             "SELECT t_order.status AS ORDER_BY_DERIVED_0 FROM t_order WHERE order_id = 1000")) {
-                ResultSetMetaData metaData = resultSet.getMetaData();
-                assertThat(metaData.getColumnCount(), is(1));
-                assertThat(metaData.getColumnLabel(1), is("ORDER_BY_DERIVED_0"));
+                ResultSetMetaData actualMetaData = resultSet.getMetaData();
+                assertThat(actualMetaData.getColumnCount(), is(1));
+                assertThat(actualMetaData.getColumnLabel(1), is("ORDER_BY_DERIVED_0"));
                 assertTrue(resultSet.next());
                 assertThat(resultSet.getString("ORDER_BY_DERIVED_0"), is("ACTIVE"));
                 assertFalse(resultSet.next());
@@ -182,9 +182,9 @@ class ShardingSphereResultSetShorthandProjectionIT {
                     Statement statement = shardingSphereConnection.createStatement();
                     ResultSet resultSet = statement.executeQuery(
                             "SELECT t_order.status AS ORDER_BY_DERIVED_0 FROM t_order ORDER BY t_order.order_id ASC")) {
-                ResultSetMetaData metaData = resultSet.getMetaData();
-                assertThat("user alias ORDER_BY_DERIVED_0 visible, internal one hidden", metaData.getColumnCount(), is(1));
-                assertThat(metaData.getColumnLabel(1), is("ORDER_BY_DERIVED_0"));
+                ResultSetMetaData actualMetaData = resultSet.getMetaData();
+                assertThat("user alias ORDER_BY_DERIVED_0 visible, internal one hidden", actualMetaData.getColumnCount(), is(1));
+                assertThat(actualMetaData.getColumnLabel(1), is("ORDER_BY_DERIVED_0"));
                 assertTrue(resultSet.next());
                 assertThat(resultSet.getString("ORDER_BY_DERIVED_0"), is("ACTIVE"));
             }
@@ -204,12 +204,12 @@ class ShardingSphereResultSetShorthandProjectionIT {
             try (
                     Statement statement = shardingSphereConnection.createStatement();
                     ResultSet resultSet = statement.executeQuery("SELECT T.*, T.status status_new FROM t_order T ORDER BY T.user_id")) {
-                ResultSetMetaData metaData = resultSet.getMetaData();
-                assertThat("shorthand columns visible, ORDER_BY_DERIVED hidden", metaData.getColumnCount(), is(4));
-                assertThat(metaData.getColumnLabel(1), is("order_id"));
-                assertThat(metaData.getColumnLabel(2), is("user_id"));
-                assertThat(metaData.getColumnLabel(3), is("status"));
-                assertThat(metaData.getColumnLabel(4), is("status_new"));
+                ResultSetMetaData actualMetaData = resultSet.getMetaData();
+                assertThat("shorthand columns visible, ORDER_BY_DERIVED hidden", actualMetaData.getColumnCount(), is(4));
+                assertThat(actualMetaData.getColumnLabel(1), is("order_id"));
+                assertThat(actualMetaData.getColumnLabel(2), is("user_id"));
+                assertThat(actualMetaData.getColumnLabel(3), is("status"));
+                assertThat(actualMetaData.getColumnLabel(4), is("status_new"));
                 assertTrue(resultSet.next());
                 assertThat(resultSet.getString("order_id"), is("1000"));
                 assertThat(resultSet.getString("status_new"), is("ACTIVE"));
@@ -228,8 +228,9 @@ class ShardingSphereResultSetShorthandProjectionIT {
             try (
                     Statement statement = shardingSphereConnection.createStatement();
                     ResultSet resultSet = statement.executeQuery("SELECT COUNT(DISTINCT user_id) FROM t_order")) {
-                ResultSetMetaData metaData = resultSet.getMetaData();
-                assertThat(metaData.getColumnCount(), is(1));
+                ResultSetMetaData actualMetaData = resultSet.getMetaData();
+                assertThat(actualMetaData.getColumnCount(), is(1));
+                assertThat(actualMetaData.getColumnLabel(1), is("COUNT(DISTINCT user_id)"));
                 assertTrue(resultSet.next());
                 assertThat(resultSet.getInt(1), is(2));
                 assertFalse(resultSet.next());
@@ -250,8 +251,8 @@ class ShardingSphereResultSetShorthandProjectionIT {
                     Statement statement = shardingSphereConnection.createStatement();
                     ResultSet resultSet = statement.executeQuery(
                             "SELECT o.order_id, i.* FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = 1000")) {
-                ResultSetMetaData metaData = resultSet.getMetaData();
-                assertThat("explicit column + shorthand from joined table", metaData.getColumnCount(), is(4));
+                ResultSetMetaData actualMetaData = resultSet.getMetaData();
+                assertThat("explicit column + shorthand from joined table", actualMetaData.getColumnCount(), is(4));
                 assertTrue(resultSet.next());
                 assertThat(resultSet.getString("item_name"), is("ITEM_A"));
                 assertFalse(resultSet.next());
