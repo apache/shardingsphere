@@ -37,6 +37,8 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PostgreSQLPgNamespaceTableStatisticsCollectorTest {
     
@@ -60,6 +62,19 @@ class PostgreSQLPgNamespaceTableStatisticsCollectorTest {
         assertThat(actualResults.get("foo_schema").get("nspname"), is("foo_schema"));
         assertThat(actualResults.get("bar_schema").get("oid"), is(2L));
         assertThat(actualResults.get("bar_schema").get("nspname"), is("bar_schema"));
+    }
+    
+    @Test
+    void assertCollectWithNoSchemas() {
+        assertTrue(collector.collect("foo_db", "pg_catalog", "pg_namespace", createMetaData(Collections.emptyList())).isEmpty());
+    }
+    
+    @Test
+    void assertCollectWithDatabaseNotExists() {
+        ShardingSphereMetaData metaData = createMetaData(Collections.emptyList());
+        metaData.dropDatabase("foo_db");
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> collector.collect("foo_db", "pg_catalog", "pg_namespace", metaData));
+        assertThat(actual.getMessage(), is("Database 'foo_db' does not exist."));
     }
     
     @Test

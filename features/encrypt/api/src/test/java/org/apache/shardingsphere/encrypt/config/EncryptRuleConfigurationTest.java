@@ -116,15 +116,15 @@ class EncryptRuleConfigurationTest {
         EncryptRuleConfiguration ruleConfig = createRuleConfiguration(new EncryptColumnRuleConfiguration(
                 "foo_col", new EncryptColumnItemRuleConfiguration("foo_cipher", "bar_encryptor")));
         InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
-        assertThat(actual.getMessage(), is("Invalid 'EncryptRuleConfiguration' rule, error message is: Property `tables` references unconfigured encryptors `bar_encryptor`."));
+        assertThat(actual.getMessage(), is("Invalid 'EncryptRuleConfiguration' rule, error message is: Property `tables` references unconfigured encryptors."));
     }
     
     @Test
     void assertDuplicateTableNamesViolation() {
-        EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Arrays.asList(new EncryptTableRuleConfiguration("foo_tbl", Collections.emptyList()),
-                new EncryptTableRuleConfiguration("bar_tbl", Collections.emptyList()), new EncryptTableRuleConfiguration("foo_tbl", Collections.emptyList())), Collections.emptyMap());
+        EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Arrays.asList(new EncryptTableRuleConfiguration("foo_{message}", Collections.emptyList()),
+                new EncryptTableRuleConfiguration("bar_tbl", Collections.emptyList()), new EncryptTableRuleConfiguration("foo_{message}", Collections.emptyList())), Collections.emptyMap());
         InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
-        assertThat(actual.getMessage(), is("Invalid 'EncryptRuleConfiguration' rule, error message is: Property `tables` must not contain duplicate table names `foo_tbl`."));
+        assertThat(actual.getMessage(), is("Invalid 'EncryptRuleConfiguration' rule, error message is: Property `tables` must not contain duplicate table names."));
         SQLException actualSQLException = actual.toSQLException();
         assertThat(actualSQLException.getMessage(), is(actual.getMessage()));
         assertThat(actualSQLException.getSQLState(), is("44000"));
@@ -195,12 +195,31 @@ class EncryptRuleConfigurationTest {
     }
     
     @Test
+    void assertValidateAssistedQueryWithTemplateName() {
+        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("foo_{message}", new EncryptColumnItemRuleConfiguration("foo_cipher", "foo_encryptor"));
+        columnConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("foo_{message}", "foo_encryptor"));
+        EncryptRuleConfiguration ruleConfig = createRuleConfiguration(columnConfig, Collections.singletonMap("foo_encryptor", new AlgorithmConfiguration("FIXTURE", new Properties())));
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'EncryptRuleConfiguration' rule, error message is: Property `tables[].columns` assisted query column conflicts with a logic column."));
+    }
+    
+    @Test
+    void assertValidateLikeQueryWithTemplateName() {
+        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("foo_{message}", new EncryptColumnItemRuleConfiguration("foo_cipher", "foo_encryptor"));
+        columnConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("foo_{message}", "foo_encryptor"));
+        EncryptRuleConfiguration ruleConfig = createRuleConfiguration(columnConfig, Collections.singletonMap("foo_encryptor", new AlgorithmConfiguration("FIXTURE", new Properties())));
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
+        assertThat(actual.getMessage(), is("Invalid 'EncryptRuleConfiguration' rule, error message is: Property `tables[].columns` like query column conflicts with a logic column."));
+    }
+    
+    @Test
     void assertValidateInvalidRuleItemConfiguration() {
-        EncryptColumnRuleConfiguration columnConfig = createValidColumnConfiguration();
-        columnConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("foo_col", "foo_encryptor"));
+        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("foo_{message}", new EncryptColumnItemRuleConfiguration("foo_cipher", "foo_encryptor"));
+        columnConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("foo_{message}", "foo_encryptor"));
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("foo_tbl", Collections.singleton(columnConfig));
         EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
-        assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validateRuleItem(ruleConfig, tableConfig));
+        InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validateRuleItem(ruleConfig, tableConfig));
+        assertThat(actual.getMessage(), is("Invalid 'EncryptRuleConfiguration' rule, error message is: Property `columns` assisted query column conflicts with a logic column."));
     }
     
     private static EncryptColumnRuleConfiguration createValidColumnConfiguration() {

@@ -2210,17 +2210,25 @@ references = []
                 self.assertTrue(required_sources.issubset(bundle["profiles"][profile]))
 
     def test_case_policy_binding_requires_full_statement_in_source(self) -> None:
-        for punctuation in (".", ";"):
+        for punctuation in ".!?;。！？；":
             with self.subTest(punctuation=punctuation), tempfile.TemporaryDirectory() as directory:
-                statement = f"Preserve every supported behavior before handing off the completed task{punctuation}"
+                statement = (
+                    f"Preserve every supported behavior before handing off the completed task{punctuation}"
+                    if punctuation in ".!?;"
+                    else f"在交付本次任务之前，必须保留全部现有的受支持行为并完成必要的验证{punctuation}"
+                )
+                short_statement = f"Preserve behavior{punctuation}"
                 root = Path(directory)
                 manifest_path = self.create_bundle(root)
-                (root / ".codex" / "rules.md").write_text(f"{statement}\n", encoding="utf-8")
+                (root / ".codex" / "rules.md").write_text(f"{statement}\n{short_statement}\n", encoding="utf-8")
                 bundle = run.load_policy_manifest(root, manifest_path)
                 binding = run.normalize_case_policy_bindings([self.create_bound_case(statement)], bundle)[0]
                 self.assertEqual(".codex/rules.md", binding["assertions"][0]["source_path"])
+                for invalid_statement in (statement[:-1], short_statement):
+                    with self.assertRaisesRegex(ValueError, "complete normative sentences"):
+                        run.normalize_case_policy_bindings([self.create_bound_case(invalid_statement)], bundle)
                 for invalid_statement in (
-                        f"Preserve every unsupported behavior before handing off the completed task{punctuation}",
+                        statement.replace("supported", "unsupported").replace("受支持", "不受支持"),
                         statement[:-1] + (";" if punctuation == "." else "."),
                 ):
                     with self.assertRaisesRegex(ValueError, "absent from its source"):

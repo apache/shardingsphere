@@ -52,7 +52,16 @@ exit "$rc"
 #### Local Docker Test Images
 
 - For serial local tests, use the repository's existing standard image names with the `latest` tag for locally built test artifacts instead of inventing names or per-run tags.
-  Preserve existing external-dependency and CI image tags.
+  Preserve existing external-dependency and CI image tags unless they conflict with the established target version for the same dependency and major-version line.
+- Use one pinned image version across all test entry points for the same external test dependency and supported major-version line.
+  Follow the target version explicitly required by the current task or established repository tests; resolve an unclear or conflicting target before selecting an image.
+  Do not use a different version, a floating tag, or an omitted tag to satisfy that dependency and major-version line.
+- Before execution, inspect the final effective test image selection.
+  Correct a conflicting selection only within the current task's authorized scope, before starting the test.
+  If the conflicting selection is outside that scope, report the difference without changing other entry points or starting the test.
+- Do not relabel or substitute an image to present another dependency version as the required version.
+  During actual runtime verification, verify both the selected image and the dependency's actual version; an image tag alone does not prove the version.
+- Unifying an external test dependency image within one major-version line does not authorize changes to other dependencies or major-version lines.
 - Reuse an existing image only after proving that it contains the current artifacts being verified; the presence of `latest` alone is not proof.
   When artifacts change or freshness cannot be proved, rebuild current artifacts and update the same `latest` tag through the repository's standard build flow.
 - Record the old image ID, if present, before rebuilding.
