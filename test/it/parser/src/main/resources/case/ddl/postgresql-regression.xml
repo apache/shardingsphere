@@ -146,6 +146,7 @@
     <create-trigger sql-case-id="create_constraint_trigger_postgresql">
         <trigger-name name="foo_trigger" start-index="26" stop-index="36" />
         <table name="foo" start-index="54" stop-index="56" />
+        <table name="bar" start-index="63" stop-index="65" />
     </create-trigger>
     <create-trigger sql-case-id="create_constraint_trigger_optional_clauses_postgresql">
         <trigger-name name="foo_trigger" start-index="26" stop-index="36" />

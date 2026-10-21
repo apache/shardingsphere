@@ -109,4 +109,6 @@
     <sql-case id="create_index_cast_binary_pg" value="CREATE INDEX foo_idx ON foo_table (CAST(a + CAST(b AS integer) AS integer))" db-types="PostgreSQL" case-types="Literal" />
     <sql-case id="create_index_nested_function_cast_pg" value="CREATE INDEX foo_idx ON foo_table (coalesce(abs(CAST(b AS integer)), CAST(a AS integer), b))" db-types="PostgreSQL" case-types="Literal" />
     <sql-case id="create_index_array_subscript_function_pg" value="CREATE INDEX foo_idx ON foo_table (abs(a[1]))" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="create_index_nulls_distinct_pg" value="CREATE UNIQUE INDEX idx ON foo_table (a) INCLUDE (b) NULLS DISTINCT" db-types="PostgreSQL" />
+    <sql-case id="create_index_nulls_not_distinct_pg" value="CREATE UNIQUE INDEX idx ON foo_table (a) NULLS NOT DISTINCT" db-types="PostgreSQL" />
 </sql-cases>

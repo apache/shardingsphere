@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegist
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteCallback;
@@ -300,6 +301,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         HintValueContext hintValueContext = SQLHintUtils.extractHint(originSQL);
         String sql = SQLHintUtils.removeHint(originSQL);
         ShardingSphereDatabase currentDatabase = metaData.getDatabase(usedDatabaseName);
+        ShardingSpherePreconditions.checkNotNull(currentDatabase, () -> SQLExceptionTransformEngine.toSQLException(new UnknownDatabaseException(usedDatabaseName), metaData.getProtocolType()));
         DatabaseType databaseType = currentDatabase.getProtocolType();
         SQLStatement sqlStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(databaseType).parse(sql, false);
         SQLStatementContext sqlStatementContext = sqlStatement instanceof DistSQLStatement
@@ -422,6 +424,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {
+        if (null == queryContext) {
+            return Optional.empty();
+        }
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         return sqlStatementContext instanceof InsertStatementContext ? ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext() : Optional.empty();
     }

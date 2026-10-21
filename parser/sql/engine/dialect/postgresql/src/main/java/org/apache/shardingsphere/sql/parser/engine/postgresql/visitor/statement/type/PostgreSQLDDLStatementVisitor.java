@@ -80,6 +80,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Co
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnrefContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommentContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ConstraintClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CountContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateAccessMethodContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateAggregateContext;
@@ -110,6 +111,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Cr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateSubscriptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTextSearchContext;
@@ -186,6 +188,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.No
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OpenContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PrepareContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PriorContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.QualifiedNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RefreshMatViewStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ReindexContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RelativeCountContext;
@@ -193,6 +196,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Re
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameTableSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SecurityLabelStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableConstraintOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableConstraintUsingIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNameClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNamesClauseContext;
@@ -432,8 +436,8 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
             if (null != each.columnDefinition()) {
                 result.getValue().add((ColumnDefinitionSegment) visit(each.columnDefinition()));
             }
-            if (null != each.tableConstraint()) {
-                result.getValue().add((ConstraintDefinitionSegment) visit(each.tableConstraint()));
+            if (null != each.createTableConstraint()) {
+                result.getValue().add((ConstraintDefinitionSegment) visit(each.createTableConstraint()));
             }
         }
         return result;
@@ -657,18 +661,29 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         return result;
     }
     
-    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitCreateTableConstraint(final CreateTableConstraintContext ctx) {
+        return createConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.constraintClause(), ctx.tableConstraintOption());
+    }
+    
     @Override
     public ASTNode visitTableConstraint(final TableConstraintContext ctx) {
-        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        if (null != ctx.constraintClause()) {
-            result.setConstraintName((ConstraintSegment) visit(ctx.constraintClause().constraintName()));
+        return createConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.constraintClause(), ctx.tableConstraintOption());
+    }
+    
+    private ConstraintDefinitionSegment createConstraintDefinitionSegment(final int startIndex, final int stopIndex,
+                                                                          final ConstraintClauseContext constraintClause, final TableConstraintOptionContext option) {
+        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(startIndex, stopIndex);
+        if (null != constraintClause) {
+            result.setConstraintName((ConstraintSegment) visit(constraintClause.constraintName()));
         }
-        if (null != ctx.tableConstraintOption().primaryKey()) {
-            result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.tableConstraintOption().keyColumnNames())).getValue());
+        if (null != option.primaryKey()) {
+            for (ColumnNameContext each : option.keyColumnNames().columnName()) {
+                result.getPrimaryKeyColumns().add((ColumnSegment) visit(each));
+            }
         }
-        if (null != ctx.tableConstraintOption().FOREIGN()) {
-            result.setReferencedTable((SimpleTableSegment) visit(ctx.tableConstraintOption().tableName()));
+        if (null != option.FOREIGN()) {
+            result.setReferencedTable((SimpleTableSegment) visit(option.tableName()));
         }
         return result;
     }
@@ -967,7 +982,9 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
         CreateTriggerStatement result = new CreateTriggerStatement(getDatabaseType());
         result.setTriggerName(new FunctionNameSegment(ctx.name().start.getStartIndex(), ctx.name().stop.getStopIndex(), createIdentifierValue(ctx.name().getText())));
-        result.setTable((SimpleTableSegment) visit(ctx.qualifiedName(0)));
+        for (QualifiedNameContext each : ctx.qualifiedName()) {
+            result.getTables().add((SimpleTableSegment) visit(each));
+        }
         return result;
     }
     

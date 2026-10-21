@@ -21,7 +21,9 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.distsql.statement.type.rul.sql.ParseStatement;
 import org.apache.shardingsphere.driver.executor.engine.facade.DriverExecutorFacade;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
@@ -45,6 +47,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.reflect.Field;
@@ -70,14 +73,67 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ShardingSpherePreparedStatementTest {
+    
+    @Test
+    void assertCreatePreparedStatementAfterDatabaseRemoved() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        ShardingSphereMetaData metaData = createMetaData(databaseType);
+        ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
+        when(connection.getContextManager().getMetaDataContexts().getMetaData()).thenReturn(metaData);
+        when(connection.getCurrentDatabaseName()).thenReturn("foo_db");
+        when(metaData.getProtocolType()).thenReturn(databaseType);
+        when(metaData.getDatabase("foo_db")).thenReturn(null);
+        SQLException expected = new SQLException("Unknown database 'foo_db'", "42000", 1049);
+        try (MockedStatic<SQLExceptionTransformEngine> mockedEngine = mockStatic(SQLExceptionTransformEngine.class, CALLS_REAL_METHODS)) {
+            mockedEngine.when(() -> SQLExceptionTransformEngine.toSQLException(
+                    argThat(ex -> ex instanceof UnknownDatabaseException && "foo_db".equals(((UnknownDatabaseException) ex).getDatabaseName())), same(databaseType))).thenReturn(expected);
+            SQLException actual = assertThrows(SQLException.class, () -> new ShardingSpherePreparedStatement(connection, "SELECT 1"));
+            assertThat(actual, sameInstance(expected));
+            assertThat(actual.getMessage(), is("Unknown database 'foo_db'"));
+            assertThat(actual.getSQLState(), is("42000"));
+            assertThat(actual.getErrorCode(), is(1049));
+        }
+        verify(connection, never()).registerStatementManager(any());
+    }
+    
+    @Test
+    void assertCreatePreparedStatementWhenDatabaseRemovedDuringParsing() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        ShardingSphereMetaData metaData = createMetaData(databaseType);
+        ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
+        when(connection.getContextManager().getMetaDataContexts().getMetaData()).thenReturn(metaData);
+        when(connection.getCurrentDatabaseName()).thenReturn("foo_db");
+        when(metaData.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        SQLParserRule parserRule = mock(SQLParserRule.class, RETURNS_DEEP_STUBS);
+        when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singletonList(parserRule)));
+        when(parserRule.getSQLParserEngine(databaseType).parse("foo_distsql", true)).thenAnswer(invocation -> {
+            when(metaData.getDatabase("foo_db")).thenReturn(null);
+            return new ParseStatement("SELECT 1");
+        });
+        SQLException expected = new SQLException("Unknown database 'foo_db'", "42000", 1049);
+        try (MockedStatic<SQLExceptionTransformEngine> mockedEngine = mockStatic(SQLExceptionTransformEngine.class, CALLS_REAL_METHODS)) {
+            mockedEngine.when(() -> SQLExceptionTransformEngine.toSQLException(
+                    argThat(ex -> ex instanceof UnknownDatabaseException && "foo_db".equals(((UnknownDatabaseException) ex).getDatabaseName())), same(databaseType))).thenReturn(expected);
+            SQLException actual = assertThrows(SQLException.class, () -> new ShardingSpherePreparedStatement(connection, "foo_distsql"));
+            assertThat(actual, sameInstance(expected));
+            assertThat(actual.getMessage(), is("Unknown database 'foo_db'"));
+            assertThat(actual.getSQLState(), is("42000"));
+            assertThat(actual.getErrorCode(), is(1049));
+        }
+        verify(connection, never()).registerStatementManager(any());
+    }
     
     @SuppressWarnings("unchecked")
     @Test
