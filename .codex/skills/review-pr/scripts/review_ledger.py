@@ -782,7 +782,8 @@ def review_evidence_versions(ledger: dict[str, Any]) -> dict[tuple[str, str, str
     return result
 
 
-def result_review_errors(proof: Any, reviews: dict[str, dict[str, Any]], own_reviewer: str = "", current_basis: bool = True) -> list[str]:
+def result_review_errors(proof: Any, reviews: dict[str, dict[str, Any]], basis_ledger: dict[str, Any],
+                         source_ledgers: dict[str, dict[str, Any]], own_reviewer: str = "", current_basis: bool = True) -> list[str]:
     if not isinstance(proof, dict) or any(not has_text(proof.get(key)) for key in ("reason", "counter_evidence")):
         raise RuntimeError("Result review requires an evidence assessment and strongest counter-evidence")
     if not isinstance(proof.get("evidence"), list) or not proof["evidence"]:
@@ -800,8 +801,17 @@ def result_review_errors(proof: Any, reviews: dict[str, dict[str, Any]], own_rev
         ledger = reviews[reviewer]["ledger"]
         if not current_basis and anchor not in all_anchors(ledger):
             errors.append("Historical result-review evidence is not recorded in its original ledger")
-        elif current_basis and capture_anchor(anchor, ledger) != anchor:
-            errors.append("Result-review evidence is stale")
+        elif current_basis:
+            evidence_ledger = basis_ledger
+            current_anchor = anchor
+            if "source" == anchor["side"]:
+                if not any(each["origin"] == anchor["origin"] and each["path"] == anchor["path"] for each in ledger["basis"]["sources"]):
+                    raise RuntimeError("Source anchor does not match a declared material and origin")
+                evidence_ledger = source_ledgers.get(anchor["origin"], ledger)
+                material_path = next(each["path"] for each in evidence_ledger["basis"]["sources"] if each["origin"] == anchor["origin"])
+                current_anchor = {**anchor, "path": material_path}
+            if capture_anchor(current_anchor, evidence_ledger) != current_anchor:
+                errors.append("Result-review evidence is stale")
     return errors
 
 
@@ -850,8 +860,6 @@ def validate_session(session: Any) -> list[str]:
             current_review_start = review_offset
             basis_assessments = 0
             source_versions = {}
-        elif report_count != 1:
-            errors.append("Later stages on an unchanged review basis require one independent original assessment")
         source_versions.update(stage_versions)
         basis_assessments += report_count
         if basis_assessments > 6:
@@ -866,6 +874,9 @@ def validate_session(session: Any) -> list[str]:
         confirmed = any(each["status"] == "confirmed" for each in ledger["findings"])
         if "Review Incomplete" != record["result"] and confirmed != ("Not Mergeable" == record["result"]):
             errors.append("An original decision contradicts its confirmed finding set")
+    basis_ledger = records[current_review_start]["ledger"]
+    source_ledgers = {source["origin"]: record["ledger"] for record in records[current_review_start:]
+                      for source in record["ledger"]["basis"]["sources"]}
     known_reviews = {}
     original_findings = set()
     prior_ids = set()
@@ -873,6 +884,8 @@ def validate_session(session: Any) -> list[str]:
     for index, review_round in enumerate(session["rounds"]):
         current_basis = index >= current_start
         stage = stage_records[index]
+        if index > current_start and len(stage) != 1:
+            errors.append("Later stages on an unchanged review basis require one independent original assessment")
         known_reviews.update((each["reviewer"], each) for each in stage)
         for record in stage:
             original_findings.update((record["reviewer"], each["id"]) for each in record["ledger"]["findings"])
@@ -882,7 +895,8 @@ def validate_session(session: Any) -> list[str]:
                 raise RuntimeError("Every report review requires its original reviewer identity")
             reviewer = report_review["reviewer"]
             audited_reviewers.append(reviewer)
-            errors.extend(result_review_errors(report_review, known_reviews, own_reviewer=reviewer, current_basis=current_basis))
+            errors.extend(result_review_errors(report_review, known_reviews, basis_ledger, source_ledgers,
+                                                own_reviewer=reviewer, current_basis=current_basis))
         if Counter(audited_reviewers) != Counter(each["reviewer"] for each in stage):
             errors.append("Every original report requires substantive result review in its stage")
         groups, members = {}, {}
@@ -895,7 +909,7 @@ def validate_session(session: Any) -> list[str]:
             if finding["id"] in groups:
                 errors.append("Canonical finding identities are duplicated")
             groups[finding["id"]] = finding
-            errors.extend(result_review_errors(finding, known_reviews, current_basis=current_basis))
+            errors.extend(result_review_errors(finding, known_reviews, basis_ledger, source_ledgers, current_basis=current_basis))
             for member in finding["members"]:
                 if not isinstance(member, dict) or any(not has_text(member.get(key)) for key in ("reviewer", "finding")):
                     raise RuntimeError("Finding mappings require an original reviewer and finding identity")

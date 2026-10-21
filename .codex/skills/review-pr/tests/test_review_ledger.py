@@ -948,6 +948,121 @@ class ReviewLedgerTest(unittest.TestCase):
                   "rounds": historical["rounds"] + current["rounds"]}
         self.assertIn("The current review basis exceeds six independent original assessments", ledger.validate_session(actual))
 
+    def test_session_rechecks_historical_committed_candidate_proof(self):
+        self.git("add", self.source_path)
+        self.git("commit", "-qm", "Synthetic reviewed candidate")
+        historical = self.create_session([[("F1", "confirmed")], []], committed=True)
+        (self.repo / self.source_path).write_text("first\nfixed_first\nthird\nfourth\nfifth\nnew_second\nlast\n", encoding="utf-8")
+        self.git("add", self.source_path)
+        self.git("commit", "-qm", "Synthetic changed candidate")
+        current = self.create_session([[], []], review_start=2, committed=True)
+        current["rounds"][0].update({"findings": json.loads(json.dumps(historical["rounds"][-1]["findings"])),
+                                     "result": "Not Mergeable", "feedback_mode": "Change Request"})
+        actual = {**current, "reviews": historical["reviews"] + current["reviews"],
+                  "rounds": historical["rounds"] + current["rounds"], "result": "Not Mergeable", "feedback_mode": "Change Request"}
+        self.assertIn("Result-review evidence is stale", ledger.validate_session(actual))
+        actual["rounds"][-1]["findings"][0]["evidence"] = current["rounds"][0]["report_reviews"][0]["evidence"]
+        self.assertEqual([], ledger.validate_session(actual))
+
+    def test_session_reuses_unchanged_candidate_and_base_proof(self):
+        self.git("add", self.source_path)
+        self.git("commit", "-qm", "Synthetic reviewed candidate")
+        historical = self.create_session([[("F1", "confirmed")], []], committed=True)
+        report = json.loads(Path(historical["reviews"][0]["path"]).read_text(encoding="utf-8"))
+        actual_ledger = ledger.read_ledger(report["ledger"])
+        anchor = ledger.capture_anchor({"side": "base", "path": self.source_path, "start_line": 2, "end_line": 2}, actual_ledger)
+        actual_ledger["findings"][0]["anchors"].append(anchor)
+        self.update_session_basis(historical, 0, actual_ledger, json.loads(self.basis_file.read_text(encoding="utf-8")))
+        historical["rounds"][0]["findings"][0]["evidence"].append({"reviewer": "review-1", "anchor": anchor})
+        (self.repo / "Rules.md").write_text("Use the owning public boundary and preserve the original task baseline.\n", encoding="utf-8")
+        self.git("add", "Rules.md")
+        self.git("commit", "-qm", "Synthetic changed rules with unchanged candidate evidence")
+        current = self.create_session([[], []], review_start=2, committed=True)
+        current["rounds"][0].update({"findings": json.loads(json.dumps(historical["rounds"][-1]["findings"])),
+                                     "result": "Not Mergeable", "feedback_mode": "Change Request"})
+        actual = {**current, "reviews": historical["reviews"] + current["reviews"],
+                  "rounds": historical["rounds"] + current["rounds"], "result": "Not Mergeable", "feedback_mode": "Change Request"}
+        self.assertEqual([], ledger.validate_session(actual))
+
+    def test_session_accepts_historical_pair_stages_after_rule_change(self):
+        historical = self.create_session([[], [], [], []])
+        historical["rounds"][1]["report_reviews"].extend(historical["rounds"].pop()["report_reviews"])
+        (self.repo / "Rules.md").write_text("Use an initial pair followed by one fresh assessment per later stage.\n", encoding="utf-8")
+        current = self.create_session([[], []], review_start=4)
+        actual = {**current, "reviews": historical["reviews"] + current["reviews"],
+                  "rounds": historical["rounds"] + current["rounds"]}
+        self.assertEqual([], ledger.validate_session(actual))
+
+    def test_session_rechecks_relocated_source_across_current_evidence_sets(self):
+        historical = self.create_session([[("F1", "confirmed")], []])
+        report = json.loads(Path(historical["reviews"][0]["path"]).read_text(encoding="utf-8"))
+        actual_ledger = ledger.read_ledger(report["ledger"])
+        anchor = ledger.capture_anchor({"side": "source", "origin": "attempt:target-version", "path": str(self.attempt_log)}, actual_ledger)
+        actual_ledger["findings"][0]["anchors"].append(anchor)
+        self.update_session_basis(historical, 0, actual_ledger, json.loads(self.basis_file.read_text(encoding="utf-8")))
+        historical["rounds"][0]["findings"][0]["evidence"] = [{"reviewer": "review-1", "anchor": anchor}]
+        relocated = self.private_root / "relocated-attempt.log"
+        self.attempt_log.rename(relocated)
+        (self.repo / "Rules.md").write_text("Use declared source origins across all current independent assessments.\n", encoding="utf-8")
+        basis = json.loads(self.basis_file.read_text(encoding="utf-8"))
+        next(each for each in basis["sources"] if "attempt:target-version" == each["origin"])["path"] = str(relocated)
+        self.basis_file.write_text(json.dumps(basis), encoding="utf-8")
+        for index, changed in enumerate((False, True)):
+            with self.subTest(changed=changed):
+                if changed:
+                    relocated.write_text("The current source disproves the original external fact.\n", encoding="utf-8")
+                current = self.create_session([[], []], review_start=2 + index * 2)
+                last_report = json.loads(Path(current["reviews"][-1]["path"]).read_text(encoding="utf-8"))
+                last_ledger = ledger.read_ledger(last_report["ledger"])
+                independent_basis = {**basis, "sources": [each for each in basis["sources"] if "attempt:target-version" != each["origin"]]}
+                self.update_session_basis(current, 1, last_ledger, independent_basis)
+                current["rounds"][0].update({"findings": json.loads(json.dumps(historical["rounds"][-1]["findings"])),
+                                             "result": "Not Mergeable", "feedback_mode": "Change Request"})
+                actual = {**current, "reviews": historical["reviews"] + current["reviews"],
+                          "rounds": historical["rounds"] + current["rounds"], "result": "Not Mergeable", "feedback_mode": "Change Request"}
+                if changed:
+                    self.assertIn("Result-review evidence is stale", ledger.validate_session(actual))
+                else:
+                    self.assertEqual([], ledger.validate_session(actual))
+                    actual["rounds"][-1]["findings"][0]["evidence"][0]["anchor"]["path"] = str(relocated)
+                    self.assert_session_cli_rejected(actual)
+
+    def test_session_recaptures_historical_source_absent_from_current_declarations(self):
+        historical = self.create_session([[("F1", "confirmed")], []])
+        report = json.loads(Path(historical["reviews"][0]["path"]).read_text(encoding="utf-8"))
+        actual_ledger = ledger.read_ledger(report["ledger"])
+        anchor = ledger.capture_anchor({"side": "source", "origin": "attempt:target-version", "path": str(self.attempt_log)}, actual_ledger)
+        actual_ledger["findings"][0]["anchors"].append(anchor)
+        self.update_session_basis(historical, 0, actual_ledger, json.loads(self.basis_file.read_text(encoding="utf-8")))
+        historical["rounds"][0]["findings"][0]["evidence"] = [{"reviewer": "review-1", "anchor": anchor}]
+        (self.repo / "Rules.md").write_text("Recheck every retained finding using available current material.\n", encoding="utf-8")
+        basis = json.loads(self.basis_file.read_text(encoding="utf-8"))
+        basis["sources"] = [each for each in basis["sources"] if "attempt:target-version" != each["origin"]]
+        self.basis_file.write_text(json.dumps(basis), encoding="utf-8")
+        current = self.create_session([[], []], review_start=2)
+        current["rounds"][0].update({"findings": json.loads(json.dumps(historical["rounds"][-1]["findings"])),
+                                     "result": "Not Mergeable", "feedback_mode": "Change Request"})
+        actual = {**current, "reviews": historical["reviews"] + current["reviews"],
+                  "rounds": historical["rounds"] + current["rounds"], "result": "Not Mergeable", "feedback_mode": "Change Request"}
+        self.assertEqual([], ledger.validate_session(actual))
+        self.attempt_log.write_text("The material no longer supports the original finding.\n", encoding="utf-8")
+        self.assertIn("Result-review evidence is stale", ledger.validate_session(actual))
+        self.attempt_log.unlink()
+        self.assert_session_cli_rejected(actual)
+
+    def test_session_accepts_current_coordinator_source_proof(self):
+        actual = self.create_session([[], []])
+        report = json.loads(Path(actual["reviews"][0]["path"]).read_text(encoding="utf-8"))
+        actual_ledger = ledger.read_ledger(report["ledger"])
+        anchor = ledger.capture_anchor({"side": "source", "origin": "attempt:target-version", "path": str(self.attempt_log)}, actual_ledger)
+        actual["rounds"][0]["findings"] = [{
+            "id": "coordinator-candidate", "members": [], "status": "withdrawn", "classification": "correctness",
+            "reason": "Current source evidence disproves the suspected trigger.",
+            "counter_evidence": "The recorded external fact rules out the alternative path.",
+            "evidence": [{"reviewer": "review-1", "anchor": anchor}],
+        }]
+        self.assertEqual([], ledger.validate_session(actual))
+
     def test_session_preserves_real_incomplete_evidence(self):
         actual = self.create_session([[("G1", "review-incomplete-gap")], [("G1", "review-incomplete-gap")]])
         self.assertEqual([], ledger.validate_session(actual))
@@ -990,8 +1105,8 @@ class ReviewLedgerTest(unittest.TestCase):
                         redirect_stdout(StringIO()), redirect_stderr(StringIO()):
                     self.assertEqual(1, ledger.main())
 
-    def create_session(self, review_findings, review_start=0):
-        original = self.create_valid_ledger()
+    def create_session(self, review_findings, review_start=0, committed=False):
+        original = self.create_valid_ledger(committed)
         actual = {"reviews": [], "rounds": [], "result": "Mergeable", "feedback_mode": ""}
         findings = {}
         report_reviews = []
@@ -1058,7 +1173,7 @@ class ReviewLedgerTest(unittest.TestCase):
 
     def initialize_ledger(self, committed=False):
         arguments = ["init", "--repo-root", str(self.repo), "--pr", "synthetic-review", "--base-ref", self.base_sha,
-                     "--head-ref", "HEAD", "--review-basis", str(self.basis_file)]
+                     "--head-ref", self.git("rev-parse", "HEAD").strip() if committed else "HEAD", "--review-basis", str(self.basis_file)]
         if not committed:
             arguments.extend(["--candidate-files", str(self.candidate_files)])
         output = StringIO()
