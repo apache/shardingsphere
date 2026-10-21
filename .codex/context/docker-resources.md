@@ -75,4 +75,3 @@ Apply these rules before direct Docker commands and any build, Maven test, E2E, 
 - Image cleanup does not authorize deleting containers, networks, volumes or data.
 - Limit deletion to image IDs confirmed for this task, using `docker image rm --no-prune` without force to avoid removing unselected parent images.
 - Do not run global prune or extend image cleanup to other tasks' images, containers, volumes, or data.
-

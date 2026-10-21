@@ -37,7 +37,6 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -97,6 +96,19 @@ class RefreshTableMetaDataExecutorTest {
     }
     
     @Test
+    void assertExecuteUpdateWhenSchemaDropped() {
+        ShardingSphereDatabase database = mockDatabase(true);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getName()).thenReturn("Foo_Schema");
+        when(schema.containsTable(new IdentifierValue("foo_table"))).thenReturn(true);
+        when(database.getSchema(new IdentifierValue("foo_schema"))).thenReturn(schema, null);
+        ContextManager contextManager = mock(ContextManager.class);
+        executor.setDatabase(database);
+        executor.executeUpdate(new RefreshTableMetaDataStatement(new IdentifierValue("foo_table"), null, new IdentifierValue("foo_schema")), contextManager);
+        verify(contextManager).reloadTable(database, "Foo_Schema", new IdentifierValue("foo_table"));
+    }
+    
+    @Test
     void assertExecuteUpdateWithEmptyStorageUnits() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("logic_db");
@@ -139,8 +151,7 @@ class RefreshTableMetaDataExecutorTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("logic_db");
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
-        when(result.containsSchema(anyString())).thenReturn(schemaExists);
-        when(result.containsSchema(any(IdentifierValue.class))).thenReturn(schemaExists);
+        when(result.getSchema(any(IdentifierValue.class))).thenReturn(schemaExists ? mock(ShardingSphereSchema.class) : null);
         return result;
     }
 }
