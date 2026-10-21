@@ -97,9 +97,9 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
     void assertResolveUnspecifiedParameterValuesWithWhereColumns() {
         PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT id FROM foo_tbl WHERE id=? OR k IN (?, ?) OR k BETWEEN ? AND ?", Arrays.asList(0, 1, 2, 3, 4));
         List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Arrays.asList(
-                new PostgreSQLTypeUnspecifiedSQLParameter("1"), new PostgreSQLTypeUnspecifiedSQLParameter(" 2 "), new PostgreSQLTypeUnspecifiedSQLParameter("+3"),
-                new PostgreSQLTypeUnspecifiedSQLParameter("-4"), new PostgreSQLTypeUnspecifiedSQLParameter("\t5\n")));
-        assertThat(actual, is(Arrays.asList(1, 2L, 3L, -4L, 5L)));
+                new PostgreSQLTypeUnspecifiedSQLParameter("-01"), new PostgreSQLTypeUnspecifiedSQLParameter(" 2 "), new PostgreSQLTypeUnspecifiedSQLParameter("+3"),
+                new PostgreSQLTypeUnspecifiedSQLParameter("0"), new PostgreSQLTypeUnspecifiedSQLParameter("\t5\n")));
+        assertThat(actual, is(Arrays.asList(-1, 2L, 3L, 0L, 5L)));
     }
     
     @Test
@@ -165,6 +165,16 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         assertThat(actual.get(0), is(7));
         assertThat(actual.get(1), sameInstance(expectedName));
         assertThat(actual.get(2), sameInstance(expectedLength));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("resolveUnspecifiedParameterValuesWithUnresolvedBigintTextArguments")
+    void assertResolveUnspecifiedParameterValuesWithUnresolvedBigintText(final String name, final String text) {
+        PostgreSQLServerPreparedStatement preparedStatement = createInsertPreparedStatement("INSERT INTO foo_tbl (k) VALUES (?)", Collections.singletonList(0));
+        prepareInsertTableMetaData();
+        PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter(text);
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Collections.singletonList(expected));
+        assertThat(actual.get(0), sameInstance(expected));
     }
     
     @Test
@@ -296,6 +306,15 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
                 Arguments.of("out of range", "3000000000"),
                 Arguments.of("non ascii digit", "١"),
                 Arguments.of("empty", ""));
+    }
+    
+    private static Stream<Arguments> resolveUnspecifiedParameterValuesWithUnresolvedBigintTextArguments() {
+        return Stream.of(
+                Arguments.of("leading zero", "010"),
+                Arguments.of("signed leading zero", "+010"),
+                Arguments.of("repeated zero", "00"),
+                Arguments.of("negative", "-1"),
+                Arguments.of("out of range", "9223372036854775808"));
     }
     
     private PostgreSQLServerPreparedStatement createBoundPreparedStatement(final String sql, final List<Integer> actualParameterMarkerIndexes) {

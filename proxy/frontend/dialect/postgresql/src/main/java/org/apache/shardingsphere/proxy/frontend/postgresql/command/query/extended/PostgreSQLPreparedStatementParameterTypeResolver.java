@@ -75,9 +75,13 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
     
     private static final Pattern INTEGER_TEXT_PATTERN = Pattern.compile("[ \\t\\n\\r\\f\\x0B]*([+-]?[0-9]+)[ \\t\\n\\r\\f\\x0B]*");
     
+    private static final Pattern BIGINT_TEXT_PATTERN = Pattern.compile("[ \\t\\n\\r\\f\\x0B]*\\+?(0|[1-9][0-9]*)[ \\t\\n\\r\\f\\x0B]*");
+    
     /**
      * Resolve values of unspecified type parameters by the integer columns they are compared with or assigned to.
      * Only plain decimal integer text is resolved, because Java decodes it to the same value as PostgreSQL integer input.
+     * JDBC BIGINT columns can also be oid columns, whose input reads a leading zero as octal and wraps negative numbers,
+     * so their text is resolved only without a minus sign or leading zeros, where oid and int8 input give the same value.
      * Other values stay unspecified and are passed to the database as text.
      *
      * @param connectionSession connection session
@@ -218,12 +222,13 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         if (1 != columnTypes.size() || !INTEGER_COLUMN_JDBC_TYPES.contains(columnTypes.iterator().next())) {
             return parameter;
         }
-        Matcher matcher = INTEGER_TEXT_PATTERN.matcher(parameter.toString());
+        int columnType = columnTypes.iterator().next();
+        Matcher matcher = (Types.BIGINT == columnType ? BIGINT_TEXT_PATTERN : INTEGER_TEXT_PATTERN).matcher(parameter.toString());
         if (!matcher.matches()) {
             return parameter;
         }
         try {
-            return PostgreSQLBinaryColumnType.valueOfJDBCType(columnTypes.iterator().next()).getTextValueParser().parse(matcher.group(1));
+            return PostgreSQLBinaryColumnType.valueOfJDBCType(columnType).getTextValueParser().parse(matcher.group(1));
         } catch (final NumberFormatException ignored) {
             return parameter;
         }
@@ -265,6 +270,15 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
                         PostgreSQLBinaryColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1), parameterMetaData.getParameterTypeName(i + 1)));
             }
         }
+    }
+    
+    private static boolean hasUnspecifiedParameterTypes(final PostgreSQLServerPreparedStatement preparedStatement) {
+        for (int each : preparedStatement.getActualParameterMarkerIndexes()) {
+            if (PostgreSQLBinaryColumnType.UNSPECIFIED == preparedStatement.getParameterTypes().get(each)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
@@ -318,14 +332,5 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
             result.add(new ShardingSphereIdentifier(each.getIdentifier().getValue()));
         }
         return result;
-    }
-    
-    private static boolean hasUnspecifiedParameterTypes(final PostgreSQLServerPreparedStatement preparedStatement) {
-        for (int each : preparedStatement.getActualParameterMarkerIndexes()) {
-            if (PostgreSQLBinaryColumnType.UNSPECIFIED == preparedStatement.getParameterTypes().get(each)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
