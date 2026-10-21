@@ -66,6 +66,10 @@ class ShardingSphereResultSetShorthandProjectionIT {
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT, status VARCHAR(50))");
             statement.execute("INSERT INTO t_order VALUES (1000, 10, 'ACTIVE')");
             statement.execute("INSERT INTO t_order VALUES (1001, 11, 'PENDING')");
+            statement.execute("DROP TABLE IF EXISTS t_order_item");
+            statement.execute("CREATE TABLE t_order_item (item_id INT PRIMARY KEY, order_id INT, item_name VARCHAR(50))");
+            statement.execute("INSERT INTO t_order_item VALUES (1, 1000, 'ITEM_A')");
+            statement.execute("INSERT INTO t_order_item VALUES (2, 1001, 'ITEM_B')");
         }
     }
     
@@ -145,7 +149,7 @@ class ShardingSphereResultSetShorthandProjectionIT {
     
     /**
      * Case 4: SELECT t_order.status AS ORDER_BY_DERIVED_0 FROM t_order WHERE order_id = 1000
-     * User alias matches derived-column prefix — must remain visible. Expected: 1 column labeled ORDER_BY_DERIVED_0.
+     * User alias matches derived-column prefix â€” must remain visible. Expected: 1 column labeled ORDER_BY_DERIVED_0.
      */
     @Test
     void assertUserAliasMatchingDerivedPrefix() throws SQLException {
@@ -228,6 +232,28 @@ class ShardingSphereResultSetShorthandProjectionIT {
                 assertThat(metaData.getColumnCount(), is(1));
                 assertTrue(resultSet.next());
                 assertThat(resultSet.getInt(1), is(2));
+                assertFalse(resultSet.next());
+            }
+        }
+    }
+    
+    /**
+     * Case 8: SELECT o.order_id, i.* FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = 1000
+     * Reproduces the original issue #28841: explicit column + shorthand from another table in a JOIN.
+     * Expected columns: order_id, item_id, order_id, item_name (4 columns).
+     */
+    @Test
+    void assertJoinWithShorthandProjection() throws SQLException {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.setDataSourceName("ds_0");
+            try (
+                    Statement statement = shardingSphereConnection.createStatement();
+                    ResultSet resultSet = statement.executeQuery(
+                            "SELECT o.order_id, i.* FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = 1000")) {
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                assertThat("explicit column + shorthand from joined table", metaData.getColumnCount(), is(4));
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getString("item_name"), is("ITEM_A"));
                 assertFalse(resultSet.next());
             }
         }
