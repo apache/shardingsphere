@@ -23,8 +23,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 
 import java.sql.ResultSetMetaData;
@@ -42,7 +40,7 @@ import java.util.Map;
  * <p>Two resolution paths exist:</p>
  * <ul>
  *   <li>When a shorthand projection is unexpanded (binding was skipped), physical {@link ResultSetMetaData}
- *       is authoritative, and internally generated derived columns are subtracted from the visible count.</li>
+ *       is fully authoritative because the SQL was not rewritten and no internal columns were appended.</li>
  *   <li>When projections are fully expanded, logical {@code expandProjections} are authoritative.</li>
  * </ul>
  */
@@ -70,8 +68,7 @@ public final class VisibleColumnMapping {
     public static VisibleColumnMapping resolve(final SelectStatementContext selectStatementContext, final ResultSetMetaData physicalMetaData) throws SQLException {
         ProjectionsContext projectionsContext = selectStatementContext.getProjectionsContext();
         if (projectionsContext.containsUnexpandedShorthandProjection()) {
-            int internalDerivedCount = countInternalDerivedColumns(projectionsContext);
-            int visibleCount = physicalMetaData.getColumnCount() - internalDerivedCount;
+            int visibleCount = physicalMetaData.getColumnCount();
             Map<String, Integer> labelMap = new CaseInsensitiveMap<>(visibleCount, 1F);
             for (int columnIndex = visibleCount; columnIndex > 0; columnIndex--) {
                 labelMap.put(physicalMetaData.getColumnLabel(columnIndex), columnIndex);
@@ -98,28 +95,6 @@ public final class VisibleColumnMapping {
         }
         List<Projection> expandProjections = projectionsContext.getExpandProjections();
         return new VisibleColumnMapping(expandProjections.size(), projectionsContext.getColumnLabelAndIndexMap(), expandProjections);
-    }
-    
-    /**
-     * Count internally generated derived columns (ORDER_BY_DERIVED, GROUP_BY_DERIVED, AVG_DERIVED_COUNT, AVG_DERIVED_SUM).
-     *
-     * <p>These columns are appended at the end of the physical result set by the SQL rewriter
-     * and must not be visible to the user.</p>
-     *
-     * @param projectionsContext projections context
-     * @return count of internal derived columns
-     */
-    static int countInternalDerivedColumns(final ProjectionsContext projectionsContext) {
-        int count = 0;
-        for (Projection each : projectionsContext.getProjections()) {
-            if (each instanceof DerivedProjection) {
-                count++;
-            }
-            if (each instanceof AggregationProjection) {
-                count += ((AggregationProjection) each).getDerivedAggregationProjections().size();
-            }
-        }
-        return count;
     }
     
     /**
