@@ -33,7 +33,6 @@ import org.mockito.MockedStatic;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -126,7 +125,7 @@ class QueryHeaderBuilderEngineTest {
     @Test
     void assertBuildWithUnexpandedShorthandFallsBackToMetaData() throws SQLException {
         ShorthandProjection shorthandProjection = new ShorthandProjection(null, Collections.emptyList());
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.asList(shorthandProjection));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singletonList(shorthandProjection));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.containsDerivedProjections()).thenReturn(true);
         when(sqlStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
