@@ -50,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -107,17 +108,31 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         }
         Map<Integer, AggregationDistinctProjection> projectionsByColumnIndex =
                 projectionsContext.getAggregationDistinctProjectionsByColumnIndex(queryResult.getMetaData().getColumnCount() - appendedColumnCount);
+        if (projectionsByColumnIndex.isEmpty()) {
+            return;
+        }
+        Collection<OrderByItem> expressionOrderByItems = getExpressionOrderByItems(orderByItems);
         for (Entry<Integer, AggregationDistinctProjection> entry : projectionsByColumnIndex.entrySet()) {
             int previousIndex = entry.getValue().getIndex();
             entry.getValue().setIndex(entry.getKey());
-            setAggregationDistinctOrderByIndexes(orderByItems, entry.getValue(), previousIndex);
+            setAggregationDistinctOrderByIndexes(expressionOrderByItems, entry.getValue(), previousIndex);
         }
+    }
+    
+    private Collection<OrderByItem> getExpressionOrderByItems(final Collection<OrderByItem> orderByItems) {
+        Collection<OrderByItem> result = new ArrayList<>(orderByItems.size());
+        for (OrderByItem each : orderByItems) {
+            if (each.getSegment() instanceof ExpressionOrderByItemSegment) {
+                result.add(each);
+            }
+        }
+        return result;
     }
     
     private void setAggregationDistinctOrderByIndexes(final Collection<OrderByItem> orderByItems, final AggregationDistinctProjection projection, final int previousIndex) {
         String projectionExpression = SQLUtils.getExactlyExpression(SQLUtils.getExactlyValue(projection.getExpression()));
         for (OrderByItem each : orderByItems) {
-            if (each.getSegment() instanceof ExpressionOrderByItemSegment && previousIndex == each.getIndex()
+            if (previousIndex == each.getIndex()
                     && projectionExpression.equalsIgnoreCase(SQLUtils.getExactlyExpression(SQLUtils.getExactlyValue(((ExpressionOrderByItemSegment) each.getSegment()).getExpression())))) {
                 each.setIndex(projection.getIndex());
             }
