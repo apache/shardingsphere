@@ -18,30 +18,43 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -139,12 +152,152 @@ class JDBCStreamQueryResultTest {
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, Time.class), is(new Time(0L)));
     }
     
-    @Test
-    void assertGetValueByLocalTime() throws SQLException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("localTimeArguments")
+    void assertGetValueByLocalTime(final String name, final Class<?> type, final LocalTime value) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
-        LocalTime value = LocalTime.of(1, 2, 3);
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(resultSet.getMetaData()).thenReturn(metaData);
+        if (Object.class == type) {
+            when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        }
         when(resultSet.getObject(1, LocalTime.class)).thenReturn(value);
-        assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, LocalTime.class), is(value));
+        assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, type), is(value));
+    }
+    
+    private static Stream<Arguments> localTimeArguments() {
+        return Stream.of(
+                Arguments.of("typed-microseconds", LocalTime.class, LocalTime.of(12, 34, 56, 123456000)),
+                Arguments.of("object-microseconds", Object.class, LocalTime.of(12, 34, 56, 123456000)),
+                Arguments.of("object-midnight-microsecond", Object.class, LocalTime.of(0, 0, 0, 1000)),
+                Arguments.of("typed-whole-second", LocalTime.class, LocalTime.of(1, 2, 3)));
+    }
+    
+    @Test
+    void assertGetValueByObjectTimeNull() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(resultSet.getMetaData()).thenReturn(metaData);
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        assertNull(new JDBCStreamQueryResult(resultSet).getValue(1, Object.class));
+    }
+    
+    @Test
+    void assertGetValueByLocalTimeWithUnsupportedTypedGetter() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        Time expected = Time.valueOf("12:34:56");
+        when(resultSet.getTime(1)).thenReturn(expected);
+        assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, LocalTime.class), is(expected));
+    }
+    
+    @Test
+    void assertGetValueByObjectTimeWithUnsupportedTypedGetter() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(resultSet.getMetaData()).thenReturn(metaData);
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        Time expected = new Time(Time.valueOf("12:34:56").getTime() + 123);
+        when(resultSet.getTime(1)).thenReturn(expected);
+        assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, Object.class), is(expected));
+    }
+    
+    @Test
+    void assertGetValueByLocalTimeWithSQLFailure() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        SQLException expected = new SQLException("foo_time_failure");
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(expected);
+        assertThat(assertThrows(SQLException.class, () -> new JDBCStreamQueryResult(resultSet).getValue(1, LocalTime.class)), sameInstance(expected));
+    }
+    
+    @Test
+    void assertGetValueWithoutRepeatedUnsupportedGetter() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(resultSet.getMetaData()).thenReturn(metaData);
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        Time expected = new Time(Time.valueOf("12:34:56").getTime() + 123);
+        when(resultSet.getTime(1)).thenReturn(expected);
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
+        assertThat(queryResult.getValue(1, LocalTime.class), is(expected));
+        assertThat(queryResult.getValue(1, Object.class), is(expected));
+        verify(resultSet).getObject(1, LocalTime.class);
+        verify(resultSet, times(2)).getTime(1);
+    }
+    
+    @Test
+    void assertGetValueByLocalTimeWithUnsupportedTypedGetterAndNull() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
+        assertNull(queryResult.getValue(1, LocalTime.class));
+        assertNull(queryResult.getValue(1, LocalTime.class));
+        verify(resultSet).getObject(1, LocalTime.class);
+        verify(resultSet, times(2)).getTime(1);
+    }
+    
+    @Test
+    void assertGetValuePreservesOtherColumnPrecision() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        LocalTime expected = LocalTime.of(12, 34, 56, 123456000);
+        when(resultSet.getObject(2, LocalTime.class)).thenReturn(expected);
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
+        assertNull(queryResult.getValue(1, LocalTime.class));
+        assertThat(queryResult.getValue(2, LocalTime.class), is(expected));
+    }
+    
+    @Test
+    void assertGetValueMemoizesEachUnsupportedColumn() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        when(resultSet.getObject(2, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        Time expected = Time.valueOf("12:34:56");
+        when(resultSet.getTime(2)).thenReturn(expected);
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
+        assertNull(queryResult.getValue(1, LocalTime.class));
+        assertThat(queryResult.getValue(2, LocalTime.class), is(expected));
+        assertThat(queryResult.getValue(2, LocalTime.class), is(expected));
+        verify(resultSet).getObject(2, LocalTime.class);
+    }
+    
+    @Test
+    void assertGetValueRetriesAfterFallbackFailure() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class).thenReturn(LocalTime.NOON);
+        SQLException expected = new SQLException("foo_time_failure");
+        when(resultSet.getTime(1)).thenThrow(expected);
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
+        assertThat(assertThrows(SQLException.class, () -> queryResult.getValue(1, LocalTime.class)), sameInstance(expected));
+        assertThat(queryResult.getValue(1, LocalTime.class), is(LocalTime.NOON));
+    }
+    
+    @Test
+    void assertGetValueRetriesAfterSQLFailure() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        SQLException expected = new SQLException("foo_time_failure");
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(expected).thenReturn(LocalTime.NOON);
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
+        assertThat(assertThrows(SQLException.class, () -> queryResult.getValue(1, LocalTime.class)), sameInstance(expected));
+        assertThat(queryResult.getValue(1, LocalTime.class), is(LocalTime.NOON));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidTimeColumnArguments")
+    void assertGetValuePreservesInvalidColumnFailure(final String name, final int columnIndex) throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
+        assertNull(queryResult.getValue(1, LocalTime.class));
+        SQLException expected = new SQLException("foo_column_failure");
+        when(resultSet.getObject(columnIndex, LocalTime.class)).thenThrow(expected);
+        assertThat(assertThrows(SQLException.class, () -> queryResult.getValue(columnIndex, LocalTime.class)), sameInstance(expected));
+    }
+    
+    private static Stream<Arguments> invalidTimeColumnArguments() {
+        return Stream.of(Arguments.of("negative", -1), Arguments.of("zero", 0), Arguments.of("out-of-range", Integer.MAX_VALUE));
     }
     
     @Test
@@ -196,8 +349,20 @@ class JDBCStreamQueryResultTest {
     @Test
     void assertGetValueByObject() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(resultSet.getMetaData()).thenReturn(metaData);
+        when(metaData.getColumnType(1)).thenReturn(Types.VARCHAR);
         when(resultSet.getObject(1)).thenReturn("value");
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, Object.class), is("value"));
+    }
+    
+    @Test
+    void assertGetValueByURL() throws SQLException, MalformedURLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject(1)).thenReturn(new URL("https://shardingsphere.apache.org/"));
+        Object actual = new JDBCStreamQueryResult(resultSet).getValue(1, URL.class);
+        assertThat(actual, isA(URL.class));
+        assertThat(((URL) actual).toExternalForm(), is("https://shardingsphere.apache.org/"));
     }
     
     @Test

@@ -19,10 +19,13 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.util.FirebirdDateTimeUtils;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.sql.Time;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 
 /**
@@ -36,8 +39,10 @@ public final class FirebirdTimeBinaryProtocolValue implements FirebirdBinaryProt
     }
     
     @Override
+    @HighFrequencyInvocation
     public void write(final FirebirdPacketPayload payload, final Object value) {
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(((Time) value).getTime()), ZoneId.systemDefault());
+        LocalDateTime localDateTime =
+                value instanceof LocalTime ? ((LocalTime) value).atDate(LocalDate.of(1970, 1, 1)) : LocalDateTime.ofInstant(Instant.ofEpochMilli(((Time) value).getTime()), ZoneId.systemDefault());
         payload.writeInt4(new FirebirdDateTimeUtils(localDateTime).getEncodedTime());
     }
     

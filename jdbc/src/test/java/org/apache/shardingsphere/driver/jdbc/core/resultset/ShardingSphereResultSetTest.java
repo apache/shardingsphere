@@ -29,9 +29,13 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -48,23 +52,30 @@ import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ShardingSphereResultSetTest {
@@ -72,6 +83,8 @@ class ShardingSphereResultSetTest {
     private MergedResult mergeResultSet;
     
     private ShardingSphereResultSet shardingSphereResultSet;
+    
+    private ResultSetMetaData resultSetMetaData;
     
     private DatabaseType protocolType;
     
@@ -97,7 +110,7 @@ class ShardingSphereResultSetTest {
     
     private List<ResultSet> getResultSets() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("label");
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
@@ -236,6 +249,24 @@ class ShardingSphereResultSetTest {
     void assertGetStringWithColumnLabel() throws SQLException {
         when(mergeResultSet.getValue(1, String.class)).thenReturn("value");
         assertThat(shardingSphereResultSet.getString("label"), is("value"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("timeStringArguments")
+    void assertGetStringWithTimeValue(final String name, final int columnType, final LocalTime value, final String expected) throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(columnType);
+        when(mergeResultSet.getValue(1, String.class)).thenReturn(value);
+        assertThat(shardingSphereResultSet.getString(1), is(expected));
+    }
+    
+    private static Stream<Arguments> timeStringArguments() {
+        return Stream.of(
+                Arguments.of("time-minutes", Types.TIME, LocalTime.of(12, 34), "12:34:00"),
+                Arguments.of("time-midnight", Types.TIME, LocalTime.MIDNIGHT, "00:00:00"),
+                Arguments.of("time-trailing-zero", Types.TIME, LocalTime.of(12, 34, 56, 123450000), "12:34:56.12345"),
+                Arguments.of("object-minutes", Types.JAVA_OBJECT, LocalTime.of(12, 34), "12:34"),
+                Arguments.of("object-midnight", Types.JAVA_OBJECT, LocalTime.MIDNIGHT, "00:00"),
+                Arguments.of("object-trailing-zero", Types.JAVA_OBJECT, LocalTime.of(12, 34, 56, 123450000), "12:34:56.123450"));
     }
     
     @Test
@@ -514,6 +545,77 @@ class ShardingSphereResultSetTest {
         assertThat(shardingSphereResultSet.getObject(1), is("object_value"));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("localTimeJdbcArguments")
+    void assertGetObjectWithLocalTimeValue(final String name, final Object value, final Time expected) throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(mergeResultSet.getValue(1, Time.class)).thenReturn(value);
+        Object actual = shardingSphereResultSet.getObject(1);
+        assertThat(actual, isA(Time.class));
+        assertThat(actual, is(expected));
+    }
+    
+    private static Stream<Arguments> localTimeJdbcArguments() {
+        return Stream.of(
+                Arguments.of("whole-second", LocalTime.of(12, 34, 56), Time.valueOf("12:34:56")),
+                Arguments.of("microseconds", LocalTime.of(12, 34, 56, 123456000), new Time(Time.valueOf("12:34:56").getTime() + 123)),
+                Arguments.of("midnight-microsecond", LocalTime.of(0, 0, 0, 1000), Time.valueOf("00:00:00")),
+                Arguments.of("legacy-time", new Time(Time.valueOf("12:34:56").getTime() + 123), new Time(Time.valueOf("12:34:56").getTime() + 123)));
+    }
+    
+    @Test
+    void assertGetObjectWithObjectTypeAndLocalTime() throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(mergeResultSet.getValue(1, Time.class)).thenReturn(LocalTime.of(12, 34, 56, 123456000));
+        Object actual = shardingSphereResultSet.getObject(1, Object.class);
+        assertThat(actual, isA(Time.class));
+        assertThat(actual, is(new Time(Time.valueOf("12:34:56").getTime() + 123)));
+    }
+    
+    @Test
+    void assertGetObjectWithObjectTypeAndNonTime() throws SQLException {
+        when(mergeResultSet.getValue(1, Object.class)).thenReturn("foo_object");
+        assertThat(shardingSphereResultSet.getObject(1, Object.class), is("foo_object"));
+    }
+    
+    @Test
+    void assertGetObjectWithNonTimeLocalTime() throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.JAVA_OBJECT);
+        LocalTime expected = LocalTime.of(12, 34, 56, 123456000);
+        when(mergeResultSet.getValue(1, Object.class)).thenReturn(expected);
+        assertThat(shardingSphereResultSet.getObject(1), sameInstance(expected));
+    }
+    
+    @Test
+    void assertGetObjectWithObjectTypeAndNonTimeLocalTime() throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.JAVA_OBJECT);
+        LocalTime expected = LocalTime.of(12, 34, 56, 123456000);
+        when(mergeResultSet.getValue(1, Object.class)).thenReturn(expected);
+        assertThat(shardingSphereResultSet.getObject(1, Object.class), sameInstance(expected));
+    }
+    
+    @Test
+    void assertGetObjectWithNullTime() throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
+        assertNull(shardingSphereResultSet.getObject(1));
+        verify(mergeResultSet).getValue(1, Time.class);
+    }
+    
+    @Test
+    void assertGetObjectWithReusedColumnMetadata() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(resultSet.getMetaData()).thenReturn(metaData);
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        Time expected = Time.valueOf("12:34:56");
+        when(mergeResultSet.getValue(1, Time.class)).thenReturn(expected);
+        ShardingSphereResultSet actual =
+                new ShardingSphereResultSet(Collections.singletonList(resultSet), mergeResultSet, statement, createSQLStatementContext(), Collections.singletonMap("label", 1));
+        assertThat(actual.getObject(1), is(expected));
+        assertThat(actual.getObject(1), is(expected));
+        verify(resultSet).getMetaData();
+    }
+    
     @Test
     void assertGetObjectWithColumnLabel() throws SQLException {
         when(mergeResultSet.getValue(1, Object.class)).thenReturn("object_value");
@@ -525,6 +627,26 @@ class ShardingSphereResultSetTest {
         String result = "foo";
         when(mergeResultSet.getValue(1, String.class)).thenReturn(result);
         assertThat(shardingSphereResultSet.getObject(1, String.class), is(result));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("timeStringArguments")
+    void assertGetObjectWithStringTypeAndTimeValue(final String name, final int columnType, final LocalTime value, final String expected) throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(columnType);
+        when(mergeResultSet.getValue(1, String.class)).thenReturn(value);
+        assertThat(shardingSphereResultSet.getObject(1, String.class), is(expected));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assignableLocalTimeArguments")
+    void assertGetObjectWithAssignableLocalTimeType(final String name, final Class<?> type) throws SQLException {
+        LocalTime expected = LocalTime.of(12, 34);
+        when(mergeResultSet.getValue(1, type)).thenReturn(expected);
+        assertThat(shardingSphereResultSet.getObject(1, type), sameInstance(expected));
+    }
+    
+    private static Stream<Arguments> assignableLocalTimeArguments() {
+        return Stream.of(Arguments.of("serializable", Serializable.class), Arguments.of("temporal-accessor", TemporalAccessor.class), Arguments.of("comparable", Comparable.class));
     }
     
     @Test

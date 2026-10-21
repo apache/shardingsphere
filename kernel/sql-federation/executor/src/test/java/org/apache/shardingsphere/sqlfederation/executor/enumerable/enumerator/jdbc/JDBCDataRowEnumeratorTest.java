@@ -21,17 +21,25 @@ import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWr
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -42,6 +50,62 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class JDBCDataRowEnumeratorTest {
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("timeArguments")
+    void assertEnumerateTimeRow(final String name, final Object value, final Time expected) throws SQLException {
+        MergedResult queryResult = mock(MergedResult.class);
+        QueryResultMetaData metaData = mock(QueryResultMetaData.class);
+        when(metaData.getColumnCount()).thenReturn(2);
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(metaData.getColumnType(2)).thenReturn(Types.INTEGER);
+        when(queryResult.next()).thenReturn(true);
+        when(queryResult.getValue(1, Time.class)).thenReturn(value);
+        when(queryResult.getValue(2, Object.class)).thenReturn(48);
+        JDBCDataRowEnumerator enumerator = new JDBCDataRowEnumerator(queryResult, metaData, Collections.emptyList());
+        assertTrue(enumerator.moveNext());
+        Object actual = enumerator.current();
+        assertThat(actual, isA(Object[].class));
+        Object[] actualValues = (Object[]) actual;
+        assertThat(actualValues[0], isA(Time.class));
+        assertThat(actualValues[0], is(expected));
+        assertThat(actualValues[1], is(48));
+    }
+    
+    private static Stream<Arguments> timeArguments() {
+        return Stream.of(
+                Arguments.of("memory-microseconds", LocalTime.of(12, 34, 56, 123456000), new Time(Time.valueOf("12:34:56").getTime() + 123)),
+                Arguments.of("memory-midnight", LocalTime.MIDNIGHT, Time.valueOf("00:00:00")),
+                Arguments.of("memory-whole-second", LocalTime.of(12, 34, 56), Time.valueOf("12:34:56")),
+                Arguments.of("legacy-time", new Time(Time.valueOf("12:34:56").getTime() + 123), new Time(Time.valueOf("12:34:56").getTime() + 123)));
+    }
+    
+    @Test
+    void assertEnumerateNullTimeRow() throws SQLException {
+        MergedResult queryResult = mock(MergedResult.class);
+        QueryResultMetaData metaData = mock(QueryResultMetaData.class);
+        when(metaData.getColumnCount()).thenReturn(1);
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(queryResult.next()).thenReturn(true);
+        JDBCDataRowEnumerator enumerator = new JDBCDataRowEnumerator(queryResult, metaData, Collections.emptyList());
+        assertTrue(enumerator.moveNext());
+        assertNull(enumerator.current());
+        verify(queryResult).getValue(1, Time.class);
+    }
+    
+    @Test
+    void assertEnumerateNonTimeLocalTimeRow() throws SQLException {
+        MergedResult queryResult = mock(MergedResult.class);
+        QueryResultMetaData metaData = mock(QueryResultMetaData.class);
+        when(metaData.getColumnCount()).thenReturn(1);
+        when(metaData.getColumnType(1)).thenReturn(Types.JAVA_OBJECT);
+        when(queryResult.next()).thenReturn(true);
+        LocalTime expected = LocalTime.of(12, 34, 56, 123456000);
+        when(queryResult.getValue(1, Object.class)).thenReturn(expected);
+        JDBCDataRowEnumerator enumerator = new JDBCDataRowEnumerator(queryResult, metaData, Collections.emptyList());
+        assertTrue(enumerator.moveNext());
+        assertThat(enumerator.current(), sameInstance(expected));
+    }
     
     @Test
     void assertEnumerateRowsBuildsRows() throws SQLException {

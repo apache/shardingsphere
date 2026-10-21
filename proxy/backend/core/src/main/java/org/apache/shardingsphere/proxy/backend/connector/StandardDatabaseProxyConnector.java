@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
@@ -89,6 +90,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -354,13 +357,25 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     }
     
     @Override
+    @HighFrequencyInvocation
     public QueryResponseRow getRowData() throws SQLException {
         List<QueryResponseCell> cells = new ArrayList<>(queryHeaders.size());
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
-            Object data = mergedResult.getValue(columnIndex, Object.class);
-            cells.add(new QueryResponseCell(queryHeaders.get(columnIndex - 1).getColumnType(), data, queryHeaders.get(columnIndex - 1).getColumnTypeName()));
+            QueryHeader queryHeader = queryHeaders.get(columnIndex - 1);
+            Class<?> valueType = getValueType(queryHeader.getColumnType());
+            Object data = mergedResult.getValue(columnIndex, valueType);
+            cells.add(new QueryResponseCell(queryHeader.getColumnType(), data, queryHeader.getColumnTypeName()));
         }
         return new QueryResponseRow(cells);
+    }
+    
+    private Class<?> getValueType(final int columnType) {
+        switch (columnType) {
+            case Types.TIME:
+                return LocalTime.class;
+            default:
+                return Object.class;
+        }
     }
     
     @Override

@@ -39,16 +39,19 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +68,8 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     private static final String BINARY = "Binary";
     
+    private final ResultSet firstResultSet;
+    
     private final MergedResult mergeResultSet;
     
     private final DialectResultSetValueConverter dialectResultSetValueConverter;
@@ -72,17 +77,22 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     @Getter
     private final Map<String, Integer> columnLabelAndIndexMap;
     
+    private ResultSetMetaData resultSetMetaData;
+    
     public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final SQLStatementContext sqlStatementContext) throws SQLException {
         super(resultSets, statement, sqlStatementContext);
+        firstResultSet = resultSets.get(0);
         this.mergeResultSet = mergeResultSet;
         DatabaseType protocolType = getProtocolType(statement);
         dialectResultSetValueConverter = getDialectResultSetValueConverter(protocolType);
-        columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData());
+        resultSetMetaData = firstResultSet.getMetaData();
+        columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSetMetaData);
     }
     
     public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement,
                                    final SQLStatementContext sqlStatementContext, final Map<String, Integer> columnLabelAndIndexMap) {
         super(resultSets, statement, sqlStatementContext);
+        firstResultSet = resultSets.get(0);
         this.mergeResultSet = mergeResultSet;
         DatabaseType protocolType = getProtocolType(statement);
         dialectResultSetValueConverter = getDialectResultSetValueConverter(protocolType);
@@ -171,12 +181,32 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public String getString(final int columnIndex) throws SQLException {
-        return (String) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, String.class), String.class);
+        Object value = mergeResultSet.getValue(columnIndex, String.class);
+        return (String) ResultSetUtils.convertValue(formatTimeValue(columnIndex, value), String.class);
     }
     
     @Override
     public String getString(final String columnLabel) throws SQLException {
         return getString(getIndexFromColumnLabelAndIndexMap(columnLabel));
+    }
+    
+    /**
+     * Format SQL time value for string conversion.
+     *
+     * @param columnIndex column index
+     * @param value value
+     * @return formatted SQL time value or original value, including {@code null} for SQL {@code NULL}
+     * @throws SQLException SQL exception
+     */
+    private Object formatTimeValue(final int columnIndex, final Object value) throws SQLException {
+        return value instanceof LocalTime && isTimeColumn(columnIndex) ? DateTimeFormatter.ISO_LOCAL_TIME.format((LocalTime) value) : value;
+    }
+    
+    private boolean isTimeColumn(final int columnIndex) throws SQLException {
+        if (null == resultSetMetaData) {
+            resultSetMetaData = firstResultSet.getMetaData();
+        }
+        return Types.TIME == resultSetMetaData.getColumnType(columnIndex);
     }
     
     @Override
@@ -372,7 +402,11 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Object getObject(final int columnIndex) throws SQLException {
-        return mergeResultSet.getValue(columnIndex, Object.class);
+        if (!isTimeColumn(columnIndex)) {
+            return mergeResultSet.getValue(columnIndex, Object.class);
+        }
+        Object result = mergeResultSet.getValue(columnIndex, Time.class);
+        return result instanceof LocalTime ? ResultSetUtils.convertValue(result, Time.class) : result;
     }
     
     @Override
@@ -395,7 +429,12 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
         if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type) || OffsetDateTime.class.equals(type)) {
             return (T) convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type);
         }
-        return (T) convertValue(mergeResultSet.getValue(columnIndex, type), type);
+        boolean timeColumn = Object.class == type && isTimeColumn(columnIndex);
+        Object value = mergeResultSet.getValue(columnIndex, timeColumn ? Time.class : type);
+        if (String.class == type) {
+            value = formatTimeValue(columnIndex, value);
+        }
+        return (T) convertValue(value, timeColumn ? Time.class : type);
     }
     
     @Override

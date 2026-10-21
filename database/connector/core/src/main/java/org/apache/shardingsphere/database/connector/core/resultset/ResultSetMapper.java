@@ -20,12 +20,17 @@ package org.apache.shardingsphere.database.connector.core.resultset;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
+import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Types;
+import java.time.LocalTime;
+import java.util.BitSet;
 import java.util.Optional;
 
 /**
@@ -36,6 +41,10 @@ public final class ResultSetMapper {
     
     private final DatabaseType databaseType;
     
+    private WeakReference<ResultSet> timeResultSet;
+    
+    private BitSet unsupportedTimeColumns;
+    
     /**
      * Load result set value.
      *
@@ -44,6 +53,7 @@ public final class ResultSetMapper {
      * @return data value
      * @throws SQLException SQL exception
      */
+    @HighFrequencyInvocation
     public Object load(final ResultSet resultSet, final int columnIndex) throws SQLException {
         Optional<DialectResultSetMapper> dialectResultSetMapper = DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType);
         ResultSetMetaData metaData = resultSet.getMetaData();
@@ -77,7 +87,7 @@ public final class ResultSetMapper {
             case Types.DATE:
                 return dialectResultSetMapper.isPresent() ? dialectResultSetMapper.get().getDateValue(resultSet, columnIndex) : resultSet.getDate(columnIndex);
             case Types.TIME:
-                return resultSet.getTime(columnIndex);
+                return getTimeValue(resultSet, columnIndex);
             case Types.TIMESTAMP:
                 return resultSet.getTimestamp(columnIndex);
             case Types.BLOB:
@@ -94,6 +104,31 @@ public final class ResultSetMapper {
                 return dialectResultSetMapper.isPresent()
                         ? dialectResultSetMapper.get().getDefaultValue(resultSet, columnIndex, metaData.getColumnType(columnIndex))
                         : resultSet.getObject(columnIndex);
+        }
+    }
+    
+    /**
+     * Get time value.
+     *
+     * @param resultSet result set
+     * @param columnIndex column index
+     * @return time value, or {@code null} for SQL {@code NULL}
+     * @throws SQLException SQL exception
+     */
+    private Object getTimeValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        if (null != timeResultSet && resultSet == timeResultSet.get() && unsupportedTimeColumns.get(columnIndex)) {
+            return resultSet.getTime(columnIndex);
+        }
+        try {
+            return resultSet.getObject(columnIndex, LocalTime.class);
+        } catch (final SQLFeatureNotSupportedException ignored) {
+            Object result = resultSet.getTime(columnIndex);
+            if (null == timeResultSet || resultSet != timeResultSet.get()) {
+                timeResultSet = new WeakReference<>(resultSet);
+                unsupportedTimeColumns = new BitSet();
+            }
+            unsupportedTimeColumns.set(columnIndex);
+            return result;
         }
     }
 }

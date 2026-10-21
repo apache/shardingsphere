@@ -39,17 +39,25 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -140,11 +148,130 @@ class ResultSetMapperTest {
         assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(object));
     }
     
-    @Test
-    void assertLoadTimeValue() throws SQLException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("timeArguments")
+    void assertLoadTimeValue(final String name, final LocalTime value) throws SQLException {
         when(metaData.getColumnType(1)).thenReturn(Types.TIME);
-        when(resultSet.getTime(1)).thenReturn(new Time(0L));
-        assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(new Time(0L)));
+        when(resultSet.getObject(1, LocalTime.class)).thenReturn(value);
+        assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(value));
+    }
+    
+    private static Stream<Arguments> timeArguments() {
+        return Stream.of(
+                Arguments.of("microseconds", LocalTime.of(12, 34, 56, 123456000)),
+                Arguments.of("midnight-microsecond", LocalTime.of(0, 0, 0, 1000)),
+                Arguments.of("whole-second", LocalTime.of(12, 34, 56)));
+    }
+    
+    @Test
+    void assertLoadTimeNull() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        assertNull(new ResultSetMapper(databaseType).load(resultSet, 1));
+    }
+    
+    @Test
+    void assertLoadTimeWithUnsupportedTypedGetter() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        Time expected = new Time(Time.valueOf("12:34:56").getTime() + 123);
+        when(resultSet.getTime(1)).thenReturn(expected);
+        assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(expected));
+    }
+    
+    @Test
+    void assertLoadTimeWithUnsupportedTypedGetterAndNull() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        ResultSetMapper mapper = new ResultSetMapper(databaseType);
+        assertNull(mapper.load(resultSet, 1));
+        assertNull(mapper.load(resultSet, 1));
+        verify(resultSet).getObject(1, LocalTime.class);
+        verify(resultSet, times(2)).getTime(1);
+    }
+    
+    @Test
+    void assertLoadTimeWithSQLFailure() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        SQLException expected = new SQLException("foo_time_failure");
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(expected);
+        assertThat(assertThrows(SQLException.class, () -> new ResultSetMapper(databaseType).load(resultSet, 1)), sameInstance(expected));
+    }
+    
+    @Test
+    void assertLoadTimeWithoutRepeatedUnsupportedGetter() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        Time expected = new Time(Time.valueOf("12:34:56").getTime() + 123);
+        when(resultSet.getTime(1)).thenReturn(expected);
+        ResultSetMapper mapper = new ResultSetMapper(databaseType);
+        assertThat(mapper.load(resultSet, 1), is(expected));
+        assertThat(mapper.load(resultSet, 1), is(expected));
+        verify(resultSet).getObject(1, LocalTime.class);
+        verify(resultSet, times(2)).getTime(1);
+    }
+    
+    @Test
+    void assertLoadTimePreservesOtherColumnPrecision() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(metaData.getColumnType(2)).thenReturn(Types.TIME);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        LocalTime expected = LocalTime.of(12, 34, 56, 123456000);
+        when(resultSet.getObject(2, LocalTime.class)).thenReturn(expected);
+        ResultSetMapper mapper = new ResultSetMapper(databaseType);
+        assertNull(mapper.load(resultSet, 1));
+        assertThat(mapper.load(resultSet, 2), is(expected));
+    }
+    
+    @Test
+    void assertLoadTimeMemoizesEachUnsupportedColumn() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(metaData.getColumnType(2)).thenReturn(Types.TIME);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        doThrow(SQLFeatureNotSupportedException.class).when(resultSet).getObject(2, LocalTime.class);
+        Time expected = Time.valueOf("12:34:56");
+        Time firstColumnValue = Time.valueOf("01:02:03");
+        when(resultSet.getTime(1)).thenReturn(firstColumnValue);
+        when(resultSet.getTime(2)).thenReturn(expected);
+        ResultSetMapper mapper = new ResultSetMapper(databaseType);
+        assertThat(mapper.load(resultSet, 1), is(firstColumnValue));
+        assertThat(mapper.load(resultSet, 2), is(expected));
+        assertThat(mapper.load(resultSet, 2), is(expected));
+        verify(resultSet).getObject(2, LocalTime.class);
+    }
+    
+    @Test
+    void assertLoadTimeDoesNotShareUnsupportedColumnsBetweenResultSets() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        ResultSet otherResultSet = mock(ResultSet.class);
+        when(otherResultSet.getMetaData()).thenReturn(metaData);
+        when(otherResultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
+        ResultSetMapper mapper = new ResultSetMapper(databaseType);
+        assertNull(mapper.load(resultSet, 1));
+        assertNull(mapper.load(otherResultSet, 1));
+        doReturn(LocalTime.of(12, 34, 56, 123456000)).when(resultSet).getObject(1, LocalTime.class);
+        assertThat(mapper.load(resultSet, 1), is(LocalTime.of(12, 34, 56, 123456000)));
+    }
+    
+    @Test
+    void assertLoadTimeRetriesAfterFallbackFailure() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class).thenReturn(LocalTime.NOON);
+        SQLException expected = new SQLException("foo_time_failure");
+        when(resultSet.getTime(1)).thenThrow(expected);
+        ResultSetMapper mapper = new ResultSetMapper(databaseType);
+        assertThat(assertThrows(SQLException.class, () -> mapper.load(resultSet, 1)), sameInstance(expected));
+        assertThat(mapper.load(resultSet, 1), is(LocalTime.NOON));
+    }
+    
+    @Test
+    void assertLoadTimeRetriesAfterSQLFailure() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        SQLException expected = new SQLException("foo_time_failure");
+        when(resultSet.getObject(1, LocalTime.class)).thenThrow(expected).thenReturn(LocalTime.NOON);
+        ResultSetMapper mapper = new ResultSetMapper(databaseType);
+        assertThat(assertThrows(SQLException.class, () -> mapper.load(resultSet, 1)), sameInstance(expected));
+        assertThat(mapper.load(resultSet, 1), is(LocalTime.NOON));
     }
     
     @Test

@@ -21,10 +21,15 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Timestamp;
+import java.time.LocalTime;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -56,5 +61,21 @@ class PostgreSQLTimeBinaryProtocolValueTest {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         actual.write(payload, timestamp);
         verify(payload).writeInt8(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime(timestamp));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("localTimeArguments")
+    void assertWriteLocalTime(final String name, final LocalTime value, final long expected) {
+        new PostgreSQLTimeBinaryProtocolValue().write(payload, value);
+        verify(payload).writeInt8(expected);
+    }
+    
+    private static Stream<Arguments> localTimeArguments() {
+        return Stream.of(
+                Arguments.of("midnight", LocalTime.MIDNIGHT, 0L),
+                Arguments.of("whole-second", LocalTime.of(12, 34, 56), 45_296_000_000L),
+                Arguments.of("microseconds", LocalTime.of(12, 34, 56, 123456000), 45_296_123_456L),
+                Arguments.of("midnight-microsecond", LocalTime.of(0, 0, 0, 1000), 1L),
+                Arguments.of("end-of-day", LocalTime.of(23, 59, 59, 999999000), 86_399_999_999L));
     }
 }

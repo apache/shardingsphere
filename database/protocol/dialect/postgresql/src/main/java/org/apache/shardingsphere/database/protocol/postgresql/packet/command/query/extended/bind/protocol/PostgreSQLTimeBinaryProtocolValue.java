@@ -19,8 +19,10 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.PostgreSQLBinaryTimestampUtils;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.sql.Timestamp;
+import java.time.LocalTime;
 
 /**
  * Binary protocol value for time for PostgreSQL.
@@ -38,7 +40,9 @@ public final class PostgreSQLTimeBinaryProtocolValue implements PostgreSQLBinary
     }
     
     @Override
+    @HighFrequencyInvocation
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeInt8(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime((Timestamp) value));
+        long time = value instanceof LocalTime ? ((LocalTime) value).toNanoOfDay() / 1000L : PostgreSQLBinaryTimestampUtils.toPostgreSQLTime((Timestamp) value);
+        payload.writeInt8(time);
     }
 }

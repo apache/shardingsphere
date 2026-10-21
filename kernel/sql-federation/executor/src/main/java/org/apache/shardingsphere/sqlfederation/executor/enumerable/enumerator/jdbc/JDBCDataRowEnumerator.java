@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqlfederation.executor.enumerable.enumerator.j
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
@@ -27,8 +28,11 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 
 /**
@@ -68,9 +72,23 @@ public final class JDBCDataRowEnumerator implements Enumerator<Object> {
         currentRow = 1 == metaData.getColumnCount() ? rowValues[0] : rowValues;
     }
     
+    @HighFrequencyInvocation
     private Object getValue(final int index) throws SQLException {
-        Object result = queryResult.getValue(index + 1, Object.class);
+        int columnIndex = index + 1;
+        Object result = Types.TIME == metaData.getColumnType(columnIndex) ? getTimeValue(columnIndex) : queryResult.getValue(columnIndex, Object.class);
         return result instanceof LocalDateTime ? ResultSetUtils.convertValue(result, Timestamp.class) : result;
+    }
+    
+    /**
+     * Get time value for the Calcite row.
+     *
+     * @param columnIndex column index
+     * @return time value, or {@code null} for SQL {@code NULL}
+     * @throws SQLException SQL exception
+     */
+    private Object getTimeValue(final int columnIndex) throws SQLException {
+        Object result = queryResult.getValue(columnIndex, Time.class);
+        return result instanceof LocalTime ? ResultSetUtils.convertValue(result, Time.class) : result;
     }
     
     @Override

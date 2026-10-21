@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedStreamCharsetConversionException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
@@ -32,11 +34,14 @@ import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Optional;
 
@@ -49,6 +54,9 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
     private final ResultSet resultSet;
     
     private final boolean containsJDBCResultSet;
+    
+    @Getter(AccessLevel.NONE)
+    private BitSet unsupportedTimeColumns;
     
     public JDBCStreamQueryResult(final ResultSet resultSet) throws SQLException {
         this(resultSet, false);
@@ -66,6 +74,7 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
     }
     
     @Override
+    @HighFrequencyInvocation
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (boolean.class == type) {
             return resultSet.getBoolean(columnIndex);
@@ -104,7 +113,7 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
             return resultSet.getTime(columnIndex);
         }
         if (LocalTime.class == type) {
-            return resultSet.getObject(columnIndex, LocalTime.class);
+            return getLocalTime(columnIndex);
         }
         if (Timestamp.class == type) {
             return resultSet.getTimestamp(columnIndex);
@@ -124,7 +133,30 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
         if (ZonedDateTime.class == type) {
             return resultSet.getObject(columnIndex, type);
         }
-        return resultSet.getObject(columnIndex);
+        return Object.class == type && Types.TIME == getMetaData().getColumnType(columnIndex) ? getLocalTime(columnIndex) : resultSet.getObject(columnIndex);
+    }
+    
+    /**
+     * Get time value.
+     *
+     * @param columnIndex column index
+     * @return time value, or {@code null} for SQL {@code NULL}
+     * @throws SQLException SQL exception
+     */
+    private Object getLocalTime(final int columnIndex) throws SQLException {
+        if (null != unsupportedTimeColumns && 0 < columnIndex && unsupportedTimeColumns.get(columnIndex)) {
+            return resultSet.getTime(columnIndex);
+        }
+        try {
+            return resultSet.getObject(columnIndex, LocalTime.class);
+        } catch (final SQLFeatureNotSupportedException ignored) {
+            Object result = resultSet.getTime(columnIndex);
+            if (null == unsupportedTimeColumns) {
+                unsupportedTimeColumns = new BitSet();
+            }
+            unsupportedTimeColumns.set(columnIndex);
+            return result;
+        }
     }
     
     @Override

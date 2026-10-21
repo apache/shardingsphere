@@ -22,6 +22,7 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 
@@ -33,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -65,6 +67,7 @@ public final class ResultSetUtils {
      * @return converted value
      * @throws SQLFeatureNotSupportedException SQL feature not supported exception
      */
+    @HighFrequencyInvocation
     public static Object convertValue(final Object value, final Class<?> convertType) throws SQLFeatureNotSupportedException {
         ShardingSpherePreconditions.checkNotNull(convertType, () -> new SQLFeatureNotSupportedException("Type can not be null"));
         if (null == value) {
@@ -88,6 +91,9 @@ public final class ResultSetUtils {
         if (value instanceof Number) {
             return convertNumberValue(value, convertType);
         }
+        if (value instanceof Time && LocalTime.class == convertType) {
+            return LocalDateTime.ofInstant(Instant.ofEpochMilli(((Time) value).getTime()), ZoneId.systemDefault()).toLocalTime();
+        }
         if (value instanceof Date) {
             return convertDateValue((Date) value, convertType);
         }
@@ -107,9 +113,12 @@ public final class ResultSetUtils {
             return convertBooleanValue(value);
         }
         try {
+            if (value instanceof LocalTime) {
+                return convertLocalTimeValue((LocalTime) value, convertType);
+            }
             return convertType.cast(value);
         } catch (final ClassCastException ignored) {
-            throw new SQLFeatureNotSupportedException("getObject with type, cannot convert " + value.getClass().getName() + ":" + value + " to " + convertType.getName());
+            throw new SQLFeatureNotSupportedException(String.format("getObject with type, cannot convert %s:%s to %s", value.getClass().getName(), value, convertType.getName()));
         }
     }
     
@@ -282,6 +291,24 @@ public final class ResultSetUtils {
         }
         int firstChar = Character.toLowerCase(stringVal.charAt(0));
         return 't' == firstChar || 'y' == firstChar || '1' == firstChar || "-1".equals(stringVal);
+    }
+    
+    private static Object convertLocalTimeValue(final LocalTime value, final Class<?> convertType) {
+        if (Time.class == convertType) {
+            Time result = Time.valueOf(value);
+            result.setTime(result.getTime() + value.getNano() / 1_000_000);
+            return result;
+        }
+        if (Timestamp.class == convertType) {
+            return Timestamp.valueOf(value.atDate(LocalDate.of(1970, 1, 1)));
+        }
+        if (java.sql.Date.class == convertType) {
+            return new java.sql.Date(Time.valueOf(value).getTime() + value.getNano() / 1_000_000);
+        }
+        if (LocalDate.class == convertType) {
+            return LocalDate.of(1970, 1, 1);
+        }
+        return convertType.cast(value);
     }
     
     /**

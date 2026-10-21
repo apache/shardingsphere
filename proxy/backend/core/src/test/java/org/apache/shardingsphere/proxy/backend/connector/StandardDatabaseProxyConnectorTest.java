@@ -71,6 +71,7 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBack
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
@@ -113,13 +114,16 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -813,6 +817,44 @@ class StandardDatabaseProxyConnectorTest {
         assertNotNull(actual);
         assertThat(actual.getNextException(), is(sqlExceptionByResultSet));
         assertThat(actual.getNextException().getNextException(), is(sqlExceptionByStatement));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("timeRowArguments")
+    void assertGetRowDataWithTime(final String name, final LocalTime value) throws SQLException {
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, LocalTime.class)).thenReturn(value);
+        when(mergedResult.getValue(2, Object.class)).thenReturn(48);
+        setField(engine, "mergedResult", mergedResult);
+        setField(engine, "queryHeaders", Arrays.asList(
+                new QueryHeader("foo_db", "foo_table", "foo_time", "foo_time", Types.TIME, "TIME", 17, 6, true, false, false, false),
+                new QueryHeader("foo_db", "foo_table", "foo_id", "foo_id", Types.INTEGER, "INT", 11, 0, true, false, false, false)));
+        Iterator<QueryResponseCell> actual = engine.getRowData().getCells().iterator();
+        assertThat(actual.next().getData(), is(value));
+        assertThat(actual.next().getData(), is(48));
+        assertFalse(actual.hasNext());
+        verify(mergedResult).getValue(1, LocalTime.class);
+        verify(mergedResult).getValue(2, Object.class);
+    }
+    
+    private static Stream<Arguments> timeRowArguments() {
+        return Stream.of(
+                Arguments.of("microseconds", LocalTime.of(12, 34, 56, 123456000)),
+                Arguments.of("midnight-microsecond", LocalTime.of(0, 0, 0, 1000)),
+                Arguments.of("whole-second", LocalTime.of(12, 34, 56)));
+    }
+    
+    @Test
+    void assertGetRowDataWithNullTime() throws SQLException {
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
+        MergedResult mergedResult = mock(MergedResult.class);
+        setField(engine, "mergedResult", mergedResult);
+        setField(engine, "queryHeaders", Collections.singletonList(new QueryHeader("foo_db", "foo_table", "foo_time", "foo_time", Types.TIME, "TIME", 17, 6, true, false, false, false)));
+        QueryResponseCell actual = engine.getRowData().getCells().iterator().next();
+        assertNull(actual.getData());
+        assertThat(actual.getJdbcType(), is(Types.TIME));
+        verify(mergedResult).getValue(1, LocalTime.class);
     }
     
     @Test
