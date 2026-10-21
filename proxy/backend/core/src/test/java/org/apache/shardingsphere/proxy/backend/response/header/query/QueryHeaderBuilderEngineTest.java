@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.ColumnIndexOutOfRangeException;
@@ -32,6 +33,7 @@ import org.mockito.MockedStatic;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -118,6 +120,27 @@ class QueryHeaderBuilderEngineTest {
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(mock(QueryHeaderBuilder.class));
             assertThrows(ColumnIndexOutOfRangeException.class,
                     () -> new QueryHeaderBuilderEngine(databaseType).build(sqlStatementContext, mock(ShardingSphereResultSetMetaData.class), mock(), 2));
+        }
+    }
+    
+    @Test
+    void assertBuildWithUnexpandedShorthandFallsBackToMetaData() throws SQLException {
+        ShorthandProjection shorthandProjection = new ShorthandProjection(null, Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.asList(shorthandProjection));
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.containsDerivedProjections()).thenReturn(true);
+        when(sqlStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
+        ShardingSphereResultSetMetaData resultSetMetaData = mock(ShardingSphereResultSetMetaData.class);
+        when(resultSetMetaData.getColumnName(1)).thenReturn("order_id");
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("order_id");
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        QueryHeader expectedQueryHeader = mock(QueryHeader.class);
+        try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
+            when(queryHeaderBuilder.build(resultSetMetaData, database, "order_id", "order_id", 1)).thenReturn(expectedQueryHeader);
+            spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(queryHeaderBuilder);
+            QueryHeader actualQueryHeader = new QueryHeaderBuilderEngine(databaseType).build(sqlStatementContext, resultSetMetaData, database, 1);
+            assertThat(actualQueryHeader, is(expectedQueryHeader));
         }
     }
     
