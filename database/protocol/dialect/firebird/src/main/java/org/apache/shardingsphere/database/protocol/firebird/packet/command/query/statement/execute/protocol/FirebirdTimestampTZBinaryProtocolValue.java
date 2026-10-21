@@ -39,7 +39,7 @@ public final class FirebirdTimestampTZBinaryProtocolValue implements FirebirdBin
         LocalDateTime localDateTime = ((OffsetDateTime) value).atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
         payload.writeInt4(FirebirdDateTimeUtils.getEncodedDate(localDateTime));
         payload.writeInt4(new FirebirdDateTimeUtils(localDateTime).getEncodedTime());
-        payload.writeInt4(((OffsetDateTime) value).getOffset().getTotalSeconds() / 60);
+        payload.writeInt4(((OffsetDateTime) value).getOffset().getTotalSeconds() / 60 + FirebirdDateTimeUtils.TIME_ZONE_ID_CORRECTION);
     }
     
     @Override

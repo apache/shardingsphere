@@ -267,7 +267,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * @param length logical length of one array element
      * @param pad byte used to fill the storage length when the value is shorter
      */
-    public void writeOpaque(final byte[] value, final int length, final byte pad) {
+    private void writeOpaque(final byte[] value, final int length, final byte pad) {
         int written = Math.min(value.length, length);
         byteBuf.writeBytes(value, 0, written);
         byte[] storage = new byte[length - written];

@@ -53,23 +53,23 @@ public final class FirebirdDecFloatBinaryProtocolValue implements FirebirdBinary
         return FirebirdBinaryColumnType.DEC16 == columnType ? Decimal64.parseBytes(bytes) : Decimal128.parseBytes(bytes);
     }
     
+    private int getByteLength() {
+        return FirebirdBinaryColumnType.DEC16 == columnType ? DEC16_BYTE_LENGTH : DEC34_BYTE_LENGTH;
+    }
+    
     @Override
     public void write(final FirebirdPacketPayload payload, final Object value) {
         BigDecimal decimal = toBigDecimal(value);
         payload.writeBytes(FirebirdBinaryColumnType.DEC16 == columnType ? Decimal64.valueOf(decimal).toBytes() : Decimal128.valueOf(decimal).toBytes());
     }
     
+    private BigDecimal toBigDecimal(final Object value) {
+        Preconditions.checkArgument(value instanceof Number, "Can not encode DECFLOAT value `%s`", value);
+        return value instanceof BigDecimal ? (BigDecimal) value : new BigDecimal(value.toString());
+    }
     @Override
     public int getLength(final FirebirdPacketPayload payload) {
         return getByteLength();
     }
     
-    private int getByteLength() {
-        return FirebirdBinaryColumnType.DEC16 == columnType ? DEC16_BYTE_LENGTH : DEC34_BYTE_LENGTH;
-    }
-    
-    private BigDecimal toBigDecimal(final Object value) {
-        Preconditions.checkArgument(value instanceof Number, "Can not encode DECFLOAT value `%s`", value);
-        return value instanceof BigDecimal ? (BigDecimal) value : new BigDecimal(value.toString());
-    }
 }

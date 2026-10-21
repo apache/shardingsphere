@@ -40,6 +40,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FirebirdSliceResponsePacketTest {
     
@@ -112,6 +113,10 @@ class FirebirdSliceResponsePacketTest {
         BigDecimal value = new BigDecimal("1.5");
         return Stream.of(
                 Arguments.of("int128", 16, FirebirdBinaryColumnType.INT128, BigInteger.valueOf(-2L), 16, repeatedSignBytes(16, (byte) -2)),
+                Arguments.of("int128_positive", 16, FirebirdBinaryColumnType.INT128, BigInteger.valueOf(2L), 16, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}),
+                Arguments.of("int128_big_decimal", 16, FirebirdBinaryColumnType.INT128, new BigDecimal("4"), 16, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4}),
+                Arguments.of("int128_integer", 16, FirebirdBinaryColumnType.INT128, 7, 16, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7}),
+                Arguments.of("int128_long", 16, FirebirdBinaryColumnType.INT128, -3L, 16, repeatedSignBytes(16, (byte) -3)),
                 Arguments.of("time_tz", 6, FirebirdBinaryColumnType.TIME_TZ, OffsetTime.parse("01:02:03+02:00"), 6, new byte[]{0x31, 0x6d, 0x0b, (byte) 0xB0, 0, 0, 0x06, 0x17}),
                 Arguments.of("d_float", 8, FirebirdBinaryColumnType.D_FLOAT, 1.5D, 8, new byte[]{0x3F, (byte) 0xF8, 0, 0, 0, 0, 0, 0}),
                 Arguments.of("quad", 8, FirebirdBinaryColumnType.QUAD, 5L, 8, new byte[]{0, 0, 0, 0, 0, 0, 0, 5}),
@@ -147,5 +152,19 @@ class FirebirdSliceResponsePacketTest {
         byte[] actual = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(actual);
         assertThat(actual, is(new byte[]{0, 0, 0, 60, 0, 0, 0, 1, 0, 0, 0, 1, 65, 0, 0, 0, 0, 0, 0, 71}));
+    }
+
+    @Test
+    void assertInt128RejectsValuesThatNeedMoreThanSixteenBytes() {
+        ByteBuf byteBuf = Unpooled.buffer();
+        PacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        BigInteger largest = BigInteger.ONE.shiftLeft(127).subtract(BigInteger.ONE);
+        new FirebirdSliceResponsePacket(16, FirebirdBinaryColumnType.INT128, Collections.singletonList(largest), 16).write(payload);
+        assertThat(byteBuf.readableBytes(), is(SLICE_HEADER_LENGTH + 16));
+        ByteBuf overflowBuf = Unpooled.buffer();
+        PacketPayload overflowPayload = new FirebirdPacketPayload(overflowBuf, StandardCharsets.UTF_8);
+        FirebirdSliceResponsePacket overflow = new FirebirdSliceResponsePacket(16, FirebirdBinaryColumnType.INT128,
+                Collections.singletonList(BigInteger.ONE.shiftLeft(127)), 16);
+        assertThrows(IllegalArgumentException.class, () -> overflow.write(overflowPayload));
     }
 }

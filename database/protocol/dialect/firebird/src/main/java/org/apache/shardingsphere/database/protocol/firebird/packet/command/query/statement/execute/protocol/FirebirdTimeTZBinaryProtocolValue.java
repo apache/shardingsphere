@@ -38,8 +38,6 @@ import java.time.ZoneOffset;
  */
 public final class FirebirdTimeTZBinaryProtocolValue implements FirebirdBinaryProtocolValue {
     
-    private static final int TIME_ZONE_ID_CORRECTION = 1439;
-    
     @Override
     public Object read(final FirebirdPacketPayload payload) {
         Object result = FirebirdDateTimeUtils.getTime(payload.readInt4());
@@ -52,7 +50,7 @@ public final class FirebirdTimeTZBinaryProtocolValue implements FirebirdBinaryPr
         OffsetTime offsetTime = (OffsetTime) value;
         LocalTime utcTime = offsetTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalTime();
         payload.writeInt4(new FirebirdDateTimeUtils(LocalDateTime.of(LocalDate.ofEpochDay(0L), utcTime)).getEncodedTime());
-        payload.writeInt4(offsetTime.getOffset().getTotalSeconds() / 60 + TIME_ZONE_ID_CORRECTION);
+        payload.writeInt4(offsetTime.getOffset().getTotalSeconds() / 60 + FirebirdDateTimeUtils.TIME_ZONE_ID_CORRECTION);
     }
     
     @Override
