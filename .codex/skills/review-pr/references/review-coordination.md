@@ -68,7 +68,8 @@ A newly proved finding or an evidence-based change in status, classification, di
 The coordinator must retain and compare prior adjudications even though fresh reviewers must not receive them.
 Do not select an arbitrary matching subset of reports or impose an unagreed stage or time limit.
 Do not extend the six-assessment limit without explicit user authorization.
-If confirmation remains unfinished after six assessments or a concrete failure prevents continuing confirmation, report `Review Status: Not Converged`, that reason, the confirmed facts and unresolved differences without a formal `Review Result` line or a mergeability conclusion.
+If confirmation remains unfinished after six assessments or a concrete failure prevents continuing confirmation, report `Review Status: Not Converged`, the reason, confirmed facts and unresolved differences, and apply the main Skill's qualified negative rule.
+When no current blocker satisfies that rule, omit a formal `Review Result` line or mergeability conclusion unless the Review Incomplete Proof Gate establishes an incomplete result.
 Disagreement, exhausted review attempts or an unavailable isolation mechanism do not satisfy the Review Incomplete Proof Gate.
 
 When authoritative scope cannot be established, preserve the Review Incomplete Proof Gate's missing-scope evidence route and state explicitly that complete independent code reviews could not start.
@@ -102,7 +103,8 @@ Individual reports may differ from that final adjudication only with recorded ev
 Before publishing a completed Formal Review result or an overall readiness conclusion in a discussion reply, run `scripts/review_ledger.py validate-session --session <JSON>` after the coordinator's substantive result review.
 The command is read-only and validates records, references and evidence freshness; it neither launches reviewers nor proves their isolation or semantic correctness.
 If session validation fails, inspect the exact failure and correct only an unsupported record or missing evidence; never rewrite an original assessment or change issue mappings merely to obtain a pass.
-Only the coordinator emits the final report under the Output Contract after validation succeeds.
+Only the coordinator emits the final report under the Output Contract.
+Complete confirmation requires successful session validation; when it cannot finish, follow the main Skill's qualified negative rule without claiming validation succeeded.
 
 ## Review-Material Lifecycle
 
