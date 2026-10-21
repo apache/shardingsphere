@@ -37,7 +37,8 @@ public final class FirebirdConnectionPropertiesParser implements ConnectionPrope
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
         DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(GDSFactory.getDatabasePath(GDSFactory.getTypeForProtocol(url), url));
-        String databaseName = dbAttachInfo.getAttachObjectName().split("\\?")[0];
+        String attachObjectName = dbAttachInfo.getAttachObjectName();
+        String databaseName = attachObjectName.contains("?") ? attachObjectName.split("\\?")[0] : attachObjectName;
         Properties queryProps = new Properties();
         queryProps.putAll(FBDriver.normalizeProperties(url, new Properties()));
         return new ConnectionProperties(dbAttachInfo.getServerName(), dbAttachInfo.getPortNumber(), databaseName, null, queryProps);
