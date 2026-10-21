@@ -487,7 +487,6 @@ class FirebirdBatchedStatementsExecutorTest {
     }
     
     private ContextManager mockContextManager(final String... dataSourceNames) {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(dataSourceNames.length, 1F);
         for (String each : dataSourceNames) {
@@ -515,6 +514,7 @@ class FirebirdBatchedStatementsExecutorTest {
                 new ShardingSphereColumn("col", Types.VARCHAR, false, false, false, true, false, false)));
         when(schema.getTable(new IdentifierValue("t")).getAllColumns()).thenReturn(Arrays.asList(new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("col", Types.VARCHAR, false, false, false, true, false, false)));
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue("db"))).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
