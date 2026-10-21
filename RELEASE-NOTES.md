@@ -192,7 +192,7 @@
 1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
 1. SQL Parser: Support parsing SYSTEM_USER in SQL92 dialect and bind it as a niladic function instead of a column - [#39102](https://github.com/apache/shardingsphere/pull/39102)
 1. E2E: Add Firebird to SQL E2E tests through ShardingSphere-Proxy
-1. Proxy: Simplify command executors and authentication engine in Firebird
+1. Proxy: Simplify command executors and authentication engine in Firebird - [#40318](https://github.com/apache/shardingsphere/pull/40318)
 
 ## Release 5.5.3
 
