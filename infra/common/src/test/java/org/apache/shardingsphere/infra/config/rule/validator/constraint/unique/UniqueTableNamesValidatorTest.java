@@ -69,10 +69,11 @@ class UniqueTableNamesValidatorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("duplicatedTablesArguments")
-    void assertIsValidWithDuplicatedNames(final String name, final Collection<?> tables, final String expectedMessage) {
+    void assertIsValidWithDuplicatedNames(final String name, final Collection<?> tables) {
         ConstraintValidatorContext context = mock(ConstraintValidatorContext.class);
         ConstraintViolationBuilder builder = mock(ConstraintViolationBuilder.class);
-        when(context.buildConstraintViolationWithTemplate(expectedMessage)).thenReturn(builder);
+        when(context.getDefaultConstraintMessageTemplate()).thenReturn("must not contain duplicate table names");
+        when(context.buildConstraintViolationWithTemplate("must not contain duplicate table names")).thenReturn(builder);
         assertFalse(validator.isValid(tables, context));
         verify(context).disableDefaultConstraintViolation();
         verify(builder).addConstraintViolation();
@@ -80,10 +81,10 @@ class UniqueTableNamesValidatorTest {
     
     private static Stream<Arguments> duplicatedTablesArguments() {
         return Stream.of(
-                Arguments.of("Nonadjacent duplicated name", createTables("foo_tbl", "bar_tbl", "foo_tbl"), "must not contain duplicate table names `foo_tbl`"),
-                Arguments.of("All duplicated names retain encounter order", createTables("z_tbl", "a_tbl", "z_tbl", "a_tbl", "z_tbl"),
-                        "must not contain duplicate table names `z_tbl, a_tbl`"),
-                Arguments.of("Names read across different table types", Arrays.asList(new Table("foo_tbl"), new OtherTable("foo_tbl")), "must not contain duplicate table names `foo_tbl`"));
+                Arguments.of("Nonadjacent duplicated name", createTables("foo_tbl", "bar_tbl", "foo_tbl")),
+                Arguments.of("Multiple duplicated names", createTables("z_tbl", "a_tbl", "z_tbl", "a_tbl", "z_tbl")),
+                Arguments.of("Names read across different table types", Arrays.asList(new Table("foo_tbl"), new OtherTable("foo_tbl"))),
+                Arguments.of("Template characters in duplicated names", createTables("foo_{message}_${7*7}", "foo_{message}_${7*7}")));
     }
     
     @Test

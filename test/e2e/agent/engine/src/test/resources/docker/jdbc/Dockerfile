@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FROM eclipse-temurin:21-jdk
+FROM eclipse-temurin:21-jre
 
 ENV IS_DOCKER true
 

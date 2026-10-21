@@ -149,17 +149,34 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
     }
     
     private Object decodeStringParameterValue(final List<MySQLBinaryColumnType> parameterColumnTypes, final int paramIndex, final MySQLBinaryColumnType parameterType, final Object value) {
-        if (!(value instanceof byte[]) || MySQLBinaryColumnType.STRING != parameterType || !isCharacterColumnType(parameterColumnTypes, paramIndex)) {
+        if (!(value instanceof byte[]) || MySQLBinaryColumnType.STRING != parameterType || !isCharacterOrNumericColumnType(parameterColumnTypes, paramIndex)) {
             return value;
         }
         return new String((byte[]) value, payload.getCharset());
     }
     
-    private boolean isCharacterColumnType(final List<MySQLBinaryColumnType> parameterColumnTypes, final int paramIndex) {
-        if (paramIndex >= parameterColumnTypes.size()) {
+    private boolean isCharacterOrNumericColumnType(final List<MySQLBinaryColumnType> parameterColumnTypes, final int paramIndex) {
+        MySQLBinaryColumnType columnType = getParameterColumnType(parameterColumnTypes, paramIndex);
+        if (null == columnType) {
             return false;
         }
-        MySQLBinaryColumnType columnType = parameterColumnTypes.get(paramIndex);
-        return MySQLBinaryColumnType.STRING == columnType || MySQLBinaryColumnType.VAR_STRING == columnType || MySQLBinaryColumnType.VARCHAR == columnType;
+        switch (columnType) {
+            case STRING:
+            case VAR_STRING:
+            case VARCHAR:
+                return true;
+            case TINY:
+            case SHORT:
+            case LONG:
+            case LONGLONG:
+            case INT24:
+            case FLOAT:
+            case DOUBLE:
+            case DECIMAL:
+            case NEWDECIMAL:
+                return true;
+            default:
+                return false;
+        }
     }
 }

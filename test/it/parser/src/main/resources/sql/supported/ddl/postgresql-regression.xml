@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_table_generated_virtual_postgresql" value="CREATE TABLE foo (id int, doubled int GENERATED ALWAYS AS (id * 2) VIRTUAL)" db-types="PostgreSQL" />
+    <sql-case id="create_table_generated_implicit_virtual_postgresql" value="CREATE TABLE foo (id int, doubled int GENERATED ALWAYS AS (id * 2))" db-types="PostgreSQL" />
+    <sql-case id="create_table_generated_stored_postgresql" value="CREATE TABLE foo (id int, doubled int GENERATED ALWAYS AS (id * 2) STORED)" db-types="PostgreSQL" />
+    <sql-case id="create_table_check_enforced_postgresql" value="CREATE TABLE foo (id int, CHECK (id &gt; 0) ENFORCED)" db-types="PostgreSQL" />
+    <sql-case id="create_table_check_not_enforced_postgresql" value="CREATE TABLE foo (id int, CHECK (id &gt; 0) NOT ENFORCED)" db-types="PostgreSQL" />
+    <sql-case id="create_table_unique_nulls_not_distinct_postgresql" value="CREATE TABLE foo (id int, UNIQUE NULLS NOT DISTINCT (id))" db-types="PostgreSQL" />
+    <sql-case id="create_table_column_unique_nulls_not_distinct_postgresql" value="CREATE TABLE foo (id int UNIQUE NULLS NOT DISTINCT)" db-types="PostgreSQL" />
+    <sql-case id="create_table_not_null_no_inherit_postgresql" value="CREATE TABLE foo (id int, NOT NULL id NO INHERIT)" db-types="PostgreSQL" />
+    <sql-case id="create_table_temporal_primary_key_postgresql" value="CREATE TABLE foo (id int, valid_at int4range, PRIMARY KEY (id, valid_at WITHOUT OVERLAPS))" db-types="PostgreSQL" />
+    <sql-case id="create_table_temporal_unique_postgresql" value="CREATE TABLE foo (id int, valid_at int4range, UNIQUE (id, valid_at WITHOUT OVERLAPS))" db-types="PostgreSQL" />
+    <sql-case id="create_table_temporal_foreign_key_postgresql" value="CREATE TABLE foo (id int, valid_at int4range, FOREIGN KEY (id, PERIOD valid_at) REFERENCES bar (id, PERIOD valid_at))" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set_expression_postgresql" value="ALTER TABLE foo ALTER COLUMN doubled SET EXPRESSION AS (id * 3)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_not_null_no_inherit_postgresql" value="ALTER TABLE foo ADD NOT NULL id NO INHERIT" db-types="PostgreSQL" />
+    <sql-case id="create_publication_columns_where_postgresql" value="CREATE PUBLICATION foo_pub FOR TABLE foo (id) WHERE (id &gt; 0)" db-types="PostgreSQL" />
+    <sql-case id="create_publication_schemas_postgresql" value="CREATE PUBLICATION foo_pub FOR TABLES IN SCHEMA public, CURRENT_SCHEMA" db-types="PostgreSQL" />
+    <sql-case id="create_publication_mixed_objects_postgresql" value="CREATE PUBLICATION foo_pub FOR TABLE foo (id), bar WHERE (id &gt; 0), TABLES IN SCHEMA public, audit" db-types="PostgreSQL" />
+    <sql-case id="alter_publication_add_schema_postgresql" value="ALTER PUBLICATION foo_pub ADD TABLES IN SCHEMA public" db-types="PostgreSQL" />
+    <sql-case id="alter_publication_set_schema_postgresql" value="ALTER PUBLICATION foo_pub SET TABLES IN SCHEMA public" db-types="PostgreSQL" />
+    <sql-case id="alter_publication_drop_schema_postgresql" value="ALTER PUBLICATION foo_pub DROP TABLES IN SCHEMA public" db-types="PostgreSQL" />
+    <sql-case id="alter_publication_table_filter_postgresql" value="ALTER PUBLICATION foo_pub SET TABLE foo (id) WHERE (id &gt; 0)" db-types="PostgreSQL" />
+    <sql-case id="create_function_return_body_postgresql" value="CREATE FUNCTION foo() RETURNS int RETURN 1" db-types="PostgreSQL" />
+    <sql-case id="create_function_atomic_body_postgresql" value="CREATE FUNCTION foo() RETURNS int LANGUAGE SQL BEGIN ATOMIC RETURN 1; END" db-types="PostgreSQL" />
+    <sql-case id="create_function_atomic_empty_statements_postgresql" value="CREATE FUNCTION foo() RETURNS int BEGIN ATOMIC ; RETURN 1;; END" db-types="PostgreSQL" />
+    <sql-case id="create_function_atomic_table_body_postgresql" value="CREATE FUNCTION foo() RETURNS TABLE (a int) LANGUAGE SQL BEGIN ATOMIC SELECT 1; END" db-types="PostgreSQL" />
+    <sql-case id="create_procedure_atomic_body_postgresql" value="CREATE PROCEDURE foo() LANGUAGE SQL BEGIN ATOMIC INSERT INTO bar (id) VALUES (1); END" db-types="PostgreSQL" />
+    <sql-case id="create_procedure_atomic_ddl_body_postgresql" value="CREATE PROCEDURE foo() LANGUAGE SQL BEGIN ATOMIC CREATE TABLE bar (id int); END" db-types="PostgreSQL" />
+    <sql-case id="create_procedure_atomic_empty_body_postgresql" value="CREATE PROCEDURE foo() BEGIN ATOMIC END" db-types="PostgreSQL" />
+    <sql-case id="create_or_replace_trigger_postgresql" value="CREATE OR REPLACE TRIGGER foo_trigger BEFORE INSERT ON foo FOR EACH ROW EXECUTE FUNCTION audit_foo()" db-types="PostgreSQL" />
+    <sql-case id="create_constraint_trigger_postgresql" value="CREATE CONSTRAINT TRIGGER foo_trigger AFTER UPDATE ON foo FROM bar DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (id &gt; 0) EXECUTE FUNCTION audit_foo()" db-types="PostgreSQL" />
+    <sql-case id="create_constraint_trigger_optional_clauses_postgresql" value="CREATE CONSTRAINT TRIGGER foo_trigger AFTER INSERT ON foo FOR ROW EXECUTE FUNCTION audit_foo()" db-types="PostgreSQL" />
+    <sql-case id="create_statistics_named_postgresql" value="CREATE STATISTICS foo_stats (dependencies) ON a, b FROM foo" db-types="PostgreSQL" />
+    <sql-case id="create_statistics_unnamed_postgresql" value="CREATE STATISTICS (dependencies) ON a, b FROM foo" db-types="PostgreSQL" />
+    <sql-case id="create_subscription_postgresql" value="CREATE SUBSCRIPTION foo_sub CONNECTION 'dbname=test' PUBLICATION foo_pub WITH (connect = false)" db-types="PostgreSQL" />
+    <sql-case id="create_operator_class_postgresql" value="CREATE OPERATOR CLASS int_ops FOR TYPE int USING btree AS OPERATOR 1 &lt; (int, int), FUNCTION 1 btint4cmp(int, int)" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_class_postgresql" value="ALTER OPERATOR CLASS int_ops USING btree RENAME TO int_ops_new" db-types="PostgreSQL" />
+    <sql-case id="create_operator_family_postgresql" value="CREATE OPERATOR FAMILY int_family USING btree" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_family_add_postgresql" value="ALTER OPERATOR FAMILY int_family USING btree ADD OPERATOR 1 &lt; (int, int)" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_family_drop_postgresql" value="ALTER OPERATOR FAMILY int_family USING btree DROP OPERATOR 1 (int, int), FUNCTION 1 (int, int)" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_family_rename_postgresql" value="ALTER OPERATOR FAMILY int_family USING btree RENAME TO int_family_new" db-types="PostgreSQL" />
+    <sql-case id="alter_event_trigger_enable_postgresql" value="ALTER EVENT TRIGGER foo_event ENABLE" db-types="PostgreSQL" />
+    <sql-case id="alter_event_trigger_enable_replica_postgresql" value="ALTER EVENT TRIGGER foo_event ENABLE REPLICA" db-types="PostgreSQL" />
+    <sql-case id="alter_event_trigger_enable_always_postgresql" value="ALTER EVENT TRIGGER foo_event ENABLE ALWAYS" db-types="PostgreSQL" />
+    <sql-case id="import_foreign_schema_postgresql" value="IMPORT FOREIGN SCHEMA remote LIMIT TO (foo, bar) FROM SERVER foreign_server INTO local OPTIONS (import_default 'true')" db-types="PostgreSQL" />
+    <sql-case id="create_index_zero_argument_function_postgresql" value="CREATE INDEX foo_idx ON foo (foo_func())" db-types="PostgreSQL" />
+    <sql-case id="create_index_coalesce_postgresql" value="CREATE INDEX foo_idx ON foo (coalesce(id, 0))" db-types="PostgreSQL" />
+    <sql-case id="create_index_function_column_postgresql" value="CREATE INDEX foo_idx ON foo (lower(name))" db-types="PostgreSQL" />
+    <sql-case id="create_index_cast_postgresql" value="CREATE INDEX foo_idx ON foo (CAST(a AS text))" db-types="PostgreSQL" />
+    <sql-case id="create_index_nested_cast_postgresql" value="CREATE INDEX foo_idx ON foo (CAST(a + CAST(b AS integer) AS text))" db-types="PostgreSQL" />
+    <sql-case id="prepare_merge_postgresql" value="PREPARE foo_prepare AS MERGE INTO foo USING bar ON foo.id = bar.id WHEN MATCHED THEN DO NOTHING" db-types="PostgreSQL" />
+    <sql-case id="create_table_as_select_columns_parameter_postgresql" value="CREATE TABLE foo (id, name) AS SELECT id, name FROM bar WHERE id = ?" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="create_table_as_values_columns_postgresql" value="CREATE TABLE foo (id) AS VALUES (1)" db-types="PostgreSQL" />
+    <sql-case id="create_table_as_execute_parameters_postgresql" value="CREATE TABLE foo AS EXECUTE foo_query(?, ?) WITH NO DATA" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="create_table_as_execute_columns_postgresql" value="CREATE TABLE foo (id, name) AS EXECUTE foo_query WITH DATA" db-types="PostgreSQL" />
+    <sql-case id="create_table_storage_compression_postgresql" value="CREATE TABLE foo (id int STORAGE PLAIN, name text COMPRESSION pglz)" db-types="PostgreSQL" />
+    <sql-case id="create_table_like_generated_compression_postgresql" value="CREATE TABLE foo (LIKE bar INCLUDING GENERATED INCLUDING COMPRESSION)" db-types="PostgreSQL" />
+    <sql-case id="create_table_foreign_key_delete_set_columns_postgresql" value="CREATE TABLE foo (id int REFERENCES bar (id) ON DELETE SET NULL (id), other_id int, FOREIGN KEY (other_id) REFERENCES bar (id) ON DELETE SET DEFAULT (other_id))" db-types="PostgreSQL" />
+    <sql-case id="create_table_typed_column_constraints_postgresql" value="CREATE TABLE foo OF foo_type (id WITH OPTIONS PRIMARY KEY, UNIQUE (name))" db-types="PostgreSQL" />
+    <sql-case id="create_table_partition_generated_with_options_postgresql" value="CREATE TABLE foo PARTITION OF bar (id WITH OPTIONS GENERATED ALWAYS AS (base_id * 2) VIRTUAL) FOR VALUES FROM (0) TO (10)" db-types="PostgreSQL" />
+    <sql-case id="create_table_partition_primary_unique_postgresql" value="CREATE TABLE foo PARTITION OF bar (id PRIMARY KEY, code UNIQUE) FOR VALUES IN (1, 2)" db-types="PostgreSQL" />
+    <sql-case id="create_view_cascaded_check_option_postgresql" value="CREATE VIEW foo_view AS SELECT * FROM bar WITH CASCADED CHECK OPTION" db-types="PostgreSQL" />
+    <sql-case id="alter_table_constraint_inheritance_postgresql" value="ALTER TABLE foo ALTER CONSTRAINT foo_check INHERIT, ALTER CONSTRAINT bar_check NO INHERIT" db-types="PostgreSQL" />
+    <sql-case id="alter_table_storage_default_postgresql" value="ALTER TABLE foo ALTER COLUMN id SET STORAGE DEFAULT" db-types="PostgreSQL" />
+    <sql-case id="alter_table_access_method_default_postgresql" value="ALTER TABLE foo SET ACCESS METHOD DEFAULT" db-types="PostgreSQL" />
+    <sql-case id="alter_table_reloptions_qualified_postgresql" value="ALTER TABLE foo SET (autovacuum_enabled = false, toast.autovacuum_enabled = false)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_reset_reloptions_postgresql" value="ALTER TABLE foo RESET (autovacuum_enabled, toast.autovacuum_enabled)" db-types="PostgreSQL" />
+    <sql-case id="create_index_nulls_distinct_postgresql" value="CREATE UNIQUE INDEX foo_idx ON foo (id) NULLS DISTINCT" db-types="PostgreSQL" />
+    <sql-case id="create_index_nulls_not_distinct_postgresql" value="CREATE UNIQUE INDEX foo_idx ON foo (id) NULLS NOT DISTINCT" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_table_serial_aliases_postgresql" value="ALTER FOREIGN TABLE foo ADD COLUMN foo_small smallserial, ADD COLUMN foo_serial serial, ADD COLUMN foo_big bigserial" db-types="PostgreSQL" />
+    <sql-case id="create_user_mapping_without_options_postgresql" value="CREATE USER MAPPING FOR CURRENT_USER SERVER foo_server" db-types="PostgreSQL" />
+    <sql-case id="create_user_mapping_options_postgresql" value="CREATE USER MAPPING FOR PUBLIC SERVER foo_server OPTIONS (user 'foo_user')" db-types="PostgreSQL" />
+    <sql-case id="alter_user_mapping_options_postgresql" value="ALTER USER MAPPING FOR foo_user SERVER foo_server OPTIONS (SET user 'bar_user')" db-types="PostgreSQL" />
+    <sql-case id="drop_user_mapping_postgresql" value="DROP USER MAPPING IF EXISTS FOR foo_user SERVER foo_server" db-types="PostgreSQL" />
+    <sql-case id="create_server_without_options_postgresql" value="CREATE SERVER foo_server FOREIGN DATA WRAPPER foo_wrapper" db-types="PostgreSQL" />
+    <sql-case id="create_transform_postgresql" value="CREATE TRANSFORM FOR int LANGUAGE sql (FROM SQL WITH FUNCTION foo_from(internal), TO SQL WITH FUNCTION foo_to(int))" db-types="PostgreSQL" />
+    <sql-case id="alter_large_object_owner_postgresql" value="ALTER LARGE OBJECT 42 OWNER TO CURRENT_USER" db-types="PostgreSQL" />
+    <sql-case id="alter_domain_add_not_null_postgresql" value="ALTER DOMAIN foo_domain ADD CONSTRAINT foo_not_null NOT NULL" db-types="PostgreSQL" />
+    <sql-case id="drop_collation_qualified_list_postgresql" value="DROP COLLATION foo_schema.foo_collation, bar_schema.bar_collation" db-types="PostgreSQL" />
+    <sql-case id="drop_conversion_qualified_postgresql" value="DROP CONVERSION foo_schema.foo_conversion" db-types="PostgreSQL" />
+    <sql-case id="drop_domain_qualified_list_postgresql" value="DROP DOMAIN foo_schema.foo_domain, bar_schema.bar_domain" db-types="PostgreSQL" />
+    <sql-case id="alter_materialized_view_access_method_postgresql" value="ALTER MATERIALIZED VIEW foo_view SET ACCESS METHOD heap" db-types="PostgreSQL" />
+    <sql-case id="alter_materialized_view_all_tablespace_postgresql" value="ALTER MATERIALIZED VIEW ALL IN TABLESPACE foo_space SET TABLESPACE bar_space" db-types="PostgreSQL" />
+    <sql-case id="alter_type_definition_postgresql" value="ALTER TYPE foo_type SET (STORAGE = extended, SEND = foo_send)" db-types="PostgreSQL" />
+    <sql-case id="alter_sequence_logged_postgresql" value="ALTER SEQUENCE foo_seq SET LOGGED" db-types="PostgreSQL" />
+    <sql-case id="alter_sequence_unlogged_postgresql" value="ALTER SEQUENCE foo_seq SET UNLOGGED" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_definition_postgresql" value="ALTER OPERATOR === (int, int) SET (COMMUTATOR = NONE, MERGES, HASHES = true)" db-types="PostgreSQL" />
+    <sql-case id="alter_default_privileges_schemas_grant_postgresql" value="ALTER DEFAULT PRIVILEGES GRANT USAGE ON SCHEMAS TO foo_role" db-types="PostgreSQL" />
+    <sql-case id="alter_default_privileges_schemas_revoke_postgresql" value="ALTER DEFAULT PRIVILEGES REVOKE USAGE ON SCHEMAS FROM foo_role" db-types="PostgreSQL" />
+    <sql-case id="alter_default_privileges_large_objects_postgresql" value="ALTER DEFAULT PRIVILEGES GRANT SELECT ON LARGE OBJECTS TO foo_role" db-types="PostgreSQL" />
+    <sql-case id="alter_default_privileges_types_role_postgresql" value="ALTER DEFAULT PRIVILEGES FOR ROLE foo_owner REVOKE USAGE ON TYPES FROM PUBLIC" db-types="PostgreSQL" />
+    <sql-case id="alter_default_privileges_types_schema_postgresql" value="ALTER DEFAULT PRIVILEGES IN SCHEMA foo_schema GRANT USAGE ON TYPES TO PUBLIC" db-types="PostgreSQL" />
+    <sql-case id="create_aggregate_negative_initcond_postgresql" value="CREATE AGGREGATE foo_sum(int) (SFUNC = int4pl, STYPE = int, INITCOND = -100)" db-types="PostgreSQL" />
+    <sql-case id="create_event_trigger_login_postgresql" value="CREATE EVENT TRIGGER foo_event ON login EXECUTE FUNCTION foo_login()" db-types="PostgreSQL" />
+    <sql-case id="create_function_single_transform_type_postgresql" value="CREATE FUNCTION foo_func() RETURNS int LANGUAGE SQL TRANSFORM FOR TYPE int AS 'SELECT 1'" db-types="PostgreSQL" />
+    <sql-case id="alter_subscription_skip_lsn_postgresql" value="ALTER SUBSCRIPTION foo_sub SKIP (lsn = '0/12345')" db-types="PostgreSQL" />
+    <sql-case id="alter_subscription_skip_none_postgresql" value="ALTER SUBSCRIPTION foo_sub SKIP (lsn = NONE)" db-types="PostgreSQL" />
+    <sql-case id="reindex_options_postgresql" value="REINDEX (TABLESPACE foo_space, CONCURRENTLY) TABLE foo" db-types="PostgreSQL" />
+    <sql-case id="alter_tablespace_reloptions_postgresql" value="ALTER TABLESPACE foo_space SET (random_page_cost = 1, seq_page_cost = 1)" db-types="PostgreSQL" />
+    <sql-case id="cluster_index_on_table_postgresql" value="CLUSTER foo_idx ON foo" db-types="PostgreSQL" />
+    <sql-case id="drop_database_force_postgresql" value="DROP DATABASE foo_db WITH (FORCE)" db-types="PostgreSQL" />
+    <sql-case id="drop_database_force_without_with_postgresql" value="DROP DATABASE foo_db (FORCE)" db-types="PostgreSQL" />
+</sql-cases>

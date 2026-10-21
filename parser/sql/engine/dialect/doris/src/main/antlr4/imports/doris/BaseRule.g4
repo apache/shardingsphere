@@ -389,6 +389,7 @@ identifierKeywordsUnambiguous
     | NEXT
     | NGRAM_BF
     | NODEGROUP
+    | NOW
     | NOWAIT
     | NO_WAIT
     | NULLS
@@ -803,7 +804,7 @@ delimiterName
     ; 
 
 userIdentifierOrText
-    : textOrIdentifier (AT_ textOrIdentifier)?
+    : textOrIdentifier (AT_ (textOrIdentifier (DOT_ textOrIdentifier)*)?)?
     ;
 
 username
@@ -919,7 +920,7 @@ logName
     ;
 
 roleName
-    : roleIdentifierOrText (AT_ textOrIdentifier)?
+    : roleIdentifierOrText (AT_ textOrIdentifier (DOT_ textOrIdentifier)*)?
     ;
 
 roleIdentifierOrText
@@ -1132,7 +1133,7 @@ jsonTableColumns
 jsonTableColumn
     : name FOR ORDINALITY
     | name dataType PATH path (NULL | DEFAULT string_ | ERROR) ON (EMPTY | ERROR)
-    | name dataType EXISTS PATH string_ path
+    | name dataType EXISTS PATH path
     | NESTED PATH? path COLUMNS
     ;
 
@@ -1299,7 +1300,7 @@ castType
     | castTypeName = JSON
     | castTypeName = REAL
     | castTypeName = DOUBLE PRECISION
-    | castTypeName = FLOAT precision?
+    | castTypeName = FLOAT (fieldLength | precision)?
     // DORIS ADDED BEGIN
     | castTypeName = STRING
     | castTypeName = INT
@@ -1365,7 +1366,7 @@ shorthandRegularFunction
 
 completeRegularFunction
     // DORIS CHANGED BEGIN
-    : regularFunctionName (LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_) indexAlias? overClause?
+    : regularFunctionName (LP_ (ALL expr | expr (COMMA_ expr)* | ASTERISK_)? RP_) indexAlias? overClause?
     // DORIS CHANGED END
     ;
 
@@ -1442,7 +1443,7 @@ orderByItem
     ;
 
 dataType
-    : dataTypeName = (INTEGER | INT | TINYINT | SMALLINT | MIDDLEINT | MEDIUMINT | BIGINT) fieldLength? fieldOptions?
+    : dataTypeName = (INTEGER | INT | INT1 | INT2 | INT3 | INT4 | INT8 | TINYINT | SMALLINT | MIDDLEINT | MEDIUMINT | BIGINT) fieldLength? fieldOptions?
     | (dataTypeName = REAL | dataTypeName = DOUBLE PRECISION?) precision? fieldOptions?
     | dataTypeName = (FLOAT | DECIMAL | DEC | NUMERIC | FIXED) (fieldLength | precision)? fieldOptions?
     | dataTypeName = BIT fieldLength?
@@ -1470,11 +1471,11 @@ dataType
     | dataTypeName = BLOB fieldLength?
     | dataTypeName = (MEDIUMBLOB | LONGBLOB)
     | dataTypeName = LONG VARBINARY
-    | dataTypeName = (LONG_CHAR_VARYING | LONG_VARCHAR)? charsetWithOptBinary?
+    | dataTypeName = (LONG_CHAR_VARYING | LONG_VARCHAR) charsetWithOptBinary?
     | dataTypeName = TINYTEXT charsetWithOptBinary?
     | dataTypeName = TEXT fieldLength? charsetWithOptBinary?
     | dataTypeName = MEDIUMTEXT charsetWithOptBinary?
-    | dataTypeName = LONGTEXT charsetWithOptBinary?
+    | dataTypeName = (LONG | LONGTEXT) charsetWithOptBinary?
     | dataTypeName = ENUM stringList charsetWithOptBinary?
     | dataTypeName = SET stringList charsetWithOptBinary?
     | dataTypeName = (SERIAL | JSON | GEOMETRY | GEOMCOLLECTION | GEOMETRYCOLLECTION | POINT | MULTIPOINT | LINESTRING | MULTILINESTRING | POLYGON | MULTIPOLYGON)
@@ -1556,7 +1557,7 @@ defaultCharset
     ;
 
 now
-    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP) (LP_ NUMBER_? RP_)?
+    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW) (LP_ NUMBER_? RP_)?
     ;
 
 columnFormat

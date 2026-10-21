@@ -89,4 +89,18 @@ class ReadwriteSplittingInspectionServiceTest {
         when(queryFacade.query(eq("logic_db"), eq("COUNT READWRITE_SPLITTING RULE FROM logic_db"))).thenReturn(List.of(Map.of("count", 1)));
         assertThat(new ReadwriteSplittingInspectionService().queryRuleCount(queryFacade, "logic_db"), is(List.of(Map.of("count", 1))));
     }
+    
+    @Test
+    void assertQueryRule() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        new ReadwriteSplittingInspectionService().queryRule(queryFacade, "foo_db", "foo_rule");
+        verify(queryFacade).query("foo_db", "SHOW READWRITE_SPLITTING RULE foo_rule FROM foo_db");
+    }
+    
+    @Test
+    void assertQueryStatuses() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        new ReadwriteSplittingInspectionService().queryStatuses(queryFacade, "foo_db");
+        verify(queryFacade).query("foo_db", "SHOW STATUS FROM READWRITE_SPLITTING RULES FROM foo_db");
+    }
 }

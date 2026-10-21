@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -44,6 +44,37 @@ class MCPToolInputSchemaValidatorTest {
     
     private static Stream<Arguments> invalidInputSchemaCases() {
         return Stream.of(
+                Arguments.of("conditional composition",
+                        Map.of("type", "object", "properties", Map.of("query", Map.of("type", "string", "description", "Query.")), "required", List.of("query"), "additionalProperties", false,
+                                "if", Map.of("query", Map.of("type", "string"))),
+                        "Tool `database_gateway_test_tool` inputSchema contains unsupported top-level field `if`."),
+                Arguments.of("top-level type", Map.of("type", "array", "properties", Map.of(), "required", List.of(), "additionalProperties", false),
+                        "Tool `database_gateway_test_tool` inputSchema must be an object."),
+                Arguments.of("top-level properties", Map.of("type", "object", "properties", "foo", "required", List.of(), "additionalProperties", false),
+                        "Tool `database_gateway_test_tool` inputSchema must declare properties."),
+                Arguments.of("top-level required", Map.of("type", "object", "properties", Map.of(), "required", "foo", "additionalProperties", false),
+                        "Tool `database_gateway_test_tool` inputSchema required must be an array."),
+                Arguments.of("top-level additionalProperties", Map.of("type", "object", "properties", Map.of(), "required", List.of(), "additionalProperties", "foo"),
+                        "Tool `database_gateway_test_tool` inputSchema additionalProperties must be a boolean."),
+                Arguments.of("properties on string", createInputSchemaWithQuery(Map.of("type", "string", "properties", Map.of(), "description", "Query."), List.of("query")),
+                        "Tool `database_gateway_test_tool` inputSchema at `inputSchema.properties.query` must use type `object` with properties."),
+                Arguments.of("nested properties is not object", createInputSchemaWithQuery(Map.of("type", "object", "properties", "foo", "description", "Query."), List.of("query")),
+                        "Tool `database_gateway_test_tool` inputSchema at `inputSchema.properties.query.properties` must be an object."),
+                Arguments.of("property name is not string",
+                        Map.of("type", "object", "properties", Map.of(1, Map.of("type", "string", "description", "Query.")), "required", List.of(), "additionalProperties", false),
+                        "Tool `database_gateway_test_tool` inputSchema property name at `inputSchema.properties` must be a string."),
+                Arguments.of("required on string", createInputSchemaWithQuery(Map.of("type", "string", "required", List.of(), "description", "Query."), List.of("query")),
+                        "Tool `database_gateway_test_tool` inputSchema at `inputSchema.properties.query` must use type `object` with required properties."),
+                Arguments.of("nested required is not array", createInputSchemaWithQuery(Map.of("type", "object", "required", "foo", "description", "Query."), List.of("query")),
+                        "Tool `database_gateway_test_tool` inputSchema at `inputSchema.properties.query.required` must be an array."),
+                Arguments.of("items on string", createInputSchemaWithQuery(Map.of("type", "string", "items", Map.of(), "description", "Query."), List.of("query")),
+                        "Tool `database_gateway_test_tool` inputSchema at `inputSchema.properties.query` must use type `array` with items."),
+                Arguments.of("additionalProperties on string", createInputSchemaWithQuery(Map.of("type", "string", "additionalProperties", false, "description", "Query."), List.of("query")),
+                        "Tool `database_gateway_test_tool` inputSchema at `inputSchema.properties.query` must use type `object` with additionalProperties."),
+                Arguments.of("range on string", createInputSchemaWithQuery(Map.of("type", "string", "minimum", 0, "maximum", 10, "description", "Query."), List.of("query")),
+                        "Tool `database_gateway_test_tool` inputSchema at `inputSchema.properties.query` only supports minimum, maximum and default for type `integer`."),
+                Arguments.of("integer default wrong type", createInputSchemaWithQuery(Map.of("type", "integer", "default", "foo", "description", "Query."), List.of("query")),
+                        "Tool `database_gateway_test_tool` inputSchema at `inputSchema.properties.query.default` must be an integer in the Java int range."),
                 Arguments.of("unsupported type", createInputSchemaWithQuery(Map.of("type", "unsupported", "description", "Query."), List.of("query")),
                         "Tool `database_gateway_test_tool` inputSchema at `inputSchema.properties.query` uses unsupported type `unsupported`."),
                 Arguments.of("property is not an object", createInputSchemaWithQuery("string", List.of("query")),
@@ -88,10 +119,19 @@ class MCPToolInputSchemaValidatorTest {
         return Map.of("type", "object", "properties", Map.of("query", querySchema), "required", required, "additionalProperties", false);
     }
     
-    @Test
-    void assertValidateWithStringDefault() {
-        Map<String, Object> inputSchema = createInputSchemaWithQuery(Map.of("type", "string", "default", "query", "description", "Query."), List.of("query"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("validInputSchemaCases")
+    void assertValidateWithValidInputSchema(final String name, final Map<String, Object> inputSchema) {
         assertDoesNotThrow(() -> MCPToolInputSchemaValidator.validate(createToolDescriptor(inputSchema)));
+    }
+    
+    private static Stream<Arguments> validInputSchemaCases() {
+        return Stream.of(
+                Arguments.of("string default", createInputSchemaWithQuery(Map.of("type", "string", "default", "query", "description", "Query."), List.of("query"))),
+                Arguments.of("integer default without range", createInputSchemaWithQuery(Map.of("type", "integer", "default", 3, "description", "Query."), List.of("query"))),
+                Arguments.of("BigInteger bounds", createInputSchemaWithQuery(Map.of("type", "integer", "minimum", BigInteger.ZERO, "maximum", BigInteger.TEN, "default", BigInteger.TEN,
+                        "description", "Query."), List.of("query"))),
+                Arguments.of("schema without type", createInputSchemaWithQuery(Map.of("description", "Query."), List.of("query"))));
     }
     
     private MCPToolDescriptor createToolDescriptor(final Map<String, Object> inputSchema) {

@@ -90,6 +90,27 @@ class EncryptWorkflowApplyArtifactValidatorTest {
         assertTrue(actual.isEmpty());
     }
     
+    @Test
+    void assertValidateUnavailableQueryAlgorithms() {
+        EncryptWorkflowRequest request = new EncryptWorkflowRequest();
+        request.getOptions().setRequiresEqualityFilter(true);
+        request.getOptions().setAssistedQueryAlgorithmType("FOO_ASSISTED");
+        request.getOptions().setRequiresLikeQuery(true);
+        request.getOptions().setLikeQueryAlgorithmType("FOO_LIKE");
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setRequest(request);
+        String sql = "CREATE ENCRYPT RULE `foo_table` (COLUMNS((NAME=`foo_column`, CIPHER=`foo_cipher`, ENCRYPT_ALGORITHM(TYPE(NAME='aes')))))";
+        try (MockedStatic<WorkflowAlgorithmUtils> mocked = mockStatic(WorkflowAlgorithmUtils.class, CALLS_REAL_METHODS)) {
+            mocked.when(() -> WorkflowAlgorithmUtils.isAlgorithmServiceAvailable(EncryptAlgorithm.class, "FOO_ASSISTED", Map.of())).thenReturn(false);
+            mocked.when(() -> WorkflowAlgorithmUtils.isAlgorithmServiceAvailable(EncryptAlgorithm.class, "FOO_LIKE", Map.of())).thenReturn(false);
+            List<Map<String, Object>> actual = new EncryptWorkflowApplyArtifactValidator().validate(snapshot, List.of(new ExecutableWorkflowArtifact(sql, sql)));
+            assertThat(actual.size(), is(2));
+            assertThat(actual.get(0).get("message"),
+                    is("Generated encrypt DistSQL references assisted query algorithm `FOO_ASSISTED`, but it cannot be loaded or initialized by EncryptAlgorithm SPI."));
+            assertThat(actual.get(1).get("message"), is("Generated encrypt DistSQL references like query algorithm `FOO_LIKE`, but it cannot be loaded or initialized by EncryptAlgorithm SPI."));
+        }
+    }
+    
     private ExecutableWorkflowArtifact createArtifact(final String sql, final String displaySql) {
         return new ExecutableWorkflowArtifact(sql, displaySql);
     }

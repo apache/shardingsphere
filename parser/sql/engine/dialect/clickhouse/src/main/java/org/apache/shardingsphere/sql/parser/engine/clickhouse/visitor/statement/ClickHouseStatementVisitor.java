@@ -348,7 +348,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
             return new SubqueryExpressionSegment((SubquerySegment) astNode);
         }
         if (astNode instanceof OtherLiteralValue) {
-            return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(), ((OtherLiteralValue) astNode).getValue());
+            return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(), ((OtherLiteralValue) astNode).getValue(), Collections.emptyList());
         }
         return astNode;
     }
@@ -378,7 +378,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         if (null != ctx.columnName()) {
             return visit(ctx.columnName());
         }
-        return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText());
+        return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText(), Collections.emptyList());
     }
     
     @Override

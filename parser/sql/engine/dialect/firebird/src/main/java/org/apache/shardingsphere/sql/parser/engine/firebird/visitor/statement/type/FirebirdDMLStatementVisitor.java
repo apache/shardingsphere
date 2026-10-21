@@ -44,8 +44,12 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Inse
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.JoinedTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.MergeContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.OffsetDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.OrderByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.QualifiedShorthandContext;
@@ -211,7 +215,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         List<ExpressionSegment> segments = new LinkedList<>();
         for (AssignmentValueContext each : ctx.assignmentValue()) {
             segments.add(isStringLiteralWithCharacterSetOrCollation(each)
-                    ? new CommonExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), getOriginalText(each))
+                    ? new CommonExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), getOriginalText(each), Collections.emptyList())
                     : (ExpressionSegment) visit(each));
         }
         return new InsertValuesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), segments);
@@ -240,7 +244,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         if (null != expr) {
             return visit(expr);
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList());
     }
     
     @Override
@@ -268,11 +272,12 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
+        WithSegment withSegment = null == ctx.withClause() ? null : (WithSegment) visit(ctx.withClause());
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
-        result.addParameterMarkers(getParameterMarkerSegments());
-        if (null != ctx.withClause()) {
-            result = createSelectStatementBuilder(result).with((WithSegment) visit(ctx.withClause())).build();
+        if (null != withSegment) {
+            result = createSelectStatementBuilder(result).with(withSegment).build();
         }
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -345,6 +350,9 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         if (null != ctx.havingClause()) {
             selectStatementBuilder.having((HavingSegment) visit(ctx.havingClause()));
         }
+        if (null != ctx.limitClause()) {
+            selectStatementBuilder.limit((LimitSegment) visit(ctx.limitClause()));
+        }
         return selectStatementBuilder.build();
     }
     
@@ -361,6 +369,40 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
             offset = (PaginationValueSegment) visit(ctx.skipValue());
         }
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+    }
+    
+    @Override
+    public ASTNode visitLimitClause(final LimitClauseContext ctx) {
+        PaginationValueSegment rowCount = null;
+        PaginationValueSegment offset = null;
+        if (null != ctx.rowsClause()) {
+            offset = (PaginationValueSegment) visitLimitValue(ctx.rowsClause().expr(0));
+            if (ctx.rowsClause().expr().size() > 1) {
+                rowCount = (PaginationValueSegment) visitLimitValue(ctx.rowsClause().expr(1));
+            }
+        } else {
+            OffsetDefinitionContext offsetDefinition = ctx.offsetDefinition();
+            if (null != offsetDefinition.offsetClause()) {
+                offset = (PaginationValueSegment) visitLimitValue(offsetDefinition.offsetClause().limitOffset());
+            }
+            if (null != offsetDefinition.fetchClause()) {
+                rowCount = (PaginationValueSegment) visitLimitValue(offsetDefinition.fetchClause().limitRowCount());
+            }
+        }
+        return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+    }
+    
+    private ASTNode visitLimitValue(final ParserRuleContext ctx) {
+        if (ctx.getChild(0) instanceof NumberLiteralsContext) {
+            return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.getChild(0))).getValue().longValue());
+        }
+        if (ctx.getChild(0) instanceof ParameterMarkerContext) {
+            ParameterMarkerSegment result =
+                    new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.getChild(0))).getValue());
+            getParameterMarkerSegments().add(result);
+            return result;
+        }
+        return null;
     }
     
     @Override
@@ -626,9 +668,10 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
+        WithSegment withSegment = null == ctx.withClause() ? null : (WithSegment) visit(ctx.withClause());
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
-        if (null != ctx.withClause()) {
-            result = createSelectStatementBuilder(result).with((WithSegment) visit(ctx.withClause())).build();
+        if (null != withSegment) {
+            result = createSelectStatementBuilder(result).with(withSegment).build();
         }
         return result;
     }

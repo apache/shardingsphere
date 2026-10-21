@@ -38,5 +38,5 @@ positionalNotation
     ;
 
 namedNotation
-    : identifier EQ_ GT_ aExpr
+    : identifier NAMED_ARGUMENT_ aExpr
     ;

@@ -41,4 +41,4 @@ ShardingSphere-MCP 面向支持 MCP 的 AI 应用、IDE 插件和 Agent 平台�
   - 数据加密：说明如何通过 MCP 功能插件规划、执行和校验数据加密规则变更。
   - 数据脱敏：说明如何通过 MCP 功能插件规划、执行和校验数据脱敏规则变更。
 
-自研集成或协议调试场景可参考[自研集成附录](developer-appendix/)。
+自研集成或协议调试场景可参考[自研集成附录](/cn/user-manual/shardingsphere-mcp/developer-appendix/)。

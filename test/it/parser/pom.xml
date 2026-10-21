@@ -41,6 +41,7 @@
             <artifactId>shardingsphere-parser-sql-engine-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-data-pipeline-cdc-distsql-parser</artifactId>
@@ -204,4 +205,26 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>external-sql-parser-report</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <trimStackTrace>false</trimStackTrace>
+                            <statelessTestsetReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5Xml30StatelessReporter">
+                                <usePhrasedTestCaseMethodName>true</usePhrasedTestCaseMethodName>
+                            </statelessTestsetReporter>
+                            <properties>
+                                <configurationParameters>junit.jupiter.params.displayname.argument.maxlength=2147483647</configurationParameters>
+                            </properties>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

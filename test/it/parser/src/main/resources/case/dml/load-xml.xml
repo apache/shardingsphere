@@ -31,4 +31,7 @@
     <load-xml sql-case-id="load_xml_into_table_with_ignore_lines">
         <table name="t_order" start-index="43" stop-index="49" />
     </load-xml>
+    <load-xml sql-case-id="load_xml_rows_identified_by">
+        <table name="t" start-index="38" stop-index="38" />
+    </load-xml>
 </sql-parser-test-cases>
