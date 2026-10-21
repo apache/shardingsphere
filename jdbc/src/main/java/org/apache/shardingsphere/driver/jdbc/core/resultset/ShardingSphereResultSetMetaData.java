@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
 import org.apache.shardingsphere.driver.jdbc.adapter.WrapperAdapter;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.ColumnIndexOutOfRangeException;
@@ -42,12 +43,24 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     private final SQLStatementContext sqlStatementContext;
     
+    private VisibleColumnMapping visibleColumnMapping;
+    
+    private boolean visibleColumnMappingResolved;
+    
     @Override
     public int getColumnCount() throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
-            return ShardingSphereResultSetUtils.getVisibleColumnCount((SelectStatementContext) sqlStatementContext, resultSetMetaData);
+        VisibleColumnMapping mapping = resolveVisibleColumnMapping();
+        return null == mapping ? resultSetMetaData.getColumnCount() : mapping.getColumnCount();
+    }
+    
+    private VisibleColumnMapping resolveVisibleColumnMapping() throws SQLException {
+        if (!visibleColumnMappingResolved) {
+            if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
+                visibleColumnMapping = VisibleColumnMapping.resolve((SelectStatementContext) sqlStatementContext, resultSetMetaData);
+            }
+            visibleColumnMappingResolved = true;
         }
-        return resultSetMetaData.getColumnCount();
+        return visibleColumnMapping;
     }
     
     @Override
@@ -87,37 +100,30 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnLabel(final int column) throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
-            SelectStatementContext selectCtx = (SelectStatementContext) sqlStatementContext;
-            checkColumnIndex(column);
-            if (selectCtx.getProjectionsContext().containsUnexpandedShorthandProjection()) {
-                return resultSetMetaData.getColumnLabel(column);
-            }
-            return selectCtx.getProjectionsContext().getExpandProjections().get(column - 1).getColumnLabel();
+        VisibleColumnMapping mapping = resolveVisibleColumnMapping();
+        if (null != mapping) {
+            checkColumnIndex(column, mapping);
+            Projection projection = mapping.findProjection(column);
+            return null == projection ? resultSetMetaData.getColumnLabel(column) : projection.getColumnLabel();
         }
         return resultSetMetaData.getColumnLabel(column);
     }
     
-    @Override
-    public String getColumnName(final int column) throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
-            SelectStatementContext selectCtx = (SelectStatementContext) sqlStatementContext;
-            checkColumnIndex(column);
-            if (selectCtx.getProjectionsContext().containsUnexpandedShorthandProjection()) {
-                return resultSetMetaData.getColumnName(column);
-            }
-            return selectCtx.getProjectionsContext().getExpandProjections().get(column - 1).getColumnName();
+    private void checkColumnIndex(final int column, final VisibleColumnMapping mapping) throws SQLException {
+        if (column > mapping.getColumnCount()) {
+            throw new ColumnIndexOutOfRangeException(column).toSQLException();
         }
-        return resultSetMetaData.getColumnName(column);
     }
     
-    private void checkColumnIndex(final int column) throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext) {
-            int visibleCount = ShardingSphereResultSetUtils.getVisibleColumnCount((SelectStatementContext) sqlStatementContext, resultSetMetaData);
-            if (column > visibleCount) {
-                throw new ColumnIndexOutOfRangeException(column).toSQLException();
-            }
+    @Override
+    public String getColumnName(final int column) throws SQLException {
+        VisibleColumnMapping mapping = resolveVisibleColumnMapping();
+        if (null != mapping) {
+            checkColumnIndex(column, mapping);
+            Projection projection = mapping.findProjection(column);
+            return null == projection ? resultSetMetaData.getColumnName(column) : projection.getColumnName();
         }
+        return resultSetMetaData.getColumnName(column);
     }
     
     @Override

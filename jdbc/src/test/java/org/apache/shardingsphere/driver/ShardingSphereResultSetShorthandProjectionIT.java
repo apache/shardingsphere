@@ -188,7 +188,33 @@ class ShardingSphereResultSetShorthandProjectionIT {
     }
     
     /**
-     * Case 6: SELECT COUNT(DISTINCT user_id) FROM t_order
+     * Case 6: SELECT T.*, T.status status_new FROM t_order T ORDER BY T.user_id
+     * Shorthand + ORDER BY derived column coexisting. The shorthand remains unexpanded,
+     * while ProjectionsContextEngine appends ORDER_BY_DERIVED_0 for the absent order-by item.
+     * Expected: 4 visible columns (order_id, user_id, status, status_new); ORDER_BY_DERIVED hidden.
+     */
+    @Test
+    void assertShorthandWithOrderByDerived() throws SQLException {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.setDataSourceName("ds_0");
+            try (
+                    Statement statement = shardingSphereConnection.createStatement();
+                    ResultSet resultSet = statement.executeQuery("SELECT T.*, T.status status_new FROM t_order T ORDER BY T.user_id")) {
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                assertThat("shorthand columns visible, ORDER_BY_DERIVED hidden", metaData.getColumnCount(), is(4));
+                assertThat(metaData.getColumnLabel(1), is("order_id"));
+                assertThat(metaData.getColumnLabel(2), is("user_id"));
+                assertThat(metaData.getColumnLabel(3), is("status"));
+                assertThat(metaData.getColumnLabel(4), is("status_new"));
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getString("order_id"), is("1000"));
+                assertThat(resultSet.getString("status_new"), is("ACTIVE"));
+            }
+        }
+    }
+    
+    /**
+     * Case 7: SELECT COUNT(DISTINCT user_id) FROM t_order
      * Expected: 1 column.
      */
     @Test
