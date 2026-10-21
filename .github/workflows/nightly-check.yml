@@ -183,7 +183,7 @@ jobs:
           chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh &&
           ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
       - name: Upload coverage reports to codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ${{ github.workspace }}/target/mergeReport/jacoco.xml

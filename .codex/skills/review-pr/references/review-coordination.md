@@ -47,6 +47,9 @@ The coordinator's result review is focused verification of the reports and their
 
 ## Cross-Round Confirmation
 
+Permit at most three pairs and six complete independent assessments for one unchanged review basis.
+Coordinator result reviews, evidence checks and verification reports do not count toward this limit.
+
 Before changing an overall conclusion, compare the prior and current effective candidates, requirement sources and versions, applicable exceptions, review focus, evidence identities and finding sets; candidate-type or Git revision labels and a different previous verdict do not establish a changed basis.
 A changed effective candidate, requirement, rule version or outcome-sensitive external fact invalidates the affected prior assessments; never combine results from different bases to pass this gate.
 Start fresh confirmation on the changed basis while retaining the original task baseline, attributed scope, historical candidates and original assessments.
@@ -59,13 +62,14 @@ Only consecutive rounds on the current basis count toward its confirmation; earl
    Compare unchanged decisions semantically; reviewer identities, member mappings, file hashes, evidence wording and report ordering do not establish a changed conclusion.
 5. Confirm only when the fresh pair's normalized complete assessments agree with each other, the previous adjudication and the current adjudication, the supporting evidence and counter-evidence are sufficient, and no unresolved issue can change the conclusion.
    An evidenced need for a maintainer decision may be a confirmed `Needs Discussion` condition; it does not establish a code defect.
-6. Otherwise verify the differences, record their evidence-based dispositions without changing the original assessments, retain the updated current adjudication as the next comparison baseline and start a fresh round.
+6. Otherwise verify the differences, record their evidence-based dispositions without changing the original assessments, retain the updated current adjudication as the next comparison baseline and start a fresh round only while fewer than three pairs have completed on this basis.
 
-Any substantive issue, classification, disposition, evidence-gap or readiness change requires a subsequent fresh pair.
+Any substantive issue, classification, disposition, evidence-gap or readiness change requires a subsequent fresh pair within this limit; if none remains, do not confirm the changed conclusion.
 The coordinator must retain and compare the prior adjudication even though the fresh reviewers must not receive it.
 Do not select an arbitrary matching pair across rounds or impose an unagreed round or time limit.
-If a concrete failure prevents continuing confirmation, report `Review Status: Not Converged`, that reason, the confirmed facts and unresolved differences without a formal `Review Result` line or a mergeability conclusion.
-Disagreement or an unavailable isolation mechanism does not satisfy the Review Incomplete Proof Gate.
+Do not extend the six-assessment limit without explicit user authorization.
+If the third pair does not satisfy confirmation or a concrete failure prevents continuing confirmation, report `Review Status: Not Converged`, that reason, the confirmed facts and unresolved differences without a formal `Review Result` line or a mergeability conclusion.
+Disagreement, exhausted review attempts or an unavailable isolation mechanism do not satisfy the Review Incomplete Proof Gate.
 
 When authoritative scope cannot be established, preserve the Review Incomplete Proof Gate's missing-scope evidence route and state explicitly that complete independent code reviews could not start.
 That proven scope failure may return the existing `Review Incomplete` report without a session, but must not claim completed dual coverage or a mergeability conclusion.
