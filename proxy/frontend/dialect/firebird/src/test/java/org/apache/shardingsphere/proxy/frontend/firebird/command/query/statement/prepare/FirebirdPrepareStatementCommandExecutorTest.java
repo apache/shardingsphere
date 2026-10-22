@@ -301,6 +301,34 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeBinaryExpressions() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT 'foo' || 'bar', 1 + 2 FROM foo_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.SELECT,
+                FirebirdSQLInfoPacketType.FIELD,
+                FirebirdSQLInfoPacketType.FIELD,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPacketPayload concatenationPayload = mock(FirebirdPacketPayload.class);
+        when(concatenationPayload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        actualReturnPacket.getDescribeSelect().get(0).write(concatenationPayload);
+        verify(concatenationPayload).writeBytes("CONCATENATION".getBytes(StandardCharsets.UTF_8));
+        verify(concatenationPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        FirebirdPacketPayload arithmeticPayload = mock(FirebirdPacketPayload.class);
+        when(arithmeticPayload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        actualReturnPacket.getDescribeSelect().get(1).write(arithmeticPayload);
+        verify(arithmeticPayload).writeBytes("+".getBytes(StandardCharsets.UTF_8));
+        verify(arithmeticPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+    }
+    
+    @Test
     void assertDescribeLiterals() throws Exception {
         when(packet.getSQL()).thenReturn("SELECT 'it''s', 1 AS one FROM foo_tbl");
         when(packet.nextItem()).thenReturn(true, true, true, true, true, true, true, false);
