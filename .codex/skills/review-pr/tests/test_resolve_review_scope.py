@@ -26,11 +26,11 @@ SCRIPTS_DIR = Path(__file__).resolve().parents[1] / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
-import review_common as common
-from review_common import ChangedFile, categorize, compare_github_files, parse_name_status
+import resolve_review_scope as common
+from resolve_review_scope import ChangedFile, categorize, compare_github_files, parse_name_status
 
 
-class ReviewCommonTest(unittest.TestCase):
+class ResolveReviewScopeTest(unittest.TestCase):
 
     def test_parse_name_status(self):
         actual = parse_name_status("M\tmodule/Foo.java\nR100\told.md\tnew.md\nC75\tsource.yml\tcopy.yml\n")
