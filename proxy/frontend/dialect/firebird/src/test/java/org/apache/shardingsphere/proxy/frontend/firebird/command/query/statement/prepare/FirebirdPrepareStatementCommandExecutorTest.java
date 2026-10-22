@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
+import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -80,7 +81,9 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -149,6 +152,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobInfoRegistry.refreshTable("foo_db", "foo_tbl", Collections.emptyMap());
         FirebirdBlobInfoRegistry.refreshTable("foo_db", "foo_tbl_0", Collections.emptyMap());
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("foo_db", "foo_tbl", Collections.emptyMap());
     }
     
     private MetaDataContexts createMetaDataContexts() {
@@ -156,7 +160,9 @@ class FirebirdPrepareStatementCommandExecutorTest {
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(parserRule));
         ShardingSphereColumn column = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
         ShardingSphereColumn blobColumn = new ShardingSphereColumn("content", Types.BLOB, false, false, true, true, false, true);
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(column, blobColumn), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereColumn nameColumn = new ShardingSphereColumn("foo_name", Types.VARCHAR, false, false, true, true, false, true);
+        ShardingSphereColumn patternColumn = new ShardingSphereColumn("foo_pattern", Types.VARCHAR, false, false, true, true, false, true);
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(column, blobColumn, nameColumn, patternColumn), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList());
         ShardingSphereDatabase database = spy(new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
@@ -382,10 +388,78 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeLikeParameters() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT id FROM foo_tbl WHERE content LIKE ? ESCAPE ?");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.BIND,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(2));
+        for (FirebirdReturnColumnPacket each : actualReturnPacket.getDescribeBind()) {
+            FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+            each.write(payload);
+            verify(payload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("likeOperandParameterArguments")
+    void assertDescribeLikeOperandParameters(final String name, final String sql, final List<int[]> expectedTypesAndLengths) throws Exception {
+        Map<String, Integer> columnSizes = new HashMap<>(2, 1F);
+        columnSizes.put("foo_name", 20);
+        columnSizes.put("foo_pattern", 50);
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("foo_db", "foo_tbl", columnSizes);
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.BIND,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        List<FirebirdReturnColumnPacket> actual = ((FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData()).getDescribeBind();
+        assertThat(actual.size(), is(expectedTypesAndLengths.size()));
+        for (int i = 0; i < expectedTypesAndLengths.size(); i++) {
+            FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+            actual.get(i).write(payload);
+            verify(payload).writeInt4LE(expectedTypesAndLengths.get(i)[0] + 1);
+            verify(payload).writeInt4LE(expectedTypesAndLengths.get(i)[1]);
+        }
+    }
+    
+    @Test
     void assertExecuteWithValidStatementHandleWithoutFetchHandler() throws Exception {
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         executor.execute();
         verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(1));
+    }
+    
+    private static Stream<Arguments> likeOperandParameterArguments() {
+        int varying = FirebirdBinaryColumnType.VARYING.getValue();
+        return Stream.of(
+                Arguments.of("parameter in value takes literal pattern length", "SELECT id FROM foo_tbl WHERE (foo_name || ?) LIKE 'a%'", Collections.singletonList(new int[]{varying, 2})),
+                Arguments.of("parameter in value takes column pattern length", "SELECT id FROM foo_tbl WHERE (foo_name || ?) LIKE foo_name", Collections.singletonList(new int[]{varying, 20})),
+                Arguments.of("pattern of integer column", "SELECT id FROM foo_tbl WHERE id LIKE ?", Collections.singletonList(new int[]{varying, 30})),
+                Arguments.of("value of integer column pattern", "SELECT id FROM foo_tbl WHERE ? LIKE id", Collections.singletonList(new int[]{varying, 30})),
+                Arguments.of("pattern and escape of integer column", "SELECT id FROM foo_tbl WHERE id LIKE ? ESCAPE ?", Arrays.asList(new int[]{varying, 30}, new int[]{varying, 30})),
+                Arguments.of("escape of column pattern", "SELECT id FROM foo_tbl WHERE foo_name LIKE foo_pattern ESCAPE ?", Collections.singletonList(new int[]{varying, 50})),
+                Arguments.of("escape of other column pattern", "SELECT id FROM foo_tbl WHERE foo_pattern LIKE foo_name ESCAPE ?", Collections.singletonList(new int[]{varying, 20})),
+                Arguments.of("escape of literal pattern", "SELECT id FROM foo_tbl WHERE foo_name LIKE 'a#_%' ESCAPE ?", Collections.singletonList(new int[]{varying, 4})),
+                Arguments.of("pattern and escape of text column", "SELECT id FROM foo_tbl WHERE foo_name LIKE ? ESCAPE ?", Arrays.asList(new int[]{varying, 20}, new int[]{varying, 20})),
+                Arguments.of("value and pattern parameters", "SELECT id FROM foo_tbl WHERE ? LIKE ?", Arrays.asList(new int[]{varying, 30}, new int[]{varying, 30})),
+                Arguments.of("pattern before comparison", "SELECT id FROM foo_tbl WHERE foo_name LIKE ? AND id = ?",
+                        Arrays.asList(new int[]{varying, 20}, new int[]{FirebirdBinaryColumnType.LONG.getValue(), 4})));
     }
     
     @Test
@@ -491,7 +565,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
-        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(4));
         FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
         actualReturnPacket.getDescribeSelect().get(0).write(idPayload);
         verify(idPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
