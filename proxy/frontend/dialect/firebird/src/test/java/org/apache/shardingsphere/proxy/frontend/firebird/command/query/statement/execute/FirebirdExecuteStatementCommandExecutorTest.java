@@ -220,6 +220,12 @@ class FirebirdExecuteStatementCommandExecutorTest {
         assertThrows(InvalidSegstrIdException.class, () -> executor.execute());
     }
     
+    private void mockParameter(final FirebirdBinaryColumnType parameterType, final Object parameterValue) {
+        when(packet.getStatementId()).thenReturn(2);
+        when(packet.getParameterTypes()).thenReturn(Collections.singletonList(parameterType));
+        when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList(parameterValue)));
+    }
+    
     @Test
     void assertRejectUnknownBlobParameter() {
         long blobId = 13L;
@@ -234,6 +240,14 @@ class FirebirdExecuteStatementCommandExecutorTest {
         List<Object> actualParams = executeAndGetParameters();
         assertThat(actualParams.size(), is(1));
         assertThat(actualParams.get(0), is(9));
+    }
+    
+    private List<Object> executeAndGetParameters() throws SQLException {
+        ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build()));
+        when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
+        new FirebirdExecuteStatementCommandExecutor(packet, connectionSession).execute();
+        return queryContextCaptor.getValue().getParameters();
     }
     
     @Test
@@ -297,19 +311,5 @@ class FirebirdExecuteStatementCommandExecutorTest {
         assertThat(iterator.next(), isA(FirebirdGenericResponsePacket.class));
         assertFalse(iterator.hasNext());
         assertThat(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID), is(proxyBackendHandler));
-    }
-    
-    private void mockParameter(final FirebirdBinaryColumnType parameterType, final Object parameterValue) {
-        when(packet.getStatementId()).thenReturn(2);
-        when(packet.getParameterTypes()).thenReturn(Collections.singletonList(parameterType));
-        when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList(parameterValue)));
-    }
-    
-    private List<Object> executeAndGetParameters() throws SQLException {
-        ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build()));
-        when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
-        new FirebirdExecuteStatementCommandExecutor(packet, connectionSession).execute();
-        return queryContextCaptor.getValue().getParameters();
     }
 }

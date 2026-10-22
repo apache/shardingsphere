@@ -164,6 +164,10 @@ class FirebirdPrepareStatementCommandExecutorTest {
         assertThat(preparedStatement.getSqlStatementContext(), isA(SelectStatementContext.class));
     }
     
+    private FirebirdPrepareStatementReturnPacket executeAndGetReturnPacket() throws SQLException {
+        return (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) new FirebirdPrepareStatementCommandExecutor(packet, connectionSession).execute().iterator().next()).getData();
+    }
+    
     @Test
     void assertExecuteDropDatabaseWithoutNameResolvesCurrentDatabase() throws Exception {
         when(packet.getSQL()).thenReturn("DROP DATABASE");
@@ -518,9 +522,5 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         TableNotFoundException actual = assertThrows(TableNotFoundException.class, executor::execute);
         assertThat(actual.getMessage(), is("Table or view 'foo_tbl' does not exist."));
-    }
-    
-    private FirebirdPrepareStatementReturnPacket executeAndGetReturnPacket() throws SQLException {
-        return (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) new FirebirdPrepareStatementCommandExecutor(packet, connectionSession).execute().iterator().next()).getData();
     }
 }

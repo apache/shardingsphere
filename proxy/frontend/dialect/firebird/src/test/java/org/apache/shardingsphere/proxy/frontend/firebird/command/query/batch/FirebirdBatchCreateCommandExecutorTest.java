@@ -121,6 +121,13 @@ class FirebirdBatchCreateCommandExecutorTest {
         assertThat(actualBatchStatement.getColumnDescriptors().get(0).getOffset(), is(0));
     }
     
+    private void mockPreparedStatement() {
+        FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
+    }
+    
     @Test
     void assertExecuteWithRecordCounts() {
         mockPreparedStatement();
@@ -273,13 +280,6 @@ class FirebirdBatchCreateCommandExecutorTest {
     
     private ByteBuf createBatchParametersBuffer(final int tag, final int value) {
         return Unpooled.buffer().writeByte(BATCH_VERSION_1).writeByte(tag).writeIntLE(4).writeIntLE(value);
-    }
-    
-    private void mockPreparedStatement() {
-        FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
-        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
-        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
-        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
     }
     
     private static Stream<Arguments> bufferSizeArguments() {
