@@ -74,14 +74,18 @@ public final class MCPJdbcTransactionStatementExecutor {
     private void executeSavepointStatement(final String sessionId, final MCPDatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
         String statementType = classificationResult.getStatementType();
         String savepointName = classificationResult.getSavepointName().orElse("");
-        if ("SAVEPOINT".equals(statementType)) {
-            executeSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
-        } else if ("ROLLBACK TO SAVEPOINT".equals(statementType)) {
-            executeRollbackSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
-        } else if ("RELEASE SAVEPOINT".equals(statementType)) {
-            executeReleaseSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
-        } else {
-            throw new MCPInvalidRequestException("Statement is not a transaction command.");
+        switch (statementType) {
+            case "SAVEPOINT":
+                executeSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
+                break;
+            case "ROLLBACK TO SAVEPOINT":
+                executeRollbackSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
+                break;
+            case "RELEASE SAVEPOINT":
+                executeReleaseSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
+                break;
+            default:
+                throw new MCPInvalidRequestException("Statement is not a transaction command.");
         }
     }
     

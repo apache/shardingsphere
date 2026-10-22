@@ -205,7 +205,11 @@ final class SQLStatementScanner {
         }
         char firstChar = text.charAt(0);
         char lastChar = text.charAt(text.length() - 1);
-        return '"' == firstChar && '"' == lastChar || '`' == firstChar && '`' == lastChar || '[' == firstChar && ']' == lastChar;
+        return switch (firstChar) {
+            case '"', '`' -> firstChar == lastChar;
+            case '[' -> ']' == lastChar;
+            default -> false;
+        };
     }
     
     private boolean containsExecutableCommentMarker(final String text) {
@@ -316,8 +320,11 @@ final class SQLStatementScanner {
     }
     
     private int findLineCommentEnd(final String sql, final List<Token> tokens, final int startIndex, final boolean lineCommentsHandledByLexer) {
+        if (lineCommentsHandledByLexer) {
+            return -1;
+        }
         Token start = tokens.get(startIndex);
-        if (lineCommentsHandledByLexer || !"-".equals(start.getText()) || startIndex + 1 >= tokens.size() || !"-".equals(tokens.get(startIndex + 1).getText())
+        if (!"-".equals(start.getText()) || startIndex + 1 >= tokens.size() || !"-".equals(tokens.get(startIndex + 1).getText())
                 || tokens.get(startIndex + 1).getStartIndex() != start.getStopIndex() + 1) {
             return -1;
         }
