@@ -19,13 +19,19 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdStatementIdGeneratorTest {
     
@@ -55,6 +61,42 @@ class FirebirdStatementIdGeneratorTest {
         assertThat(GENERATOR.getStatementId(1), is(0));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("resolveStatementIdArguments")
+    void assertResolveStatementId(final String name, final int statementHandle, final int expectedStatementId) {
+        GENERATOR.registerConnection(1);
+        registeredConnectionIds.add(1);
+        GENERATOR.nextStatementId(1);
+        GENERATOR.nextStatementId(1);
+        assertThat(GENERATOR.resolveStatementId(1, statementHandle), is(expectedStatementId));
+    }
+    
+    @Test
+    void assertIsAllocated() {
+        GENERATOR.registerConnection(1);
+        registeredConnectionIds.add(1);
+        int statementId = GENERATOR.nextStatementId(1);
+        assertTrue(GENERATOR.isAllocated(1, statementId));
+        assertFalse(GENERATOR.isAllocated(1, statementId + 1));
+        assertFalse(GENERATOR.isAllocated(2, statementId));
+    }
+    
+    @Test
+    void assertReleaseStatementId() {
+        GENERATOR.registerConnection(1);
+        registeredConnectionIds.add(1);
+        int statementId = GENERATOR.nextStatementId(1);
+        GENERATOR.releaseStatementId(1, statementId);
+        assertFalse(GENERATOR.isAllocated(1, statementId));
+        assertThat(GENERATOR.nextStatementId(1), is(statementId + 1));
+    }
+    
+    @Test
+    void assertReleaseStatementIdWithUnregisteredConnection() {
+        GENERATOR.releaseStatementId(1, 1);
+        assertFalse(GENERATOR.isAllocated(1, 1));
+    }
+    
     @Test
     void assertUnregisterConnection() {
         GENERATOR.registerConnection(1);
@@ -62,5 +104,10 @@ class FirebirdStatementIdGeneratorTest {
         GENERATOR.unregisterConnection(1);
         registeredConnectionIds.remove(1);
         assertThrows(IllegalStateException.class, () -> GENERATOR.getStatementId(1));
+        assertFalse(GENERATOR.isAllocated(1, 1));
+    }
+    
+    private static Stream<Arguments> resolveStatementIdArguments() {
+        return Stream.of(Arguments.of("explicit handle", 1, 1), Arguments.of("lazy handle", 0xFFFF, 2), Arguments.of("sign-extended lazy handle", -1, 2));
     }
 }

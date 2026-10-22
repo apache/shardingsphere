@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementStateException;
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLRecordsInfo;
@@ -26,6 +28,7 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
@@ -46,14 +49,18 @@ public final class FirebirdSQLInfoExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdSQLInfoReturnPacket(packet.getInfoItems(), getRecordsInfo())));
+        int statementId = FirebirdStatementIdGenerator.getInstance().resolveStatementId(connectionSession.getConnectionId(), packet.getHandle());
+        if (!FirebirdStatementIdGenerator.getInstance().isAllocated(connectionSession.getConnectionId(), statementId)) {
+            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidStatementStateException(statementId, false)));
+        }
+        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
+        if (null == preparedStatement) {
+            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidStatementStateException(statementId, true)));
+        }
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdSQLInfoReturnPacket(packet.getInfoItems(), getRecordsInfo(preparedStatement))));
     }
     
-    private FirebirdSQLRecordsInfo getRecordsInfo() {
-        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getHandle());
-        if (null == preparedStatement) {
-            return new FirebirdSQLRecordsInfo(0L, 0L, 0L);
-        }
+    private FirebirdSQLRecordsInfo getRecordsInfo(final FirebirdServerPreparedStatement preparedStatement) {
         long affectedRows = preparedStatement.getAffectedRows();
         SQLStatement sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
         long insertCount = sqlStatement instanceof InsertStatement ? affectedRows : 0L;
