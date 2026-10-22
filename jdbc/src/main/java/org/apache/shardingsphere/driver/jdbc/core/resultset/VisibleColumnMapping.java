@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -44,6 +45,7 @@ import java.util.Map;
  *   <li>When projections are fully expanded, logical {@code expandProjections} are authoritative.</li>
  * </ul>
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class VisibleColumnMapping {

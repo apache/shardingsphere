@@ -37,6 +37,7 @@ import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -139,7 +140,7 @@ class QueryHeaderBuilderEngineTest {
             when(queryHeaderBuilder.build(resultSetMetaData, database, "order_id", "order_id", 1)).thenReturn(expectedQueryHeader);
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(queryHeaderBuilder);
             QueryHeader actualQueryHeader = new QueryHeaderBuilderEngine(databaseType).build(sqlStatementContext, resultSetMetaData, database, 1);
-            assertThat(actualQueryHeader, is(expectedQueryHeader));
+            assertThat(actualQueryHeader, sameInstance(expectedQueryHeader));
         }
     }
     

@@ -157,8 +157,7 @@ final class ShardingSphereResultSetShorthandProjectionIT {
             hintManager.setDataSourceName("ds_0");
             try (
                     Statement statement = shardingSphereConnection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(
-                            "SELECT t_order.status AS ORDER_BY_DERIVED_0 FROM t_order WHERE order_id = 1000")) {
+                    ResultSet resultSet = statement.executeQuery("SELECT t_order.status AS ORDER_BY_DERIVED_0 FROM t_order WHERE order_id = 1000")) {
                 ResultSetMetaData actualMetaData = resultSet.getMetaData();
                 assertThat(actualMetaData.getColumnCount(), is(1));
                 assertThat(actualMetaData.getColumnLabel(1), is("ORDER_BY_DERIVED_0"));
@@ -180,8 +179,7 @@ final class ShardingSphereResultSetShorthandProjectionIT {
             hintManager.setDataSourceName("ds_0");
             try (
                     Statement statement = shardingSphereConnection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(
-                            "SELECT t_order.status AS ORDER_BY_DERIVED_0 FROM t_order ORDER BY t_order.order_id ASC")) {
+                    ResultSet resultSet = statement.executeQuery("SELECT t_order.status AS ORDER_BY_DERIVED_0 FROM t_order ORDER BY t_order.order_id ASC")) {
                 ResultSetMetaData actualMetaData = resultSet.getMetaData();
                 assertThat("user alias ORDER_BY_DERIVED_0 visible, internal one hidden", actualMetaData.getColumnCount(), is(1));
                 assertThat(actualMetaData.getColumnLabel(1), is("ORDER_BY_DERIVED_0"));
@@ -249,8 +247,7 @@ final class ShardingSphereResultSetShorthandProjectionIT {
             hintManager.setDataSourceName("ds_0");
             try (
                     Statement statement = shardingSphereConnection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(
-                            "SELECT o.order_id, i.* FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = 1000")) {
+                    ResultSet resultSet = statement.executeQuery("SELECT o.order_id, i.* FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = 1000")) {
                 ResultSetMetaData actualMetaData = resultSet.getMetaData();
                 assertThat("explicit column + shorthand from joined table", actualMetaData.getColumnCount(), is(4));
                 assertTrue(resultSet.next());

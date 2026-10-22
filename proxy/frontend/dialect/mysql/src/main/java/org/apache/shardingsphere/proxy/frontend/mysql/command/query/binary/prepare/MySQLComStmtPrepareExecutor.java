@@ -175,6 +175,9 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     }
     
     private boolean isProjectionMetadataDerivableLocally(final SelectStatementContext selectStatementContext) {
+        if (selectStatementContext.getProjectionsContext().containsUnexpandedShorthandProjection()) {
+            return false;
+        }
         ShardingSphereSchema schema = getSchema(selectStatementContext);
         for (Projection each : selectStatementContext.getProjectionsContext().getExpandProjections()) {
             if (!(each instanceof ColumnProjection)) {
