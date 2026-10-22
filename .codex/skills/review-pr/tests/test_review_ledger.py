@@ -643,7 +643,7 @@ class ReviewLedgerTest(unittest.TestCase):
                     report_reviews[0]["evidence"][0]["anchor"]["end_line"] = 99
                 else:
                     report_reviews[0][missing] = [] if "evidence" == missing else " "
-                if missing in {"reason", "counter_evidence", "evidence", "valid_range"}:
+                if missing in {"report", "reason", "counter_evidence", "evidence", "valid_range"}:
                     self.assert_session_cli_rejected(actual)
                 else:
                     self.assertTrue(ledger.validate_session(actual))
@@ -702,15 +702,13 @@ class ReviewLedgerTest(unittest.TestCase):
                     actual["rounds"][-1]["findings"][0]["status"] = "candidate"
                 self.assertTrue(ledger.validate_session(actual))
 
-    def test_session_rejects_same_count_with_different_findings_or_feedback(self):
+    def test_session_accepts_different_independent_findings_and_feedback(self):
         actual = self.create_session([[("F1", "confirmed")], [("F2", "confirmed")]])
-        self.assertTrue(ledger.validate_session(actual))
-        for review_round in actual["rounds"]:
-            review_round["findings"][0]["members"].extend(review_round["findings"].pop()["members"])
+        self.assertEqual([], ledger.validate_session(actual))
         report = json.loads(Path(actual["reviews"][-1]["path"]).read_text(encoding="utf-8"))
         report["feedback_mode"] = "Needs Discussion"
         self.save_session_report(actual, len(actual["reviews"]) - 1, report)
-        self.assertTrue(ledger.validate_session(actual))
+        self.assertEqual([], ledger.validate_session(actual))
 
     def test_session_preserves_finding_discovered_during_result_review(self):
         original = self.create_session([[], [], [("F1", "confirmed")], [("F1", "confirmed")]])
@@ -723,59 +721,63 @@ class ReviewLedgerTest(unittest.TestCase):
         })
         original["rounds"][0].update({"result": "Not Mergeable", "feedback_mode": "Change Request"})
         first_pair = json.loads(json.dumps(original))
-        first_pair.update({"reviews": first_pair["reviews"][:2], "rounds": first_pair["rounds"][:1], "result": "Mergeable", "feedback_mode": ""})
-        self.assertTrue(ledger.validate_session(first_pair))
+        first_pair.update({"reviews": first_pair["reviews"][:2], "rounds": first_pair["rounds"][:1],
+                           "result": "Not Mergeable", "feedback_mode": "Change Request"})
+        self.assertEqual([], ledger.validate_session(first_pair))
         missing_identity = json.loads(json.dumps(original))
         missing_identity["rounds"][1]["findings"][0]["id"] = "replacement-F1"
         self.assertTrue(ledger.validate_session(missing_identity))
         self.assertEqual([], ledger.validate_session(original))
 
-    def test_session_requires_historical_findings_in_final_pair(self):
+    def test_session_retains_historical_findings_omitted_by_later_reports(self):
         original = self.create_session([[("F1", "confirmed")], [("F1", "confirmed"), ("F2", "confirmed")],
                                         [("F1", "confirmed")], [("F1", "confirmed")],
                                         [("F1", "confirmed")], [("F1", "confirmed")]])
-        self.assertTrue(ledger.validate_session(original))
+        self.assertEqual([], ledger.validate_session(original))
         actual = json.loads(json.dumps(original))
         actual["rounds"][-1]["findings"].pop()
         self.assertTrue(ledger.validate_session(actual))
         actual = json.loads(json.dumps(original))
-        for review_round in actual["rounds"][-2:]:
-            review_round["findings"][-1]["status"] = "withdrawn"
+        actual["rounds"][-1]["findings"][-1].update({
+            "status": "withdrawn", "reason": "Current source evidence disproves the historical triggering path.",
+            "evidence": actual["rounds"][-1]["report_reviews"][0]["evidence"],
+        })
         self.assertEqual([], ledger.validate_session(actual))
 
-    def test_session_allows_more_than_two_complete_pairs(self):
-        actual = self.create_session([[("F1", "confirmed")], [], [("F1", "confirmed")], [("F1", "confirmed")],
-                                      [("F1", "confirmed")], [("F1", "confirmed")]])
-        actual["rounds"][-1]["findings"][0].update({"reason": "The fresh source evidence confirms the same triggering path.",
-                                                   "evidence": actual["rounds"][-1]["report_reviews"][0]["evidence"]})
-        self.assertEqual([], ledger.validate_session(actual))
+    def test_session_accepts_two_through_six_original_assessments(self):
+        for count in range(2, 7):
+            with self.subTest(count=count):
+                actual = self.create_session([[("F1", "confirmed")]] + [[]] * (count - 1))
+                actual["rounds"][-1]["findings"][0].update({"reason": "The fresh source evidence confirms the same triggering path.",
+                                                           "evidence": actual["rounds"][-1]["report_reviews"][0]["evidence"]})
+                self.assertEqual([], ledger.validate_session(actual))
 
-    def test_session_rejects_more_than_three_complete_pairs(self):
-        actual = self.create_session([[]] * 8)
+    def test_session_rejects_seventh_original_assessment(self):
+        actual = self.create_session([[]] * 7)
         self.assertIn("The current review basis exceeds six independent original assessments", ledger.validate_session(actual))
 
-    def test_session_stops_after_third_unconfirmed_pair(self):
-        actual = self.create_session([[("F1", "confirmed")]] * 6)
-        actual["rounds"][-1]["findings"][0]["classification"] = "performance"
-        self.assertIn("The latest complete adjudication differs from the previous round; stop and report Review Status: Not Converged", ledger.validate_session(actual))
+    def test_session_accepts_new_confirmed_finding_in_sixth_assessment(self):
+        actual = self.create_session([[], [], [], [], [], [("F1", "confirmed")]])
+        self.assertEqual([], ledger.validate_session(actual))
 
-    def test_session_requires_confirmation_after_first_round(self):
-        actual = self.create_session([[], []])
-        actual.update({"reviews": actual["reviews"][:2], "rounds": actual["rounds"][:1]})
-        self.assertTrue(ledger.validate_session(actual))
-
-    def test_session_requires_stable_complete_dispositions(self):
+    def test_session_accepts_evidenced_final_disposition_changes(self):
         original = self.create_session([[("F1", "withdrawn")]] * 6)
         for field, value in (("classification", "performance"), ("status", "non-blocking")):
             with self.subTest(field=field):
                 actual = json.loads(json.dumps(original))
-                actual["rounds"][-1]["findings"][0][field] = value
-                self.assertTrue(ledger.validate_session(actual))
+                finding = actual["rounds"][-1]["findings"][0]
+                finding.update({field: value, "reason": "The current owning contract supports this revised disposition.",
+                                "evidence": actual["rounds"][-1]["report_reviews"][0]["evidence"]})
+                self.assertEqual([], ledger.validate_session(actual))
 
-    def test_session_requires_stable_feedback_mode(self):
-        actual = self.create_session([[("F1", "confirmed")], [("F1", "confirmed")]])
-        actual["rounds"][-2]["feedback_mode"] = "Needs Discussion"
-        self.assertTrue(ledger.validate_session(actual))
+    def test_session_accepts_evidenced_final_feedback_change(self):
+        actual = self.create_session([[("F1", "confirmed")], [("F1", "confirmed")], []])
+        actual["rounds"][0]["feedback_mode"] = "Needs Discussion"
+        actual["rounds"][-1]["findings"][0].update({
+            "reason": "Current source evidence establishes a required correctness fix.",
+            "evidence": actual["rounds"][-1]["report_reviews"][0]["evidence"],
+        })
+        self.assertEqual([], ledger.validate_session(actual))
 
     def test_session_requires_final_closed_dispositions(self):
         for status in ("withdrawn", "non-blocking", "out-of-scope"):
@@ -784,24 +786,58 @@ class ReviewLedgerTest(unittest.TestCase):
                 for reference in actual["reviews"]:
                     report = json.loads(Path(reference["path"]).read_text(encoding="utf-8"))
                     self.assertEqual([], ledger.validate_ledger(ledger.read_ledger(report["ledger"])))
-                errors = ledger.validate_session(actual)
-                if "withdrawn" == status:
-                    self.assertEqual([], errors)
-                else:
-                    self.assertIn("The latest pair does not agree with the result review and all historical findings", errors)
+                actual["rounds"][-1]["findings"][0].update({
+                    "status": status, "reason": "The current owner contract supports the coordinator's final disposition.",
+                    "evidence": actual["rounds"][-1]["report_reviews"][0]["evidence"],
+                })
+                self.assertEqual([], ledger.validate_session(actual))
 
-    def test_session_rejects_repeated_unconfirmed_adjudication(self):
-        actual = self.create_session([[("F1", "confirmed")], []])
+    def test_session_rejects_unresolved_final_adjudication(self):
+        actual = self.create_session([[("F1", "confirmed")]] * 6)
+        actual["rounds"][-1]["findings"][0]["status"] = "candidate"
+        actual["rounds"][-1].update({"result": "", "feedback_mode": ""})
         self.assertTrue(ledger.validate_session(actual))
 
-    def test_session_requires_complete_review_pairs(self):
+    def test_session_requires_two_initial_original_assessments(self):
         original = self.create_session([[], []])
-        for count in (0, 1, 3):
+        for count in (0, 1):
             with self.subTest(count=count):
                 actual = json.loads(json.dumps(original))
                 actual["reviews"] = (actual["reviews"] * 2)[:count]
                 with self.assertRaises(RuntimeError):
                     ledger.validate_session(actual)
+
+    def test_session_requires_complete_initial_and_singleton_stages(self):
+        original = self.create_session([[], [], [], []])
+        for invalid in ("initial_singleton", "later_pair", "missing_stage", "duplicate_report", "wrong_stage"):
+            with self.subTest(invalid=invalid):
+                actual = json.loads(json.dumps(original))
+                if "initial_singleton" == invalid:
+                    first_stage = actual["rounds"][0]
+                    second_stage = json.loads(json.dumps(first_stage))
+                    second_stage["report_reviews"] = [first_stage["report_reviews"].pop()]
+                    actual["rounds"].insert(1, second_stage)
+                elif "later_pair" == invalid:
+                    actual["rounds"][1]["report_reviews"].extend(actual["rounds"].pop()["report_reviews"])
+                elif "missing_stage" == invalid:
+                    actual["rounds"].pop()
+                elif "duplicate_report" == invalid:
+                    actual["rounds"][1]["report_reviews"] = actual["rounds"][0]["report_reviews"][:1]
+                else:
+                    actual["rounds"][1]["report_reviews"], actual["rounds"][2]["report_reviews"] = \
+                        actual["rounds"][2]["report_reviews"], actual["rounds"][1]["report_reviews"]
+                self.assert_session_cli_rejected(actual)
+
+    def test_session_keeps_intermediate_candidates_without_a_formal_verdict(self):
+        original = self.create_session([[("F1", "confirmed")], [], []])
+        original["rounds"][0]["findings"][0]["status"] = "candidate"
+        original["rounds"][0].update({"result": "", "feedback_mode": ""})
+        self.assertEqual([], ledger.validate_session(original))
+        for result, feedback in (("Not Mergeable", "Change Request"), ("", "Change Request")):
+            with self.subTest(result=result, feedback=feedback):
+                actual = json.loads(json.dumps(original))
+                actual["rounds"][0].update({"result": result, "feedback_mode": feedback})
+                self.assert_session_cli_rejected(actual)
 
     def test_session_rejects_reused_or_modified_original_records(self):
         original = self.create_session([[], []])
@@ -878,7 +914,7 @@ class ReviewLedgerTest(unittest.TestCase):
     def test_session_reconfirms_changed_basis_and_retains_history(self):
         for changed in ("candidate", "evidence"):
             with self.subTest(changed=changed):
-                historical = self.create_session([[("F1", "confirmed")], [("F1", "confirmed")]])
+                historical = self.create_session([[("F1", "confirmed")], [("F1", "confirmed")], []])
                 if "candidate" == changed:
                     (self.repo / self.source_path).write_text("first\nfixed_first\nthird\nfourth\nfifth\nnew_second\nlast\n", encoding="utf-8")
                 else:
@@ -891,12 +927,141 @@ class ReviewLedgerTest(unittest.TestCase):
                                         "evidence": review_round["report_reviews"][0]["evidence"]})
                 actual = {**current, "reviews": historical["reviews"] + current["reviews"],
                           "rounds": historical["rounds"] + current["rounds"]}
-                pending = {**actual, "reviews": actual["reviews"][:-2], "rounds": actual["rounds"][:-1]}
-                self.assertTrue(ledger.validate_session(pending))
+                pending = json.loads(json.dumps(actual))
+                pending["reviews"].pop()
+                pending["rounds"][-1]["report_reviews"].pop()
+                self.assertIn("Each review basis requires an initial pair of independent original assessments", ledger.validate_session(pending))
                 self.assertEqual([], ledger.validate_session(actual))
+                if "candidate" == changed:
+                    stale = json.loads(json.dumps(actual))
+                    stale["rounds"][-1]["findings"][0]["evidence"] = historical["rounds"][-1]["findings"][0]["evidence"]
+                    self.assertTrue(ledger.validate_session(stale))
                 original_report = Path(historical["reviews"][0]["path"])
                 original_report.write_bytes(original_report.read_bytes() + b"\n")
                 self.assert_session_cli_rejected(actual)
+
+    def test_session_rejects_exhausted_historical_basis(self):
+        historical = self.create_session([[]] * 7)
+        (self.repo / self.source_path).write_text("first\nnext_first\nthird\nfourth\nfifth\nnew_second\nlast\n", encoding="utf-8")
+        current = self.create_session([[], []], review_start=len(historical["reviews"]))
+        actual = {**current, "reviews": historical["reviews"] + current["reviews"],
+                  "rounds": historical["rounds"] + current["rounds"]}
+        self.assertIn("The current review basis exceeds six independent original assessments", ledger.validate_session(actual))
+
+    def test_session_rechecks_historical_committed_candidate_proof(self):
+        self.git("add", self.source_path)
+        self.git("commit", "-qm", "Synthetic reviewed candidate")
+        historical = self.create_session([[("F1", "confirmed")], []], committed=True)
+        (self.repo / self.source_path).write_text("first\nfixed_first\nthird\nfourth\nfifth\nnew_second\nlast\n", encoding="utf-8")
+        self.git("add", self.source_path)
+        self.git("commit", "-qm", "Synthetic changed candidate")
+        current = self.create_session([[], []], review_start=2, committed=True)
+        current["rounds"][0].update({"findings": json.loads(json.dumps(historical["rounds"][-1]["findings"])),
+                                     "result": "Not Mergeable", "feedback_mode": "Change Request"})
+        actual = {**current, "reviews": historical["reviews"] + current["reviews"],
+                  "rounds": historical["rounds"] + current["rounds"], "result": "Not Mergeable", "feedback_mode": "Change Request"}
+        self.assertIn("Result-review evidence is stale", ledger.validate_session(actual))
+        actual["rounds"][-1]["findings"][0]["evidence"] = current["rounds"][0]["report_reviews"][0]["evidence"]
+        self.assertEqual([], ledger.validate_session(actual))
+
+    def test_session_reuses_unchanged_candidate_and_base_proof(self):
+        self.git("add", self.source_path)
+        self.git("commit", "-qm", "Synthetic reviewed candidate")
+        historical = self.create_session([[("F1", "confirmed")], []], committed=True)
+        report = json.loads(Path(historical["reviews"][0]["path"]).read_text(encoding="utf-8"))
+        actual_ledger = ledger.read_ledger(report["ledger"])
+        anchor = ledger.capture_anchor({"side": "base", "path": self.source_path, "start_line": 2, "end_line": 2}, actual_ledger)
+        actual_ledger["findings"][0]["anchors"].append(anchor)
+        self.update_session_basis(historical, 0, actual_ledger, json.loads(self.basis_file.read_text(encoding="utf-8")))
+        historical["rounds"][0]["findings"][0]["evidence"].append({"reviewer": "review-1", "anchor": anchor})
+        (self.repo / "Rules.md").write_text("Use the owning public boundary and preserve the original task baseline.\n", encoding="utf-8")
+        self.git("add", "Rules.md")
+        self.git("commit", "-qm", "Synthetic changed rules with unchanged candidate evidence")
+        current = self.create_session([[], []], review_start=2, committed=True)
+        current["rounds"][0].update({"findings": json.loads(json.dumps(historical["rounds"][-1]["findings"])),
+                                     "result": "Not Mergeable", "feedback_mode": "Change Request"})
+        actual = {**current, "reviews": historical["reviews"] + current["reviews"],
+                  "rounds": historical["rounds"] + current["rounds"], "result": "Not Mergeable", "feedback_mode": "Change Request"}
+        self.assertEqual([], ledger.validate_session(actual))
+
+    def test_session_accepts_historical_pair_stages_after_rule_change(self):
+        historical = self.create_session([[], [], [], []])
+        historical["rounds"][1]["report_reviews"].extend(historical["rounds"].pop()["report_reviews"])
+        (self.repo / "Rules.md").write_text("Use an initial pair followed by one fresh assessment per later stage.\n", encoding="utf-8")
+        current = self.create_session([[], []], review_start=4)
+        actual = {**current, "reviews": historical["reviews"] + current["reviews"],
+                  "rounds": historical["rounds"] + current["rounds"]}
+        self.assertEqual([], ledger.validate_session(actual))
+
+    def test_session_rechecks_relocated_source_across_current_evidence_sets(self):
+        historical = self.create_session([[("F1", "confirmed")], []])
+        report = json.loads(Path(historical["reviews"][0]["path"]).read_text(encoding="utf-8"))
+        actual_ledger = ledger.read_ledger(report["ledger"])
+        anchor = ledger.capture_anchor({"side": "source", "origin": "attempt:target-version", "path": str(self.attempt_log)}, actual_ledger)
+        actual_ledger["findings"][0]["anchors"].append(anchor)
+        self.update_session_basis(historical, 0, actual_ledger, json.loads(self.basis_file.read_text(encoding="utf-8")))
+        historical["rounds"][0]["findings"][0]["evidence"] = [{"reviewer": "review-1", "anchor": anchor}]
+        relocated = self.private_root / "relocated-attempt.log"
+        self.attempt_log.rename(relocated)
+        (self.repo / "Rules.md").write_text("Use declared source origins across all current independent assessments.\n", encoding="utf-8")
+        basis = json.loads(self.basis_file.read_text(encoding="utf-8"))
+        next(each for each in basis["sources"] if "attempt:target-version" == each["origin"])["path"] = str(relocated)
+        self.basis_file.write_text(json.dumps(basis), encoding="utf-8")
+        for index, changed in enumerate((False, True)):
+            with self.subTest(changed=changed):
+                if changed:
+                    relocated.write_text("The current source disproves the original external fact.\n", encoding="utf-8")
+                current = self.create_session([[], []], review_start=2 + index * 2)
+                last_report = json.loads(Path(current["reviews"][-1]["path"]).read_text(encoding="utf-8"))
+                last_ledger = ledger.read_ledger(last_report["ledger"])
+                independent_basis = {**basis, "sources": [each for each in basis["sources"] if "attempt:target-version" != each["origin"]]}
+                self.update_session_basis(current, 1, last_ledger, independent_basis)
+                current["rounds"][0].update({"findings": json.loads(json.dumps(historical["rounds"][-1]["findings"])),
+                                             "result": "Not Mergeable", "feedback_mode": "Change Request"})
+                actual = {**current, "reviews": historical["reviews"] + current["reviews"],
+                          "rounds": historical["rounds"] + current["rounds"], "result": "Not Mergeable", "feedback_mode": "Change Request"}
+                if changed:
+                    self.assertIn("Result-review evidence is stale", ledger.validate_session(actual))
+                else:
+                    self.assertEqual([], ledger.validate_session(actual))
+                    actual["rounds"][-1]["findings"][0]["evidence"][0]["anchor"]["path"] = str(relocated)
+                    self.assert_session_cli_rejected(actual)
+
+    def test_session_recaptures_historical_source_absent_from_current_declarations(self):
+        historical = self.create_session([[("F1", "confirmed")], []])
+        report = json.loads(Path(historical["reviews"][0]["path"]).read_text(encoding="utf-8"))
+        actual_ledger = ledger.read_ledger(report["ledger"])
+        anchor = ledger.capture_anchor({"side": "source", "origin": "attempt:target-version", "path": str(self.attempt_log)}, actual_ledger)
+        actual_ledger["findings"][0]["anchors"].append(anchor)
+        self.update_session_basis(historical, 0, actual_ledger, json.loads(self.basis_file.read_text(encoding="utf-8")))
+        historical["rounds"][0]["findings"][0]["evidence"] = [{"reviewer": "review-1", "anchor": anchor}]
+        (self.repo / "Rules.md").write_text("Recheck every retained finding using available current material.\n", encoding="utf-8")
+        basis = json.loads(self.basis_file.read_text(encoding="utf-8"))
+        basis["sources"] = [each for each in basis["sources"] if "attempt:target-version" != each["origin"]]
+        self.basis_file.write_text(json.dumps(basis), encoding="utf-8")
+        current = self.create_session([[], []], review_start=2)
+        current["rounds"][0].update({"findings": json.loads(json.dumps(historical["rounds"][-1]["findings"])),
+                                     "result": "Not Mergeable", "feedback_mode": "Change Request"})
+        actual = {**current, "reviews": historical["reviews"] + current["reviews"],
+                  "rounds": historical["rounds"] + current["rounds"], "result": "Not Mergeable", "feedback_mode": "Change Request"}
+        self.assertEqual([], ledger.validate_session(actual))
+        self.attempt_log.write_text("The material no longer supports the original finding.\n", encoding="utf-8")
+        self.assertIn("Result-review evidence is stale", ledger.validate_session(actual))
+        self.attempt_log.unlink()
+        self.assert_session_cli_rejected(actual)
+
+    def test_session_accepts_current_coordinator_source_proof(self):
+        actual = self.create_session([[], []])
+        report = json.loads(Path(actual["reviews"][0]["path"]).read_text(encoding="utf-8"))
+        actual_ledger = ledger.read_ledger(report["ledger"])
+        anchor = ledger.capture_anchor({"side": "source", "origin": "attempt:target-version", "path": str(self.attempt_log)}, actual_ledger)
+        actual["rounds"][0]["findings"] = [{
+            "id": "coordinator-candidate", "members": [], "status": "withdrawn", "classification": "correctness",
+            "reason": "Current source evidence disproves the suspected trigger.",
+            "counter_evidence": "The recorded external fact rules out the alternative path.",
+            "evidence": [{"reviewer": "review-1", "anchor": anchor}],
+        }]
+        self.assertEqual([], ledger.validate_session(actual))
 
     def test_session_preserves_real_incomplete_evidence(self):
         actual = self.create_session([[("G1", "review-incomplete-gap")], [("G1", "review-incomplete-gap")]])
@@ -940,10 +1105,8 @@ class ReviewLedgerTest(unittest.TestCase):
                         redirect_stdout(StringIO()), redirect_stderr(StringIO()):
                     self.assertEqual(1, ledger.main())
 
-    def create_session(self, review_findings, review_start=0):
-        if 2 == len(review_findings):
-            review_findings = review_findings * 2
-        original = self.create_valid_ledger()
+    def create_session(self, review_findings, review_start=0, committed=False):
+        original = self.create_valid_ledger(committed)
         actual = {"reviews": [], "rounds": [], "result": "Mergeable", "feedback_mode": ""}
         findings = {}
         report_reviews = []
@@ -972,7 +1135,7 @@ class ReviewLedgerTest(unittest.TestCase):
                                                                   "reason": "Checked the triggering path and independent fix boundary.",
                                                                   "counter_evidence": "Checked the strongest supported counterexample.", "evidence": evidence})
                 disposition["members"].append({"reviewer": reviewer, "finding": finding["id"]})
-            if index % 2:
+            if index >= 1:
                 round_statuses = {finding["status"] for finding in findings.values()}
                 result = "Review Incomplete" if "review-incomplete-gap" in round_statuses else "Not Mergeable" if "confirmed" in round_statuses else "Mergeable"
                 actual["rounds"].append({"report_reviews": report_reviews, "findings": json.loads(json.dumps(list(findings.values()))),
@@ -1010,7 +1173,7 @@ class ReviewLedgerTest(unittest.TestCase):
 
     def initialize_ledger(self, committed=False):
         arguments = ["init", "--repo-root", str(self.repo), "--pr", "synthetic-review", "--base-ref", self.base_sha,
-                     "--head-ref", "HEAD", "--review-basis", str(self.basis_file)]
+                     "--head-ref", self.git("rev-parse", "HEAD").strip() if committed else "HEAD", "--review-basis", str(self.basis_file)]
         if not committed:
             arguments.extend(["--candidate-files", str(self.candidate_files)])
         output = StringIO()
