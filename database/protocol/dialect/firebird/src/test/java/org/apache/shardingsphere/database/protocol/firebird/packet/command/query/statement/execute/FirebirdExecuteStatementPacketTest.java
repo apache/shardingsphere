@@ -39,7 +39,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -73,7 +72,6 @@ class FirebirdExecuteStatementPacketTest {
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, blrType, (short) BlrConstants.blr_end);
-        when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         assertThat(packet.getStatementId(), is(1));
         assertThat(packet.getTransactionId(), is(2));
@@ -88,7 +86,6 @@ class FirebirdExecuteStatementPacketTest {
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
-        when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         assertThat(packet.getParameterTypes(), is(Collections.singletonList(FirebirdBinaryColumnType.LONG)));
         assertThat(packet.getParameterValues(), is(Collections.singletonList(null)));
@@ -124,11 +121,9 @@ class FirebirdExecuteStatementPacketTest {
         when(payload.readBuffer()).thenReturn(byteBuf, returnBlr);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
-        when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
         when(returnBlr.isReadable()).thenReturn(true);
         when(returnBlr.duplicate()).thenReturn(returnBlr);
         when(returnBlr.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
-        when(returnBlr.skipBytes(anyInt())).thenReturn(returnBlr);
         when(payload.readInt4Unsigned()).thenReturn(30L, 1L, 1024L);
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION19);
         assertThat(packet.getReturnColumns(), is(Collections.singletonList(FirebirdBinaryColumnType.LONG)));
@@ -166,7 +161,6 @@ class FirebirdExecuteStatementPacketTest {
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
-        when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
         when(byteBuf.readerIndex()).thenReturn(42);
         assertThat(FirebirdExecuteStatementPacket.getLength(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), is(42));
         verify(byteBuf).resetReaderIndex();

@@ -132,9 +132,7 @@ public enum FirebirdBinaryColumnType implements BinaryColumnType {
     }
     
     FirebirdBinaryColumnType(final int value, final int length) {
-        this.value = value;
-        this.length = length;
-        subtype = 0;
+        this(value, length, 0);
     }
     
     /**

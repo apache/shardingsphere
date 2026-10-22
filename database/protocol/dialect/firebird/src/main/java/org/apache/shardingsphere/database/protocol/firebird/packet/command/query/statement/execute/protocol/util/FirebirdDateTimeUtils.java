@@ -66,13 +66,8 @@ public final class FirebirdDateTimeUtils {
     }
     
     public FirebirdDateTimeUtils() {
-        year = 0;
         month = 1;
         day = 1;
-        hour = 0;
-        minute = 0;
-        second = 0;
-        fractions = 0;
     }
     
     /**
@@ -105,10 +100,7 @@ public final class FirebirdDateTimeUtils {
     }
     
     private int convertDate(final int c, final int ya, final int cpMonth) {
-        return 146097 * c / 4
-                + 1461 * ya / 4
-                + (153 * cpMonth + 2) / 5
-                + day + 1721119 - 2400001;
+        return 146097 * c / 4 + 1461 * ya / 4 + (153 * cpMonth + 2) / 5 + day + 1721119 - 2400001;
     }
     
     /**
@@ -139,10 +131,7 @@ public final class FirebirdDateTimeUtils {
     }
     
     public int getEncodedTime() {
-        return hour * FRACTIONS_PER_HOUR
-                + minute * FRACTIONS_PER_MINUTE
-                + second * FRACTIONS_PER_SECOND
-                + fractions;
+        return hour * FRACTIONS_PER_HOUR + minute * FRACTIONS_PER_MINUTE + second * FRACTIONS_PER_SECOND + fractions;
     }
     
     /**

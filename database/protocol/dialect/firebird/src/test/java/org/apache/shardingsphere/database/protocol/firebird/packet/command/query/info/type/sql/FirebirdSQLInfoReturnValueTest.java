@@ -26,7 +26,6 @@ class FirebirdSQLInfoReturnValueTest {
     
     @Test
     void assertValueOf() {
-        assertThat(FirebirdSQLInfoReturnValue.valueOf(FirebirdSQLInfoReturnValue.SELECT.getCode()),
-                is(FirebirdSQLInfoReturnValue.SELECT));
+        assertThat(FirebirdSQLInfoReturnValue.valueOf(FirebirdSQLInfoReturnValue.SELECT.getCode()), is(FirebirdSQLInfoReturnValue.SELECT));
     }
 }

@@ -55,8 +55,9 @@ coverage, or convergence. Never use a previous Formal Review result as
 evidence or as a conclusion to match. Treat previous public findings only as
 hypotheses whose cited facts must be reverified.
 
-Two reviews with the same effective candidate, requirements, focus, and
-evidence must produce the same canonical assessment. Public-PR and local-candidate reviews may resolve different candidates, but they must apply the same code-correctness judgment and Formal Review result mapping. A changed focus, requirement,
+Completed coordinated reviews with the same effective candidate, requirements, focus, and evidence must produce the same canonical overall assessment.
+Individual independent assessments may discover different candidates; the coordinator verifies and adjudicates their cumulative findings under Independent Review Coordination.
+Public-PR and local-candidate reviews may resolve different candidates, but they must apply the same code-correctness judgment and Formal Review result mapping. A changed focus, requirement,
 or external fact changes the review basis and may legitimately change the
 assessment. Mergeability or CI evidence may add external-state findings or
 gaps, but it must not change code-correctness findings derived from an otherwise
@@ -78,10 +79,9 @@ unchanged basis.
 5. Treat every concern as a candidate until it passes the Finding Proof Gate.
 6. Do not turn uncertainty, inaccessible evidence, tool failure, skipped
    verification, or uninspected counter-evidence into a blocker.
-7. In Formal Review, do not select a verdict, stop at the first blocker, or publish findings before the Completion Gate.
-   Consolidate findings by independent fix boundary and return the complete
-   current-head set once. Only an explicit request for status, narrow review, or
-   early high-risk blockers authorizes a partial result.
+7. In Formal Review, complete the required review and do not stop at the first blocker.
+   Consolidate findings by independent fix boundary and return the complete current-head set once after the Completion Gate.
+   Before that gate, publish only an explicitly requested status, narrow review or early high-risk blocker, or the qualified negative result defined in the Formal Decision Contract.
 8. Follow `AGENTS.md` for repository authority, evidence, scope, safety, and sensitive data, and follow the applicable canonical references below for implementation, testing, contract, non-regression, and verification criteria.
 
 ## Repository Code Policy References
@@ -137,7 +137,7 @@ Map the gate result before applying the remaining Formal Decision Contract.
 - If Checkstyle or Spotless fails on an applicable PR-impact file, return `Not Mergeable` with `Feedback Mode: Change Request`.
 - A style-check failure result must include `Feedback Mode: Change Request` and the blocking-issue count in `### Result`, then identify each failed check and affected PR-impact file in `### Blocking Issues`.
 - A style-check failure result must also include `### Coverage` with the effective candidate SHA, authoritative files accounted for, failed command, exit code, and affected PR-impact file.
-- If environment, dependency, candidate-materialization, tool, or coverage-proof failure leaves any applicable PR-impact file unverified, return `Review Incomplete`.
+- If environment, dependency, candidate-materialization, tool, or coverage-proof failure leaves any applicable PR-impact file unverified, apply the Formal Decision Contract's qualified negative rule; otherwise return `Review Incomplete`.
 - If a module-scoped command fails only on unchanged files, narrow the check reliably or compare the base and effective candidate before attribution; do not classify the PR from that module failure alone.
 - If a check has no applicable PR-impact file, record `Not Applicable` and the repository-configuration basis in `### Coverage`.
 - Only successful current-candidate evidence for both checks, or an explicit not-applicable determination for either check, permits the remaining Formal Decision Contract to select `Mergeable`.
@@ -199,7 +199,7 @@ All three discovery lenses may share the same current source material, but each 
 9. Run a convergence pass across the complete candidate and its affected behavior and contracts, including the latest delta.
    If it finds a new independent candidate, return to step 6; otherwise freeze the assessment after the Completion Gate.
 
-If an outcome-sensitive decisive fact passes the Review Incomplete Proof Gate, return the mode-appropriate incomplete result.
+If an outcome-sensitive decisive fact passes the Review Incomplete Proof Gate, apply the Formal Decision Contract to the proven findings and remaining gap.
 Otherwise continue the review or request a split; do not produce a complete verdict from a partial review.
 
 ## Completion Gate and Scripts
@@ -246,16 +246,23 @@ Sources use `rule`, `requirement` or `evidence` roles; `--anchors` takes an anch
 
 Use `base` for original content and `candidate` for effective content; text blocks need an anchor overlapping their changed lines, whole-object binary, mode or rename changes omit the line bounds, and `source` anchors require the declared source's matching origin and path.
 
-If the gate cannot pass because a gap satisfies the Review Incomplete Proof Gate, return `Review Incomplete` in Formal Review and state the incomplete evidence without a formal verdict in a discussion reply.
+If the gate cannot pass because a gap satisfies the Review Incomplete Proof Gate, apply the Formal Decision Contract's qualified negative rule before selecting the incomplete result.
+When no qualified negative result applies, return `Review Incomplete` in Formal Review and state the incomplete evidence without a formal verdict in a discussion reply.
 When confirmed blockers coexist with a proven gap that could hide more blockers, list them as confirmed partial facts but do not present them as the complete change-request set.
 
 ## Formal Decision Contract
 
-Map the canonical assessment to Formal Review only after the Completion Gate
-evaluation and Independent Review Coordination:
+In Formal Review Mode, when a concrete failure prevents completing the required review or the current basis reaches its confirmation limit, automatically publish `Not Mergeable` if at least one current-candidate finding passes the Finding Proof Gate and substantive coordinator review.
+The coordinator must verify candidate identity, source versions, the full failing path and strongest counter-evidence; unresolved facts or differences must not be capable of invalidating that finding.
+This qualified negative result also applies when local Git objects, ledgers or session validation are unavailable but admissible immutable evidence independently proves the finding.
+Use the existing feedback-mode rules for the proven findings, including `Needs Discussion` for an evidenced required maintainer decision.
+A candidate, disputed, withdrawn or stale finding, a tool failure, or non-convergence alone cannot justify this result.
+The exception permits a qualified negative report while full coverage or confirmation remains unfinished; it does not permit `Mergeable`, an exhaustive finding-set claim, a successful ledger or session-validation claim, or coding-task completion.
 
-1. If the gate fails because a gap satisfies the Review Incomplete Proof Gate, use `Review Incomplete`, even when some blockers are already confirmed.
-2. If the Mandatory Style Verification Gate is incomplete for any applicable PR-impact file, use `Review Incomplete`, even when some blockers are already confirmed.
+For a complete result, evaluate the Completion Gate and Independent Review Coordination, then apply the following mapping:
+
+1. If the gate fails because a gap satisfies the Review Incomplete Proof Gate and no qualified negative result applies, use `Review Incomplete`.
+2. If the Mandatory Style Verification Gate is incomplete for any applicable PR-impact file and no qualified negative result applies, use `Review Incomplete`.
 3. If Checkstyle or Spotless fails on an applicable PR-impact file, use `Not Mergeable` with `Feedback Mode: Change Request`.
 4. If admissible evidence disproves the problem model, expected behavior, ownership, protocol or SQL semantics, compatibility assumption, accepted project commitment, or solution direction, or establishes that a new project commitment still requires a maintainer decision, use `Not Mergeable` with `Feedback Mode: Needs Discussion`.
 5. If at least one candidate passes the Finding Proof Gate, use `Not Mergeable`
@@ -305,6 +312,9 @@ Use this format for both public-PR and local-candidate reviews.
 - `Not Mergeable`: `### Result` with exactly one `Review Result: Not Mergeable` line, one `Feedback Mode`, a `Blocking Issues: N` line, and a concise reason; `### Blocking Issues`; `### Coverage`.
 - `Review Incomplete`: `### Result` with exactly one `Review Result: Review Incomplete` line and a concise reason; `### Confirmed Issues` when any are already proven; `### Verified Facts`; `### Required Evidence`; `### Coverage`.
 
+For a qualified negative result, use the `Not Mergeable` structure with `Review Status: Not Converged` and `Confirmed Blocking Issues: N` in place of `Blocking Issues: N`.
+State that the findings are a confirmed subset, and report the actual completed and unreviewed coverage, unresolved differences, failed or unavailable checks, and the reason confirmation could not finish.
+
 For each blocking issue include:
 
 - `Evidence`: current public or sanitized verification anchor.
@@ -315,7 +325,7 @@ For each blocking issue include:
 Do not add patch-level changes after selecting Needs Discussion.
 Do not include placeholder headings.
 In `### Coverage`, report the candidate type, reviewed baseline or head, authoritative requirements and files accounted for, accepted behavior and project-commitment basis, behavior clusters, completed discovery lenses, unresolved gaps, and CI scope.
-Also report the completed independent-review pairs, result-review outcome and resolution of any differences without exposing private reviewer materials.
+Also report the completed independent assessments and stages, overall adjudication and resolution of any differences without exposing private reviewer materials.
 For every public PR or PR-backed local candidate, also report the effective candidate SHA, each style-verification scope and command, each exit code, every covered applicable PR-impact file, and every `Not Applicable` check with its basis.
 For a standalone local candidate, identify the task baseline and attributed local delta; for a PR-backed candidate, identify authorized local commits, index changes, or working-tree changes separately from the public PR state.
 In Code Correctness Review, state that the result is code-scope only and CI was not reviewed while distinguishing the completed local style verification from CI.

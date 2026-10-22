@@ -60,9 +60,7 @@ public enum FirebirdSQLInfoReturnValue {
     }
     
     FirebirdSQLInfoReturnValue(final int code) {
-        this.code = code;
-        selectDescribable = false;
-        bindDescribable = false;
+        this(code, false, false);
     }
     
     /**

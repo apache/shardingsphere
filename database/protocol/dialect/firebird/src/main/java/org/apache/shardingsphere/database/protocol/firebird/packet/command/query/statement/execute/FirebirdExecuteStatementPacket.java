@@ -24,7 +24,6 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdBlrRowMetadata;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -78,31 +77,24 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
             }
             payload.skipPadding(length);
         }
-        
         for (int i = 0; i < parameterTypes.size(); i++) {
-            Integer nullBit = nullBits.get(i / 8);
-            if (((nullBit >> i % 8) & 1) == 0) {
-                FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(parameterTypes.get(i));
+            if (0 == ((nullBits.get(i / 8) >> i % 8) & 1)) {
                 boolean octets = isOctets(parameterTypes.get(i), parameterMetadata.getColumnCharacterSets().get(i));
-                parameterValues.add(octets ? ByteBufUtil.getBytes(payload.readBuffer()) : binaryProtocolValue.read(payload));
+                parameterValues.add(octets ? ByteBufUtil.getBytes(payload.readBuffer()) : FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(parameterTypes.get(i)).read(payload));
             } else {
                 parameterValues.add(null);
             }
         }
-        
         if (isStoredProcedure()) {
             returnColumns.addAll(FirebirdBlrRowMetadata.parseBLR(payload.readBuffer()).getColumnTypes());
             outputMessageNumber = payload.readInt4();
         }
-        
         if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION16.getCode()) {
             statementTimeout = payload.readInt4Unsigned();
         }
-        
         if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION18.getCode()) {
             cursorFlags = payload.readInt4Unsigned();
         }
-        
         if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION19.getCode()) {
             maxBlobSize = payload.readInt4Unsigned();
         }

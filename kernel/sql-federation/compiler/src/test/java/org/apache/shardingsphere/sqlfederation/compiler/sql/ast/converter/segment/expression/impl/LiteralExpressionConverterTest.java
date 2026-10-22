@@ -78,7 +78,7 @@ class LiteralExpressionConverterTest {
     
     @Test
     void assertConvertApproximateNumber() {
-        SqlNumericLiteral actual = (SqlNumericLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, new Float("1.5")), null).orElse(null);
+        SqlNumericLiteral actual = (SqlNumericLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, Float.valueOf("1.5")), null).orElse(null);
         assertNotNull(actual);
         assertFalse(actual.isExact());
     }

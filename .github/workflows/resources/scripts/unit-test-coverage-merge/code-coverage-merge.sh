@@ -30,7 +30,7 @@ echo 'Start searching for jacoco.exec files'
 execFiles=$(find $project -name 'jacoco.exec')
 
 # Check if files exist
-if [ -z "$execFiles" ]; then
+if [[ -z "$execFiles" ]]; then
   echo "Can't find jacoco.exec file in the specified directory"
   exit 1
 fi
@@ -62,7 +62,7 @@ classOutPutDir="$target/mergeClassFile"
 classFolders=$(find $project -type d -name 'classes')
 
 # Check if folders are found
-if [ -z "$classFolders" ]; then
+if [[ -z "$classFolders" ]]; then
   echo "The classes folder was not found in the given directory"
   exit 1
 fi

@@ -45,8 +45,7 @@ final class FirebirdNonFixedLengthColumnSizeLoader {
         Map<String, Map<String, Integer>> result = new HashMap<>(material.getActualTableNames().size(), 1F);
         try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(material.getStorageType(), material.getDataSource().getConnection())) {
             for (String each : material.getActualTableNames()) {
-                Map<String, Integer> columnSizes = loadTableColumnSizes(connection, each);
-                result.put(each, columnSizes);
+                result.put(each, loadTableColumnSizes(connection, each));
             }
         }
         return result;
@@ -54,29 +53,22 @@ final class FirebirdNonFixedLengthColumnSizeLoader {
     
     private Map<String, Integer> loadTableColumnSizes(final MetaDataLoaderConnection connection, final String formattedTableName) throws SQLException {
         Map<String, Integer> result = new HashMap<>();
-        loadColumnSizesFromMetaData(connection, formattedTableName, result);
-        return result.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(result);
-    }
-    
-    private void loadColumnSizesFromMetaData(final MetaDataLoaderConnection connection, final String formattedTableName, final Map<String, Integer> result) throws SQLException {
         try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), formattedTableName, "%")) {
             while (resultSet.next()) {
-                if (!Objects.equals(formattedTableName, resultSet.getString("TABLE_NAME"))) {
-                    continue;
-                }
-                int dataType = resultSet.getInt("DATA_TYPE");
-                if (!isNonFixedLengthType(dataType)) {
+                if (!Objects.equals(formattedTableName, resultSet.getString("TABLE_NAME")) || !isNonFixedLengthType(resultSet.getInt("DATA_TYPE"))) {
                     continue;
                 }
                 String columnName = resultSet.getString("COLUMN_NAME");
-                if (null != columnName) {
-                    int columnSize = resultSet.getInt("COLUMN_SIZE");
-                    if (!resultSet.wasNull() && columnSize > 0) {
-                        result.put(columnName.toUpperCase(Locale.ENGLISH), columnSize);
-                    }
+                if (null == columnName) {
+                    continue;
+                }
+                int columnSize = resultSet.getInt("COLUMN_SIZE");
+                if (!resultSet.wasNull() && columnSize > 0) {
+                    result.put(columnName.toUpperCase(Locale.ENGLISH), columnSize);
                 }
             }
         }
+        return result;
     }
     
     private boolean isNonFixedLengthType(final int dataType) {

@@ -34,8 +34,6 @@ import java.util.List;
 @Getter
 public final class FirebirdBlrRowMetadata {
     
-    private final ByteBuf blr;
-    
     private final int length;
     
     private final List<FirebirdBinaryColumnType> columnTypes;
@@ -49,10 +47,9 @@ public final class FirebirdBlrRowMetadata {
      * @return row binary
      */
     public static FirebirdBlrRowMetadata parseBLR(final ByteBuf blrBuffer) {
-        int length = blrBuffer.readableBytes();
         List<Integer> columnCharacterSets = new ArrayList<>();
         List<FirebirdBinaryColumnType> columnTypes = parse(blrBuffer, columnCharacterSets);
-        return new FirebirdBlrRowMetadata(blrBuffer, length, columnTypes, columnCharacterSets);
+        return new FirebirdBlrRowMetadata(blrBuffer.readableBytes(), columnTypes, columnCharacterSets);
     }
     
     private static List<FirebirdBinaryColumnType> parse(final ByteBuf blrBuffer, final List<Integer> columnCharacterSets) {
