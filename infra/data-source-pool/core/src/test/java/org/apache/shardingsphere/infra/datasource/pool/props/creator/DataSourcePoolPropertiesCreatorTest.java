@@ -44,7 +44,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
@@ -58,14 +57,6 @@ class DataSourcePoolPropertiesCreatorTest {
         DataSourcePoolProperties actual = DataSourcePoolPropertiesCreator.create(config);
         assertThat(actual.getPoolClassName(), is(MockedDataSource.class.getName()));
         assertThat(actual.getAllLocalProperties(), is(expectedProperties));
-    }
-    
-    @Test
-    void assertCreateWithHikariDataSourceConfiguration() {
-        ConnectionConfiguration connectionConfig = new ConnectionConfiguration("com.zaxxer.hikari.HikariDataSource", null, "jdbc:mock://127.0.0.1/foo_ds", "root", "root");
-        DataSourcePoolProperties actual = DataSourcePoolPropertiesCreator.create(new DataSourceConfiguration(connectionConfig, new PoolConfiguration(1000L, 2000L, 3000L, 8, 2, false, null)));
-        assertThat(actual.getPoolClassName(), is("com.zaxxer.hikari.HikariDataSource"));
-        assertFalse(actual.getAllLocalProperties().containsKey("dataSourceClassName"));
     }
     
     @Test

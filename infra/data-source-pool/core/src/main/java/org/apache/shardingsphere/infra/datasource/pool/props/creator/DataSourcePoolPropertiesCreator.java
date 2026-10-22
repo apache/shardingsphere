@@ -68,9 +68,7 @@ public final class DataSourcePoolPropertiesCreator {
     @SuppressWarnings({"unchecked", "rawtypes", "CollectionWithoutInitialCapacity"})
     private static Map<String, Object> createProperties(final DataSourceConfiguration config) {
         Map<String, Object> result = new LinkedHashMap<>();
-        if (!"com.zaxxer.hikari.HikariDataSource".equals(config.getConnection().getDataSourceClassName())) {
-            result.put("dataSourceClassName", config.getConnection().getDataSourceClassName());
-        }
+        result.put("dataSourceClassName", config.getConnection().getDataSourceClassName());
         result.put("url", config.getConnection().getUrl());
         result.put("username", config.getConnection().getUsername());
         result.put("password", config.getConnection().getPassword());
