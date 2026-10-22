@@ -24,7 +24,6 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -39,7 +38,7 @@ public final class FirebirdBatchMessageCommandExecutor implements CommandExecuto
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() {
         FirebirdBatchStatementManager.getInstance().appendBatchMessage(connectionSession.getConnectionId(), packet);
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
