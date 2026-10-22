@@ -32,6 +32,7 @@ import io.netty.util.Attribute;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.ThreadUtils;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.MySQLBinlogContext;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
@@ -48,6 +49,8 @@ import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperation
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,6 +72,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -88,7 +92,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.times;
@@ -97,9 +103,10 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
 @SuppressWarnings("ProhibitedExceptionDeclared")
-@ExtendWith({MockitoExtension.class, LogCaptureExtension.class})
+@ExtendWith({MockitoExtension.class, LogCaptureExtension.class, AutoMockExtension.class})
 @LogCaptureSettings(suppressOutput = true)
 @MockitoSettings(strictness = Strictness.LENIENT)
+@StaticMockSettings({CompletableFuture.class, ThreadUtils.class})
 class MySQLBinlogClientTest {
     
     @Mock
@@ -314,6 +321,42 @@ class MySQLBinlogClientTest {
         MySQLBinlogEventPacketDecoder decoder = captor.getAllValues().stream().filter(MySQLBinlogEventPacketDecoder.class::isInstance).map(MySQLBinlogEventPacketDecoder.class::cast).findFirst()
                 .orElseThrow(IllegalStateException::new);
         assertThat(getChecksumLength(decoder), is(0));
+    }
+    
+    @Test
+    void assertReconnectAfterTransientFailure() throws Exception {
+        client = createClientMock();
+        prepareClientChannel();
+        setServerVersion("5.5.0");
+        doReturn(true).when(client).execute(anyString());
+        when(channel.writeAndFlush(any(MySQLComRegisterSlaveCommandPacket.class))).thenAnswer(invocation -> {
+            Promise<Object> callback = new DefaultPromise<>(eventLoopGroup.next());
+            callback.setSuccess(new MySQLOKPacket(0));
+            setResponseCallback(callback);
+            return null;
+        });
+        client.subscribe("binlog-000004", 16L);
+        ArgumentCaptor<ChannelHandler> handlerCaptor = ArgumentCaptor.forClass(ChannelHandler.class);
+        verify(pipeline, times(2)).addLast(handlerCaptor.capture());
+        ChannelInboundHandlerAdapter handler = handlerCaptor.getAllValues().stream().filter(each -> "MySQLBinlogEventHandler".equals(each.getClass().getSimpleName()))
+                .map(each -> (ChannelInboundHandlerAdapter) each).findFirst().orElseThrow(IllegalStateException::new);
+        ChannelHandlerContext context = mock(ChannelHandlerContext.class);
+        handler.channelRead(context, new PlaceholderBinlogEvent("binlog-000005", 32L, 1L));
+        doThrow(new PipelineInternalException("connect failed")).doNothing().when(client).connect();
+        doNothing().when(client).subscribe("binlog-000005", 32L);
+        CompletableFuture<Void> reconnectFuture = new CompletableFuture<>();
+        ArgumentCaptor<Runnable> reconnectCaptor = ArgumentCaptor.forClass(Runnable.class);
+        when(CompletableFuture.runAsync(reconnectCaptor.capture())).thenReturn(reconnectFuture);
+        handler.channelInactive(context);
+        handler.channelInactive(context);
+        assertThat(reconnectCaptor.getAllValues().size(), is(1));
+        reconnectCaptor.getValue().run();
+        verify(client, times(2)).connect();
+        verify(channel).close();
+        verify(client).subscribe("binlog-000005", 32L);
+        reconnectFuture.complete(null);
+        handler.channelInactive(context);
+        assertThat(reconnectCaptor.getAllValues().size(), is(2));
     }
     
     @Test

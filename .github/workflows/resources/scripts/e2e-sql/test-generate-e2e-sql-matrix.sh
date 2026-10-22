@@ -221,12 +221,12 @@ assert_full_trigger() {
 # ---------- prerequisite check ----------
 
 if ! command -v jq &> /dev/null; then
-  echo "ERROR: jq is required but not installed."
+  echo "ERROR: jq is required but not installed." >&2
   exit 1
 fi
 
 if [[ ! -f "$TARGET_SCRIPT" ]]; then
-  echo "ERROR: Target script not found: $TARGET_SCRIPT"
+  echo "ERROR: Target script not found: $TARGET_SCRIPT" >&2
   exit 1
 fi
 

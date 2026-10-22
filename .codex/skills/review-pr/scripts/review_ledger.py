@@ -505,6 +505,13 @@ def cmd_mark_file(args: argparse.Namespace) -> int:
     errors = validate_current_basis(ledger)
     if errors:
         raise RuntimeError("; ".join(errors))
+    apply_mark_file(ledger, args)
+    write_ledger(ledger_file, ledger)
+    print(f"marked={args.path} status={args.status}")
+    return 0
+
+
+def apply_mark_file(ledger: dict[str, Any], args: argparse.Namespace) -> None:
     entry = find_file_entry(ledger, args.path)
     if args.coverage:
         coverage = json.loads(Path(args.coverage).read_text(encoding="utf-8"))
@@ -522,9 +529,6 @@ def cmd_mark_file(args: argparse.Namespace) -> int:
     if errors:
         raise RuntimeError("; ".join(errors))
     ledger["review_revision"] += 1
-    write_ledger(ledger_file, ledger)
-    print(f"marked={args.path} status={args.status}")
-    return 0
 
 
 def cmd_add_finding(args: argparse.Namespace) -> int:
@@ -533,6 +537,13 @@ def cmd_add_finding(args: argparse.Namespace) -> int:
     errors = validate_current_basis(ledger)
     if errors:
         raise RuntimeError("; ".join(errors))
+    apply_add_finding(ledger, args)
+    write_ledger(ledger_file, ledger)
+    print(f"finding={args.id} status={args.status}")
+    return 0
+
+
+def apply_add_finding(ledger: dict[str, Any], args: argparse.Namespace) -> None:
     anchors = json.loads(Path(args.anchors).read_text(encoding="utf-8")) if args.anchors else []
     if not isinstance(anchors, list):
         raise RuntimeError("Finding anchors material must be a list")
@@ -559,9 +570,6 @@ def cmd_add_finding(args: argparse.Namespace) -> int:
         ledger["findings"].append(finding)
     sync_file_findings(ledger)
     ledger["review_revision"] += 1
-    write_ledger(ledger_file, ledger)
-    print(f"finding={args.id} status={args.status}")
-    return 0
 
 
 def cmd_add_pass(args: argparse.Namespace) -> int:
@@ -570,6 +578,13 @@ def cmd_add_pass(args: argparse.Namespace) -> int:
     errors = validate_current_basis(ledger)
     if errors:
         raise RuntimeError("; ".join(errors))
+    apply_add_pass(ledger, args)
+    write_ledger(ledger_file, ledger)
+    print(f"pass={args.focus} new_findings={args.new_findings}")
+    return 0
+
+
+def apply_add_pass(ledger: dict[str, Any], args: argparse.Namespace) -> None:
     if 0 > args.new_findings:
         raise RuntimeError("New finding count must not be negative")
     ledger["passes"].append({
@@ -580,8 +595,36 @@ def cmd_add_pass(args: argparse.Namespace) -> int:
         "created_at": int(time.time()),
         "basis_fingerprint": basis_fingerprint(ledger),
     })
+
+
+def cmd_batch(args: argparse.Namespace) -> int:
+    operations = json.loads(Path(args.operations).read_text(encoding="utf-8"))
+    if not isinstance(operations, list) or not operations:
+        raise RuntimeError("Batch operations must be a nonempty list of argument lists")
+    ledger_file = resolve_ledger_file(args.ledger)
+    ledger = read_ledger(ledger_file)
+    errors = validate_current_basis(ledger)
+    if errors:
+        raise RuntimeError("; ".join(errors))
+    parser = build_parser()
+    updates = {"mark-file": apply_mark_file, "add-finding": apply_add_finding, "add-pass": apply_add_pass}
+    for operation in operations:
+        if not isinstance(operation, list) or not operation or not all(isinstance(each, str) for each in operation):
+            raise RuntimeError("Each batch operation must be a nonempty list of argument strings")
+        if operation[0] not in updates:
+            raise RuntimeError("Batch operations support only mark-file, add-finding and add-pass")
+        try:
+            update = parser.parse_args([operation[0], "--ledger", str(ledger_file), *operation[1:]])
+        except SystemExit as ex:
+            raise RuntimeError("Invalid batch operation arguments") from ex
+        if update.ledger != str(ledger_file):
+            raise RuntimeError("Every batch operation must use the outer ledger")
+        updates[update.command](ledger, update)
+    errors = validate_current_basis(ledger)
+    if errors:
+        raise RuntimeError("; ".join(errors))
     write_ledger(ledger_file, ledger)
-    print(f"pass={args.focus} new_findings={args.new_findings}")
+    print(f"batched={len(operations)}")
     return 0
 
 
@@ -1028,6 +1071,10 @@ def build_parser() -> argparse.ArgumentParser:
     review_pass.add_argument("--focus", required=True, choices=PASS_FOCUSES, help="Pass focus")
     review_pass.add_argument("--new-findings", required=True, type=int, help="New independent findings")
     review_pass.set_defaults(func=cmd_add_pass)
+    batch = subparsers.add_parser("batch", help="Apply ordered updates to one ledger with one atomic write")
+    batch.add_argument("--ledger", required=True, help="Ledger file or directory")
+    batch.add_argument("--operations", required=True, help="JSON nonempty ordered list of existing mutation argument lists without --ledger")
+    batch.set_defaults(func=cmd_batch)
     validate = subparsers.add_parser("validate", help="Validate mechanical coverage completion")
     validate.add_argument("--ledger", required=True, help="Ledger file or directory")
     validate.set_defaults(func=cmd_validate)

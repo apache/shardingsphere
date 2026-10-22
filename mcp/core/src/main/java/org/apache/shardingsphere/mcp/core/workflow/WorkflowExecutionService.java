@@ -91,15 +91,14 @@ public final class WorkflowExecutionService {
         if (!invalidArtifactResponse.isEmpty()) {
             return invalidArtifactResponse;
         }
-        WorkflowApplyOutcome applyOutcome = new WorkflowApplyOutcome();
         if (WorkflowLifecycle.EXECUTION_MODE_PREVIEW.equalsIgnoreCase(actualExecutionMode)) {
             return previewApply(workflowSessionContext, snapshot);
         }
         if (isManualOnly(actualExecutionMode)) {
+            WorkflowApplyOutcome applyOutcome = new WorkflowApplyOutcome();
             return applyManualOnly(workflowSessionContext, snapshot, applyOutcome);
         }
-        return applyAutomatically(workflowSessionContext, queryFacade, executionFacade, workflowRuntimeHandler, sessionId, snapshot,
-                actualExecutionMode, applyOutcome);
+        return applyAutomatically(workflowSessionContext, queryFacade, executionFacade, workflowRuntimeHandler, sessionId, snapshot, actualExecutionMode);
     }
     
     private String requireExecutionMode(final WorkflowContextSnapshot snapshot, final String executionMode) {
@@ -225,11 +224,9 @@ public final class WorkflowExecutionService {
                 WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY, createArtifactPayload(snapshot));
     }
     
-    private Map<String, Object> applyAutomatically(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
-                                                   final MCPFeatureExecutionFacade executionFacade,
-                                                   final MCPWorkflowRuntimeHandler workflowRuntimeHandler,
-                                                   final String sessionId, final WorkflowContextSnapshot snapshot, final String executionMode,
-                                                   final WorkflowApplyOutcome applyOutcome) {
+    private Map<String, Object> applyAutomatically(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade,
+                                                   final MCPWorkflowRuntimeHandler workflowRuntimeHandler, final String sessionId, final WorkflowContextSnapshot snapshot, final String executionMode) {
+        WorkflowApplyOutcome applyOutcome = new WorkflowApplyOutcome();
         if (WorkflowSecretReferenceUtils.hasSecretReferences(getRequest(snapshot))) {
             return failSecretReferenceManualExecutionRequired(workflowSessionContext, snapshot, executionMode, applyOutcome);
         }

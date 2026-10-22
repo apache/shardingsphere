@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.constr
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.PostgreSQLDDLTemplateExecutor;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,7 +60,7 @@ public final class PostgreSQLConstraintsPropertiesAppender {
     private void loadPrimaryOrUniqueConstraint(final Map<String, Object> context, final String name, final String type) {
         Collection<Map<String, Object>> constraintsProps = fetchConstraintsProperties(context, type);
         fetchConstraintsColumns(constraintsProps);
-        context.put(name, constraintsProps.stream().filter(each -> !isPartitionAndConstraintInherited(each, context)).collect(Collectors.toList()));
+        context.put(name, constraintsProps.stream().filter(each -> !isPartitionAndConstraintInherited(each, context)).collect(Collectors.toCollection(ArrayList::new)));
     }
     
     private Collection<Map<String, Object>> fetchConstraintsProperties(final Map<String, Object> context, final String constraintType) {
@@ -73,8 +74,8 @@ public final class PostgreSQLConstraintsPropertiesAppender {
     
     private void fetchConstraintsColumns(final Collection<Map<String, Object>> constraintsProps) {
         for (Map<String, Object> each : constraintsProps) {
-            each.put("columns",
-                    fetchConstraintsCols(each).stream().<Map<String, Object>>map(col -> Collections.singletonMap("column", stripQuote((String) col.get("column")))).collect(Collectors.toList()));
+            each.put("columns", fetchConstraintsCols(each).stream().<Map<String, Object>>map(col -> Collections.singletonMap("column", stripQuote((String) col.get("column"))))
+                    .collect(Collectors.toCollection(ArrayList::new)));
             appendConstraintsInclude(each);
         }
     }
@@ -82,7 +83,7 @@ public final class PostgreSQLConstraintsPropertiesAppender {
     private void appendConstraintsInclude(final Map<String, Object> constraintsProp) {
         Collection<Object> includes = templateExecutor.getMajorVersion() >= PG_CONSTRAINTS_INCLUDE_VERSION
                 ? templateExecutor.executeByTemplate(Collections.singletonMap("cid", constraintsProp.get("oid")),
-                        "component/index_constraint/%s/get_constraint_include.ftl").stream().map(each -> each.get("colname")).collect(Collectors.toList())
+                        "component/index_constraint/%s/get_constraint_include.ftl").stream().map(each -> each.get("colname")).collect(Collectors.toCollection(ArrayList::new))
                 : Collections.emptyList();
         constraintsProp.put("include", includes);
     }
@@ -106,11 +107,11 @@ public final class PostgreSQLConstraintsPropertiesAppender {
     }
     
     private Collection<Map<String, Object>> fetchForeignKeys(final Map<String, Object> context) {
-        return getForeignKeys((Long) context.get("tid")).stream().filter(each -> !isPartitionAndConstraintInherited(each, context)).collect(Collectors.toList());
+        return getForeignKeys((Long) context.get("tid")).stream().filter(each -> !isPartitionAndConstraintInherited(each, context)).collect(Collectors.toCollection(ArrayList::new));
     }
     
     private Collection<Map<String, Object>> fetchCheckConstraints(final Map<String, Object> context) {
-        return getCheckConstraints((Long) context.get("tid")).stream().filter(each -> !isPartitionAndConstraintInherited(each, context)).collect(Collectors.toList());
+        return getCheckConstraints((Long) context.get("tid")).stream().filter(each -> !isPartitionAndConstraintInherited(each, context)).collect(Collectors.toCollection(ArrayList::new));
     }
     
     private Collection<Map<String, Object>> getExclusionConstraints(final Map<String, Object> context) {

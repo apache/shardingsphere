@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -83,10 +84,7 @@ public final class FirebirdStatementIdGenerator {
     
     private AtomicInteger getStatementCounter(final int connectionId) {
         AtomicInteger result = connectionRegistry.get(connectionId);
-        if (null == result) {
-            throw new IllegalStateException("No statement ID generator found for connectionId: " + connectionId);
-        }
+        ShardingSpherePreconditions.checkNotNull(result, () -> new IllegalStateException("No statement ID generator found for connectionId: " + connectionId));
         return result;
     }
-    
 }

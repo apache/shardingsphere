@@ -80,6 +80,194 @@ class ReviewLedgerTest(unittest.TestCase):
     def test_complete_ledger_is_valid(self):
         self.assertEqual([], ledger.validate_ledger(self.create_valid_ledger()))
 
+    def test_batch_matches_sequential_updates_with_less_io(self):
+        actual = self.create_valid_ledger()
+        finding = self.create_confirmed_finding("F1")
+        finding["status"] = "candidate"
+        actual["findings"].append(finding)
+        ledger.sync_file_findings(actual)
+        ledger.write_ledger(self.ledger_file, actual)
+        original_bytes = self.ledger_file.read_bytes()
+        operations = [
+            ["mark-file", "--path", self.source_path, "--status", "reviewed", "--cluster", "batch", "--risk-axis", "compatibility",
+             "--coverage", str(self.private_root / "coverage.json")],
+            ["add-finding", "--id", "F1", "--status", "withdrawn", "--reason", "The supported owner contract disproves the candidate.", "--file", self.source_path],
+            *[["add-pass", "--focus", focus, "--new-findings", "0"] for focus in ledger.PASS_FOCUSES],
+        ]
+        with patch.object(ledger.time, "time", return_value=12345), patch.object(ledger, "capture_basis", wraps=ledger.capture_basis) as captures, \
+                patch.object(ledger, "write_ledger", wraps=ledger.write_ledger) as writes, redirect_stdout(StringIO()):
+            for operation in operations:
+                arguments = ledger.build_parser().parse_args([operation[0], "--ledger", str(self.ledger_file), *operation[1:]])
+                self.assertEqual(0, arguments.func(arguments))
+        self.assertEqual(6, captures.call_count)
+        self.assertEqual(6, writes.call_count)
+        expected = ledger.read_ledger(self.ledger_file)
+        self.ledger_file.write_bytes(original_bytes)
+        output = StringIO()
+        arguments = self.batch_arguments(operations)
+        with patch.object(ledger.time, "time", return_value=12345), patch.object(ledger, "capture_basis", wraps=ledger.capture_basis) as captures, \
+                patch.object(ledger, "write_ledger", wraps=ledger.write_ledger) as writes, redirect_stdout(output):
+            self.assertEqual(0, arguments.func(arguments))
+        self.assertEqual(2, captures.call_count)
+        self.assertEqual(1, writes.call_count)
+        self.assertEqual("batched=6\n", output.getvalue())
+        actual = ledger.read_ledger(self.ledger_file)
+        self.assertEqual(expected, actual)
+        self.assertEqual(3, actual["review_revision"])
+        self.assertEqual(["F1"], actual["files"][0]["findings"])
+        self.assertEqual("withdrawn", actual["findings"][0]["status"])
+        self.assertEqual([], ledger.validate_ledger(actual))
+
+    def test_batch_allows_in_progress_ledger_updates(self):
+        self.initialize_ledger()
+        arguments = self.batch_arguments([
+            ["mark-file", "--path", self.source_path, "--status", "pending", "--cluster", "core"],
+            ["add-finding", "--id", "F1", "--status", "candidate", "--file", self.source_path],
+        ])
+        with redirect_stdout(StringIO()):
+            self.assertEqual(0, ledger.cmd_batch(arguments))
+        actual = ledger.read_ledger(self.ledger_file)
+        self.assertEqual(2, actual["review_revision"])
+        self.assertEqual("pending", actual["files"][0]["status"])
+        self.assertEqual(["F1"], actual["files"][0]["findings"])
+        self.assertEqual("candidate", actual["findings"][0]["status"])
+        self.assertIn("Pending files remain: 1", ledger.validate_ledger(actual))
+
+    def test_batch_failure_preserves_original_ledger_bytes(self):
+        actual = self.create_valid_ledger()
+        original = self.ledger_file.read_bytes()
+        coverage_file = self.private_root / "empty-coverage.json"
+        coverage_file.write_text("[]\n", encoding="utf-8")
+        anchors_file = self.private_root / "out-of-range-anchors.json"
+        anchors_file.write_text(json.dumps([{"side": "candidate", "path": self.source_path, "start_line": 1, "end_line": 80}]), encoding="utf-8")
+        invalid = [
+            ("negative-count", ["add-pass", "--focus", "convergence", "--new-findings", "-1"], "New finding count must not be negative"),
+            ("outside-scope", ["mark-file", "--path", "outside.java", "--status", "reviewed"], "File is not in ledger scope: outside.java"),
+            ("empty-coverage", ["mark-file", "--path", self.source_path, "--status", "reviewed", "--coverage", str(coverage_file)],
+             f"{self.source_path} has uncovered changed blocks: {len(actual['files'][0]['blocks'])}"),
+            ("anchor-range", ["add-finding", "--id", "F2", "--status", "non-blocking", "--file", self.source_path, "--anchors", str(anchors_file)],
+             "Source anchor line range is outside the actual source"),
+        ]
+        for scenario, operation, expected in invalid:
+            with self.subTest(scenario=scenario):
+                arguments = self.batch_arguments([
+                    ["add-finding", "--id", "F1", "--status", "candidate", "--file", self.source_path],
+                    operation,
+                ])
+                output = StringIO()
+                with patch.object(ledger, "write_ledger", wraps=ledger.write_ledger) as writes, redirect_stdout(output), self.assertRaises(RuntimeError) as caught:
+                    ledger.cmd_batch(arguments)
+                self.assertEqual(expected, str(caught.exception))
+                self.assertEqual(0, writes.call_count)
+                self.assertEqual(original, self.ledger_file.read_bytes())
+                self.assertEqual("", output.getvalue())
+
+    def test_batch_rejects_malformed_operations_and_cli_arguments(self):
+        self.create_valid_ledger()
+        original = self.ledger_file.read_bytes()
+        invalid = [
+            None, {}, [], "add-pass", 1, True, [[]], [{}], [[1]], [["add-pass", 0]],
+            [["cleanup"]], [["init"]], [["batch"]], [["status"]],
+            [["add-pass", "--focus", "invalid", "--new-findings", "0"]],
+            [["add-pass", "--focus", "convergence", "--new-findings", "invalid"]],
+            [["add-pass", "--focus", "convergence", "--new-findings", "0", "--unknown"]],
+            [["mark-file", "--path", self.source_path, "--status", "invalid"]],
+            [["add-finding", "--id", "F1", "--status", "invalid"]],
+            [["add-pass", "--help"]], [["mark-file", "-h"]],
+        ]
+        for operations in invalid:
+            with self.subTest(operations=operations):
+                arguments = self.batch_arguments(operations)
+                with patch.object(ledger, "write_ledger", wraps=ledger.write_ledger) as writes, redirect_stdout(StringIO()), redirect_stderr(StringIO()), \
+                        self.assertRaises(RuntimeError):
+                    ledger.cmd_batch(arguments)
+                self.assertEqual(0, writes.call_count)
+                self.assertEqual(original, self.ledger_file.read_bytes())
+
+    def test_batch_rejects_alternate_ledger_targets(self):
+        self.create_valid_ledger()
+        original = self.ledger_file.read_bytes()
+        other = ledger.ledger_root() / "other-ledger" / ledger.LEDGER_FILE_NAME
+        other.parent.mkdir(mode=0o700)
+        ledger.write_ledger(other, ledger.read_ledger(self.ledger_file))
+        other_original = other.read_bytes()
+        for override in (["--ledger", str(other)], ["--led", str(other)], ["--ledger=" + str(other)], ["--led=" + str(other)]):
+            with self.subTest(override=override):
+                arguments = self.batch_arguments([["add-pass", "--focus", "convergence", "--new-findings", "0", *override]])
+                with patch.object(ledger, "write_ledger", wraps=ledger.write_ledger) as writes, redirect_stdout(StringIO()), redirect_stderr(StringIO()), \
+                        self.assertRaises(RuntimeError):
+                    ledger.cmd_batch(arguments)
+                self.assertEqual(0, writes.call_count)
+                self.assertEqual(original, self.ledger_file.read_bytes())
+                self.assertEqual(other_original, other.read_bytes())
+
+    def test_batch_rejects_stale_candidate_rule_and_owner_evidence(self):
+        self.create_valid_ledger()
+        original = self.ledger_file.read_bytes()
+        for path in (self.source_path, "Rules.md", self.owner_path):
+            with self.subTest(path=path):
+                source = self.repo / path
+                source_original = source.read_bytes()
+                source.write_text("Changed source commitment.\n", encoding="utf-8")
+                try:
+                    arguments = self.batch_arguments([["add-pass", "--focus", "convergence", "--new-findings", "0"]])
+                    with patch.object(ledger, "write_ledger", wraps=ledger.write_ledger) as writes, redirect_stdout(StringIO()), self.assertRaises(RuntimeError):
+                        ledger.cmd_batch(arguments)
+                    self.assertEqual(0, writes.call_count)
+                    self.assertEqual(original, self.ledger_file.read_bytes())
+                finally:
+                    source.write_bytes(source_original)
+
+    def test_batch_rechecks_evidence_before_persisting(self):
+        self.create_valid_ledger()
+        original = self.ledger_file.read_bytes()
+        apply_mark_file = ledger.apply_mark_file
+
+        def change_source(actual, arguments):
+            apply_mark_file(actual, arguments)
+            (self.repo / self.owner_path).write_text("Changed after the initial freshness check.\n", encoding="utf-8")
+
+        arguments = self.batch_arguments([["mark-file", "--path", self.source_path, "--status", "reviewed", "--cluster", "batch"]])
+        output = StringIO()
+        with patch.object(ledger, "apply_mark_file", side_effect=change_source), patch.object(ledger, "write_ledger", wraps=ledger.write_ledger) as writes, \
+                redirect_stdout(output), self.assertRaisesRegex(RuntimeError, "Source anchor is stale"):
+            ledger.cmd_batch(arguments)
+        self.assertEqual(0, writes.call_count)
+        self.assertEqual(original, self.ledger_file.read_bytes())
+        self.assertEqual("", output.getvalue())
+
+    def test_batch_pass_before_mutation_remains_stale(self):
+        self.create_valid_ledger()
+        arguments = self.batch_arguments([
+            ["add-pass", "--focus", "convergence", "--new-findings", "0"],
+            ["mark-file", "--path", self.source_path, "--status", "reviewed", "--reason", "More precise reviewed metadata."],
+        ])
+        with redirect_stdout(StringIO()):
+            self.assertEqual(0, ledger.cmd_batch(arguments))
+        actual = ledger.read_ledger(self.ledger_file)
+        self.assertEqual(actual["review_revision"] - 1, actual["passes"][-1]["review_revision"])
+        self.assertIn("Latest convergence pass predates a file or finding change", ledger.validate_ledger(actual))
+
+    def test_batch_new_evidence_invalidates_earlier_passes(self):
+        actual = self.create_valid_ledger()
+        original_fingerprint = ledger.basis_fingerprint(actual)
+        (self.repo / "new-owner.txt").write_text("Additional owning contract.\n", encoding="utf-8")
+        coverage = actual["files"][0]["coverage"]
+        coverage[0]["anchors"].append({"side": "candidate", "path": "new-owner.txt"})
+        coverage_file = self.private_root / "new-evidence-coverage.json"
+        coverage_file.write_text(json.dumps(coverage), encoding="utf-8")
+        arguments = self.batch_arguments([
+            ["add-pass", "--focus", "convergence", "--new-findings", "0"],
+            ["mark-file", "--path", self.source_path, "--status", "reviewed", "--coverage", str(coverage_file)],
+        ])
+        with redirect_stdout(StringIO()):
+            self.assertEqual(0, ledger.cmd_batch(arguments))
+        actual = ledger.read_ledger(self.ledger_file)
+        self.assertEqual(original_fingerprint, actual["passes"][-1]["basis_fingerprint"])
+        errors = ledger.validate_ledger(actual)
+        self.assertIn("Required review passes missing: root-cause, blast-radius, tests-runtime, convergence", errors)
+        self.assertIn("Latest convergence pass uses a different review basis", errors)
+
     def test_confirmed_finding_requires_non_blank_proof(self):
         actual_ledger = self.create_valid_ledger()
         finding = self.create_confirmed_finding("F1")
@@ -1170,6 +1358,11 @@ class ReviewLedgerTest(unittest.TestCase):
         ledger.write_ledger(ledger_file, actual_ledger)
         report["ledger_sha256"] = hashlib.sha256(ledger_file.read_bytes()).hexdigest()
         self.save_session_report(session, index, report)
+
+    def batch_arguments(self, operations):
+        operations_file = self.private_root / "operations.json"
+        operations_file.write_text(json.dumps(operations), encoding="utf-8")
+        return ledger.build_parser().parse_args(["batch", "--ledger", str(self.ledger_file), "--operations", str(operations_file)])
 
     def initialize_ledger(self, committed=False):
         arguments = ["init", "--repo-root", str(self.repo), "--pr", "synthetic-review", "--base-ref", self.base_sha,

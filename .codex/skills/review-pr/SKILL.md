@@ -226,6 +226,10 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 - Validate the current basis and coverage before selecting a result; a passing ledger proves mechanical coverage and evidence freshness, while the reviewer must still establish semantic proof under the existing gates.
 - For a standalone local candidate with index or working-tree changes, provide the same exact task-path file to both scripts with `--candidate-files <path>`. The scripts resolve those paths from the computed merge-base through the working tree, include matching untracked files, and fail when a listed path is unchanged.
 - Mutate one ledger sequentially; do not run ledger commands concurrently.
+- Batch related updates to one reviewer ledger with `scripts/review_ledger.py batch --ledger <ledger> --operations <JSON>`, where the JSON is a nonempty ordered array of argument arrays for `mark-file`, `add-finding` and `add-pass`, using their existing flags and input files without `--ledger`.
+- Each batch applies the existing operations in order and writes once only after all per-operation checks and both freshness checks pass.
+- Batch freshness checks verify the current basis and captured source anchors before applying operations and again before writing; any failed operation or freshness check leaves the original ledger unchanged.
+- Batching does not replace final ledger or session validation.
 
 Use these JSON shapes in local files passed to the arguments, replacing the example values with current evidence and block IDs from the initialized ledger:
 Sources use `rule`, `requirement` or `evidence` roles; `--anchors` takes an anchor-array file shaped like `anchors` below.
