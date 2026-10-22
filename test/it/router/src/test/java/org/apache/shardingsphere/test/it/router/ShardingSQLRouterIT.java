@@ -71,6 +71,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -161,8 +162,8 @@ class ShardingSQLRouterIT {
     void assertRouteDatabaseOnlyJoin() {
         RouteContext actual = routeDatabaseOnlyJoin("SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.user_id = i.user_id", Collections.emptyList());
         assertThat(actual.getRouteUnits().size(), is(3));
-        assertThat(getRouteUnitSignatures(actual), is(createRouteUnits("ds_0:t_order=t_order,t_order_item=t_order_item", "ds_1:t_order=t_order,t_order_item=t_order_item",
-                "ds_2:t_order=t_order,t_order_item=t_order_item")));
+        assertThat(getRouteUnitSignatures(actual), is(createRouteUnits(
+                "ds_0:t_order=t_order,t_order_item=t_order_item", "ds_1:t_order=t_order,t_order_item=t_order_item", "ds_2:t_order=t_order,t_order_item=t_order_item")));
     }
     
     @Test
@@ -286,21 +287,13 @@ class ShardingSQLRouterIT {
     private static List<Set<String>> getOriginalDataNodeSignatures(final RouteContext routeContext) {
         List<Set<String>> result = new LinkedList<>();
         for (Collection<DataNode> each : routeContext.getOriginalDataNodes()) {
-            Set<String> dataNodes = new TreeSet<>();
-            for (DataNode dataNode : each) {
-                dataNodes.add(dataNode.getDataSourceName() + "." + dataNode.getTableName());
-            }
-            result.add(dataNodes);
+            result.add(each.stream().map(dataNode -> dataNode.getDataSourceName() + "." + dataNode.getTableName()).collect(Collectors.toCollection(TreeSet::new)));
         }
         return result;
     }
     
     private static List<Set<String>> createOriginalDataNodes(final String... dataNodes) {
-        List<Set<String>> result = new LinkedList<>();
-        for (String each : dataNodes) {
-            result.add(Collections.singleton(each));
-        }
-        return result;
+        return Arrays.stream(dataNodes).map(Collections::singleton).collect(Collectors.toList());
     }
     
     private static Set<String> createRouteUnits(final String... routeUnits) {
