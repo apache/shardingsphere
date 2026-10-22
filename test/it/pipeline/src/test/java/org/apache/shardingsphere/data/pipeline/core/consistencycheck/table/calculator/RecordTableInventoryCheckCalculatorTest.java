@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -109,6 +110,14 @@ class RecordTableInventoryCheckCalculatorTest {
         TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildOrderIdUniqueKey(), QueryType.RANGE_QUERY, null);
         assertRangeQueryCalculatedResult(calculator, param, Range.openClosed(4, null), 4, 8);
+    }
+    
+    @Test
+    void assertCalculateOfRangeQueryWithOnlyUpperBound() {
+        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(10, 1, StreamingRangeType.SMALL);
+        TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"), Collections.emptyList(), buildUserIdUniqueKey(),
+                QueryType.RANGE_QUERY, null);
+        assertRangeQueryCalculatedResult(calculator, param, Range.openClosed(null, 3), 7, 3);
     }
     
     @ParameterizedTest
@@ -357,6 +366,22 @@ class RecordTableInventoryCheckCalculatorTest {
         assertThat(actual.getRecordsCount(), is(1));
         assertTrue(actual.getMaxUniqueKeyValue().isPresent());
         assertThat(actual.getMaxUniqueKeyValue().get(), is(3));
+    }
+    
+    @Test
+    void assertCalculateOfPointQueryWithShardingColumn() {
+        RecordTableInventoryCheckCalculator calculator = new RecordTableInventoryCheckCalculator(3, StreamingRangeType.SMALL);
+        TableInventoryCalculateParameter param = new TableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"), Collections.emptyList(), buildUserIdUniqueKey(),
+                QueryType.POINT_QUERY, null);
+        param.setUniqueKeysValues(Collections.singleton(3));
+        param.setShardingColumnsNames(Collections.singletonList("order_id"));
+        param.setShardingColumnsValues(Collections.singletonList(5));
+        Optional<TableInventoryCheckCalculatedResult> actualResult = calculator.calculateChunk(param);
+        QuietlyCloser.close(param.getCalculationContext());
+        assertTrue(actualResult.isPresent());
+        RecordTableInventoryCheckCalculatedResult actual = (RecordTableInventoryCheckCalculatedResult) actualResult.get();
+        assertThat(actual.getRecordsCount(), is(1));
+        assertRecord(actual.getRecords().get(0), 3, 5);
     }
     
     @ParameterizedTest

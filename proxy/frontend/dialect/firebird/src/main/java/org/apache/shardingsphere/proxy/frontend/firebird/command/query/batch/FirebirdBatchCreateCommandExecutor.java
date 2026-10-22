@@ -30,10 +30,10 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -66,27 +66,19 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() {
         int statementId = packet.getStatementHandle();
-        if (null == connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId)) {
-            throw new InvalidStatementHandleException(statementId);
-        }
+        ShardingSpherePreconditions.checkNotNull(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId), () -> new InvalidStatementHandleException(statementId));
         int connectionId = connectionSession.getConnectionId();
-        if (null != FirebirdBatchStatementManager.getInstance().getBatchStatement(connectionId, statementId)) {
-            throw new BatchAlreadyOpenedException(statementId);
-        }
+        ShardingSpherePreconditions.checkState(null == FirebirdBatchStatementManager.getInstance().getBatchStatement(connectionId, statementId), () -> new BatchAlreadyOpenedException(statementId));
         ByteBuf batchBlr = packet.getBatchBlr();
-        int blrLength = batchBlr.readableBytes();
-        FirebirdParseBatchBlr messageFormat = FirebirdParseBatchBlr.parse(batchBlr, blrLength);
-        if (messageFormat.getFields().isEmpty()) {
-            throw new BatchParametersRequiredException(statementId);
-        }
+        FirebirdParseBatchBlr messageFormat = FirebirdParseBatchBlr.parse(batchBlr, batchBlr.readableBytes());
+        ShardingSpherePreconditions.checkNotEmpty(messageFormat.getFields(), () -> new BatchParametersRequiredException(statementId));
         if (packet.getBatchMessageLength() != messageFormat.getMessageLength()) {
             throw new InvalidBatchMessageFormatException(
                     String.format("invalid message length: computed %d from BLR but client sent %d", messageFormat.getMessageLength(), packet.getBatchMessageLength()));
         }
-        ByteBuf batchParametersBuffer = packet.getBatchParametersBuffer();
-        BatchParameters batchParameters = BatchParameters.parse(batchParametersBuffer);
+        BatchParameters batchParameters = BatchParameters.parse(packet.getBatchParametersBuffer());
         FirebirdBatchStatementManager.getInstance().registerBatchStatement(
                 connectionId, statementId, messageFormat.getFields(), batchParameters.getBufferSize(), batchParameters.isRecordCounts(), batchParameters.isMultiError());
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
@@ -105,14 +97,12 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         private final boolean multiError;
         
         static BatchParameters parse(final ByteBuf batchParametersBuffer) {
-            if (null == batchParametersBuffer || !batchParametersBuffer.isReadable()) {
+            if (!batchParametersBuffer.isReadable()) {
                 return new BatchParameters(BATCH_VERSION_1, DEFAULT_BUFFER_SIZE, false, false);
             }
             ByteBuf reader = batchParametersBuffer.duplicate();
             int version = reader.readUnsignedByte();
-            if (BATCH_VERSION_1 != version) {
-                throw new InvalidBatchParameterVersionException(version, BATCH_VERSION_1);
-            }
+            ShardingSpherePreconditions.checkState(BATCH_VERSION_1 == version, () -> new InvalidBatchParameterVersionException(version, BATCH_VERSION_1));
             long bufferSize = DEFAULT_BUFFER_SIZE;
             boolean recordCounts = false;
             boolean multiError = false;
@@ -143,21 +133,16 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         }
         
         private static void ensureClumpletHeaderReadable(final ByteBuf reader) {
-            if (reader.readableBytes() < 1 + WIDE_CLUMPLET_LENGTH_SIZE) {
-                throw new DatabaseProtocolException("Invalid batch parameters buffer");
-            }
+            ShardingSpherePreconditions.checkState(reader.readableBytes() >= 1 + WIDE_CLUMPLET_LENGTH_SIZE, () -> new DatabaseProtocolException("Invalid batch parameters buffer"));
         }
         
         private static void ensureClumpletValueReadable(final ByteBuf reader, final int tag, final int valueLength) {
-            if (valueLength < 0 || valueLength > reader.readableBytes()) {
-                throw new DatabaseProtocolException("Invalid batch parameter length for tag %d: %d", tag, valueLength);
-            }
+            ShardingSpherePreconditions.checkState(valueLength >= 0 && valueLength <= reader.readableBytes(), () -> new DatabaseProtocolException("Invalid batch parameter length for tag %d: %d", tag,
+                    valueLength));
         }
         
         private static int readIntegerValue(final ByteBuf reader, final int tag, final int valueLength) {
-            if (INTEGER_VALUE_LENGTH != valueLength) {
-                throw new DatabaseProtocolException("Invalid batch parameter integer length for tag %d: %d", tag, valueLength);
-            }
+            ShardingSpherePreconditions.checkState(INTEGER_VALUE_LENGTH == valueLength, () -> new DatabaseProtocolException("Invalid batch parameter integer length for tag %d: %d", tag, valueLength));
             return reader.readIntLE();
         }
     }

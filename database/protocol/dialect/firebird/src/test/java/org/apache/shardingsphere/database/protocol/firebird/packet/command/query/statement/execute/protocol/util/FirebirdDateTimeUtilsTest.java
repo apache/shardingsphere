@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.util;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -55,8 +58,7 @@ class FirebirdDateTimeUtilsTest {
     void assertGetEncodedTimeAndSetTime() {
         LocalDateTime sourceDateTime = LocalDateTime.of(2024, 6, 30, 1, 2, 3, 500_000_000);
         FirebirdDateTimeUtils utils = new FirebirdDateTimeUtils(sourceDateTime);
-        int expectedFractions = (sourceDateTime.getNano() / FirebirdDateTimeUtils.NANOSECONDS_PER_FRACTION)
-                % FirebirdDateTimeUtils.FRACTIONS_PER_SECOND;
+        int expectedFractions = (sourceDateTime.getNano() / FirebirdDateTimeUtils.NANOSECONDS_PER_FRACTION) % FirebirdDateTimeUtils.FRACTIONS_PER_SECOND;
         int expectedEncodedTime = sourceDateTime.getHour() * FirebirdDateTimeUtils.FRACTIONS_PER_HOUR
                 + sourceDateTime.getMinute() * FirebirdDateTimeUtils.FRACTIONS_PER_MINUTE
                 + sourceDateTime.getSecond() * FirebirdDateTimeUtils.FRACTIONS_PER_SECOND
@@ -90,14 +92,22 @@ class FirebirdDateTimeUtilsTest {
         assertThat(actualDateTime.toLocalDateTime(), is(LocalDateTime.of(2026, 10, 2, 12, 34, 56, 789_000_000)));
     }
     
-    @Test
-    void assertGetDateTimeWithOffset() {
-        LocalDateTime sourceDateTime = LocalDateTime.of(2025, 1, 1, 9, 30, 0);
-        int encodedDate = FirebirdDateTimeUtils.getEncodedDate(sourceDateTime);
-        int encodedTime = new FirebirdDateTimeUtils(sourceDateTime).getEncodedTime();
-        Timestamp actualDateTime = FirebirdDateTimeUtils.getDateTimeWithOffset(encodedDate, encodedTime, 60);
-        LocalDateTime expectedDateTime = LocalDateTime.of(2025, 1, 1, sourceDateTime.getHour(), sourceDateTime.getMinute(), sourceDateTime.getSecond(), 0);
-        assertThat(actualDateTime.toLocalDateTime(), is(expectedDateTime));
+    @ParameterizedTest(name = "{3}")
+    @CsvSource({
+            "60310, 432000000, 1439, 2024-01-01T12:00:00Z",
+            "60310, 360000000, 1559, 2024-01-01T12:00:00+02:00",
+            "60310, 612000000, 1139, 2024-01-01T12:00:00-05:00",
+            "60310, 234000000, 1769, 2024-01-01T12:00:00+05:30",
+            "60309, 612000000, 1919, 2024-01-01T01:00:00+08:00",
+            "60311, 162000000, 1139, 2024-01-01T23:30:00-05:00",
+            "60310, 801301234, 1559, 2024-01-02T00:15:30.123400+02:00",
+            "60379, 90000000, 1439, 2024-03-10T02:30:00Z",
+            "60617, 234000000, 1139, 2024-11-03T01:30:00-05:00",
+            "60617, 234000000, 65361, 2024-11-03T01:30:00-05:00"
+    })
+    void assertGetDateTimeWithOffset(final int encodedDate, final int encodedTime, final int encodedTimeZone, final String expected) {
+        OffsetDateTime actual = FirebirdDateTimeUtils.getDateTimeWithOffset(encodedDate, encodedTime, encodedTimeZone);
+        assertThat(actual, is(OffsetDateTime.parse(expected)));
     }
     
     @Test

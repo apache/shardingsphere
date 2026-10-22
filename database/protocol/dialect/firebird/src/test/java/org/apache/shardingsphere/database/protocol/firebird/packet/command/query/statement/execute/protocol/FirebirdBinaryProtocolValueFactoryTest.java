@@ -19,6 +19,11 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
@@ -26,93 +31,37 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FirebirdBinaryProtocolValueFactoryTest {
     
-    @Test
-    void assertGetStringBinaryProtocolValueByVarying() {
-        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.VARYING);
-        assertThat(actual, isA(FirebirdStringBinaryProtocolValue.class));
-    }
-    
-    // TODO Uncomment when a specific handler is required; currently BLOB is handled by StringBinaryProtocolValue
-    // @Test
-    // void assertGetByteBinaryProtocolValue() {
-    // FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.BLOB);
-    // assertThat(actual, isA(FirebirdByteBinaryProtocolValue.class));
-    // }
-    
-    @Test
-    void assertGetInt16BinaryProtocolValue() {
-        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.INT128);
-        assertThat(actual, isA(FirebirdInt16BinaryProtocolValue.class));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getBinaryProtocolValueArguments")
+    void assertGetBinaryProtocolValue(final String name, final FirebirdBinaryColumnType binaryColumnType, final Class<? extends FirebirdBinaryProtocolValue> expectedClass) {
+        assertThat(FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(binaryColumnType), isA(expectedClass));
     }
     
     @Test
-    void assertGetInt8BinaryProtocolValue() {
-        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.INT64);
-        assertThat(actual, isA(FirebirdInt8BinaryProtocolValue.class));
-    }
-    
-    @Test
-    void assertGetInt4BinaryProtocolValue() {
-        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.LONG);
-        assertThat(actual, isA(FirebirdInt4BinaryProtocolValue.class));
-    }
-    
-    @Test
-    void assertGetInt2BinaryProtocolValue() {
-        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.SHORT);
-        assertThat(actual, isA(FirebirdInt2BinaryProtocolValue.class));
-    }
-    
-    @Test
-    void assertGetBooleanBinaryProtocolValue() {
-        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.BOOLEAN);
-        assertThat(actual, isA(FirebirdBooleanBinaryProtocolValue.class));
-    }
-    
-    @Test
-    void assertGetDoubleBinaryProtocolValue() {
-        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.DOUBLE);
-        assertThat(actual, isA(FirebirdDoubleBinaryProtocolValue.class));
-    }
-    
-    @Test
-    void assertGetFloatBinaryProtocolValue() {
-        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.FLOAT);
-        assertThat(actual, isA(FirebirdFloatBinaryProtocolValue.class));
-    }
-    
-    @Test
-    void assertGetDateBinaryProtocolValue() {
-        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.DATE);
-        assertThat(actual, isA(FirebirdDateBinaryProtocolValue.class));
-    }
-    
-    @Test
-    void assertGetTimeBinaryProtocolValue() {
-        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.TIME);
-        assertThat(actual, isA(FirebirdTimeBinaryProtocolValue.class));
-    }
-    
-    @Test
-    void assertGetTimestampBinaryProtocolValue() {
-        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.TIMESTAMP);
-        assertThat(actual, isA(FirebirdTimestampBinaryProtocolValue.class));
-    }
-    
-    @Test
-    void assertGetTimestampTZBinaryProtocolValue() {
-        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.TIMESTAMP_TZ);
-        assertThat(actual, isA(FirebirdTimestampTZBinaryProtocolValue.class));
-    }
-    
-    @Test
-    void assertGetNullBinaryProtocolValue() {
-        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.NULL);
-        assertThat(actual, isA(FirebirdNullBinaryProtocolValue.class));
+    void assertGetBlobBinaryProtocolValue() {
+        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.BLOB);
+        assertThat(actual, isA(FirebirdBlobBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueExThrown() {
         assertThrows(IllegalArgumentException.class, () -> FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.TIME_TZ_EX));
+    }
+    
+    private static Stream<Arguments> getBinaryProtocolValueArguments() {
+        return Stream.of(
+                Arguments.of("varying", FirebirdBinaryColumnType.VARYING, FirebirdStringBinaryProtocolValue.class),
+                Arguments.of("int128", FirebirdBinaryColumnType.INT128, FirebirdInt16BinaryProtocolValue.class),
+                Arguments.of("int64", FirebirdBinaryColumnType.INT64, FirebirdInt8BinaryProtocolValue.class),
+                Arguments.of("long", FirebirdBinaryColumnType.LONG, FirebirdInt4BinaryProtocolValue.class),
+                Arguments.of("short", FirebirdBinaryColumnType.SHORT, FirebirdInt2BinaryProtocolValue.class),
+                Arguments.of("boolean", FirebirdBinaryColumnType.BOOLEAN, FirebirdBooleanBinaryProtocolValue.class),
+                Arguments.of("double", FirebirdBinaryColumnType.DOUBLE, FirebirdDoubleBinaryProtocolValue.class),
+                Arguments.of("float", FirebirdBinaryColumnType.FLOAT, FirebirdFloatBinaryProtocolValue.class),
+                Arguments.of("date", FirebirdBinaryColumnType.DATE, FirebirdDateBinaryProtocolValue.class),
+                Arguments.of("time", FirebirdBinaryColumnType.TIME, FirebirdTimeBinaryProtocolValue.class),
+                Arguments.of("timestamp", FirebirdBinaryColumnType.TIMESTAMP, FirebirdTimestampBinaryProtocolValue.class),
+                Arguments.of("timestamp_tz", FirebirdBinaryColumnType.TIMESTAMP_TZ, FirebirdTimestampTZBinaryProtocolValue.class),
+                Arguments.of("null", FirebirdBinaryColumnType.NULL, FirebirdNullBinaryProtocolValue.class));
     }
 }

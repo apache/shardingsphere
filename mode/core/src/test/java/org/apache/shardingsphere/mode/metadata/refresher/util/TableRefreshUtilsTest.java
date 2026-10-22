@@ -42,6 +42,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -196,13 +198,14 @@ class TableRefreshUtilsTest {
         assertFalse(TableRefreshUtils.isNeedRefresh(new RuleMetaData(Collections.singleton(rule)), "foo_schema", "foo_tbl"));
     }
     
-    @Test
-    void assertIsNeedRefreshBlockedByDataSourceWildcard() {
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"foo_ds.*", "foo_ds.*.*", "foo_ds.foo_schema.*"})
+    void assertIsNeedRefreshBlockedByWildcard(final String tablePattern) {
         MutableDataNodeRuleAttribute mutableDataNodeRuleAttribute = mock(MutableDataNodeRuleAttribute.class);
         DataNode dataNode = new DataNode("foo_ds", "foo_schema", "foo_tbl");
         when(mutableDataNodeRuleAttribute.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(dataNode));
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
-        ruleConfig.setTables(Collections.singletonList("foo_ds.*"));
+        ruleConfig.setTables(Collections.singletonList(tablePattern));
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
@@ -232,32 +235,6 @@ class TableRefreshUtilsTest {
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
         assertTrue(TableRefreshUtils.isNeedRefresh(new RuleMetaData(Collections.singleton(rule)), "foo_schema", Arrays.asList("bar_tbl", "foo_tbl")));
-    }
-    
-    @Test
-    void assertIsNeedRefreshBlockedByDataSourceSchemaWildcard() {
-        MutableDataNodeRuleAttribute mutableDataNodeRuleAttribute = mock(MutableDataNodeRuleAttribute.class);
-        DataNode dataNode = new DataNode("foo_ds", "foo_schema", "foo_tbl");
-        when(mutableDataNodeRuleAttribute.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(dataNode));
-        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
-        ruleConfig.setTables(Collections.singletonList("foo_ds.*.*"));
-        ShardingSphereRule rule = mock(ShardingSphereRule.class);
-        when(rule.getConfiguration()).thenReturn(ruleConfig);
-        when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
-        assertFalse(TableRefreshUtils.isNeedRefresh(new RuleMetaData(Collections.singleton(rule)), "foo_schema", "foo_tbl"));
-    }
-    
-    @Test
-    void assertIsNeedRefreshBlockedBySchemaSpecificWildcard() {
-        MutableDataNodeRuleAttribute mutableDataNodeRuleAttribute = mock(MutableDataNodeRuleAttribute.class);
-        DataNode dataNode = new DataNode("foo_ds", "foo_schema", "foo_tbl");
-        when(mutableDataNodeRuleAttribute.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(dataNode));
-        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
-        ruleConfig.setTables(Collections.singletonList("foo_ds.foo_schema.*"));
-        ShardingSphereRule rule = mock(ShardingSphereRule.class);
-        when(rule.getConfiguration()).thenReturn(ruleConfig);
-        when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
-        assertFalse(TableRefreshUtils.isNeedRefresh(new RuleMetaData(Collections.singleton(rule)), "foo_schema", "foo_tbl"));
     }
     
     @Test

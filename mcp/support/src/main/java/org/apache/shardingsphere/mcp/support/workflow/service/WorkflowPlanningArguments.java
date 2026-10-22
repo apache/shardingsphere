@@ -54,7 +54,7 @@ public final class WorkflowPlanningArguments {
      */
     public Boolean getBooleanArgument(final String name) {
         Object result = arguments.get(name);
-        return result instanceof Boolean ? (Boolean) result : null;
+        return result instanceof Boolean booleanValue ? booleanValue : null;
     }
     
     /**

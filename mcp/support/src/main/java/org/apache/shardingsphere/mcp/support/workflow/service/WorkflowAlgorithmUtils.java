@@ -110,8 +110,8 @@ public final class WorkflowAlgorithmUtils {
         if (null == value) {
             return Map.of();
         }
-        if (value instanceof Properties) {
-            return createPropertyMap((Properties) value);
+        if (value instanceof Properties props) {
+            return createPropertyMap(props);
         }
         if (value instanceof Map) {
             return createPropertyMap((Map<?, ?>) value);
