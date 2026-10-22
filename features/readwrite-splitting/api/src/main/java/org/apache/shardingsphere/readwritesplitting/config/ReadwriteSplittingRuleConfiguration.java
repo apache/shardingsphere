@@ -46,6 +46,7 @@ public final class ReadwriteSplittingRuleConfiguration implements DatabaseRuleCo
     private final Collection<@NotNull ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups;
     
     @NotNull
-    @SPITypeExists(spiClassName = "org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm")
+    @Valid
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm", groups = RuleConfigurationTypeValidationGroup.class)
     private final Map<@NotBlank String, @NotNull AlgorithmConfiguration> loadBalancers;
 }

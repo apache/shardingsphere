@@ -29,7 +29,7 @@ It generates sharding rule DistSQL only. It does not generate physical DDL, inde
 - Confirm the returned `plan_id`, `resources_to_read`, `next_actions`, and `distsql_artifacts` before applying the workflow.
 - Preview the workflow before execution and validate Proxy-visible rule state after execution.
 
-For the general review flow of rule changes, see [Rule Change Flow](../plugin-workflow/).
+For the general review flow of rule changes, see [Rule Change Flow](/en/user-manual/shardingsphere-mcp/features/plugin-workflow/).
 
 ## Limitations
 

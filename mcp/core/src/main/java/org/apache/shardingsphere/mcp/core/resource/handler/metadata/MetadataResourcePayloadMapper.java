@@ -59,24 +59,23 @@ public final class MetadataResourcePayloadMapper {
     }
     
     private Object mapItem(final ShardingSphereMCPResourceMetadata metadata, final Object item) {
-        if (item instanceof RuntimeDatabaseProfile) {
-            return createDatabasePayload((RuntimeDatabaseProfile) item);
+        if (item instanceof RuntimeDatabaseProfile databaseProfile) {
+            return createDatabasePayload(databaseProfile);
         }
-        if (item instanceof ShardingSphereSchema) {
-            return createSchemaPayload(getDatabase(), (ShardingSphereSchema) item, detail);
+        if (item instanceof ShardingSphereSchema schema) {
+            return createSchemaPayload(getDatabase(), schema, detail);
         }
-        if (item instanceof ShardingSphereTable) {
-            ShardingSphereTable table = (ShardingSphereTable) item;
+        if (item instanceof ShardingSphereTable table) {
             return "view".equals(metadata.getObjectScope()) ? createViewPayload(getDatabase(), getSchema(), table, detail) : createTablePayload(getDatabase(), getSchema(), table, detail);
         }
-        if (item instanceof MCPColumnMetadata) {
-            return createColumnPayload((MCPColumnMetadata) item);
+        if (item instanceof MCPColumnMetadata columnMetadata) {
+            return createColumnPayload(columnMetadata);
         }
-        if (item instanceof ShardingSphereIndex) {
-            return createIndexPayload((ShardingSphereIndex) item);
+        if (item instanceof ShardingSphereIndex index) {
+            return createIndexPayload(index);
         }
-        if (item instanceof MCPSequenceMetadata) {
-            return createSequencePayload((MCPSequenceMetadata) item);
+        if (item instanceof MCPSequenceMetadata sequenceMetadata) {
+            return createSequencePayload(sequenceMetadata);
         }
         return item;
     }

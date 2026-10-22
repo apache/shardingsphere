@@ -36,8 +36,12 @@ class WorkflowSynchronizationSupportTest {
     
     @Test
     void assertSynchronize() {
-        new WorkflowSynchronizationSupport(Duration.ofMillis(1L), Duration.ofMillis(1L))
-                .synchronize(() -> createValidationReport(WorkflowLifecycle.STATUS_PASSED));
+        AtomicInteger attempts = new AtomicInteger();
+        new WorkflowSynchronizationSupport(Duration.ofMillis(1L), Duration.ofMillis(1L)).synchronize(() -> {
+            attempts.incrementAndGet();
+            return createValidationReport(WorkflowLifecycle.STATUS_PASSED);
+        });
+        assertThat(attempts.get(), is(1));
     }
     
     @Test

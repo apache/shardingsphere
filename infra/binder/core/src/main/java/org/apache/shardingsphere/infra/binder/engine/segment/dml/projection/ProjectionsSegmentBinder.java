@@ -176,8 +176,10 @@ public final class ProjectionsSegmentBinder {
         }
         ColumnSegment columnSegment = ((ColumnProjectionSegment) projectionSegment).getColumn();
         String columnName = columnSegment.getIdentifier().getValue();
-        return !columnSegment.getOwner().isPresent() && (null == columnSegment.getNestedObjectAttributes() || columnSegment.getNestedObjectAttributes().isEmpty())
-                && (isTableAliasOrName(boundTableSegment, columnName) || tableBinderContexts.containsKey(CaseInsensitiveString.of(columnName)));
+        if (columnSegment.getOwner().isPresent() || null != columnSegment.getNestedObjectAttributes() && !columnSegment.getNestedObjectAttributes().isEmpty()) {
+            return false;
+        }
+        return isTableAliasOrName(boundTableSegment, columnName) || tableBinderContexts.containsKey(CaseInsensitiveString.of(columnName));
     }
     
     private static boolean isSupportWholeRowProjection(final SQLStatementBinderContext binderContext) {

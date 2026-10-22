@@ -103,8 +103,8 @@ public final class ReadwriteSplittingStatusWorkflowRequest extends WorkflowReque
         if (null == previousRequest) {
             return new ReadwriteSplittingStatusWorkflowRequest();
         }
-        if (previousRequest instanceof ReadwriteSplittingStatusWorkflowRequest) {
-            return ((ReadwriteSplittingStatusWorkflowRequest) previousRequest).copy();
+        if (previousRequest instanceof ReadwriteSplittingStatusWorkflowRequest request) {
+            return request.copy();
         }
         ReadwriteSplittingStatusWorkflowRequest result = new ReadwriteSplittingStatusWorkflowRequest();
         copyFieldsTo(previousRequest, result);

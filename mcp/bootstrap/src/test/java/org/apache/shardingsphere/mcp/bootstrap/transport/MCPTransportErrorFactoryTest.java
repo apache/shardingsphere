@@ -31,6 +31,7 @@ import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSe
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -106,5 +107,12 @@ class MCPTransportErrorFactoryTest {
         McpError actual = MCPTransportErrorFactory.createResourceError(new MCPInvalidRequestException(" "));
         assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INVALID_PARAMS));
         assertThat(actual.getJsonRpcError().message(), is("Invalid request."));
+    }
+    
+    @Test
+    void assertCreateErrorWithDatabaseFailure() {
+        McpError actual = MCPTransportErrorFactory.createError(new SQLException("foo_message"));
+        assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INTERNAL_ERROR));
+        assertThat(actual.getJsonRpcError().message(), is("MCP query failed."));
     }
 }

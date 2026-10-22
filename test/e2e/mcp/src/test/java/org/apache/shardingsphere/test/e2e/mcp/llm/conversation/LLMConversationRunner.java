@@ -51,6 +51,8 @@ public final class LLMConversationRunner {
     
     private static final String SYSTEM_PROMPT = """
             You are evaluating a live ShardingSphere MCP server. Use the available MCP functions to inspect current state and complete the user's task.
+            Before constructing an UPDATE statement for preview, retrieve the target table's complete column list from MCP.
+            Use the returned column names for both assignments and row selection.
             Choose tools from their advertised names, descriptions, and input schemas. Pass resource URIs only to mcp_read_resource, never as SQL.
             Never guess or stop before retrieving the requested evidence. When target metadata is explicitly marked as already verified, use the requested
             planning response as evidence instead of repeating metadata discovery. Preview side effects without executing them. Use function calls for

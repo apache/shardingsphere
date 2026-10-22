@@ -53,9 +53,8 @@ public final class FirebirdCommandExecuteEngine implements CommandExecuteEngine 
     
     @Override
     public FirebirdCommandPacket getCommandPacket(final PacketPayload payload, final CommandPacketType type, final ConnectionSession connectionSession) {
-        return FirebirdCommandPacketFactory.newInstance((FirebirdCommandPacketType) type,
-                (FirebirdPacketPayload) payload, FirebirdConnectionProtocolVersion.getInstance().getProtocolVersion(connectionSession.getConnectionId()),
-                connectionSession.getConnectionId());
+        return FirebirdCommandPacketFactory.newInstance((FirebirdCommandPacketType) type, (FirebirdPacketPayload) payload,
+                FirebirdConnectionProtocolVersion.getInstance().getProtocolVersion(connectionSession.getConnectionId()), connectionSession.getConnectionId());
     }
     
     @Override
@@ -84,8 +83,7 @@ public final class FirebirdCommandExecuteEngine implements CommandExecuteEngine 
         while (queryCommandExecutor.next()) {
             count++;
             databaseConnectionManager.getConnectionResourceLock().doAwait(context);
-            DatabasePacket dataValue = queryCommandExecutor.getQueryRowPacket();
-            context.write(dataValue);
+            context.write(queryCommandExecutor.getQueryRowPacket());
             if (flushThreshold == count) {
                 context.flush();
                 count = 0;

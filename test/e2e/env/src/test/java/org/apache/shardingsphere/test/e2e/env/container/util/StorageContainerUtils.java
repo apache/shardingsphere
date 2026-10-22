@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 
 import javax.sql.DataSource;
@@ -43,7 +44,9 @@ public final class StorageContainerUtils {
      */
     public static DataSource generateDataSource(final String jdbcUrl, final String username, final String password, final int maximumPoolSize) {
         HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DatabaseTypedSPILoader.getService(StorageContainerOption.class, DatabaseTypeFactory.get(jdbcUrl)).getConnectOption().getDriverClassName());
+        StorageContainerConnectOption connectOption = DatabaseTypedSPILoader.getService(StorageContainerOption.class, DatabaseTypeFactory.get(jdbcUrl)).getConnectOption();
+        result.setDriverClassName(connectOption.getDriverClassName());
+        connectOption.getConnectionTestQuery().ifPresent(result::setConnectionTestQuery);
         result.setJdbcUrl(jdbcUrl);
         result.setUsername(username);
         result.setPassword(password);

@@ -48,15 +48,13 @@ public final class FirebirdDatabaseInfoReturnPacket extends FirebirdPacket {
     
     private static final int BUILD_NO = 0;
     
+    private static final int ODS_MAJOR_VERSION = 13;
+    
+    private static final int ODS_MINOR_VERSION = 1;
+    
     private static final String SERVER_NAME = String.format("Firebird %d.%d (ShardingSphere-Proxy)", MAJOR_VERSION, MINOR_VERSION);
     
-    private static final String FB_VERSION = String.format("%s-%s%d.%d.%d.%d %s",
-            FirebirdArchType.ARCHITECTURE.getIdentifier(),
-            BUILD_TYPE,
-            MAJOR_VERSION,
-            MINOR_VERSION,
-            REV_NO,
-            BUILD_NO,
+    private static final String FB_VERSION = String.format("%s-%s%d.%d.%d.%d %s", FirebirdArchType.ARCHITECTURE.getIdentifier(), BUILD_TYPE, MAJOR_VERSION, MINOR_VERSION, REV_NO, BUILD_NO,
             SERVER_NAME);
     
     private final List<FirebirdInfoPacketType> infoItems;
@@ -76,22 +74,22 @@ public final class FirebirdDatabaseInfoReturnPacket extends FirebirdPacket {
         // TODO implement other request types handle
         switch (type) {
             case DB_SQL_DIALECT:
-                data.writeInt1(FirebirdDatabaseInfoPacketType.DB_SQL_DIALECT.getCode());
+                data.writeInt1(type.getCode());
                 data.writeInt2LE(1);
                 data.writeInt1(SQL_DIALECT);
                 break;
             case ODS_VERSION:
-                data.writeInt1(FirebirdDatabaseInfoPacketType.ODS_VERSION.getCode());
+                data.writeInt1(type.getCode());
                 data.writeInt2LE(4);
-                data.writeInt4LE(MAJOR_VERSION);
+                data.writeInt4LE(ODS_MAJOR_VERSION);
                 break;
             case ODS_MINOR_VERSION:
-                data.writeInt1(FirebirdDatabaseInfoPacketType.ODS_MINOR_VERSION.getCode());
+                data.writeInt1(type.getCode());
                 data.writeInt2LE(4);
-                data.writeInt4LE(MINOR_VERSION);
+                data.writeInt4LE(ODS_MINOR_VERSION);
                 break;
             case FIREBIRD_VERSION:
-                data.writeInt1(FirebirdDatabaseInfoPacketType.FIREBIRD_VERSION.getCode());
+                data.writeInt1(type.getCode());
                 data.writeInt2LE(FB_VERSION.length() + 2);
                 data.writeInt1(1);
                 data.writeInt1(FB_VERSION.length());

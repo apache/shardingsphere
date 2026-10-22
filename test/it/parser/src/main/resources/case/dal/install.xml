@@ -78,4 +78,11 @@
             <property key="auto_load" value="false" />
         </plugin>
     </install-plugin>
+    <install-component sql-case-id="install_component_set_global">
+        <component name="file://component1" start-index="18" stop-index="36" />
+    </install-component>
+
+    <install-component sql-case-id="install_component_set_persist">
+        <component name="file://component1" start-index="18" stop-index="36" />
+    </install-component>
 </sql-parser-test-cases>

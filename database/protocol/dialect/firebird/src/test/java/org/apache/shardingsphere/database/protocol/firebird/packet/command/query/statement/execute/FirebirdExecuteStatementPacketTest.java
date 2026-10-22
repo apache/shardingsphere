@@ -33,6 +33,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.stream.Stream;
 
@@ -72,12 +73,23 @@ class FirebirdExecuteStatementPacketTest {
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, blrType, (short) BlrConstants.blr_end);
-        when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         assertThat(packet.getStatementId(), is(1));
         assertThat(packet.getTransactionId(), is(2));
         assertThat(packet.getParameterTypes(), is(Collections.singletonList(expectedParameterType)));
         assertThat(packet.getParameterValues(), is(Collections.singletonList(expectedParameterValue)));
+    }
+    
+    @Test
+    void assertExecuteStatementPacketWithTimestampWithTimeZoneParameter() {
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1, 60310, 801301234, 1559);
+        when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.isReadable()).thenReturn(true);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_timestamp_tz, (short) BlrConstants.blr_end);
+        when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
+        FirebirdExecuteStatementPacket actual = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
+        assertThat(actual.getParameterTypes(), is(Collections.singletonList(FirebirdBinaryColumnType.TIMESTAMP_TZ)));
+        assertThat(actual.getParameterValues(), is(Collections.singletonList(OffsetDateTime.parse("2024-01-02T00:15:30.123400+02:00"))));
     }
     
     @Test
@@ -87,7 +99,6 @@ class FirebirdExecuteStatementPacketTest {
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
-        when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         assertThat(packet.getParameterTypes(), is(Collections.singletonList(FirebirdBinaryColumnType.LONG)));
         assertThat(packet.getParameterValues(), is(Collections.singletonList(null)));
@@ -110,11 +121,9 @@ class FirebirdExecuteStatementPacketTest {
         when(payload.readBuffer()).thenReturn(byteBuf, returnBlr);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
-        when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
         when(returnBlr.isReadable()).thenReturn(true);
         when(returnBlr.duplicate()).thenReturn(returnBlr);
         when(returnBlr.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
-        when(returnBlr.skipBytes(anyInt())).thenReturn(returnBlr);
         when(payload.readInt4Unsigned()).thenReturn(30L, 1L, 1024L);
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION19);
         assertThat(packet.getReturnColumns(), is(Collections.singletonList(FirebirdBinaryColumnType.LONG)));
@@ -152,7 +161,6 @@ class FirebirdExecuteStatementPacketTest {
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
-        when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
         when(byteBuf.readerIndex()).thenReturn(42);
         assertThat(FirebirdExecuteStatementPacket.getLength(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), is(42));
         verify(byteBuf).resetReaderIndex();

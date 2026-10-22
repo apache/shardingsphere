@@ -33,12 +33,12 @@ public final class OpenGaussAuthenticationHexData {
     private final String nonce;
     
     public OpenGaussAuthenticationHexData() {
-        salt = generate(64);
-        nonce = generate(8);
+        Random random = new SecureRandom();
+        salt = generate(64, random);
+        nonce = generate(8, random);
     }
     
-    private String generate(final int length) {
-        Random random = new SecureRandom();
+    private String generate(final int length, final Random random) {
         StringBuilder result = new StringBuilder(length);
         for (int i = 0; i < result.capacity(); i++) {
             result.append(Integer.toString(random.nextInt(0x10), 0x10));

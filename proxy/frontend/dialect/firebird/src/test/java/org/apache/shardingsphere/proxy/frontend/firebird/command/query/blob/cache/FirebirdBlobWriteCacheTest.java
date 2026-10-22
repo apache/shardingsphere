@@ -62,7 +62,7 @@ class FirebirdBlobWriteCacheTest {
     
     @Test
     void assertRegisterBlobCreatesMappingsWhenConnectionMissing() {
-        CACHE.registerBlob(2, 3, 4L);
+        CACHE.registerBlob(2, 3, 4L, false);
         OptionalLong actualBlobId = CACHE.getBlobId(2, 3);
         assertTrue(actualBlobId.isPresent());
         assertThat(actualBlobId.getAsLong(), is(4L));
@@ -80,9 +80,8 @@ class FirebirdBlobWriteCacheTest {
         int blobHandle = 8;
         long blobId = 9L;
         CACHE.registerConnection(connectionId);
-        boolean actualClosedWhenMissing = CACHE.isClosed(connectionId, blobId);
-        assertFalse(actualClosedWhenMissing);
-        CACHE.registerBlob(connectionId, blobHandle, blobId);
+        assertFalse(CACHE.isClosed(connectionId, blobId));
+        CACHE.registerBlob(connectionId, blobHandle, blobId, false);
         OptionalInt actualSizeAfterAppend = CACHE.appendSegment(connectionId, blobHandle, new byte[]{1, 2, 3});
         assertTrue(actualSizeAfterAppend.isPresent());
         assertThat(actualSizeAfterAppend.getAsInt(), is(3));
@@ -107,9 +106,9 @@ class FirebirdBlobWriteCacheTest {
         long oldBlobId = 9L;
         long expectedBlobId = 10L;
         CACHE.registerConnection(connectionId);
-        CACHE.registerBlob(connectionId, blobHandle, oldBlobId);
+        CACHE.registerBlob(connectionId, blobHandle, oldBlobId, false);
         CACHE.closeWrite(connectionId, blobHandle);
-        CACHE.registerBlob(connectionId, blobHandle, expectedBlobId);
+        CACHE.registerBlob(connectionId, blobHandle, expectedBlobId, false);
         CACHE.removeWrite(connectionId, oldBlobId);
         OptionalLong actualBlobId = CACHE.getBlobId(connectionId, blobHandle);
         assertTrue(actualBlobId.isPresent());

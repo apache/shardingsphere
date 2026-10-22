@@ -21,12 +21,20 @@
         <assertion expected-data-file="cached_connections.xml" />
     </test-case>
     
-    <test-case sql="SHOW COMPUTE NODES">
+    <test-case sql="SHOW COMPUTE NODES" adapters="proxy">
         <assertion expected-data-file="show_compute_nodes.xml" />
     </test-case>
+
+    <test-case sql="SHOW COMPUTE NODES" adapters="jdbc">
+        <assertion expected-data-file="show_compute_nodes_jdbc.xml" />
+    </test-case>
     
-    <test-case sql="SHOW AUTHORITY RULE;">
+    <test-case sql="SHOW AUTHORITY RULE;" adapters="proxy">
         <assertion expected-data-file="show_authority_rule.xml" />
+    </test-case>
+
+    <test-case sql="SHOW AUTHORITY RULE;" adapters="jdbc">
+        <assertion expected-data-file="show_authority_rule_jdbc.xml" />
     </test-case>
     
     <test-case sql="SHOW TRANSACTION RULE;">
@@ -41,16 +49,24 @@
         <assertion expected-data-file="show_status_from_readwrite_splitting_rules.xml" />
     </test-case>
     
-    <test-case sql="SHOW DIST VARIABLES;">
+    <test-case sql="SHOW DIST VARIABLES;" adapters="proxy">
         <assertion expected-data-file="show_dist_variables.xml" />
+    </test-case>
+
+    <test-case sql="SHOW DIST VARIABLES;" adapters="jdbc">
+        <assertion expected-data-file="show_dist_variables_jdbc.xml" />
     </test-case>
     
     <test-case sql="SHOW DIST VARIABLE WHERE name = sql_show;">
         <assertion expected-data-file="show_dist_variable_where_name_equal_sql_show.xml" />
     </test-case>
     
-    <test-case sql="SHOW COMPUTE NODE INFO">
+    <test-case sql="SHOW COMPUTE NODE INFO" adapters="proxy">
         <assertion expected-data-file="show_compute_node_info.xml" />
+    </test-case>
+
+    <test-case sql="SHOW COMPUTE NODE INFO" adapters="jdbc">
+        <assertion expected-data-file="show_compute_node_info_jdbc.xml" />
     </test-case>
     
     <test-case sql="SHOW COMPUTE NODE MODE">

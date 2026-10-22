@@ -89,7 +89,6 @@ class DistSQLUpdateExecuteEngineTest {
             when(executor.buildToBeAlteredRuleConfiguration(sqlStatement)).thenReturn(ruleConfig);
             new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager, null).executeUpdate();
         }
-        verify(executor).checkBeforeUpdate(sqlStatement);
         verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(ruleConfig);
     }
     

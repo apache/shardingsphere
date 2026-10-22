@@ -159,7 +159,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     @Override
     public ASTNode visitAssignmentValue(final ClickHouseStatementParser.AssignmentValueContext ctx) {
         ExprContext expr = ctx.expr();
-        return null == expr ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText()) : visit(expr);
+        return null == expr ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList()) : visit(expr);
     }
     
     @Override

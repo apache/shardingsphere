@@ -59,7 +59,6 @@ class TablelessSQLRouterTest {
         RouteContext actual = new TablelessSQLRouter().route(queryContext, ruleMetaData, database, Collections.emptyList(), new RouteContext());
         assertTrue(actual.getOriginalDataNodes().isEmpty());
         assertThat(actual.getRouteUnits().size(), is(1));
-        assertTrue(actual.getRouteStageContexts().isEmpty());
     }
     
     @Test

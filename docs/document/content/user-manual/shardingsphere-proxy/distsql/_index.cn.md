@@ -64,7 +64,8 @@ Resource & Rule Utility Language，负责 SQL 解析、SQL 格式化、执行计
 
 ## 使用限制
 
-DistSQL 只能用于 ShardingSphere-Proxy，ShardingSphere-JDBC 暂不提供。
+DistSQL 可用于 ShardingSphere-Proxy 和 ShardingSphere-JDBC。
+ShardingSphere-JDBC 的执行方式和使用限制请参见 [Java API：执行 DistSQL](/cn/user-manual/shardingsphere-jdbc/java-api/)。
 
 ## 原理介绍
 

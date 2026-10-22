@@ -39,33 +39,21 @@ public final class TypedPropertyValue {
         if (boolean.class == key.getType() || Boolean.class == key.getType()) {
             return Boolean.valueOf(value);
         }
-        if (int.class == key.getType() || Integer.class == key.getType()) {
-            try {
+        try {
+            if (int.class == key.getType() || Integer.class == key.getType()) {
                 return Integer.valueOf(value);
-            } catch (final NumberFormatException ignored) {
-                throw new TypedPropertyValueException(key, value);
             }
-        }
-        if (long.class == key.getType() || Long.class == key.getType()) {
-            try {
+            if (long.class == key.getType() || Long.class == key.getType()) {
                 return Long.valueOf(value);
-            } catch (final NumberFormatException ignored) {
-                throw new TypedPropertyValueException(key, value);
             }
-        }
-        if (float.class == key.getType() || Float.class == key.getType()) {
-            try {
+            if (float.class == key.getType() || Float.class == key.getType()) {
                 return Float.valueOf(value);
-            } catch (final NumberFormatException ignored) {
-                throw new TypedPropertyValueException(key, value);
             }
-        }
-        if (double.class == key.getType() || Double.class == key.getType()) {
-            try {
+            if (double.class == key.getType() || Double.class == key.getType()) {
                 return Double.valueOf(value);
-            } catch (final NumberFormatException ignored) {
-                throw new TypedPropertyValueException(key, value);
             }
+        } catch (final NumberFormatException ignored) {
+            throw new TypedPropertyValueException(key, value);
         }
         if (Enum.class.isAssignableFrom(key.getType())) {
             return getEnumValue(key, value);

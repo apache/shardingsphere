@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
@@ -38,6 +40,9 @@ import java.util.Optional;
  * <p>The requested length in the packet is the size of the client buffer receiving the length-prefixed
  * segments, so the returned segment data is capped at the requested length minus the 2-byte segment length
  * prefix, and at 65535 bytes representable by that prefix.</p>
+ *
+ * <p>Like Firebird, the last data of the BLOB comes with the end of BLOB state when the client buffer still has room
+ * for another segment length prefix and at least one byte after it.</p>
  */
 @RequiredArgsConstructor
 public final class FirebirdGetBlobSegmentCommandExecutor implements CommandExecutor {
@@ -60,17 +65,21 @@ public final class FirebirdGetBlobSegmentCommandExecutor implements CommandExecu
     public Collection<DatabasePacket> execute() {
         int connectionId = connectionSession.getConnectionId();
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionId, packet.getBlobHandle());
+        ShardingSpherePreconditions.checkState(FirebirdBlobHandleGenerator.getInstance().isAllocated(connectionId, blobHandle), () -> new InvalidSegstrHandleException(blobHandle));
         Optional<BlobSegment> blobSegment = FirebirdBlobReadCache.getInstance().readSegment(connectionId, blobHandle, getMaxSegmentDataLength());
         if (!blobSegment.isPresent()) {
             return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(SEGMENT_STATE_EOF));
         }
         BlobSegment segment = blobSegment.get();
-        int segmentState = segment.isComplete() ? SEGMENT_STATE_COMPLETE : SEGMENT_STATE_PARTIAL;
-        FirebirdGetBlobSegmentResponsePacket responsePacket = new FirebirdGetBlobSegmentResponsePacket(segment.getData());
-        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(segmentState).setData(responsePacket));
+        int segmentState = segment.isComplete() ? getLastSegmentState(segment.getData().length) : SEGMENT_STATE_PARTIAL;
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(segmentState).setData(new FirebirdGetBlobSegmentResponsePacket(segment.getData())));
     }
     
     private int getMaxSegmentDataLength() {
         return Math.min(Math.max(packet.getSegmentLength() - SEGMENT_LENGTH_PREFIX_SIZE, 0), MAX_SEGMENT_DATA_LENGTH);
+    }
+    
+    private int getLastSegmentState(final int segmentDataLength) {
+        return packet.getSegmentLength() - SEGMENT_LENGTH_PREFIX_SIZE - segmentDataLength > SEGMENT_LENGTH_PREFIX_SIZE ? SEGMENT_STATE_EOF : SEGMENT_STATE_COMPLETE;
     }
 }

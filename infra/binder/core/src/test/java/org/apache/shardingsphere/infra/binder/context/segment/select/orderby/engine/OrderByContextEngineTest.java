@@ -95,6 +95,8 @@ class OrderByContextEngineTest {
         List<OrderByItem> items = (List<OrderByItem>) actualOrderByContext.getItems();
         assertThat(((ColumnOrderByItemSegment) items.get(0).getSegment()).getColumn(), is(columnProjectionSegment1.getColumn()));
         assertThat(((ColumnOrderByItemSegment) items.get(1).getSegment()).getColumn(), is(columnProjectionSegment2.getColumn()));
+        assertThat(items.get(0).getSegment().getNullsOrderType(databaseType), is(NullsOrderType.FIRST));
+        assertThat(items.get(1).getSegment().getNullsOrderType(databaseType), is(NullsOrderType.FIRST));
         assertTrue(actualOrderByContext.isGenerated());
     }
 }

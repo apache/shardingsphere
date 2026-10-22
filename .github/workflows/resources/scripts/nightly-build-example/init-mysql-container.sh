@@ -18,14 +18,14 @@
 set -e
 
 if [ $# -ne 1 ]; then
-    echo "Usage: $0 <init.sql path>"
+    echo "Usage: $0 <init.sql path>" >&2
     exit 1
 fi
 
 INIT_SQL_PATH=$1
 
 if [ ! -f "$INIT_SQL_PATH" ]; then
-    echo "Error: init.sql file not found at $INIT_SQL_PATH"
+    echo "Error: init.sql file not found at $INIT_SQL_PATH" >&2
     exit 1
 fi
 

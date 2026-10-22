@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -45,17 +46,15 @@ public final class FirebirdCommitTransactionCommandExecutor implements CommandEx
         int transactionHandle = packet.getTransactionId();
         validateTransactionHandle(transactionHandle);
         if (!connectionSession.isAutoCommit()) {
-            ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager());
             // TODO add rollback and return exception
-            transactionManager.commit();
+            new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager()).commit();
         }
         FirebirdTransactionIdGenerator.getInstance().closeTransaction(connectionSession.getConnectionId(), transactionHandle);
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
     
     private void validateTransactionHandle(final int transactionHandle) {
-        if (!FirebirdTransactionIdGenerator.getInstance().isTransactionActive(connectionSession.getConnectionId(), transactionHandle)) {
-            throw new InvalidTransactionHandleException(transactionHandle);
-        }
+        ShardingSpherePreconditions.checkState(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(connectionSession.getConnectionId(), transactionHandle),
+                () -> new InvalidTransactionHandleException(transactionHandle));
     }
 }

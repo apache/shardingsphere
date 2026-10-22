@@ -36,10 +36,9 @@ public final class FirebirdBatchSyncCommandPacket extends FirebirdCommandPacket 
     /**
      * Get length of packet.
      *
-     * @param payload Firebird packet payload
      * @return length of packet
      */
-    public static int getLength(final FirebirdPacketPayload payload) {
+    public static int getLength() {
         return 4;
     }
 }

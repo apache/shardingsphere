@@ -36,7 +36,7 @@ class PostgreSQLPipelineFreemarkerManagerTest {
     @Test
     void assertGetSQLByDefaultVersion() {
         String actual = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(Collections.singletonMap("databaseName", "foo_db"), "component/table/%s/get_database_id.ftl", 10, 0);
-        String expected = "\n" + "SELECT oid AS did, datlastsysoid FROM pg_catalog.pg_database WHERE datname = 'foo_db';" + "\n";
+        String expected = "\nSELECT oid AS did, datlastsysoid FROM pg_catalog.pg_database WHERE datname = 'foo_db';\n";
         assertThat(actual, is(expected));
     }
     

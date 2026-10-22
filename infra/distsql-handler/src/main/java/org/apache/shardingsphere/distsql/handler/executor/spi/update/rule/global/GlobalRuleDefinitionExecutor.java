@@ -32,14 +32,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 public interface GlobalRuleDefinitionExecutor<T extends GlobalRuleDefinitionStatement, R extends ShardingSphereRule> extends DistSQLExecutorRuleAware<R>, TypedSPI {
     
     /**
-     * Check before update.
-     *
-     * @param sqlStatement SQL statement
-     */
-    default void checkBeforeUpdate(final T sqlStatement) {
-    }
-    
-    /**
      * Build to be altered rule configuration.
      *
      * @param sqlStatement SQL statement

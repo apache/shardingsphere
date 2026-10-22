@@ -71,17 +71,20 @@ unreservedWord
     | C92 | CATALOG_NAME | CHARACTER_SET_CATALOG | CHARACTER_SET_NAME | CHARACTER_SET_SCHEMA
     | CLASS_ORIGIN | COBOL | COLLATION_CATALOG | COLLATION_NAME | COLLATION_SCHEMA
     | COLUMN_NAME | COMMAND_FUNCTION | COMMITTED | CONDITION_NUMBER | CONNECTION_NAME
+    | COMMENT
     | CONSTRAINT_CATALOG | CONSTRAINT_NAME | CONSTRAINT_SCHEMA | CURSOR_NAME
     | DATA | DATETIME_INTERVAL_CODE | DATETIME_INTERVAL_PRECISION | DYNAMIC_FUNCTION
     | FORTRAN
+    | KEY
     | LENGTH
     | MESSAGE_LENGTH | MESSAGE_OCTET_LENGTH | MESSAGE_TEXT | MORE92 | MUMPS
-    | NAME | NULLABLE | NUMBER
+    | NAME | NULLABLE | NULLS | NUMBER
     | ORDER
     | PASCAL | PLI
     | REPEATABLE | RETURNED_LENGTH | RETURNED_OCTET_LENGTH | RETURNED_SQLSTATE | ROW_COUNT
     | SCALE | SCHEMA_NAME | SERIALIZABLE | SERVER_NAME | SUBCLASS_ORIGIN
     | TABLE_NAME | TYPE
+    | TEXT
     | UNCOMMITTED | UNNAMED | VALUE | FIRSTNAME | MIDDLENAME | LASTNAME
     ;
 
@@ -244,8 +247,7 @@ comparisonOperator
     ;
 
 predicate
-    :
-    | bitExpr NOT? IN subquery
+    : bitExpr NOT? IN subquery
     | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
     | bitExpr NOT? BETWEEN bitExpr AND predicate
     | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)?
@@ -390,11 +392,11 @@ subquery
     ;
 
 orderByClause
-    : ORDER BY orderByItem (COMMA_ orderByItem)* limitClause?
+    : ORDER BY orderByItem (COMMA_ orderByItem)*
     ;
 
 orderByItem
-    : (numberLiterals | expr) (ASC | DESC)?
+    : (numberLiterals | expr) (ASC | DESC)? (NULLS FIRST | NULLS LAST)?
     ;
 
 limitClause

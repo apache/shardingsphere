@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.model;
 
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,5 +34,16 @@ class ShadowAlgorithmCleanupWorkflowRequestTest {
         ShadowAlgorithmCleanupWorkflowRequest actual = ShadowAlgorithmCleanupWorkflowRequest.merge(previous, current);
         assertThat(actual.getDatabase(), is("logic_db"));
         assertThat(actual.getAlgorithmName(), is("shadow_algorithm"));
+    }
+    
+    @Test
+    void assertMergeFromBaseRequest() {
+        WorkflowRequest previous = new WorkflowRequest();
+        previous.setDatabase("foo_db");
+        ShadowAlgorithmCleanupWorkflowRequest current = new ShadowAlgorithmCleanupWorkflowRequest();
+        current.setAlgorithmName("foo_algorithm");
+        ShadowAlgorithmCleanupWorkflowRequest actual = ShadowAlgorithmCleanupWorkflowRequest.merge(previous, current);
+        assertThat(actual.getDatabase(), is("foo_db"));
+        assertThat(actual.getAlgorithmName(), is("foo_algorithm"));
     }
 }

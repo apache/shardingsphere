@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.Postgre
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,9 +51,9 @@ public final class PostgreSQLColumnPropertiesAppender {
     
     private static final Pattern BRACKETS_PATTERN = Pattern.compile("(\\(\\d+\\))");
     
-    private static final Pattern SIGNED_NUMBER_WITH_GROUPING_PATTERN = Pattern.compile("^([+-])?\\s*[0-9][0-9,\\s]*$");
+    private static final Pattern SIGNED_NUMBER_WITH_GROUPING_PATTERN = Pattern.compile("^([+-])?\\s*\\d[\\d,\\s]*$");
     
-    private static final Pattern NON_DIGIT_PATTERN = Pattern.compile("[^0-9]");
+    private static final Pattern NON_DIGIT_PATTERN = Pattern.compile("\\D");
     
     private static final String ATT_OPTION_SPLIT = "=";
     
@@ -106,7 +107,7 @@ public final class PostgreSQLColumnPropertiesAppender {
     }
     
     private Collection<String> toCollection(final Array array) throws SQLException {
-        return Arrays.stream((String[]) array.getArray()).collect(Collectors.toList());
+        return Arrays.stream((String[]) array.getArray()).collect(Collectors.toCollection(ArrayList::new));
     }
     
     private Collection<Map<String, Object>> getColumnFromInherits(final Collection<String> collInherits) {
@@ -138,7 +139,7 @@ public final class PostgreSQLColumnPropertiesAppender {
     }
     
     private Collection<String> toCollectionAndSort(final Array editTypes) throws SQLException {
-        return Arrays.stream((String[]) editTypes.getArray()).sorted(String::compareTo).collect(Collectors.toList());
+        return Arrays.stream((String[]) editTypes.getArray()).sorted(String::compareTo).collect(Collectors.toCollection(ArrayList::new));
     }
     
     private void columnFormatter(final Map<String, Object> column, final Collection<String> editTypes) throws SQLException {
@@ -148,7 +149,7 @@ public final class PostgreSQLColumnPropertiesAppender {
         formatColumnVariables(column);
         templateExecutor.formatSecurityLabels(column);
         editTypes.add(column.get("cltype").toString());
-        column.put("edit_types", editTypes.stream().sorted().collect(Collectors.toList()));
+        column.put("edit_types", editTypes.stream().sorted().collect(Collectors.toCollection(ArrayList::new)));
         column.put("cltype", parseTypeName(column.get("cltype").toString()));
     }
     
@@ -192,7 +193,7 @@ public final class PostgreSQLColumnPropertiesAppender {
         if (null == column.get("attnum") || null == column.get("indkey")) {
             return;
         }
-        if (Arrays.stream(column.get("indkey").toString().split(" ")).collect(Collectors.toList()).contains(column.get("attnum").toString())) {
+        if (Arrays.stream(column.get("indkey").toString().split(" ")).toList().contains(column.get("attnum").toString())) {
             column.put("is_pk", true);
             column.put("is_primary_key", true);
         } else {
@@ -213,8 +214,7 @@ public final class PostgreSQLColumnPropertiesAppender {
             case NUMERIC:
                 setColumnPrecision(column, fullType);
                 break;
-            case DATE:
-            case VARCHAR:
+            case DATE, VARCHAR:
                 setColumnLength(column, fullType);
                 break;
             default:
@@ -323,7 +323,7 @@ public final class PostgreSQLColumnPropertiesAppender {
             return;
         }
         Collection<Map<String, String>> attOptions = new LinkedList<>();
-        Collection<String> columnVariables = Arrays.stream((String[]) ((Array) column.get("attoptions")).getArray()).collect(Collectors.toList());
+        Collection<String> columnVariables = Arrays.stream((String[]) ((Array) column.get("attoptions")).getArray()).toList();
         for (String each : columnVariables) {
             Map<String, String> columnVariable = new LinkedHashMap<>();
             columnVariable.put("name", each.substring(0, each.indexOf(ATT_OPTION_SPLIT)));

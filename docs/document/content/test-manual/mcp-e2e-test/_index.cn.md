@@ -51,23 +51,28 @@ docker build --platform "$(docker version --format '{{.Server.Os}}/{{.Server.Arc
 
 ## LLM Runtime
 
-MCP LLM lane 默认使用本地 Docker image 承载 OpenAI-compatible endpoint。
-构建前建议先查看 Docker 占用：
+按 [Docker 官方说明](https://docs.docker.com/ai/model-runner/get-started/)安装 Docker Model Runner。
+Docker Desktop 启用主机 TCP 访问：
 
 ```bash
-docker system df
+docker desktop enable model-runner --tcp 12434
 ```
 
-只校验本机架构选择，不下载模型：
+Docker Engine 安装并启动 CPU runner：
 
 ```bash
-sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh --dry-run
+MODEL_RUNNER_CONTROLLER_VERSION=v1.2.8@sha256:5bdc2bac71c1b70453f7dec5b527031bc6d8d99b8d1b2a10a8bcca073ae257a3 \
+MODEL_RUNNER_CONTROLLER_VARIANT=cpu docker model install-runner --gpu none
 ```
 
-构建本地 runtime image：
+拉取、配置并启动模型：
 
 ```bash
-sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh
+docker model pull ai/qwen3.5:9b-q4_K_XL
+docker model configure --context-size 8192 ai/qwen3.5:9b-q4_K_XL -- \
+  --jinja --reasoning-budget 0 --reasoning-format deepseek --chat-template-kwargs '{"enable_thinking":false}' \
+  --parallel 1 -b 256 -ub 128 --cache-ram 0 --no-cache-prompt
+docker model run --detach ai/qwen3.5:9b-q4_K_XL
 ```
 
 ## 运行 MCP Functionality E2E
@@ -106,10 +111,10 @@ CI conformance lane 将 `modelcontextprotocol/conformance` 固定在 commit `21a
 仅本地调试时，可以连接已经运行的 OpenAI-compatible endpoint：
 
 ```bash
-./mvnw -pl test/e2e/mcp verify -Pe2e.mcp.llm -De2e.run.type=DOCKER -Dit.test=LLMHttpE2EIT -Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:8080/v1
+./mvnw -pl test/e2e/mcp verify -Pe2e.mcp.llm -De2e.run.type=DOCKER -Dit.test=LLMHttpE2EIT -Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:12434/engines/v1
 ```
 
-External debug endpoint 不能作为 score-closing evidence。
+External debug endpoint 仅用于本地调试；正式 `LLMHttpE2EIT` 场景要求 Docker 和已经准备好的 Docker Model Runner。
 
 ## 产物
 
@@ -119,7 +124,7 @@ MCP LLM E2E artifact 写入：
 test/e2e/mcp/target/llm-e2e/
 ```
 
-每个场景都记录问题、实际答案、原始模型 response、MCP interaction trace、实时 tool definitions、runtime evidence 和 assertion report。Artifact 写入会脱敏 secret-shaped 值；如果发现未脱敏 secret pattern 或已知模型 API key，测试直接失败。
+每个场景都记录问题、实际答案、原始模型 response、MCP interaction trace、实时 tool definitions 和 assertion report。Artifact 写入会脱敏 secret-shaped 值；如果发现未脱敏 secret pattern 或已知模型 API key，测试直接失败。
 
 GitHub Actions 入口：
 

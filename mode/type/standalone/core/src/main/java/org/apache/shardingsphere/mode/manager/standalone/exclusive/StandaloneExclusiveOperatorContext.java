@@ -21,16 +21,16 @@ import org.apache.shardingsphere.mode.exclusive.ExclusiveLockHandle;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorContext;
 import org.apache.shardingsphere.mode.retry.RetryExecutor;
 
-import java.util.Collection;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Standalone lock context.
  */
 public final class StandaloneExclusiveOperatorContext implements ExclusiveOperatorContext {
     
-    private final Collection<String> exclusiveOperationKeys = new CopyOnWriteArraySet<>();
+    private final Set<String> exclusiveOperationKeys = ConcurrentHashMap.newKeySet();
     
     @Override
     public Optional<ExclusiveLockHandle> start(final String operationKey, final long timeoutMillis) {

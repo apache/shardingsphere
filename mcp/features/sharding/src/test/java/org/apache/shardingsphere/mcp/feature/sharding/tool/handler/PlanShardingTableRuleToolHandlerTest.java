@@ -47,7 +47,8 @@ class PlanShardingTableRuleToolHandlerTest {
                                 ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND,
                                 "CREATE SHARDING TABLE RULE `t_order`(DATANODES('ds_${0..1}.t_order_${0..1}'))")))) {
             WorkflowContextFixture fixture = ShardingWorkflowToolHandlerTestFixture.createWorkflowContextFixture();
-            MCPSuccessPayload actual = new PlanShardingTableRuleToolHandler().handle(fixture.requestContext(), Map.of(
+            PlanShardingTableRuleToolHandler handler = new PlanShardingTableRuleToolHandler();
+            MCPSuccessPayload actual = handler.handle(handler.getContextType().cast(fixture.requestContext()), Map.of(
                     "database", "logic_db",
                     "table", "t_order",
                     "column", "order_id",

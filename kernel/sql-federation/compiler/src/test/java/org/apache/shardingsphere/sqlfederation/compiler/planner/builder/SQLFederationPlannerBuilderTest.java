@@ -50,7 +50,7 @@ class SQLFederationPlannerBuilderTest {
         assertThat(actual.getRelTraitDefs(), hasItem(ConventionTraitDef.INSTANCE));
         assertThat(actual.getRelTraitDefs(), hasItem(RelCollationTraitDef.INSTANCE));
         assertTrue(actual.getRules().contains(EnumerableRules.ENUMERABLE_JOIN_RULE));
-        assertTrue(actual.getRules().stream().anyMatch(each -> each instanceof ConverterRule));
+        assertTrue(actual.getRules().stream().anyMatch(ConverterRule.class::isInstance));
     }
     
     @Test
