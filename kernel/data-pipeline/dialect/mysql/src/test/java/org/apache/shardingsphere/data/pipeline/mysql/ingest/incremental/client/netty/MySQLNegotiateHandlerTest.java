@@ -172,10 +172,12 @@ class MySQLNegotiateHandlerTest {
     }
     
     private String publicKey() {
-        return "-----BEGIN PUBLIC KEY-----\n"
-                + "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL8eq+i+GtqR4344d18PT9bjK5YfX/8r\n"
-                + "O8uRAZ3kKQEiC5EvhczHxVn9Yx8RJWb1x1oGf4bm/FYnGV8eK3opg+cCAwEAAQ==\n"
-                + "-----END PUBLIC KEY-----";
+        return """
+                -----BEGIN PUBLIC KEY-----
+                MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL8eq+i+GtqR4344d18PT9bjK5YfX/8r
+                O8uRAZ3kKQEiC5EvhczHxVn9Yx8RJWb1x1oGf4bm/FYnGV8eK3opg+cCAwEAAQ==
+                -----END PUBLIC KEY-----\
+                """;
     }
     
     private MySQLAuthSwitchResponsePacket captureAuthSwitchResponse() {

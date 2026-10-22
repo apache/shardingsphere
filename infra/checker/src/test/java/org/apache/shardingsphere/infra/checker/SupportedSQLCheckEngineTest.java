@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -63,7 +62,7 @@ class SupportedSQLCheckEngineTest {
         when(database.findDefaultSchema()).thenReturn(Optional.of(defaultSchema));
         new SupportedSQLCheckEngine().checkSQL(Collections.singleton(rule), sqlStatementContext, database);
         verify(supportedSQLChecker).check(rule, database, defaultSchema, sqlStatementContext);
-        verify(unsupportedSQLChecker, never()).check(eq(rule), eq(database), eq(defaultSchema), eq(sqlStatementContext));
+        verify(unsupportedSQLChecker, never()).check(rule, database, defaultSchema, sqlStatementContext);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

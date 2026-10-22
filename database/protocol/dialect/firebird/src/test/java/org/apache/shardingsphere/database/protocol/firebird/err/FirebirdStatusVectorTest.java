@@ -40,8 +40,7 @@ class FirebirdStatusVectorTest {
     
     @Test
     void assertWriteKeepsNativeCodeAndStripsStateSuffix() {
-        SQLException ex = new SQLException("prefix; detail [SQLState:42000]", "42000", ISCConstants.isc_arith_except);
-        FirebirdStatusVector vector = new FirebirdStatusVector(ex);
+        FirebirdStatusVector vector = new FirebirdStatusVector(new SQLException("prefix; detail [SQLState:42000]", "42000", ISCConstants.isc_arith_except));
         assertThat(vector.getGdsCode(), is(ISCConstants.isc_arith_except));
         assertThat(vector.getErrorMessage(), is("prefix; detail"));
         vector.write(payload);
@@ -56,10 +55,8 @@ class FirebirdStatusVectorTest {
     
     @Test
     void assertWriteRebuildsDuplicateKeyVectorAsSegments() {
-        String message = "violation of PRIMARY or UNIQUE KEY constraint \"INTEG_2\" on table \"MY_TABLE\";"
-                + " Problematic key value is (\"COL1\" = 1) [SQLState:23000, ISC error code:335544665]";
-        SQLException ex = new SQLException(message, "23000", ISCConstants.isc_unique_key_violation);
-        FirebirdStatusVector vector = new FirebirdStatusVector(ex);
+        String message = "violation of PRIMARY or UNIQUE KEY constraint \"INTEG_2\" on table \"MY_TABLE\"; Problematic key value is (\"COL1\" = 1) [SQLState:23000, ISC error code:335544665]";
+        FirebirdStatusVector vector = new FirebirdStatusVector(new SQLException(message, "23000", ISCConstants.isc_unique_key_violation));
         assertThat(vector.getGdsCode(), is(ISCConstants.isc_unique_key_violation));
         vector.write(payload);
         InOrder inOrder = inOrder(payload);
@@ -79,8 +76,7 @@ class FirebirdStatusVectorTest {
     
     @Test
     void assertWriteOmitsArgumentWhenMessageIsEmpty() {
-        SQLException ex = new SQLException("", "28000", ISCConstants.isc_login);
-        FirebirdStatusVector vector = new FirebirdStatusVector(ex);
+        FirebirdStatusVector vector = new FirebirdStatusVector(new SQLException("", "28000", ISCConstants.isc_login));
         vector.write(payload);
         InOrder inOrder = inOrder(payload);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
@@ -91,8 +87,7 @@ class FirebirdStatusVectorTest {
     
     @Test
     void assertWriteWithNullMessage() {
-        SQLException ex = new SQLException(null, "28000", ISCConstants.isc_login);
-        FirebirdStatusVector vector = new FirebirdStatusVector(ex);
+        FirebirdStatusVector vector = new FirebirdStatusVector(new SQLException(null, "28000", ISCConstants.isc_login));
         assertThat(vector.getErrorMessage(), is(""));
         vector.write(payload);
         InOrder inOrder = inOrder(payload);
@@ -104,8 +99,7 @@ class FirebirdStatusVectorTest {
     
     @Test
     void assertWriteUsesRandomCodeWhenErrorCodeIsLowerThanArithExcept() {
-        SQLException ex = new SQLException("plain", "00000", ISCConstants.isc_arith_except - 1);
-        FirebirdStatusVector vector = new FirebirdStatusVector(ex);
+        FirebirdStatusVector vector = new FirebirdStatusVector(new SQLException("plain", "00000", ISCConstants.isc_arith_except - 1));
         assertThat(vector.getGdsCode(), is(ISCConstants.isc_random));
         vector.write(payload);
         InOrder inOrder = inOrder(payload);
@@ -119,8 +113,7 @@ class FirebirdStatusVectorTest {
     
     @Test
     void assertWriteFailSafeUsesRandomCodeAndKeepsSqlStateForUnmatchedParameterizedTemplate() {
-        SQLException ex = new SQLException("totally unrelated text", "23000", ISCConstants.isc_unique_key_violation);
-        FirebirdStatusVector vector = new FirebirdStatusVector(ex);
+        FirebirdStatusVector vector = new FirebirdStatusVector(new SQLException("totally unrelated text", "23000", ISCConstants.isc_unique_key_violation));
         assertThat(vector.getGdsCode(), is(ISCConstants.isc_random));
         vector.write(payload);
         InOrder inOrder = inOrder(payload);

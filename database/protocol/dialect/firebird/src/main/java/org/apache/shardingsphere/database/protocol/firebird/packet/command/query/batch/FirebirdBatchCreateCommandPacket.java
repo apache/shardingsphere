@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 /**
  * Firebird create batch command packet.
@@ -41,9 +42,7 @@ public final class FirebirdBatchCreateCommandPacket extends FirebirdCommandPacke
         payload.skipReserved(4);
         statementHandle = payload.readInt4();
         batchBlr = payload.readBuffer();
-        if (!batchBlr.isReadable()) {
-            throw new DatabaseProtocolException("Missing required format info in createBatch()");
-        }
+        ShardingSpherePreconditions.checkState(batchBlr.isReadable(), () -> new DatabaseProtocolException("Missing required format info in createBatch()"));
         batchMessageLength = payload.readInt4Unsigned();
         batchParametersBuffer = payload.readBuffer();
     }

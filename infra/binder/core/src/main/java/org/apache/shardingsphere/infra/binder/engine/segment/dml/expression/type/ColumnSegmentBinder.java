@@ -100,7 +100,6 @@ public final class ColumnSegmentBinder {
             return segment;
         }
         ColumnSegment columnSegment = createNestedObjectColumnSegment(segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts).orElse(segment);
-        ColumnSegment result = copy(columnSegment);
         Collection<TableSegmentBinderContext> tableSegmentBinderContexts =
                 getTableSegmentBinderContexts(columnSegment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         ColumnSegmentInfo columnSegmentInfo = getColumnSegmentInfo(columnSegment, parentSegmentType, tableSegmentBinderContexts, outerTableBinderContexts, binderContext);
@@ -110,6 +109,7 @@ public final class ColumnSegmentBinder {
         }
         ShardingSpherePreconditions.checkState(inputColumnSegment.isPresent() || isSkipColumnBind(tableSegmentBinderContexts, outerTableBinderContexts.values()),
                 () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
+        ColumnSegment result = copy(columnSegment);
         inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
         columnSegment.getOwner().ifPresent(optional -> result.setOwner(bindOwnerTableContext(optional, inputColumnSegment.orElse(null))));
         result.setColumnBoundInfo(createColumnSegmentBoundInfo(columnSegment, inputColumnSegment.orElse(null), columnSegmentInfo.getTableSourceType()));

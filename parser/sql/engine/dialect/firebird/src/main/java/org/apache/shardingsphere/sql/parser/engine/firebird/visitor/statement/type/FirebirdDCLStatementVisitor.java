@@ -44,14 +44,12 @@ public final class FirebirdDCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        return new GrantStatement(getDatabaseType(),
-                null == ctx.privilegeClause() ? Collections.emptyList() : Collections.singleton((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName())));
+        return new GrantStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName())));
     }
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        return new RevokeStatement(getDatabaseType(),
-                null == ctx.privilegeClause() ? Collections.emptyList() : Collections.singleton((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName())));
+        return new RevokeStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName())));
     }
     
     @Override
