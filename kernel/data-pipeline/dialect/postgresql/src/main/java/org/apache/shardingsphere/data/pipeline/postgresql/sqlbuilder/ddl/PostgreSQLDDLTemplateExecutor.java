@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Abstract ddl adapter for PostgreSQL.
@@ -73,7 +72,7 @@ public final class PostgreSQLDDLTemplateExecutor {
         Collection<Map<String, Object>> result = new LinkedList<>();
         while (resultSet.next()) {
             int columnCount = metaData.getColumnCount();
-            Map<String, Object> row = new LinkedHashMap<>(columnCount);
+            Map<String, Object> row = LinkedHashMap.newLinkedHashMap(columnCount);
             for (int i = 1; i <= columnCount; i++) {
                 row.put(metaData.getColumnName(i), resultSet.getObject(i));
             }
@@ -103,7 +102,7 @@ public final class PostgreSQLDDLTemplateExecutor {
     private Map<String, Object> getSingleRow(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         int columnCount = metaData.getColumnCount();
-        Map<String, Object> result = new LinkedHashMap<>(columnCount);
+        Map<String, Object> result = LinkedHashMap.newLinkedHashMap(columnCount);
         if (resultSet.next()) {
             for (int i = 1; i <= columnCount; i++) {
                 result.put(metaData.getColumnName(i), resultSet.getObject(i));
@@ -123,7 +122,7 @@ public final class PostgreSQLDDLTemplateExecutor {
             return;
         }
         Collection<Map<String, String>> formatLabels = new LinkedList<>();
-        Collection<String> securityLabels = Arrays.stream((String[]) ((Array) data.get("seclabels")).getArray()).collect(Collectors.toList());
+        Collection<String> securityLabels = Arrays.stream((String[]) ((Array) data.get("seclabels")).getArray()).toList();
         for (String each : securityLabels) {
             Map<String, String> securityLabel = new LinkedHashMap<>(2, 1F);
             securityLabel.put("provider", each.substring(0, each.indexOf(SECURITY_LABEL_SPLIT)));

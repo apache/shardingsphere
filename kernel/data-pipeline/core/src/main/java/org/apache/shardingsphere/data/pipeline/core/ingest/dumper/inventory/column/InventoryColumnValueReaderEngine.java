@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.col
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
@@ -67,28 +68,20 @@ public final class InventoryColumnValueReaderEngine {
             case Types.TINYINT:
                 if (isSigned(metaData, columnIndex)) {
                     return resultSet.getByte(columnIndex);
-                } else {
-                    return resultSet.getShort(columnIndex);
                 }
+                return resultSet.getShort(columnIndex);
             case Types.SMALLINT:
                 if (isSigned(metaData, columnIndex)) {
                     return resultSet.getShort(columnIndex);
-                } else {
-                    return resultSet.getInt(columnIndex);
                 }
+                return resultSet.getInt(columnIndex);
             case Types.INTEGER:
                 if (isSigned(metaData, columnIndex)) {
                     return resultSet.getInt(columnIndex);
-                } else {
-                    return resultSet.getLong(columnIndex);
                 }
+                return resultSet.getLong(columnIndex);
             case Types.BIGINT:
-                if (isSigned(metaData, columnIndex)) {
-                    return resultSet.getLong(columnIndex);
-                } else {
-                    BigDecimal decimal = resultSet.getBigDecimal(columnIndex);
-                    return null == decimal ? null : decimal.toBigInteger();
-                }
+                return readBigIntValue(resultSet, metaData, columnIndex);
             case Types.NUMERIC:
             case Types.DECIMAL:
                 return resultSet.getBigDecimal(columnIndex);
@@ -132,5 +125,14 @@ public final class InventoryColumnValueReaderEngine {
     
     private boolean isSigned(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
         return metaData.isSigned(columnIndex);
+    }
+    
+    @Nullable
+    private Object readBigIntValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        if (isSigned(metaData, columnIndex)) {
+            return resultSet.getLong(columnIndex);
+        }
+        BigDecimal result = resultSet.getBigDecimal(columnIndex);
+        return null == result ? null : result.toBigInteger();
     }
 }

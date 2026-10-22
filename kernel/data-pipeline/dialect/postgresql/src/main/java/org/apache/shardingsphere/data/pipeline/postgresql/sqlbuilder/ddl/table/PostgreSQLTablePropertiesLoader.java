@@ -118,7 +118,7 @@ public final class PostgreSQLTablePropertiesLoader {
     }
     
     private boolean anyIsTrue(final Collection<Object> collection) {
-        return collection.stream().anyMatch(each -> each instanceof Boolean && (Boolean) each);
+        return collection.stream().anyMatch(each -> each instanceof Boolean value && value);
     }
     
     private void updateRlspolicySupport(final Map<String, Object> context) {

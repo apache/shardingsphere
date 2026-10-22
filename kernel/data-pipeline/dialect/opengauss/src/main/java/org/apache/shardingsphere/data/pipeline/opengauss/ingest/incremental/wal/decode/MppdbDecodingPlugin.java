@@ -192,9 +192,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
             return decodeString(data.substring(1));
         }
         switch (columnType) {
-            case "tinyint":
-            case "smallint":
-            case "integer":
+            case "tinyint", "smallint", "integer":
                 return Integer.parseInt(data);
             case "bigint":
                 return Long.parseLong(data);
@@ -204,8 +202,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
                 return Double.parseDouble(data);
             case "boolean":
                 return Boolean.parseBoolean(data);
-            case "time without time zone":
-            case "time with time zone":
+            case "time without time zone", "time with time zone":
                 try {
                     return timestampUtils.toTime(null, decodeString(data));
                 } catch (final SQLException ex) {
@@ -213,35 +210,20 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
                 }
             case "date":
                 return Date.valueOf(decodeString(data));
-            case "timestamp without time zone":
-            case "timestamp with time zone":
-            case "smalldatetime":
+            case "timestamp without time zone", "timestamp with time zone", "smalldatetime":
                 try {
                     return timestampUtils.toTimestamp(null, decodeString(data));
                 } catch (final SQLException ex) {
                     throw new DecodingException(ex);
                 }
-            case "bytea":
-            case "blob":
+            case "bytea", "blob":
                 return decodeBytea(data);
-            case "raw":
-            case "reltime":
-            case "int4range":
-            case "int8range":
-            case "numrange":
-            case "tsrange":
-            case "tstzrange":
-            case "daterange":
+            case "raw", "reltime", "int4range", "int8range", "numrange", "tsrange", "tstzrange", "daterange":
                 return decodePgObject(data, columnType);
             case "money":
                 return decodeMoney(data);
             case "interval":
                 return decodeInterval(data);
-            case "character varying":
-            case "text":
-            case "character":
-            case "nvarchar2":
-            case "tsquery":
             default:
                 return decodeString(data).replace("''", "'");
         }
