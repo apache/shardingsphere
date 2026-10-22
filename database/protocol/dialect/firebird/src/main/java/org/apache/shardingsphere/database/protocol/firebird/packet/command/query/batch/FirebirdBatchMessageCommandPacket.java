@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import lombok.Getter;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.nio.charset.Charset;
@@ -37,6 +39,8 @@ import java.util.List;
 public final class FirebirdBatchMessageCommandPacket extends FirebirdCommandPacket {
     
     private static final int FIXED_BATCH_MSG_HEADER_LENGTH = 12;
+    
+    private static final int OCTETS_CHARACTER_SET_ID = 1;
     
     private final int statementHandle;
     
@@ -147,11 +151,15 @@ public final class FirebirdBatchMessageCommandPacket extends FirebirdCommandPack
         return result;
     }
     
+    @HighFrequencyInvocation
     private static Object readValue(final FirebirdPacketPayload payload, final FirebirdBatchColumnDescriptor descriptor) {
         if (FirebirdBinaryColumnType.TEXT == descriptor.getType() || FirebirdBinaryColumnType.LEGACY_TEXT == descriptor.getType()) {
-            String result = payload.readBytes(descriptor.getLength()).toString(payload.getCharset());
+            ByteBuf value = payload.readBytes(descriptor.getLength());
             payload.skipPadding(descriptor.getLength());
-            return result;
+            return OCTETS_CHARACTER_SET_ID == descriptor.getScale() ? ByteBufUtil.getBytes(value) : value.toString(payload.getCharset());
+        }
+        if (FirebirdBinaryColumnType.VARYING == descriptor.getType() && OCTETS_CHARACTER_SET_ID == descriptor.getScale()) {
+            return ByteBufUtil.getBytes(payload.readBuffer());
         }
         return FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(descriptor.getType()).read(payload);
     }
