@@ -80,8 +80,7 @@ class ClusterExclusiveOperatorContextTest {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         try {
             Future<Optional<ExclusiveLockHandle>> future = executorService.submit(() -> context.start("op", 500L));
-            TimeUnit.MILLISECONDS.sleep(100L);
-            assertFalse(future.isDone());
+            assertThrows(TimeoutException.class, () -> future.get(100L, TimeUnit.MILLISECONDS));
             assertThat(sharedState.tryLockCallCount.get(), is(1));
             lockHandle.close();
             Optional<ExclusiveLockHandle> actual = future.get(1L, TimeUnit.SECONDS);

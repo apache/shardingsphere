@@ -22,6 +22,8 @@ import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.Postgre
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -281,32 +283,13 @@ class PostgreSQLColumnPropertiesAppenderTest {
         assertNull(singleColumn.get("seqmax"));
     }
     
-    @Test
-    void assertNormalizeSequenceValuesRemovesInvalidFormat() {
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {", ,", "+-123", "999999999999999999999999"})
+    void assertNormalizeSequenceValuesRemovesInvalidValues(final String value) {
         Map<String, Object> column = createTextColumnWithName("id");
         column.put("attidentity", "a");
         column.put("colconstype", "i");
-        column.put("seqmax", ", ,");
-        Map<String, Object> singleColumn = appendWithSingleColumn(column);
-        assertFalse(singleColumn.containsKey("seqmax"));
-    }
-    
-    @Test
-    void assertNormalizeSequenceValuesRemovesMultipleSigns() {
-        Map<String, Object> column = createTextColumnWithName("id");
-        column.put("attidentity", "a");
-        column.put("colconstype", "i");
-        column.put("seqmax", "+-123");
-        Map<String, Object> singleColumn = appendWithSingleColumn(column);
-        assertFalse(singleColumn.containsKey("seqmax"));
-    }
-    
-    @Test
-    void assertNormalizeSequenceValuesRemovesOverflowValue() {
-        Map<String, Object> column = createTextColumnWithName("id");
-        column.put("attidentity", "a");
-        column.put("colconstype", "i");
-        column.put("seqmax", "999999999999999999999999");
+        column.put("seqmax", value);
         Map<String, Object> singleColumn = appendWithSingleColumn(column);
         assertFalse(singleColumn.containsKey("seqmax"));
     }

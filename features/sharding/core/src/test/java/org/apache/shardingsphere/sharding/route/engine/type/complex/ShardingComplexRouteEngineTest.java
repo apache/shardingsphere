@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
@@ -84,7 +85,7 @@ class ShardingComplexRouteEngineTest {
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeUnits.size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
-        Map<String, String> actualTableNames = routeUnits.get(0).getTableMappers().stream().collect(Collectors.toMap(each -> each.getLogicName(), each -> each.getActualName()));
+        Map<String, String> actualTableNames = routeUnits.get(0).getTableMappers().stream().collect(Collectors.toMap(RouteMapper::getLogicName, RouteMapper::getActualName));
         assertThat(actualTableNames.size(), is(2));
         assertThat(actualTableNames.get("t_order"), is("t_order_1"));
         assertThat(actualTableNames.get("t_user"), is("t_user_1"));

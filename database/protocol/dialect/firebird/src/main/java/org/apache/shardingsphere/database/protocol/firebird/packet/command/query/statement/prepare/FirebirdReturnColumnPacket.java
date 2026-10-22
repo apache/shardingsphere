@@ -63,28 +63,21 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
                     FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.SQLDA_SEQ, index, payload);
                     break;
                 case TYPE:
-                    int type = columnType.getValue() + 1;
-                    FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.TYPE, type, payload);
+                    FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.TYPE, columnType.getValue() + 1, payload);
                     break;
                 case SUB_TYPE:
-                    int subType = columnType.getSubtype();
-                    if (columnType == FirebirdBinaryColumnType.BLOB && null != blobSubType) {
-                        subType = blobSubType;
-                    }
+                    int subType = FirebirdBinaryColumnType.BLOB == columnType && null != blobSubType ? blobSubType : columnType.getSubtype();
                     FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.SUB_TYPE, subType, payload);
                     break;
                 case SCALE:
                     FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.SCALE, 0, payload);
                     break;
                 case LENGTH:
-                    if (columnType == FirebirdBinaryColumnType.VARYING
-                            || columnType == FirebirdBinaryColumnType.LEGACY_VARYING
-                            || columnType == FirebirdBinaryColumnType.TEXT
-                            || columnType == FirebirdBinaryColumnType.LEGACY_TEXT) {
+                    if (FirebirdBinaryColumnType.VARYING == columnType || FirebirdBinaryColumnType.LEGACY_VARYING == columnType || FirebirdBinaryColumnType.TEXT == columnType
+                            || FirebirdBinaryColumnType.LEGACY_TEXT == columnType) {
                         FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.LENGTH, columnLength, payload);
                     } else {
-                        int length = columnType.getLength();
-                        FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.LENGTH, length, payload);
+                        FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.LENGTH, columnType.getLength(), payload);
                     }
                     break;
                 case FIELD:

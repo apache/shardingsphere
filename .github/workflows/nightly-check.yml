@@ -78,7 +78,21 @@ jobs:
             continue
           fi
           echo "Checking $file"
-          markdown-link-check -c .github/workflows/resources/linkcheck/markdown-link-check.json -q "$file" || result=1
+          for retry_delay in 0 10 30; do
+            if [[ $retry_delay -gt 0 ]]; then
+              echo "Retrying $file after ${retry_delay}s due to HTTP 503"
+              sleep "$retry_delay"
+            fi
+            if output=$(markdown-link-check -c .github/workflows/resources/linkcheck/markdown-link-check.json -q "$file" 2>&1); then
+              printf '%s\n' "$output"
+              break
+            fi
+            printf '%s\n' "$output"
+            if [[ $retry_delay -eq 30 ]] || ! grep -q ' → Status: 503$' <<< "$output"; then
+              result=1
+              break
+            fi
+          done
           done
           exit "$result"
 
