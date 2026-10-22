@@ -606,10 +606,14 @@ public final class ShardingTableRuleStatementChecker {
     
     private static DataNodeInfo createTableDataNode(final String logicTable, final Collection<DataNode> actualDataNodes) {
         String tableName = actualDataNodes.iterator().next().getTableName();
-        String prefix = tableName.startsWith(logicTable) ? logicTable + ShardingTableConstants.DATA_NODE_SUFFIX_PATTERN.matcher(tableName.substring(logicTable.length())).replaceAll("")
-                : ShardingTableConstants.DATA_NODE_SUFFIX_PATTERN.matcher(tableName).replaceAll("");
+        String prefix = tableName.equalsIgnoreCase(logicTable) ? tableName : getTableDataNodePrefix(logicTable, tableName);
         int suffixMinLength = actualDataNodes.stream().map(each -> each.getTableName().length() - prefix.length()).min(Comparator.comparing(Integer::intValue)).orElse(1);
         return new DataNodeInfo(prefix, suffixMinLength, ShardingTableConstants.DEFAULT_PADDING_CHAR);
+    }
+    
+    private static String getTableDataNodePrefix(final String logicTable, final String tableName) {
+        return tableName.startsWith(logicTable) ? logicTable + ShardingTableConstants.DATA_NODE_SUFFIX_PATTERN.matcher(tableName.substring(logicTable.length())).replaceAll("")
+                : ShardingTableConstants.DATA_NODE_SUFFIX_PATTERN.matcher(tableName).replaceAll("");
     }
     
     /**

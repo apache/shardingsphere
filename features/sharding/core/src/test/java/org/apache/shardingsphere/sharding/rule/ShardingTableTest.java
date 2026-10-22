@@ -88,6 +88,14 @@ class ShardingTableTest {
         assertThat(actual.getTableDataNode().getSuffixMinLength(), is(3));
     }
     
+    @Test
+    void assertGetTableDataNodeWithoutTableShardingSuffix() {
+        ShardingTableRuleConfiguration config = new ShardingTableRuleConfiguration("t_order", "ds_0.T_ORDER");
+        ShardingTable actual = new ShardingTable(config, Collections.singleton("ds_0"), null);
+        assertThat(actual.getTableDataNode().getPrefix(), is("T_ORDER"));
+        assertThat(actual.getTableDataNode().getSuffixMinLength(), is(0));
+    }
+    
     private ShardingTable createShardingTable() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}");
         shardingTableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
