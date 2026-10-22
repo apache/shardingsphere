@@ -54,17 +54,11 @@ public final class MySQLMCPDialectSQLExceptionClassifier implements MCPDialectSQ
             return Optional.empty();
         }
         switch (cause.getErrorCode()) {
-            case ER_DBACCESS_DENIED_ERROR:
-            case ER_TABLEACCESS_DENIED_ERROR:
-            case ER_COLUMNACCESS_DENIED_ERROR:
-            case ER_SPECIFIC_ACCESS_DENIED_ERROR:
-            case ER_PROCACCESS_DENIED_ERROR:
+            case ER_DBACCESS_DENIED_ERROR, ER_TABLEACCESS_DENIED_ERROR, ER_COLUMNACCESS_DENIED_ERROR, ER_SPECIFIC_ACCESS_DENIED_ERROR, ER_PROCACCESS_DENIED_ERROR:
                 return Optional.of(MCPJDBCErrorCategory.AUTHORIZATION);
-            case ER_BAD_DB_ERROR:
-            case ER_SP_DOES_NOT_EXIST:
+            case ER_BAD_DB_ERROR, ER_SP_DOES_NOT_EXIST:
                 return Optional.of(MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE);
-            case ER_PARSE_ERROR:
-            case ER_SYNTAX_ERROR:
+            case ER_PARSE_ERROR, ER_SYNTAX_ERROR:
                 return Optional.of(MCPJDBCErrorCategory.SYNTAX);
             default:
                 return Optional.of(MCPJDBCErrorCategory.QUERY_FAILED);

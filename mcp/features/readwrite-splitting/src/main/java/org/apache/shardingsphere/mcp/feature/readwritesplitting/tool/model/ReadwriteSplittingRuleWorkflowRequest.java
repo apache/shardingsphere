@@ -82,7 +82,12 @@ public final class ReadwriteSplittingRuleWorkflowRequest extends WorkflowRequest
             return;
         }
         this.readStorageUnits.clear();
-        readStorageUnits.stream().map(each -> null == each ? "" : each.trim()).filter(each -> !each.isEmpty()).forEach(this.readStorageUnits::add);
+        for (String each : readStorageUnits) {
+            String normalizedValue = null == each ? "" : each.trim();
+            if (!normalizedValue.isEmpty()) {
+                this.readStorageUnits.add(normalizedValue);
+            }
+        }
     }
     
     /**
@@ -174,8 +179,8 @@ public final class ReadwriteSplittingRuleWorkflowRequest extends WorkflowRequest
         if (null == previousRequest) {
             return new ReadwriteSplittingRuleWorkflowRequest();
         }
-        if (previousRequest instanceof ReadwriteSplittingRuleWorkflowRequest) {
-            return ((ReadwriteSplittingRuleWorkflowRequest) previousRequest).copy();
+        if (previousRequest instanceof ReadwriteSplittingRuleWorkflowRequest request) {
+            return request.copy();
         }
         ReadwriteSplittingRuleWorkflowRequest result = new ReadwriteSplittingRuleWorkflowRequest();
         copyFieldsTo(previousRequest, result);

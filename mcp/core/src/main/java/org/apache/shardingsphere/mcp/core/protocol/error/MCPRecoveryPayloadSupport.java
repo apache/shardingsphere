@@ -87,10 +87,14 @@ final class MCPRecoveryPayloadSupport {
     }
     
     private static boolean isRuntimeRecoveryCategory(final String category) {
-        return RuntimeDatabaseConnectionException.CATEGORY_MISSING_JDBC_DRIVER.equals(category) || RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED.equals(category)
-                || RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED.equals(category)
-                || RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT.equals(category) || RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION.equals(category)
-                || RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE.equals(category)
-                || RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED.equals(category);
+        switch (category) {
+            case RuntimeDatabaseConnectionException.CATEGORY_MISSING_JDBC_DRIVER, RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED,
+                    RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED, RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT,
+                    RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION, RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE,
+                    RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED:
+                return true;
+            default:
+                return false;
+        }
     }
 }
