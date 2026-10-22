@@ -35,7 +35,7 @@ from collections import Counter
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
 
-from review_common import (
+from resolve_review_scope import (
     categorize, compare_github_files, get_repo_root, parse_name_status, resolve_candidate_changes, run_git,
 )
 

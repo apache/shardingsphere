@@ -33,10 +33,10 @@ SCRIPTS_DIR = Path(__file__).resolve().parents[1] / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
-import review_ledger as ledger
+import manage_review_ledger as ledger
 
 
-class ReviewLedgerTest(unittest.TestCase):
+class ManageReviewLedgerTest(unittest.TestCase):
 
     def setUp(self):
         temporary = tempfile.TemporaryDirectory()
@@ -467,7 +467,7 @@ class ReviewLedgerTest(unittest.TestCase):
         self.create_valid_ledger()
         content = self.ledger_file.read_bytes()
         output, error = StringIO(), StringIO()
-        arguments = ["review_ledger.py", "cleanup", "--ledger", str(self.ledger_file)]
+        arguments = ["manage_review_ledger.py", "cleanup", "--ledger", str(self.ledger_file)]
         with patch.object(sys, "argv", arguments), patch.object(Path, "unlink", side_effect=PermissionError("cleanup denied")), \
                 redirect_stdout(output), redirect_stderr(error):
             self.assertEqual(1, ledger.main())
@@ -541,7 +541,7 @@ class ReviewLedgerTest(unittest.TestCase):
                 actual[section][key] = value
                 self.ledger_file.write_text(json.dumps(actual), encoding="utf-8")
                 output = StringIO()
-                with patch.object(sys, "argv", ["review_ledger.py", "validate", "--ledger", str(self.ledger_file)]), redirect_stderr(output):
+                with patch.object(sys, "argv", ["manage_review_ledger.py", "validate", "--ledger", str(self.ledger_file)]), redirect_stderr(output):
                     self.assertEqual(1, ledger.main())
                 self.assertEqual(f"error: Malformed review coverage ledger {diagnostic}\n", output.getvalue())
 
@@ -1265,7 +1265,7 @@ class ReviewLedgerTest(unittest.TestCase):
         original_files = {path: path.read_bytes() for path in self.private_root.rglob("*.json")}
         for command in (["validate-session", "--session", str(session_file)],
                         ["validate", "--ledger", json.loads(Path(actual["reviews"][0]["path"]).read_text(encoding="utf-8"))["ledger"]]):
-            with self.subTest(command=command[0]), patch.object(sys, "argv", ["review_ledger.py", *command]), redirect_stdout(StringIO()):
+            with self.subTest(command=command[0]), patch.object(sys, "argv", ["manage_review_ledger.py", *command]), redirect_stdout(StringIO()):
                 self.assertEqual(0, ledger.main())
         self.assertEqual(original_files, {path: path.read_bytes() for path in original_files})
         original = json.loads(json.dumps(actual))
@@ -1289,7 +1289,7 @@ class ReviewLedgerTest(unittest.TestCase):
                 else:
                     actual[invalid] = []
                 session_file.write_text(json.dumps(actual), encoding="utf-8")
-                with patch.object(sys, "argv", ["review_ledger.py", "validate-session", "--session", str(session_file)]), \
+                with patch.object(sys, "argv", ["manage_review_ledger.py", "validate-session", "--session", str(session_file)]), \
                         redirect_stdout(StringIO()), redirect_stderr(StringIO()):
                     self.assertEqual(1, ledger.main())
 
@@ -1341,7 +1341,7 @@ class ReviewLedgerTest(unittest.TestCase):
         session_file = self.private_root / "rejected-session.json"
         session_file.write_text(json.dumps(session), encoding="utf-8")
         output = StringIO()
-        with patch.object(sys, "argv", ["review_ledger.py", "validate-session", "--session", str(session_file)]), \
+        with patch.object(sys, "argv", ["manage_review_ledger.py", "validate-session", "--session", str(session_file)]), \
                 redirect_stdout(output), redirect_stderr(StringIO()):
             self.assertEqual(1, ledger.main())
         self.assertNotIn("OK:", output.getvalue())
