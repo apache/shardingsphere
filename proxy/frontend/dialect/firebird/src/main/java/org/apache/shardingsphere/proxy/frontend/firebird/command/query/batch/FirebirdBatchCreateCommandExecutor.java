@@ -67,9 +67,9 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
     
     @Override
     public Collection<DatabasePacket> execute() {
-        int connectionId = connectionSession.getConnectionId();
         int statementId = packet.getStatementHandle();
         ShardingSpherePreconditions.checkNotNull(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId), () -> new InvalidStatementHandleException(statementId));
+        int connectionId = connectionSession.getConnectionId();
         ShardingSpherePreconditions.checkState(null == FirebirdBatchStatementManager.getInstance().getBatchStatement(connectionId, statementId), () -> new BatchAlreadyOpenedException(statementId));
         ByteBuf batchBlr = packet.getBatchBlr();
         FirebirdParseBatchBlr messageFormat = FirebirdParseBatchBlr.parse(batchBlr, batchBlr.readableBytes());
