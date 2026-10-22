@@ -20,10 +20,8 @@ package org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.ReplayedSessionVariableProvider;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
@@ -33,6 +31,7 @@ import org.mockito.MockedStatic;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
@@ -45,19 +44,14 @@ class FirebirdSetVariableAdminExecutorTest {
     @Test
     void assertExecute() {
         SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "key"), "value")));
-        FirebirdSetVariableAdminExecutor executor = new FirebirdSetVariableAdminExecutor(setStatement);
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
-        RequiredSessionVariableRecorder requiredSessionVariableRecorder = mock(RequiredSessionVariableRecorder.class);
-        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
-        when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(requiredSessionVariableRecorder);
-        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             ReplayedSessionVariableProvider replayedSessionVariableProvider = mock(ReplayedSessionVariableProvider.class);
             when(replayedSessionVariableProvider.isNeedToReplay("key")).thenReturn(true);
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(ReplayedSessionVariableProvider.class, databaseType)).thenReturn(Optional.of(replayedSessionVariableProvider));
-            executor.execute(connectionSession, mock());
-            verify(requiredSessionVariableRecorder).setVariable("key", "value");
-            verify(databaseConnectionManager).markSessionVariablesDirty();
+            new FirebirdSetVariableAdminExecutor(setStatement).execute(connectionSession, mock());
+            verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("key", "value");
+            verify(connectionSession.getDatabaseConnectionManager()).markSessionVariablesDirty();
         }
     }
 }
