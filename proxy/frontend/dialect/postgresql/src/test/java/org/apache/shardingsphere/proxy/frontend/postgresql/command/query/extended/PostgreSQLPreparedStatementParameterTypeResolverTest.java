@@ -102,6 +102,15 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         assertThat(actual, is(Arrays.asList(-1, 2L, 3L, 0L, 5L)));
     }
     
+    private PostgreSQLServerPreparedStatement createBoundPreparedStatement(final String sql, final List<Integer> actualParameterMarkerIndexes) {
+        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(contextManager.getMetaDataContexts().getMetaData(), "postgres", new HintValueContext()).bind(sqlParserEngine.parse(sql, false));
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.nCopies(actualParameterMarkerIndexes.size(), PostgreSQLBinaryColumnType.UNSPECIFIED));
+        return new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, actualParameterMarkerIndexes);
+    }
+    
     @Test
     void assertResolveUnspecifiedParameterValuesWithManyOrConditions() {
         int orConditionCount = 16;
@@ -161,6 +170,31 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         assertThat(actual.get(0), sameInstance(expected));
     }
     
+    @Test
+    void assertResolveUnspecifiedParameterValuesWithInLiteralValue() {
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT id FROM foo_tbl WHERE id IN (?, 1)", Collections.singletonList(0));
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement,
+                Collections.singletonList(new PostgreSQLTypeUnspecifiedSQLParameter("010")));
+        assertThat(actual, is(Collections.singletonList(10)));
+    }
+    
+    @Test
+    void assertResolveUnspecifiedParameterValuesWithInTypeCastValue() {
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT id FROM foo_tbl WHERE id IN (?, 1::oid)", Collections.singletonList(0));
+        PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("010");
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Collections.singletonList(expected));
+        assertThat(actual.get(0), sameInstance(expected));
+    }
+    
+    @Test
+    void assertResolveUnspecifiedParameterValuesWithDerivedColumn() {
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT x FROM (SELECT CASE WHEN true THEN id ELSE k END AS x FROM foo_tbl) AS t WHERE x=?",
+                Collections.singletonList(0));
+        PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("010");
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Collections.singletonList(expected));
+        assertThat(actual.get(0), sameInstance(expected));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("resolveUnspecifiedParameterValuesWithUnresolvedTextArguments")
     void assertResolveUnspecifiedParameterValuesWithUnresolvedText(final String name, final String text) {
@@ -181,6 +215,27 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         assertThat(actual.get(0), is(7));
         assertThat(actual.get(1), sameInstance(expectedName));
         assertThat(actual.get(2), sameInstance(expectedLength));
+    }
+    
+    private PostgreSQLServerPreparedStatement createInsertPreparedStatement(final String sql, final List<Integer> actualParameterMarkerIndexes) {
+        SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlParserEngine.parse(sql, false));
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.nCopies(actualParameterMarkerIndexes.size(), PostgreSQLBinaryColumnType.UNSPECIFIED));
+        return new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, actualParameterMarkerIndexes);
+    }
+    
+    private void prepareInsertTableMetaData() {
+        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("postgres");
+        when(database.getDefaultSchemaName()).thenReturn("public");
+        lenient().when(database.containsSchema("public")).thenReturn(true);
+        lenient().when(database.getSchema("public").containsTable("foo_tbl")).thenReturn(true);
+        when(database.getSchema("public").getTable("foo_tbl")).thenReturn(new ShardingSphereTable("foo_tbl", Arrays.asList(
+                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("k", Types.BIGINT, false, false, false, true, false, false),
+                new ShardingSphereColumn("uuid_col", Types.OTHER, false, false, false, true, false, false),
+                new ShardingSphereColumn("created_at", Types.TIMESTAMP, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -331,36 +386,6 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
                 Arguments.of("repeated zero", "00"),
                 Arguments.of("negative", "-1"),
                 Arguments.of("out of range", "9223372036854775808"));
-    }
-    
-    private PostgreSQLServerPreparedStatement createBoundPreparedStatement(final String sql, final List<Integer> actualParameterMarkerIndexes) {
-        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
-        ContextManager contextManager = mockContextManager();
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(contextManager.getMetaDataContexts().getMetaData(), "postgres", new HintValueContext()).bind(sqlParserEngine.parse(sql, false));
-        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.nCopies(actualParameterMarkerIndexes.size(), PostgreSQLBinaryColumnType.UNSPECIFIED));
-        return new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, actualParameterMarkerIndexes);
-    }
-    
-    private PostgreSQLServerPreparedStatement createInsertPreparedStatement(final String sql, final List<Integer> actualParameterMarkerIndexes) {
-        SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlParserEngine.parse(sql, false));
-        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.nCopies(actualParameterMarkerIndexes.size(), PostgreSQLBinaryColumnType.UNSPECIFIED));
-        return new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, actualParameterMarkerIndexes);
-    }
-    
-    private void prepareInsertTableMetaData() {
-        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
-        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("postgres");
-        when(database.getDefaultSchemaName()).thenReturn("public");
-        lenient().when(database.containsSchema("public")).thenReturn(true);
-        lenient().when(database.getSchema("public").containsTable("foo_tbl")).thenReturn(true);
-        when(database.getSchema("public").getTable("foo_tbl")).thenReturn(new ShardingSphereTable("foo_tbl", Arrays.asList(
-                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("k", Types.BIGINT, false, false, false, true, false, false),
-                new ShardingSphereColumn("uuid_col", Types.OTHER, false, false, false, true, false, false),
-                new ShardingSphereColumn("created_at", Types.TIMESTAMP, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
     }
     
     private ContextManager mockContextManager() {

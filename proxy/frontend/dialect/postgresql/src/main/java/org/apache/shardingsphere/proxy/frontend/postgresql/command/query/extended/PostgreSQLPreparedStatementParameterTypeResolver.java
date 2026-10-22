@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Betw
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
@@ -81,6 +83,8 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
      * Resolve values of unspecified type parameters by the integer columns they are compared with or assigned to.
      * A parameter is resolved only when every occurrence of it is compared with or assigned to a column, so that a parameter also used elsewhere,
      * such as an overloaded function argument, keeps the type the database infers from all of its occurrences.
+     * Only columns of physical tables are used, and an IN list is used only when all of its values are parameters or literals,
+     * because a derived column or another typed value in the list can make the database infer a different type.
      * Only plain decimal integer text is resolved, because Java decodes it to the same value as PostgreSQL integer input.
      * JDBC BIGINT columns can also be oid columns, whose input reads a leading zero as octal and wraps negative numbers,
      * so their text is resolved only without a minus sign or leading zeros, where oid and int8 input give the same value.
@@ -155,13 +159,32 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
             return;
         }
         ShardingSphereTable table = database.getSchema(schemaName).getTable(logicTableName);
-        List<ShardingSphereIdentifier> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
+        Collection<ShardingSphereIdentifier> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
         for (InsertValuesSegment each : insertStatement.getValues()) {
             putInsertValueColumnTypes(each, table, columnNamesOfInsert, parameterMarkerColumnTypes);
         }
     }
     
-    private static void putInsertValueColumnTypes(final InsertValuesSegment insertValuesSegment, final ShardingSphereTable table, final List<ShardingSphereIdentifier> columnNamesOfInsert,
+    private static String getSchemaNameOfInsertStatement(final ShardingSphereDatabase database, final InsertStatement insertStatement) {
+        return insertStatement.getTable().flatMap(SimpleTableSegment::getOwner).map(optional -> optional.getIdentifier().getValue()).orElseGet(database::getDefaultSchemaName);
+    }
+    
+    private static String getTableNameOfInsertStatement(final InsertStatement insertStatement) {
+        return insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
+    }
+    
+    private static List<ShardingSphereIdentifier> getColumnNamesOfInsertStatement(final InsertStatement insertStatement, final ShardingSphereTable table) {
+        if (insertStatement.getColumns().isEmpty()) {
+            return table.getColumnNames();
+        }
+        List<ShardingSphereIdentifier> result = new ArrayList<>(insertStatement.getColumns().size());
+        for (ColumnSegment each : insertStatement.getColumns()) {
+            result.add(new ShardingSphereIdentifier(each.getIdentifier().getValue()));
+        }
+        return result;
+    }
+    
+    private static void putInsertValueColumnTypes(final InsertValuesSegment insertValuesSegment, final ShardingSphereTable table, final Collection<ShardingSphereIdentifier> columnNamesOfInsert,
                                                   final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
         Iterator<ShardingSphereIdentifier> columnNames = columnNamesOfInsert.iterator();
         for (ExpressionSegment each : insertValuesSegment.getValues()) {
@@ -175,12 +198,35 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         }
     }
     
+    private static void putParameterColumnType(final ParameterMarkerExpressionSegment parameterMarker, final int columnType, final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
+        parameterMarkerColumnTypes.computeIfAbsent(parameterMarker.getParameterMarkerIndex(), unused -> new HashSet<>()).add(columnType);
+    }
+    
     private static void putSetAssignmentColumnTypes(final ShardingSphereDatabase database, final UpdateStatement updateStatement, final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
         for (ColumnAssignmentSegment each : updateStatement.getSetAssignment().getAssignments()) {
             if (1 == each.getColumns().size()) {
                 putColumnType(database, each.getColumns().get(0), each.getValue(), parameterMarkerColumnTypes);
             }
         }
+    }
+    
+    private static void putColumnType(final ShardingSphereDatabase database, final ExpressionSegment column, final ExpressionSegment value,
+                                      final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
+        if (column instanceof ColumnSegment && value instanceof ParameterMarkerExpressionSegment) {
+            findColumnType(database, ((ColumnSegment) column).getColumnBoundInfo())
+                    .ifPresent(columnType -> putParameterColumnType((ParameterMarkerExpressionSegment) value, columnType, parameterMarkerColumnTypes));
+        }
+    }
+    
+    private static Optional<Integer> findColumnType(final ShardingSphereDatabase database, final ColumnSegmentBoundInfo columnBoundInfo) {
+        if (TableSourceType.PHYSICAL_TABLE != columnBoundInfo.getTableSourceType()) {
+            return Optional.empty();
+        }
+        if (!database.containsSchema(columnBoundInfo.getOriginalSchema()) || !database.getSchema(columnBoundInfo.getOriginalSchema()).containsTable(columnBoundInfo.getOriginalTable())) {
+            return Optional.empty();
+        }
+        ShardingSphereTable table = database.getSchema(columnBoundInfo.getOriginalSchema()).getTable(columnBoundInfo.getOriginalTable());
+        return table.containsColumn(columnBoundInfo.getOriginalColumn()) ? Optional.of(table.getColumn(columnBoundInfo.getOriginalColumn()).getDataType()) : Optional.empty();
     }
     
     private static void putWhereColumnTypes(final ShardingSphereDatabase database, final WhereSegment whereSegment, final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
@@ -199,9 +245,7 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
             return;
         }
         if (predicate instanceof InExpression) {
-            for (ExpressionSegment each : ((InExpression) predicate).getExpressionList()) {
-                putColumnType(database, ((InExpression) predicate).getLeft(), each, parameterMarkerColumnTypes);
-            }
+            putInColumnTypes(database, (InExpression) predicate, parameterMarkerColumnTypes);
             return;
         }
         if (predicate instanceof BetweenExpression) {
@@ -211,24 +255,23 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         }
     }
     
-    private static void putColumnType(final ShardingSphereDatabase database, final ExpressionSegment column, final ExpressionSegment value,
-                                      final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
-        if (column instanceof ColumnSegment && value instanceof ParameterMarkerExpressionSegment) {
-            findColumnType(database, ((ColumnSegment) column).getColumnBoundInfo())
-                    .ifPresent(columnType -> putParameterColumnType((ParameterMarkerExpressionSegment) value, columnType, parameterMarkerColumnTypes));
+    private static void putInColumnTypes(final ShardingSphereDatabase database, final InExpression inExpression, final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
+        Collection<ExpressionSegment> values = inExpression.getExpressionList();
+        if (!isParameterMarkersOrLiterals(values)) {
+            return;
+        }
+        for (ExpressionSegment each : values) {
+            putColumnType(database, inExpression.getLeft(), each, parameterMarkerColumnTypes);
         }
     }
     
-    private static Optional<Integer> findColumnType(final ShardingSphereDatabase database, final ColumnSegmentBoundInfo columnBoundInfo) {
-        if (!database.containsSchema(columnBoundInfo.getOriginalSchema()) || !database.getSchema(columnBoundInfo.getOriginalSchema()).containsTable(columnBoundInfo.getOriginalTable())) {
-            return Optional.empty();
+    private static boolean isParameterMarkersOrLiterals(final Collection<ExpressionSegment> values) {
+        for (ExpressionSegment each : values) {
+            if (!(each instanceof ParameterMarkerExpressionSegment) && !(each instanceof LiteralExpressionSegment)) {
+                return false;
+            }
         }
-        ShardingSphereTable table = database.getSchema(columnBoundInfo.getOriginalSchema()).getTable(columnBoundInfo.getOriginalTable());
-        return table.containsColumn(columnBoundInfo.getOriginalColumn()) ? Optional.of(table.getColumn(columnBoundInfo.getOriginalColumn()).getDataType()) : Optional.empty();
-    }
-    
-    private static void putParameterColumnType(final ParameterMarkerExpressionSegment parameterMarker, final int columnType, final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
-        parameterMarkerColumnTypes.computeIfAbsent(parameterMarker.getParameterMarkerIndex(), unused -> new HashSet<>()).add(columnType);
+        return true;
     }
     
     private static Object resolveUnspecifiedParameterValue(final Object parameter, final Collection<Integer> columnTypes) {
@@ -326,24 +369,5 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
             ShardingSpherePreconditions.checkState(table.containsColumn(columnName), () -> new ColumnNotFoundException(logicTableName, columnName));
             preparedStatement.getParameterTypes().set(parameterIndex, PostgreSQLBinaryColumnType.valueOfJDBCType(table.getColumn(columnName).getDataType()));
         }
-    }
-    
-    private static String getSchemaNameOfInsertStatement(final ShardingSphereDatabase database, final InsertStatement insertStatement) {
-        return insertStatement.getTable().flatMap(SimpleTableSegment::getOwner).map(optional -> optional.getIdentifier().getValue()).orElseGet(database::getDefaultSchemaName);
-    }
-    
-    private static String getTableNameOfInsertStatement(final InsertStatement insertStatement) {
-        return insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
-    }
-    
-    private static List<ShardingSphereIdentifier> getColumnNamesOfInsertStatement(final InsertStatement insertStatement, final ShardingSphereTable table) {
-        if (insertStatement.getColumns().isEmpty()) {
-            return table.getColumnNames();
-        }
-        List<ShardingSphereIdentifier> result = new ArrayList<>(insertStatement.getColumns().size());
-        for (ColumnSegment each : insertStatement.getColumns()) {
-            result.add(new ShardingSphereIdentifier(each.getIdentifier().getValue()));
-        }
-        return result;
     }
 }
