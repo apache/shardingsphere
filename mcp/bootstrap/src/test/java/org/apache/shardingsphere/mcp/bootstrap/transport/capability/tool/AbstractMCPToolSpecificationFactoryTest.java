@@ -163,7 +163,7 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
         assertFalse(actualQuestions.isEmpty());
         Map<?, ?> actualQuestion = (Map<?, ?>) actualQuestions.get(0);
         assertThat(actualQuestion.get("input_type"), is("secret"));
-        assertTrue(Boolean.TRUE.equals(actualQuestion.get("secret")));
+        assertTrue((Boolean) actualQuestion.get("secret"));
         assertTrue(actualQuestion.containsKey("message"));
         assertFalse(actualQuestion.containsKey("display_message"));
         List<?> actualNextActions = (List<?>) actualPayload.get("next_actions");

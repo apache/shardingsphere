@@ -27,8 +27,7 @@ class FirebirdSQLInfoPacketTypeTest {
     
     @Test
     void assertValueOf() {
-        assertThat(FirebirdSQLInfoPacketType.valueOf(FirebirdSQLInfoPacketType.STMT_TYPE.getCode()),
-                is(FirebirdSQLInfoPacketType.STMT_TYPE));
+        assertThat(FirebirdSQLInfoPacketType.valueOf(FirebirdSQLInfoPacketType.STMT_TYPE.getCode()), is(FirebirdSQLInfoPacketType.STMT_TYPE));
     }
     
     @Test

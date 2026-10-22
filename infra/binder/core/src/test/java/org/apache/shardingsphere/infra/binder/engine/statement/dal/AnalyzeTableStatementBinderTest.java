@@ -39,7 +39,6 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,9 +60,9 @@ class AnalyzeTableStatementBinderTest {
         IdentifierValue databaseName = new IdentifierValue("foo_db");
         when(metaData.containsDatabase(databaseName)).thenReturn(true);
         when(metaData.getDatabase(databaseName.getValue())).thenReturn(database);
-        when(metaData.getDatabase(eq(databaseName))).thenReturn(database);
+        when(metaData.getDatabase(databaseName)).thenReturn(database);
         when(database.getDefaultSchemaName()).thenReturn(databaseName.getValue());
-        when(database.getSchema(eq(databaseName))).thenReturn(schema);
+        when(database.getSchema(databaseName)).thenReturn(schema);
         AnalyzeTableStatement actual = getAnalyzeTableStatement();
         Collection<SimpleTableSegment> actualTables = actual.getTables();
         assertThat(actualTables.size(), is(1));

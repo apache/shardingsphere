@@ -33,8 +33,21 @@ class WorkflowKindTest {
     }
     
     @Test
+    void assertValueOfWithLongValue() {
+        String value = "foo.".repeat(10000) + "bar";
+        assertThat(WorkflowKind.valueOf(value).getValue(), is(value));
+    }
+    
+    @Test
     void assertValueOfWithInvalidValue() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> WorkflowKind.valueOf("encrypt_rule"));
         assertThat(actual.getMessage(), is("Invalid workflow kind `encrypt_rule`."));
+    }
+    
+    @Test
+    void assertValueOfWithLongInvalidValue() {
+        String value = "foo.".repeat(10000);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> WorkflowKind.valueOf(value));
+        assertThat(actual.getMessage(), is(String.format("Invalid workflow kind `%s`.", value)));
     }
 }

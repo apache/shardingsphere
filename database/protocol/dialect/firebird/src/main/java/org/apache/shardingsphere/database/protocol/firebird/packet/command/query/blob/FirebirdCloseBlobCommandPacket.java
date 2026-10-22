@@ -44,7 +44,6 @@ public final class FirebirdCloseBlobCommandPacket extends FirebirdCommandPacket 
      * @return length of packet
      */
     public static int getLength() {
-        // 4 reserved + blobHandle(4)
         return 8;
     }
 }
