@@ -162,7 +162,6 @@ class FirebirdBatchCreateCommandExecutorTest {
     @Test
     void assertExecuteWhenStatementDoesNotExist() {
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
-        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(null);
         assertThrows(InvalidStatementHandleException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());

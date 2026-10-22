@@ -490,21 +490,11 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private String getOperationName(final String operationType) {
-        switch (operationType) {
-            case "||":
-                return "CONCATENATION";
-            default:
-                return operationType;
-        }
+        return "||".equals(operationType) ? "CONCATENATION" : operationType;
     }
     
     private int getOperationType(final String operationType) {
-        switch (operationType) {
-            case "||":
-                return 12;
-            default:
-                return 4;
-        }
+        return "||".equals(operationType) ? 12 : 4;
     }
     
     @HighFrequencyInvocation
