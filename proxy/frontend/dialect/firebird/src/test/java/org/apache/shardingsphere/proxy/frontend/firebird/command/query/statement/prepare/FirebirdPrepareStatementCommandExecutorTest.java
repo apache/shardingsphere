@@ -361,6 +361,24 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeAliasedCommonTableExpressionShorthandWithCollidingAliasSelect() throws Exception {
+        FirebirdReturnColumnPacket actualColumnPacket = describeSingleColumn(
+                "WITH foo_cte (n) AS (SELECT 1 FROM foo_tbl), bar_cte (n) AS (SELECT 'foo' FROM foo_tbl) SELECT foo_alias.* FROM foo_cte foo_alias JOIN bar_cte foo_cte ON 1 = 1");
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class, RETURNS_DEEP_STUBS);
+        actualColumnPacket.write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeAliasedCommonTableExpressionWithCollidingAliasSelect() throws Exception {
+        FirebirdReturnColumnPacket actualColumnPacket = describeSingleColumn(
+                "WITH foo_cte (n) AS (SELECT 1 FROM foo_tbl), bar_cte (n) AS (SELECT 'foo' FROM foo_tbl) SELECT foo_cte.n FROM foo_cte foo_alias JOIN bar_cte foo_cte ON 1 = 1");
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class, RETURNS_DEEP_STUBS);
+        actualColumnPacket.write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+    }
+    
+    @Test
     void assertDescribeCommonTableExpressionWithDerivedTableSelect() throws Exception {
         FirebirdReturnColumnPacket actualColumnPacket =
                 describeSingleColumn("WITH foo_cte (n) AS (SELECT derived_tbl.n FROM (SELECT 'foo' AS n FROM foo_tbl) derived_tbl) SELECT n FROM foo_cte");
