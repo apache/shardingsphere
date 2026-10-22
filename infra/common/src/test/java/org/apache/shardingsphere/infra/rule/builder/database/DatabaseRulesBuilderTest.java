@@ -176,7 +176,7 @@ class DatabaseRulesBuilderTest {
             mockedLoader.when(() -> OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class,
                     Collections.singleton(FixtureDatabaseRuleConfiguration.class))).thenReturn(Collections.singletonMap(FixtureDatabaseRuleConfiguration.class, checker));
             assertThat(DatabaseRulesBuilder.build("foo_db", null, rules, ruleConfig, null, EMPTY_RESOURCE_META_DATA), isA(FixtureRule.class));
-            verify(checker).check(eq("foo_db"), eq(ruleConfig), eq(EMPTY_RESOURCE_META_DATA.getDataSourceMap()), eq(rules));
+            verify(checker).check("foo_db", ruleConfig, EMPTY_RESOURCE_META_DATA.getDataSourceMap(), rules);
         }
     }
     

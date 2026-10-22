@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -50,13 +51,10 @@ public final class FirebirdBatchBlobSegmentsCommandPacket extends FirebirdComman
     private Collection<byte[]> readSegments(final ByteBuf buffer) {
         Collection<byte[]> result = new LinkedList<>();
         while (buffer.isReadable()) {
-            if (buffer.readableBytes() < Short.BYTES) {
-                throw new DatabaseProtocolException("Truncated batch BLOB segment length");
-            }
+            ShardingSpherePreconditions.checkState(buffer.readableBytes() >= Short.BYTES, () -> new DatabaseProtocolException("Truncated batch BLOB segment length"));
             int segmentLength = buffer.readUnsignedShortLE();
-            if (buffer.readableBytes() < segmentLength) {
-                throw new DatabaseProtocolException("Batch BLOB segment declares %d bytes, but only %d bytes remain", segmentLength, buffer.readableBytes());
-            }
+            ShardingSpherePreconditions.checkState(buffer.readableBytes() >= segmentLength, () -> new DatabaseProtocolException("Batch BLOB segment declares %d bytes, but only %d bytes remain",
+                    segmentLength, buffer.readableBytes()));
             byte[] segmentData = new byte[segmentLength];
             buffer.readBytes(segmentData);
             result.add(segmentData);
@@ -75,8 +73,6 @@ public final class FirebirdBatchBlobSegmentsCommandPacket extends FirebirdComman
      * @return length of packet
      */
     public static int getLength(final FirebirdPacketPayload payload) {
-        int length = 12;
-        length += payload.getBufferLength(length);
-        return length;
+        return 12 + payload.getBufferLength(12);
     }
 }

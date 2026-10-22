@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.Connecti
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
 import org.firebirdsql.gds.impl.DbAttachInfo;
 import org.firebirdsql.gds.impl.GDSFactory;
-import org.firebirdsql.gds.impl.GDSType;
 import org.firebirdsql.jdbc.FBDriver;
 
 import java.util.Properties;
@@ -35,9 +34,7 @@ public final class FirebirdConnectionPropertiesParser implements ConnectionPrope
     @SneakyThrows(Exception.class)
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
-        GDSType type = GDSFactory.getTypeForProtocol(url);
-        String databaseURL = GDSFactory.getDatabasePath(type, url);
-        DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(databaseURL);
+        DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(GDSFactory.getDatabasePath(GDSFactory.getTypeForProtocol(url), url));
         String attachObjectName = dbAttachInfo.getAttachObjectName();
         String databaseName = attachObjectName.contains("?") ? attachObjectName.split("\\?")[0] : attachObjectName;
         Properties queryProps = new Properties();
