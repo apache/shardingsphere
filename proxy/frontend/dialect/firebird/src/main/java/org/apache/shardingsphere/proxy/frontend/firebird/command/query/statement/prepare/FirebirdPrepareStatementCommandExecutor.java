@@ -273,6 +273,9 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private Collection<Projection> getProjections(final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             SelectStatementContext selectStatement = (SelectStatementContext) sqlStatementContext;
+            if (selectStatement.getProjectionsContext().containsUnexpandedShorthandProjection()) {
+                return resolveUnexpandedShorthandProjections(selectStatement, schema);
+            }
             Collection<Projection> expandProjections = selectStatement.getProjectionsContext().getExpandProjections();
             Map<Integer, SelectStatementContext> subquery = selectStatement.getSubqueryContexts();
             if (subquery.isEmpty()) {
@@ -319,6 +322,18 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                     ColumnSegmentBoundInfo info = new ColumnSegmentBoundInfo(null, new IdentifierValue(table.getName()), new IdentifierValue(each.getName()), TableSourceType.PHYSICAL_TABLE);
                     result.add(new ColumnProjection(null, new IdentifierValue(each.getName()), null, sqlStatementContext.getSqlStatement().getDatabaseType(), null, null, info));
                 });
+            }
+        }
+        return result;
+    }
+    
+    private Collection<Projection> resolveUnexpandedShorthandProjections(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) {
+        Collection<Projection> result = new LinkedList<>();
+        for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
+            if (each instanceof ShorthandProjection) {
+                result.addAll(processShorthandProjection(selectStatementContext, schema, (ShorthandProjection) each));
+            } else if (!(each instanceof DerivedProjection)) {
+                result.add(each);
             }
         }
         return result;

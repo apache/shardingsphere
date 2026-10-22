@@ -101,26 +101,24 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     }
     
     private Collection<DatabasePacket> createPackets(final SQLStatementContext sqlStatementContext, final int statementId, final MySQLServerPreparedStatement serverPreparedStatement) {
-        Collection<Projection> projections = getProjections(sqlStatementContext);
-        Collection<DatabasePacket> result = new ArrayList<>(sqlStatementContext.getSqlStatement().getParameterCount() + projections.size() + 3);
         int parameterCount = sqlStatementContext.getSqlStatement().getParameterCount();
         ShardingSpherePreconditions.checkState(parameterCount <= MAX_PARAMETER_COUNT, TooManyPlaceholdersException::new);
-        result.add(new MySQLComStmtPrepareOKPacket(statementId, projections.size(), parameterCount, 0));
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
         int statusFlags = ServerStatusFlagCalculator.calculateFor(connectionSession, true);
+        Collection<MySQLPacket> projectionPackets = sqlStatementContext instanceof SelectStatementContext
+                ? createProjectionColumnDefinition41Packets((SelectStatementContext) sqlStatementContext, characterSet, serverPreparedStatement)
+                : Collections.emptyList();
+        Collection<DatabasePacket> result = new ArrayList<>(parameterCount + projectionPackets.size() + 3);
+        result.add(new MySQLComStmtPrepareOKPacket(statementId, projectionPackets.size(), parameterCount, 0));
         if (parameterCount > 0) {
             result.addAll(createParameterColumnDefinition41Packets(sqlStatementContext, characterSet, serverPreparedStatement));
             result.add(new MySQLEofPacket(statusFlags));
         }
-        if (!projections.isEmpty() && sqlStatementContext instanceof SelectStatementContext) {
-            result.addAll(createProjectionColumnDefinition41Packets((SelectStatementContext) sqlStatementContext, characterSet, serverPreparedStatement));
+        if (!projectionPackets.isEmpty()) {
+            result.addAll(projectionPackets);
             result.add(new MySQLEofPacket(statusFlags));
         }
         return result;
-    }
-    
-    private Collection<Projection> getProjections(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections() : Collections.emptyList();
     }
     
     private Collection<MySQLPacket> createParameterColumnDefinition41Packets(final SQLStatementContext sqlStatementContext, final int characterSet,
