@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
@@ -264,6 +265,17 @@ class SubqueryExtractorTest {
         SubquerySegment collateNested = new SubquerySegment(2, 8, SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).build(), "");
         SubquerySegment collateOuter = createSubqueryWithNestedPredicate(collateNested);
         CollateExpression collate = new CollateExpression(0, 15, new LiteralExpressionSegment(12, 14, "C"), new SubqueryExpressionSegment(collateOuter));
+        SubquerySegment directNotNested = new SubquerySegment(2, 8, SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).build(), "");
+        SubquerySegment directNotOuter = createSubqueryWithNestedPredicate(directNotNested);
+        SelectStatement directNotPredicate = SelectStatement.builder().projections(new ProjectionsSegment(0, 0))
+                .where(new WhereSegment(0, 10, new NotExpression(0, 10, new SubqueryExpressionSegment(directNotOuter), true))).build();
+        SubquerySegment recursiveNotNested = new SubquerySegment(2, 8, SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).build(), "");
+        SubquerySegment recursiveNotOuter = createSubqueryWithNestedPredicate(recursiveNotNested);
+        SelectStatement recursiveNotPredicate = SelectStatement.builder().projections(new ProjectionsSegment(0, 0))
+                .where(new WhereSegment(0, 10, new NotExpression(0, 10, new SubqueryExpressionSegment(recursiveNotOuter), true))).build();
+        SubquerySegment nestedNotSubquery = new SubquerySegment(1, 9, SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).build(), "");
+        NotExpression innerNot = new NotExpression(0, 10, new SubqueryExpressionSegment(nestedNotSubquery), true);
+        SelectStatement nestedNotPredicate = SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).where(new WhereSegment(0, 10, new NotExpression(0, 10, innerNot, true))).build();
         return Stream.of(
                 Arguments.of("Empty common expression", createSelectWithExpressionProjection(new CommonExpressionSegment(0, 0, "legacy", Collections.emptyList())), false,
                         Collections.emptyList(), Collections.emptyList()),
@@ -280,7 +292,11 @@ class SubqueryExtractorTest {
                         Arrays.asList(firstRow, secondRow), Arrays.asList(SubqueryType.PROJECTION, SubqueryType.PROJECTION)),
                 Arguments.of("Unary predicate without SELECT recursion", unaryPredicate, false, Collections.singletonList(unaryOuter), Collections.singletonList(SubqueryType.PREDICATE)),
                 Arguments.of("Collate with SELECT recursion", createSelectWithExpressionProjection(collate), true,
-                        Arrays.asList(collateOuter, collateNested), Arrays.asList(SubqueryType.PROJECTION, SubqueryType.PREDICATE)));
+                        Arrays.asList(collateOuter, collateNested), Arrays.asList(SubqueryType.PROJECTION, SubqueryType.PREDICATE)),
+                Arguments.of("Not predicate without SELECT recursion", directNotPredicate, false, Collections.singletonList(directNotOuter), Collections.singletonList(SubqueryType.PREDICATE)),
+                Arguments.of("Not predicate with SELECT recursion", recursiveNotPredicate, true,
+                        Arrays.asList(recursiveNotOuter, recursiveNotNested), Arrays.asList(SubqueryType.PREDICATE, SubqueryType.PREDICATE)),
+                Arguments.of("Nested not predicate", nestedNotPredicate, false, Collections.singletonList(nestedNotSubquery), Collections.singletonList(SubqueryType.PREDICATE)));
     }
     
     private static SubquerySegment createSubqueryWithNestedPredicate(final SubquerySegment nested) {

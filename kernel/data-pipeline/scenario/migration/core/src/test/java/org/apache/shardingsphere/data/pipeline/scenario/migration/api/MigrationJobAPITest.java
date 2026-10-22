@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.api;
 
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
@@ -29,9 +30,12 @@ import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepa
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +43,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
@@ -55,9 +60,11 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
@@ -74,6 +81,9 @@ class MigrationJobAPITest {
     private PipelineJobManager jobManager;
     
     @Mock
+    private PipelineJobConfigurationManager jobConfigManager;
+    
+    @Mock
     private PipelineDataSourcePersistService dataSourcePersistService;
     
     private MigrationJobAPI jobAPI;
@@ -82,6 +92,7 @@ class MigrationJobAPITest {
     void setUp() throws ReflectiveOperationException {
         jobAPI = new MigrationJobAPI();
         Plugins.getMemberAccessor().set(MigrationJobAPI.class.getDeclaredField("jobManager"), jobAPI, jobManager);
+        Plugins.getMemberAccessor().set(MigrationJobAPI.class.getDeclaredField("jobConfigManager"), jobAPI, jobConfigManager);
         Plugins.getMemberAccessor().set(MigrationJobAPI.class.getDeclaredField("dataSourcePersistService"), jobAPI, dataSourcePersistService);
     }
     
@@ -119,6 +130,52 @@ class MigrationJobAPITest {
         assertThat(actual, is(expected));
         verify(dataSourcePersistService).load(contextKey, "MIGRATION");
         verify(jobManager, never()).start(any());
+    }
+    
+    @Test
+    void assertCommit() {
+        String jobId = PipelineJobIdUtils.marshal(new MigrationJobId(contextKey, Collections.emptyList()));
+        String checkJobId = "foo_check_job";
+        MigrationJobConfiguration jobConfig = mock(MigrationJobConfiguration.class);
+        when(jobConfig.getTargetDatabaseName()).thenReturn("foo_db");
+        when(jobConfigManager.getJobConfiguration(jobId)).thenReturn(jobConfig);
+        ContextManager contextManager = mock(ContextManager.class);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
+        try (
+                MockedStatic<PipelineAPIFactory> ignoredFactory = mockStatic(PipelineAPIFactory.class, Answers.RETURNS_DEEP_STUBS);
+                MockedStatic<PipelineContextManager> ignoredContext = mockStatic(PipelineContextManager.class)) {
+            when(PipelineAPIFactory.getPipelineGovernanceFacade(contextKey).getJobFacade().getCheck().listCheckJobIds(jobId)).thenReturn(Collections.singleton(checkJobId));
+            when(PipelineContextManager.getContext(contextKey)).thenReturn(contextManager);
+            jobAPI.commit(jobId);
+            InOrder inOrder = inOrder(jobManager, contextManager);
+            inOrder.verify(jobManager).stop(jobId);
+            inOrder.verify(jobManager).drop(checkJobId);
+            inOrder.verify(contextManager).getDatabase("foo_db");
+            inOrder.verify(contextManager).reloadDatabase(database);
+            inOrder.verify(jobManager).drop(jobId);
+        }
+    }
+    
+    @Test
+    void assertCommitWithUnknownDatabase() {
+        String jobId = PipelineJobIdUtils.marshal(new MigrationJobId(contextKey, Collections.emptyList()));
+        MigrationJobConfiguration jobConfig = mock(MigrationJobConfiguration.class);
+        when(jobConfig.getTargetDatabaseName()).thenReturn("foo_db");
+        when(jobConfigManager.getJobConfiguration(jobId)).thenReturn(jobConfig);
+        ContextManager contextManager = mock(ContextManager.class);
+        UnknownDatabaseException expected = new UnknownDatabaseException("foo_db");
+        when(contextManager.getDatabase("foo_db")).thenThrow(expected);
+        try (
+                MockedStatic<PipelineAPIFactory> ignoredFactory = mockStatic(PipelineAPIFactory.class, Answers.RETURNS_DEEP_STUBS);
+                MockedStatic<PipelineContextManager> ignoredContext = mockStatic(PipelineContextManager.class)) {
+            when(PipelineContextManager.getContext(contextKey)).thenReturn(contextManager);
+            UnknownDatabaseException actual = assertThrows(UnknownDatabaseException.class, () -> jobAPI.commit(jobId));
+            assertThat(actual, sameInstance(expected));
+            verify(jobManager).stop(jobId);
+            verify(contextManager, never()).reloadDatabase(any(ShardingSphereDatabase.class));
+            verify(jobManager, never()).drop(jobId);
+        }
     }
     
     @ParameterizedTest(name = "{0}")
