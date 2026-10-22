@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
+import org.apache.shardingsphere.database.connector.firebird.metadata.data.loader.FirebirdSystemTableColumnSizeLoader;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
@@ -93,6 +94,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Sa
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.jspecify.annotations.Nullable;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -151,7 +153,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return packet.isValidStatementHandle() ? packet.getStatementId() : FirebirdStatementIdGenerator.getInstance().getStatementId(connectionSession.getConnectionId());
     }
     
-    private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext) {
+    private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext) throws SQLException {
         FirebirdSQLInfoReturnValue statementType = getFirebirdStatementType(sqlStatementContext.getSqlStatement());
         FirebirdPrepareStatementReturnPacket returnPacket = new FirebirdPrepareStatementReturnPacket();
         while (packet.nextItem()) {
@@ -229,7 +231,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
-    private void processDescribe(final SQLStatementContext sqlStatementContext, final Collection<FirebirdReturnColumnPacket> describeColumns, final boolean returnAll) {
+    private void processDescribe(final SQLStatementContext sqlStatementContext, final Collection<FirebirdReturnColumnPacket> describeColumns, final boolean returnAll) throws SQLException {
         // TODO add exception if the first item is not DESCRIBE_VARS
         packet.nextItem();
         Collection<FirebirdSQLInfoPacketType> requestedItems = new LinkedList<>();
@@ -250,7 +252,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private void processReturnValues(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                      final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
-                                     final Collection<FirebirdSQLInfoPacketType> requestedItems) {
+                                     final Collection<FirebirdSQLInfoPacketType> requestedItems) throws SQLException {
         Collection<Projection> projections = getProjections(sqlStatementContext, database, schema);
         int columnCount = 0;
         for (Projection each : projections) {
@@ -272,7 +274,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private Collection<Projection> getProjections(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
-                                                  final Supplier<Optional<ShardingSphereSchema>> schema) {
+                                                  final Supplier<Optional<ShardingSphereSchema>> schema) throws SQLException {
         if (sqlStatementContext instanceof SelectStatementContext) {
             SelectStatementContext selectStatement = (SelectStatementContext) sqlStatementContext;
             Collection<Projection> expandProjections = selectStatement.getProjectionsContext().getExpandProjections();
@@ -309,7 +311,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private Collection<Projection> processShorthandProjection(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
-                                                              final Supplier<Optional<ShardingSphereSchema>> schema, final ShorthandProjection projection) {
+                                                              final Supplier<Optional<ShardingSphereSchema>> schema, final ShorthandProjection projection) throws SQLException {
         if (!projection.getActualColumns().isEmpty()) {
             return projection.getActualColumns();
         }
@@ -328,18 +330,30 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     @HighFrequencyInvocation
-    private ShardingSphereTable getTable(final String tableName, final Supplier<ShardingSphereDatabase> database, final Supplier<Optional<ShardingSphereSchema>> schema) {
+    private ShardingSphereTable getTable(final String tableName, final Supplier<ShardingSphereDatabase> database, final Supplier<Optional<ShardingSphereSchema>> schema) throws SQLException {
         ShardingSphereTable result = schema.get().map(optional -> optional.getTable(tableName)).orElse(null);
         if (null == result) {
-            result = database.get().getSchema("system_tables").getTable(tableName);
+            result = getSystemTable(tableName, database.get());
         }
         ShardingSpherePreconditions.checkNotNull(result, () -> new TableNotFoundException(tableName));
         return result;
     }
     
+    private ShardingSphereTable getSystemTable(final String tableName, final ShardingSphereDatabase database) throws SQLException {
+        if (!FirebirdNonFixedLengthColumnSizeRegistry.isSystemTablesRefreshed(database.getName()) && !database.getResourceMetaData().getStorageUnits().isEmpty()) {
+            refreshSystemTableColumnSizes(database);
+        }
+        return database.getSchema("system_tables").getTable(tableName);
+    }
+    
+    private void refreshSystemTableColumnSizes(final ShardingSphereDatabase database) throws SQLException {
+        DataSource dataSource = database.getResourceMetaData().getStorageUnits().values().iterator().next().getDataSource();
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshSystemTables(database.getName(), new FirebirdSystemTableColumnSizeLoader(dataSource).load());
+    }
+    
     private void processParameters(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                    final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
-                                   final Collection<FirebirdSQLInfoPacketType> requestedItems) {
+                                   final Collection<FirebirdSQLInfoPacketType> requestedItems) throws SQLException {
         if (sqlStatementContext instanceof InsertStatementContext) {
             processInsertStatement((InsertStatementContext) sqlStatementContext, database, schema, describeColumns, requestedItems);
             return;
@@ -359,7 +373,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private void processInsertStatement(final InsertStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                         final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
-                                        final Collection<FirebirdSQLInfoPacketType> requestedItems) {
+                                        final Collection<FirebirdSQLInfoPacketType> requestedItems) throws SQLException {
         Collection<String> tableNames = getTableNames(sqlStatementContext);
         Collection<String> affectedColumns = new LinkedList<>();
         for (InsertValueContext context : sqlStatementContext.getInsertValueContexts()) {

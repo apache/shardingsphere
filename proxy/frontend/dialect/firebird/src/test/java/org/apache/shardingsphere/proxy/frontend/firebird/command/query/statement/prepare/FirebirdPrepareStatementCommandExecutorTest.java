@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.prepare;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
+import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -37,6 +39,7 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -61,6 +64,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.AfterEach;
@@ -72,10 +76,14 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
@@ -90,6 +98,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -148,7 +158,16 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, 1);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobInfoRegistry.refreshTable("foo_db", "foo_tbl", Collections.emptyMap());
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("foo_db", "RDB$RELATIONS", Collections.emptyMap());
+        getSystemTableRefreshedSchemas().clear();
         FirebirdBlobInfoRegistry.refreshTable("foo_db", "foo_tbl_0", Collections.emptyMap());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Collection<String> getSystemTableRefreshedSchemas() {
+        return (Collection<String>) Plugins.getMemberAccessor()
+                .get(FirebirdNonFixedLengthColumnSizeRegistry.class.getDeclaredField("SYSTEM_TABLE_REFRESHED_SCHEMAS"), FirebirdNonFixedLengthColumnSizeRegistry.class);
     }
     
     private MetaDataContexts createMetaDataContexts() {
@@ -237,6 +256,76 @@ class FirebirdPrepareStatementCommandExecutorTest {
         when(connectionSession.getUsedDatabaseName()).thenReturn(null);
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         assertThrows(NoDatabaseSelectedException.class, executor::execute);
+    }
+    
+    @Test
+    void assertDescribeSystemTableParameter() throws Exception {
+        ShardingSphereColumn relationIdColumn = new ShardingSphereColumn("RDB$RELATION_ID", Types.SMALLINT, false, false, false, true, false, true);
+        ShardingSphereTable relationsTable = new ShardingSphereTable("RDB$RELATIONS", Collections.singleton(relationIdColumn), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema systemSchema = new ShardingSphereSchema("system_tables", databaseType, Collections.singleton(relationsTable), Collections.emptyList());
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("foo_db");
+        doReturn(true).when(database).containsSchema(new IdentifierValue("system_tables"));
+        doReturn(systemSchema).when(database).getSchema(new IdentifierValue("system_tables"));
+        when(packet.getSQL()).thenReturn("SELECT RDB$RELATION_ID FROM RDB$RELATIONS WHERE RDB$RELATION_ID = ?");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.BIND,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        FirebirdPrepareStatementReturnPacket actual = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
+        assertThat(actual.getDescribeBind().size(), is(1));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actual.getDescribeBind().iterator().next().write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.SHORT.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeSystemTableColumnLengthWithoutLoadedSizes() throws Exception {
+        ShardingSphereColumn relationNameColumn = new ShardingSphereColumn("RDB$RELATION_NAME", Types.CHAR, false, false, false, true, false, true);
+        ShardingSphereTable relationsTable = new ShardingSphereTable("RDB$RELATIONS", Collections.singleton(relationNameColumn), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema systemSchema = new ShardingSphereSchema("system_tables", databaseType, Collections.singleton(relationsTable), Collections.emptyList());
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("foo_db");
+        doReturn(true).when(database).containsSchema(new IdentifierValue("system_tables"));
+        doReturn(systemSchema).when(database).getSchema(new IdentifierValue("system_tables"));
+        doReturn(createResourceMetaDataWithSystemTableColumnSize()).when(database).getResourceMetaData();
+        when(packet.getSQL()).thenReturn("SELECT RDB$RELATION_NAME FROM RDB$RELATIONS");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.SELECT,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        FirebirdPrepareStatementReturnPacket actual = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
+        assertThat(actual.getDescribeSelect().size(), is(1));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actual.getDescribeSelect().iterator().next().write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        verify(payload).writeInt4LE(63);
+        assertTrue(FirebirdNonFixedLengthColumnSizeRegistry.isSystemTablesRefreshed("foo_db"));
+    }
+    
+    private ResourceMetaData createResourceMetaDataWithSystemTableColumnSize() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.getString("TABLE_NAME")).thenReturn("RDB$RELATIONS");
+        when(resultSet.getString("COLUMN_NAME")).thenReturn("RDB$RELATION_NAME");
+        when(resultSet.getInt("CHAR_LEN")).thenReturn(63);
+        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        when(dataSource.getConnection().prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getDataSource()).thenReturn(dataSource);
+        ResourceMetaData result = mock(ResourceMetaData.class);
+        when(result.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
+        return result;
     }
     
     @Test
