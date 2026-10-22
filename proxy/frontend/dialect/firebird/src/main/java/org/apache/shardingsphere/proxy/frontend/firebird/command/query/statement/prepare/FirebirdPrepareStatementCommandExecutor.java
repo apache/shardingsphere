@@ -117,6 +117,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private static final ShardingSphereTable LITERAL_TABLE = new ShardingSphereTable(null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     
+    private static final int MAX_VARCHAR_LENGTH = 32765;
+    
     private final FirebirdPrepareStatementPacket packet;
     
     private final ConnectionSession connectionSession;
@@ -189,7 +191,6 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         if (statement instanceof InsertStatement) {
             if (((InsertStatement) statement).getReturning().isPresent()) {
                 returningSegment = ((InsertStatement) statement).getReturning().orElse(null);
-                // INSERT ... SELECT ... RETURNING may return many rows, so Firebird answers it with a cursor
                 return ((InsertStatement) statement).getInsertSelect().isPresent() ? FirebirdSQLInfoReturnValue.SELECT : FirebirdSQLInfoReturnValue.EXEC_PROCEDURE;
             }
             return FirebirdSQLInfoReturnValue.INSERT;
@@ -328,7 +329,6 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private Collection<String> getReturningTableNames(final SQLStatementContext sqlStatementContext) {
-        // RETURNING * of INSERT ... SELECT covers the target table only, not the tables of the query
         if (sqlStatementContext instanceof InsertStatementContext) {
             return ((InsertStatementContext) sqlStatementContext).getSqlStatement().getTable()
                     .map(optional -> Collections.singleton(optional.getTableName().getIdentifier().getValue())).orElseGet(Collections::emptySet);
@@ -358,13 +358,19 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         for (int i = 0; i < parametersCount; i++) {
             ColumnSegment columnSegment = affectedColumns.get(i);
             if (null == columnSegment) {
-                processCustomColumn(null, null, null, 12, describeColumns, requestedItems, i + 1);
+                processUnknownParameter(describeColumns, requestedItems, i + 1);
                 continue;
             }
             ShardingSphereTable table = getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue(), database, schema);
             ShardingSphereColumn column = table.getColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue());
             processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), i + 1);
         }
+    }
+    
+    private void processUnknownParameter(final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final int idx) {
+        ShardingSphereColumn column = new ShardingSphereColumn(null, Types.VARCHAR, false, false, true, true, false, false);
+        String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
+        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, LITERAL_TABLE, column, null, null, owner, MAX_VARCHAR_LENGTH, false, null));
     }
     
     private void processInsertStatement(final InsertStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
@@ -419,6 +425,9 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     @HighFrequencyInvocation
     private Collection<WhereSegment> getWhereSegments(final WhereContextAvailable sqlStatementContext) {
+        if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
+            return getWhereSegments(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext());
+        }
         if (!(sqlStatementContext instanceof SelectStatementContext) || !((SelectStatementContext) sqlStatementContext).isContainsCombine()) {
             return sqlStatementContext.getWhereSegments();
         }

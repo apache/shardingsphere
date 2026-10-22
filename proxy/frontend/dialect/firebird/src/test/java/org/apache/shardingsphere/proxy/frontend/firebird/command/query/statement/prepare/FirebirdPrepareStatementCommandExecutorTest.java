@@ -503,7 +503,9 @@ class FirebirdPrepareStatementCommandExecutorTest {
     @Test
     void assertDescribeInsertSelectParameters() throws Exception {
         when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) SELECT id + ? FROM foo_tbl WHERE id BETWEEN ? AND ?");
-        mockDescribeRequest(FirebirdSQLInfoPacketType.BIND);
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
@@ -511,12 +513,23 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPacketPayload projectionPayload = mock(FirebirdPacketPayload.class);
         actualReturnPacket.getDescribeBind().get(0).write(projectionPayload);
         verify(projectionPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        verify(projectionPayload).writeInt4LE(32765);
         FirebirdPacketPayload lowerBoundPayload = mock(FirebirdPacketPayload.class);
         actualReturnPacket.getDescribeBind().get(1).write(lowerBoundPayload);
         verify(lowerBoundPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
         FirebirdPacketPayload upperBoundPayload = mock(FirebirdPacketPayload.class);
         actualReturnPacket.getDescribeBind().get(2).write(upperBoundPayload);
         verify(upperBoundPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeInsertSelectParametersOfUnionWithThreeBranches() throws Exception {
+        String sql = "INSERT INTO foo_tbl (id) SELECT id FROM foo_tbl WHERE id = ? UNION ALL SELECT id FROM foo_tbl WHERE content = ? UNION ALL SELECT id FROM foo_tbl WHERE id = ?";
+        FirebirdPrepareStatementReturnPacket actual = describeBind(sql);
+        assertThat(actual.getDescribeBind().size(), is(3));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.BLOB);
+        assertParameterType(actual.getDescribeBind().get(2), FirebirdBinaryColumnType.LONG);
     }
     
     @Test
