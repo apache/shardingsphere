@@ -135,7 +135,7 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
     
     private Object evaluate(final String expression) {
         if (isConstantExpression(expression)) {
-            return expression.replaceAll("^\"|\"$", "");
+            return expression.replaceAll("(^\")|(\"$)", "");
         }
         Script script = scriptCache.get(expression, SHELL::parse);
         return null == script ? expression : script.run();

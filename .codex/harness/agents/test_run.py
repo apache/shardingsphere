@@ -402,6 +402,99 @@ class RunTest(unittest.TestCase):
             [each["prompt_sha256"] for each in evaluations],
         )
 
+    def test_serial_initial_evaluation_cli_flag(self) -> None:
+        for arguments, expected in ((["run.py"], False), (["run.py", "--serial-initial-evaluation"], True)):
+            with self.subTest(arguments=arguments), patch("sys.argv", arguments):
+                self.assertEqual(expected, run.parse_args().serial_initial_evaluation)
+
+    def test_claim_confirmation_recovery_only_once(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            summary = root / "summary.json"
+            summary.write_text("{}", encoding="utf-8")
+            recovery = {
+                "summary": {"output_dir": str(root)},
+                "provenance": {
+                    "summary_path": str(summary.resolve()),
+                    "preserved_artifacts_sha256": {str(summary.resolve()): hashlib.sha256(summary.read_bytes()).hexdigest()},
+                },
+            }
+            run.claim_confirmation_recovery(recovery, root / "resumed")
+            claim_path = root / "confirmation-recovery.json"
+            original_claim = claim_path.read_bytes()
+            claim = json.loads(original_claim)
+            self.assertEqual(str((root / "resumed").resolve()), claim["output_dir"])
+            self.assertEqual(recovery["provenance"]["preserved_artifacts_sha256"][str(summary.resolve())], claim["summary_sha256"])
+            with self.assertRaises(FileExistsError):
+                run.claim_confirmation_recovery(recovery, root / "duplicate")
+            self.assertEqual(original_claim, claim_path.read_bytes())
+            self.assertEqual("{}", summary.read_text(encoding="utf-8"))
+
+    def test_claim_confirmation_recovery_rejects_changed_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            summary = root / "summary.json"
+            summary.write_text("changed", encoding="utf-8")
+            recovery = {
+                "summary": {"output_dir": str(root)},
+                "provenance": {
+                    "summary_path": str(summary.resolve()),
+                    "preserved_artifacts_sha256": {str(summary.resolve()): hashlib.sha256(b"original").hexdigest()},
+                },
+            }
+            with self.assertRaisesRegex(ValueError, "evidence changed"):
+                run.claim_confirmation_recovery(recovery, root / "resumed")
+            self.assertFalse((root / "confirmation-recovery.json").exists())
+
+    def test_run_cases_serial_initial_evaluation(self) -> None:
+        other_case = copy.deepcopy(self.case)
+        other_case["id"] = "other_case"
+        cases = [self.case, other_case]
+        lock = threading.Lock()
+        active = 0
+        maximum_active = 0
+
+        def fake_run_codex(
+                policy: bytes, codex_home: Path, output_dir: Path, schema_path: Path,
+                prompt: str, timeout: int, evaluation_number: int) -> tuple[int, float, dict[str, Any]]:
+            nonlocal active, maximum_active
+            del policy, codex_home, output_dir, schema_path, prompt, timeout
+            with lock:
+                active += 1
+                maximum_active = max(maximum_active, active)
+            threading.Event().wait(0.02)
+            with lock:
+                active -= 1
+            return 0, float(evaluation_number), {"results": [self._create_case_result(cases[evaluation_number - 1], "Proceed.")]}
+
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "partition_cases", return_value=[[self.case], [other_case]]), patch.object(
+                run, "run_codex", side_effect=fake_run_codex):
+            exit_code, _, actual, evaluations = run.run_cases(
+                b"policy", Path(output_directory), Path(output_directory), cases, "policy_sha256", 1, serial=True
+            )
+        self.assertEqual(0, exit_code)
+        self.assertEqual(1, maximum_active)
+        self.assertEqual([each["id"] for each in cases], [each["case_id"] for each in actual["results"]])
+        self.assertEqual([1, 1], [each["parallel_limit"] for each in evaluations])
+        self.assertEqual([[self.case["id"]], [other_case["id"]]], [each["returned_case_ids"] for each in evaluations])
+
+    def test_run_cases_serial_initial_evaluation_preserves_runner_failure(self) -> None:
+        other_case = copy.deepcopy(self.case)
+        other_case["id"] = "other_case"
+        actual = {"results": [self._create_case_result(other_case, "Proceed.")]}
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "partition_cases", return_value=[[self.case], [other_case]]), patch.object(
+                run, "run_codex", side_effect=[(7, 1.0, {}), (0, 2.0, actual)]) as run_codex:
+            exit_code, _, result, evaluations = run.run_cases(
+                b"policy", Path(output_directory), Path(output_directory), [self.case, other_case], "policy_sha256", 1, serial=True
+            )
+        self.assertEqual(7, exit_code)
+        self.assertEqual({}, result)
+        self.assertEqual(2, run_codex.call_count)
+        self.assertEqual([7, 0], [each["runner_exit_code"] for each in evaluations])
+        self.assertEqual([[], [other_case["id"]]], [each["returned_case_ids"] for each in evaluations])
+
     def test_summarize_transport_validation_accepts_exact_batch_transport(self) -> None:
         other_case = copy.deepcopy(self.case)
         other_case["id"] = "other_case"
@@ -866,6 +959,304 @@ class RunTest(unittest.TestCase):
         self.assertEqual([], actual["safety_regressions"])
         self.assertEqual([], actual["confirmed_case_regressions"])
 
+    def _create_confirmation_recovery(self) -> tuple[list[dict[str, Any]], dict[str, Any], dict[str, Any], dict[str, Any]]:
+        recovered_case = copy.deepcopy(self.case)
+        recovered_case["id"] = "recovered_case"
+        cases = [self.case, recovered_case]
+        initial_actual = {"results": [self._create_case_result(each, "Refuse.") for each in cases]}
+        for each in initial_actual["results"]:
+            each["decision"] = "refuse"
+        baseline = {
+            "policy_sha256": "baseline-policy",
+            "policy_bindings": [],
+            "case_contracts": run.normalize_case_contracts(cases),
+            "results": [{"case_id": each["id"], "critical": True, "passed": True, "failures": []} for each in cases],
+        }
+        round_actual = {"results": [initial_actual["results"][0], self._create_case_result(recovered_case, "Proceed.")]}
+        usage = {"input_tokens": 0, "cached_input_tokens": 0, "uncached_input_tokens": 0, "output_tokens": 0}
+        recovery = {
+            "round_results": {
+                side: ({
+                    "side": side,
+                    "round": 2,
+                    "case_ids": [each["id"] for each in cases],
+                    "runner_exit_code": 0,
+                    "transport_validation": {"passed": True},
+                    "results": run.grade(cases, round_actual),
+                    "usage": usage,
+                }, round_actual)
+                for side in ("baseline", "candidate")
+            },
+            "failed_samples": [{
+                "side": side,
+                "round": 3,
+                "case_ids": [self.case["id"]],
+                "runner_exit_code": 1,
+                "transport_validation": {"passed": False},
+                "results": [],
+                "usage": usage,
+            } for side in ("baseline", "candidate")],
+        }
+        return cases, initial_actual, baseline, recovery
+
+    def test_semantic_confirmation_recovery_preserves_prior_observations_and_pending_cases(self) -> None:
+        cases, initial_actual, baseline, recovery = self._create_confirmation_recovery()
+
+        def fake_round(
+                round_number: int, side_specs: dict[str, dict[str, Any]], codex_home: Path,
+                confirmation_root: Path, timeout: int, *, serial: bool = False
+        ) -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
+            del codex_home, confirmation_root, timeout
+            self.assertEqual(3, round_number)
+            self.assertTrue(serial)
+            self.assertEqual({"baseline": [self.case["id"]], "candidate": [self.case["id"]]}, {
+                side: spec["case_ids"] for side, spec in side_specs.items()
+            })
+            result = {}
+            for side in ("baseline", "candidate"):
+                actual_case = self._create_case_result(self.case, "Proceed." if side == "baseline" else "Refuse.")
+                if side == "candidate":
+                    actual_case["decision"] = "refuse"
+                actual = {"results": [actual_case]}
+                sample = copy.deepcopy(recovery["failed_samples"][0])
+                sample.update({
+                    "side": side,
+                    "runner_exit_code": 0,
+                    "transport_validation": {"passed": True},
+                    "results": run.grade([self.case], actual),
+                })
+                result[side] = sample, actual
+            return result
+
+        original_recovery = copy.deepcopy(recovery)
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "load_baseline_policy", return_value=b"baseline-policy"), patch.object(
+                run, "load_baseline_evaluator", return_value=run), patch.object(
+                run, "run_confirmation_round", side_effect=fake_round) as run_round, patch.object(
+                run, "claim_confirmation_recovery") as claim_recovery:
+            actual = run.run_semantic_confirmation(
+                cases, initial_actual, run.grade(cases, initial_actual), baseline, [], b"candidate-policy",
+                "candidate-policy", {}, Path("unused"), Path(output_directory), 1, recovery=recovery
+            )
+        self.assertEqual(1, run_round.call_count)
+        claim_recovery.assert_called_once_with(recovery, Path(output_directory))
+        self.assertEqual([True, False, True], actual["baseline_samples"][self.case["id"]])
+        self.assertEqual([False, False, False], actual["candidate_samples"][self.case["id"]])
+        self.assertEqual([True, True], actual["baseline_samples"]["recovered_case"])
+        self.assertEqual([False, True], actual["candidate_samples"]["recovered_case"])
+        self.assertEqual([self.case["id"]], actual["confirmed_case_regressions"])
+        self.assertEqual([], actual["blockers"])
+        self.assertEqual([2, 2, 3, 3], [each["round"] for each in actual["samples"]])
+        self.assertEqual(original_recovery, recovery)
+
+    def test_semantic_confirmation_recovery_rejects_changed_pending_cases(self) -> None:
+        cases, initial_actual, baseline, recovery = self._create_confirmation_recovery()
+        recovery["failed_samples"][0]["case_ids"] = ["recovered_case"]
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "load_baseline_policy", return_value=b"baseline-policy"), patch.object(
+                run, "load_baseline_evaluator", return_value=run), patch.object(
+                run, "run_confirmation_round") as run_round, patch.object(
+                run, "claim_confirmation_recovery") as claim_recovery, self.assertRaisesRegex(ValueError, "reconstructed plan"):
+            run.run_semantic_confirmation(
+                cases, initial_actual, run.grade(cases, initial_actual), baseline, [], b"candidate-policy",
+                "candidate-policy", {}, Path("unused"), Path(output_directory), 1, recovery=recovery
+            )
+        run_round.assert_not_called()
+        claim_recovery.assert_not_called()
+
+    def test_semantic_confirmation_recovery_keeps_transport_failure_blocking(self) -> None:
+        cases, initial_actual, baseline, recovery = self._create_confirmation_recovery()
+        failed_round = {each["side"]: (copy.deepcopy(each), {}) for each in recovery["failed_samples"]}
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "load_baseline_policy", return_value=b"baseline-policy"), patch.object(
+                run, "load_baseline_evaluator", return_value=run), patch.object(
+                run, "run_confirmation_round", return_value=failed_round) as run_round, patch.object(
+                run, "claim_confirmation_recovery") as claim_recovery:
+            actual = run.run_semantic_confirmation(
+                cases, initial_actual, run.grade(cases, initial_actual), baseline, [], b"candidate-policy",
+                "candidate-policy", {}, Path("unused"), Path(output_directory), 1, recovery=recovery
+            )
+        self.assertEqual(1, run_round.call_count)
+        claim_recovery.assert_called_once_with(recovery, Path(output_directory))
+        self.assertEqual([True, False], actual["baseline_samples"][self.case["id"]])
+        self.assertEqual([False, False], actual["candidate_samples"][self.case["id"]])
+        self.assertEqual(["semantic-stability-confirmation-runner-failed"], actual["blockers"])
+        self.assertEqual([], actual["confirmed_case_regressions"])
+        self.assertEqual([1, 1], [each["runner_exit_code"] for each in actual["samples"] if each["round"] == 3])
+
+    def _create_preserved_confirmation_run(self, directory: Path) -> dict[str, Any]:
+        directory = directory.resolve()
+        cases = [copy.deepcopy(self.case), copy.deepcopy(self.case)]
+        cases[0]["required_summary_term_groups"] = [["zzz", "aaa"]]
+        cases[1]["id"] = "recovered_case"
+        case_source = "\n".join(
+            "[[cases]]\n" + "\n".join(f"{key} = {json.dumps(value)}" for key, value in each.items())
+            for each in cases
+        )
+        bundle = run.load_policy_manifest(Path(run.__file__).resolve().parents[3])
+        modules = {}
+        for side in ("baseline", "candidate"):
+            repo_root = directory / side
+            for source in bundle["sources"]:
+                path = repo_root / source["path"]
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(source["data"])
+            (repo_root / ".codex/harness/agents/cases.toml").write_text(case_source, encoding="utf-8")
+            if side == "baseline":
+                policy_path = repo_root / "AGENTS.md"
+                policy_path.write_bytes(policy_path.read_bytes().rstrip(b"\n"))
+            runner_path = repo_root / ".codex/harness/agents/run.py"
+            spec = importlib.util.spec_from_file_location(f"preserved_{side}", runner_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            modules[side] = module
+
+        def fake_process(command: list[str], **kwargs: Any) -> Mock:
+            result_path = Path(command[command.index("--output-last-message") + 1])
+            output_dir = result_path.parent
+            policy = (Path(command[command.index("--cd") + 1]) / "AGENTS.md").read_bytes()
+            if output_dir.parent.name == "round-3":
+                kwargs["stdout"].write(json.dumps({
+                    "type": "turn.failed", "error": {"message": "429 Too Many Requests"},
+                }) + "\n")
+                return Mock(returncode=1)
+            actual = {"results": []}
+            for each in cases:
+                passed = not policy.endswith(b"\n") if output_dir.parent.name != "round-2" else each["id"] == "recovered_case"
+                actual_case = self._create_case_result(each, "Proceed. zzz" if passed else "Refuse.")
+                if not passed:
+                    actual_case["decision"] = "refuse"
+                actual["results"].append(actual_case)
+            result_path.write_text(json.dumps(actual), encoding="utf-8")
+            kwargs["stdout"].write(json.dumps({
+                "type": "item.completed", "item": {"type": "agent_message", "text": json.dumps(actual)},
+            }) + "\n")
+            kwargs["stdout"].write(json.dumps({"type": "turn.completed", "usage": {}}) + "\n")
+            return Mock(returncode=0)
+
+        baseline_output = directory / "baseline-output"
+        candidate_output = directory / "candidate-output"
+        with patch.object(run.subprocess, "run", side_effect=fake_process), patch.object(
+                modules["baseline"], "resolve_codex_home", return_value=directory / "codex-home"), patch(
+                "sys.argv", ["run.py", "--mode", "all", "--output-dir", str(baseline_output)]
+        ), patch("builtins.print"):
+            self.assertEqual(0, modules["baseline"].main())
+        with patch.object(run.subprocess, "run", side_effect=fake_process), patch.object(
+                modules["candidate"], "resolve_codex_home", return_value=directory / "codex-home"), patch("sys.argv", [
+                    "run.py", "--mode", "all", "--semantic-stability-check", "--baseline", str(baseline_output),
+                    "--authorized-policy-source-change", "agents", "--output-dir", str(candidate_output),
+                ]), patch("builtins.print"):
+            self.assertEqual(1, modules["candidate"].main())
+        return {
+            "module": modules["candidate"],
+            "baseline_path": baseline_output,
+            "candidate_path": candidate_output,
+            "baseline": modules["candidate"].load_baseline(baseline_output),
+            "cases": cases,
+        }
+
+    def test_confirmation_recovery_loads_raw_samples_and_main_runs_only_missing_observations(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = self._create_preserved_confirmation_run(Path(directory))
+            candidate = fixture["module"]
+            bundle = candidate.load_policy_manifest(Path(candidate.__file__).resolve().parents[3])
+            recovery = candidate.load_confirmation_recovery(
+                fixture["candidate_path"], fixture["baseline_path"], fixture["baseline"], bundle,
+                fixture["cases"], candidate.normalize_case_policy_bindings(fixture["cases"], bundle)
+            )
+            self.assertEqual([False, False], [each["passed"] for each in recovery["summary"]["results"]])
+            self.assertEqual([False, True], [each["passed"] for each in recovery["round_results"]["candidate"][0]["results"]])
+            self.assertEqual([3, 3], [each["round"] for each in recovery["failed_samples"]])
+            self.assertTrue(recovery["provenance"]["preserved_artifacts_sha256"])
+            original_summary = (fixture["candidate_path"] / "summary.json").read_bytes()
+            calls = []
+
+            def fake_process(command: list[str], **kwargs: Any) -> Mock:
+                result_path = Path(command[command.index("--output-last-message") + 1])
+                output_dir = result_path.parent
+                self.assertEqual("round-3", output_dir.parent.name)
+                calls.append(output_dir.name)
+                actual = {"results": [self._create_case_result(self.case, "Proceed. zzz")]}
+                result_path.write_text(json.dumps(actual), encoding="utf-8")
+                kwargs["stdout"].write(json.dumps({
+                    "type": "item.completed", "item": {"type": "agent_message", "text": json.dumps(actual)},
+                }) + "\n")
+                kwargs["stdout"].write(json.dumps({"type": "turn.completed", "usage": {}}) + "\n")
+                return Mock(returncode=0)
+
+            output_dir = Path(directory) / "recovered-output"
+            with patch.object(run.subprocess, "run", side_effect=fake_process), patch.object(
+                    candidate, "resolve_codex_home", return_value=Path(directory) / "codex-home"), patch("sys.argv", [
+                        "run.py", "--mode", "all", "--semantic-stability-check", "--baseline", str(fixture["baseline_path"]),
+                        "--authorized-policy-source-change", "agents", "--resume-confirmation", str(fixture["candidate_path"]),
+                        "--output-dir", str(output_dir),
+                    ]), patch("builtins.print"):
+                self.assertEqual(0, candidate.main())
+            summary = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
+            confirmation = summary["semantic_stability"]["confirmation"]
+            self.assertEqual(["baseline", "candidate"], calls)
+            self.assertEqual([False, False, True], confirmation["candidate_samples"][self.case["id"]])
+            self.assertEqual([False, True], confirmation["candidate_samples"]["recovered_case"])
+            self.assertTrue(summary["semantic_stability"]["passed"])
+            self.assertEqual(original_summary, (fixture["candidate_path"] / "summary.json").read_bytes())
+            self.assertEqual(2, len(summary["confirmation_recovery"]["failed_attempts"]))
+            self.assertTrue((fixture["candidate_path"] / "confirmation-recovery.json").is_file())
+
+    def test_confirmation_recovery_rejects_changed_sources_and_raw_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = self._create_preserved_confirmation_run(Path(directory))
+            candidate = fixture["module"]
+            repo_root = Path(candidate.__file__).resolve().parents[3]
+            output_dir = fixture["candidate_path"]
+            summary_path = output_dir / "summary.json"
+            previous = json.loads(summary_path.read_text(encoding="utf-8"))
+            cross_run = copy.deepcopy(previous)
+            cross_run["evaluations"][0]["events_log"] = str(fixture["baseline_path"] / "events-evaluation-1.jsonl")
+            mutations = [
+                ("current-policy", repo_root / "AGENTS.md", (repo_root / "AGENTS.md").read_bytes().rstrip(b"\n")),
+                ("current-cases", repo_root / ".codex/harness/agents/cases.toml",
+                 (repo_root / ".codex/harness/agents/cases.toml").read_bytes().replace(b'prompt = "Proceed."', b'prompt = "Inspect."')),
+                ("current-core", Path(candidate.__file__), Path(candidate.__file__).read_bytes().replace(b"MAX_EVALUATION_INPUT_BYTES = 110_000", b"MAX_EVALUATION_INPUT_BYTES = 109_999")),
+                ("preserved-source", output_dir / "policy-snapshot/AGENTS.md", b"changed"),
+                ("schema", output_dir / "decision-evaluation-1.schema.json", b"{}"),
+                ("raw-result", output_dir / "result-evaluation-1.json", b'{"results": []}'),
+                ("completed-event", output_dir / "events-evaluation-1.jsonl", b'{"type": "turn.completed"}\n'),
+                ("cross-run-log", summary_path, json.dumps(cross_run).encode("utf-8")),
+                ("missing-third-log", output_dir / "semantic-confirmation/round-3/candidate/events-evaluation-1.jsonl", None),
+                ("partial-third-result", output_dir / "semantic-confirmation/round-3/candidate/result-evaluation-1.json", b'{"results": []}'),
+            ]
+            for name, path, replacement in mutations:
+                with self.subTest(name=name):
+                    original = path.read_bytes() if path.exists() else None
+                    try:
+                        if replacement is None:
+                            path.unlink()
+                        else:
+                            path.write_bytes(replacement)
+                        with self.assertRaises(ValueError):
+                            bundle = candidate.load_policy_manifest(repo_root)
+                            cases = candidate.load_cases(None)
+                            candidate.load_confirmation_recovery(
+                                output_dir, fixture["baseline_path"], fixture["baseline"], bundle, cases,
+                                candidate.normalize_case_policy_bindings(cases, bundle)
+                            )
+                    finally:
+                        if original is None:
+                            path.unlink()
+                        else:
+                            path.write_bytes(original)
+
+    def test_confirmation_recovery_main_rejects_filters_before_execution_or_claim(self) -> None:
+        required = ["run.py", "--mode", "all", "--semantic-stability-check", "--baseline", "baseline", "--resume-confirmation", "previous"]
+        for extra in (["--mode", "semantic"], ["--case", "test_case"], ["--profile", "root"], ["--impact-source", "agents"],
+                      ["--allow-failures"], ["--transport-check"], ["--list-cases"]):
+            with self.subTest(extra=extra), patch("sys.argv", required + extra), patch.object(
+                    run, "run_cases") as run_cases, patch.object(run, "claim_confirmation_recovery") as claim_recovery, self.assertRaisesRegex(
+                    ValueError, "requires unfiltered"):
+                run.main()
+            run_cases.assert_not_called()
+            claim_recovery.assert_not_called()
+
     def test_confirmation_round_runs_baseline_and_candidate_concurrently(self) -> None:
         barrier = threading.Barrier(2)
 
@@ -896,6 +1287,44 @@ class RunTest(unittest.TestCase):
                 2, side_specs, Path("unused"), Path(output_directory), 1
             )
         self.assertEqual({"baseline", "candidate"}, set(actual))
+
+    def test_confirmation_round_serial_mode_preserves_side_order_and_limits_concurrency(self) -> None:
+        lock = threading.Lock()
+        active = 0
+        max_active = 0
+        started_sides = []
+
+        def fake_sample(*args: Any) -> tuple[dict[str, Any], dict[str, Any]]:
+            nonlocal active, max_active
+            side = args[0]
+            with lock:
+                started_sides.append(side)
+                active += 1
+                max_active = max(max_active, active)
+            threading.Event().wait(0.02)
+            with lock:
+                active -= 1
+            return {"side": side}, {"results": []}
+
+        side_specs = {
+            side: {
+                "case_ids": [self.case["id"]],
+                "cases": [self.case],
+                "evaluator": None,
+                "policy": side.encode(),
+                "policy_sha256": side,
+                "semantic_policy_assertions": {},
+            }
+            for side in ("baseline", "candidate")
+        }
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "run_confirmation_sample", side_effect=fake_sample):
+            actual = run.run_confirmation_round(
+                3, side_specs, Path("unused"), Path(output_directory), 1, serial=True
+            )
+        self.assertEqual(["baseline", "candidate"], started_sides)
+        self.assertEqual(["baseline", "candidate"], list(actual))
+        self.assertEqual(1, max_active)
 
     def test_confirmation_sample_uses_selected_evaluator(self) -> None:
         actual = {"results": [self._create_case_result(self.case, "Proceed.")]}
@@ -2196,11 +2625,11 @@ references = []
         bundle = run.load_policy_manifest(repo_root)
         expected = {
             "code-write": {"code-of-conduct", "code-implementation", "implementation-rules", "non-regression"},
-            "test-write": {"code-of-conduct", "code-implementation", "implementation-rules", "testing-rules", "contracts-and-removal"},
+            "test-write": {"token-efficiency", "code-of-conduct", "code-implementation", "implementation-rules", "testing-rules", "contracts-and-removal"},
             "code-review": {"contracts-and-removal", "code-verification"},
             "code-design": {"implementation-rules", "testing-rules", "contracts-and-removal", "cross-cutting-skills"},
             "runtime-diagnosis": {"runtime-triage", "code-verification"},
-            "command-execution": {"token-efficiency", "code-verification"},
+            "command-execution": {"token-efficiency", "docker-resources", "code-verification"},
             "gen-ut": {"code-of-conduct", "code-implementation", "implementation-rules", "contracts-and-removal", "gen-ut"},
             "review-pr": {"code-of-conduct", "implementation-rules", "code-verification", "review-pr"},
             "policy-maintenance": {"policy-maintenance", "policy-source-manifest"},

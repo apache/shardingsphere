@@ -27,8 +27,7 @@ class FirebirdDatabaseInfoPacketTypeTest {
     
     @Test
     void assertValueOf() {
-        assertThat(FirebirdDatabaseInfoPacketType.valueOf(FirebirdDatabaseInfoPacketType.DB_SQL_DIALECT.getCode()),
-                is(FirebirdDatabaseInfoPacketType.DB_SQL_DIALECT));
+        assertThat(FirebirdDatabaseInfoPacketType.valueOf(FirebirdDatabaseInfoPacketType.DB_SQL_DIALECT.getCode()), is(FirebirdDatabaseInfoPacketType.DB_SQL_DIALECT));
     }
     
     @Test

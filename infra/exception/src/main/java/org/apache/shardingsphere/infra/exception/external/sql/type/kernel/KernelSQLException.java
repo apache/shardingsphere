@@ -38,6 +38,19 @@ public abstract class KernelSQLException extends ShardingSphereSQLException {
         super(sqlState, TYPE_OFFSET, getErrorCode(kernelCode, errorCode), cause, reason, messageArgs);
     }
     
+    /**
+     * Create a kernel SQL exception without formatting the reason.
+     *
+     * @param reason literal exception message
+     * @param sqlState SQL state
+     * @param kernelCode kernel code
+     * @param errorCode error code
+     * @param cause cause, or {@code null} if absent
+     */
+    protected KernelSQLException(final String reason, final SQLState sqlState, final int kernelCode, final int errorCode, final Exception cause) {
+        super(sqlState.getValue(), TYPE_OFFSET, getErrorCode(kernelCode, errorCode), reason, cause);
+    }
+    
     private static int getErrorCode(final int kernelCode, final int errorCode) {
         Preconditions.checkArgument(kernelCode >= 0 && kernelCode < 10, "The value range of kernel code should be [0, 10).");
         Preconditions.checkArgument(errorCode >= 0 && errorCode < 1000, "The value range of error code should be [0, 1000).");

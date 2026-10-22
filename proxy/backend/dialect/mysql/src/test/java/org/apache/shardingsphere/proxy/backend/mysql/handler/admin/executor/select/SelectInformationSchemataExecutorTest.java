@@ -69,7 +69,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -194,7 +193,7 @@ class SelectInformationSchemataExecutorTest {
         when(lowerCasePreparedStatement.executeQuery()).thenReturn(lowerCaseResultSet);
         when(queryPreparedStatement.executeQuery()).thenReturn(resultSet);
         when(result.prepareStatement(any(String.class))).thenReturn(queryPreparedStatement);
-        when(result.prepareStatement(eq("SELECT @@lower_case_table_names"))).thenReturn(lowerCasePreparedStatement);
+        when(result.prepareStatement("SELECT @@lower_case_table_names")).thenReturn(lowerCasePreparedStatement);
         return result;
     }
     
