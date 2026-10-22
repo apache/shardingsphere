@@ -32,12 +32,11 @@ class FirebirdBinaryProtocolValueFactoryTest {
         assertThat(actual, isA(FirebirdStringBinaryProtocolValue.class));
     }
     
-    // TODO Uncomment when a specific handler is required; currently BLOB is handled by StringBinaryProtocolValue
-    // @Test
-    // void assertGetByteBinaryProtocolValue() {
-    // FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.BLOB);
-    // assertThat(actual, isA(FirebirdByteBinaryProtocolValue.class));
-    // }
+    @Test
+    void assertGetBlobBinaryProtocolValue() {
+        FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.BLOB);
+        assertThat(actual, isA(FirebirdBlobBinaryProtocolValue.class));
+    }
     
     @Test
     void assertGetInt16BinaryProtocolValue() {
