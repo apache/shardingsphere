@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 @EqualsAndHashCode
 public final class WorkflowKind {
     
-    private static final Pattern IDENTIFIER_PATTERN = Pattern.compile("[a-z0-9]+(?:\\.[a-z0-9]+)+");
+    private static final Pattern IDENTIFIER_PATTERN = Pattern.compile("[a-z0-9]+(?:\\.[a-z0-9]+)++");
     
     private final String value;
     

@@ -126,8 +126,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Test data should use standardized prefixes (e.g., `foo_`/`bar_`) to clearly identify their test purpose
 - Use `PropertiesBuilder` simplify `Properties` building.
 - Parameterized tests:
-    - For parameterized tests, provide display names via parameters and use `"{0}"` as the display-name template;
-    - Declare the first parameter of each parameterized test exactly as `final String name`;
+    - Parameterized test display names must distinguish test scenarios;
     - Provide at least three meaningful argument sets for each parameterized test;
     - Only combine cases that invoke the same method under test and use the same form of assertion.
 

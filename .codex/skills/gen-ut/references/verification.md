@@ -65,7 +65,7 @@ python3 .codex/skills/gen-ut/scripts/scan_quality_rules.py --json \
   <ResolvedTestFileSet>
 ```
 
-Retain the applicable repository Checkstyle report alongside the scanner baseline; Checkstyle owns Boolean-literal assertions and parameterized-test display-name and first-parameter syntax.
+Retain the applicable repository Checkstyle report alongside the scanner baseline; Checkstyle owns Boolean-literal assertion syntax.
 Apply `R11` to baseline diagnostics rather than treating every nonzero scanner exit as a new blocking failure.
 New or task-relevant Checkstyle warnings block completion; only baseline-proven unchanged, unrelated diagnostics may remain non-blocking under `R11`.
 Read coverage counters and missed branch locations from the native JaCoCo XML and HTML reports.

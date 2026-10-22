@@ -49,25 +49,6 @@ exit "$rc"
 - Filter logs for startup, readiness, `BUILD SUCCESS`, `Process finished`, `testFailed`, `Caused by`, or feature-specific markers.
 - Before using a running service as evidence, prove that it uses current-source or rebuilt task artifacts. Stop temporary processes after verification.
 
-#### Local Docker Test Images
-
-- For serial local tests, use the repository's existing standard image names with the `latest` tag for locally built test artifacts instead of inventing names or per-run tags.
-  Preserve existing external-dependency and CI image tags.
-- Reuse an existing image only after proving that it contains the current artifacts being verified; the presence of `latest` alone is not proof.
-  When artifacts change or freshness cannot be proved, rebuild current artifacts and update the same `latest` tag through the repository's standard build flow.
-- Record the old image ID, if present, before rebuilding.
-  Verify the new image ID after a successful build, and do not delete it when it equals the old ID.
-  Retain the original usable image if the build fails.
-- After a successful replacement, remove the recorded old image only after confirming that it has no other tags, no container dependencies, no other use, and a verified rebuild source.
-  Check all containers, including running and stopped containers, when verifying image dependencies.
-  An untagged `<none>:<none>` listing does not prove that an image is unused, and overwriting `latest` does not remove the old image.
-- Apply the same tag, dependency, other-use, and rebuild checks to task-created temporary images, and handle them after build or test success or failure.
-  Keep the standard `latest` image intended for reuse.
-  For any image that cannot be safely removed, report its ID, retention reason, and conditions for later cleanup.
-- When parallel local tests require independent tags, explain the isolation need and plan cleanup before using them so that tasks do not contend for `latest`.
-- Limit deletion to image IDs confirmed for this task, using `docker image rm --no-prune` without force to avoid removing unselected parent images.
-  Do not run global prune or extend image cleanup to other tasks' images, containers, volumes, or data.
-
 ### Database Queries
 
 - Prefer read-only queries and bound rows, columns, object names, and metadata filters. Avoid `SELECT *` without a specific reason.
