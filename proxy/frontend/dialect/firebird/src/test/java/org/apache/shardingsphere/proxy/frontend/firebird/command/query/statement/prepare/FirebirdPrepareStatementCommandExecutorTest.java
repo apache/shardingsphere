@@ -353,6 +353,32 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeAliasedCommonTableExpressionShorthandSelect() throws Exception {
+        FirebirdReturnColumnPacket actualColumnPacket = describeSingleColumn("WITH foo_cte (n) AS (SELECT 'foo' FROM foo_tbl) SELECT foo_alias.* FROM foo_cte foo_alias");
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class, RETURNS_DEEP_STUBS);
+        actualColumnPacket.write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeCommonTableExpressionWithDerivedTableSelect() throws Exception {
+        FirebirdReturnColumnPacket actualColumnPacket =
+                describeSingleColumn("WITH foo_cte (n) AS (SELECT derived_tbl.n FROM (SELECT 'foo' AS n FROM foo_tbl) derived_tbl) SELECT n FROM foo_cte");
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class, RETURNS_DEEP_STUBS);
+        actualColumnPacket.write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeDerivedTableFromCommonTableExpressionSelect() throws Exception {
+        FirebirdReturnColumnPacket actualColumnPacket =
+                describeSingleColumn("WITH foo_cte (n) AS (SELECT 'foo' FROM foo_tbl) SELECT derived_tbl.n FROM (SELECT n FROM foo_cte) derived_tbl");
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class, RETURNS_DEEP_STUBS);
+        actualColumnPacket.write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+    }
+    
+    @Test
     void assertDescribeCommonTableExpressionWithShorthandSelect() throws Exception {
         FirebirdReturnColumnPacket actualColumnPacket = describeSingleColumn("WITH foo_cte (a, b, n) AS (SELECT foo_tbl.*, 'foo' FROM foo_tbl) SELECT n FROM foo_cte");
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class, RETURNS_DEEP_STUBS);

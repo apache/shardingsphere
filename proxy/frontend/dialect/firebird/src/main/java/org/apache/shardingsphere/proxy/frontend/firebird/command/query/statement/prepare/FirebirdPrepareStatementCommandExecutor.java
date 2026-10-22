@@ -292,11 +292,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             if (!(from instanceof SubqueryTableSegment)) {
                 return expandProjections;
             }
-            Collection<Projection> subqueryProjections = new LinkedList<>();
-            for (SelectStatementContext value : subquery.values()) {
-                subqueryProjections.addAll(value.getProjectionsContext().getExpandProjections());
-            }
-            return subqueryProjections;
+            SelectStatementContext fromSubquery = subquery.get(((SubqueryTableSegment) from).getSubquery().getStartIndex());
+            return null == fromSubquery ? expandProjections : fromSubquery.getProjectionsContext().getExpandProjections();
         }
         if (null == returningSegment) {
             return Collections.emptyList();
@@ -346,59 +343,91 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         List<CommonTableExpressionSegment> commonTableExpressions = new ArrayList<>(selectStatement.getWith().get().getCommonTableExpressions());
         ColumnProjection columnProjection = (ColumnProjection) projection;
-        IdentifierValue owner = columnProjection.getOwner().orElse(null);
-        Optional<ProjectionSegment> result = selectStatement.getFrom().flatMap(optional -> findOriginProjectionSegment(commonTableExpressions, optional, owner, columnProjection.getName()));
-        return result.flatMap(optional -> new ProjectionEngine(selectStatement.getDatabaseType()).createProjection(optional));
+        Optional<ProjectionSegment> result =
+                findOriginProjectionSegment(commonTableExpressions, getProjectionSelect(selectStatement), columnProjection.getOwner().orElse(null), columnProjection.getName());
+        return result.flatMap(projectionSegment -> new ProjectionEngine(selectStatement.getDatabaseType()).createProjection(projectionSegment));
+    }
+    
+    private SelectStatement getProjectionSelect(final SelectStatement selectStatement) {
+        // projections of a select from a derived table are taken from the derived table, see getProjections
+        return selectStatement.getFrom().filter(SubqueryTableSegment.class::isInstance).map(optional -> ((SubqueryTableSegment) optional).getSubquery().getSelect()).orElse(selectStatement);
     }
     
     private boolean isTemporaryColumnWithoutTable(@Nullable final ColumnSegmentBoundInfo columnBoundInfo) {
         return null != columnBoundInfo && TableSourceType.TEMPORARY_TABLE == columnBoundInfo.getTableSourceType() && columnBoundInfo.getOriginalTable().getValue().isEmpty();
     }
     
-    private Optional<ProjectionSegment> findOriginProjectionSegment(final List<CommonTableExpressionSegment> commonTableExpressions, final TableSegment from,
+    private Optional<ProjectionSegment> findOriginProjectionSegment(final List<CommonTableExpressionSegment> commonTableExpressions, final SelectStatement select,
                                                                     @Nullable final IdentifierValue owner, final IdentifierValue columnName) {
-        if (from instanceof JoinTableSegment) {
-            Optional<ProjectionSegment> result = findOriginProjectionSegment(commonTableExpressions, ((JoinTableSegment) from).getLeft(), owner, columnName);
-            return result.isPresent() ? result : findOriginProjectionSegment(commonTableExpressions, ((JoinTableSegment) from).getRight(), owner, columnName);
+        Collection<TableSegment> tableSources = new LinkedList<>();
+        select.getFrom().ifPresent(from -> addTableSources(from, tableSources));
+        for (TableSegment each : tableSources) {
+            if (null == owner || owner.getValue().equalsIgnoreCase(each.getAliasName().orElseGet(() -> getSourceTableName(each)))) {
+                Optional<ProjectionSegment> result = findSourceProjectionSegment(commonTableExpressions, each, columnName);
+                if (result.isPresent()) {
+                    return result;
+                }
+            }
         }
-        return from instanceof SimpleTableSegment ? findCommonTableExpressionOriginProjectionSegment(commonTableExpressions, (SimpleTableSegment) from, owner, columnName) : Optional.empty();
-    }
-    
-    private Optional<ProjectionSegment> findCommonTableExpressionOriginProjectionSegment(final List<CommonTableExpressionSegment> commonTableExpressions, final SimpleTableSegment table,
-                                                                                         @Nullable final IdentifierValue owner, final IdentifierValue columnName) {
-        String tableName = table.getTableName().getIdentifier().getValue();
-        if (table.getOwner().isPresent() || null != owner && !owner.getValue().equalsIgnoreCase(table.getAliasName().orElse(tableName))) {
+        if (null == owner) {
             return Optional.empty();
         }
-        for (int i = 0; i < commonTableExpressions.size(); i++) {
-            if (tableName.equalsIgnoreCase(commonTableExpressions.get(i).getAliasName().orElse(""))) {
-                return findCommonTableExpressionColumnOrigin(commonTableExpressions.subList(0, i), commonTableExpressions.get(i), columnName);
+        // columns expanded from alias.* keep the CTE name instead of the alias as owner
+        for (TableSegment each : tableSources) {
+            if (each.getAliasName().isPresent() && owner.getValue().equalsIgnoreCase(getSourceTableName(each))) {
+                return findSourceProjectionSegment(commonTableExpressions, each, columnName);
             }
         }
         return Optional.empty();
     }
     
-    private Optional<ProjectionSegment> findCommonTableExpressionColumnOrigin(final List<CommonTableExpressionSegment> precedingCommonTableExpressions,
-                                                                              final CommonTableExpressionSegment commonTableExpression, final IdentifierValue columnName) {
-        SelectStatement anchorSelect = getAnchorSelect(commonTableExpression);
-        Optional<ProjectionSegment> result = findCommonTableExpressionColumn(commonTableExpression, anchorSelect, columnName);
+    private void addTableSources(final TableSegment tableSegment, final Collection<TableSegment> tableSources) {
+        if (tableSegment instanceof JoinTableSegment) {
+            addTableSources(((JoinTableSegment) tableSegment).getLeft(), tableSources);
+            addTableSources(((JoinTableSegment) tableSegment).getRight(), tableSources);
+        } else if (tableSegment instanceof SimpleTableSegment || tableSegment instanceof SubqueryTableSegment) {
+            tableSources.add(tableSegment);
+        }
+    }
+    
+    private String getSourceTableName(final TableSegment tableSegment) {
+        return tableSegment instanceof SimpleTableSegment ? ((SimpleTableSegment) tableSegment).getTableName().getIdentifier().getValue() : "";
+    }
+    
+    private Optional<ProjectionSegment> findSourceProjectionSegment(final List<CommonTableExpressionSegment> commonTableExpressions, final TableSegment tableSource,
+                                                                    final IdentifierValue columnName) {
+        if (tableSource instanceof SubqueryTableSegment) {
+            SubqueryTableSegment subqueryTable = (SubqueryTableSegment) tableSource;
+            return findDerivedColumnOrigin(commonTableExpressions, subqueryTable.getSubquery().getSelect(), subqueryTable.getColumns(), columnName);
+        }
+        SimpleTableSegment table = (SimpleTableSegment) tableSource;
+        if (table.getOwner().isPresent()) {
+            return Optional.empty();
+        }
+        String tableName = getSourceTableName(table);
+        for (int i = 0; i < commonTableExpressions.size(); i++) {
+            CommonTableExpressionSegment commonTableExpression = commonTableExpressions.get(i);
+            if (tableName.equalsIgnoreCase(commonTableExpression.getAliasName().orElse(""))) {
+                return findDerivedColumnOrigin(commonTableExpressions.subList(0, i), commonTableExpression.getSubquery().getSelect(), commonTableExpression.getColumns(), columnName);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<ProjectionSegment> findDerivedColumnOrigin(final List<CommonTableExpressionSegment> commonTableExpressions, final SelectStatement derivedSelect,
+                                                                final Collection<ColumnSegment> declaredColumns, final IdentifierValue columnName) {
+        SelectStatement select = derivedSelect.getCombine().map(optional -> optional.getLeft().getSelect()).orElse(derivedSelect);
+        Optional<ProjectionSegment> result = findProjectionSegment(select, declaredColumns, columnName);
         if (!result.isPresent() || !(result.get() instanceof ColumnProjectionSegment) || !isTemporaryColumnWithoutTable(((ColumnProjectionSegment) result.get()).getColumn().getColumnBoundInfo())) {
             return result;
         }
         ColumnSegment column = ((ColumnProjectionSegment) result.get()).getColumn();
-        IdentifierValue owner = column.getOwner().map(OwnerSegment::getIdentifier).orElse(null);
-        return anchorSelect.getFrom().flatMap(optional -> findOriginProjectionSegment(precedingCommonTableExpressions, optional, owner, column.getIdentifier()));
+        return findOriginProjectionSegment(commonTableExpressions, select, column.getOwner().map(OwnerSegment::getIdentifier).orElse(null), column.getIdentifier());
     }
     
-    private SelectStatement getAnchorSelect(final CommonTableExpressionSegment commonTableExpression) {
-        SelectStatement select = commonTableExpression.getSubquery().getSelect();
-        return select.getCombine().map(optional -> optional.getLeft().getSelect()).orElse(select);
-    }
-    
-    private Optional<ProjectionSegment> findCommonTableExpressionColumn(final CommonTableExpressionSegment commonTableExpression, final SelectStatement anchorSelect,
-                                                                        final IdentifierValue columnName) {
-        Iterator<ColumnSegment> columns = commonTableExpression.getColumns().iterator();
-        for (ProjectionSegment each : getExpandedProjectionSegments(anchorSelect)) {
+    private Optional<ProjectionSegment> findProjectionSegment(final SelectStatement select, final Collection<ColumnSegment> declaredColumns, final IdentifierValue columnName) {
+        Iterator<ColumnSegment> columns = declaredColumns.iterator();
+        for (ProjectionSegment each : getExpandedProjectionSegments(select)) {
             String columnLabel = columns.hasNext() ? columns.next().getIdentifier().getValue() : each.getColumnLabel();
             if (columnLabel.equalsIgnoreCase(columnName.getValue())) {
                 return Optional.of(each);
