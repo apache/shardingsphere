@@ -193,6 +193,9 @@
 1. SQL Parser: Support parsing SYSTEM_USER in SQL92 dialect and bind it as a niladic function instead of a column - [#39102](https://github.com/apache/shardingsphere/pull/39102)
 1. E2E: Add Firebird to SQL E2E tests through ShardingSphere-Proxy
 1. Proxy: Simplify connection properties parsing and metadata loading in Firebird - [#40323](https://github.com/apache/shardingsphere/pull/40323)
+1. Proxy: Simplify SQL dialect exception mapping in Firebird - [#40312](https://github.com/apache/shardingsphere/pull/40312)
+1. Proxy: Simplify protocol codec and packets in Firebird - [#40314](https://github.com/apache/shardingsphere/pull/40314)
+1. SQL Parser: Simplify SQL statement visitors in Firebird - [#40315](https://github.com/apache/shardingsphere/pull/40315)
 
 ## Release 5.5.3
 

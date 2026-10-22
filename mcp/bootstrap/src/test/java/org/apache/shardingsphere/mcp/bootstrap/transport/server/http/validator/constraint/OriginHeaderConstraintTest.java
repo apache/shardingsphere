@@ -20,6 +20,11 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.MCPTransportSecurityException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -48,27 +53,19 @@ class OriginHeaderConstraintTest {
         assertDoesNotThrow(() -> new OriginHeaderConstraint(true).validate("http://[::1]:8080"));
     }
     
-    @Test
-    void assertValidateWithRemoteOriginOnLoopbackBinding() {
-        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> new OriginHeaderConstraint(true).validate("http://example.com:8080"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getDeniedOrigins")
+    void assertValidateWithDeniedOrigin(final String name, final boolean loopbackBinding, final String origin) {
+        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> new OriginHeaderConstraint(loopbackBinding).validate(origin));
         assertThat(actual.getStatusCode(), is(403));
         assertThat(actual.getMessage(), is("Origin is not allowed by MCP HTTP transport policy."));
         assertThat(((MCPTransportSecurityException) actual).getCategory(), is("origin_not_allowed"));
     }
     
-    @Test
-    void assertValidateWithLoopbackOriginOnNonLoopbackBinding() {
-        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> new OriginHeaderConstraint(false).validate("http://127.0.0.1:8080"));
-        assertThat(actual.getStatusCode(), is(403));
-        assertThat(actual.getMessage(), is("Origin is not allowed by MCP HTTP transport policy."));
-        assertThat(((MCPTransportSecurityException) actual).getCategory(), is("origin_not_allowed"));
-    }
-    
-    @Test
-    void assertValidateWithInvalidOrigin() {
-        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> new OriginHeaderConstraint(true).validate("://bad-origin"));
-        assertThat(actual.getStatusCode(), is(403));
-        assertThat(actual.getMessage(), is("Origin is not allowed by MCP HTTP transport policy."));
-        assertThat(((MCPTransportSecurityException) actual).getCategory(), is("origin_not_allowed"));
+    private static Stream<Arguments> getDeniedOrigins() {
+        return Stream.of(
+                Arguments.of("remote origin on loopback binding", true, "http://example.com:8080"),
+                Arguments.of("loopback origin on non-loopback binding", false, "http://127.0.0.1:8080"),
+                Arguments.of("invalid origin", true, "://bad-origin"));
     }
 }

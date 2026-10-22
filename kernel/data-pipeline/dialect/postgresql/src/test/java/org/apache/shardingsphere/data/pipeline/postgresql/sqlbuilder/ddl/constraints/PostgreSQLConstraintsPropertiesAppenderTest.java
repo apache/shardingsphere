@@ -31,7 +31,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -59,8 +58,8 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
         Collection<Map<String, Object>> primaryKeys = (Collection<Map<String, Object>>) context.get("primary_key");
         assertThat(primaryKeys.size(), is(1));
         Map<String, Object> primaryKey = primaryKeys.iterator().next();
-        List<String> primaryColumns = ((Collection<Map<String, Object>>) primaryKey.get("columns")).stream().map(each -> (String) each.get("column")).collect(Collectors.toList());
-        assertThat(primaryColumns, is(Arrays.asList("id", "name")));
+        Collection<String> actualPrimaryColumns = ((Collection<Map<String, Object>>) primaryKey.get("columns")).stream().map(each -> (String) each.get("column")).toList();
+        assertThat(actualPrimaryColumns, is(Arrays.asList("id", "name")));
         assertThat(primaryKey.get("include"), is(Collections.singletonList("include_col")));
         Collection<Map<String, Object>> uniqueConstraints = (Collection<Map<String, Object>>) context.get("unique_constraint");
         assertThat(uniqueConstraints.size(), is(1));
@@ -86,10 +85,10 @@ class PostgreSQLConstraintsPropertiesAppenderTest {
         Collection<Map<String, Object>> exclusionConstraints = (Collection<Map<String, Object>>) context.get("exclude_constraint");
         assertThat(exclusionConstraints.size(), is(1));
         Map<String, Object> exclusionConstraint = exclusionConstraints.iterator().next();
-        List<Boolean> orders = ((Collection<Map<String, Object>>) exclusionConstraint.get("columns")).stream().map(each -> (Boolean) each.get("order")).collect(Collectors.toList());
-        List<Boolean> nullsOrders = ((Collection<Map<String, Object>>) exclusionConstraint.get("columns")).stream().map(each -> (Boolean) each.get("nulls_order")).collect(Collectors.toList());
-        assertThat(orders, is(Arrays.asList(true, false)));
-        assertThat(nullsOrders, is(Arrays.asList(false, true)));
+        Collection<Boolean> actualOrders = ((Collection<Map<String, Object>>) exclusionConstraint.get("columns")).stream().map(each -> (Boolean) each.get("order")).toList();
+        Collection<Boolean> actualNullsOrders = ((Collection<Map<String, Object>>) exclusionConstraint.get("columns")).stream().map(each -> (Boolean) each.get("nulls_order")).toList();
+        assertThat(actualOrders, is(Arrays.asList(true, false)));
+        assertThat(actualNullsOrders, is(Arrays.asList(false, true)));
         assertThat(exclusionConstraint.get("include"), is(Collections.singletonList("excl_inc")));
     }
     

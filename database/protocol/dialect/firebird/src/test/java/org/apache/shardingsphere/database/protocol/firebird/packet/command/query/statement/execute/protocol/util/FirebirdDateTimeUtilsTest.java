@@ -55,8 +55,7 @@ class FirebirdDateTimeUtilsTest {
     void assertGetEncodedTimeAndSetTime() {
         LocalDateTime sourceDateTime = LocalDateTime.of(2024, 6, 30, 1, 2, 3, 500_000_000);
         FirebirdDateTimeUtils utils = new FirebirdDateTimeUtils(sourceDateTime);
-        int expectedFractions = (sourceDateTime.getNano() / FirebirdDateTimeUtils.NANOSECONDS_PER_FRACTION)
-                % FirebirdDateTimeUtils.FRACTIONS_PER_SECOND;
+        int expectedFractions = (sourceDateTime.getNano() / FirebirdDateTimeUtils.NANOSECONDS_PER_FRACTION) % FirebirdDateTimeUtils.FRACTIONS_PER_SECOND;
         int expectedEncodedTime = sourceDateTime.getHour() * FirebirdDateTimeUtils.FRACTIONS_PER_HOUR
                 + sourceDateTime.getMinute() * FirebirdDateTimeUtils.FRACTIONS_PER_MINUTE
                 + sourceDateTime.getSecond() * FirebirdDateTimeUtils.FRACTIONS_PER_SECOND

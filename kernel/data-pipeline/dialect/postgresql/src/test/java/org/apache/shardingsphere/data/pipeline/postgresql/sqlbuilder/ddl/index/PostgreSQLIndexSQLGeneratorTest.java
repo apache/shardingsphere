@@ -64,7 +64,7 @@ class PostgreSQLIndexSQLGeneratorTest {
         when(templateExecutor.getMajorVersion()).thenReturn(10);
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/indexes/%s/nodes.ftl"))).thenReturn(Collections.singletonList(createIndexNode(2L, false)));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/indexes/%s/properties.ftl"))).thenReturn(Collections.singletonList(createNonBtreeIndexProps()));
-        when(templateExecutor.executeByTemplate(eq(Collections.singletonMap("idx", 2L)), eq("component/indexes/%s/column_details.ftl")))
+        when(templateExecutor.executeByTemplate(Collections.singletonMap("idx", 2L), "component/indexes/%s/column_details.ftl"))
                 .thenReturn(Collections.singletonList(createColumnDetail("foo_col", "foo_collation", "foo_op_class", null)));
         PostgreSQLIndexSQLGenerator generator = new PostgreSQLIndexSQLGenerator(mock(Connection.class), 10, 0);
         Plugins.getMemberAccessor().set(PostgreSQLIndexSQLGenerator.class.getDeclaredField("templateExecutor"), generator, templateExecutor);

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
@@ -56,20 +57,14 @@ class FirebirdBooleanBinaryProtocolValueTest {
     void assertWriteWithTrue() {
         ByteBuf byteBuf = Unpooled.buffer();
         new FirebirdBooleanBinaryProtocolValue().write(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8), true);
-        assertThat(byteBuf.readByte(), is((byte) 1));
-        assertThat(byteBuf.readByte(), is((byte) 0));
-        assertThat(byteBuf.readByte(), is((byte) 0));
-        assertThat(byteBuf.readByte(), is((byte) 0));
+        assertThat(ByteBufUtil.getBytes(byteBuf), is(new byte[]{1, 0, 0, 0}));
     }
     
     @Test
     void assertWriteWithFalse() {
         ByteBuf byteBuf = Unpooled.buffer();
         new FirebirdBooleanBinaryProtocolValue().write(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8), false);
-        assertThat(byteBuf.readByte(), is((byte) 0));
-        assertThat(byteBuf.readByte(), is((byte) 0));
-        assertThat(byteBuf.readByte(), is((byte) 0));
-        assertThat(byteBuf.readByte(), is((byte) 0));
+        assertThat(ByteBufUtil.getBytes(byteBuf), is(new byte[]{0, 0, 0, 0}));
     }
     
     @Test

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
@@ -60,11 +61,8 @@ class FirebirdInt16BinaryProtocolValueTest {
     @MethodSource("writeArguments")
     void assertWrite(final String name, final Object value, final byte[] expected) {
         ByteBuf actualBuffer = Unpooled.buffer();
-        FirebirdPacketPayload actualPayload = new FirebirdPacketPayload(actualBuffer, StandardCharsets.UTF_8);
-        new FirebirdInt16BinaryProtocolValue().write(actualPayload, value);
-        byte[] actual = new byte[16];
-        actualBuffer.getBytes(0, actual);
-        assertThat(actual, is(expected));
+        new FirebirdInt16BinaryProtocolValue().write(new FirebirdPacketPayload(actualBuffer, StandardCharsets.UTF_8), value);
+        assertThat(ByteBufUtil.getBytes(actualBuffer), is(expected));
     }
     
     @Test
