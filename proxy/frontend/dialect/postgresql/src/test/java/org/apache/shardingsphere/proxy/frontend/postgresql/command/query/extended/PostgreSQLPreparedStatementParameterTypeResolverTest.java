@@ -145,6 +145,22 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         assertThat(actual.get(0), sameInstance(expected));
     }
     
+    @Test
+    void assertResolveUnspecifiedParameterValuesWithRepeatedParameter() {
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT id FROM foo_tbl WHERE id=? OR id=?", Arrays.asList(0, 0));
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement,
+                Collections.singletonList(new PostgreSQLTypeUnspecifiedSQLParameter("1")));
+        assertThat(actual, is(Collections.singletonList(1)));
+    }
+    
+    @Test
+    void assertResolveUnspecifiedParameterValuesWithParameterAlsoUsedAsFunctionArgument() {
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT abs(?) FROM foo_tbl WHERE id=?", Arrays.asList(0, 0));
+        PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("-2147483648");
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Collections.singletonList(expected));
+        assertThat(actual.get(0), sameInstance(expected));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("resolveUnspecifiedParameterValuesWithUnresolvedTextArguments")
     void assertResolveUnspecifiedParameterValuesWithUnresolvedText(final String name, final String text) {
