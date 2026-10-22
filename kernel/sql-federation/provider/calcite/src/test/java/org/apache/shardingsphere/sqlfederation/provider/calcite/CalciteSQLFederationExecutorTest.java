@@ -88,6 +88,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -312,7 +313,7 @@ class CalciteSQLFederationExecutorTest {
                         (mock, context) -> when(mock.compile(any(ExecutionPlanCacheKey.class), eq(false))).thenReturn(executionPlan));
                 MockedStatic<RelOptUtil> relOptUtil = mockStatic(RelOptUtil.class)) {
             relOptUtil.when(() -> RelOptUtil.toString(any(RelNode.class), eq(SqlExplainLevel.ALL_ATTRIBUTES))).thenReturn("plan");
-            executor.executeQuery(prepareEngine, callback, federationContext);
+            assertThat(executor.executeQuery(prepareEngine, callback, federationContext), sameInstance(resultSet));
         }
     }
     

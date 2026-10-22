@@ -33,6 +33,7 @@
 1. SQL Parser: Preserve SQLServer `CREATE TABLE` column nullability metadata - [#39414](https://github.com/apache/shardingsphere/pull/39414)
 1. SQL Parser: Preserve MySQL `ALTER TABLE MODIFY COLUMN` nullability metadata - [#39421](https://github.com/apache/shardingsphere/pull/39421)
 1. SQL Parser: Preserve Firebird `CREATE TABLE` column nullability metadata - [#39423](https://github.com/apache/shardingsphere/pull/39423)
+1. SQL Parser: Fix Firebird parsing of KEY, TEXT and COMMENT column aliases - [#40262](https://github.com/apache/shardingsphere/issues/40262)
 1. SQL Parser: Preserve openGauss `CREATE TABLE` column nullability metadata - [#39425](https://github.com/apache/shardingsphere/pull/39425)
 1. SQL Parser: Preserve Hive `CREATE TABLE` column nullability metadata - [#39428](https://github.com/apache/shardingsphere/pull/39428)
 1. SQL Parser: Preserve SQLServer `ALTER TABLE ALTER COLUMN` nullability metadata - [#39430](https://github.com/apache/shardingsphere/pull/39430)
@@ -192,6 +193,7 @@
 1. SQL Parser: Support parsing SYSTEM_USER in SQL92 dialect and bind it as a niladic function instead of a column - [#39102](https://github.com/apache/shardingsphere/pull/39102)
 1. E2E: Add Firebird to SQL E2E tests through ShardingSphere-Proxy
 1. Proxy: Simplify protocol codec and packets in Firebird - [#40314](https://github.com/apache/shardingsphere/pull/40314)
+1. SQL Parser: Simplify SQL statement visitors in Firebird - [#40315](https://github.com/apache/shardingsphere/pull/40315)
 
 ## Release 5.5.3
 

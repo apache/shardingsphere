@@ -210,7 +210,7 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
         // MARIADB CHANGED BEGIN
         if (null != ctx.LEAD() || null != ctx.LAG() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE() || null != ctx.MEDIAN()) {
             result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
-            appendLeadLagParameters(result.getParameters(), ctx.leadLagInfo());
+            appendWindowFunctionLeadLagParameters(result.getParameters(), ctx.leadLagInfo());
         }
         // MARIADB CHANGED END
         if (null != ctx.NTH_VALUE()) {
@@ -221,7 +221,7 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
         return result;
     }
     
-    private void appendLeadLagParameters(final Collection<ExpressionSegment> parameters, final LeadLagInfoContext ctx) {
+    private void appendWindowFunctionLeadLagParameters(final Collection<ExpressionSegment> parameters, final LeadLagInfoContext ctx) {
         if (null == ctx) {
             return;
         }
