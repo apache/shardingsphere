@@ -142,6 +142,8 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("batch_release", FirebirdCommandPacketType.BATCH_RLS, 8),
                 Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, 8),
                 Arguments.of("batch_sync", FirebirdCommandPacketType.BATCH_SYNC, 4),
+                Arguments.of("connect", FirebirdCommandPacketType.CONNECT, 20),
+                Arguments.of("attach", FirebirdCommandPacketType.ATTACH, 8),
                 Arguments.of("void_as_default", FirebirdCommandPacketType.VOID, 0));
     }
 }
