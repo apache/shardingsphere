@@ -59,9 +59,7 @@ final class ShardingSphereResultSetShorthandProjectionIT {
     }
     
     private static void initDataSource(final String url) throws SQLException {
-        try (
-                Connection connection = DriverManager.getConnection(url, "sa", "");
-                Statement statement = connection.createStatement()) {
+        try (Connection connection = DriverManager.getConnection(url, "sa", ""); Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT, status VARCHAR(50))");
             statement.execute("INSERT INTO t_order VALUES (1000, 10, 'ACTIVE')");
@@ -136,9 +134,8 @@ final class ShardingSphereResultSetShorthandProjectionIT {
     void assertOrderByDerivedColumnHidden() throws SQLException {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setDataSourceName("ds_0");
-            try (
-                    Statement statement = shardingSphereConnection.createStatement();
-                    ResultSet resultSet = statement.executeQuery("SELECT t_order.status FROM t_order ORDER BY t_order.order_id ASC")) {
+            String sql = "SELECT t_order.status FROM t_order ORDER BY t_order.order_id ASC";
+            try (Statement statement = shardingSphereConnection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
                 ResultSetMetaData actualMetaData = resultSet.getMetaData();
                 assertThat("only status should be visible, ORDER_BY_DERIVED must be hidden", actualMetaData.getColumnCount(), is(1));
                 assertThat(actualMetaData.getColumnLabel(1), is("status"));
@@ -199,9 +196,8 @@ final class ShardingSphereResultSetShorthandProjectionIT {
     void assertShorthandWithOrderByDerived() throws SQLException {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setDataSourceName("ds_0");
-            try (
-                    Statement statement = shardingSphereConnection.createStatement();
-                    ResultSet resultSet = statement.executeQuery("SELECT T.*, T.status status_new FROM t_order T ORDER BY T.user_id")) {
+            String sql = "SELECT T.*, T.status status_new FROM t_order T ORDER BY T.user_id";
+            try (Statement statement = shardingSphereConnection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
                 ResultSetMetaData actualMetaData = resultSet.getMetaData();
                 assertThat("shorthand columns visible, ORDER_BY_DERIVED hidden", actualMetaData.getColumnCount(), is(4));
                 assertThat(actualMetaData.getColumnLabel(1), is("order_id"));
@@ -223,9 +219,8 @@ final class ShardingSphereResultSetShorthandProjectionIT {
     void assertCountDistinct() throws SQLException {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setDataSourceName("ds_0");
-            try (
-                    Statement statement = shardingSphereConnection.createStatement();
-                    ResultSet resultSet = statement.executeQuery("SELECT COUNT(DISTINCT user_id) FROM t_order")) {
+            String sql = "SELECT COUNT(DISTINCT user_id) FROM t_order";
+            try (Statement statement = shardingSphereConnection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
                 ResultSetMetaData actualMetaData = resultSet.getMetaData();
                 assertThat(actualMetaData.getColumnCount(), is(1));
                 assertThat(actualMetaData.getColumnLabel(1), is("COUNT(DISTINCT user_id)"));

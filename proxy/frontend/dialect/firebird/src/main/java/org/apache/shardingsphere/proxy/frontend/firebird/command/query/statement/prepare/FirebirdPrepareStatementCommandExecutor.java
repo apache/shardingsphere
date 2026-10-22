@@ -263,7 +263,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                                                   final Supplier<Optional<ShardingSphereSchema>> schema) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-            if (selectStatementContext.getProjectionsContext().containsUnexpandedShorthandProjection()) {
+            if (!(selectStatementContext.getSqlStatement().getFrom().orElse(null) instanceof SubqueryTableSegment)
+                    && selectStatementContext.getProjectionsContext().containsUnexpandedShorthandProjection()) {
                 return resolveUnexpandedShorthandProjections(selectStatementContext, database, schema);
             }
             // workaround for SubqueryTableBindUtils transform Expression and Aggregation projections to Column projection
@@ -292,11 +293,6 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return result;
     }
     
-    private Collection<Projection> processShorthandProjection(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
-                                                              final Supplier<Optional<ShardingSphereSchema>> schema, final ShorthandProjection projection) {
-        return resolveShorthandColumns(sqlStatementContext, database, schema, projection);
-    }
-    
     private Collection<Projection> resolveUnexpandedShorthandProjections(final SelectStatementContext selectStatementContext,
                                                                          final Supplier<ShardingSphereDatabase> database, final Supplier<Optional<ShardingSphereSchema>> schema) {
         Collection<Projection> result = new LinkedList<>();
@@ -310,6 +306,11 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return result;
     }
     
+    private Collection<Projection> processShorthandProjection(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                                              final Supplier<Optional<ShardingSphereSchema>> schema, final ShorthandProjection projection) {
+        return resolveShorthandColumns(sqlStatementContext, database, schema, projection);
+    }
+    
     private Collection<Projection> resolveShorthandColumns(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                                            final Supplier<Optional<ShardingSphereSchema>> schema, final ShorthandProjection projection) {
         if (!projection.getActualColumns().isEmpty()) {
@@ -318,7 +319,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         Collection<Projection> result = new LinkedList<>();
         Optional<IdentifierValue> owner = projection.getOwner();
         for (String tableName : getTableNames(sqlStatementContext)) {
-            if (owner.isPresent() && !owner.get().getValue().equalsIgnoreCase(tableName)
+            if (sqlStatementContext instanceof SelectStatementContext && owner.isPresent() && !owner.get().getValue().equalsIgnoreCase(tableName)
                     && !isAliasOf(owner.get().getValue(), tableName, sqlStatementContext)) {
                 continue;
             }
@@ -337,8 +338,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             return false;
         }
         for (SimpleTableSegment each : tablesContext.getSimpleTables()) {
-            if (each.getAlias().isPresent() && each.getAlias().get().getValue().equalsIgnoreCase(alias)
-                    && each.getTableName().getIdentifier().getValue().equalsIgnoreCase(tableName)) {
+            if (each.getAlias().isPresent() && each.getAlias().get().getValue().equalsIgnoreCase(alias) && each.getTableName().getIdentifier().getValue().equalsIgnoreCase(tableName)) {
                 return true;
             }
         }

@@ -44,6 +44,8 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+// AutoMockExtension uses RETURNS_DEEP_STUBS, whose untyped answer for the generic DatabaseTypedSPILoader.getService overload cannot be assigned to QueryHeaderBuilder.
+// These tests therefore stub that overload explicitly.
 class QueryHeaderBuilderEngineTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
@@ -55,9 +57,9 @@ class QueryHeaderBuilderEngineTest {
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("col_label");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         QueryHeader expectedQueryHeader = mock(QueryHeader.class);
+        QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
+        when(queryHeaderBuilder.build(resultSetMetaData, database, "col_name", "col_label", 1)).thenReturn(expectedQueryHeader);
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
-            when(queryHeaderBuilder.build(resultSetMetaData, database, "col_name", "col_label", 1)).thenReturn(expectedQueryHeader);
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(queryHeaderBuilder);
             QueryHeader actualQueryHeader = new QueryHeaderBuilderEngine(databaseType).build(resultSetMetaData, database, 1);
             assertThat(actualQueryHeader, is(expectedQueryHeader));
@@ -77,9 +79,9 @@ class QueryHeaderBuilderEngineTest {
         ShardingSphereResultSetMetaData resultSetMetaData = mock(ShardingSphereResultSetMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         QueryHeader expectedQueryHeader = mock(QueryHeader.class);
+        QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
+        when(queryHeaderBuilder.build(resultSetMetaData, database, "c1", "l1", 1)).thenReturn(expectedQueryHeader);
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
-            when(queryHeaderBuilder.build(resultSetMetaData, database, "c1", "l1", 1)).thenReturn(expectedQueryHeader);
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(queryHeaderBuilder);
             QueryHeader actualQueryHeader = new QueryHeaderBuilderEngine(databaseType).build(sqlStatementContext, resultSetMetaData, database, 1);
             assertThat(actualQueryHeader, is(expectedQueryHeader));
@@ -95,12 +97,11 @@ class QueryHeaderBuilderEngineTest {
         ResultSet resultSet = mock(ResultSet.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         QueryHeader expectedQueryHeader = mock(QueryHeader.class);
+        QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
+        when(queryHeaderBuilder.build(resultSetMetaData, database, "col_name", "col_label", 1)).thenReturn(expectedQueryHeader);
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
-            when(queryHeaderBuilder.build(resultSetMetaData, database, "col_name", "col_label", 1)).thenReturn(expectedQueryHeader);
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(queryHeaderBuilder);
-            QueryHeader actualQueryHeader =
-                    new QueryHeaderBuilderEngine(databaseType).build(sqlStatementContext, resultSetMetaData, resultSet, database, 1);
+            QueryHeader actualQueryHeader = new QueryHeaderBuilderEngine(databaseType).build(sqlStatementContext, resultSetMetaData, resultSet, database, 1);
             assertThat(actualQueryHeader, is(expectedQueryHeader));
             verify(queryHeaderBuilder).appendProtocolAttributes(expectedQueryHeader, resultSet);
         }
@@ -135,9 +136,9 @@ class QueryHeaderBuilderEngineTest {
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("order_id");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         QueryHeader expectedQueryHeader = mock(QueryHeader.class);
+        QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
+        when(queryHeaderBuilder.build(resultSetMetaData, database, "order_id", "order_id", 1)).thenReturn(expectedQueryHeader);
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
-            when(queryHeaderBuilder.build(resultSetMetaData, database, "order_id", "order_id", 1)).thenReturn(expectedQueryHeader);
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(queryHeaderBuilder);
             QueryHeader actualQueryHeader = new QueryHeaderBuilderEngine(databaseType).build(sqlStatementContext, resultSetMetaData, database, 1);
             assertThat(actualQueryHeader, sameInstance(expectedQueryHeader));
@@ -152,9 +153,9 @@ class QueryHeaderBuilderEngineTest {
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("col_label");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         QueryHeader expectedQueryHeader = mock(QueryHeader.class);
+        QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
+        when(queryHeaderBuilder.build(resultSetMetaData, database, "col_name", "col_label", 1)).thenReturn(expectedQueryHeader);
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
-            when(queryHeaderBuilder.build(resultSetMetaData, database, "col_name", "col_label", 1)).thenReturn(expectedQueryHeader);
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(queryHeaderBuilder);
             QueryHeader actualQueryHeader = new QueryHeaderBuilderEngine(databaseType).build(sqlStatementContext, resultSetMetaData, database, 1);
             assertThat(actualQueryHeader, is(expectedQueryHeader));
