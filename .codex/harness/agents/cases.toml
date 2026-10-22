@@ -4866,3 +4866,80 @@ forbidden_summary_terms = ["order=move-all-passes-last", "failure=keep-earlier-u
 critical = true
 policy_binding_profile = "review-pr"
 policy_assertions = [{source = "review-pr", statements = ["Mutate one ledger sequentially; do not run ledger commands concurrently.", "Each batch applies the existing operations in order and writes once only after all per-operation checks and both freshness checks pass.", "Batch freshness checks verify the current basis and captured source anchors before applying operations and again before writing; any failed operation or freshness check leaves the original ledger unchanged.", "Batching does not replace final ledger or session validation."]}, {source = "review-pr-coordination", statements = ["Never share reviewed-file statuses, candidate findings, proof conclusions or convergence results between independent reviewers.", "Each independent reviewer runs the complete Review Workflow and Completion Gate once, records a separate ledger and original assessment, and returns them privately to the coordinator."]}]
+
+[[cases]]
+id = "review_ownership_with_correct_behavior"
+group = "synthetic source and consumer discovery"
+description = "Separates a provider ownership violation with correct runtime results from legitimate shared dispatch policy."
+phase = "read-only source and consumer analysis"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = '''
+Answer this self-contained read-only source-analysis question using only the supplied synthetic records and bound rules.
+Assess the two independent candidates below; do not inspect files, run commands, edit anything, select or implement a repair, or produce an overall PR verdict.
+Java fragments omit unrelated declarations and imports.
+
+A: U0 requests fixing startup for a pool explicitly configured with its own class as innerClass while preserving existing extension and loading contracts.
+The pre-existing maintained module contract assigns pool-specific bean-property rejection to registered PoolMetadata; shared PropertyConverter preserves supplied bean properties for that owner to assess.
+Registry.create(type) creates the outer pool, and Registry.metadata(type) resolves the existing registered AcmeMetadata when type is acme.Pool.
+The complete startup path calls PropertyConverter.convert(type, supplied), then passes that result to PoolFactory.configure(type, result, registry) below.
+PoolFactory consults skippedValues before every bean setter, as it did before this task; the metadata API, registration and consuming filter are unchanged.
+For this input, supplied is an insertion-ordered map [innerClass:acme.Pool,limit:8], and type is acme.Pool.
+The mock pool records each setter as name:value; setting innerClass to acme.Pool would recursively construct another pool, while applying only limit:8 starts successfully.
+Candidate A adds only the acme.Pool conditional and removal in PropertyConverter; its previous implementation returned the supplied properties unchanged in a copy.
+An older YAML importer contains the same class-name workaround, and focused startup tests pass with candidate A.
+```java
+interface PoolMetadata {
+    Map<String, String> skippedValues();
+}
+final class AcmeMetadata implements PoolMetadata {
+    public Map<String, String> skippedValues() { return Map.of(); }
+}
+final class PropertyConverter {
+    Map<String, String> convert(String type, Map<String, String> supplied) {
+        Map<String, String> result = new LinkedHashMap<>(supplied);
+        if ("acme.Pool".equals(type)) {
+            result.remove("innerClass");
+        }
+        return result;
+    }
+}
+final class PoolFactory {
+    void configure(String type, Map<String, String> properties, Registry registry) {
+        Pool pool = registry.create(type);
+        Map<String, String> skipped = registry.metadata(type).skippedValues();
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            if (!skipped.containsKey(entry.getKey()) || !entry.getValue().equals(skipped.get(entry.getKey()))) {
+                pool.set(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+}
+```
+B: A separate task adds a wire selector supported by an existing versioned wire-format contract.
+That maintained contract assigns alias decoding to shared SelectorCodec before registry and provider resolution, and specifies that token acme resolves to acme.Pool.
+PoolMetadata runs only after that resolution and owns bean setters, not wire aliases.
+Candidate B adds the contracted alias to SelectorCodec below; it changes no ownership, interface or registration contract.
+```java
+final class SelectorCodec {
+    String decode(String value) {
+        return "acme".equals(value) ? "acme.Pool" : value;
+    }
+}
+```
+Give A.applied as the compact ordered list of actual setter calls, A.status and B.status as keep or change, and B.target as the decoded result for input acme.
+Write exactly one marker=value assignment per requested marker, with unquoted scalar values and no spaces inside lists, then briefly explain each status using the complete path and maintained ownership contracts.
+Address the existing skippedValues capability, passing tests and YAML precedent when assessing A, and the shared decoding contract when assessing B.
+Do not repeat an alternative assignment for a marker.
+'''
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A.applied=[limit:8]", "A.status=change", "B.target=acme.Pool", "B.status=keep", "AcmeMetadata", "skippedValues", "SelectorCodec"]
+forbidden_summary_terms = ["A.status=keep", "B.status=change"]
+critical = true
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr-high-risk", statements = ["Keep dialect, protocol, and feature-specific behavior in its owning module.", "Shared code must not acquire target names, protocol identifiers, type-name string checks, or target lifecycle comments without a verified shared contract.", "Treat ownership or implicit-state concerns as blockers only when a reachable contract violation is proven; prefer explicit state only when it is the minimum necessary fix."]}, {source = "implementation-rules", statements = ["Before choosing an implementation, inspect the current behavior owner, relevant architecture and sibling modules for existing capabilities and patterns that fit the required responsibilities, contracts and dependency boundaries.", "Among designs that satisfy these prerequisites, first preserve the maintained architecture already present in the repository, including its behavior owners, module boundaries, and design patterns, unless the user explicitly requires an authorized architecture change.", "Prefer direct reuse, then composition or delegation, then an existing extension point."]}, {source = "review-pr", statements = ["`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Counter-evidence`: check the strongest evidence that could disprove the finding, especially author or maintainer replies and version-specific facts.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable."]}]
