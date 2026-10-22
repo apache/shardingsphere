@@ -47,12 +47,9 @@ public final class FirebirdMCPDialectSQLExceptionClassifier implements MCPDialec
         switch (cause.getErrorCode()) {
             case NO_PERMISSION:
                 return Optional.of(MCPJDBCErrorCategory.AUTHORIZATION);
-            case LOGIN:
-            case LOGIN_ERROR:
+            case LOGIN, LOGIN_ERROR:
                 return Optional.of(MCPJDBCErrorCategory.AUTHENTICATION);
-            case COLUMN_UNKNOWN:
-            case TABLE_UNKNOWN:
-            case PROCEDURE_UNKNOWN:
+            case COLUMN_UNKNOWN, TABLE_UNKNOWN, PROCEDURE_UNKNOWN:
                 return Optional.of(MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE);
             case TOKEN_UNKNOWN:
                 return Optional.of(MCPJDBCErrorCategory.SYNTAX);

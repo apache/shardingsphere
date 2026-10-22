@@ -58,8 +58,7 @@ public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION, false, false, true, false, true,
-                Collections.singleton("org.firebirdsql.ds.FBXADataSource"));
+        return new DialectTransactionOption(false, DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION, false, false, true, false, true, Collections.singleton("org.firebirdsql.ds.FBXADataSource"));
     }
     
     @Override

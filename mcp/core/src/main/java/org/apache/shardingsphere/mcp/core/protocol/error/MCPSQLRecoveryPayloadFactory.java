@@ -149,8 +149,7 @@ final class MCPSQLRecoveryPayloadFactory {
                                 "Choose the storage unit from the target logical database."),
                         createResourceHint("shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules", "storage-unit",
                                 "Read rules that use the chosen storage unit."));
-            case "SHOW SINGLE TABLES":
-            case "SHOW SINGLE TABLE":
+            case "SHOW SINGLE TABLES", "SHOW SINGLE TABLE":
                 return List.of(createResourceHint("shardingsphere://databases/{database}/single-tables", "single-table",
                         "Read single table mappings from the target logical database instead of executing SHOW SINGLE TABLE."));
             case "SHOW DEFAULT SINGLE TABLE STORAGE UNIT":

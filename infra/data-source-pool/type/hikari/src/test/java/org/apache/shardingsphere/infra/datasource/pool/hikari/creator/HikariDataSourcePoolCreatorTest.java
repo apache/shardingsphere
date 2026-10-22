@@ -30,6 +30,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class HikariDataSourcePoolCreatorTest {
     
@@ -41,6 +42,15 @@ class HikariDataSourcePoolCreatorTest {
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
         assertThat(actual.getDataSourceProperties(), is(PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value"))));
+    }
+    
+    @Test
+    void assertCreateDataSourceWithHikariDataSourceClassName() {
+        Map<String, Object> props = createDataSourcePoolProperties();
+        props.put("dataSourceClassName", HikariDataSource.class.getName());
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.create(new DataSourcePoolProperties(HikariDataSource.class.getName(), props));
+        assertNull(actual.getDataSourceClassName());
+        assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
     }
     
     private Map<String, Object> createDataSourcePoolProperties() {

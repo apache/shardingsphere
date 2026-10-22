@@ -23,6 +23,7 @@ That outer loop alone owns code changes, their verification and coding-task comp
 ## Independent Reviewer Roles
 
 For every top-level Formal Review and every discussion reply that makes or changes an overall readiness conclusion, a coordinator must first obtain two mutually blind independent complete assessments of the same effective candidate, original baseline, authoritative scope, requirements and rule versions, and review focus.
+Launch the initial pair in parallel, starting both isolated reviewer contexts before waiting for either assessment, and collect both original assessments before Review of the Reports.
 A reply limited to one finding remains scoped to that finding and does not require a full-candidate pair unless it makes an overall readiness conclusion.
 Reviewers may discover different relevant raw evidence, but shared evidence must refer to the same content version and all outcome-sensitive evidence must be reconciled before completion.
 Use isolated reviewer contexts within the active task; do not create another user-owned task or send repository material to an external review service.

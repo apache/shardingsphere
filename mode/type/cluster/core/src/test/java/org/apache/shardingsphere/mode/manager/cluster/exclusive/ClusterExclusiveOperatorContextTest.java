@@ -28,12 +28,15 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -73,6 +76,43 @@ class ClusterExclusiveOperatorContextTest {
     }
     
     @Test
+    void assertStartWithConcurrentSameKey() throws InterruptedException, ExecutionException, TimeoutException {
+        SharedState sharedState = new SharedState();
+        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true, true));
+        CountDownLatch startGate = new CountDownLatch(1);
+        CountDownLatch attemptsFinished = new CountDownLatch(2);
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        Collection<Future<Boolean>> actualResults = new ArrayList<>(2);
+        try {
+            for (int i = 0; i < 2; i++) {
+                actualResults.add(executorService.submit(() -> {
+                    assertTrue(startGate.await(5L, TimeUnit.SECONDS));
+                    Optional<ExclusiveLockHandle> actualLockHandle = context.start("foo_operation", 0L);
+                    try {
+                        attemptsFinished.countDown();
+                        assertTrue(attemptsFinished.await(5L, TimeUnit.SECONDS));
+                        return actualLockHandle.isPresent();
+                    } finally {
+                        actualLockHandle.ifPresent(ExclusiveLockHandle::close);
+                    }
+                }));
+            }
+            startGate.countDown();
+            int actualAcquiredCount = 0;
+            for (Future<Boolean> each : actualResults) {
+                if (each.get(5L, TimeUnit.SECONDS)) {
+                    actualAcquiredCount++;
+                }
+            }
+            assertThat(actualAcquiredCount, is(1));
+            assertThat(sharedState.tryLockCallCount.get(), is(1));
+        } finally {
+            startGate.countDown();
+            executorService.shutdownNow();
+        }
+    }
+    
+    @Test
     void assertStartWaitsUntilOperationKeyReleased() throws InterruptedException, ExecutionException, TimeoutException {
         SharedState sharedState = new SharedState();
         ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true, true));
@@ -80,8 +120,7 @@ class ClusterExclusiveOperatorContextTest {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         try {
             Future<Optional<ExclusiveLockHandle>> future = executorService.submit(() -> context.start("op", 500L));
-            TimeUnit.MILLISECONDS.sleep(100L);
-            assertFalse(future.isDone());
+            assertThrows(TimeoutException.class, () -> future.get(100L, TimeUnit.MILLISECONDS));
             assertThat(sharedState.tryLockCallCount.get(), is(1));
             lockHandle.close();
             Optional<ExclusiveLockHandle> actual = future.get(1L, TimeUnit.SECONDS);
