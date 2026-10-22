@@ -34,6 +34,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -107,6 +108,26 @@ class FirebirdFetchResponsePacketTest {
         assertThat(byteBuf.readByte(), is((byte) 0));
         assertThat(byteBuf.readByte(), is((byte) 0));
         assertThat(byteBuf.readByte(), is((byte) 0));
+    }
+    
+    @Test
+    void assertWriteWithTimestampWithTimeZoneCellData() {
+        ByteBuf actual = Unpooled.buffer();
+        try {
+            FirebirdPacketPayload packetPayload = new FirebirdPacketPayload(actual, StandardCharsets.UTF_8);
+            BinaryRow row = new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.TIMESTAMP_TZ, OffsetDateTime.parse("2024-01-02T00:15:30.123400+02:00"))));
+            FirebirdFetchResponsePacket.getFetchRowPacket(row).write(packetPayload);
+            assertThat(actual.readableBytes(), is(28));
+            assertThat(actual.readInt(), is(66));
+            assertThat(actual.readInt(), is(0));
+            assertThat(actual.readInt(), is(1));
+            assertThat(actual.readInt(), is(0));
+            assertThat(actual.readInt(), is(60310));
+            assertThat(actual.readInt(), is(801301234));
+            assertThat(actual.readInt(), is(1559));
+        } finally {
+            actual.release();
+        }
     }
     
     @Test

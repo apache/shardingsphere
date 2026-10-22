@@ -78,7 +78,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
@@ -102,7 +101,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
@@ -127,8 +125,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
         SQLStatement sqlStatement = resolveCurrentDatabase(sqlParserRule.getSQLParserEngine(databaseType).parse(packet.getSQL(), true));
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(
-                metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement);
         int statementId = getStatementId();
         if (packet.isValidStatementHandle()) {
             FirebirdStatementResourceCleaner.clean(connectionSession, statementId, true);
@@ -185,25 +182,16 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             return FirebirdSQLInfoReturnValue.SELECT;
         }
         if (statement instanceof InsertStatement) {
-            if (((InsertStatement) statement).getReturning().isPresent()) {
-                returningSegment = ((InsertStatement) statement).getReturning().orElse(null);
-                return FirebirdSQLInfoReturnValue.EXEC_PROCEDURE;
-            }
-            return FirebirdSQLInfoReturnValue.INSERT;
+            returningSegment = ((InsertStatement) statement).getReturning().orElse(null);
+            return null == returningSegment ? FirebirdSQLInfoReturnValue.INSERT : FirebirdSQLInfoReturnValue.EXEC_PROCEDURE;
         }
         if (statement instanceof UpdateStatement) {
-            if (((UpdateStatement) statement).getReturning().isPresent()) {
-                returningSegment = ((UpdateStatement) statement).getReturning().orElse(null);
-                return FirebirdSQLInfoReturnValue.EXEC_PROCEDURE;
-            }
-            return FirebirdSQLInfoReturnValue.UPDATE;
+            returningSegment = ((UpdateStatement) statement).getReturning().orElse(null);
+            return null == returningSegment ? FirebirdSQLInfoReturnValue.UPDATE : FirebirdSQLInfoReturnValue.EXEC_PROCEDURE;
         }
         if (statement instanceof DeleteStatement) {
-            if (((DeleteStatement) statement).getReturning().isPresent()) {
-                returningSegment = ((DeleteStatement) statement).getReturning().orElse(null);
-                return FirebirdSQLInfoReturnValue.EXEC_PROCEDURE;
-            }
-            return FirebirdSQLInfoReturnValue.DELETE;
+            returningSegment = ((DeleteStatement) statement).getReturning().orElse(null);
+            return null == returningSegment ? FirebirdSQLInfoReturnValue.DELETE : FirebirdSQLInfoReturnValue.EXEC_PROCEDURE;
         }
         if (statement instanceof DDLStatement) {
             return FirebirdSQLInfoReturnValue.DDL;
@@ -251,9 +239,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private void processReturnValues(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                      final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
                                      final Collection<FirebirdSQLInfoPacketType> requestedItems) {
-        Collection<Projection> projections = getProjections(sqlStatementContext, database, schema);
         int columnCount = 0;
-        for (Projection each : projections) {
+        for (Projection each : getProjections(sqlStatementContext, database, schema)) {
             if (each instanceof ColumnProjection) {
                 String tableName = ((ColumnProjection) each).getOriginalTable().getValue();
                 ShardingSphereTable table = getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName, database, schema);
@@ -274,30 +261,23 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private Collection<Projection> getProjections(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                                   final Supplier<Optional<ShardingSphereSchema>> schema) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            SelectStatementContext selectStatement = (SelectStatementContext) sqlStatementContext;
-            Collection<Projection> expandProjections = selectStatement.getProjectionsContext().getExpandProjections();
-            Map<Integer, SelectStatementContext> subquery = selectStatement.getSubqueryContexts();
-            if (subquery.isEmpty()) {
-                return expandProjections;
-            }
+            SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
             // workaround for SubqueryTableBindUtils transform Expression and Aggregation projections to Column projection
-            TableSegment from = ((SelectStatement) sqlStatementContext.getSqlStatement()).getFrom().orElse(null);
-            if (!(from instanceof SubqueryTableSegment)) {
-                return expandProjections;
+            if (selectStatementContext.getSubqueryContexts().isEmpty() || !(selectStatementContext.getSqlStatement().getFrom().orElse(null) instanceof SubqueryTableSegment)) {
+                return selectStatementContext.getProjectionsContext().getExpandProjections();
             }
-            Collection<Projection> subqueryProjections = new LinkedList<>();
-            for (SelectStatementContext value : subquery.values()) {
-                subqueryProjections.addAll(value.getProjectionsContext().getExpandProjections());
+            Collection<Projection> result = new LinkedList<>();
+            for (SelectStatementContext each : selectStatementContext.getSubqueryContexts().values()) {
+                result.addAll(each.getProjectionsContext().getExpandProjections());
             }
-            return subqueryProjections;
+            return result;
         }
         if (null == returningSegment) {
             return Collections.emptyList();
         }
         ProjectionEngine projectionEngine = new ProjectionEngine(sqlStatementContext.getSqlStatement().getDatabaseType());
         Collection<Projection> result = new LinkedList<>();
-        Collection<ProjectionSegment> projections = returningSegment.getProjections().getProjections();
-        for (ProjectionSegment each : projections) {
+        for (ProjectionSegment each : returningSegment.getProjections().getProjections()) {
             Projection projection = projectionEngine.createProjection(each).orElse(null);
             if (projection instanceof ShorthandProjection) {
                 result.addAll(processShorthandProjection(sqlStatementContext, database, schema, (ShorthandProjection) projection));
@@ -314,15 +294,12 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             return projection.getActualColumns();
         }
         Collection<Projection> result = new LinkedList<>();
-        TablesContext tablesContext = sqlStatementContext.getTablesContext();
-        if (null != tablesContext) {
-            for (String tableName : tablesContext.getTableNames()) {
-                ShardingSphereTable table = getTable(tableName, database, schema);
-                table.getAllColumns().forEach(each -> {
-                    ColumnSegmentBoundInfo info = new ColumnSegmentBoundInfo(null, new IdentifierValue(table.getName()), new IdentifierValue(each.getName()), TableSourceType.PHYSICAL_TABLE);
-                    result.add(new ColumnProjection(null, new IdentifierValue(each.getName()), null, sqlStatementContext.getSqlStatement().getDatabaseType(), null, null, info));
-                });
-            }
+        for (String tableName : getTableNames(sqlStatementContext)) {
+            ShardingSphereTable table = getTable(tableName, database, schema);
+            table.getAllColumns().forEach(each -> {
+                ColumnSegmentBoundInfo info = new ColumnSegmentBoundInfo(null, new IdentifierValue(table.getName()), new IdentifierValue(each.getName()), TableSourceType.PHYSICAL_TABLE);
+                result.add(new ColumnProjection(null, new IdentifierValue(each.getName()), null, sqlStatementContext.getSqlStatement().getDatabaseType(), null, null, info));
+            });
         }
         return result;
     }
@@ -378,8 +355,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private Collection<String> processInsertValueContext(final InsertStatementContext context, final InsertValueContext valueContext) {
         Collection<String> result = new LinkedList<>();
         for (int i = 0; i < valueContext.getValueExpressions().size(); i++) {
-            ExpressionSegment expression = valueContext.getValueExpressions().get(i);
-            if (expression instanceof ParameterMarkerExpressionSegment) {
+            if (valueContext.getValueExpressions().get(i) instanceof ParameterMarkerExpressionSegment) {
                 result.add(context.getColumnNames().get(i));
             }
         }
@@ -401,8 +377,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             }
         }
         if (sqlStatementContext instanceof WhereContextAvailable) {
-            Collection<WhereSegment> whereSegments = getWhereSegments((WhereContextAvailable) sqlStatementContext);
-            for (WhereSegment each : whereSegments) {
+            for (WhereSegment each : getWhereSegments((WhereContextAvailable) sqlStatementContext)) {
                 processExpr(each.getExpr(), result);
             }
         }
@@ -490,21 +465,11 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private String getOperationName(final String operationType) {
-        switch (operationType) {
-            case "||":
-                return "CONCATENATION";
-            default:
-                return operationType;
-        }
+        return "||".equals(operationType) ? "CONCATENATION" : operationType;
     }
     
     private int getOperationType(final String operationType) {
-        switch (operationType) {
-            case "||":
-                return 12;
-            default:
-                return 4;
-        }
+        return "||".equals(operationType) ? Types.VARCHAR : Types.INTEGER;
     }
     
     @HighFrequencyInvocation
@@ -535,7 +500,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         String columnAliasString = null == columnAlias ? column.getName() : columnAlias.getValue();
         String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
         boolean blobColumn = isBlobColumn(table, column);
-        Integer blobSubtype = resolveBlobSubtype(table, column, blobColumn);
+        Integer blobSubtype = blobColumn ? resolveBlobSubtype(table, column) : null;
         Integer columnLength = blobColumn ? null : resolveColumnLength(table, column);
         describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner, columnLength, blobColumn, blobSubtype));
     }
@@ -562,10 +527,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return logicTableName;
     }
     
-    private Integer resolveBlobSubtype(final ShardingSphereTable table, final ShardingSphereColumn column, final boolean blobColumn) {
-        if (!blobColumn) {
-            return null;
-        }
+    private Integer resolveBlobSubtype(final ShardingSphereTable table, final ShardingSphereColumn column) {
         OptionalInt subtype = FirebirdBlobInfoRegistry.findBlobSubtype(connectionSession.getCurrentDatabaseName(), getActualTableName(table.getName()), column.getName());
         return subtype.isPresent() ? subtype.getAsInt() : null;
     }

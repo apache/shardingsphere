@@ -48,9 +48,12 @@ final class MCPQueryRecoveryPayloadFactory {
             return true;
         }
         MCPJDBCErrorCategory category = MCPJDBCExceptionClassifier.classify(cause);
-        return cause instanceof MCPTimeoutException && MCPJDBCErrorCategory.TIMEOUT == category
-                || cause instanceof MCPUnsupportedException && MCPJDBCErrorCategory.FEATURE_NOT_SUPPORTED == category
-                || cause instanceof MCPInvalidRequestException && MCPJDBCErrorCategory.SYNTAX == category;
+        return switch (cause) {
+            case MCPTimeoutException ignored -> MCPJDBCErrorCategory.TIMEOUT == category;
+            case MCPUnsupportedException ignored -> MCPJDBCErrorCategory.FEATURE_NOT_SUPPORTED == category;
+            case MCPInvalidRequestException ignored -> MCPJDBCErrorCategory.SYNTAX == category;
+            default -> false;
+        };
     }
     
     static Map<String, Object> create(final Throwable cause) {
@@ -111,9 +114,13 @@ final class MCPQueryRecoveryPayloadFactory {
     }
     
     private static boolean usesResourceHint(final String category) {
-        return MCPDiagnosticCategory.OBJECT_NOT_VISIBLE.equals(category) || MCPDiagnosticCategory.CONNECTION_INTERRUPTED.equals(category)
-                || MCPDiagnosticCategory.EXECUTION_TIMEOUT.equals(category) || MCPDiagnosticCategory.UNSUPPORTED_DATABASE_CAPABILITY.equals(category)
-                || MCPDiagnosticCategory.QUERY_FAILED.equals(category);
+        switch (category) {
+            case MCPDiagnosticCategory.OBJECT_NOT_VISIBLE, MCPDiagnosticCategory.CONNECTION_INTERRUPTED, MCPDiagnosticCategory.EXECUTION_TIMEOUT,
+                    MCPDiagnosticCategory.UNSUPPORTED_DATABASE_CAPABILITY, MCPDiagnosticCategory.QUERY_FAILED:
+                return true;
+            default:
+                return false;
+        }
     }
     
     private static List<Map<String, Object>> createResourcesToRead(final String category) {

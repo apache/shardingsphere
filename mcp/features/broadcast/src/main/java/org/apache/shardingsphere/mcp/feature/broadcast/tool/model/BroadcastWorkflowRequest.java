@@ -52,7 +52,12 @@ public final class BroadcastWorkflowRequest extends WorkflowRequest {
             return;
         }
         this.tables.clear();
-        tables.stream().map(each -> null == each ? "" : each.trim()).filter(each -> !each.isEmpty()).forEach(this.tables::add);
+        for (String each : tables) {
+            String normalizedValue = null == each ? "" : each.trim();
+            if (!normalizedValue.isEmpty()) {
+                this.tables.add(normalizedValue);
+            }
+        }
     }
     
     /**
@@ -100,8 +105,8 @@ public final class BroadcastWorkflowRequest extends WorkflowRequest {
         if (null == previousRequest) {
             return new BroadcastWorkflowRequest();
         }
-        if (previousRequest instanceof BroadcastWorkflowRequest) {
-            return ((BroadcastWorkflowRequest) previousRequest).copy();
+        if (previousRequest instanceof BroadcastWorkflowRequest request) {
+            return request.copy();
         }
         BroadcastWorkflowRequest result = new BroadcastWorkflowRequest();
         copyFieldsTo(previousRequest, result);
