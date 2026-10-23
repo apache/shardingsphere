@@ -43,7 +43,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ShardingSphere database factory.
@@ -93,7 +92,7 @@ public final class ShardingSphereDatabaseFactory {
      * @param protocolType database protocol type
      * @param databaseConfig database configuration
      * @param computeNodeInstanceContext compute node instance context
-     * @param schemas schemas
+     * @param schemas loaded schemas; system schemas missing from them are built and added
      * @return created database
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
@@ -109,14 +108,25 @@ public final class ShardingSphereDatabaseFactory {
      * @param databaseConfig database configuration
      * @param props configuration properties
      * @param computeNodeInstanceContext compute node instance context
-     * @param schemas schemas
+     * @param schemas loaded schemas; system schemas missing from them are built and added
      * @return created database
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext, final Collection<ShardingSphereSchema> schemas) {
         ResourceMetaData resourceMetaData = new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
         Collection<ShardingSphereRule> rules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
-        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(rules), schemas, props);
+        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(rules), mergeSystemSchemas(name, protocolType, props, schemas), props);
+    }
+    
+    private static Collection<ShardingSphereSchema> mergeSystemSchemas(final String name, final DatabaseType protocolType, final ConfigurationProperties props,
+                                                                       final Collection<ShardingSphereSchema> schemas) {
+        Collection<String> schemaNames = new LinkedList<>();
+        for (ShardingSphereSchema each : schemas) {
+            schemaNames.add(each.getName());
+        }
+        Collection<ShardingSphereSchema> result = new LinkedList<>(schemas);
+        result.addAll(SystemSchemaBuilder.build(name, protocolType, props, schemaNames).values());
+        return result;
     }
     
     /**
@@ -137,10 +147,8 @@ public final class ShardingSphereDatabaseFactory {
         ResourceMetaData resourceMetaData = new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
         DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(protocolType, resourceMetaData, props);
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
-        Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>(GenericSchemaBuilder.buildWithInventoryCheck(protocolType,
-                new GenericSchemaBuilderMaterial(resourceMetaData.getStorageUnits(), databaseRules, props, DefaultSchemaNameResolver.resolveProtocol(protocolType, name),
-                        identifierContext, revisionCandidateSchemas)));
-        SystemSchemaBuilder.build(name, protocolType, props).forEach(schemas::putIfAbsent);
-        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(databaseRules), schemas.values(), props);
+        Collection<ShardingSphereSchema> schemas = GenericSchemaBuilder.buildWithInventoryCheck(protocolType, new GenericSchemaBuilderMaterial(resourceMetaData.getStorageUnits(), databaseRules, props,
+                DefaultSchemaNameResolver.resolveProtocol(protocolType, name), identifierContext, revisionCandidateSchemas)).values();
+        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(databaseRules), mergeSystemSchemas(name, protocolType, props, schemas), props);
     }
 }

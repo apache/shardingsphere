@@ -24,6 +24,11 @@ import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -33,6 +38,7 @@ import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigu
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.compiler.SQLStatementCompiler;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.schema.CalciteSchemaBuilder;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLOperatorTable;
@@ -43,6 +49,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.io.IOException;
@@ -85,10 +92,10 @@ class SQLStatementCompilerIT {
         tables.add(createMultiTypesSecondTableMetaData());
         CalciteSchema calciteSchema = CalciteSchema.createRootSchema(true);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
-        calciteSchema.add(SCHEMA_NAME, new SQLFederationSchema(SCHEMA_NAME, new ShardingSphereSchema("foo_db", databaseType, tables, Collections.emptyList()), databaseType));
+        calciteSchema.add(SCHEMA_NAME, new SQLFederationSchema(SCHEMA_NAME, new ShardingSphereSchema("foo_db", databaseType, tables, Collections.emptyList()), Collections.emptyList(), databaseType));
         sqlStatementCompiler = new SQLStatementCompiler(
                 new SQLFederationRelConverter(new CompilerContext(mock(SQLParserRule.class), calciteSchema, new CalciteConnectionConfigImpl(new Properties()), getOperatorTables()),
-                        Collections.singletonList("federate_jdbc"), databaseType, EnumerableConvention.INSTANCE),
+                        Collections.singletonList(Collections.singletonList("federate_jdbc")), databaseType, EnumerableConvention.INSTANCE),
                 EnumerableConvention.INSTANCE);
     }
     
@@ -258,6 +265,37 @@ class SQLStatementCompilerIT {
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(testcase.getSql(), false);
         String actual = sqlStatementCompiler.compile(sqlStatement, "MySQL").getPhysicalPlan().explain().replaceAll(System.lineSeparator(), " ");
         assertThat(actual, is(testcase.getAssertion().iterator().next().getExpectedResult()));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("compileWithOracleSystemSchemaArguments")
+    void assertCompileWithOracleSystemSchema(final String name, final String sql, final String expectedScan) {
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "Oracle")).parse(sql, false);
+        String actual = createOracleSQLStatementCompiler().compile(sqlStatement, "Oracle").getPhysicalPlan().explain().replaceAll(System.lineSeparator(), " ");
+        assertThat(actual, containsString(expectedScan));
+    }
+    
+    private SQLStatementCompiler createOracleSQLStatementCompiler() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        Collection<ShardingSphereSchema> schemas = new LinkedList<>(SystemSchemaBuilder.build("logic_db", databaseType, props).values());
+        ShardingSphereTable orderTable = new ShardingSphereTable("T_ORDER",
+                Collections.singleton(new ShardingSphereColumn("ORDER_ID", Types.BIGINT, true, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable viewsTable = new ShardingSphereTable("ALL_VIEWS",
+                Collections.singleton(new ShardingSphereColumn("VIEW_NAME", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
+        schemas.add(new ShardingSphereSchema("LOGIC_DB", databaseType, Arrays.asList(orderTable, viewsTable), Collections.emptyList()));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("logic_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), schemas, props);
+        CompilerContext compilerContext = new CompilerContext(
+                mock(SQLParserRule.class), CalciteSchemaBuilder.build(Collections.singleton(database)), new CalciteConnectionConfigImpl(new Properties()), getOperatorTables());
+        return new SQLStatementCompiler(new SQLFederationRelConverter(compilerContext, Arrays.asList(Collections.singletonList("logic_db"), Arrays.asList("logic_db", "SYS")),
+                databaseType, EnumerableConvention.INSTANCE), EnumerableConvention.INSTANCE);
+    }
+    
+    private static Stream<Arguments> compileWithOracleSystemSchemaArguments() {
+        return Stream.of(
+                Arguments.of("user table", "SELECT ORDER_ID FROM T_ORDER", "EnumerableScan(table=[[logic_db, T_ORDER]], sql=[SELECT * FROM \"T_ORDER\"]"),
+                Arguments.of("unqualified dictionary view", "SELECT SEQUENCE_NAME FROM ALL_SEQUENCES", "EnumerableScan(table=[[logic_db, SYS, ALL_SEQUENCES]], sql=[SELECT * FROM \"ALL_SEQUENCES\"]"),
+                Arguments.of("user table shadows dictionary view", "SELECT VIEW_NAME FROM ALL_VIEWS", "EnumerableScan(table=[[logic_db, ALL_VIEWS]], sql=[SELECT * FROM \"ALL_VIEWS\"]"));
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {

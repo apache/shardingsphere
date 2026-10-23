@@ -34,7 +34,13 @@ import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.rel2sql.RelToSqlConverter;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlDialect;
+import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.util.SqlString;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationTable;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.dialect.SQLDialectFactory;
 
@@ -90,7 +96,13 @@ public final class EnumerableScan extends TableScan implements EnumerableRel {
     
     private SqlString createSQLString(final RelNode scanContext, final String databaseType) {
         SqlDialect sqlDialect = SQLDialectFactory.getSQLDialect(databaseType);
-        return new RelToSqlConverter(sqlDialect).visitRoot(scanContext).asStatement().toSqlString(sqlDialect);
+        RelToSqlConverter converter = isTableNameUnqualified(databaseType) ? new UnqualifiedTableNameRelToSQLConverter(sqlDialect) : new RelToSqlConverter(sqlDialect);
+        return converter.visitRoot(scanContext).asStatement().toSqlString(sqlDialect);
+    }
+    
+    private boolean isTableNameUnqualified(final String databaseType) {
+        DialectSchemaOption schemaOption = new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, databaseType)).getDialectDatabaseMetaData().getSchemaOption();
+        return !schemaOption.getDefaultSchema().isPresent() && schemaOption.getDefaultSystemSchema().isPresent() && !schemaOption.isSystemSchemaPreferredOverCurrentSchema();
     }
     
     private int[] getParamIndexes(final Collection<Integer> dynamicParameters) {
@@ -100,5 +112,21 @@ public final class EnumerableScan extends TableScan implements EnumerableRel {
             result[index++] = each;
         }
         return result;
+    }
+    
+    private static final class UnqualifiedTableNameRelToSQLConverter extends RelToSqlConverter {
+        
+        private UnqualifiedTableNameRelToSQLConverter(final SqlDialect dialect) {
+            super(dialect);
+        }
+        
+        @Override
+        protected Result dispatch(final RelNode relNode) {
+            if (!(relNode instanceof TableScan)) {
+                return super.dispatch(relNode);
+            }
+            List<String> qualifiedName = ((TableScan) relNode).getTable().getQualifiedName();
+            return result(new SqlIdentifier(qualifiedName.get(qualifiedName.size() - 1), SqlParserPos.ZERO), Collections.singleton(Clause.FROM), relNode, null);
+        }
     }
 }
