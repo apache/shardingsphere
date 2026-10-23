@@ -52,11 +52,17 @@ public final class OrderBySegmentBinder {
                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,
                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        Collection<OrderByItemSegment> boundOrderByItems = new LinkedList<>();
-        for (OrderByItemSegment each : segment.getOrderByItems()) {
-            boundOrderByItems.add(bind(binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts, each));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> previousTableBinderContexts = binderContext.getOrderByFromTableBinderContexts();
+        binderContext.setOrderByFromTableBinderContexts(tableBinderContexts);
+        try {
+            Collection<OrderByItemSegment> boundOrderByItems = new LinkedList<>();
+            for (OrderByItemSegment each : segment.getOrderByItems()) {
+                boundOrderByItems.add(bind(binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts, each));
+            }
+            return new OrderBySegment(segment.getStartIndex(), segment.getStopIndex(), boundOrderByItems);
+        } finally {
+            binderContext.setOrderByFromTableBinderContexts(previousTableBinderContexts);
         }
-        return new OrderBySegment(segment.getStartIndex(), segment.getStopIndex(), boundOrderByItems);
     }
     
     private static OrderByItemSegment bind(final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,

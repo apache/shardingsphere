@@ -33,11 +33,14 @@ import org.junit.jupiter.api.Test;
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
+import javax.transaction.xa.XAResource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,10 +50,13 @@ class FirebirdXAConnectionWrapperTest {
     
     @Test
     void assertWrap() throws SQLException {
-        XAConnection actual = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType).wrap(createXADataSource(), mockConnection());
+        Connection connection = mockConnection();
+        FBConnection firebirdConnection = connection.unwrap(FBConnection.class);
+        XAResource expected = mock(XAResource.class);
+        when(firebirdConnection.getManagedConnection().getXAResource()).thenReturn(expected);
+        XAConnection actual = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType).wrap(createXADataSource(), connection);
         assertThat(actual, isA(FBXAConnection.class));
-        // TODO Fix the error with getting XAResource
-        // assertThat(actual.getXAResource(), isA(FBXAConnection.class));
+        assertThat(actual.getXAResource(), sameInstance(expected));
     }
     
     private XADataSource createXADataSource() {
@@ -61,7 +67,7 @@ class FirebirdXAConnectionWrapperTest {
     
     private Connection mockConnection() throws SQLException {
         Connection result = mock(Connection.class);
-        when(result.unwrap(FBConnection.class)).thenReturn(mock(FBConnection.class));
+        when(result.unwrap(FBConnection.class)).thenReturn(mock(FBConnection.class, RETURNS_DEEP_STUBS));
         return result;
     }
 }

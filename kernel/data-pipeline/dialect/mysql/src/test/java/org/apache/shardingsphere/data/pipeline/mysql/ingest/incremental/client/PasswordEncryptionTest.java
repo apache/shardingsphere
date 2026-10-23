@@ -68,14 +68,16 @@ class PasswordEncryptionTest {
     }
     
     private String mockPublicKey() {
-        return "-----BEGIN PUBLIC KEY-----\n"
-                + "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1ealW/qDdArgzCMnE5Cz\n"
-                + "6FHskcTTweMncG6A124rn2DFBZvmZNyTBiFLM7Scp3jFSyqpw2xg6aaKcM9eCaCf\n"
-                + "nJg4A18HgpAxrFnijVADgsNrHlSniNe2AsN+/uLpEtWezVLr823WvPLgMKQMRWfy\n"
-                + "UD24rpoC2Leir+rvyG8xbDHX65NPGxPFGrlwo7kbUqrgQlYOC3x64C4/S/6K6EZQ\n"
-                + "XaUZwZHdXjEme0/D8p8KBXdMipanZXwHdL+LOBSACj3/FwHn+6oZO2k02g80uofs\n"
-                + "zFdWMjpPVqVCqe85GRFzEY73wDYEItl0d+9a9OV3FFZqVgC2FLk3cD5qajPtyo6v\n"
-                + "UQIDAQAB\n"
-                + "-----END PUBLIC KEY-----\n";
+        return """
+                -----BEGIN PUBLIC KEY-----
+                MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1ealW/qDdArgzCMnE5Cz
+                6FHskcTTweMncG6A124rn2DFBZvmZNyTBiFLM7Scp3jFSyqpw2xg6aaKcM9eCaCf
+                nJg4A18HgpAxrFnijVADgsNrHlSniNe2AsN+/uLpEtWezVLr823WvPLgMKQMRWfy
+                UD24rpoC2Leir+rvyG8xbDHX65NPGxPFGrlwo7kbUqrgQlYOC3x64C4/S/6K6EZQ
+                XaUZwZHdXjEme0/D8p8KBXdMipanZXwHdL+LOBSACj3/FwHn+6oZO2k02g80uofs
+                zFdWMjpPVqVCqe85GRFzEY73wDYEItl0d+9a9OV3FFZqVgC2FLk3cD5qajPtyo6v
+                UQIDAQAB
+                -----END PUBLIC KEY-----
+                """;
     }
 }

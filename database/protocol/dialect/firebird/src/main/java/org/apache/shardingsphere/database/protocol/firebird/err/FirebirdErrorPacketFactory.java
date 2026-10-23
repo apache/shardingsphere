@@ -25,8 +25,6 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacke
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
-import java.sql.SQLException;
-
 /**
  * Error packet factory for Firebird.
  */
@@ -42,7 +40,6 @@ public final class FirebirdErrorPacketFactory {
      * @return created instance
      */
     public static FirebirdPacket newInstance(final Exception cause) {
-        SQLException sqlEx = SQLExceptionTransformEngine.toSQLException(cause, DATABASE_TYPE);
-        return FirebirdGenericResponsePacket.getPacket().setErrorStatusVector(sqlEx);
+        return FirebirdGenericResponsePacket.getPacket().setErrorStatusVector(SQLExceptionTransformEngine.toSQLException(cause, DATABASE_TYPE));
     }
 }

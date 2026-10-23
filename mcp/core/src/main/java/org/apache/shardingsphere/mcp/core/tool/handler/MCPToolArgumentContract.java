@@ -180,7 +180,7 @@ final class MCPToolArgumentContract {
     }
     
     private BigInteger toBigInteger(final Object value) {
-        return value instanceof BigInteger ? (BigInteger) value : BigInteger.valueOf(((Number) value).longValue());
+        return value instanceof BigInteger bigInteger ? bigInteger : BigInteger.valueOf(((Number) value).longValue());
     }
     
     private int getIntegerSchemaValue(final Map<?, ?> schema, final String key) {
