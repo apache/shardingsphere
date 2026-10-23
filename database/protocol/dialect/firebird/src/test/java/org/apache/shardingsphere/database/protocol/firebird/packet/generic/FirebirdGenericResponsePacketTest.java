@@ -108,8 +108,7 @@ class FirebirdGenericResponsePacketTest {
     @Test
     void assertSetWriteZeroStatementId() {
         FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket();
-        FirebirdGenericResponsePacket actual = packet.setWriteZeroStatementId(true);
-        assertThat(actual, is(packet));
+        assertThat(packet.setWriteZeroStatementId(true), is(packet));
         assertTrue(packet.isWriteZeroStatementId());
     }
     
@@ -126,7 +125,6 @@ class FirebirdGenericResponsePacketTest {
     
     @Test
     void assertWriteWithDataAndStatusVector() {
-        when(byteBuf.writeZero(4)).thenReturn(byteBuf);
         when(byteBuf.readableBytes()).thenReturn(4, 8);
         SQLException ex = new SQLException("foo_error", "42000", ISCConstants.isc_arith_except);
         when(payload.getByteBuf()).thenReturn(byteBuf);

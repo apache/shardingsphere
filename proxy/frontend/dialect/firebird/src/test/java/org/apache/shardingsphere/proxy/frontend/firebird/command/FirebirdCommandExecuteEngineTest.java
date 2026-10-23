@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionResourceLock;
@@ -115,9 +114,6 @@ class FirebirdCommandExecuteEngineTest {
     private ConnectionResourceLock connectionResourceLock;
     
     @Mock
-    private ContextManager mockContextManager;
-    
-    @Mock
     private FirebirdPacket errorPacket;
     
     @Mock
@@ -136,7 +132,6 @@ class FirebirdCommandExecuteEngineTest {
     
     @Test
     void assertGetCommandPacketType() {
-        when(byteBuf.readerIndex()).thenReturn(0);
         when(byteBuf.getInt(0)).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue());
         FirebirdPacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
         assertThat(engine.getCommandPacketType(payload), is(FirebirdCommandPacketType.EXECUTE));
@@ -181,7 +176,6 @@ class FirebirdCommandExecuteEngineTest {
     @Test
     void assertWriteQueryDataWithInactiveChannel() throws SQLException {
         when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.QUERY);
-        when(channel.isActive()).thenReturn(false);
         engine.writeQueryData(context, databaseConnectionManager, queryCommandExecutor, 0);
         verify(queryCommandExecutor, never()).next();
         verify(databaseConnectionManager, never()).getConnectionResourceLock();
@@ -220,7 +214,6 @@ class FirebirdCommandExecuteEngineTest {
         Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD.getKey(), String.valueOf(threshold)));
         MetaDataContexts metaDataContexts = new MetaDataContexts(new ShardingSphereMetaData(Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()),
                 new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(props)), new ShardingSphereStatistics());
-        when(mockContextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(mockContextManager);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
     }
 }

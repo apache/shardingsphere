@@ -54,7 +54,6 @@ class FirebirdBinaryColumnTypeTest {
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.ARRAY), is(FirebirdBinaryColumnType.ARRAY));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.TIME_WITH_TIMEZONE), is(FirebirdBinaryColumnType.TIME_TZ));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.TIMESTAMP_WITH_TIMEZONE), is(FirebirdBinaryColumnType.TIMESTAMP_TZ));
-        
         assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_varying2), is(FirebirdBinaryColumnType.VARYING));
         assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_text2), is(FirebirdBinaryColumnType.TEXT));
         assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_text), is(FirebirdBinaryColumnType.LEGACY_TEXT));

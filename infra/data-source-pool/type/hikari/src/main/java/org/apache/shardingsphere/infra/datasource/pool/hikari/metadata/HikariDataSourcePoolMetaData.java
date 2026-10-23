@@ -31,7 +31,7 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     private static final Map<String, Object> DEFAULT_PROPS = new HashMap<>(6, 1F);
     
-    private static final Map<String, Object> SKIPPED_PROPS = new HashMap<>(2, 1F);
+    private static final Map<String, Object> SKIPPED_PROPS = new HashMap<>(3, 1F);
     
     private static final Map<String, String> PROP_SYNONYMS = new HashMap<>(6, 1F);
     
@@ -57,6 +57,7 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     private static void buildInvalidProperties() {
         SKIPPED_PROPS.put("minimumIdle", -1);
         SKIPPED_PROPS.put("maximumPoolSize", -1);
+        SKIPPED_PROPS.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
     }
     
     private static void buildPropertySynonyms() {

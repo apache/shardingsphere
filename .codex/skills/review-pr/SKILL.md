@@ -79,10 +79,9 @@ unchanged basis.
 5. Treat every concern as a candidate until it passes the Finding Proof Gate.
 6. Do not turn uncertainty, inaccessible evidence, tool failure, skipped
    verification, or uninspected counter-evidence into a blocker.
-7. In Formal Review, do not select a verdict, stop at the first blocker, or publish findings before the Completion Gate.
-   Consolidate findings by independent fix boundary and return the complete
-   current-head set once. Only an explicit request for status, narrow review, or
-   early high-risk blockers authorizes a partial result.
+7. In Formal Review, complete the required review and do not stop at the first blocker.
+   Consolidate findings by independent fix boundary and return the complete current-head set once after the Completion Gate.
+   Before that gate, publish only an explicitly requested status, narrow review or early high-risk blocker, or the qualified negative result defined in the Formal Decision Contract.
 8. Follow `AGENTS.md` for repository authority, evidence, scope, safety, and sensitive data, and follow the applicable canonical references below for implementation, testing, contract, non-regression, and verification criteria.
 
 ## Repository Code Policy References
@@ -138,7 +137,7 @@ Map the gate result before applying the remaining Formal Decision Contract.
 - If Checkstyle or Spotless fails on an applicable PR-impact file, return `Not Mergeable` with `Feedback Mode: Change Request`.
 - A style-check failure result must include `Feedback Mode: Change Request` and the blocking-issue count in `### Result`, then identify each failed check and affected PR-impact file in `### Blocking Issues`.
 - A style-check failure result must also include `### Coverage` with the effective candidate SHA, authoritative files accounted for, failed command, exit code, and affected PR-impact file.
-- If environment, dependency, candidate-materialization, tool, or coverage-proof failure leaves any applicable PR-impact file unverified, return `Review Incomplete`.
+- If environment, dependency, candidate-materialization, tool, or coverage-proof failure leaves any applicable PR-impact file unverified, apply the Formal Decision Contract's qualified negative rule; otherwise return `Review Incomplete`.
 - If a module-scoped command fails only on unchanged files, narrow the check reliably or compare the base and effective candidate before attribution; do not classify the PR from that module failure alone.
 - If a check has no applicable PR-impact file, record `Not Applicable` and the repository-configuration basis in `### Coverage`.
 - Only successful current-candidate evidence for both checks, or an explicit not-applicable determination for either check, permits the remaining Formal Decision Contract to select `Mergeable`.
@@ -165,7 +164,7 @@ publish non-blocking observations unless they materially help the user.
 
 `Review Incomplete` is a terminal evidence classification, not a fallback for unfinished analysis.
 Classify a gap as incomplete only when a specific outcome-sensitive decisive fact remains unavailable after every admissible evidence route has been attempted; if relevant local or public evidence exists or another allowed route remains, continue the review and classify the candidate.
-After authoritative scope is established, record each incomplete gap in the ledger with the missing fact, unavailable-evidence proof, affected full path, strongest alternatives checked, outcome impact, scope proof, and affected files, then run `scripts/review_ledger.py validate-incomplete --ledger <ledger>` before selecting the result.
+After authoritative scope is established, record each incomplete gap in the ledger with the missing fact, unavailable-evidence proof, affected full path, strongest alternatives checked, outcome impact, scope proof, and affected files, then run `scripts/manage_review_ledger.py validate-incomplete --ledger <ledger>` before selecting the result.
 If authoritative scope cannot be established, state the exact unavailable scope fact and attempted routes in `### Required Evidence`; do not fabricate ledger scope.
 
 ## Behavior Clusters and Risk Triage
@@ -200,7 +199,7 @@ All three discovery lenses may share the same current source material, but each 
 9. Run a convergence pass across the complete candidate and its affected behavior and contracts, including the latest delta.
    If it finds a new independent candidate, return to step 6; otherwise freeze the assessment after the Completion Gate.
 
-If an outcome-sensitive decisive fact passes the Review Incomplete Proof Gate, return the mode-appropriate incomplete result.
+If an outcome-sensitive decisive fact passes the Review Incomplete Proof Gate, apply the Formal Decision Contract to the proven findings and remaining gap.
 Otherwise continue the review or request a split; do not produce a complete verdict from a partial review.
 
 ## Completion Gate and Scripts
@@ -214,7 +213,7 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 - Complete the Mandatory Style Verification Gate against the latest effective candidate for every public PR or PR-backed local candidate.
 - Leave no unresolved gap that could change the blocker set and require a latest-candidate convergence pass with zero new independent candidates.
 - Use `scripts/build_review_inventory.py --format json` when local refs are available; its Markdown is only a bounded summary.
-- Use `scripts/review_ledger.py` for each independent assessment; it accounts for review state but does not judge correctness.
+- Use `scripts/manage_review_ledger.py` for each independent assessment; it accounts for review state but does not judge correctness.
 - Initialize a new ledger for each round that requires one, from the full current inventory with pending file statuses and no inherited review passes.
 - Use the existing private system temporary directory and record the exact ledger path returned by initialization for this review.
 - Initialize with `--review-basis <JSON>` containing the selected focus and readable sources identified by role and origin, so the ledger binds their actual content versions to the effective candidate, original baseline and authoritative files.
@@ -227,6 +226,10 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 - Validate the current basis and coverage before selecting a result; a passing ledger proves mechanical coverage and evidence freshness, while the reviewer must still establish semantic proof under the existing gates.
 - For a standalone local candidate with index or working-tree changes, provide the same exact task-path file to both scripts with `--candidate-files <path>`. The scripts resolve those paths from the computed merge-base through the working tree, include matching untracked files, and fail when a listed path is unchanged.
 - Mutate one ledger sequentially; do not run ledger commands concurrently.
+- Batch related updates to one reviewer ledger with `scripts/manage_review_ledger.py batch --ledger <ledger> --operations <JSON>`, where the JSON is a nonempty ordered array of argument arrays for `mark-file`, `add-finding` and `add-pass`, using their existing flags and input files without `--ledger`.
+- Each batch applies the existing operations in order and writes once only after all per-operation checks and both freshness checks pass.
+- Batch freshness checks verify the current basis and captured source anchors before applying operations and again before writing; any failed operation or freshness check leaves the original ledger unchanged.
+- Batching does not replace final ledger or session validation.
 
 Use these JSON shapes in local files passed to the arguments, replacing the example values with current evidence and block IDs from the initialized ledger:
 Sources use `rule`, `requirement` or `evidence` roles; `--anchors` takes an anchor-array file shaped like `anchors` below.
@@ -247,16 +250,23 @@ Sources use `rule`, `requirement` or `evidence` roles; `--anchors` takes an anch
 
 Use `base` for original content and `candidate` for effective content; text blocks need an anchor overlapping their changed lines, whole-object binary, mode or rename changes omit the line bounds, and `source` anchors require the declared source's matching origin and path.
 
-If the gate cannot pass because a gap satisfies the Review Incomplete Proof Gate, return `Review Incomplete` in Formal Review and state the incomplete evidence without a formal verdict in a discussion reply.
+If the gate cannot pass because a gap satisfies the Review Incomplete Proof Gate, apply the Formal Decision Contract's qualified negative rule before selecting the incomplete result.
+When no qualified negative result applies, return `Review Incomplete` in Formal Review and state the incomplete evidence without a formal verdict in a discussion reply.
 When confirmed blockers coexist with a proven gap that could hide more blockers, list them as confirmed partial facts but do not present them as the complete change-request set.
 
 ## Formal Decision Contract
 
-Map the canonical assessment to Formal Review only after the Completion Gate
-evaluation and Independent Review Coordination:
+In Formal Review Mode, when a concrete failure prevents completing the required review or the current basis reaches its confirmation limit, automatically publish `Not Mergeable` if at least one current-candidate finding passes the Finding Proof Gate and substantive coordinator review.
+The coordinator must verify candidate identity, source versions, the full failing path and strongest counter-evidence; unresolved facts or differences must not be capable of invalidating that finding.
+This qualified negative result also applies when local Git objects, ledgers or session validation are unavailable but admissible immutable evidence independently proves the finding.
+Use the existing feedback-mode rules for the proven findings, including `Needs Discussion` for an evidenced required maintainer decision.
+A candidate, disputed, withdrawn or stale finding, a tool failure, or non-convergence alone cannot justify this result.
+The exception permits a qualified negative report while full coverage or confirmation remains unfinished; it does not permit `Mergeable`, an exhaustive finding-set claim, a successful ledger or session-validation claim, or coding-task completion.
 
-1. If the gate fails because a gap satisfies the Review Incomplete Proof Gate, use `Review Incomplete`, even when some blockers are already confirmed.
-2. If the Mandatory Style Verification Gate is incomplete for any applicable PR-impact file, use `Review Incomplete`, even when some blockers are already confirmed.
+For a complete result, evaluate the Completion Gate and Independent Review Coordination, then apply the following mapping:
+
+1. If the gate fails because a gap satisfies the Review Incomplete Proof Gate and no qualified negative result applies, use `Review Incomplete`.
+2. If the Mandatory Style Verification Gate is incomplete for any applicable PR-impact file and no qualified negative result applies, use `Review Incomplete`.
 3. If Checkstyle or Spotless fails on an applicable PR-impact file, use `Not Mergeable` with `Feedback Mode: Change Request`.
 4. If admissible evidence disproves the problem model, expected behavior, ownership, protocol or SQL semantics, compatibility assumption, accepted project commitment, or solution direction, or establishes that a new project commitment still requires a maintainer decision, use `Not Mergeable` with `Feedback Mode: Needs Discussion`.
 5. If at least one candidate passes the Finding Proof Gate, use `Not Mergeable`
@@ -305,6 +315,9 @@ Use this format for both public-PR and local-candidate reviews.
 - `Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`.
 - `Not Mergeable`: `### Result` with exactly one `Review Result: Not Mergeable` line, one `Feedback Mode`, a `Blocking Issues: N` line, and a concise reason; `### Blocking Issues`; `### Coverage`.
 - `Review Incomplete`: `### Result` with exactly one `Review Result: Review Incomplete` line and a concise reason; `### Confirmed Issues` when any are already proven; `### Verified Facts`; `### Required Evidence`; `### Coverage`.
+
+For a qualified negative result, use the `Not Mergeable` structure with `Review Status: Not Converged` and `Confirmed Blocking Issues: N` in place of `Blocking Issues: N`.
+State that the findings are a confirmed subset, and report the actual completed and unreviewed coverage, unresolved differences, failed or unavailable checks, and the reason confirmation could not finish.
 
 For each blocking issue include:
 

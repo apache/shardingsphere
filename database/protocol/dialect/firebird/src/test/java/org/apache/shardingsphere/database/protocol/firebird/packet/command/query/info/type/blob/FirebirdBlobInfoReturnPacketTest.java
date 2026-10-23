@@ -41,17 +41,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdBlobInfoReturnPacketTest {
     
-    private static final String SWITCH_CLASS_NAME =
-            "org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoReturnPacket$1";
+    private static final String SWITCH_CLASS_NAME = "org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoReturnPacket$1";
     
-    private static final String SWITCH_FIELD_NAME =
-            "$SwitchMap$org$apache$shardingsphere$database$protocol$firebird$packet$command$query$info$type$blob$FirebirdBlobInfoPacketType";
+    private static final String SWITCH_FIELD_NAME = "$SwitchMap$org$apache$shardingsphere$database$protocol$firebird$packet$command$query$info$type$blob$FirebirdBlobInfoPacketType";
     
     @Mock
     private FirebirdPacketPayload payload;
@@ -66,7 +63,7 @@ class FirebirdBlobInfoReturnPacketTest {
     void assertWriteCommonInfoWithRequestedEndWritesSingleTerminator() {
         FirebirdBlobInfoReturnPacket packet = new FirebirdBlobInfoReturnPacket(Collections.singletonList(FirebirdCommonInfoPacketType.END), 0, false);
         packet.write((PacketPayload) payload);
-        verify(payload, times(1)).writeInt1(FirebirdCommonInfoPacketType.END.getCode());
+        verify(payload).writeInt1(FirebirdCommonInfoPacketType.END.getCode());
     }
     
     @ParameterizedTest(name = "{0}")

@@ -38,4 +38,23 @@ class FirebirdBatchMessageCommandPacketTest {
                 Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.LONG, Integer.BYTES, 0, 0)));
         assertThat(actual, is(20));
     }
+    
+    @Test
+    void assertGetLengthWithIncompleteHeader() {
+        ByteBuf packet = Unpooled.buffer().writeZero(11);
+        packet.readerIndex(2);
+        int actual = FirebirdBatchMessageCommandPacket.getLength(new FirebirdPacketPayload(packet, StandardCharsets.UTF_8), Collections.emptyList());
+        assertThat(actual, is(-1));
+        assertThat(packet.readerIndex(), is(2));
+    }
+    
+    @Test
+    void assertGetLengthWithNonzeroReaderIndex() {
+        ByteBuf packet = Unpooled.buffer().writeZero(3).writeInt(0).writeInt(42).writeInt(1).writeByte(0).writeZero(3).writeInt(100);
+        packet.readerIndex(3);
+        int actual = FirebirdBatchMessageCommandPacket.getLength(new FirebirdPacketPayload(packet, StandardCharsets.UTF_8),
+                Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.LONG, Integer.BYTES, 0, 0)));
+        assertThat(actual, is(20));
+        assertThat(packet.readerIndex(), is(23));
+    }
 }
