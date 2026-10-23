@@ -77,11 +77,26 @@ class RALE2EIT implements SQLE2EIT {
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecute(final AssertionTestParameter testParam) throws SQLException, IOException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
-        init(context);
+        Throwable primaryException = null;
         try {
+            init(context);
             assertExecute(context, testParam);
+            // CHECKSTYLE:OFF
+        } catch (final SQLException | IOException | RuntimeException | AssertionError ex) {
+            // CHECKSTYLE:ON
+            primaryException = ex;
+            throw ex;
         } finally {
-            tearDown(context);
+            try {
+                tearDown(context);
+                // CHECKSTYLE:OFF
+            } catch (final SQLException | RuntimeException ex) {
+                // CHECKSTYLE:ON
+                if (null == primaryException) {
+                    throw ex;
+                }
+                primaryException.addSuppressed(ex);
+            }
         }
     }
     
@@ -152,8 +167,8 @@ class RALE2EIT implements SQLE2EIT {
     
     private void assertResultSet(final SQLE2EITContext context, final ResultSet resultSet, final AssertionTestParameter testParam) throws SQLException, IOException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns(context), context, testParam);
-        if ("jdbc".equals(testParam.getAdapter()) && ("show_storage_units.xml".equals(context.getAssertion().getExpectedDataFile())
-                || "show_sharding_table_rule.xml".equals(context.getAssertion().getExpectedDataFile()) || "show_tables.xml".equals(context.getAssertion().getExpectedDataFile()))) {
+        if ("show_sharding_table_rule.xml".equals(context.getAssertion().getExpectedDataFile()) || "jdbc".equals(testParam.getAdapter())
+                && ("show_storage_units.xml".equals(context.getAssertion().getExpectedDataFile()) || "show_tables.xml".equals(context.getAssertion().getExpectedDataFile()))) {
             assertThat(getActualRows(resultSet), containsInAnyOrder(getExpectedJdbcRows(context, testParam).toArray()));
         } else {
             assertRows(resultSet, getIgnoreAssertColumns(context), context.getDataSet().getRows());

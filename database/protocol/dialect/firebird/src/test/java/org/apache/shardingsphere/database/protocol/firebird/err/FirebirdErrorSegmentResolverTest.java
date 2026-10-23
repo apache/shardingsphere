@@ -33,24 +33,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdErrorSegmentResolverTest {
     
+    private static final String DUPLICATE_KEY_MESSAGE = "violation of PRIMARY or UNIQUE KEY constraint \"INTEG_2\" on table \"MY_TABLE\"; Problematic key value is (\"COL1\" = 1)";
+    
     @Test
     void assertResolveRebuildsDuplicateKeyVectorAsSegments() {
-        String message = "violation of PRIMARY or UNIQUE KEY constraint \"INTEG_2\" on table \"MY_TABLE\";"
-                + " Problematic key value is (\"COL1\" = 1)";
-        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_unique_key_violation, message, "23000");
-        assertThat(segments.size(), is(2));
-        assertThat(segments.get(0).getGdsCode(), is(ISCConstants.isc_unique_key_violation));
-        assertThat(segments.get(0).getArguments(), contains("INTEG_2", "MY_TABLE"));
-        assertNull(segments.get(0).getSqlState());
-        assertThat(segments.get(1).getGdsCode(), is(ISCConstants.isc_random));
-        assertThat(segments.get(1).getArguments(), contains("Problematic key value is (\"COL1\" = 1)"));
+        List<Segment> actual = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_unique_key_violation, DUPLICATE_KEY_MESSAGE, "23000");
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0).getGdsCode(), is(ISCConstants.isc_unique_key_violation));
+        assertThat(actual.get(0).getArguments(), contains("INTEG_2", "MY_TABLE"));
+        assertNull(actual.get(0).getSqlState());
+        assertThat(actual.get(1).getGdsCode(), is(ISCConstants.isc_random));
+        assertThat(actual.get(1).getArguments(), contains("Problematic key value is (\"COL1\" = 1)"));
     }
     
     @Test
     void assertResolveRendersDuplicateKeyTableNameWithoutNull() {
-        String message = "violation of PRIMARY or UNIQUE KEY constraint \"INTEG_2\" on table \"MY_TABLE\";"
-                + " Problematic key value is (\"COL1\" = 1)";
-        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_unique_key_violation, message, "23000");
+        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_unique_key_violation, DUPLICATE_KEY_MESSAGE, "23000");
         StringBuilder rendered = new StringBuilder();
         for (Segment each : segments) {
             GDSExceptionHelper.GDSMessage segmentMessage = GDSExceptionHelper.getMessage(each.getGdsCode());
@@ -60,7 +58,7 @@ class FirebirdErrorSegmentResolverTest {
             }
             rendered.append(segmentMessage);
         }
-        assertThat(rendered.toString(), is(message));
+        assertThat(rendered.toString(), is(DUPLICATE_KEY_MESSAGE));
     }
     
     @Test

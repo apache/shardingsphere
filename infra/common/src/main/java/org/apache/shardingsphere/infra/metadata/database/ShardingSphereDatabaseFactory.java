@@ -147,7 +147,7 @@ public final class ShardingSphereDatabaseFactory {
         ResourceMetaData resourceMetaData = new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
         DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(protocolType, resourceMetaData, props);
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
-        Collection<ShardingSphereSchema> schemas = GenericSchemaBuilder.build(protocolType, new GenericSchemaBuilderMaterial(resourceMetaData.getStorageUnits(), databaseRules, props,
+        Collection<ShardingSphereSchema> schemas = GenericSchemaBuilder.buildWithInventoryCheck(protocolType, new GenericSchemaBuilderMaterial(resourceMetaData.getStorageUnits(), databaseRules, props,
                 DefaultSchemaNameResolver.resolveProtocol(protocolType, name), identifierContext, revisionCandidateSchemas)).values();
         return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(databaseRules), mergeSystemSchemas(name, protocolType, props, schemas), props);
     }

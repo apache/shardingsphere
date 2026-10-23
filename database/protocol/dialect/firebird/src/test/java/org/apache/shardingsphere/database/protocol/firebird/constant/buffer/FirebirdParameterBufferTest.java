@@ -71,8 +71,7 @@ class FirebirdParameterBufferTest {
         parameterBuffer.parseBuffer(buffer);
         assertThat(parameterBuffer.getVersion(), is(1));
         assertThat(parameterBuffer.<Integer>getValue(intType), is(123));
-        boolean actualBoolean = parameterBuffer.getValue(booleanType);
-        assertTrue(actualBoolean);
+        assertTrue(parameterBuffer.<Boolean>getValue(booleanType));
         assertThat(parameterBuffer.getValue(stringType), is(expectedString));
     }
     
@@ -94,6 +93,33 @@ class FirebirdParameterBufferTest {
         assertThat(parameterBuffer.getVersion(), is(2));
         assertThat(parameterBuffer.<Integer>getValue(intType), is(789));
         assertThat(parameterBuffer.getValue(stringType), is(expectedString));
+    }
+    
+    @Test
+    void assertParseTraditionalBufferWithSizedIntValues() {
+        when(intType.getFormat()).thenReturn(FirebirdValueFormat.SIZED_INT);
+        when(booleanType.getFormat()).thenReturn(FirebirdValueFormat.SIZED_INT);
+        ByteBuf buffer = Unpooled.buffer();
+        buffer.writeByte(1);
+        buffer.writeBytes(new byte[]{1, 1, 7});
+        buffer.writeBytes(new byte[]{2, 2, (byte) 0xD2, 0x04});
+        FirebirdParameterBuffer parameterBuffer = new FirebirdParameterBuffer(createValueOf(), version -> 1 == version);
+        parameterBuffer.parseBuffer(buffer);
+        assertThat(parameterBuffer.<Integer>getValue(intType), is(7));
+        assertThat(parameterBuffer.<Integer>getValue(booleanType), is(1234));
+    }
+    
+    @Test
+    void assertParseExtendedBufferWithSizedIntValue() {
+        when(intType.getFormat()).thenReturn(FirebirdValueFormat.SIZED_INT);
+        ByteBuf buffer = Unpooled.buffer();
+        buffer.writeByte(2);
+        buffer.writeByte(1);
+        buffer.writeIntLE(2);
+        buffer.writeBytes(new byte[]{(byte) 0xD2, 0x04});
+        FirebirdParameterBuffer parameterBuffer = new FirebirdParameterBuffer(createValueOf(), version -> 1 == version);
+        parameterBuffer.parseBuffer(buffer);
+        assertThat(parameterBuffer.<Integer>getValue(intType), is(1234));
     }
     
     @Test

@@ -13,11 +13,11 @@ weight = 3
 
 ## 前置条件
 
-- 已按[快速开始](../../quick-start/)启动 HTTP MCP Server。
+- 已按[快速开始](/cn/user-manual/shardingsphere-mcp/quick-start/)启动 HTTP MCP Server。
 - 只暴露可被 OpenAI API 访问且已受保护的远程 endpoint。ShardingSphere-MCP 内置 HTTP Server 不提供认证或授权。
 - 远程平台接入时，应将 ShardingSphere-MCP 放在受信网关或反向代理后面，由外层组件提供 TLS 终止、身份认证、
   授权策略、网络访问控制和审计日志。
-  安全边界见[部署说明](../../deployment/)和[配置说明](../../configuration/)。
+  安全边界见[部署说明](/cn/user-manual/shardingsphere-mcp/deployment/)和[配置说明](/cn/user-manual/shardingsphere-mcp/configuration/)。
 - 该受保护的远程 endpoint 需要支持 `Streamable HTTP` 或 `HTTP/SSE`。
 - 已准备 OpenAI API Key，并选择支持 remote MCP 的模型。
 - 如果受保护的远程 endpoint 或网关使用 OAuth 或 Bearer 认证，还需要准备可传给 MCP tool 的访问令牌。
@@ -89,18 +89,18 @@ response = client.responses.create(
 - OpenAI Responses API 的 remote MCP 只适用于远程 HTTP MCP Server，不适用于本地 `STDIO` 进程。
 - 远程 MCP Server 默认会触发审批流程。对于可能产生写操作或副作用的工具，应保留审批或显式限制 `allowed_tools`。
 - 只通过你信任的环境暴露 ShardingSphere-MCP，并优先使用受你控制的远程地址。
-- 本页只说明 OpenAI API 集成方式。若希望在 ChatGPT 产品界面中直接接入，请参考 [ChatGPT Developer Mode](../chatgpt-developer-mode/)。
-- 具体可用任务和使用边界见[能力清单](../../capabilities/)。
+- 本页只说明 OpenAI API 集成方式。若希望在 ChatGPT 产品界面中直接接入，请参考 [ChatGPT Developer Mode](/cn/user-manual/shardingsphere-mcp/client-integration/chatgpt-developer-mode/)。
+- 具体可用任务和使用边界见[能力清单](/cn/user-manual/shardingsphere-mcp/capabilities/)。
 
 ## 参考资料
 
 ### 相关文档
 
-- [快速开始](../../quick-start/)
-- [能力清单](../../capabilities/)
-- [配置说明](../../configuration/)
-- [Codex](../codex/)
-- [ChatGPT Developer Mode](../chatgpt-developer-mode/)
+- [快速开始](/cn/user-manual/shardingsphere-mcp/quick-start/)
+- [能力清单](/cn/user-manual/shardingsphere-mcp/capabilities/)
+- [配置说明](/cn/user-manual/shardingsphere-mcp/configuration/)
+- [Codex](/cn/user-manual/shardingsphere-mcp/client-integration/codex/)
+- [ChatGPT Developer Mode](/cn/user-manual/shardingsphere-mcp/client-integration/chatgpt-developer-mode/)
 
 ### 官方参考
 

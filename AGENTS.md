@@ -6,6 +6,7 @@ Follow this guide; paths are repository-relative.
 
 1. Inspect the applicable `CODE_OF_CONDUCT.md` section before changing code or tests.
 2. Before Maven, E2E, Proxy startup, database clients, IDE/MCP runs, large structured analysis, or commands likely to exceed 100 lines, read or reuse `.codex/context/token-efficiency.md` and follow its Command Contract.
+   Read `.codex/context/docker-resources.md` before direct or indirect Docker use.
 3. Before changing production, tests, scripts, build logic, generated source, or behavior configuration, read `.codex/skills/code-implementation/SKILL.md` through EOF. Read-only and prose-only work does not activate it, and no Skill grants authority or scope.
 4. If Skill discovery omits required `code-implementation`, load its repository file directly. A missing required canonical source keeps ordinary writes read-only; only an exact user-authorized policy or harness repair may use `.codex/harness/agents/policy-maintenance.md`.
 5. For read-only code or test analysis, planning, design, or review, read the implementation rules without activating the write workflow. Load testing, removal, contract, or non-regression rules only when that topic can affect the requested conclusion.
@@ -23,7 +24,7 @@ Before changing this guide, a canonical policy source, or its harness, read `.co
 ## Response Style
 
 - Restrain the urge to elaborate: complete all required task actions and keep required evidence, risks, verification results, and output formats while limiting the reply's length.
-- Analyze the issue thoroughly, lead with the conclusion, and give the shortest complete answer in plain language; expand only when the user requests a detailed explanation or asks a specific follow-up.
+- Analyze the issue thoroughly, lead with the conclusion, and give the shortest complete answer in plain language; match detail to the question and context.
 - For details, lead with the answer, then `---`; otherwise omit it.
 
 ## Authority and Safety
@@ -59,12 +60,16 @@ Evaluate premises that affect correctness, scope, compatibility, safety, or cost
 
 Before editing, record the goal, boundary, acceptance criteria, and required verification. Inspect only the owners, consumers, contracts, tests, configuration, registrations, precedent, and instructions needed to make the change. For non-trivial work, plan only the ordered steps needed to control dependencies and verification.
 
+Before choosing a solution or drafting content, read the relevant context and establish the current responsibilities.
+For existing artifacts, prefer applicable capabilities and patterns, adding only what the task requires.
+Keep changes at the abstraction and detail appropriate to their surroundings.
+
 ### Strict Scope and Task-Delta Gate
 
-1. An active task is one independent, verifiable objective including its corrections and follow-ups. Start a new baseline only after completion and an explicit independent objective; when ambiguous, stay read-only and confirm.
+1. An active task is one independent, verifiable objective including its corrections and follow-ups. Start a new baseline only after completion and an explicit independent objective; when ambiguous, stay read-only and confirm. At each turn's start and before renewed analysis, planning, or decisions, check the original request and task record; stop goal or scope drift.
 2. Derive acceptance criteria only from requested outcomes, proven direct prerequisites, and focused regression protection. Do not add cleanup, generalization, consistency work, adjacent fixes, or optional improvements.
-3. Before a file-changing tool, record original status and relevant diffs, infer the smallest owning paths, and freeze `file -> allowed intent -> unmet criterion`. A named module or path is the maximum boundary, and an allowed file does not authorize unrelated hunks.
-4. Keep the baseline and boundary through follow-ups, reviews, failures, and verification. Expand only with exact additional path and intent authorization, append without rebaselining, and keep other scope read-only.
+3. Before a file-changing tool, record original status and relevant diffs, infer the smallest owning paths, and freeze `file -> allowed intent -> unmet criterion`. A named module or path is the maximum boundary, and an allowed file does not authorize unrelated hunks. Check each write against its recorded file, intent, and criterion.
+4. Keep the baseline and boundary through follow-ups, reviews, failures, and verification. Expand only with exact additional path and intent authorization, append without rebaselining, and keep other scope read-only. Recover missing or conflicting records read-only; if unrecoverable, stay read-only and confirm missing constraints. Retain the record across context reduction; summaries cannot authorize expansion.
 5. Inspect every path and hunk after each coherent edit batch. Inspect immediately after a formatter, generator, bulk replacement, or any action whose write set is not exact. Before an outside-boundary edit, report its evidence, minimum scope, affected contracts, and consequence of declining it.
 6. Preserve pre-existing and unattributed changes; do not overwrite, format, remove, roll back, or claim them, and do not infer ownership from baseline absence.
 7. After the last write, audit the delta against the original baseline and remove only safely separable unnecessary task changes.
@@ -81,7 +86,11 @@ Do not add over 10,000 physical production and test source lines in one active t
 
 ## Specialized Workflows
 
-Use `$analyze-issue` for issue diagnosis and maintainer replies, `$gen-ut` with `code-implementation` for unit-test generation or coverage, and `$review-pr` for PR correctness, mergeability, CI, or a triggered Formal Review. Complete reviews or recommendations use Formal Review with `### Result`, one `Review Result`, `### Evidence`, and `### Coverage`; Coverage identifies local-only changes. Standalone review is read-only. A missing required specialized Skill uses an equivalent manual checklist; do not install or create one for the task. Optional Skills never waive gates or expand authority or scope.
+Use `$analyze-issue` for issue diagnosis and maintainer replies, `$gen-ut` with `code-implementation` for unit-test generation or coverage, and `$review-pr` for explicit code or PR reviews, mergeability, CI, or a triggered Formal Review.
+Ordinary implementation completion self-review follows the Change Completion Gate.
+Standalone review is read-only.
+A missing required specialized Skill uses an equivalent manual checklist; do not install or create one for the task.
+Optional Skills never waive gates or expand authority or scope.
 
 ## Change Completion Gate
 
@@ -119,14 +128,4 @@ Preserve supported behavior outside the exact authorized change. Load the full n
 - Do not send API keys, passwords, connection strings, or unrelated private source code to Jev.
 - Deterministic rules and simple arithmetic do not need Jev.
 
-### Jev Usage Report
-
-At the end of each task, report the following:
-
-- Whether the skill was used and what guidance it provided.
-- Whether Jev MCP was called; if not, state the decisive routing reason, not an unchecked condition such as quota or balance.
-- The number of Jev MCP calls, the judgments handled, and the role each call played.
-- Whether Jev changed task routing, prioritization, conclusions, or the execution plan.
-- Whether Jev actually reduced token usage or improved processing speed or efficiency.
-- Report specific token savings or time changes only when measured data is available; otherwise write "cannot be measured accurately" and do not guess.
-- Report problems caused by Jev; write "none found" when no problems were found.
+Do not include routine Jev usage feedback in task reports unless the user explicitly requests it.

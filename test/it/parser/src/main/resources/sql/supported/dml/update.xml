@@ -55,7 +55,7 @@
     <sql-case id="update_with_set_value_clause" value="UPDATE ot1 SET VALUE(ot1.x) = t1(20) WHERE VALUE(ot1.x) = t1(10);" db-types="Oracle" />
     <sql-case id="update_with_subquery_target_oracle" value="UPDATE (SELECT * FROM employees) SET salary = 1" db-types="Oracle" />
     <sql-case id="update_with_dblink_oracle" value="UPDATE employees@remote SET salary = salary" db-types="Oracle" />
-    <sql-case id="update_with_current_of_oracle" value="UPDATE t_order SET status = 'OK' WHERE CURRENT OF order_cursor" db-types="Oracle" />
+    <sql-case id="update_with_current_of_oracle" value="UPDATE t_order SET status = 'OK' WHERE CURRENT OF order_cursor" db-types="Oracle,PostgreSQL" />
     <sql-case id="update_with_open_row_set_function" value="UPDATE T SET XmlCol = ( SELECT * FROM OPENROWSET(BULK 'C:\SampleFolder\SampleData3.txt', SINGLE_BLOB) AS x) WHERE IntCol = 1" db-types="SQLServer"/>
     <sql-case id="update_with_point_type" value="UPDATE dbo.Cities SET Location.SetXY(23.5, 23.5) WHERE Name = 'Anchorage'" db-types="SQLServer"/>
     <sql-case id="update_with_table_hint" value="UPDATE Production.Product WITH (TABLOCK) SET ListPrice = ListPrice * 1.10 WHERE ProductNumber LIKE 'BK-%'" db-types="SQLServer"/>
@@ -85,4 +85,18 @@
     <sql-case id="update_with_where_sql92" value="UPDATE t_order SET status = 'x' WHERE order_id = 1" db-types="SQL92" />
     <sql-case id="update_set_default_oracle" value="UPDATE employees SET status = DEFAULT WHERE employee_id = 1" db-types="Oracle" />
     <sql-case id="update_table_collection_oracle" value="UPDATE TABLE(SELECT nested_col FROM t_nested) SET nested_col = DEFAULT" db-types="Oracle" />
+
+    <sql-case id="update_tuple_implicit_postgresql_regression" value="UPDATE foo SET (a, b) = (?, ?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="update_tuple_explicit_postgresql_regression" value="UPDATE foo SET (a, b) = ROW(?, ?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="update_tuple_subquery_postgresql_regression" value="UPDATE foo SET (a, b) = (SELECT ?, ?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="update_current_of_postgresql_regression" value="UPDATE foo SET id = ? WHERE CURRENT OF foo_cursor" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="update_with_returning_postgresql_regression" value="WITH seed(id) AS (SELECT ?) UPDATE foo SET id = ? WHERE id = ? RETURNING id, ?" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="update_with_returning_aliases_postgresql_regression" value="WITH seed(id) AS (SELECT ?) UPDATE foo SET id = ? WHERE id = ? RETURNING WITH (OLD AS old_row, NEW AS new_row) old_row.id, new_row.id, ?" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="update_tuple_literal_pg" value="UPDATE t_order SET (user_id, status) = (1, 'foo')" db-types="PostgreSQL" />
+    <sql-case id="update_tuple_subquery_pg" value="UPDATE t_order SET (user_id, status) = (SELECT 1, 'foo')" db-types="PostgreSQL" />
+    <sql-case id="update_array_element_pg" value="UPDATE t_order SET status[1] = 'foo'" db-types="PostgreSQL" />
+    <sql-case id="update_array_slice_pg" value="UPDATE t_order SET status[1:2][2] = 'foo'" db-types="PostgreSQL" />
+    <sql-case id="update_array_parameter_pg" value="UPDATE t_order SET status[$1] = $2" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="update_member_target_pg" value="UPDATE t_order SET status.value = 'foo'" db-types="PostgreSQL" />
+    <sql-case id="update_indirection_parameters_postgresql_regression" value="UPDATE foo SET items[?] = ?, span[?:?] = ?" db-types="PostgreSQL" case-types="Placeholder" />
 </sql-cases>

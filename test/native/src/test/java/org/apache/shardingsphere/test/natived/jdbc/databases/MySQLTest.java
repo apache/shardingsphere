@@ -55,9 +55,7 @@ class MySQLTest {
     
     @SuppressWarnings("resource")
     @Container
-    private final GenericContainer<?> container = new GenericContainer<>("mysql:9.7.1-oraclelinux9")
-            .withEnv("MYSQL_ROOT_PASSWORD", password)
-            .withExposedPorts(3306);
+    private final GenericContainer<?> container = new GenericContainer<>("mysql:8.0.40").withEnv("MYSQL_ROOT_PASSWORD", password).withExposedPorts(3306);
     
     private DataSource logicDataSource;
     

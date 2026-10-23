@@ -19,6 +19,23 @@ grammar DorisStatement;
 
 import Comments, DDLStatement, TCLStatement, LCLStatement, DCLStatement;
 
+// DORIS CHANGED BEGIN
+@lexer::members {
+    private void adjustNumberToken() {
+        if ('.' == _input.LA(_tokenStartCharIndex - _input.index())) {
+            int previousCharacter = _input.LA(_tokenStartCharIndex - _input.index() - 1);
+            int nextCharacter = _input.LA(1);
+            if ((Character.isLetterOrDigit(previousCharacter) || '_' == previousCharacter || '$' == previousCharacter || previousCharacter >= 0x80 && previousCharacter <= 0xFFFF)
+                    && (Character.isLetter(nextCharacter) || '_' == nextCharacter || '$' == nextCharacter || nextCharacter >= 0x80 && nextCharacter <= 0xFFFF)) {
+                _input.seek(_tokenStartCharIndex + 1);
+                setCharPositionInLine(_tokenStartCharPositionInLine + 1);
+                setType(DOT_);
+            }
+        }
+    }
+}
+// DORIS CHANGED END
+
 execute
     : (select
     | insert

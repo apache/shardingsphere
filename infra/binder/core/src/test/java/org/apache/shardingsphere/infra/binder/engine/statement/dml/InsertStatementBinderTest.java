@@ -32,12 +32,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.In
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -53,6 +55,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.not;
@@ -106,6 +109,27 @@ class InsertStatementBinderTest {
         assertThat(statusColumnSegment.getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_db"));
         assertThat(statusColumnSegment.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
         assertThat(statusColumnSegment.getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
+    }
+    
+    @Test
+    void assertBindWithStatementAttributes() {
+        ParameterMarkerExpressionSegment parameterMarker = new ParameterMarkerExpressionSegment(0, 0, 0);
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
+                .insertColumns(new InsertColumnsSegment(0, 0, Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("order_id")),
+                        new ColumnSegment(0, 0, new IdentifierValue("user_id")), new ColumnSegment(0, 0, new IdentifierValue("status")))))
+                .values(Collections.singletonList(new InsertValuesSegment(0, 0,
+                        Arrays.asList(parameterMarker, new ColumnSegment(0, 0, new IdentifierValue("foo_variable")), new LiteralExpressionSegment(0, 0, "OK")))))
+                .build();
+        CommentSegment comment = new CommentSegment("/* foo_comment */", 0, 16);
+        insertStatement.addParameterMarkers(Collections.singletonList(parameterMarker));
+        insertStatement.getVariableNames().add("foo_variable");
+        insertStatement.getComments().add(comment);
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), insertStatement));
+        assertThat(actual.getParameterMarkers(), contains(parameterMarker));
+        assertThat(actual.getParameterCount(), is(1));
+        assertThat(actual.getVariableNames(), contains("foo_variable"));
+        assertThat(actual.getComments(), contains(comment));
     }
     
     @Test

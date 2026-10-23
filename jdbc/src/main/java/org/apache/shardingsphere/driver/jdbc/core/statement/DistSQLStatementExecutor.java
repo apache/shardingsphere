@@ -65,7 +65,7 @@ final class DistSQLStatementExecutor {
         new DistSQLUpdateExecuteEngine(sqlStatement, connection.getCurrentDatabaseName(), connection.getContextManager(), createConnectionContext(queryContext)).executeUpdate();
     }
     
-    boolean isQuery(final QueryContext queryContext) throws SQLException {
+    boolean isQuery(final QueryContext queryContext) {
         DistSQLStatement sqlStatement = (DistSQLStatement) queryContext.getSqlStatementContext().getSqlStatement();
         checkTransaction(sqlStatement);
         ShardingSpherePreconditions.checkState(isQuery(sqlStatement) || isUpdate(sqlStatement), () -> new UnsupportedSQLOperationException(sqlStatement.getClass().getName()));
@@ -87,8 +87,7 @@ final class DistSQLStatementExecutor {
     
     private DistSQLConnectionContext createConnectionContext(final QueryContext queryContext) {
         DistSQLConnectionContext result = new DistSQLConnectionContext(queryContext, connection.getDatabaseConnectionManager().getConnectionSize(),
-                connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getCurrentDatabaseName()).getProtocolType(),
-                connection.getDatabaseConnectionManager(), statementManager);
+                connection.getContextManager().getDatabase(connection.getCurrentDatabaseName()).getProtocolType(), connection.getDatabaseConnectionManager(), statementManager);
         result.setProcessId(connection.getProcessId());
         return result;
     }

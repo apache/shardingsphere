@@ -91,7 +91,7 @@ class FirebirdNonFixedLengthColumnSizeRegistryTest {
     @MethodSource("findColumnSizeEmptyCases")
     void assertFindColumnSizeWhenAbsent(final String name, final String tableName, final String columnName, final boolean registerTable, final boolean registerColumn) {
         if (registerTable) {
-            columnSizes.put("SCHEMA_A.TABLE_A", registerColumn ? Collections.singletonMap("SIZE_COL", 12) : Collections.singletonMap("OTHER_COL", 12));
+            columnSizes.put("SCHEMA_A.TABLE_A", Collections.singletonMap(registerColumn ? "SIZE_COL" : "OTHER_COL", 12));
         }
         assertFalse(FirebirdNonFixedLengthColumnSizeRegistry.findColumnSize("schema_a", tableName, columnName).isPresent());
     }

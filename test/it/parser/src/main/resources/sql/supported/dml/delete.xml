@@ -46,7 +46,7 @@
     <sql-case id="delete_with_partition" value="DELETE FROM sales PARTITION (sales_q1_1998) WHERE amount_sold > 1000" db-types="Oracle" />
     <sql-case id="delete_with_table" value="DELETE product_price_history" db-types="Oracle" />
     <sql-case id="delete_table_collection_oracle" value="DELETE FROM TABLE(SELECT nested_col FROM t_nested) WHERE nested_col = 1" db-types="Oracle" />
-    <sql-case id="delete_with_current_of_oracle" value="DELETE FROM t_order WHERE CURRENT OF order_cursor" db-types="Oracle" />
+    <sql-case id="delete_with_current_of_oracle" value="DELETE FROM t_order WHERE CURRENT OF order_cursor" db-types="Oracle,PostgreSQL" />
     <sql-case id="delete_with_schema" value="DELETE FROM db1.t_order" />
     <sql-case id="delete_with_simple_condition" value="DELETE FROM Q1_2000_sales WHERE amount_sold &lt; 0" db-types="Oracle" />
     <sql-case id="delete_with_output_clause_with_compress_function" value="DELETE FROM player OUTPUT deleted.id,deleted.name, deleted.surname,deleted.datemodifier,COMPRESS(deleted.info) INTO dbo.inactivePlayers WHERE datemodified &lt; @startOfYear" db-types="SQLServer" />
@@ -57,4 +57,9 @@
     <sql-case id="delete_with_where" value="DELETE FROM orders WHERE order_id = 9527;" db-types="Hive" />
     <sql-case id="delete_without_where_sql92" value="DELETE FROM t_order" db-types="SQL92" />
     <sql-case id="delete_with_where_sql92" value="DELETE FROM t_order WHERE order_id = 1" db-types="SQL92" />
+
+    <sql-case id="delete_current_of_postgresql_regression" value="DELETE FROM foo WHERE CURRENT OF foo_cursor" db-types="PostgreSQL" />
+    <sql-case id="delete_with_returning_postgresql_regression" value="WITH seed(id) AS (SELECT ?) DELETE FROM foo WHERE id = ? RETURNING id, ?" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="delete_with_returning_aliases_postgresql_regression" value="WITH seed(id) AS (SELECT ?) DELETE FROM foo WHERE id = ? RETURNING WITH (OLD AS old_row, NEW AS new_row) old_row.id, new_row.id, ?" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="delete_current_of_quoted_pg" value="delete from t_order where current of &quot;Foo&quot;" db-types="PostgreSQL" />
 </sql-cases>

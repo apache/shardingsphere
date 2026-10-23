@@ -44,18 +44,18 @@ public final class EncryptTableRuleConfigurationValidator implements ConstraintV
     private boolean isDerivedColumnValid(final EncryptColumnRuleConfiguration columnConfig, final Collection<String> logicColumnNames, final ConstraintValidatorContext context) {
         Optional<EncryptColumnItemRuleConfiguration> assistedQuery = columnConfig.getAssistedQuery();
         if (assistedQuery.isPresent() && logicColumnNames.contains(assistedQuery.get().getName())) {
-            return addConstraintViolation("assisted query", assistedQuery.get().getName(), context);
+            return addConstraintViolation("assisted query column conflicts with a logic column", context);
         }
         Optional<EncryptColumnItemRuleConfiguration> likeQuery = columnConfig.getLikeQuery();
         if (likeQuery.isPresent() && logicColumnNames.contains(likeQuery.get().getName())) {
-            return addConstraintViolation("like query", likeQuery.get().getName(), context);
+            return addConstraintViolation("like query column conflicts with a logic column", context);
         }
         return true;
     }
     
-    private boolean addConstraintViolation(final String columnType, final String columnName, final ConstraintValidatorContext context) {
+    private boolean addConstraintViolation(final String message, final ConstraintValidatorContext context) {
         context.disableDefaultConstraintViolation();
-        context.buildConstraintViolationWithTemplate(String.format("%s column `%s` conflicts with a logic column", columnType, columnName)).addPropertyNode("columns").addConstraintViolation();
+        context.buildConstraintViolationWithTemplate(message).addPropertyNode("columns").addConstraintViolation();
         return false;
     }
 }

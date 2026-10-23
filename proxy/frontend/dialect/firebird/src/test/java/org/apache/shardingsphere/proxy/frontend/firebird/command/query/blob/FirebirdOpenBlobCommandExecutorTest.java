@@ -34,7 +34,6 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cach
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,7 +67,6 @@ class FirebirdOpenBlobCommandExecutorTest {
     
     @BeforeEach
     void setup() {
-        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobHandleGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobReadCache.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobWriteCache.getInstance().registerConnection(CONNECTION_ID);
@@ -78,7 +76,6 @@ class FirebirdOpenBlobCommandExecutorTest {
     
     @AfterEach
     void tearDown() {
-        FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobHandleGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobReadCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobWriteCache.getInstance().unregisterConnection(CONNECTION_ID);
@@ -108,7 +105,6 @@ class FirebirdOpenBlobCommandExecutorTest {
     
     @Test
     void assertExecuteWithZeroBlobId() {
-        when(packet.getBlobId()).thenReturn(0L);
         FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
@@ -120,7 +116,7 @@ class FirebirdOpenBlobCommandExecutorTest {
     
     @Test
     void assertExecuteAfterCreatedBlobIsClosed() {
-        FirebirdGenericResponsePacket createdResponse = createBlobWithSegment(new byte[]{1, 2, 3});
+        FirebirdGenericResponsePacket createdResponse = createBlobWithSegment(new byte[]{1, 2, 3}, false);
         FirebirdCloseBlobCommandPacket closePacket = mock(FirebirdCloseBlobCommandPacket.class);
         when(closePacket.getBlobHandle()).thenReturn(createdResponse.getHandle());
         new FirebirdCloseBlobCommandExecutor(closePacket, connectionSession).execute();
@@ -135,10 +131,34 @@ class FirebirdOpenBlobCommandExecutorTest {
     
     @Test
     void assertExecuteWhenCreatedBlobIsNotClosed() {
-        FirebirdGenericResponsePacket createdResponse = createBlobWithSegment(new byte[]{1, 2, 3});
+        FirebirdGenericResponsePacket createdResponse = createBlobWithSegment(new byte[]{1, 2, 3}, false);
         when(packet.getBlobId()).thenReturn(createdResponse.getId());
         FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession);
         assertThrows(InvalidSegstrIdException.class, executor::execute);
+    }
+    
+    @Test
+    void assertExecuteWithResultBlobId() {
+        when(packet.getBlobId()).thenReturn(registerBlobContent(new byte[]{1, 2}));
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(packet, connectionSession).execute().iterator().next();
+        assertThat(FirebirdBlobReadCache.getInstance().isStreamBlob(CONNECTION_ID, actual.getHandle()), is(Optional.of(true)));
+    }
+    
+    @Test
+    void assertExecuteWithZeroBlobIdOpensSegmentedBlob() {
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(packet, connectionSession).execute().iterator().next();
+        assertThat(FirebirdBlobReadCache.getInstance().isStreamBlob(CONNECTION_ID, actual.getHandle()), is(Optional.of(false)));
+    }
+    
+    @Test
+    void assertExecuteRestoresCreatedStreamBlobType() {
+        FirebirdGenericResponsePacket createdResponse = createBlobWithSegment(new byte[]{1, 2, 3}, true);
+        FirebirdCloseBlobCommandPacket closePacket = mock(FirebirdCloseBlobCommandPacket.class);
+        when(closePacket.getBlobHandle()).thenReturn(createdResponse.getHandle());
+        new FirebirdCloseBlobCommandExecutor(closePacket, connectionSession).execute();
+        when(packet.getBlobId()).thenReturn(createdResponse.getId());
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(packet, connectionSession).execute().iterator().next();
+        assertThat(FirebirdBlobReadCache.getInstance().isStreamBlob(CONNECTION_ID, actual.getHandle()), is(Optional.of(true)));
     }
     
     @Test
@@ -148,9 +168,10 @@ class FirebirdOpenBlobCommandExecutorTest {
         assertThrows(InvalidSegstrIdException.class, executor::execute);
     }
     
-    private FirebirdGenericResponsePacket createBlobWithSegment(final byte[] segment) {
-        FirebirdGenericResponsePacket result = (FirebirdGenericResponsePacket) new FirebirdCreateBlobCommandExecutor(
-                mock(FirebirdCreateBlobCommandPacket.class), connectionSession).execute().iterator().next();
+    private FirebirdGenericResponsePacket createBlobWithSegment(final byte[] segment, final boolean streamBlob) {
+        FirebirdCreateBlobCommandPacket createPacket = mock(FirebirdCreateBlobCommandPacket.class);
+        when(createPacket.isStreamBlob()).thenReturn(streamBlob);
+        FirebirdGenericResponsePacket result = (FirebirdGenericResponsePacket) new FirebirdCreateBlobCommandExecutor(createPacket, connectionSession).execute().iterator().next();
         FirebirdPutBlobSegmentCommandPacket putPacket = mock(FirebirdPutBlobSegmentCommandPacket.class);
         when(putPacket.getBlobHandle()).thenReturn(result.getHandle());
         when(putPacket.getSegment()).thenReturn(segment);

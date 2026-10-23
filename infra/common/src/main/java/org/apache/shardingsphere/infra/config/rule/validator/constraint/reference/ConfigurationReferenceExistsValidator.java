@@ -40,8 +40,6 @@ public final class ConfigurationReferenceExistsValidator implements ConstraintVa
     
     private boolean allowEmpty;
     
-    private String message;
-    
     @Override
     public void initialize(final ConfigurationReferenceExists constraintAnnotation) {
         ShardingSpherePreconditions.checkState(0 != constraintAnnotation.referencePaths().length, () -> new ValidationException("At least one configuration reference property is required."));
@@ -53,7 +51,6 @@ public final class ConfigurationReferenceExistsValidator implements ConstraintVa
         ShardingSpherePreconditions.checkState(!poolProperty.isEmpty() && !poolProperty.contains("."),
                 () -> new ValidationException("Configuration pool must be a property on the annotated object."));
         allowEmpty = constraintAnnotation.allowEmpty();
-        message = constraintAnnotation.message();
     }
     
     private String[] parseReferencePaths(final String referencePath) {
@@ -106,7 +103,7 @@ public final class ConfigurationReferenceExistsValidator implements ConstraintVa
             return true;
         }
         context.disableDefaultConstraintViolation();
-        context.buildConstraintViolationWithTemplate(message.replace("{pool}", poolProperty).replace("{reference}", (String) value)).addPropertyNode(rootProperty).addConstraintViolation();
+        context.buildConstraintViolationWithTemplate(context.getDefaultConstraintMessageTemplate()).addPropertyNode(rootProperty).addConstraintViolation();
         return false;
     }
     

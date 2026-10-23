@@ -99,6 +99,7 @@
     <alter-database sql-case-id="alter_database_set_managedlocation" />
     <alter-database sql-case-id="alter_schema_set_managedlocation" />
     <alter-database sql-case-id="alter_database_set_lc_messages" />
+    <alter-database sql-case-id="alter_database_refresh_collation_version" />
     <alter-database sql-case-id="alter_database_set_data_quota" database-name="example_db" quota-type="DATA" quota-value="10995116277760" />
     <alter-database sql-case-id="alter_database_set_data_quota_with_unit" database-name="example_db" quota-type="DATA" quota-value="107374182400" />
     <alter-database sql-case-id="alter_database_set_data_quota_with_two_letter_unit" database-name="example_db" quota-type="DATA" quota-value="1073741824" />

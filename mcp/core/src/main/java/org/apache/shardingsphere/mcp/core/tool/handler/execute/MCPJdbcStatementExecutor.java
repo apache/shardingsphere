@@ -156,7 +156,8 @@ public final class MCPJdbcStatementExecutor {
         boolean originalReadOnly = connection.isReadOnly();
         boolean originalAutoCommit = connection.getAutoCommit();
         boolean autoCommitDisabled = false;
-        SQLException failure = null;
+        Throwable failure = null;
+        SQLExecutionResult result;
         try {
             connection.setReadOnly(true);
             if (originalAutoCommit) {
@@ -165,9 +166,11 @@ public final class MCPJdbcStatementExecutor {
             }
             try (Statement statement = connection.createStatement()) {
                 configureStatement(statement, executionRequest);
-                return executeStatement(statement, executionRequest, classificationResult);
+                result = executeStatement(statement, executionRequest, classificationResult);
             }
-        } catch (final SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final SQLException | RuntimeException | Error ex) {
+            // CHECKSTYLE:ON
             failure = ex;
             throw ex;
         } finally {
@@ -178,13 +181,14 @@ public final class MCPJdbcStatementExecutor {
                 failure = restoreAutoCommit(connection, originalAutoCommit, failure);
             }
             failure = restoreReadOnly(connection, originalReadOnly, failure);
-            if (null != failure) {
-                throw failure;
-            }
         }
+        if (null != failure) {
+            throw (SQLException) failure;
+        }
+        return result;
     }
     
-    private SQLException rollbackReadOnlyConnection(final Connection connection, final SQLException previousFailure) {
+    private Throwable rollbackReadOnlyConnection(final Connection connection, final Throwable previousFailure) {
         try {
             connection.rollback();
             return previousFailure;
@@ -193,7 +197,7 @@ public final class MCPJdbcStatementExecutor {
         }
     }
     
-    private SQLException restoreAutoCommit(final Connection connection, final boolean originalAutoCommit, final SQLException previousFailure) {
+    private Throwable restoreAutoCommit(final Connection connection, final boolean originalAutoCommit, final Throwable previousFailure) {
         try {
             connection.setAutoCommit(originalAutoCommit);
             return previousFailure;
@@ -202,7 +206,7 @@ public final class MCPJdbcStatementExecutor {
         }
     }
     
-    private SQLException restoreReadOnly(final Connection connection, final boolean originalReadOnly, final SQLException previousFailure) {
+    private Throwable restoreReadOnly(final Connection connection, final boolean originalReadOnly, final Throwable previousFailure) {
         try {
             connection.setReadOnly(originalReadOnly);
             return previousFailure;
@@ -211,7 +215,7 @@ public final class MCPJdbcStatementExecutor {
         }
     }
     
-    private SQLException appendFailure(final SQLException previousFailure, final SQLException failure) {
+    private Throwable appendFailure(final Throwable previousFailure, final SQLException failure) {
         if (null == previousFailure) {
             return failure;
         }
@@ -232,8 +236,7 @@ public final class MCPJdbcStatementExecutor {
                                                 final ClassificationResult classificationResult) throws SQLException {
         boolean hasResultSet = statement.execute(classificationResult.getNormalizedSql());
         switch (classificationResult.getStatementClass()) {
-            case QUERY:
-            case EXPLAIN:
+            case QUERY, EXPLAIN:
                 if (!hasResultSet) {
                     throw new QueryDidNotReturnResultSetException();
                 }
@@ -243,8 +246,7 @@ public final class MCPJdbcStatementExecutor {
                         ? createResultSetResult(statement.getResultSet(), executionRequest, classificationResult)
                         : SQLExecutionResult.updateCount(classificationResult.getStatementClass(), classificationResult.getStatementType(), statement.getUpdateCount(),
                                 executionRequest.getMaxRows(), executionRequest.getTimeoutMs(), classificationResult.getNormalizedSql());
-            case DDL:
-            case DCL:
+            case DDL, DCL:
                 return SQLExecutionResult.statementAck(classificationResult.getStatementClass(), classificationResult.getStatementType(),
                         executionRequest.getMaxRows(), executionRequest.getTimeoutMs(), classificationResult.getNormalizedSql());
             default:

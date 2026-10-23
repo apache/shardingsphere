@@ -31,4 +31,12 @@
     <sql-case id="reset_persist" value="RESET PERSIST" db-types="MySQL,Doris" />
     <sql-case id="reset_persist_identifier" value="RESET PERSIST TEST_ID" db-types="MySQL,Doris" />
     <sql-case id="reset_persist_exist_identifier" value="RESET PERSIST IF EXISTS TEST_ID" db-types="MySQL,Doris" />
+    <sql-case id="reset_session_authorization_pg" value="RESET SESSION AUTHORIZATION" db-types="PostgreSQL" />
+    <sql-case id="reset_session_authorization_lowercase_pg" value="reset session authorization;" db-types="PostgreSQL" />
+    <sql-case id="reset_session_authorization_comments_pg" value="RESET /* foo */ SESSION /* bar */ AUTHORIZATION" db-types="PostgreSQL" />
+    <sql-case id="reset_time_zone_pg" value="RESET TIME ZONE" db-types="PostgreSQL" />
+    <sql-case id="reset_dotted_pg" value="RESET custom.my_guc" db-types="PostgreSQL" />
+    <sql-case id="reset_quoted_dotted_pg" value="RESET &quot;foo&quot;.&quot;bar&quot;" db-types="PostgreSQL" />
+    <sql-case id="reset_session_parameter_pg" value="RESET session" db-types="PostgreSQL" />
+    <sql-case id="reset_time_parameter_pg" value="RESET time" db-types="PostgreSQL" />
 </sql-cases>

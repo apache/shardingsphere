@@ -25,12 +25,13 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 final class TestWorkflowSessionContext implements WorkflowSessionContext {
     
     private final Map<String, WorkflowContextSnapshot> contexts = new ConcurrentHashMap<>();
+    
+    private int planIdSequence;
     
     @Override
     public WorkflowContextSnapshot getOrCreate(final String planId) {
@@ -38,7 +39,7 @@ final class TestWorkflowSessionContext implements WorkflowSessionContext {
             return getRequired(planId);
         }
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
-        result.setPlanId("plan-" + UUID.randomUUID());
+        result.setPlanId("plan-test-" + ++planIdSequence);
         result.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
         return result;
     }

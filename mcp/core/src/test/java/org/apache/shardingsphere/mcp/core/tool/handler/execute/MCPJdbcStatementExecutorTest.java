@@ -51,6 +51,8 @@ import java.sql.SQLSyntaxErrorException;
 import java.sql.SQLTimeoutException;
 import java.sql.SQLTransientConnectionException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +62,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -71,6 +74,138 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MCPJdbcStatementExecutorTest {
+    
+    @Test
+    void assertExecuteWithOwnedConnectionStateFailure() throws SQLException {
+        RuntimeDatabaseConfiguration databaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        IllegalStateException cause = new IllegalStateException("foo connection state failed");
+        when(databaseConfig.openConnection("foo_db")).thenThrow(cause);
+        MCPJdbcStatementExecutor executor = new MCPJdbcStatementExecutor(Map.of("foo_db", databaseConfig), mock(MCPJdbcTransactionResourceManager.class));
+        SQLExecutionRequest request = new SQLExecutionRequest("foo_session", "foo_db", "", "SELECT 1", 0, 0);
+        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "", List.of(), false);
+        MCPTransactionStateException actual = assertThrows(MCPTransactionStateException.class,
+                () -> executor.execute(request, classification, createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
+        assertThat(actual.getMessage(), is(cause.getMessage()));
+        assertThat(actual.getCause(), sameInstance(cause));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("readOnlyFailureCases")
+    void assertExecuteReadOnlyWithFailure(final String name, final boolean executionFailure, final boolean rollbackFailure, final boolean autoCommitFailure, final boolean readOnlyFailure,
+                                          final String expectedMessage, final Collection<String> expectedSuppressed) throws SQLException {
+        Statement statement = mock(Statement.class);
+        Connection connection = createStatementConnection(statement);
+        when(connection.getAutoCommit()).thenReturn(true);
+        if (executionFailure) {
+            when(statement.execute("SELECT 1")).thenThrow(new SQLException("execution failed"));
+        } else {
+            when(statement.execute("SELECT 1")).thenReturn(true);
+            ResultSet resultSet = createResultSet(createColumns(), List.of(List.of(1, "foo_status")));
+            when(statement.getResultSet()).thenReturn(resultSet);
+        }
+        if (rollbackFailure) {
+            doThrow(new SQLException("rollback failed")).when(connection).rollback();
+        }
+        if (autoCommitFailure) {
+            doThrow(new SQLException("autoCommit failed")).when(connection).setAutoCommit(true);
+        }
+        if (readOnlyFailure) {
+            doThrow(new SQLException("readOnly failed")).when(connection).setReadOnly(false);
+        }
+        RuntimeDatabaseConfiguration databaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        when(databaseConfig.openConnection("foo_db")).thenReturn(connection);
+        MCPJdbcStatementExecutor executor = new MCPJdbcStatementExecutor(Map.of("foo_db", databaseConfig), mock(MCPJdbcTransactionResourceManager.class));
+        SQLExecutionRequest request = new SQLExecutionRequest("foo_session", "foo_db", "", "SELECT 1", 0, 0, true);
+        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "", List.of(), false);
+        MCPDatabaseQueryFailedException actual = assertThrows(MCPDatabaseQueryFailedException.class,
+                () -> executor.execute(request, classification, createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
+        assertThat(actual.getCause().getMessage(), is(expectedMessage));
+        assertThat(Arrays.stream(actual.getCause().getSuppressed()).map(Throwable::getMessage).toList(), is(expectedSuppressed));
+        verify(connection).rollback();
+        verify(connection).setAutoCommit(true);
+        verify(connection).setReadOnly(false);
+        verify(connection).close();
+    }
+    
+    private static Stream<Arguments> readOnlyFailureCases() {
+        return Stream.of(
+                Arguments.of("execution failure", true, false, false, false, "execution failed", List.of()),
+                Arguments.of("rollback failure", false, true, false, false, "rollback failed", List.of()),
+                Arguments.of("autoCommit restoration failure", false, false, true, false, "autoCommit failed", List.of()),
+                Arguments.of("readOnly restoration failure", false, false, false, true, "readOnly failed", List.of()),
+                Arguments.of("cleanup failures", false, true, true, true, "rollback failed", List.of("autoCommit failed", "readOnly failed")),
+                Arguments.of("execution and cleanup failures", true, true, true, true, "execution failed", List.of("rollback failed", "autoCommit failed", "readOnly failed")));
+    }
+    
+    @Test
+    void assertExecuteReadOnlyWithRuntimeFailure() throws SQLException {
+        Statement statement = mock(Statement.class);
+        IllegalStateException cause = new IllegalStateException("foo execution failed");
+        when(statement.execute("SELECT 1")).thenThrow(cause);
+        Connection connection = createStatementConnection(statement);
+        when(connection.getAutoCommit()).thenReturn(true);
+        SQLException rollbackFailure = new SQLException("foo rollback failed");
+        SQLException autoCommitFailure = new SQLException("foo autoCommit failed");
+        SQLException readOnlyFailure = new SQLException("foo readOnly failed");
+        doThrow(rollbackFailure).when(connection).rollback();
+        doThrow(autoCommitFailure).when(connection).setAutoCommit(true);
+        doThrow(readOnlyFailure).when(connection).setReadOnly(false);
+        RuntimeDatabaseConfiguration databaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        when(databaseConfig.openConnection("foo_db")).thenReturn(connection);
+        MCPJdbcStatementExecutor executor = new MCPJdbcStatementExecutor(Map.of("foo_db", databaseConfig), mock(MCPJdbcTransactionResourceManager.class));
+        SQLExecutionRequest request = new SQLExecutionRequest("foo_session", "foo_db", "", "SELECT 1", 0, 0, true);
+        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "", List.of(), false);
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> executor.execute(request, classification, createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
+        assertThat(actual, sameInstance(cause));
+        assertThat(Arrays.asList(actual.getSuppressed()), is(List.of(rollbackFailure, autoCommitFailure, readOnlyFailure)));
+        verify(statement).close();
+        verify(connection).close();
+    }
+    
+    @Test
+    void assertExecuteReadOnlyWithError() throws SQLException {
+        Statement statement = mock(Statement.class);
+        Error cause = new Error("foo execution failed");
+        when(statement.execute("SELECT 1")).thenThrow(cause);
+        Connection connection = createStatementConnection(statement);
+        when(connection.getAutoCommit()).thenReturn(true);
+        SQLException rollbackFailure = new SQLException("foo rollback failed");
+        SQLException autoCommitFailure = new SQLException("foo autoCommit failed");
+        SQLException readOnlyFailure = new SQLException("foo readOnly failed");
+        doThrow(rollbackFailure).when(connection).rollback();
+        doThrow(autoCommitFailure).when(connection).setAutoCommit(true);
+        doThrow(readOnlyFailure).when(connection).setReadOnly(false);
+        RuntimeDatabaseConfiguration databaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        when(databaseConfig.openConnection("foo_db")).thenReturn(connection);
+        MCPJdbcStatementExecutor executor = new MCPJdbcStatementExecutor(Map.of("foo_db", databaseConfig), mock(MCPJdbcTransactionResourceManager.class));
+        SQLExecutionRequest request = new SQLExecutionRequest("foo_session", "foo_db", "", "SELECT 1", 0, 0, true);
+        ClassificationResult classification = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "", List.of(), false);
+        Error actual = assertThrows(Error.class, () -> executor.execute(request, classification, createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE)));
+        assertThat(actual, sameInstance(cause));
+        assertThat(Arrays.asList(actual.getSuppressed()), is(List.of(rollbackFailure, autoCommitFailure, readOnlyFailure)));
+        verify(statement).close();
+        verify(connection).close();
+    }
+    
+    @Test
+    void assertExecuteReadOnlyWithAutoCommitAlreadyDisabled() throws SQLException {
+        Statement statement = mock(Statement.class);
+        when(statement.execute("SELECT 1")).thenReturn(true);
+        ResultSet resultSet = createResultSet(createColumns(), List.of(List.of(1, "foo_status")));
+        when(statement.getResultSet()).thenReturn(resultSet);
+        Connection connection = createStatementConnection(statement);
+        RuntimeDatabaseConfiguration databaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        when(databaseConfig.openConnection("foo_db")).thenReturn(connection);
+        MCPJdbcStatementExecutor executor = new MCPJdbcStatementExecutor(Map.of("foo_db", databaseConfig), mock(MCPJdbcTransactionResourceManager.class));
+        SQLExecutionResult actual = executor.execute(new SQLExecutionRequest("foo_session", "foo_db", "", "SELECT 1", 0, 0, true),
+                new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "", List.of(), false), createDatabaseCapability(SchemaExecutionSemantics.FIXED_TO_DATABASE));
+        assertThat(actual.getRows(), is(List.of(List.of(1, "foo_status"))));
+        verify(connection).rollback();
+        verify(connection, never()).setAutoCommit(true);
+        verify(connection, never()).setAutoCommit(false);
+        verify(connection).setReadOnly(false);
+        verify(connection).close();
+    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteCases")

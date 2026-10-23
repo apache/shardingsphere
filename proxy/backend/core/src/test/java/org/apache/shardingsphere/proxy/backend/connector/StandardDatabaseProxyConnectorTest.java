@@ -124,8 +124,10 @@ import java.util.stream.IntStream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -752,6 +754,31 @@ class StandardDatabaseProxyConnectorTest {
         verify(resultSet).close();
         verify(statement).cancel();
         verify(statement).close();
+    }
+    
+    @Test
+    void assertCloseWithClosedStatement() throws SQLException {
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
+        when(statement.isClosed()).thenReturn(true);
+        doThrow(new SQLException("Statement is closed")).when(statement).cancel();
+        engine.add(statement);
+        engine.close();
+        verify(statement, never()).cancel();
+        verify(statement).close();
+    }
+    
+    @Test
+    void assertCloseWithStatementClosedCheckFailure() throws SQLException {
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
+        when(statement.isClosed()).thenThrow(new SQLException("Statement state"));
+        SQLException expected = new SQLException("Statement");
+        doThrow(expected).when(statement).close();
+        engine.add(statement);
+        SQLException actual = assertThrows(SQLException.class, engine::close);
+        verify(statement).cancel();
+        verify(statement).close();
+        assertThat(actual.getNextException(), sameInstance(expected));
+        assertNull(actual.getNextException().getNextException());
     }
     
     @Test

@@ -19,35 +19,22 @@ lexer grammar Literals;
 
 import Alphabet, Symbol;
 
-IDENTIFIER_
-    : IDENTIFIER_START_CHAR_ IDENTIFIER_CHAR_*
-    | DQ_ ~'"'+ DQ_
-    ;
+IDENTIFIER_: IDENTIFIER_START_CHAR_ IDENTIFIER_CHAR_* | DQ_ (DQ_ DQ_ | ~'"')+ DQ_;
+STRING_: E ESCAPE_STRING_LITERAL_ (STRING_CONTINUATION_ ESCAPE_STRING_LITERAL_)* | STRING_LITERAL_ (STRING_CONTINUATION_ STRING_LITERAL_)*;
+NUMBER_: (INT_ (DOT_ INT_?)? | DOT_ INT_) (E (PLUS_ | MINUS_)? INT_)?;
+HEX_DIGIT_: X SQ_ HEX_* SQ_ (STRING_CONTINUATION_ SQ_ HEX_* SQ_)*;
+BIT_NUM_: B SQ_ [01]* SQ_ (STRING_CONTINUATION_ SQ_ [01]* SQ_)*;
+HEX_NUMBER_: '0' X '_'? HEX_ ('_'? HEX_)*;
+BINARY_NUMBER_: '0' B '_'? [01] ('_'? [01])*;
+OCTAL_NUMBER_: '0' O '_'? [0-7] ('_'? [0-7])*;
 
-STRING_
-    : E SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_
-    | SQ_ ('\'\'' | ~'\'')* SQ_
-    ;
-
-NUMBER_
-    : INT_? DOT_? INT_ (E (PLUS_ | MINUS_)? INT_)?
-    ;
-
-HEX_DIGIT_
-    : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
-    ;
-
-BIT_NUM_
-    : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
-    ;
-
-fragment INT_
-    : [0-9]+
-    ;
-
-fragment HEX_
-    : [0-9a-fA-F]
-    ;
+fragment INT_: [0-9] ('_'? [0-9])*;
+fragment HEX_: [0-9a-fA-F];
+fragment STRING_CONTENT_: '\'\'' | ~'\'';
+fragment ESCAPE_STRING_CONTENT_: '\\' . | '\'\'' | ~('\'' | '\\');
+fragment STRING_LITERAL_: SQ_ STRING_CONTENT_* SQ_;
+fragment ESCAPE_STRING_LITERAL_: SQ_ ESCAPE_STRING_CONTENT_* SQ_;
+fragment STRING_CONTINUATION_: [ \t\f]* ('\r'? '\n' | '\r') [ \t\r\n\f]*;
 
 fragment IDENTIFIER_START_CHAR_
    : [a-zA-Z_]

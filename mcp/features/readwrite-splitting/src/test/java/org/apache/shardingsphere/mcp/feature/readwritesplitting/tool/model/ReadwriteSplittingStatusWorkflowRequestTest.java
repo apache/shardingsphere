@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model;
 
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ReadwriteSplittingStatusWorkflowRequestTest {
     
@@ -33,5 +35,21 @@ class ReadwriteSplittingStatusWorkflowRequestTest {
         ReadwriteSplittingStatusWorkflowRequest actual = ReadwriteSplittingStatusWorkflowRequest.merge(previous, current);
         assertThat(actual.getRuleName(), is("readwrite_ds"));
         assertThat(actual.getStorageUnit(), is("read_ds_0"));
+    }
+    
+    @Test
+    void assertMergeWithNullRequests() {
+        assertNull(ReadwriteSplittingStatusWorkflowRequest.merge(null, null));
+    }
+    
+    @Test
+    void assertMergeFromBaseRequest() {
+        WorkflowRequest previous = new WorkflowRequest();
+        previous.setDatabase("foo_db");
+        ReadwriteSplittingStatusWorkflowRequest current = new ReadwriteSplittingStatusWorkflowRequest();
+        current.setStorageUnit("foo_read");
+        ReadwriteSplittingStatusWorkflowRequest actual = ReadwriteSplittingStatusWorkflowRequest.merge(previous, current);
+        assertThat(actual.getDatabase(), is("foo_db"));
+        assertThat(actual.getStorageUnit(), is("foo_read"));
     }
 }

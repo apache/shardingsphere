@@ -96,33 +96,37 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
     @Override
     public void remove(final Collection<String> schemaNames, final String tableName) {
         for (String each : findMatchedTableKeys(tableName)) {
-            Collection<DataNode> dataNodes = singleTableDataNodes.get(each);
-            if (null == dataNodes) {
-                continue;
+            removeTableDataNodes(schemaNames, each);
+        }
+    }
+    
+    private void removeTableDataNodes(final Collection<String> schemaNames, final String tableName) {
+        Collection<DataNode> dataNodes = singleTableDataNodes.get(tableName);
+        if (null == dataNodes) {
+            return;
+        }
+        Collection<String> removedDataNodeStrings = new LinkedList<>();
+        Iterator<DataNode> iterator = dataNodes.iterator();
+        while (iterator.hasNext()) {
+            DataNode dataNode = iterator.next();
+            if (schemaNames.contains(dataNode.getSchemaName())) {
+                iterator.remove();
+                removedDataNodeStrings.add(getDataNodeString(dataNode, tableName));
             }
-            Collection<String> removedDataNodeStrings = new LinkedList<>();
-            Iterator<DataNode> iterator = dataNodes.iterator();
-            while (iterator.hasNext()) {
-                DataNode dataNode = iterator.next();
-                if (schemaNames.contains(dataNode.getSchemaName())) {
-                    iterator.remove();
-                    removedDataNodeStrings.add(getDataNodeString(dataNode, each));
-                }
+        }
+        if (!removedDataNodeStrings.isEmpty()) {
+            Collection<String> retainedDataNodeStrings = new LinkedHashSet<>(dataNodes.size(), 1F);
+            for (DataNode each : dataNodes) {
+                retainedDataNodeStrings.add(getDataNodeString(each, tableName));
             }
-            if (!removedDataNodeStrings.isEmpty()) {
-                Collection<String> retainedDataNodeStrings = new LinkedHashSet<>(dataNodes.size(), 1F);
-                for (DataNode dataNode : dataNodes) {
-                    retainedDataNodeStrings.add(getDataNodeString(dataNode, each));
-                }
-                removedDataNodeStrings.removeAll(retainedDataNodeStrings);
-                for (String removedDataNodeString : removedDataNodeStrings) {
-                    configuration.getTables().remove(removedDataNodeString);
-                }
+            removedDataNodeStrings.removeAll(retainedDataNodeStrings);
+            for (String each : removedDataNodeStrings) {
+                configuration.getTables().remove(each);
             }
-            if (dataNodes.isEmpty()) {
-                singleTableDataNodes.remove(each);
-                tableMapperRuleAttribute.getLogicTableNames().remove(each);
-            }
+        }
+        if (dataNodes.isEmpty()) {
+            singleTableDataNodes.remove(tableName);
+            tableMapperRuleAttribute.getLogicTableNames().remove(tableName);
         }
     }
     

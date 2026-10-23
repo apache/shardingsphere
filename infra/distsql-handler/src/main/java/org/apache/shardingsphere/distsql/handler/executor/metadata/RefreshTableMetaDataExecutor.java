@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storag
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -45,9 +46,9 @@ public final class RefreshTableMetaDataExecutor implements DistSQLUpdateExecutor
     @Override
     public void executeUpdate(final RefreshTableMetaDataStatement sqlStatement, final ContextManager contextManager) {
         IdentifierValue schemaName = getSchemaName(sqlStatement);
-        checkBeforeUpdate(sqlStatement, schemaName);
+        ShardingSphereSchema schema = checkBeforeUpdate(sqlStatement, schemaName);
         if (sqlStatement.getStorageUnitName().isPresent()) {
-            String actualSchemaName = database.getSchema(schemaName).getName();
+            String actualSchemaName = schema.getName();
             if (sqlStatement.getTableName().isPresent()) {
                 contextManager.reloadTable(database, actualSchemaName, sqlStatement.getStorageUnitName().get(), sqlStatement.getTableName().get());
             } else {
@@ -56,7 +57,7 @@ public final class RefreshTableMetaDataExecutor implements DistSQLUpdateExecutor
             return;
         }
         if (sqlStatement.getTableName().isPresent()) {
-            contextManager.reloadTable(database, database.getSchema(schemaName).getName(), sqlStatement.getTableName().get());
+            contextManager.reloadTable(database, schema.getName(), sqlStatement.getTableName().get());
         } else {
             contextManager.reloadDatabase(database);
         }
@@ -66,10 +67,11 @@ public final class RefreshTableMetaDataExecutor implements DistSQLUpdateExecutor
         return sqlStatement.getSchemaName().orElseGet(() -> new IdentifierValue(database.getDefaultSchemaName()));
     }
     
-    private void checkBeforeUpdate(final RefreshTableMetaDataStatement sqlStatement, final IdentifierValue schemaName) {
+    private ShardingSphereSchema checkBeforeUpdate(final RefreshTableMetaDataStatement sqlStatement, final IdentifierValue schemaName) {
         checkStorageUnit(database.getResourceMetaData().getStorageUnits(), sqlStatement);
-        checkSchema(schemaName);
-        checkTable(sqlStatement, schemaName);
+        ShardingSphereSchema result = checkSchema(schemaName);
+        checkTable(sqlStatement, result);
+        return result;
     }
     
     private void checkStorageUnit(final Map<String, StorageUnit> storageUnits, final RefreshTableMetaDataStatement sqlStatement) {
@@ -80,14 +82,16 @@ public final class RefreshTableMetaDataExecutor implements DistSQLUpdateExecutor
         }
     }
     
-    private void checkSchema(final IdentifierValue schemaName) {
-        ShardingSpherePreconditions.checkState(database.containsSchema(schemaName), () -> new SchemaNotFoundException(schemaName.getValue()));
+    private ShardingSphereSchema checkSchema(final IdentifierValue schemaName) {
+        ShardingSphereSchema result = database.getSchema(schemaName);
+        ShardingSpherePreconditions.checkNotNull(result, () -> new SchemaNotFoundException(schemaName.getValue()));
+        return result;
     }
     
-    private void checkTable(final RefreshTableMetaDataStatement sqlStatement, final IdentifierValue schemaName) {
+    private void checkTable(final RefreshTableMetaDataStatement sqlStatement, final ShardingSphereSchema schema) {
         if (sqlStatement.getTableName().isPresent()) {
             IdentifierValue tableName = sqlStatement.getTableName().get();
-            ShardingSpherePreconditions.checkState(database.getSchema(schemaName).containsTable(tableName), () -> new TableNotFoundException(tableName.getValue()));
+            ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName.getValue()));
         }
     }
     

@@ -45,6 +45,7 @@ public final class PrepareStatementQuerySegmentBinder {
         segment.getInsert().ifPresent(optional -> result.setInsert(new InsertStatementBinder().bind(optional, binderContext)));
         segment.getUpdate().ifPresent(optional -> result.setUpdate(new UpdateStatementBinder().bind(optional, binderContext)));
         segment.getDelete().ifPresent(optional -> result.setDelete(new DeleteStatementBinder().bind(optional, binderContext)));
+        result.setMerge(segment.getMerge().orElse(null));
         return result;
     }
 }

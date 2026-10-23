@@ -34,8 +34,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InEx
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ValuesExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -172,8 +175,20 @@ public final class ExpressionExtractor {
             if (each instanceof TypeCastExpression) {
                 extractParameterMarkerExpressions(segments, Collections.singleton(((TypeCastExpression) each).getExpression()));
             }
+            if (each instanceof UnaryOperationExpression) {
+                extractParameterMarkerExpressions(segments, Collections.singleton(((UnaryOperationExpression) each).getExpression()));
+            }
+            if (each instanceof CollateExpression) {
+                ((CollateExpression) each).getExpr().ifPresent(expr -> extractParameterMarkerExpressions(segments, Collections.singleton(expr)));
+            }
+            if (each instanceof CommonExpressionSegment) {
+                extractParameterMarkerExpressions(segments, ((CommonExpressionSegment) each).getChildren());
+            }
             if (each instanceof ListExpression) {
                 extractParameterMarkerExpressions(segments, ((ListExpression) each).getItems());
+            }
+            if (each instanceof RowExpression) {
+                extractParameterMarkerExpressions(segments, ((RowExpression) each).getItems());
             }
             if (each instanceof InExpression) {
                 extractParameterMarkerExpressions(segments, Collections.singleton(((InExpression) each).getLeft()));
@@ -272,6 +287,22 @@ public final class ExpressionExtractor {
             result.addAll(extractColumns(((CaseWhenExpression) expression).getElseExpr(), containsSubQuery));
             ((CaseWhenExpression) expression).getWhenExprs().forEach(each -> result.addAll(extractColumns(each, containsSubQuery)));
             ((CaseWhenExpression) expression).getThenExprs().forEach(each -> result.addAll(extractColumns(each, containsSubQuery)));
+        }
+        if (expression instanceof CommonExpressionSegment) {
+            for (ExpressionSegment each : ((CommonExpressionSegment) expression).getChildren()) {
+                result.addAll(extractColumns(each, containsSubQuery));
+            }
+        }
+        if (expression instanceof RowExpression) {
+            for (ExpressionSegment each : ((RowExpression) expression).getItems()) {
+                result.addAll(extractColumns(each, containsSubQuery));
+            }
+        }
+        if (expression instanceof UnaryOperationExpression) {
+            result.addAll(extractColumns(((UnaryOperationExpression) expression).getExpression(), containsSubQuery));
+        }
+        if (expression instanceof CollateExpression) {
+            ((CollateExpression) expression).getExpr().ifPresent(expr -> result.addAll(extractColumns(expr, containsSubQuery)));
         }
         if (expression instanceof OuterJoinExpression) {
             result.add(((OuterJoinExpression) expression).getColumnName());

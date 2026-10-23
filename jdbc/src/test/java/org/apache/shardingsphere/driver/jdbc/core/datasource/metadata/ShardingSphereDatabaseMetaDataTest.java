@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.driver.jdbc.core.datasource.metadata;
 
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -30,6 +32,9 @@ import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -44,10 +49,14 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -68,6 +77,9 @@ class ShardingSphereDatabaseMetaDataTest {
     
     @Mock
     private DatabaseMetaData databaseMetaData;
+    
+    @Mock
+    private ConnectionProperties connectionProps;
     
     @Mock
     private ResultSet resultSet;
@@ -91,9 +103,11 @@ class ShardingSphereDatabaseMetaDataTest {
         when(shardingSphereConnection.getCurrentDatabaseName()).thenReturn("foo_db");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getDatabase(shardingSphereConnection.getCurrentDatabaseName())).thenReturn(database);
+        when(shardingSphereConnection.getContextManager().getDatabase("foo_db")).thenReturn(database);
+        Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
+        when(shardingSphereConnection.getContextManager().getStorageUnits("foo_db")).thenReturn(storageUnits);
         ShardingRule shardingRule = mockShardingRule();
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
-        ConnectionProperties connectionProps = mock(ConnectionProperties.class);
         when(connectionProps.getCatalog()).thenReturn("test");
         when(connectionProps.getSchema()).thenReturn("test");
         when(database.getResourceMetaData().getStorageUnits().get(DATA_SOURCE_NAME).getConnectionProperties()).thenReturn(connectionProps);
@@ -105,6 +119,23 @@ class ShardingSphereDatabaseMetaDataTest {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, DATA_SOURCE_NAME + "." + TABLE_NAME);
         ruleConfig.setTables(Collections.singleton(shardingTableRuleConfig));
         return new ShardingRule(ruleConfig, Collections.singletonMap(DATA_SOURCE_NAME, new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+    }
+    
+    @Test
+    void assertConstructAfterDatabaseRemoval() {
+        UnknownDatabaseException expectedException = new UnknownDatabaseException("foo_db");
+        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(null);
+        when(shardingSphereConnection.getContextManager().getDatabase("foo_db")).thenThrow(expectedException);
+        assertThat(assertThrows(UnknownDatabaseException.class, () -> new ShardingSphereDatabaseMetaData(shardingSphereConnection)), sameInstance(expectedException));
+    }
+    
+    @Test
+    void assertConstructWithPhysicalMetadataExceptionAfterDatabaseRemoval() throws SQLException {
+        SQLException expectedException = new SQLException("physical metadata failed");
+        when(connection.getMetaData()).thenThrow(expectedException);
+        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(null);
+        when(shardingSphereConnection.getContextManager().getDatabase("foo_db")).thenThrow(new UnknownDatabaseException("foo_db"));
+        assertThat(assertThrows(SQLException.class, () -> new ShardingSphereDatabaseMetaData(shardingSphereConnection)), sameInstance(expectedException));
     }
     
     @Test
@@ -889,10 +920,67 @@ class ShardingSphereDatabaseMetaDataTest {
         assertThat(shardingSphereDatabaseMetaData.getSchemas(), isA(DatabaseMetaDataResultSet.class));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getSchemasArguments")
+    void assertGetSchemasForCatalogAndSchemaPattern(final String name, final String catalog, final String schemaPattern, final String expectedCatalog,
+                                                    final String expectedSchema) throws SQLException {
+        when(databaseMetaData.getSchemas(expectedCatalog, expectedSchema)).thenReturn(resultSet);
+        assertThat(shardingSphereDatabaseMetaData.getSchemas(catalog, schemaPattern), isA(DatabaseMetaDataResultSet.class));
+    }
+    
+    private static Stream<Arguments> getSchemasArguments() {
+        return Stream.of(
+                Arguments.of("null catalog and schema", null, null, null, null),
+                Arguments.of("catalog only", "foo_catalog", null, "test", null),
+                Arguments.of("schema only", null, "foo_schema", null, "TEST"),
+                Arguments.of("catalog and schema", "foo_catalog", "foo_schema", "test", "TEST"));
+    }
+    
     @Test
-    void assertGetSchemasForCatalogAndSchemaPattern() throws SQLException {
+    void assertGetSchemasForCatalogAfterDatabaseRemoval() {
+        UnknownDatabaseException expectedException = new UnknownDatabaseException("foo_db");
+        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(null);
+        when(shardingSphereConnection.getContextManager().getStorageUnits("foo_db")).thenThrow(expectedException);
+        assertThat(assertThrows(UnknownDatabaseException.class, () -> shardingSphereDatabaseMetaData.getSchemas("foo_catalog", null)), sameInstance(expectedException));
+    }
+    
+    @Test
+    void assertGetSchemasForSchemaAfterDatabaseRemoval() {
+        UnknownDatabaseException expectedException = new UnknownDatabaseException("foo_db");
+        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(null);
+        when(shardingSphereConnection.getContextManager().getStorageUnits("foo_db")).thenThrow(expectedException);
+        assertThat(assertThrows(UnknownDatabaseException.class, () -> shardingSphereDatabaseMetaData.getSchemas(null, "foo_schema")), sameInstance(expectedException));
+    }
+    
+    @Test
+    void assertGetSchemasForNullCatalogAndSchemaAfterDatabaseRemoval() throws SQLException {
+        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(null);
+        when(shardingSphereConnection.getContextManager().getStorageUnits("foo_db")).thenThrow(new UnknownDatabaseException("foo_db"));
+        when(databaseMetaData.getSchemas(null, null)).thenReturn(resultSet);
+        assertThat(shardingSphereDatabaseMetaData.getSchemas(null, null), isA(DatabaseMetaDataResultSet.class));
+    }
+    
+    @Test
+    void assertGetSchemasWithNullPhysicalCatalog() throws SQLException {
+        when(connectionProps.getCatalog()).thenReturn(null);
+        when(databaseMetaData.getSchemas(null, "TEST")).thenReturn(resultSet);
+        assertThat(shardingSphereDatabaseMetaData.getSchemas("foo_catalog", "foo_schema"), isA(DatabaseMetaDataResultSet.class));
+    }
+    
+    @Test
+    void assertGetSchemasWithNullPhysicalSchema() throws SQLException {
+        when(connectionProps.getSchema()).thenReturn(null);
         when(databaseMetaData.getSchemas("test", null)).thenReturn(resultSet);
-        assertThat(shardingSphereDatabaseMetaData.getSchemas("test", null), isA(DatabaseMetaDataResultSet.class));
+        assertThat(shardingSphereDatabaseMetaData.getSchemas("foo_catalog", "foo_schema"), isA(DatabaseMetaDataResultSet.class));
+    }
+    
+    @Test
+    void assertGetSchemasWithPhysicalMetadataExceptionAfterDatabaseRemoval() throws SQLException {
+        SQLException expectedException = new SQLException("physical metadata failed");
+        when(connection.getMetaData()).thenThrow(expectedException);
+        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(null);
+        when(shardingSphereConnection.getContextManager().getStorageUnits("foo_db")).thenThrow(new UnknownDatabaseException("foo_db"));
+        assertThat(assertThrows(SQLException.class, () -> shardingSphereDatabaseMetaData.getSchemas("foo_catalog", "foo_schema")), sameInstance(expectedException));
     }
     
     @Test

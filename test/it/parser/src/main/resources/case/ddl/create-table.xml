@@ -5743,4 +5743,424 @@
             <column name="SEQ" />
         </column-definition>
     </create-table>
+    <create-table sql-case-id="create_table_column_charset_variants">
+        <table start-index="13" stop-index="14" name="t1" />
+        <column-definition start-index="17" stop-index="37" type="VARCHAR" charset-name="" collate-name="">
+            <column name="c1" />
+        </column-definition>
+        <column-definition start-index="40" stop-index="55" type="CHAR" charset-name="" collate-name="">
+            <column name="c2" />
+        </column-definition>
+        <column-definition start-index="58" stop-index="75" type="CHAR" charset-name="" collate-name="">
+            <column name="c3" />
+        </column-definition>
+        <column-definition start-index="78" stop-index="92" type="CHAR" charset-name="" collate-name="">
+            <column name="c4" />
+        </column-definition>
+        <column-definition start-index="95" stop-index="128" type="CHAR" charset-name="utf8mb4" collate-name="">
+            <column name="c5" />
+        </column-definition>
+        <column-definition start-index="131" stop-index="161" type="CHAR" charset-name="BINARY" collate-name="">
+            <column name="c6" />
+        </column-definition>
+        <column-definition start-index="164" stop-index="188" type="CHAR" charset-name="" collate-name="BINARY">
+            <column name="c7" />
+        </column-definition>
+        <column-definition start-index="191" stop-index="222" type="CHAR" charset-name="" collate-name="utf8mb4_bin">
+            <column name="c8" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_unnamed_check_constraint">
+        <table start-index="13" stop-index="14" name="t1" />
+        <column-definition start-index="17" stop-index="22" type="INT">
+            <column name="c1" />
+        </column-definition>
+        <constraint-definition start-index="25" stop-index="49" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_long_varchar">
+        <table start-index="13" stop-index="14" name="t1" />
+        <column-definition start-index="17" stop-index="31" type="LONG VARCHAR">
+            <column name="c1" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_convert_using_binary">
+        <table start-index="13" stop-index="14" name="t1" />
+        <select>
+            <projections start-index="26" stop-index="58">
+                <expression-projection start-index="26" stop-index="58" text="CONVERT('abc' USING BINARY)" alias="c1">
+                    <expr>
+                        <function start-index="26" stop-index="52" function-name="CONVERT" text="CONVERT('abc' USING BINARY)">
+                            <parameter>
+                                <literal-expression start-index="34" stop-index="38" value="abc" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression start-index="46" stop-index="51" value="BINARY" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_integer_type_aliases">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="INT1" start-index="16" stop-index="21">
+            <column name="a" />
+        </column-definition>
+        <column-definition type="INT2" start-index="24" stop-index="29">
+            <column name="b" />
+        </column-definition>
+        <column-definition type="INT3" start-index="32" stop-index="37">
+            <column name="c" />
+        </column-definition>
+        <column-definition type="INT4" start-index="40" stop-index="45">
+            <column name="d" />
+        </column-definition>
+        <column-definition type="INT8" start-index="48" stop-index="53">
+            <column name="e" />
+        </column-definition>
+        <column-definition type="LONG" start-index="56" stop-index="61">
+            <column name="f" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_now_default_update">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="TIMESTAMP" start-index="16" stop-index="58">
+            <column name="a" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_empty_merge_union">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="INT" start-index="16" stop-index="20">
+            <column name="a" />
+        </column-definition>
+        <create-table-option start-index="23" stop-index="30" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_nodegroup">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="INT" start-index="16" stop-index="20">
+            <column name="a" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_dollar_identifiers">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="INT" start-index="16" stop-index="22">
+            <column name="$$a" />
+        </column-definition>
+        <column-definition type="INT" start-index="25" stop-index="32">
+            <column name="b$$c" />
+        </column-definition>
+        <column-definition type="INT" start-index="35" stop-index="43">
+            <column name="$$d$$" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_digit_identifiers">
+        <table name="1a20" start-index="13" stop-index="19">
+            <owner name="db" start-index="13" stop-index="14" />
+        </table>
+        <column-definition type="INT" start-index="22" stop-index="29">
+            <column name="1a20" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_virtual_column_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="int" start-index="24" stop-index="28">
+            <column name="a" />
+        </column-definition>
+        <column-definition type="int" start-index="31" stop-index="71">
+            <column name="b" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_generated_default_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="int" start-index="24" stop-index="28">
+            <column name="a" />
+        </column-definition>
+        <column-definition type="int" start-index="31" stop-index="63">
+            <column name="b" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_stored_column_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="int" start-index="24" stop-index="28">
+            <column name="a" />
+        </column-definition>
+        <column-definition type="int" start-index="31" stop-index="70">
+            <column name="b" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_virtual_identifier_pg">
+        <table name="virtual" start-index="13" stop-index="19" />
+        <column-definition type="int" start-index="22" stop-index="32">
+            <column name="virtual" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_column_nulls_distinct_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="int" not-null="false" start-index="24" stop-index="50">
+            <column name="a" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_column_nulls_not_distinct_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="int" not-null="false" start-index="24" stop-index="54">
+            <column name="a" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_unique_nulls_distinct_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="int" not-null="false" start-index="24" stop-index="28">
+            <column name="a" />
+        </column-definition>
+        <constraint-definition constraint-name="foo_unique" start-index="31" stop-index="77" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_unique_nulls_not_distinct_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="int" not-null="false" start-index="24" stop-index="28">
+            <column name="a" />
+        </column-definition>
+        <constraint-definition constraint-name="foo_unique" start-index="31" stop-index="81" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_column_not_enforced_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="int" not-null="true" start-index="24" stop-index="84">
+            <column name="a" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_constraint_enforced_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="int" not-null="false" start-index="24" stop-index="28">
+            <column name="a" />
+        </column-definition>
+        <constraint-definition constraint-name="positive" start-index="31" stop-index="72" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_repeated_enforced_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="int" not-null="false" start-index="24" stop-index="64">
+            <column name="a" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_enforced_identifier_pg">
+        <table name="enforced" start-index="13" stop-index="20" />
+        <column-definition type="int" not-null="false" start-index="23" stop-index="34">
+            <column name="enforced" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_named_check_priority_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="int" not-null="false" start-index="24" stop-index="28">
+            <column name="a" />
+        </column-definition>
+        <constraint-definition constraint-name="positive" start-index="31" stop-index="63" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_temporal_pk_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="int4range" start-index="24" stop-index="35">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="daterange" start-index="38" stop-index="55">
+            <column name="valid_at" />
+        </column-definition>
+        <constraint-definition primary-key-column-count="2" constraint-name="foo_pk" start-index="58" stop-index="118">
+            <primary-key-column name="id" start-index="89" stop-index="90" />
+            <primary-key-column name="valid_at" start-index="93" stop-index="100" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_temporal_unique_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="int4range" start-index="24" stop-index="35">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="daterange" start-index="38" stop-index="55">
+            <column name="valid_at" />
+        </column-definition>
+        <constraint-definition primary-key-column-count="0" constraint-name="foo_unique" start-index="58" stop-index="117" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_temporal_inherited_pk_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <constraint-definition primary-key-column-count="2" constraint-name="foo_pk" start-index="24" stop-index="84">
+            <primary-key-column name="id" start-index="55" stop-index="56" />
+            <primary-key-column name="valid_at" start-index="59" stop-index="66" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_temporal_single_pk_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="daterange" start-index="24" stop-index="41">
+            <column name="valid_at" />
+        </column-definition>
+        <constraint-definition primary-key-column-count="1" start-index="44" stop-index="82">
+            <primary-key-column name="valid_at" start-index="57" stop-index="64" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_temporal_foreign_key_pg">
+        <table name="foo_table" start-index="13" stop-index="21" />
+        <column-definition type="int4range" start-index="24" stop-index="35">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="daterange" start-index="38" stop-index="55">
+            <column name="valid_at" />
+        </column-definition>
+        <constraint-definition primary-key-column-count="0" constraint-name="foo_fk" start-index="58" stop-index="154">
+            <referenced-table name="parent_table" start-index="121" stop-index="132" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_period_identifier_pg">
+        <table name="period" start-index="13" stop-index="18" />
+        <column-definition type="int" start-index="21" stop-index="30">
+            <column name="period" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_column_compression_pg">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="text" start-index="16" stop-index="38" not-null="false">
+            <column name="f" />
+            <data-type value="text" start-index="18" stop-index="21" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_column_compression_default_pg">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="text" start-index="16" stop-index="41" not-null="false">
+            <column name="f" />
+            <data-type value="text" start-index="18" stop-index="21" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_column_compression_not_null_pg">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="text" start-index="16" stop-index="46" not-null="true">
+            <column name="f" />
+            <data-type value="text" start-index="18" stop-index="21" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_column_compression_custom_pg">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="text" start-index="16" stop-index="47" not-null="false">
+            <column name="f" />
+            <data-type value="text" start-index="18" stop-index="21" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_column_storage_pg">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="text" start-index="16" stop-index="38" not-null="false">
+            <column name="f" />
+            <data-type value="text" start-index="18" stop-index="21" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_column_storage_compression_pg">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="text" start-index="16" stop-index="57" not-null="false">
+            <column name="f" />
+            <data-type value="text" start-index="18" stop-index="21" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_like_including_compression_pg">
+        <table name="t" start-index="13" stop-index="13" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_like_excluding_compression_pg">
+        <table name="t" start-index="13" stop-index="13" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_not_null_constraint_pg">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="int" start-index="16" stop-index="20" not-null="false">
+            <column name="a" />
+            <data-type value="int" start-index="18" stop-index="20" />
+        </column-definition>
+        <constraint-definition primary-key-column-count="0" start-index="23" stop-index="32" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_not_null_no_inherit_pg">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="int" start-index="16" stop-index="20" not-null="false">
+            <column name="a" />
+            <data-type value="int" start-index="18" stop-index="20" />
+        </column-definition>
+        <constraint-definition primary-key-column-count="0" start-index="23" stop-index="57" constraint-name="nn" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_column_not_null_inherit_pg">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="int" start-index="16" stop-index="40" not-null="true">
+            <column name="a" />
+            <data-type value="int" start-index="18" stop-index="20" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_column_named_not_null_inherit_pg">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="int" start-index="16" stop-index="54" not-null="true">
+            <column name="a" />
+            <data-type value="int" start-index="18" stop-index="20" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_column_check_inherit_control_pg">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="int" start-index="16" stop-index="45" not-null="false">
+            <column name="a" />
+            <data-type value="int" start-index="18" stop-index="20" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_check_inherit_control_pg">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="int" start-index="16" stop-index="20" not-null="false">
+            <column name="a" />
+            <data-type value="int" start-index="18" stop-index="20" />
+        </column-definition>
+        <constraint-definition primary-key-column-count="0" start-index="23" stop-index="59" constraint-name="c" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_check_validation_pg">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="int" start-index="16" stop-index="20" not-null="false">
+            <column name="a" />
+            <data-type value="int" start-index="18" stop-index="20" />
+        </column-definition>
+        <constraint-definition primary-key-column-count="0" start-index="23" stop-index="69" constraint-name="c" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_check_validation_order_pg">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="int" start-index="16" stop-index="20" not-null="false">
+            <column name="a" />
+            <data-type value="int" start-index="18" stop-index="20" />
+        </column-definition>
+        <constraint-definition primary-key-column-count="0" start-index="23" stop-index="69" constraint-name="c" />
+    </create-table>
 </sql-parser-test-cases>

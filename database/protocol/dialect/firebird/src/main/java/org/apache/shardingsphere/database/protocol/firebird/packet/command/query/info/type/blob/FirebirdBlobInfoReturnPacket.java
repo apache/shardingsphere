@@ -36,9 +36,13 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
     
     private static final int BLOB_TYPE_SEGMENTED = 0;
     
+    private static final int BLOB_TYPE_STREAM = 1;
+    
     private final List<FirebirdInfoPacketType> infoItems;
     
     private final int blobLength;
+    
+    private final boolean streamBlob;
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
@@ -62,10 +66,10 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
                 return;
             case MAX_SEGMENT:
             case TOTAL_LENGTH:
-                writeIntValue(payload, type, getSegmentLength());
+                writeIntValue(payload, type, blobLength);
                 return;
             case TYPE:
-                writeIntValue(payload, type, BLOB_TYPE_SEGMENTED);
+                writeIntValue(payload, type, streamBlob ? BLOB_TYPE_STREAM : BLOB_TYPE_SEGMENTED);
                 return;
             default:
                 throw new DatabaseProtocolException("Unknown blob information request type %d", type.getCode());
@@ -76,10 +80,6 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
         payload.writeInt1(type.getCode());
         payload.writeInt2LE(4);
         payload.writeInt4LE(value);
-    }
-    
-    private int getSegmentLength() {
-        return blobLength;
     }
     
     private int getSegmentCount() {
