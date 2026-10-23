@@ -93,8 +93,7 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
             return toSQLException(FirebirdVendorError.EXCESS_TRANSACTIONS, ((ExcessTransactionsException) sqlDialectException).getMaxTransactions());
         }
         if (sqlDialectException instanceof DialectSQLParsingException) {
-            DialectSQLParsingException ex = (DialectSQLParsingException) sqlDialectException;
-            return toSQLException(FirebirdVendorError.DYNAMIC_SQL_ERROR, ex.getMessage());
+            return toSQLException(FirebirdVendorError.DYNAMIC_SQL_ERROR, sqlDialectException.getMessage());
         }
         if (sqlDialectException instanceof TableExistsException) {
             return toSQLException(FirebirdVendorError.TABLE_ALREADY_EXISTS, ((TableExistsException) sqlDialectException).getTableName());

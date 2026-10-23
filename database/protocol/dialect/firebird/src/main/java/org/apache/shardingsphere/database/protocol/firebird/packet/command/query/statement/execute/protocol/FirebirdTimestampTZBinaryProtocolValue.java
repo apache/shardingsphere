@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.util.FirebirdDateTimeUtils;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.firebirdsql.gds.ng.tz.TimeZoneMapping;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -31,7 +32,7 @@ public final class FirebirdTimestampTZBinaryProtocolValue implements FirebirdBin
     
     @Override
     public Object read(final FirebirdPacketPayload payload) {
-        return FirebirdDateTimeUtils.getDateTimeWithOffset(payload.readInt4(), payload.readInt4(), payload.readInt4());
+        return FirebirdDateTimeUtils.getDateTimeWithOffset(payload.readInt4(), payload.readInt4(), payload.readInt4() & 0xFFFF);
     }
     
     @Override
@@ -39,7 +40,7 @@ public final class FirebirdTimestampTZBinaryProtocolValue implements FirebirdBin
         LocalDateTime localDateTime = ((OffsetDateTime) value).atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
         payload.writeInt4(FirebirdDateTimeUtils.getEncodedDate(localDateTime));
         payload.writeInt4(new FirebirdDateTimeUtils(localDateTime).getEncodedTime());
-        payload.writeInt4(((OffsetDateTime) value).getOffset().getTotalSeconds() / 60);
+        payload.writeInt4(TimeZoneMapping.getInstance().toTimeZoneId(((OffsetDateTime) value).getOffset()));
     }
     
     @Override

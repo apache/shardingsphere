@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.database.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.firebirdsql.gds.ISCConstants;
@@ -60,12 +59,10 @@ public final class FirebirdFetchResponsePacket extends FirebirdPacket {
         int i = 0;
         for (BinaryCell cell : row.getCells()) {
             if (null != cell.getData()) {
-                FirebirdBinaryProtocolValue type = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(cell.getColumnType());
-                type.write(payload, cell.getData());
+                FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(cell.getColumnType()).write(payload, cell.getData());
             } else {
                 int nullBitsIndex = nullBitsStartIndex + i / 8;
-                byte nullBitsByte = payload.getByteBuf().getByte(nullBitsIndex);
-                payload.getByteBuf().setByte(nullBitsIndex, nullBitsByte | (1 << i % 8));
+                payload.getByteBuf().setByte(nullBitsIndex, payload.getByteBuf().getByte(nullBitsIndex) | (1 << i % 8));
             }
             i++;
         }

@@ -52,20 +52,21 @@ public final class MCPUriPathSegmentUtils {
      */
     public static Optional<String> decodePathSegment(final String pathSegment) {
         StringBuilder result = new StringBuilder(pathSegment.length());
-        for (int i = 0; i < pathSegment.length();) {
-            if ('%' != pathSegment.charAt(i)) {
-                result.append(pathSegment.charAt(i));
-                i++;
+        int index = 0;
+        while (index < pathSegment.length()) {
+            if ('%' != pathSegment.charAt(index)) {
+                result.append(pathSegment.charAt(index));
+                index++;
                 continue;
             }
             ByteArrayOutputStream encodedBytes = new ByteArrayOutputStream();
-            while (i < pathSegment.length() && '%' == pathSegment.charAt(i)) {
-                Optional<Integer> decodedByte = decodePercentEncodedByte(pathSegment, i);
+            while (index < pathSegment.length() && '%' == pathSegment.charAt(index)) {
+                Optional<Integer> decodedByte = decodePercentEncodedByte(pathSegment, index);
                 if (decodedByte.isEmpty()) {
                     return Optional.empty();
                 }
                 encodedBytes.write(decodedByte.get());
-                i += 3;
+                index += 3;
             }
             Optional<String> decodedText = decodeUtf8(encodedBytes.toByteArray());
             if (decodedText.isEmpty()) {

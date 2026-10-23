@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
@@ -51,8 +52,7 @@ public final class FirebirdStartTransactionCommandExecutor implements CommandExe
     }
     
     private void validateNoActiveTransaction() {
-        if (FirebirdTransactionIdGenerator.getInstance().hasActiveTransaction(connectionSession.getConnectionId())) {
-            throw new ExcessTransactionsException(MAX_CONCURRENT_TRANSACTIONS);
-        }
+        ShardingSpherePreconditions.checkState(!FirebirdTransactionIdGenerator.getInstance().hasActiveTransaction(connectionSession.getConnectionId()),
+                () -> new ExcessTransactionsException(MAX_CONCURRENT_TRANSACTIONS));
     }
 }

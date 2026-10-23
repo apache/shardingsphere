@@ -207,10 +207,10 @@ public final class ShardingWorkflowPlanningService {
     private WorkflowContextSnapshot planLifecycleWorkflow(final WorkflowSessionContext workflowSessionContext, final ShardingWorkflowRequest request,
                                                           final ShardingWorkflowLifecycleSpec spec) {
         WorkflowContextSnapshot result = prepareSnapshot(workflowSessionContext, request, spec.workflowKind(), spec.defaultOperationType(), spec.summary());
-        ShardingWorkflowRequest mergedRequest = (ShardingWorkflowRequest) result.getRequest();
         if (!planningSupport.ensureSupportedOperationType(result.getClarifiedIntent(), SUPPORTED_LIFECYCLE_OPERATION_TYPES, result)) {
             return planningSupport.persistPlanningInterruption(workflowSessionContext, result);
         }
+        ShardingWorkflowRequest mergedRequest = (ShardingWorkflowRequest) result.getRequest();
         if (!inputValidator.ensureDatabase(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }

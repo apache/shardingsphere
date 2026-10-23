@@ -642,4 +642,10 @@
     <sql-case id="select_fetch_explicit_control_pg" value="SELECT 1 FETCH FIRST 3 ROWS ONLY" db-types="PostgreSQL" />
 
     <sql-case id="select_limit_offset_fetch_control_pg" value="SELECT 1 LIMIT 3 OFFSET 2" db-types="PostgreSQL" />
+    <sql-case id="select_key_alias_with_as_firebird" value="SELECT order_id AS KEY FROM t_order" db-types="Firebird" />
+    <sql-case id="select_text_alias_with_as_firebird" value="SELECT order_id AS TEXT FROM t_order" db-types="Firebird" />
+    <sql-case id="select_comment_alias_with_as_firebird" value="SELECT order_id AS COMMENT FROM t_order" db-types="Firebird" />
+    <sql-case id="select_key_alias_without_as_firebird" value="SELECT order_id KEY FROM t_order" db-types="Firebird" />
+    <sql-case id="select_text_alias_without_as_firebird" value="SELECT order_id TEXT FROM t_order" db-types="Firebird" />
+    <sql-case id="select_comment_alias_without_as_firebird" value="SELECT order_id COMMENT FROM t_order" db-types="Firebird" />
 </sql-cases>

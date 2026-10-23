@@ -142,7 +142,6 @@ Apply the Boolean assertion standard in `CODE_OF_CONDUCT.md` to literal, constan
 - `R15-C`: compare the final worktree with `Task scope baseline`; any candidate-relevant out-of-scope mutation fails. Ignore only reproducible,
   untracked or Git-ignored verification outputs.
 - `R15-D`: verify each parameterized test's argument source and actual case count against `CODE_OF_CONDUCT.md`; inspect external, unresolved, or dynamic sources manually.
-- `R15-E`: verify the first parameter against the parameterized-test signature rule in `CODE_OF_CONDUCT.md`.
 - `R15-F`: inspect each `switch` candidate in a parameterized test against the grouping rule in `CODE_OF_CONDUCT.md`.
 - `R15-G`: inspect each new nested-type candidate used in argument sets against the grouping rule in `CODE_OF_CONDUCT.md`.
   A nested type is not a violation by itself.

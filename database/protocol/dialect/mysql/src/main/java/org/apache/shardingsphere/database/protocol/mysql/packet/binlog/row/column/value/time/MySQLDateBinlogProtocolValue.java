@@ -36,12 +36,12 @@ public final class MySQLDateBinlogProtocolValue implements MySQLBinlogProtocolVa
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int date = payload.getByteBuf().readUnsignedMediumLE();
-        int year = date / 16 / 32;
-        int month = date / 32 % 16;
-        int day = date % 32;
         if (0 == date) {
             return MySQLTimeValueUtils.ZERO_OF_DATE;
         }
+        int year = date / 16 / 32;
+        int month = date / 32 % 16;
+        int day = date % 32;
         return MySQLTimeValueUtils.isCompleteDate(month, day) ? Date.valueOf(LocalDate.of(year, month, day)) : MySQLTimeValueUtils.formatIncompleteDate(year, month, day);
     }
 }

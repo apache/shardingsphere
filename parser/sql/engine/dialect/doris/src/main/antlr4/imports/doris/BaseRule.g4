@@ -970,8 +970,8 @@ triggerOrder
 expr
     : booleanPrimary
     | expr andOperator expr
-    | expr orOperator expr
     | expr XOR expr
+    | expr orOperator expr
     | notOperator expr
     ;
 

@@ -408,11 +408,17 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
         ColumnSegmentBoundInfo orderByBoundInfo = orderByColumn.getColumnBoundInfo();
         ColumnSegmentBoundInfo groupByOtherUsingBoundInfo = groupByColumn.getOtherUsingColumnBoundInfo();
         ColumnSegmentBoundInfo orderByOtherUsingBoundInfo = orderByColumn.getOtherUsingColumnBoundInfo();
-        return groupByColumn.getQualifiedName().equals(orderByColumn.getQualifiedName()) && null != groupByBoundInfo && null != orderByBoundInfo
-                && isSameColumnBoundInfo(groupByBoundInfo, orderByBoundInfo)
-                && (null == groupByOtherUsingBoundInfo ? null == orderByOtherUsingBoundInfo
-                        : null != orderByOtherUsingBoundInfo && isSameColumnBoundInfo(groupByOtherUsingBoundInfo, orderByOtherUsingBoundInfo))
-                && !isAmbiguousProjectionReference(groupByColumn);
+        if (!groupByColumn.getQualifiedName().equals(orderByColumn.getQualifiedName()) || null == groupByBoundInfo || null == orderByBoundInfo
+                || !isSameColumnBoundInfo(groupByBoundInfo, orderByBoundInfo)) {
+            return false;
+        }
+        if (null == groupByOtherUsingBoundInfo && null != orderByOtherUsingBoundInfo) {
+            return false;
+        }
+        if (null != groupByOtherUsingBoundInfo && (null == orderByOtherUsingBoundInfo || !isSameColumnBoundInfo(groupByOtherUsingBoundInfo, orderByOtherUsingBoundInfo))) {
+            return false;
+        }
+        return !isAmbiguousProjectionReference(groupByColumn);
     }
     
     private boolean isAmbiguousProjectionReference(final ColumnSegment column) {
@@ -436,9 +442,13 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
     }
     
     private boolean isSameColumnBoundInfo(final ColumnSegmentBoundInfo left, final ColumnSegmentBoundInfo right) {
-        return null != left && null != right && left.getTableSourceType() == right.getTableSourceType()
-                && Objects.equals(left.getOriginalDatabase(), right.getOriginalDatabase()) && Objects.equals(left.getOriginalSchema(), right.getOriginalSchema())
-                && Objects.equals(left.getOriginalTable(), right.getOriginalTable()) && Objects.equals(left.getOriginalColumn(), right.getOriginalColumn());
+        if (null == left || null == right || left.getTableSourceType() != right.getTableSourceType()) {
+            return false;
+        }
+        if (!Objects.equals(left.getOriginalDatabase(), right.getOriginalDatabase()) || !Objects.equals(left.getOriginalSchema(), right.getOriginalSchema())) {
+            return false;
+        }
+        return Objects.equals(left.getOriginalTable(), right.getOriginalTable()) && Objects.equals(left.getOriginalColumn(), right.getOriginalColumn());
     }
     
     /**

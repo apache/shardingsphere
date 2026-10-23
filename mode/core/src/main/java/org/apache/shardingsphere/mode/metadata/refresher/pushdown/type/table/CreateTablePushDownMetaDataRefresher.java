@@ -49,12 +49,11 @@ public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaD
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         ShardingSphereTable loadedTable = metaDataLoader.loadCreatedTable(database, logicDataSourceName, schemaName, sqlStatement.getTable().getTableName().getIdentifier(), props,
-                createRevisionCandidateSchemas(database, schemaName, sqlStatement, props));
+                createRevisionCandidateSchemas(database, schemaName, sqlStatement));
         metaDataManagerPersistService.createTable(database, schemaName, loadedTable);
     }
     
-    private Collection<ShardingSphereSchema> createRevisionCandidateSchemas(final ShardingSphereDatabase database, final String schemaName,
-                                                                            final CreateTableStatement sqlStatement, final ConfigurationProperties props) {
+    private Collection<ShardingSphereSchema> createRevisionCandidateSchemas(final ShardingSphereDatabase database, final String schemaName, final CreateTableStatement sqlStatement) {
         Collection<ShardingSphereIndex> indexes = createRevisionCandidateIndexes(sqlStatement);
         if (indexes.isEmpty()) {
             return database.getAllSchemas();

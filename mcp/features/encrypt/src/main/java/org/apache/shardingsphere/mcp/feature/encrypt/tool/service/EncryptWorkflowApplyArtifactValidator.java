@@ -66,8 +66,8 @@ public final class EncryptWorkflowApplyArtifactValidator implements MCPWorkflowA
         if (actualSQL.contains("encrypt_algorithm") && actualSQL.contains("'aes-key-value'") && !actualSQL.contains("'digest-algorithm-name'")) {
             issues.add(validationSupport.createSQLExecutabilityIssue("Generated AES encrypt DistSQL is missing `digest-algorithm-name`.", displaySql));
         }
-        if (snapshot.getRequest() instanceof EncryptWorkflowRequest) {
-            addAlgorithmIssues(issues, (EncryptWorkflowRequest) snapshot.getRequest(), displaySql);
+        if (snapshot.getRequest() instanceof EncryptWorkflowRequest request) {
+            addAlgorithmIssues(issues, request, displaySql);
         }
     }
     

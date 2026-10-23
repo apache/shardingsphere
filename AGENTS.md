@@ -6,6 +6,7 @@ Follow this guide; paths are repository-relative.
 
 1. Inspect the applicable `CODE_OF_CONDUCT.md` section before changing code or tests.
 2. Before Maven, E2E, Proxy startup, database clients, IDE/MCP runs, large structured analysis, or commands likely to exceed 100 lines, read or reuse `.codex/context/token-efficiency.md` and follow its Command Contract.
+   Read `.codex/context/docker-resources.md` before direct or indirect Docker use.
 3. Before changing production, tests, scripts, build logic, generated source, or behavior configuration, read `.codex/skills/code-implementation/SKILL.md` through EOF. Read-only and prose-only work does not activate it, and no Skill grants authority or scope.
 4. If Skill discovery omits required `code-implementation`, load its repository file directly. A missing required canonical source keeps ordinary writes read-only; only an exact user-authorized policy or harness repair may use `.codex/harness/agents/policy-maintenance.md`.
 5. For read-only code or test analysis, planning, design, or review, read the implementation rules without activating the write workflow. Load testing, removal, contract, or non-regression rules only when that topic can affect the requested conclusion.

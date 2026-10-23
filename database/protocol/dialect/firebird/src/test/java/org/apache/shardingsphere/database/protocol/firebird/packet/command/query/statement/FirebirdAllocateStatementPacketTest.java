@@ -52,7 +52,6 @@ class FirebirdAllocateStatementPacketTest {
     
     @Test
     void assertWrite() {
-        when(payload.readInt4()).thenReturn(1);
         FirebirdAllocateStatementPacket packet = new FirebirdAllocateStatementPacket(payload);
         FirebirdPacketPayload writePayload = mock(FirebirdPacketPayload.class);
         packet.write((PacketPayload) writePayload);

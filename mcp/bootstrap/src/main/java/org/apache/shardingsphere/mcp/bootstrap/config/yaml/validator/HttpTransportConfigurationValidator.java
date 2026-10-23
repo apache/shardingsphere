@@ -121,8 +121,10 @@ public final class HttpTransportConfigurationValidator implements ConstraintVali
     }
     
     private boolean isHttpTokenSymbol(final char value) {
-        return '!' == value || '#' == value || '$' == value || '%' == value || '&' == value || '\'' == value || '*' == value || '+' == value || '-' == value || '.' == value
-                || '^' == value || '_' == value || '`' == value || '|' == value || '~' == value;
+        return switch (value) {
+            case '!', '#', '$', '%', '&', '\'', '*', '+', '-', '.', '^', '_', '`', '|', '~' -> true;
+            default -> false;
+        };
     }
     
     private void addViolation(final ConstraintValidatorContext context, final String propertyName, final String message) {

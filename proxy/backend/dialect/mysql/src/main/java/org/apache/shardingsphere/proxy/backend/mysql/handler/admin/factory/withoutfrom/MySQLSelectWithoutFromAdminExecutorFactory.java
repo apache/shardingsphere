@@ -37,12 +37,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * Select without from admin executor factory for MySQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLSelectWithoutFromAdminExecutorFactory {
+    
+    private static final Pattern FUNCTION_PARENTHESES_WHITESPACE_PATTERN = Pattern.compile("\\s+\\(");
     
     /**
      * New instance of select without from admin executor factory for MySQL.
@@ -84,7 +87,7 @@ public final class MySQLSelectWithoutFromAdminExecutorFactory {
             return false;
         }
         String projectionText = ((ExpressionProjectionSegment) firstProjection).getText();
-        String trimmedText = projectionText.replaceAll("\\s+\\(", "(");
+        String trimmedText = FUNCTION_PARENTHESES_WHITESPACE_PATTERN.matcher(projectionText).replaceAll("(");
         return functionName.equalsIgnoreCase(trimmedText);
     }
     
