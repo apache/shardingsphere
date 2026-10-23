@@ -121,7 +121,7 @@ class CalciteSQLFederationExecutorTest {
         when(queryContext.getSql()).thenReturn("SELECT * FROM foo_tbl");
         when(queryContext.getConnectionContext()).thenReturn(new ConnectionContext(Collections::emptyList, new Grantee("root", "localhost")));
         SQLFederationContext federationContext = new SQLFederationContext(false, queryContext, actualMetaData, "process_schema_path");
-        AtomicReference<List<String>> actualSchemaPath = new AtomicReference<>();
+        AtomicReference<List<List<String>>> actualSchemaPaths = new AtomicReference<>();
         try (
                 CalciteSQLFederationExecutor executor = createCalciteSQLFederationExecutor(mock(), actualMetaData);
                 MockedConstruction<DatabaseTypeRegistry> ignoredRegistry = mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
@@ -132,7 +132,7 @@ class CalciteSQLFederationExecutorTest {
                     when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
                 });
                 MockedConstruction<SQLFederationRelConverter> ignoredConverter = mockConstruction(SQLFederationRelConverter.class, (mock, context) -> {
-                    actualSchemaPath.set((List<String>) context.arguments().get(1));
+                    actualSchemaPaths.set((List<List<String>>) context.arguments().get(1));
                     when(mock.getSchemaPlus()).thenReturn(mock(SchemaPlus.class));
                 });
                 MockedConstruction<SQLFederationCompilerEngine> ignoredCompiler = mockConstruction(SQLFederationCompilerEngine.class,
@@ -140,7 +140,7 @@ class CalciteSQLFederationExecutorTest {
                 MockedStatic<RelOptUtil> relOptUtil = mockStatic(RelOptUtil.class)) {
             relOptUtil.when(() -> RelOptUtil.toString(any(RelNode.class), eq(SqlExplainLevel.ALL_ATTRIBUTES))).thenReturn("plan");
             executor.executeQuery(mock(), mock(), federationContext);
-            assertThat(actualSchemaPath.get(), is(Arrays.asList("foo_db", "foo_schema")));
+            assertThat(actualSchemaPaths.get(), is(Collections.singletonList(Arrays.asList("foo_db", "foo_schema"))));
         }
     }
     
@@ -262,7 +262,7 @@ class CalciteSQLFederationExecutorTest {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
         JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
         SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
-        AtomicReference<List<String>> actualSchemaPath = new AtomicReference<>();
+        AtomicReference<List<List<String>>> actualSchemaPaths = new AtomicReference<>();
         try (
                 CalciteSQLFederationExecutor executor = createCalciteSQLFederationExecutor(mock(), actualMetaData);
                 MockedConstruction<DatabaseTypeRegistry> ignoredRegistry = mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
@@ -273,14 +273,44 @@ class CalciteSQLFederationExecutorTest {
                     when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
                 });
                 MockedConstruction<SQLFederationRelConverter> ignoredConverter = mockConstruction(SQLFederationRelConverter.class,
-                        (mock, context) -> actualSchemaPath.set((List<String>) context.arguments().get(1)));
+                        (mock, context) -> actualSchemaPaths.set((List<List<String>>) context.arguments().get(1)));
                 MockedConstruction<SQLFederationCompilerEngine> ignoredCompiler = mockConstruction(SQLFederationCompilerEngine.class,
                         (mock, context) -> when(mock.compile(any(ExecutionPlanCacheKey.class), eq(false))).thenReturn(executionPlan));
                 MockedStatic<RelOptUtil> relOptUtil = mockStatic(RelOptUtil.class)) {
             relOptUtil.when(() -> RelOptUtil.toString(any(RelNode.class), eq(SqlExplainLevel.ALL_ATTRIBUTES))).thenReturn("plan");
             executor.executeQuery(prepareEngine, callback, federationContext);
         }
-        assertThat(actualSchemaPath.get(), is(Collections.singletonList("foo_db")));
+        assertThat(actualSchemaPaths.get(), is(Collections.singletonList(Collections.singletonList("foo_db"))));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertGetSchemaPathsWithSystemSchemaAfterCurrentSchema() throws SQLException {
+        SQLStatementContext selectStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
+        QueryContext queryContext = mock(QueryContext.class);
+        when(queryContext.getSqlStatementContext()).thenReturn(selectStatementContext);
+        when(queryContext.getSql()).thenReturn("SELECT * FROM foo_tbl");
+        when(queryContext.getConnectionContext()).thenReturn(new ConnectionContext(Collections::emptyList, new Grantee("root", "localhost")));
+        ShardingSphereMetaData actualMetaData = createMetaData(new Properties());
+        SQLFederationContext federationContext = new SQLFederationContext(false, queryContext, actualMetaData, "process_schema_paths_system_schema");
+        AtomicReference<List<List<String>>> actualSchemaPaths = new AtomicReference<>();
+        try (
+                CalciteSQLFederationExecutor executor = createCalciteSQLFederationExecutor(mock(), actualMetaData);
+                MockedConstruction<DatabaseTypeRegistry> ignoredRegistry = mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
+                    DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
+                    when(schemaOption.getDefaultSystemSchema()).thenReturn(Optional.of("SYS"));
+                    DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+                    when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(schemaOption);
+                    when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
+                });
+                MockedConstruction<SQLFederationRelConverter> ignoredConverter = mockConstruction(SQLFederationRelConverter.class,
+                        (mock, context) -> actualSchemaPaths.set((List<List<String>>) context.arguments().get(1)));
+                MockedConstruction<SQLFederationCompilerEngine> ignoredCompiler = mockConstruction(SQLFederationCompilerEngine.class,
+                        (mock, context) -> when(mock.compile(any(ExecutionPlanCacheKey.class), eq(false))).thenReturn(mock(SQLFederationExecutionPlan.class)))) {
+            executor.executeQuery(mock(), mock(), federationContext);
+        }
+        assertThat(actualSchemaPaths.get(), is(Arrays.asList(Collections.singletonList("foo_db"), Arrays.asList("foo_db", "SYS"))));
     }
     
     @SuppressWarnings("unchecked")

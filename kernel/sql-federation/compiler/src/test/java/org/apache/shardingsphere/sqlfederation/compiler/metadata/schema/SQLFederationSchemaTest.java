@@ -43,10 +43,19 @@ class SQLFederationSchemaTest {
     void assertNew() {
         Collection<ShardingSphereTable> tables = Arrays.asList(createTable("foo_table"), createTable("foo_view"));
         Collection<ShardingSphereView> views = Collections.singleton(new ShardingSphereView("foo_view", "SELECT 1"));
-        SQLFederationSchema actual = new SQLFederationSchema("foo_schema", new ShardingSphereSchema("foo_schema", databaseType, tables, views), databaseType);
+        SQLFederationSchema actual = new SQLFederationSchema("foo_schema", new ShardingSphereSchema("foo_schema", databaseType, tables, views), Collections.emptyList(), databaseType);
         assertThat(actual.getName(), is("foo_schema"));
         assertThat(actual.getTableMap().get("foo_table"), isA(SQLFederationTable.class));
         assertThat(actual.getTableMap().get("foo_view"), isA(ViewTable.class));
+    }
+    
+    @Test
+    void assertNewWithSubSchemas() {
+        ShardingSphereSchema subSchema = new ShardingSphereSchema("BAR_SCHEMA", databaseType, Collections.singleton(createTable("bar_table")), Collections.emptyList());
+        SQLFederationSchema actual = new SQLFederationSchema("foo_schema", new ShardingSphereSchema("foo_schema", databaseType), Collections.singleton(subSchema), databaseType);
+        SQLFederationSchema actualSubSchema = (SQLFederationSchema) actual.getSubSchemaMap().get("bar_schema");
+        assertThat(actualSubSchema.getName(), is("BAR_SCHEMA"));
+        assertThat(actualSubSchema.getTableMap().get("bar_table"), isA(SQLFederationTable.class));
     }
     
     private ShardingSphereTable createTable(final String tableName) {

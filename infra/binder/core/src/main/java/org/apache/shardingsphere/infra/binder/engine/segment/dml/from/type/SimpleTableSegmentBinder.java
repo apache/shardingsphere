@@ -175,9 +175,9 @@ public final class SimpleTableSegmentBinder {
             return Optional.ofNullable(segment.getOwner().get().getIdentifier());
         }
         if (!dialectDatabaseMetaData.getSchemaOption().isSystemSchemaPreferredOverCurrentSchema()) {
-            Optional<IdentifierValue> currentSchema = findCurrentSchemaContainingTable(binderContext, segment.getTableName().getIdentifier());
-            if (currentSchema.isPresent()) {
-                return currentSchema;
+            Optional<IdentifierValue> result = findCurrentSchemaContainingTable(binderContext, segment.getTableName().getIdentifier());
+            if (result.isPresent()) {
+                return result;
             }
         }
         Optional<String> defaultSystemSchema = dialectDatabaseMetaData.getSchemaOption().getDefaultSystemSchema();

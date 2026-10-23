@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -94,7 +95,7 @@ class ShardingSphereDatabaseFactoryTest {
                     .thenReturn(Collections.singleton(mock(ShardingSphereRule.class)));
             mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.build(eq(protocolType), any(GenericSchemaBuilderMaterial.class)))
                     .thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", protocolType)));
-            mockedSystemSchemaBuilder.when(() -> SystemSchemaBuilder.build("foo_db", protocolType, props)).thenReturn(systemSchemas);
+            mockedSystemSchemaBuilder.when(() -> SystemSchemaBuilder.build("foo_db", protocolType, props, Collections.singletonList("foo_schema"))).thenReturn(systemSchemas);
             ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create("foo_db", protocolType, databaseConfig, props, computeNodeInstanceContext);
             mockedDefaultSchemaNameResolver.verify(() -> DefaultSchemaNameResolver.resolveProtocol(protocolType, "foo_db"));
             assertThat(actual.getName(), is("foo_db"));
@@ -123,11 +124,24 @@ class ShardingSphereDatabaseFactoryTest {
             mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.build(eq(protocolType),
                     argThat(material -> material.getRevisionCandidateSchemas().contains(candidateSchema))))
                     .thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", protocolType)));
-            mockedSystemSchemaBuilder.when(() -> SystemSchemaBuilder.build("foo_db", protocolType, props)).thenReturn(Collections.emptyMap());
             ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.createWithRevisionCandidateSchemas(
                     "foo_db", protocolType, databaseConfig, props, computeNodeInstanceContext, Collections.singleton(candidateSchema));
             mockedDefaultSchemaNameResolver.verify(() -> DefaultSchemaNameResolver.resolveProtocol(protocolType, "foo_db"));
             assertTrue(actual.containsSchema("foo_schema"));
+        }
+    }
+    
+    @Test
+    void assertCreateWithDatabaseConfigurationAndDefaultSchemaNamedAsSystemSchema() throws SQLException {
+        DatabaseType oracleDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        ShardingSphereTable userTable = new ShardingSphereTable("T_USER", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        try (MockedStatic<GenericSchemaBuilder> mockedGenericSchemaBuilder = mockStatic(GenericSchemaBuilder.class)) {
+            mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.build(eq(oracleDatabaseType), any(GenericSchemaBuilderMaterial.class)))
+                    .thenReturn(Collections.singletonMap("SYS", new ShardingSphereSchema("SYS", oracleDatabaseType, Collections.singleton(userTable), Collections.emptyList())));
+            ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create("sys", oracleDatabaseType, databaseConfig, props, mock(ComputeNodeInstanceContext.class));
+            assertThat(actual.getAllSchemas().size(), is(2));
+            assertTrue(actual.getSchema("SYS").containsTable("T_USER"));
+            assertTrue(actual.containsSchema("SYSTEM_LOBS"));
         }
     }
     

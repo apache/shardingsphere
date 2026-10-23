@@ -43,7 +43,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ShardingSphere database factory.
@@ -148,10 +147,8 @@ public final class ShardingSphereDatabaseFactory {
         ResourceMetaData resourceMetaData = new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
         DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(protocolType, resourceMetaData, props);
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
-        Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>(GenericSchemaBuilder.build(protocolType,
-                new GenericSchemaBuilderMaterial(resourceMetaData.getStorageUnits(), databaseRules, props, DefaultSchemaNameResolver.resolveProtocol(protocolType, name),
-                        identifierContext, revisionCandidateSchemas)));
-        SystemSchemaBuilder.build(name, protocolType, props).forEach(schemas::putIfAbsent);
-        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(databaseRules), schemas.values(), props);
+        Collection<ShardingSphereSchema> schemas = GenericSchemaBuilder.build(protocolType, new GenericSchemaBuilderMaterial(resourceMetaData.getStorageUnits(), databaseRules, props,
+                DefaultSchemaNameResolver.resolveProtocol(protocolType, name), identifierContext, revisionCandidateSchemas)).values();
+        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(databaseRules), mergeSystemSchemas(name, protocolType, props, schemas), props);
     }
 }
