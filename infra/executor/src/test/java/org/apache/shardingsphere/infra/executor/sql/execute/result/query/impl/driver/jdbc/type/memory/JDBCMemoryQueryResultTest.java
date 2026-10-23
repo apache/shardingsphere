@@ -38,11 +38,9 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.time.LocalTime;
 import java.util.Calendar;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -245,22 +243,10 @@ class JDBCMemoryQueryResultTest {
     @Test
     void assertGetValueByTime() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.TIME);
-        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
         when(resultSet.getTime(1)).thenReturn(new Time(0L));
         JDBCMemoryQueryResult actual = new JDBCMemoryQueryResult(resultSet, databaseType);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Time.class), is(new Time(0L)));
-        assertFalse(actual.next());
-    }
-    
-    @Test
-    void assertGetValueByLocalTime() throws SQLException {
-        ResultSet resultSet = getMockedResultSet(Types.TIME);
-        LocalTime expected = LocalTime.of(12, 34, 56, 123456000);
-        when(resultSet.getObject(1, LocalTime.class)).thenReturn(expected);
-        JDBCMemoryQueryResult actual = new JDBCMemoryQueryResult(resultSet, databaseType);
-        assertTrue(actual.next());
-        assertThat(actual.getValue(1, Object.class), is(expected));
         assertFalse(actual.next());
     }
     

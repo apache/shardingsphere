@@ -19,6 +19,10 @@ package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.d
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.resultset.DialectResultSetMapper;
+import org.apache.shardingsphere.database.connector.core.resultset.ResultSetTimeValueReader;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedStreamCharsetConversionException;
@@ -34,14 +38,12 @@ import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Optional;
 
@@ -55,8 +57,11 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
     
     private final boolean containsJDBCResultSet;
     
+    /**
+     * Custom TIME reader, or {@code null} when native JDBC TIME reading is used.
+     */
     @Getter(AccessLevel.NONE)
-    private BitSet unsupportedTimeColumns;
+    private ResultSetTimeValueReader timeValueReader;
     
     public JDBCStreamQueryResult(final ResultSet resultSet) throws SQLException {
         this(resultSet, false);
@@ -66,6 +71,16 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
         super(new JDBCQueryResultMetaData(resultSet.getMetaData()));
         this.resultSet = resultSet;
         this.containsJDBCResultSet = containsJDBCResultSet;
+    }
+    
+    public JDBCStreamQueryResult(final ResultSet resultSet, final DatabaseType storageType) throws SQLException {
+        this(resultSet, storageType, false);
+    }
+    
+    @HighFrequencyInvocation
+    public JDBCStreamQueryResult(final ResultSet resultSet, final DatabaseType storageType, final boolean containsJDBCResultSet) throws SQLException {
+        this(resultSet, containsJDBCResultSet);
+        timeValueReader = DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, storageType).flatMap(DialectResultSetMapper::createTimeValueReader).orElse(null);
     }
     
     @Override
@@ -113,7 +128,7 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
             return resultSet.getTime(columnIndex);
         }
         if (LocalTime.class == type) {
-            return getLocalTime(columnIndex);
+            return resultSet.getObject(columnIndex, LocalTime.class);
         }
         if (Timestamp.class == type) {
             return resultSet.getTimestamp(columnIndex);
@@ -133,30 +148,21 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
         if (ZonedDateTime.class == type) {
             return resultSet.getObject(columnIndex, type);
         }
-        return Object.class == type && Types.TIME == getMetaData().getColumnType(columnIndex) ? getLocalTime(columnIndex) : resultSet.getObject(columnIndex);
+        return getObjectValue(columnIndex, type);
     }
     
     /**
-     * Get time value.
+     * Read an object value, retaining {@code null} for SQL {@code NULL}.
      *
      * @param columnIndex column index
-     * @return time value, or {@code null} for SQL {@code NULL}
+     * @param type expected value type
+     * @return object value, or {@code null} for SQL {@code NULL}
      * @throws SQLException SQL exception
      */
-    private Object getLocalTime(final int columnIndex) throws SQLException {
-        if (null != unsupportedTimeColumns && 0 < columnIndex && unsupportedTimeColumns.get(columnIndex)) {
-            return resultSet.getTime(columnIndex);
-        }
-        try {
-            return resultSet.getObject(columnIndex, LocalTime.class);
-        } catch (final SQLFeatureNotSupportedException ignored) {
-            Object result = resultSet.getTime(columnIndex);
-            if (null == unsupportedTimeColumns) {
-                unsupportedTimeColumns = new BitSet();
-            }
-            unsupportedTimeColumns.set(columnIndex);
-            return result;
-        }
+    private Object getObjectValue(final int columnIndex, final Class<?> type) throws SQLException {
+        return Object.class == type && null != timeValueReader && Types.TIME == getMetaData().getColumnType(columnIndex)
+                ? timeValueReader.read(resultSet, columnIndex)
+                : resultSet.getObject(columnIndex);
     }
     
     @Override

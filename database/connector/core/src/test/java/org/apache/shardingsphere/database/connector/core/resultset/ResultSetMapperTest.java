@@ -39,11 +39,9 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.time.LocalTime;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -53,9 +51,8 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -75,6 +72,7 @@ class ResultSetMapperTest {
     @BeforeEach
     void setUp() throws SQLException {
         when(resultSet.getMetaData()).thenReturn(metaData);
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenReturn(Optional.empty());
     }
     
     @SuppressWarnings("DataFlowIssue")
@@ -148,130 +146,11 @@ class ResultSetMapperTest {
         assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(object));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("timeArguments")
-    void assertLoadTimeValue(final String name, final LocalTime value) throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
-        when(resultSet.getObject(1, LocalTime.class)).thenReturn(value);
-        assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(value));
-    }
-    
-    private static Stream<Arguments> timeArguments() {
-        return Stream.of(
-                Arguments.of("microseconds", LocalTime.of(12, 34, 56, 123456000)),
-                Arguments.of("midnight-microsecond", LocalTime.of(0, 0, 0, 1000)),
-                Arguments.of("whole-second", LocalTime.of(12, 34, 56)));
-    }
-    
     @Test
-    void assertLoadTimeNull() throws SQLException {
+    void assertLoadTimeValue() throws SQLException {
         when(metaData.getColumnType(1)).thenReturn(Types.TIME);
-        assertNull(new ResultSetMapper(databaseType).load(resultSet, 1));
-    }
-    
-    @Test
-    void assertLoadTimeWithUnsupportedTypedGetter() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
-        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
-        Time expected = new Time(Time.valueOf("12:34:56").getTime() + 123);
-        when(resultSet.getTime(1)).thenReturn(expected);
-        assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(expected));
-    }
-    
-    @Test
-    void assertLoadTimeWithUnsupportedTypedGetterAndNull() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
-        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
-        ResultSetMapper mapper = new ResultSetMapper(databaseType);
-        assertNull(mapper.load(resultSet, 1));
-        assertNull(mapper.load(resultSet, 1));
-        verify(resultSet).getObject(1, LocalTime.class);
-        verify(resultSet, times(2)).getTime(1);
-    }
-    
-    @Test
-    void assertLoadTimeWithSQLFailure() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
-        SQLException expected = new SQLException("foo_time_failure");
-        when(resultSet.getObject(1, LocalTime.class)).thenThrow(expected);
-        assertThat(assertThrows(SQLException.class, () -> new ResultSetMapper(databaseType).load(resultSet, 1)), sameInstance(expected));
-    }
-    
-    @Test
-    void assertLoadTimeWithoutRepeatedUnsupportedGetter() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
-        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
-        Time expected = new Time(Time.valueOf("12:34:56").getTime() + 123);
-        when(resultSet.getTime(1)).thenReturn(expected);
-        ResultSetMapper mapper = new ResultSetMapper(databaseType);
-        assertThat(mapper.load(resultSet, 1), is(expected));
-        assertThat(mapper.load(resultSet, 1), is(expected));
-        verify(resultSet).getObject(1, LocalTime.class);
-        verify(resultSet, times(2)).getTime(1);
-    }
-    
-    @Test
-    void assertLoadTimePreservesOtherColumnPrecision() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
-        when(metaData.getColumnType(2)).thenReturn(Types.TIME);
-        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
-        LocalTime expected = LocalTime.of(12, 34, 56, 123456000);
-        when(resultSet.getObject(2, LocalTime.class)).thenReturn(expected);
-        ResultSetMapper mapper = new ResultSetMapper(databaseType);
-        assertNull(mapper.load(resultSet, 1));
-        assertThat(mapper.load(resultSet, 2), is(expected));
-    }
-    
-    @Test
-    void assertLoadTimeMemoizesEachUnsupportedColumn() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
-        when(metaData.getColumnType(2)).thenReturn(Types.TIME);
-        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
-        doThrow(SQLFeatureNotSupportedException.class).when(resultSet).getObject(2, LocalTime.class);
-        Time expected = Time.valueOf("12:34:56");
-        Time firstColumnValue = Time.valueOf("01:02:03");
-        when(resultSet.getTime(1)).thenReturn(firstColumnValue);
-        when(resultSet.getTime(2)).thenReturn(expected);
-        ResultSetMapper mapper = new ResultSetMapper(databaseType);
-        assertThat(mapper.load(resultSet, 1), is(firstColumnValue));
-        assertThat(mapper.load(resultSet, 2), is(expected));
-        assertThat(mapper.load(resultSet, 2), is(expected));
-        verify(resultSet).getObject(2, LocalTime.class);
-    }
-    
-    @Test
-    void assertLoadTimeDoesNotShareUnsupportedColumnsBetweenResultSets() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
-        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
-        ResultSet otherResultSet = mock(ResultSet.class);
-        when(otherResultSet.getMetaData()).thenReturn(metaData);
-        when(otherResultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class);
-        ResultSetMapper mapper = new ResultSetMapper(databaseType);
-        assertNull(mapper.load(resultSet, 1));
-        assertNull(mapper.load(otherResultSet, 1));
-        doReturn(LocalTime.of(12, 34, 56, 123456000)).when(resultSet).getObject(1, LocalTime.class);
-        assertThat(mapper.load(resultSet, 1), is(LocalTime.of(12, 34, 56, 123456000)));
-    }
-    
-    @Test
-    void assertLoadTimeRetriesAfterFallbackFailure() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
-        when(resultSet.getObject(1, LocalTime.class)).thenThrow(SQLFeatureNotSupportedException.class).thenReturn(LocalTime.NOON);
-        SQLException expected = new SQLException("foo_time_failure");
-        when(resultSet.getTime(1)).thenThrow(expected);
-        ResultSetMapper mapper = new ResultSetMapper(databaseType);
-        assertThat(assertThrows(SQLException.class, () -> mapper.load(resultSet, 1)), sameInstance(expected));
-        assertThat(mapper.load(resultSet, 1), is(LocalTime.NOON));
-    }
-    
-    @Test
-    void assertLoadTimeRetriesAfterSQLFailure() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
-        SQLException expected = new SQLException("foo_time_failure");
-        when(resultSet.getObject(1, LocalTime.class)).thenThrow(expected).thenReturn(LocalTime.NOON);
-        ResultSetMapper mapper = new ResultSetMapper(databaseType);
-        assertThat(assertThrows(SQLException.class, () -> mapper.load(resultSet, 1)), sameInstance(expected));
-        assertThat(mapper.load(resultSet, 1), is(LocalTime.NOON));
+        when(resultSet.getTime(1)).thenReturn(new Time(0L));
+        assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(new Time(0L)));
     }
     
     @Test
@@ -384,5 +263,108 @@ class ResultSetMapperTest {
                 Arguments.of("binary", Types.BINARY),
                 Arguments.of("varbinary", Types.VARBINARY),
                 Arguments.of("longvarbinary", Types.LONGVARBINARY));
+    }
+    
+    @Test
+    void assertLoadTimeWithDialectReader() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        DialectResultSetMapper dialectMapper = mock(DialectResultSetMapper.class);
+        ResultSetTimeValueReader timeReader = mock(ResultSetTimeValueReader.class);
+        Object expected = new Object();
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenReturn(Optional.of(dialectMapper));
+        when(dialectMapper.createTimeValueReader()).thenReturn(Optional.of(timeReader));
+        when(timeReader.read(resultSet, 1)).thenReturn(expected);
+        assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), sameInstance(expected));
+    }
+    
+    @Test
+    void assertLoadNullTimeFromDialectReader() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        DialectResultSetMapper dialectMapper = mock(DialectResultSetMapper.class);
+        ResultSetTimeValueReader timeReader = mock(ResultSetTimeValueReader.class);
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenReturn(Optional.of(dialectMapper));
+        when(dialectMapper.createTimeValueReader()).thenReturn(Optional.of(timeReader));
+        assertNull(new ResultSetMapper(databaseType).load(resultSet, 1));
+        verify(resultSet, never()).getTime(1);
+    }
+    
+    @Test
+    void assertLoadTimeWithoutDialectReaderRepeatedly() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        DialectResultSetMapper dialectMapper = mock(DialectResultSetMapper.class);
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenReturn(Optional.of(dialectMapper));
+        Time expected = new Time(Timestamp.valueOf("1970-01-02 00:00:00").getTime());
+        when(resultSet.getTime(1)).thenReturn(expected);
+        ResultSetMapper mapper = new ResultSetMapper(databaseType);
+        assertThat(mapper.load(resultSet, 1), sameInstance(expected));
+        assertThat(mapper.load(resultSet, 1), sameInstance(expected));
+        verify(dialectMapper).createTimeValueReader();
+    }
+    
+    @Test
+    void assertLoadWithoutDialectMapperRepeatedly() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TINYINT);
+        when(resultSet.getInt(1)).thenReturn(1, 2);
+        int[] actualLookupCount = {0};
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenAnswer(invocation -> {
+            actualLookupCount[0]++;
+            return Optional.empty();
+        });
+        ResultSetMapper mapper = new ResultSetMapper(databaseType);
+        assertThat(mapper.load(resultSet, 1), is(1));
+        assertThat(mapper.load(resultSet, 1), is(2));
+        assertThat(actualLookupCount[0], is(1));
+    }
+    
+    @Test
+    void assertLoadWithIndependentDialectMappers() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.DATE);
+        Date expectedNative = new Date(0L);
+        Date expectedDialect = new Date(1L);
+        when(resultSet.getDate(1)).thenReturn(expectedNative);
+        DatabaseType otherDatabaseType = mock(DatabaseType.class);
+        DialectResultSetMapper dialectMapper = mock(DialectResultSetMapper.class);
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, otherDatabaseType)).thenReturn(Optional.of(dialectMapper));
+        when(dialectMapper.getDateValue(resultSet, 1)).thenReturn(expectedDialect);
+        ResultSetMapper firstMapper = new ResultSetMapper(databaseType);
+        ResultSetMapper nextMapper = new ResultSetMapper(otherDatabaseType);
+        assertThat(firstMapper.load(resultSet, 1), sameInstance(expectedNative));
+        assertThat(nextMapper.load(resultSet, 1), sameInstance(expectedDialect));
+    }
+    
+    @Test
+    void assertLoadTimeReaderLifecycle() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        ResultSet nextResultSet = mock(ResultSet.class);
+        when(nextResultSet.getMetaData()).thenReturn(metaData);
+        DialectResultSetMapper dialectMapper = mock(DialectResultSetMapper.class);
+        ResultSetTimeValueReader firstReader = mock(ResultSetTimeValueReader.class);
+        ResultSetTimeValueReader nextReader = mock(ResultSetTimeValueReader.class);
+        int[] actualLookupCount = {0};
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenAnswer(invocation -> {
+            actualLookupCount[0]++;
+            return Optional.of(dialectMapper);
+        });
+        when(dialectMapper.createTimeValueReader()).thenReturn(Optional.of(firstReader), Optional.of(nextReader));
+        when(firstReader.read(resultSet, 1)).thenReturn("foo_first_time");
+        when(nextReader.read(nextResultSet, 1)).thenReturn("foo_next_time");
+        ResultSetMapper mapper = new ResultSetMapper(databaseType);
+        assertThat(mapper.load(resultSet, 1), is("foo_first_time"));
+        assertThat(mapper.load(resultSet, 1), is("foo_first_time"));
+        assertThat(mapper.load(nextResultSet, 1), is("foo_next_time"));
+        assertThat(actualLookupCount[0], is(1));
+        verify(dialectMapper, times(2)).createTimeValueReader();
+    }
+    
+    @Test
+    void assertLoadTimeReaderFailure() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        DialectResultSetMapper dialectMapper = mock(DialectResultSetMapper.class);
+        ResultSetTimeValueReader timeReader = mock(ResultSetTimeValueReader.class);
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenReturn(Optional.of(dialectMapper));
+        when(dialectMapper.createTimeValueReader()).thenReturn(Optional.of(timeReader));
+        SQLException expected = new SQLException("foo_time_failure");
+        when(timeReader.read(resultSet, 1)).thenThrow(expected);
+        assertThat(assertThrows(SQLException.class, () -> new ResultSetMapper(databaseType).load(resultSet, 1)), sameInstance(expected));
     }
 }

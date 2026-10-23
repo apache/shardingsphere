@@ -24,6 +24,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,5 +39,10 @@ class DialectResultSetMapperTest {
         Object expectedValue = new Object();
         when(resultSet.getObject(1)).thenReturn(expectedValue);
         assertThat(dialectResultSetMapper.getDefaultValue(resultSet, 1, 0), is(expectedValue));
+    }
+    
+    @Test
+    void assertCreateTimeValueReader() {
+        assertFalse(dialectResultSetMapper.createTimeValueReader().isPresent());
     }
 }

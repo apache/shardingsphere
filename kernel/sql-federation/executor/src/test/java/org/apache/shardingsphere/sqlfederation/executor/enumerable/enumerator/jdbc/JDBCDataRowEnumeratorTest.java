@@ -70,6 +70,10 @@ class JDBCDataRowEnumeratorTest {
         assertThat(actualValues[0], isA(Time.class));
         assertThat(actualValues[0], is(expected));
         assertThat(actualValues[1], is(48));
+        verify(queryResult).getValue(1, Time.class);
+        verify(queryResult).getValue(2, Object.class);
+        verify(metaData).getColumnType(1);
+        verify(metaData).getColumnType(2);
     }
     
     private static Stream<Arguments> timeArguments() {

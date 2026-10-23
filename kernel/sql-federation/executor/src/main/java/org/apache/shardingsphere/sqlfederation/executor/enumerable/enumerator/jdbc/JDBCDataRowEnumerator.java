@@ -75,20 +75,37 @@ public final class JDBCDataRowEnumerator implements Enumerator<Object> {
     @HighFrequencyInvocation
     private Object getValue(final int index) throws SQLException {
         int columnIndex = index + 1;
-        Object result = Types.TIME == metaData.getColumnType(columnIndex) ? getTimeValue(columnIndex) : queryResult.getValue(columnIndex, Object.class);
-        return result instanceof LocalDateTime ? ResultSetUtils.convertValue(result, Timestamp.class) : result;
+        int columnType = metaData.getColumnType(columnIndex);
+        Object result = readColumnValue(columnIndex, columnType);
+        return convertToCalciteValue(result, columnType);
     }
     
     /**
-     * Get time value for the Calcite row.
+     * Read a column value, retaining {@code null} for SQL {@code NULL}.
      *
      * @param columnIndex column index
-     * @return time value, or {@code null} for SQL {@code NULL}
+     * @param columnType JDBC column type
+     * @return column value, or {@code null} for SQL {@code NULL}
      * @throws SQLException SQL exception
      */
-    private Object getTimeValue(final int columnIndex) throws SQLException {
-        Object result = queryResult.getValue(columnIndex, Time.class);
-        return result instanceof LocalTime ? ResultSetUtils.convertValue(result, Time.class) : result;
+    private Object readColumnValue(final int columnIndex, final int columnType) throws SQLException {
+        Class<?> valueType = Types.TIME == columnType ? Time.class : Object.class;
+        return queryResult.getValue(columnIndex, valueType);
+    }
+    
+    /**
+     * Adapt a JDBC value to Calcite, retaining {@code null} for SQL {@code NULL}.
+     *
+     * @param value original value, or {@code null} for SQL {@code NULL}
+     * @param columnType JDBC column type
+     * @return Calcite value, or {@code null} for SQL {@code NULL}
+     * @throws SQLException SQL exception
+     */
+    private Object convertToCalciteValue(final Object value, final int columnType) throws SQLException {
+        if (Types.TIME == columnType && value instanceof LocalTime) {
+            return ResultSetUtils.convertTimeValue((LocalTime) value, Time.class);
+        }
+        return value instanceof LocalDateTime ? ResultSetUtils.convertValue(value, Timestamp.class) : value;
     }
     
     @Override

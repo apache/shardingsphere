@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.database.connector.core.resultset;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -27,23 +26,29 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Types;
-import java.time.LocalTime;
-import java.util.BitSet;
-import java.util.Optional;
 
 /**
  * Result set mapper.
  */
-@RequiredArgsConstructor
 public final class ResultSetMapper {
     
-    private final DatabaseType databaseType;
+    /**
+     * Dialect mapper, or {@code null} when no dialect-specific mapper is registered.
+     */
+    private final DialectResultSetMapper dialectResultSetMapper;
     
     private WeakReference<ResultSet> timeResultSet;
     
-    private BitSet unsupportedTimeColumns;
+    /**
+     * Custom TIME reader, or {@code null} when native JDBC TIME reading is used.
+     */
+    private ResultSetTimeValueReader timeValueReader;
+    
+    @HighFrequencyInvocation
+    public ResultSetMapper(final DatabaseType databaseType) {
+        dialectResultSetMapper = DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType).orElse(null);
+    }
     
     /**
      * Load result set value.
@@ -55,14 +60,13 @@ public final class ResultSetMapper {
      */
     @HighFrequencyInvocation
     public Object load(final ResultSet resultSet, final int columnIndex) throws SQLException {
-        Optional<DialectResultSetMapper> dialectResultSetMapper = DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType);
         ResultSetMetaData metaData = resultSet.getMetaData();
         switch (metaData.getColumnType(columnIndex)) {
             case Types.BOOLEAN:
                 return resultSet.getBoolean(columnIndex);
             case Types.TINYINT:
             case Types.SMALLINT:
-                return dialectResultSetMapper.isPresent() ? dialectResultSetMapper.get().getSmallintValue(resultSet, columnIndex) : Integer.valueOf(resultSet.getInt(columnIndex));
+                return null == dialectResultSetMapper ? Integer.valueOf(resultSet.getInt(columnIndex)) : dialectResultSetMapper.getSmallintValue(resultSet, columnIndex);
             case Types.INTEGER:
                 if (metaData.isSigned(columnIndex)) {
                     return resultSet.getInt(columnIndex);
@@ -85,7 +89,7 @@ public final class ResultSetMapper {
             case Types.LONGVARCHAR:
                 return resultSet.getString(columnIndex);
             case Types.DATE:
-                return dialectResultSetMapper.isPresent() ? dialectResultSetMapper.get().getDateValue(resultSet, columnIndex) : resultSet.getDate(columnIndex);
+                return null == dialectResultSetMapper ? resultSet.getDate(columnIndex) : dialectResultSetMapper.getDateValue(resultSet, columnIndex);
             case Types.TIME:
                 return getTimeValue(resultSet, columnIndex);
             case Types.TIMESTAMP:
@@ -101,34 +105,23 @@ public final class ResultSetMapper {
             case Types.ARRAY:
                 return resultSet.getArray(columnIndex);
             default:
-                return dialectResultSetMapper.isPresent()
-                        ? dialectResultSetMapper.get().getDefaultValue(resultSet, columnIndex, metaData.getColumnType(columnIndex))
-                        : resultSet.getObject(columnIndex);
+                return null == dialectResultSetMapper ? resultSet.getObject(columnIndex) : dialectResultSetMapper.getDefaultValue(resultSet, columnIndex, metaData.getColumnType(columnIndex));
         }
     }
     
     /**
-     * Get time value.
+     * Read a TIME value, retaining {@code null} for SQL {@code NULL}.
      *
      * @param resultSet result set
      * @param columnIndex column index
-     * @return time value, or {@code null} for SQL {@code NULL}
+     * @return TIME value, or {@code null} for SQL {@code NULL}
      * @throws SQLException SQL exception
      */
     private Object getTimeValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
-        if (null != timeResultSet && resultSet == timeResultSet.get() && unsupportedTimeColumns.get(columnIndex)) {
-            return resultSet.getTime(columnIndex);
+        if (null == timeResultSet || resultSet != timeResultSet.get()) {
+            timeResultSet = new WeakReference<>(resultSet);
+            timeValueReader = null == dialectResultSetMapper ? null : dialectResultSetMapper.createTimeValueReader().orElse(null);
         }
-        try {
-            return resultSet.getObject(columnIndex, LocalTime.class);
-        } catch (final SQLFeatureNotSupportedException ignored) {
-            Object result = resultSet.getTime(columnIndex);
-            if (null == timeResultSet || resultSet != timeResultSet.get()) {
-                timeResultSet = new WeakReference<>(resultSet);
-                unsupportedTimeColumns = new BitSet();
-            }
-            unsupportedTimeColumns.set(columnIndex);
-            return result;
-        }
+        return null == timeValueReader ? resultSet.getTime(columnIndex) : timeValueReader.read(resultSet, columnIndex);
     }
 }

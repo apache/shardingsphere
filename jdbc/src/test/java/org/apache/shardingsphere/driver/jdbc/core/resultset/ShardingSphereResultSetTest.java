@@ -24,6 +24,7 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatem
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -148,6 +149,39 @@ class ShardingSphereResultSetTest {
     void assertGetBooleanWithColumnIndex() throws SQLException {
         when(mergeResultSet.getValue(1, boolean.class)).thenReturn(true);
         assertTrue(shardingSphereResultSet.getBoolean(1));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("memoryTimeArguments")
+    void assertGetBooleanWithMemoryTimeValue(final String name, final LocalTime value) throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(mergeResultSet.getValue(1, boolean.class)).thenReturn(value);
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> shardingSphereResultSet.getBoolean(1));
+    }
+    
+    private static Stream<Arguments> memoryTimeArguments() {
+        return Stream.of(
+                Arguments.of("whole-second", LocalTime.of(12, 34, 56)),
+                Arguments.of("early-hour-microseconds", LocalTime.of(2, 34, 56, 123456000)),
+                Arguments.of("midnight-microsecond", LocalTime.of(0, 0, 0, 1000)));
+    }
+    
+    @Test
+    void assertGetBooleanWithNonTimeLocalTime() throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.JAVA_OBJECT);
+        when(mergeResultSet.getValue(1, boolean.class)).thenReturn(LocalTime.NOON);
+        assertTrue(shardingSphereResultSet.getBoolean(1));
+    }
+    
+    @Test
+    void assertGetBooleanWithNullValue() throws SQLException {
+        assertFalse(shardingSphereResultSet.getBoolean(1));
+    }
+    
+    @Test
+    void assertGetBooleanWithStringValue() throws SQLException {
+        when(mergeResultSet.getValue(1, boolean.class)).thenReturn("2");
+        assertFalse(shardingSphereResultSet.getBoolean(1));
     }
     
     @Test
@@ -356,10 +390,23 @@ class ShardingSphereResultSetTest {
         assertThat(shardingSphereResultSet.getDate("label", calendar), is(new Date(0L)));
     }
     
-    @Test
-    void assertGetTimeWithColumnIndex() throws SQLException {
-        when(mergeResultSet.getValue(1, Time.class)).thenReturn(new Time(0L));
-        assertThat(shardingSphereResultSet.getTime(1), is(new Time(0L)));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("localTimeJdbcArguments")
+    void assertGetTimeWithColumnIndex(final String name, final Object value, final Time expected) throws SQLException {
+        if (value instanceof LocalTime) {
+            when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
+        }
+        when(mergeResultSet.getValue(1, Time.class)).thenReturn(value);
+        assertThat(shardingSphereResultSet.getTime(1), is(expected));
+    }
+    
+    private static Stream<Arguments> localTimeJdbcArguments() {
+        return Stream.of(
+                Arguments.of("legacy-zero", new Time(0L), new Time(0L)),
+                Arguments.of("whole-second", LocalTime.of(12, 34, 56), Time.valueOf("12:34:56")),
+                Arguments.of("microseconds", LocalTime.of(12, 34, 56, 123456000), new Time(Time.valueOf("12:34:56").getTime() + 123)),
+                Arguments.of("midnight-microsecond", LocalTime.of(0, 0, 0, 1000), Time.valueOf("00:00:00")),
+                Arguments.of("legacy-time", new Time(Time.valueOf("12:34:56").getTime() + 123), new Time(Time.valueOf("12:34:56").getTime() + 123)));
     }
     
     @Test
@@ -382,17 +429,21 @@ class ShardingSphereResultSetTest {
         assertThat(shardingSphereResultSet.getTime("label", calendar), is(new Time(0L)));
     }
     
-    @Test
-    void assertGetTimestampWithColumnIndex() throws SQLException {
-        when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(new Timestamp(0L));
-        assertThat(shardingSphereResultSet.getTimestamp(1), is(new Timestamp(0L)));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("timestampArguments")
+    void assertGetTimestampWithColumnIndex(final String name, final Object value, final Timestamp expected) throws SQLException {
+        if (value instanceof LocalTime) {
+            when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
+        }
+        when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(value);
+        assertThat(shardingSphereResultSet.getTimestamp(1), is(expected));
     }
     
-    @Test
-    void assertGetTimestampConvertedByLocalDateWithColumnIndex() throws SQLException {
-        LocalDate localDate = LocalDate.now();
-        when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(localDate);
-        assertThat(shardingSphereResultSet.getTimestamp(1), is(Timestamp.valueOf(localDate.atStartOfDay())));
+    private static Stream<Arguments> timestampArguments() {
+        return Stream.of(
+                Arguments.of("timestamp", new Timestamp(0L), new Timestamp(0L)),
+                Arguments.of("local-date", LocalDate.of(2026, 10, 13), Timestamp.valueOf("2026-10-13 00:00:00")),
+                Arguments.of("sql-time-microseconds", LocalTime.of(12, 34, 56, 123456000), Timestamp.valueOf("1970-01-01 12:34:56.123456")));
     }
     
     @Test
@@ -548,28 +599,13 @@ class ShardingSphereResultSetTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("localTimeJdbcArguments")
     void assertGetObjectWithLocalTimeValue(final String name, final Object value, final Time expected) throws SQLException {
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
-        when(mergeResultSet.getValue(1, Time.class)).thenReturn(value);
+        if (value instanceof LocalTime) {
+            when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
+        }
+        when(mergeResultSet.getValue(1, Object.class)).thenReturn(value);
         Object actual = shardingSphereResultSet.getObject(1);
         assertThat(actual, isA(Time.class));
         assertThat(actual, is(expected));
-    }
-    
-    private static Stream<Arguments> localTimeJdbcArguments() {
-        return Stream.of(
-                Arguments.of("whole-second", LocalTime.of(12, 34, 56), Time.valueOf("12:34:56")),
-                Arguments.of("microseconds", LocalTime.of(12, 34, 56, 123456000), new Time(Time.valueOf("12:34:56").getTime() + 123)),
-                Arguments.of("midnight-microsecond", LocalTime.of(0, 0, 0, 1000), Time.valueOf("00:00:00")),
-                Arguments.of("legacy-time", new Time(Time.valueOf("12:34:56").getTime() + 123), new Time(Time.valueOf("12:34:56").getTime() + 123)));
-    }
-    
-    @Test
-    void assertGetObjectWithObjectTypeAndLocalTime() throws SQLException {
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
-        when(mergeResultSet.getValue(1, Time.class)).thenReturn(LocalTime.of(12, 34, 56, 123456000));
-        Object actual = shardingSphereResultSet.getObject(1, Object.class);
-        assertThat(actual, isA(Time.class));
-        assertThat(actual, is(new Time(Time.valueOf("12:34:56").getTime() + 123)));
     }
     
     @Test
@@ -596,9 +632,8 @@ class ShardingSphereResultSetTest {
     
     @Test
     void assertGetObjectWithNullTime() throws SQLException {
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
         assertNull(shardingSphereResultSet.getObject(1));
-        verify(mergeResultSet).getValue(1, Time.class);
+        verify(mergeResultSet).getValue(1, Object.class);
     }
     
     @Test
@@ -608,9 +643,10 @@ class ShardingSphereResultSetTest {
         when(resultSet.getMetaData()).thenReturn(metaData);
         when(metaData.getColumnType(1)).thenReturn(Types.TIME);
         Time expected = Time.valueOf("12:34:56");
-        when(mergeResultSet.getValue(1, Time.class)).thenReturn(expected);
+        when(mergeResultSet.getValue(1, Object.class)).thenReturn(LocalTime.of(12, 34, 56));
         ShardingSphereResultSet actual =
                 new ShardingSphereResultSet(Collections.singletonList(resultSet), mergeResultSet, statement, createSQLStatementContext(), Collections.singletonMap("label", 1));
+        verify(resultSet).getMetaData();
         assertThat(actual.getObject(1), is(expected));
         assertThat(actual.getObject(1), is(expected));
         verify(resultSet).getMetaData();
@@ -656,6 +692,43 @@ class ShardingSphereResultSetTest {
         assertTrue(shardingSphereResultSet.getObject(1, boolean.class));
         when(mergeResultSet.getValue(1, Boolean.class)).thenReturn(result);
         assertTrue(shardingSphereResultSet.getObject(1, Boolean.class));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("unsupportedTimeArguments")
+    void assertGetObjectWithUnsupportedTimeType(final String name, final Object value, final Class<?> type) throws SQLException {
+        if (value instanceof LocalTime) {
+            when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
+        }
+        when(mergeResultSet.getValue(1, type)).thenReturn(value);
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> shardingSphereResultSet.getObject(1, type));
+    }
+    
+    private static Stream<Arguments> unsupportedTimeArguments() {
+        return Stream.of(
+                Arguments.of("boolean-whole-second", LocalTime.of(12, 34, 56), boolean.class),
+                Arguments.of("boolean-early-hour", LocalTime.of(2, 34, 56, 123456000), boolean.class),
+                Arguments.of("boolean-midnight-microsecond", LocalTime.of(0, 0, 0, 1000), boolean.class),
+                Arguments.of("object-internal-time", LocalTime.of(12, 34, 56, 123456000), Object.class),
+                Arguments.of("object-legacy-time", Time.valueOf("12:34:56"), Object.class));
+    }
+    
+    @Test
+    void assertGetObjectWithBooleanTypeAndNonTimeLocalTime() throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.JAVA_OBJECT);
+        when(mergeResultSet.getValue(1, boolean.class)).thenReturn(LocalTime.NOON);
+        assertTrue(shardingSphereResultSet.getObject(1, boolean.class));
+    }
+    
+    @Test
+    void assertGetObjectWithBooleanTypeAndNullValue() throws SQLException {
+        assertFalse(shardingSphereResultSet.getObject(1, boolean.class));
+    }
+    
+    @Test
+    void assertGetObjectWithBooleanTypeAndStringValue() throws SQLException {
+        when(mergeResultSet.getValue(1, boolean.class)).thenReturn("2");
+        assertTrue(shardingSphereResultSet.getObject(1, boolean.class));
     }
     
     @Test

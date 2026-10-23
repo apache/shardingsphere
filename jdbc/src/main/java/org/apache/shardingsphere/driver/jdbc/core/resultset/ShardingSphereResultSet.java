@@ -51,7 +51,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -68,8 +67,6 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     private static final String BINARY = "Binary";
     
-    private final ResultSet firstResultSet;
-    
     private final MergedResult mergeResultSet;
     
     private final DialectResultSetValueConverter dialectResultSetValueConverter;
@@ -77,26 +74,30 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     @Getter
     private final Map<String, Integer> columnLabelAndIndexMap;
     
-    private ResultSetMetaData resultSetMetaData;
+    private final ResultSetMetaData resultSetMetaData;
     
     public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final SQLStatementContext sqlStatementContext) throws SQLException {
-        super(resultSets, statement, sqlStatementContext);
-        firstResultSet = resultSets.get(0);
-        this.mergeResultSet = mergeResultSet;
-        DatabaseType protocolType = getProtocolType(statement);
-        dialectResultSetValueConverter = getDialectResultSetValueConverter(protocolType);
-        resultSetMetaData = firstResultSet.getMetaData();
-        columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSetMetaData);
+        this(resultSets, mergeResultSet, statement, sqlStatementContext, null);
     }
     
+    /**
+     * Read JDBC metadata during construction and build the column-label mapping when none is supplied.
+     *
+     * @param resultSets result sets
+     * @param mergeResultSet merged result set
+     * @param statement statement
+     * @param sqlStatementContext SQL statement context
+     * @param columnLabelAndIndexMap column label and index map, or {@code null} to build it from JDBC metadata
+     * @throws SQLException if JDBC metadata cannot be read
+     */
     public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement,
-                                   final SQLStatementContext sqlStatementContext, final Map<String, Integer> columnLabelAndIndexMap) {
+                                   final SQLStatementContext sqlStatementContext, final Map<String, Integer> columnLabelAndIndexMap) throws SQLException {
         super(resultSets, statement, sqlStatementContext);
-        firstResultSet = resultSets.get(0);
         this.mergeResultSet = mergeResultSet;
         DatabaseType protocolType = getProtocolType(statement);
         dialectResultSetValueConverter = getDialectResultSetValueConverter(protocolType);
-        this.columnLabelAndIndexMap = columnLabelAndIndexMap;
+        resultSetMetaData = resultSets.get(0).getMetaData();
+        this.columnLabelAndIndexMap = null == columnLabelAndIndexMap ? ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSetMetaData) : columnLabelAndIndexMap;
     }
     
     @Override
@@ -110,18 +111,60 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     }
     
     @Override
-    public boolean getBoolean(final int columnIndex) throws SQLException {
-        return (boolean) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, boolean.class), boolean.class);
-    }
-    
-    @Override
     public boolean getBoolean(final String columnLabel) throws SQLException {
         return getBoolean(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
+    public boolean getBoolean(final int columnIndex) throws SQLException {
+        return (boolean) getValue(columnIndex, boolean.class);
+    }
+    
+    /**
+     * Read and convert a column value; SQL {@code NULL} yields {@code null} for reference types or the primitive default.
+     *
+     * @param columnIndex column index
+     * @param type expected value type
+     * @return converted value, or {@code null} for SQL {@code NULL} with a reference type
+     * @throws SQLException SQL exception
+     */
+    private Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
+        return convertJdbcValue(columnIndex, mergeResultSet.getValue(columnIndex, type), type);
+    }
+    
+    /**
+     * Convert a JDBC value; {@code null} represents SQL {@code NULL}, yielding null for reference types or the primitive default.
+     *
+     * @param columnIndex column index
+     * @param value original value, or {@code null} for SQL {@code NULL}
+     * @param type expected value type
+     * @return converted value, or {@code null} for SQL {@code NULL} with a reference type
+     * @throws SQLException SQL exception
+     */
+    private Object convertJdbcValue(final int columnIndex, final Object value, final Class<?> type) throws SQLException {
+        return ResultSetUtils.convertValue(normalizeValue(columnIndex, value, type), type);
+    }
+    
+    /**
+     * Normalize a JDBC value, retaining {@code null} for SQL {@code NULL}.
+     *
+     * @param columnIndex column index
+     * @param value original value, or {@code null} for SQL {@code NULL}
+     * @param type expected value type
+     * @return normalized value, or {@code null} for SQL {@code NULL}
+     * @throws SQLException SQL exception
+     */
+    private Object normalizeValue(final int columnIndex, final Object value, final Class<?> type) throws SQLException {
+        return value instanceof LocalTime && isTimeColumn(columnIndex) ? ResultSetUtils.convertTimeValue((LocalTime) value, type) : value;
+    }
+    
+    private boolean isTimeColumn(final int columnIndex) throws SQLException {
+        return Types.TIME == resultSetMetaData.getColumnType(columnIndex);
+    }
+    
+    @Override
     public byte getByte(final int columnIndex) throws SQLException {
-        return (byte) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, byte.class), byte.class);
+        return (byte) getValue(columnIndex, byte.class);
     }
     
     @Override
@@ -131,7 +174,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public short getShort(final int columnIndex) throws SQLException {
-        return (short) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, short.class), short.class);
+        return (short) getValue(columnIndex, short.class);
     }
     
     @Override
@@ -141,7 +184,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public int getInt(final int columnIndex) throws SQLException {
-        return (int) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, int.class), int.class);
+        return (int) getValue(columnIndex, int.class);
     }
     
     @Override
@@ -151,7 +194,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public long getLong(final int columnIndex) throws SQLException {
-        return (long) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, long.class), long.class);
+        return (long) getValue(columnIndex, long.class);
     }
     
     @Override
@@ -161,7 +204,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public float getFloat(final int columnIndex) throws SQLException {
-        return (float) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, float.class), float.class);
+        return (float) getValue(columnIndex, float.class);
     }
     
     @Override
@@ -171,7 +214,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public double getDouble(final int columnIndex) throws SQLException {
-        return (double) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, double.class), double.class);
+        return (double) getValue(columnIndex, double.class);
     }
     
     @Override
@@ -180,33 +223,13 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     }
     
     @Override
-    public String getString(final int columnIndex) throws SQLException {
-        Object value = mergeResultSet.getValue(columnIndex, String.class);
-        return (String) ResultSetUtils.convertValue(formatTimeValue(columnIndex, value), String.class);
-    }
-    
-    @Override
     public String getString(final String columnLabel) throws SQLException {
         return getString(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
-    /**
-     * Format SQL time value for string conversion.
-     *
-     * @param columnIndex column index
-     * @param value value
-     * @return formatted SQL time value or original value, including {@code null} for SQL {@code NULL}
-     * @throws SQLException SQL exception
-     */
-    private Object formatTimeValue(final int columnIndex, final Object value) throws SQLException {
-        return value instanceof LocalTime && isTimeColumn(columnIndex) ? DateTimeFormatter.ISO_LOCAL_TIME.format((LocalTime) value) : value;
-    }
-    
-    private boolean isTimeColumn(final int columnIndex) throws SQLException {
-        if (null == resultSetMetaData) {
-            resultSetMetaData = firstResultSet.getMetaData();
-        }
-        return Types.TIME == resultSetMetaData.getColumnType(columnIndex);
+    @Override
+    public String getString(final int columnIndex) throws SQLException {
+        return (String) getValue(columnIndex, String.class);
     }
     
     @Override
@@ -221,7 +244,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
-        return (BigDecimal) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
+        return (BigDecimal) getValue(columnIndex, BigDecimal.class);
     }
     
     @Override
@@ -231,7 +254,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
-        return (BigDecimal) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
+        return (BigDecimal) getValue(columnIndex, BigDecimal.class);
     }
     
     @Override
@@ -251,7 +274,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Date getDate(final int columnIndex) throws SQLException {
-        return (Date) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, Date.class), Date.class);
+        return (Date) getValue(columnIndex, Date.class);
     }
     
     @Override
@@ -261,7 +284,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Date getDate(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Date) ResultSetUtils.convertValue(mergeResultSet.getCalendarValue(columnIndex, Date.class, cal), Date.class);
+        return (Date) convertJdbcValue(columnIndex, mergeResultSet.getCalendarValue(columnIndex, Date.class, cal), Date.class);
     }
     
     @Override
@@ -271,7 +294,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Time getTime(final int columnIndex) throws SQLException {
-        return (Time) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, Time.class), Time.class);
+        return (Time) getValue(columnIndex, Time.class);
     }
     
     @Override
@@ -281,7 +304,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Time getTime(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Time) ResultSetUtils.convertValue(mergeResultSet.getCalendarValue(columnIndex, Time.class, cal), Time.class);
+        return (Time) convertJdbcValue(columnIndex, mergeResultSet.getCalendarValue(columnIndex, Time.class, cal), Time.class);
     }
     
     @Override
@@ -291,7 +314,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Timestamp getTimestamp(final int columnIndex) throws SQLException {
-        return (Timestamp) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), Timestamp.class);
+        return (Timestamp) getValue(columnIndex, Timestamp.class);
     }
     
     @Override
@@ -301,7 +324,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Timestamp getTimestamp(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Timestamp) ResultSetUtils.convertValue(mergeResultSet.getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
+        return (Timestamp) convertJdbcValue(columnIndex, mergeResultSet.getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
     }
     
     @Override
@@ -402,11 +425,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Object getObject(final int columnIndex) throws SQLException {
-        if (!isTimeColumn(columnIndex)) {
-            return mergeResultSet.getValue(columnIndex, Object.class);
-        }
-        Object result = mergeResultSet.getValue(columnIndex, Time.class);
-        return result instanceof LocalTime ? ResultSetUtils.convertValue(result, Time.class) : result;
+        return normalizeValue(columnIndex, mergeResultSet.getValue(columnIndex, Object.class), Time.class);
     }
     
     @Override
@@ -427,14 +446,9 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
             return (T) getClob(columnIndex);
         }
         if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type) || OffsetDateTime.class.equals(type)) {
-            return (T) convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type);
+            return (T) convertValue(normalizeValue(columnIndex, mergeResultSet.getValue(columnIndex, Timestamp.class), Timestamp.class), type);
         }
-        boolean timeColumn = Object.class == type && isTimeColumn(columnIndex);
-        Object value = mergeResultSet.getValue(columnIndex, timeColumn ? Time.class : type);
-        if (String.class == type) {
-            value = formatTimeValue(columnIndex, value);
-        }
-        return (T) convertValue(value, timeColumn ? Time.class : type);
+        return (T) convertValue(normalizeValue(columnIndex, mergeResultSet.getValue(columnIndex, type), type), type);
     }
     
     @Override

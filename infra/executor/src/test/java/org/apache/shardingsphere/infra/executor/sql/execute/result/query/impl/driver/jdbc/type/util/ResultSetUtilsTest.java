@@ -91,8 +91,8 @@ class ResultSetUtilsTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("localTimeArguments")
-    void assertConvertLocalTimeValue(final String name, final LocalTime value, final Class<?> type, final Object expected) throws SQLException {
-        Object actual = ResultSetUtils.convertValue(value, type);
+    void assertConvertTimeValue(final String name, final LocalTime value, final Class<?> type, final Object expected) throws SQLException {
+        Object actual = ResultSetUtils.convertTimeValue(value, type);
         assertThat(actual, isA(expected.getClass()));
         assertThat(actual, is(expected));
     }
@@ -100,16 +100,15 @@ class ResultSetUtilsTest {
     private static Stream<Arguments> localTimeArguments() {
         LocalTime value = LocalTime.of(12, 34, 56, 123456000);
         return Stream.of(
-                Arguments.of("object", value, Object.class, value),
                 Arguments.of("local-time", value, LocalTime.class, value),
                 Arguments.of("time", value, Time.class, new Time(Time.valueOf("12:34:56").getTime() + 123)),
                 Arguments.of("timestamp", value, Timestamp.class, Timestamp.valueOf("1970-01-01 12:34:56.123456")),
                 Arguments.of("sql-date", value, java.sql.Date.class, new java.sql.Date(Time.valueOf("12:34:56").getTime() + 123)),
                 Arguments.of("local-date", value, LocalDate.class, LocalDate.of(1970, 1, 1)),
                 Arguments.of("string", value, String.class, "12:34:56.123456"),
-                Arguments.of("string-minutes", LocalTime.of(12, 34), String.class, "12:34"),
-                Arguments.of("string-midnight", LocalTime.MIDNIGHT, String.class, "00:00"),
-                Arguments.of("string-trailing-zero", LocalTime.of(12, 34, 56, 123450000), String.class, "12:34:56.123450"));
+                Arguments.of("string-minutes", LocalTime.of(12, 34), String.class, "12:34:00"),
+                Arguments.of("string-midnight", LocalTime.MIDNIGHT, String.class, "00:00:00"),
+                Arguments.of("string-trailing-zero", LocalTime.of(12, 34, 56, 123450000), String.class, "12:34:56.12345"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -143,17 +142,23 @@ class ResultSetUtilsTest {
         assertFalse((Boolean) ResultSetUtils.convertValue(LocalTime.MIDNIGHT, boolean.class));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("legacyTimeArguments")
-    void assertConvertTimeToLocalTime(final String name, final Time value, final LocalTime expected) throws SQLException {
-        assertThat(ResultSetUtils.convertValue(value, LocalTime.class), is(expected));
+    @Test
+    void assertConvertValueWithLegacyTimeToLocalTime() {
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertValue(Time.valueOf("12:34:56"), LocalTime.class));
     }
     
-    private static Stream<Arguments> legacyTimeArguments() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("unsupportedSqlTimeArguments")
+    void assertConvertTimeValueWithUnsupportedType(final String name, final Class<?> type) {
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertTimeValue(LocalTime.NOON, type));
+    }
+    
+    private static Stream<Arguments> unsupportedSqlTimeArguments() {
         return Stream.of(
-                Arguments.of("whole-second", Time.valueOf("12:34:56"), LocalTime.of(12, 34, 56)),
-                Arguments.of("milliseconds", new Time(Time.valueOf("12:34:56").getTime() + 123), LocalTime.of(12, 34, 56, 123000000)),
-                Arguments.of("midnight-millisecond", new Time(Time.valueOf("00:00:00").getTime() + 1), LocalTime.of(0, 0, 0, 1000000)));
+                Arguments.of("object", Object.class),
+                Arguments.of("integer", Integer.class),
+                Arguments.of("primitive-boolean", boolean.class),
+                Arguments.of("temporal-accessor", TemporalAccessor.class));
     }
     
     @Test
