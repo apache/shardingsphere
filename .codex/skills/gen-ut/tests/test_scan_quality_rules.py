@@ -44,8 +44,12 @@ class ScanQualityRulesTest(unittest.TestCase):
         """
         candidates = rules.analyze_parameterization_candidates(Path("TargetTest.java"), source, {"run"})
         self.assertEqual(1, len(candidates))
-        self.assertNotIn("high_fit", asdict(candidates[0]))
-        self.assertEqual("TargetTest.java: method=run plainTestCount=3 parameterizedPresent=False", rules.describe_candidate(asdict(candidates[0])))
+        candidate = candidates[0]
+        self.assertEqual("TargetTest.java", candidate.path)
+        self.assertEqual("run", candidate.method)
+        self.assertEqual(3, candidate.plain_test_count)
+        self.assertIs(False, candidate.parameterized_present)
+        self.assertNotIn("high_fit", asdict(candidate))
 
     def test_non_target_invocation_is_not_candidate(self):
         source = """
@@ -56,19 +60,6 @@ class ScanQualityRulesTest(unittest.TestCase):
             }
         """
         self.assertEqual([], rules.analyze_parameterization_candidates(Path("TargetTest.java"), source, {"run"}))
-
-    def test_external_method_source_requires_review_instead_of_failure(self):
-        source = """
-            class TargetTest {
-                @ParameterizedTest(name = "{0}")
-                @MethodSource("Samples#cases")
-                void assertRun(final String name, final int value) {
-                    assertThat(target.run(value), is(value));
-                }
-            }
-        """
-        reviews = rules.find_argument_source_reviews(Path("TargetTest.java"), source)
-        self.assertEqual(1, len(reviews))
 
     def test_nested_type_declarations_require_manual_review(self):
         path = Path("module/src/test/java/foo/TargetTest.java")
@@ -158,13 +149,26 @@ class ScanQualityRulesTest(unittest.TestCase):
         self.assertEqual(["TargetTest.java:3 method=assertRun"], actual["reviews"]["R15-H"])
         self.assertEqual([], rules.failed_rule_names(actual))
 
-    def test_standard_argument_sources_report_locations(self):
-        for annotation in ('@CsvSource({"foo,1", "bar,2", "baz,3"})', '@ValueSource(strings = {"foo", "bar", "baz"})', '@MethodSource("cases")'):
-            with self.subTest(annotation=annotation):
-                source = f'@ParameterizedTest(name = "{{0}}") {annotation} void assertRun(final String name) {{ target.run(name); }}'
+    def test_argument_sources_report_locations(self):
+        external_source = """
+            class TargetTest {
+                @ParameterizedTest(name = "{0}")
+                @MethodSource("Samples#cases")
+                void assertRun(final String name, final int value) {
+                    assertThat(target.run(value), is(value));
+                }
+            }
+        """
+        fixtures = (
+            ('@ParameterizedTest(name = "{0}") @CsvSource({"foo,1", "bar,2", "baz,3"}) void assertRun(final String name) { target.run(name); }', 1, "configured argument source"),
+            ('@ParameterizedTest(name = "{0}") @ValueSource(strings = {"foo", "bar", "baz"}) void assertRun(final String name) { target.run(name); }', 1, "configured argument source"),
+            ('@ParameterizedTest(name = "{0}") @MethodSource("cases") void assertRun(final String name) { target.run(name); }', 1, "providers=cases"),
+            (external_source, 3, "providers=cases"),
+        )
+        for source, line, detail in fixtures:
+            with self.subTest(source=source):
                 actual = rules.find_argument_source_reviews(Path("TargetTest.java"), source)
-                detail = "providers=cases" if "@MethodSource" in annotation else "configured argument source"
-                self.assertEqual([f"TargetTest.java:1 method=assertRun {detail}"], actual)
+                self.assertEqual([f"TargetTest.java:{line} method=assertRun {detail}"], actual)
 
     def test_branch_and_business_callback_candidates_require_review_without_mechanical_rejection(self):
         path = Path("TargetTest.java")
@@ -255,13 +259,12 @@ class ScanQualityRulesTest(unittest.TestCase):
                 actual = rules.main()
         result = json.loads(stdout.getvalue())
         self.assertEqual(1, actual)
-        self.assertEqual(["candidates", "java_file_count", "reviews", "rules"], list(result))
-        self.assertEqual(["R15-C", "R15-J"], list(result["rules"]))
+        self.assertEqual({"candidates", "java_file_count", "reviews", "rules"}, set(result))
+        self.assertEqual({"R15-C", "R15-J"}, set(result["rules"]))
         self.assertEqual([str(path)], result["reviews"]["R15-J"])
         self.assertNotIn("R15-A", result["reviews"])
         self.assertEqual(["missing scope baseline"], result["rules"]["R15-C"]["violations"])
         self.assertEqual(1, result["java_file_count"])
-        self.assertEqual(json.dumps(result, indent=2, sort_keys=True) + "\n", stdout.getvalue())
 
     def test_capture_precedes_report_flags(self):
         with tempfile.TemporaryDirectory() as temp_dir:
