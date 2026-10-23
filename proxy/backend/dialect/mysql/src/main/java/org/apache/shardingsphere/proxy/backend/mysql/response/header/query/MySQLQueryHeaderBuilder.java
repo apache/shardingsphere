@@ -52,14 +52,6 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         return new QueryHeader(schemaName, tableName, columnLabel, columnName, columnType, columnTypeName, columnLength, decimals, signed, primaryKey, notNull, autoIncrement);
     }
     
-    private int getDecimals(final int decimals, final int columnType, final int columnLength) {
-        if (Types.TIME != columnType || 0 != decimals) {
-            return decimals;
-        }
-        int result = columnLength - 11;
-        return result >= 1 && result <= 6 ? result : decimals;
-    }
-    
     private boolean isPrimaryKey(final ShardingSphereDatabase database, final String schemaName, final String tableName, final String columnName,
                                  final ShardingSphereResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
         if (null == database || null == tableName) {
@@ -72,6 +64,14 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
     private boolean isPrimaryKey(final ShardingSphereSchema schema, final String tableName, final String columnName) {
         return null != schema && null != columnName
                 && Optional.ofNullable(schema.getTable(tableName)).map(optional -> optional.getColumn(columnName)).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
+    }
+    
+    private int getDecimals(final int decimals, final int columnType, final int columnLength) {
+        if (Types.TIME != columnType || 0 != decimals) {
+            return decimals;
+        }
+        int result = columnLength - 11;
+        return result >= 1 && result <= 6 ? result : decimals;
     }
     
     @Override

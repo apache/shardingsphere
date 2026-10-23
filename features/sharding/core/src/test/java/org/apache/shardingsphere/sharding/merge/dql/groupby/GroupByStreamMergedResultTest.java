@@ -213,8 +213,7 @@ class GroupByStreamMergedResultTest {
         AggregationProjection projection = mock(AggregationDistinctProjection.class);
         when(projection.getIndex()).thenReturn(1);
         when(projection.getType()).thenReturn(AggregationType.GROUP_CONCAT);
-        GroupByStreamMergedResult actual = new GroupByStreamMergedResult(Collections.singletonMap("value", 1), Collections.singletonList(queryResult),
-                createAggregationContext(projection), mock());
+        GroupByStreamMergedResult actual = new GroupByStreamMergedResult(Collections.singletonMap("value", 1), Collections.singletonList(queryResult), createAggregationContext(projection), mock());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(expected));
         assertFalse(actual.next());
@@ -247,8 +246,7 @@ class GroupByStreamMergedResultTest {
         AggregationProjection projection = mock(AggregationDistinctProjection.class);
         when(projection.getIndex()).thenReturn(1);
         when(projection.getType()).thenReturn(aggregationType);
-        GroupByStreamMergedResult actual = new GroupByStreamMergedResult(Collections.singletonMap("value", 1), Collections.singletonList(queryResult),
-                createAggregationContext(projection), mock());
+        GroupByStreamMergedResult actual = new GroupByStreamMergedResult(Collections.singletonMap("value", 1), Collections.singletonList(queryResult), createAggregationContext(projection), mock());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(expected));
         assertFalse(actual.next());
@@ -279,8 +277,7 @@ class GroupByStreamMergedResultTest {
         AggregationProjection projection = mock(AggregationDistinctProjection.class);
         when(projection.getIndex()).thenReturn(1);
         when(projection.getType()).thenReturn(AggregationType.GROUP_CONCAT);
-        GroupByStreamMergedResult actual = new GroupByStreamMergedResult(Collections.singletonMap("value", 1), Collections.singletonList(queryResult),
-                createAggregationContext(projection), mock());
+        GroupByStreamMergedResult actual = new GroupByStreamMergedResult(Collections.singletonMap("value", 1), Collections.singletonList(queryResult), createAggregationContext(projection), mock());
         assertTrue(actual.next());
         assertNull(actual.getValue(1, Object.class));
         assertTrue(actual.wasNull());
