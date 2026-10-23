@@ -72,12 +72,18 @@ class FirebirdAdminExecutorCreatorTest {
                         new CommonSQLStatementContext(new SetStatement(DATABASE_TYPE, Collections.emptyList())), "SET NAMES utf8", FirebirdSetVariableAdminExecutor.class),
                 Arguments.of("show statement returns show executor",
                         new CommonSQLStatementContext(new ShowStatement(DATABASE_TYPE, "server_version")), "SHOW server_version", FirebirdShowVariableExecutor.class),
-                Arguments.of("delete statement returns empty", new DeleteStatementContext(DeleteStatement.builder().databaseType(DATABASE_TYPE).build()), "DELETE FROM t WHERE id = 1", null));
+                Arguments.of("delete statement returns empty", createDeleteStatementContext(), "DELETE FROM t WHERE id = 1", null));
     }
     
     private static SQLStatementContext createSelectStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class);
         when(result.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(DATABASE_TYPE).build());
+        return result;
+    }
+    
+    private static DeleteStatementContext createDeleteStatementContext() {
+        DeleteStatementContext result = mock(DeleteStatementContext.class);
+        when(result.getSqlStatement()).thenReturn(DeleteStatement.builder().databaseType(DATABASE_TYPE).build());
         return result;
     }
 }
