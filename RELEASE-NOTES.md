@@ -128,6 +128,7 @@
 
 ### Enhancements
 
+1. SQL Binder: Enhance ORDER BY column resolution with current-query scope precedence over correlated outer scopes - [#40342](https://github.com/apache/shardingsphere/pull/40342)
 1. SQL Parser: Support additional MySQL CREATE TABLE, CREATE FUNCTION, CREATE TRIGGER, INSTALL COMPONENT, LOAD XML, GET DIAGNOSTICS and SELECT syntax - [#40120](https://github.com/apache/shardingsphere/pull/40120)
 1. Metadata: Support view table type in openGauss meta data loader - [#39097](https://github.com/apache/shardingsphere/pull/39097)
 1. Build: Support compiling and using ShardingSphere under OpenJDK 26 - [#38625](https://github.com/apache/shardingsphere/issues/38625)
