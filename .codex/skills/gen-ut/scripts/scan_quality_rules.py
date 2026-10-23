@@ -61,16 +61,8 @@ class FileScanContext:
 
 
 RULE_SPECS = (
-    RuleSpec("R14", "boolean assertions require repository-standard source review", "manual"),
-    RuleSpec("R15-A", "parameterization suitability requires semantic evidence", "manual"),
-    RuleSpec("R15-B", "test value and owned or external contracts require source review", "manual"),
     RuleSpec("R15-C", "out-of-scope worktree mutation detected", "automated"),
-    RuleSpec("R15-D", "each parameterized test requires at least three actual argument sets", "manual"),
-    RuleSpec("R15-F", "switch candidates require method and assertion grouping review when parameterized", "manual"),
-    RuleSpec("R15-G", "added nested types require method and assertion grouping review when used in argument sets", "manual"),
-    RuleSpec("R15-H", "boolean assertions and parameterized grouping require source review", "manual"),
-    RuleSpec("R15-I", "Consumer candidates require method and assertion grouping review when used in argument sets", "manual"),
-    RuleSpec("R15-J", "helper and provider target invocations require semantic ownership review", "hybrid"),
+    RuleSpec("R15-J", "helper or provider invokes a target public method", "hybrid"),
 )
 CONSUMER_TOKEN_PATTERN = re.compile(r"\bConsumer\s*(?:<|\b)")
 CONSTRUCTOR_CALL_PATTERN = re.compile(r"\bnew\s+(\w+)\s*\(")
@@ -528,8 +520,7 @@ def analyze_parameterization_candidates(path: Path, source: str, target_public_m
 
 
 def describe_candidate(candidate: dict) -> str:
-    decision = "already parameterized" if candidate["parameterized_present"] else "manual-review-required"
-    return f'{candidate["path"]}: method={candidate["method"]} plainTestCount={candidate["plain_test_count"]} parameterizedPresent={candidate["parameterized_present"]} decision={decision}'
+    return f'{candidate["path"]}: method={candidate["method"]} plainTestCount={candidate["plain_test_count"]} parameterizedPresent={candidate["parameterized_present"]}'
 
 
 def find_switch_dispatch_candidates(path: Path, source: str) -> list[str]:
@@ -650,7 +641,7 @@ def find_argument_source_reviews(path: Path, source: str) -> list[str]:
         method_name = match.group(2)
         providers = parse_method_sources(method_name, match.group(1))
         detail = f"providers={','.join(providers)}" if providers else "configured argument source"
-        result.append(f"{path}:{line_number(source, match.start())} method={method_name} {detail}; verify at least three actual argument sets")
+        result.append(f"{path}:{line_number(source, match.start())} method={method_name} {detail}")
     return result
 
 
@@ -668,9 +659,6 @@ def collect_scan_result(paths: list[Path], scope_baseline_path: Path | None) -> 
         "rules": build_rule_result(violations_by_rule),
         "candidates": [asdict(each) for context in contexts for each in context.candidates],
         "reviews": {
-            "R14": [str(context.path) for context in contexts],
-            "R15-A": [str(context.path) for context in contexts if not context.target_public_methods],
-            "R15-B": [str(context.path) for context in contexts],
             "R15-D": [each for context in contexts for each in find_argument_source_reviews(context.path, context.source)],
             "R15-F": [each for context in contexts for each in find_switch_dispatch_candidates(context.path, context.source)],
             "R15-G": [each for context in contexts for each in check_r15_g(context.path, context.source, context.added_lines)],
@@ -697,12 +685,11 @@ def print_rule_summary(result: dict) -> int:
             continue
         if "automated" == each.mode:
             print(f"[{each.name}] ok")
-        elif "manual" == each.mode:
-            print(f"[{each.name}] semanticReviewRequired=true")
         else:
-            print(f"[{each.name}] mechanical=ok semanticReviewRequired=true")
-        for review in result.get("reviews", {}).get(each.name, []):
-            print(f"review: {review}")
+            print(f"[{each.name}] mechanical=ok")
+    for name, reviews in result.get("reviews", {}).items():
+        for review in reviews:
+            print(f"[{name}] review: {review}")
     return 1 if failed_rules else 0
 
 
@@ -716,8 +703,9 @@ def print_summary_only(result: dict) -> int:
         print("[R8-CANDIDATES] no candidates")
     failed_rules = [f"{each.name}={len(result['rules'][each.name]['violations'])}" for each in RULE_SPECS if result["rules"][each.name]["violations"]]
     print(f"[summary] javaFiles={result['java_file_count']}")
-    manual_rules = ",".join(each.name for each in RULE_SPECS if "automated" != each.mode)
-    print(f"[summary] semanticReviewRequired={manual_rules}")
+    reviews = [f"{name}={len(locations)}" for name, locations in result.get("reviews", {}).items() if locations]
+    if reviews:
+        print(f"[summary] reviews={' '.join(reviews)}")
     if failed_rules:
         print(f"[summary] violations={' '.join(failed_rules)}")
         return 1

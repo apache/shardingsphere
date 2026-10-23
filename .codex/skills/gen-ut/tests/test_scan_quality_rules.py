@@ -35,7 +35,7 @@ import scan_quality_rules as rules
 
 class ScanQualityRulesTest(unittest.TestCase):
 
-    def test_candidate_count_requires_manual_decision(self):
+    def test_candidate_reports_facts_without_deciding_suitability(self):
         source = """
             class TargetTest {
                 @Test void assertTargetFirst() { assertTrue(target.run(1)); }
@@ -46,7 +46,7 @@ class ScanQualityRulesTest(unittest.TestCase):
         candidates = rules.analyze_parameterization_candidates(Path("TargetTest.java"), source, {"run"})
         self.assertEqual(1, len(candidates))
         self.assertNotIn("high_fit", asdict(candidates[0]))
-        self.assertIn("decision=manual-review-required", rules.describe_candidate(asdict(candidates[0])))
+        self.assertEqual("TargetTest.java: method=run plainTestCount=3 parameterizedPresent=False", rules.describe_candidate(asdict(candidates[0])))
 
     def test_non_target_invocation_is_not_candidate(self):
         source = """
@@ -113,8 +113,6 @@ class ScanQualityRulesTest(unittest.TestCase):
                 )
                 with patch.object(rules, "create_file_scan_context", return_value=context), patch.object(rules, "check_scope_baseline", return_value=[]):
                     actual = rules.collect_scan_result([path], Path("foo_scope_baseline.json"))
-                self.assertEqual("manual", actual["rules"]["R15-G"]["mode"])
-                self.assertEqual([], actual["rules"]["R15-G"]["violations"])
                 self.assertEqual([expected_review], actual["reviews"]["R15-G"])
                 self.assertEqual([], rules.failed_rule_names(actual))
 
@@ -129,21 +127,18 @@ class ScanQualityRulesTest(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertEqual([], rules.check_r15_g(Path("TargetTest.java"), candidate_source, added_lines))
 
-    def test_test_value_review_is_independent_of_method_name(self):
+    def test_scan_reports_only_automatic_rules_and_source_locations(self):
         path = Path("TargetTest.java")
-        for method_name in ("assertGetType", "assertGetOrder", "assertGetTypeClass", "assertRun"):
-            with self.subTest(method_name=method_name):
-                source = f"class TargetTest {{ @Test void {method_name}() {{ assertTrue(target.run()); }} }}"
-                context = rules.FileScanContext(
-                    path=path, source=source, method_bodies={}, method_blocks={}, candidates=[],
-                    target_type_name="Target", target_public_methods={"run"}, added_lines=[],
-                )
-                with patch.object(rules, "create_file_scan_context", return_value=context), patch.object(rules, "check_scope_baseline", return_value=[]):
-                    actual = rules.collect_scan_result([path], Path("scope.json"))
-                self.assertEqual("manual", actual["rules"]["R15-B"]["mode"])
-                self.assertEqual([], actual["rules"]["R15-B"]["violations"])
-                self.assertEqual([str(path)], actual["reviews"]["R15-B"])
-                self.assertEqual([], rules.failed_rule_names(actual))
+        context = rules.FileScanContext(
+            path=path, source="class TargetTest { @Test void assertRun() { assertTrue(target.run()); } }",
+            method_bodies={}, method_blocks={}, candidates=[], target_type_name="Target", target_public_methods={"run"}, added_lines=[],
+        )
+        with patch.object(rules, "create_file_scan_context", return_value=context), patch.object(rules, "check_scope_baseline", return_value=[]):
+            actual = rules.collect_scan_result([path], Path("scope.json"))
+        self.assertEqual({"R15-C", "R15-J"}, set(actual["rules"]))
+        self.assertEqual({"R15-D", "R15-F", "R15-G", "R15-H", "R15-I", "R15-J"}, set(actual["reviews"]))
+        self.assertTrue(all(not locations for locations in actual["reviews"].values()))
+        self.assertEqual([], rules.failed_rule_names(actual))
 
     def test_boolean_dispatch_rule_reports_switch_review_candidate(self):
         path = Path("TargetTest.java")
@@ -162,16 +157,15 @@ class ScanQualityRulesTest(unittest.TestCase):
         with patch.object(rules, "create_file_scan_context", return_value=context), patch.object(rules, "check_scope_baseline", return_value=[]):
             actual = rules.collect_scan_result([path], Path("scope.json"))
         self.assertEqual(["TargetTest.java:3 method=assertRun"], actual["reviews"]["R15-H"])
-        self.assertEqual("manual", actual["rules"]["R15-H"]["mode"])
         self.assertEqual([], rules.failed_rule_names(actual))
 
-    def test_standard_argument_sources_require_actual_row_count_review(self):
+    def test_standard_argument_sources_report_locations(self):
         for annotation in ('@CsvSource({"foo,1", "bar,2", "baz,3"})', '@ValueSource(strings = {"foo", "bar", "baz"})', '@MethodSource("cases")'):
             with self.subTest(annotation=annotation):
                 source = f'@ParameterizedTest(name = "{{0}}") {annotation} void assertRun(final String name) {{ target.run(name); }}'
                 actual = rules.find_argument_source_reviews(Path("TargetTest.java"), source)
-                self.assertEqual(1, len(actual))
-                self.assertIn("verify at least three actual argument sets", actual[0])
+                detail = "providers=cases" if "@MethodSource" in annotation else "configured argument source"
+                self.assertEqual([f"TargetTest.java:1 method=assertRun {detail}"], actual)
 
     def test_branch_and_business_callback_candidates_require_review_without_mechanical_rejection(self):
         path = Path("TargetTest.java")
@@ -192,9 +186,32 @@ class ScanQualityRulesTest(unittest.TestCase):
         self.assertEqual([], rules.failed_rule_names(actual))
         for rule in ("R15-F", "R15-I"):
             with self.subTest(rule=rule):
-                self.assertEqual("manual", actual["rules"][rule]["mode"])
-                self.assertEqual([], actual["rules"][rule]["violations"])
                 self.assertTrue(actual["reviews"][rule])
+
+    def test_reports_preserve_locations_and_mechanical_exit_codes(self):
+        locations = {name: [f"TargetTest.java:{line} method=assertRun"] for line, name in enumerate(
+            ("R15-D", "R15-F", "R15-G", "R15-H", "R15-I", "R15-J"), start=1,
+        )}
+        candidate = {"path": "TargetTest.java", "method": "run", "plain_test_count": 3, "parameterized_present": False}
+        for failed_rule in (None, "R15-C", "R15-J"):
+            result = {
+                "rules": rules.build_rule_result({name: ["violation"] if name == failed_rule else [] for name in ("R15-C", "R15-J")}),
+                "reviews": locations, "candidates": [candidate], "java_file_count": 1,
+            }
+            for printer in (rules.print_rule_summary, rules.print_summary_only):
+                with self.subTest(failed_rule=failed_rule, printer=printer.__name__), patch.object(sys, "stdout", new_callable=io.StringIO) as stdout:
+                    self.assertEqual(int(failed_rule is not None), printer(result))
+                    output = stdout.getvalue()
+                    self.assertNotIn("semanticReviewRequired", output)
+                    self.assertNotIn("decision=", output)
+                    for name, entries in locations.items():
+                        if printer is rules.print_rule_summary:
+                            self.assertIn(f"[{name}] review: {entries[0]}", output)
+                        else:
+                            self.assertIn(f"{name}=1", output)
+                            self.assertNotIn(entries[0], output)
+                    if printer is rules.print_summary_only:
+                        self.assertIn("TargetTest.java: method=run plainTestCount=3 parameterizedPresent=False", output)
 
     def test_repeated_test_is_an_entry_but_helper_still_fails_ownership_gate(self):
         source = '''
@@ -240,6 +257,9 @@ class ScanQualityRulesTest(unittest.TestCase):
         result = json.loads(stdout.getvalue())
         self.assertEqual(1, actual)
         self.assertEqual(["candidates", "java_file_count", "reviews", "rules"], list(result))
+        self.assertEqual(["R15-C", "R15-J"], list(result["rules"]))
+        self.assertEqual([str(path)], result["reviews"]["R15-J"])
+        self.assertNotIn("R15-A", result["reviews"])
         self.assertEqual(["missing scope baseline"], result["rules"]["R15-C"]["violations"])
         self.assertEqual(1, result["java_file_count"])
         self.assertEqual(json.dumps(result, indent=2, sort_keys=True) + "\n", stdout.getvalue())
