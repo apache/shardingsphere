@@ -44,8 +44,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.variable.charset.FirebirdCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
@@ -102,9 +100,6 @@ class FirebirdAuthenticationEngineTest {
     
     @Mock
     private FirebirdConnectionResourceManager connectionResourceManager;
-    
-    @Mock
-    private ProxyContext proxyContext;
     
     private final FirebirdAuthenticationEngine authenticationEngine = new FirebirdAuthenticationEngine();
     
@@ -342,7 +337,6 @@ class FirebirdAuthenticationEngineTest {
         FirebirdSRPAuthenticationData authData = mock(FirebirdSRPAuthenticationData.class);
         Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("authData"), authenticationEngine, authData);
         FirebirdAuthenticator authenticator = mock(FirebirdAuthenticator.class);
-        when(authenticator.authenticate(any(), any())).thenReturn(false);
         FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.ATTACH);
         try (MockedConstruction<FirebirdAttachPacket> ignoredPacket = mockConstruction(FirebirdAttachPacket.class, (attachPacket, construction) -> {
             when(attachPacket.getEncoding()).thenReturn("UTF8");
@@ -362,15 +356,9 @@ class FirebirdAuthenticationEngineTest {
     }
     
     private void mockProxyContext(final AuthorityRule rule, final boolean containsDatabase) {
-        ContextManager contextManager = mock(ContextManager.class);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         lenient().when(metaData.containsDatabase(anyString())).thenReturn(containsDatabase);
-        when(metaDataContexts.getMetaData()).thenReturn(metaData);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(ProxyContext.getInstance()).thenReturn(proxyContext);
-        when(proxyContext.getContextManager()).thenReturn(contextManager);
     }
     
     private static Stream<Arguments> connectArguments() {

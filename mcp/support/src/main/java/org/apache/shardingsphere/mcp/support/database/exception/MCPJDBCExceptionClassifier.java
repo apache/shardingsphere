@@ -75,21 +75,23 @@ public final class MCPJDBCExceptionClassifier {
             if (!visited.add(current)) {
                 continue;
             }
-            if (current instanceof MCPDatabaseQueryFailedException) {
-                return ((MCPDatabaseQueryFailedException) current).getCategory();
-            }
-            if (current instanceof MCPDatabaseSQLSyntaxException) {
-                return MCPJDBCErrorCategory.SYNTAX;
-            }
-            if (current instanceof SQLException) {
-                Optional<MCPJDBCErrorCategory> category = classifySQLException(dialectClassifier, (SQLException) current);
-                if (category.isPresent() && MCPJDBCErrorCategory.QUERY_FAILED != category.get()) {
-                    return category.get();
-                }
-                if (category.isEmpty() && current instanceof SQLSyntaxErrorException) {
-                    candidate = MCPJDBCErrorCategory.SYNTAX;
-                }
-                addIfPresent(pending, ((SQLException) current).getNextException());
+            switch (current) {
+                case MCPDatabaseQueryFailedException ex:
+                    return ex.getCategory();
+                case MCPDatabaseSQLSyntaxException ignored:
+                    return MCPJDBCErrorCategory.SYNTAX;
+                case SQLException ex:
+                    Optional<MCPJDBCErrorCategory> category = classifySQLException(dialectClassifier, ex);
+                    if (category.isPresent() && MCPJDBCErrorCategory.QUERY_FAILED != category.get()) {
+                        return category.get();
+                    }
+                    if (category.isEmpty() && current instanceof SQLSyntaxErrorException) {
+                        candidate = MCPJDBCErrorCategory.SYNTAX;
+                    }
+                    addIfPresent(pending, ex.getNextException());
+                    break;
+                default:
+                    break;
             }
             addIfPresent(pending, current.getCause());
         }

@@ -49,7 +49,7 @@ public final class DropIndexPushDownMetaDataRefresher implements PushDownMetaDat
         for (IndexSegment each : sqlStatement.getIndexes()) {
             String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database,
                     each.getOwner().map(OwnerSegment::getIdentifier).orElse(new IdentifierValue(schemaName)));
-            Optional<String> logicTableName = findActualTableName(database, actualSchemaName, sqlStatement, each, props);
+            Optional<String> logicTableName = findActualTableName(database, actualSchemaName, sqlStatement, each);
             if (!logicTableName.isPresent()) {
                 continue;
             }
@@ -63,8 +63,7 @@ public final class DropIndexPushDownMetaDataRefresher implements PushDownMetaDat
         }
     }
     
-    private Optional<String> findActualTableName(final ShardingSphereDatabase database, final String schemaName,
-                                                 final DropIndexStatement sqlStatement, final IndexSegment indexSegment, final ConfigurationProperties props) {
+    private Optional<String> findActualTableName(final ShardingSphereDatabase database, final String schemaName, final DropIndexStatement sqlStatement, final IndexSegment indexSegment) {
         Optional<SimpleTableSegment> simpleTableSegment = sqlStatement.getSimpleTable();
         if (simpleTableSegment.isPresent()) {
             return Optional.of(TableRefreshUtils.getActualTableName(database, schemaName, simpleTableSegment.get().getTableName().getIdentifier()));

@@ -36,8 +36,6 @@ import java.util.Map;
  */
 public final class ReadwriteSplittingDataSourceRuleConfigurationChecker {
     
-    private final String databaseName;
-    
     private final ReadwriteSplittingDataSourceGroupRuleConfiguration config;
     
     private final Map<String, DataSource> dataSourceMap;
@@ -46,7 +44,6 @@ public final class ReadwriteSplittingDataSourceRuleConfigurationChecker {
     
     public ReadwriteSplittingDataSourceRuleConfigurationChecker(final String databaseName,
                                                                 final ReadwriteSplittingDataSourceGroupRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
-        this.databaseName = databaseName;
         this.config = config;
         this.dataSourceMap = dataSourceMap;
         exceptionIdentifier = new ReadwriteSplittingRuleExceptionIdentifier(databaseName, config.getName());

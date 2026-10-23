@@ -164,7 +164,7 @@ publish non-blocking observations unless they materially help the user.
 
 `Review Incomplete` is a terminal evidence classification, not a fallback for unfinished analysis.
 Classify a gap as incomplete only when a specific outcome-sensitive decisive fact remains unavailable after every admissible evidence route has been attempted; if relevant local or public evidence exists or another allowed route remains, continue the review and classify the candidate.
-After authoritative scope is established, record each incomplete gap in the ledger with the missing fact, unavailable-evidence proof, affected full path, strongest alternatives checked, outcome impact, scope proof, and affected files, then run `scripts/review_ledger.py validate-incomplete --ledger <ledger>` before selecting the result.
+After authoritative scope is established, record each incomplete gap in the ledger with the missing fact, unavailable-evidence proof, affected full path, strongest alternatives checked, outcome impact, scope proof, and affected files, then run `scripts/manage_review_ledger.py validate-incomplete --ledger <ledger>` before selecting the result.
 If authoritative scope cannot be established, state the exact unavailable scope fact and attempted routes in `### Required Evidence`; do not fabricate ledger scope.
 
 ## Behavior Clusters and Risk Triage
@@ -213,7 +213,7 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 - Complete the Mandatory Style Verification Gate against the latest effective candidate for every public PR or PR-backed local candidate.
 - Leave no unresolved gap that could change the blocker set and require a latest-candidate convergence pass with zero new independent candidates.
 - Use `scripts/build_review_inventory.py --format json` when local refs are available; its Markdown is only a bounded summary.
-- Use `scripts/review_ledger.py` for each independent assessment; it accounts for review state but does not judge correctness.
+- Use `scripts/manage_review_ledger.py` for each independent assessment; it accounts for review state but does not judge correctness.
 - Initialize a new ledger for each round that requires one, from the full current inventory with pending file statuses and no inherited review passes.
 - Use the existing private system temporary directory and record the exact ledger path returned by initialization for this review.
 - Initialize with `--review-basis <JSON>` containing the selected focus and readable sources identified by role and origin, so the ledger binds their actual content versions to the effective candidate, original baseline and authoritative files.
@@ -226,6 +226,10 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 - Validate the current basis and coverage before selecting a result; a passing ledger proves mechanical coverage and evidence freshness, while the reviewer must still establish semantic proof under the existing gates.
 - For a standalone local candidate with index or working-tree changes, provide the same exact task-path file to both scripts with `--candidate-files <path>`. The scripts resolve those paths from the computed merge-base through the working tree, include matching untracked files, and fail when a listed path is unchanged.
 - Mutate one ledger sequentially; do not run ledger commands concurrently.
+- Batch related updates to one reviewer ledger with `scripts/manage_review_ledger.py batch --ledger <ledger> --operations <JSON>`, where the JSON is a nonempty ordered array of argument arrays for `mark-file`, `add-finding` and `add-pass`, using their existing flags and input files without `--ledger`.
+- Each batch applies the existing operations in order and writes once only after all per-operation checks and both freshness checks pass.
+- Batch freshness checks verify the current basis and captured source anchors before applying operations and again before writing; any failed operation or freshness check leaves the original ledger unchanged.
+- Batching does not replace final ledger or session validation.
 
 Use these JSON shapes in local files passed to the arguments, replacing the example values with current evidence and block IDs from the initialized ledger:
 Sources use `rule`, `requirement` or `evidence` roles; `--anchors` takes an anchor-array file shaped like `anchors` below.

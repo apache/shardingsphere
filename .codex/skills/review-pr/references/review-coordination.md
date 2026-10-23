@@ -23,6 +23,7 @@ That outer loop alone owns code changes, their verification and coding-task comp
 ## Independent Reviewer Roles
 
 For every top-level Formal Review and every discussion reply that makes or changes an overall readiness conclusion, a coordinator must first obtain two mutually blind independent complete assessments of the same effective candidate, original baseline, authoritative scope, requirements and rule versions, and review focus.
+Launch the initial pair in parallel, starting both isolated reviewer contexts before waiting for either assessment, and collect both original assessments before Review of the Reports.
 A reply limited to one finding remains scoped to that finding and does not require a full-candidate pair unless it makes an overall readiness conclusion.
 Reviewers may discover different relevant raw evidence, but shared evidence must refer to the same content version and all outcome-sensitive evidence must be reconciled before completion.
 Use isolated reviewer contexts within the active task; do not create another user-owned task or send repository material to an external review service.
@@ -100,7 +101,7 @@ Do not treat an earlier basis's frozen evidence as current or require it to pass
 The final cumulative adjudication must satisfy the completion conditions, contain no unresolved candidate and match the proposed session result and feedback mode.
 Individual reports may differ from that final adjudication only with recorded evidence-based dispositions that explain each difference.
 
-Before publishing a completed Formal Review result or an overall readiness conclusion in a discussion reply, run `scripts/review_ledger.py validate-session --session <JSON>` after the coordinator's substantive result review.
+Before publishing a completed Formal Review result or an overall readiness conclusion in a discussion reply, run `scripts/manage_review_ledger.py validate-session --session <JSON>` after the coordinator's substantive result review.
 The command is read-only and validates records, references and evidence freshness; it neither launches reviewers nor proves their isolation or semantic correctness.
 If session validation fails, inspect the exact failure and correct only an unsupported record or missing evidence; never rewrite an original assessment or change issue mappings merely to obtain a pass.
 Only the coordinator emits the final report under the Output Contract.
@@ -112,7 +113,7 @@ Keep ledger data private and let the coordinator retain the owned ledgers, origi
 Independent reviewers return their recorded materials without cleaning them.
 For a read-only review, form a self-contained report and clean the owned materials after result review and session validation finish.
 For an enclosing coding task, retain them across `Not Mergeable` findings and candidate changes until that task completes or its failure or cancellation is handled.
-At cleanup, automatically run `scripts/review_ledger.py cleanup --ledger <recorded-ledger>` for each exact recorded review instance, including Mergeable, Not Mergeable, Review Incomplete and unconverged sessions.
+At cleanup, automatically run `scripts/manage_review_ledger.py cleanup --ledger <recorded-ledger>` for each exact recorded review instance, including Mergeable, Not Mergeable, Review Incomplete and unconverged sessions.
 Before cleaning a ledger, remove only temporary input materials created and explicitly recorded for this review, preserving declared sources owned by the repository, the user or another review.
 Apply the same exact-path ownership rule to the recorded original-result and session files.
 On a handled failure or cancellation, attempt the same cleanup for resources whose ownership is established, preserve the original failure and report any cleanup failure or remaining resources.

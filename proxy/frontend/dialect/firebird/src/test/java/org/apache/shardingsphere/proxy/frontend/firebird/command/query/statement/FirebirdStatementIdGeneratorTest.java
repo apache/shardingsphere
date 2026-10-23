@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collection;
-import java.util.HashSet;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -31,36 +29,29 @@ class FirebirdStatementIdGeneratorTest {
     
     private static final FirebirdStatementIdGenerator GENERATOR = FirebirdStatementIdGenerator.getInstance();
     
-    private final Collection<Integer> registeredConnectionIds = new HashSet<>(4, 1F);
+    @BeforeEach
+    void setUp() {
+        GENERATOR.registerConnection(1);
+    }
     
     @AfterEach
     void tearDown() {
-        for (Integer each : registeredConnectionIds) {
-            GENERATOR.unregisterConnection(each);
-        }
-        registeredConnectionIds.clear();
+        GENERATOR.unregisterConnection(1);
     }
     
     @Test
     void assertNextStatementId() {
-        GENERATOR.registerConnection(1);
-        registeredConnectionIds.add(1);
         assertThat(GENERATOR.nextStatementId(1), is(1));
     }
     
     @Test
     void assertGetStatementId() {
-        GENERATOR.registerConnection(1);
-        registeredConnectionIds.add(1);
         assertThat(GENERATOR.getStatementId(1), is(0));
     }
     
     @Test
     void assertUnregisterConnection() {
-        GENERATOR.registerConnection(1);
-        registeredConnectionIds.add(1);
         GENERATOR.unregisterConnection(1);
-        registeredConnectionIds.remove(1);
         assertThrows(IllegalStateException.class, () -> GENERATOR.getStatementId(1));
     }
 }

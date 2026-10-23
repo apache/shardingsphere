@@ -99,8 +99,13 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
                 sqlStatement.getHaving().map(optional -> HavingSegmentBinder.bind(optional, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         WindowSegment boundWindow = sqlStatement.getWindow().map(optional -> bindWindowSegment(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         Collection<FunctionSegment> boundTransformSegments = bindTransformSegments(sqlStatement, binderContext, tableBinderContexts, outerTableBinderContexts);
-        return copy(sqlStatement, boundWith, boundFrom.orElse(null), boundProjections, boundWhere,
-                boundHierarchicalQuery, boundCombine, boundLock, boundGroupBy, boundOrderBy, boundHaving, boundModel, boundWindow, boundTransformSegments);
+        SelectStatement result = SelectStatement.builder().databaseType(sqlStatement.getDatabaseType()).with(boundWith).from(boundFrom.orElse(null)).projections(boundProjections)
+                .where(boundWhere).hierarchicalQuery(boundHierarchicalQuery).combine(boundCombine).lock(boundLock).groupBy(boundGroupBy).orderBy(boundOrderBy).having(boundHaving)
+                .limit(sqlStatement.getLimit().orElse(null)).window(boundWindow).model(boundModel)
+                .subqueryType(sqlStatement.getSubqueryType().orElse(null)).intoVariables(sqlStatement.isIntoVariables()).build();
+        result.getTransformSegments().addAll(boundTransformSegments);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
+        return result;
     }
     
     private ModelSegment bindModelSegment(final ModelSegment segment, final SQLStatementBinderContext binderContext,
@@ -182,19 +187,6 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
                 boundProjections.getProjections(), new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType(), tableSourceType);
         result.put(CaseInsensitiveString.of(""), new SimpleTableSegmentBinderContext(subqueryProjections, tableSourceType));
-        return result;
-    }
-    
-    private SelectStatement copy(final SelectStatement sqlStatement, final WithSegment boundWith, final TableSegment boundFrom, final ProjectionsSegment boundProjections,
-                                 final WhereSegment boundWhere, final HierarchicalQuerySegment boundHierarchicalQuery, final CombineSegment boundCombine,
-                                 final LockSegment boundLock, final GroupBySegment boundGroupBy, final OrderBySegment boundOrderBy, final HavingSegment boundHaving,
-                                 final ModelSegment boundModel, final WindowSegment boundWindow, final Collection<FunctionSegment> boundTransformSegments) {
-        SelectStatement result = SelectStatement.builder().databaseType(sqlStatement.getDatabaseType()).with(boundWith).from(boundFrom).projections(boundProjections)
-                .where(boundWhere).hierarchicalQuery(boundHierarchicalQuery).combine(boundCombine).lock(boundLock).groupBy(boundGroupBy).orderBy(boundOrderBy).having(boundHaving)
-                .limit(sqlStatement.getLimit().orElse(null)).window(boundWindow).model(boundModel)
-                .subqueryType(sqlStatement.getSubqueryType().orElse(null)).build();
-        result.getTransformSegments().addAll(boundTransformSegments);
-        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
     

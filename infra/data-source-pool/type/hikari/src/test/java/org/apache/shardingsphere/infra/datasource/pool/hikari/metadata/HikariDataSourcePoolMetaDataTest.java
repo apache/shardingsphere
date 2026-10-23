@@ -51,6 +51,7 @@ class HikariDataSourcePoolMetaDataTest {
         Map<String, Object> actual = metaData.getSkippedProperties();
         assertThat(actual, hasEntry("minimumIdle", -1));
         assertThat(actual, hasEntry("maximumPoolSize", -1));
+        assertThat(actual, hasEntry("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource"));
     }
     
     @Test
