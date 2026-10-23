@@ -30,4 +30,34 @@
     <sql-case id="copy_query_results_from_stdin" value="COPY (SELECT * FROM t_order) FROM STDIN;" db-types="PostgreSQL" />
     <sql-case id="copy_table_to_file" value="COPY t_order TO PROGRAM 'gzip > /usr1/proj/bray/sql/country_data.gz';" db-types="PostgreSQL" />
     <sql-case id="copy_table_with_columns_to_file" value="COPY t_order(id, name) TO 'file.txt' DELIMITER ' ';" db-types="PostgreSQL" />
+
+    <sql-case id="copy_on_error_options_pg" value="COPY t FROM STDIN (on_error ignore, reject_limit 3, log_verbosity verbose)" db-types="PostgreSQL" />
+
+    <sql-case id="copy_json_array_option_pg" value="COPY t TO STDOUT (format json, force_array true)" db-types="PostgreSQL" />
+
+    <sql-case id="copy_header_match_default_pg" value="COPY t FROM STDIN (header match, null 'NULL', default 'DEFAULT')" db-types="PostgreSQL" />
+
+    <sql-case id="copy_set_null_option_pg" value="COPY t FROM STDIN (on_error set_null)" db-types="PostgreSQL" />
+
+    <sql-case id="copy_list_option_pg" value="COPY t FROM STDIN (custom ('a', 'b'))" db-types="PostgreSQL" />
+
+    <sql-case id="copy_numeric_option_pg" value="COPY t FROM STDIN (custom -1.5)" db-types="PostgreSQL" />
+
+    <sql-case id="copy_star_option_pg" value="COPY t FROM STDIN (force_not_null *, force_null *)" db-types="PostgreSQL" />
+
+    <sql-case id="copy_default_keyword_option_pg" value="COPY t FROM STDIN (custom DEFAULT)" db-types="PostgreSQL" />
+
+    <sql-case id="copy_argumentless_option_pg" value="COPY t FROM STDIN (force_array)" db-types="PostgreSQL" />
+
+    <sql-case id="copy_reserved_option_name_pg" value="COPY t FROM STDIN (select 'value')" db-types="PostgreSQL" />
+
+    <sql-case id="copy_legacy_json_pg" value="COPY t TO STDOUT JSON" db-types="PostgreSQL" />
+
+    <sql-case id="copy_old_options_control_pg" value="COPY t(a,b) TO STDOUT (FORMAT csv, FORCE_QUOTE (a,b), ESCAPE '!')" db-types="PostgreSQL" />
+
+    <sql-case id="copy_query_json_option_pg" value="COPY (SELECT 1) TO STDOUT (FORMAT json, force_array true)" db-types="PostgreSQL" />
+    <sql-case id="copy_quoted_format_pg" value="COPY foo_table TO STDOUT (FORMAT 'csv')" db-types="PostgreSQL" />
+    <sql-case id="copy_numeric_header_pg" value="COPY foo_table FROM STDIN (HEADER 2)" db-types="PostgreSQL" />
+    <sql-case id="copy_positive_header_pg" value="COPY foo_table FROM STDIN (HEADER +2)" db-types="PostgreSQL" />
+    <sql-case id="copy_negative_zero_header_pg" value="COPY foo_table FROM STDIN (HEADER -0)" db-types="PostgreSQL" />
 </sql-cases>
