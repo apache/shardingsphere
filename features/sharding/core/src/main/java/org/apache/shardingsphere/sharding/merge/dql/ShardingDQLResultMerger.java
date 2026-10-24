@@ -23,8 +23,14 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -39,12 +45,16 @@ import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByStreamMergedR
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.builder.PaginationDecoratorMergedResultBuilder;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -64,6 +74,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         Map<String, Integer> columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         selectStatementContext.setIndexes(columnLabelIndexMap);
+        setAggregationDistinctProjectionIndexes(selectStatementContext.getProjectionsContext(), selectStatementContext.getOrderByContext().getItems(), queryResults.get(0));
         MergedResult mergedResult = build(queryResults, selectStatementContext, columnLabelIndexMap, database);
         return decorate(queryResults, selectStatementContext, mergedResult);
     }
@@ -78,6 +89,54 @@ public final class ShardingDQLResultMerger implements ResultMerger {
             result.put(SQLUtils.getExactlyValue(queryResult.getMetaData().getColumnLabel(i)), i);
         }
         return result;
+    }
+    
+    @HighFrequencyInvocation
+    private void setAggregationDistinctProjectionIndexes(final ProjectionsContext projectionsContext, final Collection<OrderByItem> orderByItems, final QueryResult queryResult) throws SQLException {
+        if (!projectionsContext.isAggregationDistinctColumnsRewritten()) {
+            return;
+        }
+        int appendedColumnCount = 0;
+        if (projectionsContext.isDerivedColumnsAppended()) {
+            for (Projection each : projectionsContext.getProjections()) {
+                if (each instanceof DerivedProjection) {
+                    appendedColumnCount++;
+                } else if (each instanceof AggregationProjection) {
+                    appendedColumnCount += ((AggregationProjection) each).getDerivedAggregationProjections().size();
+                }
+            }
+        }
+        Map<Integer, AggregationDistinctProjection> projectionsByColumnIndex =
+                projectionsContext.getAggregationDistinctProjectionsByColumnIndex(queryResult.getMetaData().getColumnCount() - appendedColumnCount);
+        if (projectionsByColumnIndex.isEmpty()) {
+            return;
+        }
+        Collection<OrderByItem> expressionOrderByItems = getExpressionOrderByItems(orderByItems);
+        for (Entry<Integer, AggregationDistinctProjection> entry : projectionsByColumnIndex.entrySet()) {
+            int previousIndex = entry.getValue().getIndex();
+            entry.getValue().setIndex(entry.getKey());
+            setAggregationDistinctOrderByIndexes(expressionOrderByItems, entry.getValue(), previousIndex);
+        }
+    }
+    
+    private Collection<OrderByItem> getExpressionOrderByItems(final Collection<OrderByItem> orderByItems) {
+        Collection<OrderByItem> result = new ArrayList<>(orderByItems.size());
+        for (OrderByItem each : orderByItems) {
+            if (each.getSegment() instanceof ExpressionOrderByItemSegment) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private void setAggregationDistinctOrderByIndexes(final Collection<OrderByItem> orderByItems, final AggregationDistinctProjection projection, final int previousIndex) {
+        String projectionExpression = SQLUtils.getExactlyExpression(SQLUtils.getExactlyValue(projection.getExpression()));
+        for (OrderByItem each : orderByItems) {
+            if (previousIndex == each.getIndex()
+                    && projectionExpression.equalsIgnoreCase(SQLUtils.getExactlyExpression(SQLUtils.getExactlyValue(((ExpressionOrderByItemSegment) each.getSegment()).getExpression())))) {
+                each.setIndex(projection.getIndex());
+            }
+        }
     }
     
     private MergedResult build(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,

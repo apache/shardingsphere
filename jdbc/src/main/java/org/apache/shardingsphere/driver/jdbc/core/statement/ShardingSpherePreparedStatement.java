@@ -330,6 +330,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
         currentResultSet = null;
         setLocalUpdateCount(-1);
+        columnLabelAndIndexMap = null;
         statements.clear();
         parameterSets.clear();
         generatedValues.clear();

@@ -20,11 +20,7 @@ package org.apache.shardingsphere.proxy.backend.response.header.query;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.kernel.syntax.ColumnIndexOutOfRangeException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.sql.ResultSet;
@@ -68,10 +64,7 @@ public final class QueryHeaderBuilderEngine {
      */
     public QueryHeader build(final SQLStatementContext sqlStatementContext, final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database,
                              final int columnIndex) throws SQLException {
-        Projection projection = findProjection(sqlStatementContext, columnIndex);
-        return null == projection
-                ? build(resultSetMetaData, database, columnIndex)
-                : queryHeaderBuilder.build(resultSetMetaData, database, projection.getColumnName(), projection.getColumnLabel(), columnIndex);
+        return build(resultSetMetaData, database, columnIndex);
     }
     
     /**
@@ -87,26 +80,8 @@ public final class QueryHeaderBuilderEngine {
      */
     public QueryHeader build(final SQLStatementContext sqlStatementContext, final ShardingSphereResultSetMetaData resultSetMetaData, final ResultSet resultSet,
                              final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
-        Projection projection = findProjection(sqlStatementContext, columnIndex);
-        QueryHeader result = null == projection
-                ? queryHeaderBuilder.build(resultSetMetaData, database, resultSetMetaData.getColumnName(columnIndex), resultSetMetaData.getColumnLabel(columnIndex), columnIndex)
-                : queryHeaderBuilder.build(resultSetMetaData, database, projection.getColumnName(), projection.getColumnLabel(), columnIndex);
+        QueryHeader result = build(resultSetMetaData, database, columnIndex);
         queryHeaderBuilder.appendProtocolAttributes(result, resultSet);
         return result;
-    }
-    
-    private Projection findProjection(final SQLStatementContext sqlStatementContext, final int columnIndex) {
-        if (!(sqlStatementContext instanceof SelectStatementContext) || !((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
-            return null;
-        }
-        checkColumnIndex(sqlStatementContext, columnIndex);
-        return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(columnIndex - 1);
-    }
-    
-    private void checkColumnIndex(final SQLStatementContext sqlStatementContext, final int columnIndex) {
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
-            ShardingSpherePreconditions.checkState(columnIndex <= ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size(),
-                    () -> new ColumnIndexOutOfRangeException(columnIndex));
-        }
     }
 }
