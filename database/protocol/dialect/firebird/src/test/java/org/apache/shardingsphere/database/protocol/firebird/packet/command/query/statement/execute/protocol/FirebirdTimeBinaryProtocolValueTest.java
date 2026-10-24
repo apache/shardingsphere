@@ -21,14 +21,16 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Time;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -49,13 +51,20 @@ class FirebirdTimeBinaryProtocolValueTest {
         assertThat(new FirebirdTimeBinaryProtocolValue().read(payload), is(FirebirdDateTimeUtils.getTime(encoded)));
     }
     
-    @Test
-    void assertWrite() {
-        Time time = Time.valueOf(LocalTime.of(12, 0, 0));
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(time.getTime()), ZoneId.systemDefault());
-        int encoded = new FirebirdDateTimeUtils(localDateTime).getEncodedTime();
-        new FirebirdTimeBinaryProtocolValue().write(payload, time);
-        verify(payload).writeInt4(encoded);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("writeArguments")
+    void assertWrite(final String name, final Object value, final int expected) {
+        new FirebirdTimeBinaryProtocolValue().write(payload, value);
+        verify(payload).writeInt4(expected);
+    }
+    
+    private static Stream<Arguments> writeArguments() {
+        return Stream.of(
+                Arguments.of("legacy-time", Time.valueOf(LocalTime.of(12, 0, 0)), 432_000_000),
+                Arguments.of("midnight", LocalTime.MIDNIGHT, 0),
+                Arguments.of("whole-second", LocalTime.of(12, 34, 56), 452_960_000),
+                Arguments.of("fractional-time", LocalTime.of(12, 34, 56, 123400000), 452_961_234),
+                Arguments.of("midnight-fraction", LocalTime.of(0, 0, 0, 100000), 1));
     }
     
     @Test

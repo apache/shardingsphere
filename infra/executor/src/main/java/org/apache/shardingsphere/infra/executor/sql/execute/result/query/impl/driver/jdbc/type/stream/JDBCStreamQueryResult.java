@@ -17,7 +17,13 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.resultset.DialectResultSetMapper;
+import org.apache.shardingsphere.database.connector.core.resultset.ResultSetTimeValueReader;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedStreamCharsetConversionException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
@@ -35,6 +41,7 @@ import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -50,6 +57,12 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
     
     private final boolean containsJDBCResultSet;
     
+    /**
+     * Custom TIME reader, or {@code null} when native JDBC TIME reading is used.
+     */
+    @Getter(AccessLevel.NONE)
+    private ResultSetTimeValueReader timeValueReader;
+    
     public JDBCStreamQueryResult(final ResultSet resultSet) throws SQLException {
         this(resultSet, false);
     }
@@ -60,12 +73,23 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
         this.containsJDBCResultSet = containsJDBCResultSet;
     }
     
+    public JDBCStreamQueryResult(final ResultSet resultSet, final DatabaseType storageType) throws SQLException {
+        this(resultSet, storageType, false);
+    }
+    
+    @HighFrequencyInvocation
+    public JDBCStreamQueryResult(final ResultSet resultSet, final DatabaseType storageType, final boolean containsJDBCResultSet) throws SQLException {
+        this(resultSet, containsJDBCResultSet);
+        timeValueReader = DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, storageType).flatMap(DialectResultSetMapper::createTimeValueReader).orElse(null);
+    }
+    
     @Override
     public boolean next() throws SQLException {
         return resultSet.next();
     }
     
     @Override
+    @HighFrequencyInvocation
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (boolean.class == type) {
             return resultSet.getBoolean(columnIndex);
@@ -124,7 +148,21 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
         if (ZonedDateTime.class == type) {
             return resultSet.getObject(columnIndex, type);
         }
-        return resultSet.getObject(columnIndex);
+        return getObjectValue(columnIndex, type);
+    }
+    
+    /**
+     * Read an object value, retaining {@code null} for SQL {@code NULL}.
+     *
+     * @param columnIndex column index
+     * @param type expected value type
+     * @return object value, or {@code null} for SQL {@code NULL}
+     * @throws SQLException SQL exception
+     */
+    private Object getObjectValue(final int columnIndex, final Class<?> type) throws SQLException {
+        return Object.class == type && null != timeValueReader && Types.TIME == getMetaData().getColumnType(columnIndex)
+                ? timeValueReader.read(resultSet, columnIndex)
+                : resultSet.getObject(columnIndex);
     }
     
     @Override
