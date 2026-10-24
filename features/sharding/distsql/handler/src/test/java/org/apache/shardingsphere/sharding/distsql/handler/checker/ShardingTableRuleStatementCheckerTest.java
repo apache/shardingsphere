@@ -303,6 +303,17 @@ class ShardingTableRuleStatementCheckerTest {
     }
     
     @Test
+    void assertCheckTableRuleWithAlphanumericSuffixAndInlineAlgorithm() {
+        Properties props = PropertiesBuilder.build(new Property("algorithm-expression", "t_tenant_order_${tenant_id}"));
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_tenant_order", Collections.singleton("ds_0.t_tenant_order_${['mgm','wz3k9d']}"),
+                new KeyGenerateStrategySegment("order_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())), null);
+        tableRuleSegment.setDatabaseStrategySegment(new ShardingStrategySegment("none", null, null));
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "tenant_id", new AlgorithmSegment("INLINE", props)));
+        Collection<AbstractTableRuleSegment> rules = Collections.singleton(tableRuleSegment);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
+    }
+    
+    @Test
     void assertCheckTableRuleWithNoneStrategyTypeSuccess() {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(createCompleteTableRuleWithNoneTypeStrategy());

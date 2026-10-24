@@ -28,7 +28,13 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingTableConstants {
     
-    public static final Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile("\\d+$");
+    /**
+     * Matches a trailing actual data node suffix: a run of digits (e.g. {@code t_order_0}), or an alphanumeric run
+     * ending with a letter that follows a separator (e.g. {@code t_order_mgm}). The separator is kept in the derived
+     * prefix, and digit-ending suffixes keep the trailing digit run semantics so multi-segment numeric suffixes like
+     * {@code t_order_2023_01} behave as before.
+     */
+    public static final Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile("(\\d+|(?<=[-_])[a-zA-Z0-9]*[a-zA-Z])$");
     
     public static final char DEFAULT_PADDING_CHAR = '0';
 }
