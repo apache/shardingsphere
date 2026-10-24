@@ -163,8 +163,7 @@ class FirebirdSliceResponsePacketTest {
         assertThat(byteBuf.readableBytes(), is(SLICE_HEADER_LENGTH + 16));
         ByteBuf overflowBuf = Unpooled.buffer();
         PacketPayload overflowPayload = new FirebirdPacketPayload(overflowBuf, StandardCharsets.UTF_8);
-        FirebirdSliceResponsePacket overflow = new FirebirdSliceResponsePacket(16, FirebirdBinaryColumnType.INT128,
-                Collections.singletonList(BigInteger.ONE.shiftLeft(127)), 16);
+        FirebirdSliceResponsePacket overflow = new FirebirdSliceResponsePacket(16, FirebirdBinaryColumnType.INT128, Collections.singletonList(BigInteger.ONE.shiftLeft(127)), 16);
         assertThrows(IllegalArgumentException.class, () -> overflow.write(overflowPayload));
     }
 }
