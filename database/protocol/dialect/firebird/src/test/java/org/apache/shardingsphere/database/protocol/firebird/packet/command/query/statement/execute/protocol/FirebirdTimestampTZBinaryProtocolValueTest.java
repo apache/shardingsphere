@@ -57,7 +57,7 @@ class FirebirdTimestampTZBinaryProtocolValueTest {
         new FirebirdTimestampTZBinaryProtocolValue().write(payload, value);
         verify(payload).writeInt4(encodedDate);
         verify(payload).writeInt4(encodedTime);
-        verify(payload).writeInt4(120);
+        verify(payload).writeInt4(120 + FirebirdDateTimeUtils.TIME_ZONE_ID_CORRECTION);
     }
     
     @Test

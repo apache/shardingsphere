@@ -153,7 +153,7 @@ class FirebirdSliceResponsePacketTest {
         byteBuf.readBytes(actual);
         assertThat(actual, is(new byte[]{0, 0, 0, 60, 0, 0, 0, 1, 0, 0, 0, 1, 65, 0, 0, 0, 0, 0, 0, 71}));
     }
-
+    
     @Test
     void assertInt128RejectsValuesThatNeedMoreThanSixteenBytes() {
         ByteBuf byteBuf = Unpooled.buffer();

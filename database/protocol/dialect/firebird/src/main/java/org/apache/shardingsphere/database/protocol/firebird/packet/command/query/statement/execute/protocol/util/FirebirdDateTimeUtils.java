@@ -30,6 +30,12 @@ import java.time.LocalDateTime;
 @Setter
 public final class FirebirdDateTimeUtils {
     
+    /**
+     * Shift applied to an offset in minutes to obtain the Firebird time zone identifier: {@code UTC} is 1439 and
+     * {@code +02:00} is 1559, which keeps the whole supported range positive.
+     */
+    public static final int TIME_ZONE_ID_CORRECTION = 1439;
+    
     static final int NANOSECONDS_PER_FRACTION = 100 * 1000;
     
     static final int FRACTIONS_PER_MILLISECOND = 10;
@@ -39,12 +45,6 @@ public final class FirebirdDateTimeUtils {
     static final int FRACTIONS_PER_MINUTE = 60 * FRACTIONS_PER_SECOND;
     
     static final int FRACTIONS_PER_HOUR = 60 * FRACTIONS_PER_MINUTE;
-    
-    /**
-     * Shift applied to an offset in minutes to obtain the Firebird time zone identifier: {@code UTC} is 1439 and
-     * {@code +02:00} is 1559, which keeps the whole supported range positive.
-     */
-    public static final int TIME_ZONE_ID_CORRECTION = 1439;
     
     private int year;
     

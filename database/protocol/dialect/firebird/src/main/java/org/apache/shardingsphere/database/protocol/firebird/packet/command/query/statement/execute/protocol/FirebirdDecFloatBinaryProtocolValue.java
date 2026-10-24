@@ -67,6 +67,7 @@ public final class FirebirdDecFloatBinaryProtocolValue implements FirebirdBinary
         Preconditions.checkArgument(value instanceof Number, "Can not encode DECFLOAT value `%s`", value);
         return value instanceof BigDecimal ? (BigDecimal) value : new BigDecimal(value.toString());
     }
+    
     @Override
     public int getLength(final FirebirdPacketPayload payload) {
         return getByteLength();
