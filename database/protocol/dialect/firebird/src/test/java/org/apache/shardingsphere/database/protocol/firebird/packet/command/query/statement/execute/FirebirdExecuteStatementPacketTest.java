@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -39,7 +40,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -86,7 +86,6 @@ class FirebirdExecuteStatementPacketTest {
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_timestamp_tz, (short) BlrConstants.blr_end);
-        when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
         FirebirdExecuteStatementPacket actual = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         assertThat(actual.getParameterTypes(), is(Collections.singletonList(FirebirdBinaryColumnType.TIMESTAMP_TZ)));
         assertThat(actual.getParameterValues(), is(Collections.singletonList(OffsetDateTime.parse("2024-01-02T00:15:30.123400+02:00"))));
@@ -111,6 +110,19 @@ class FirebirdExecuteStatementPacketTest {
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         assertThat(packet.getParameterTypes(), is(Collections.emptyList()));
         assertThat(packet.getParameterValues(), is(Collections.emptyList()));
+    }
+    
+    @Test
+    void assertExecuteStatementPacketWithOctetsParameter() {
+        ByteBuf blr = Unpooled.buffer().writeZero(4).writeShortLE(2)
+                .writeByte(BlrConstants.blr_varying2).writeShortLE(1).writeShortLE(10).writeByte(BlrConstants.blr_short).writeByte(0)
+                .writeByte(BlrConstants.blr_end);
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1);
+        when(payload.readInt1()).thenReturn(0);
+        when(payload.readBuffer()).thenReturn(blr, Unpooled.wrappedBuffer(new byte[]{1, 2, (byte) 0xFF}));
+        FirebirdExecuteStatementPacket actual = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
+        assertThat(actual.getParameterTypes(), is(Collections.singletonList(FirebirdBinaryColumnType.VARYING)));
+        assertThat(actual.getParameterValues().get(0), is(new byte[]{1, 2, (byte) 0xFF}));
     }
     
     @Test

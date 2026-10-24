@@ -56,6 +56,15 @@ class FirebirdBlrRowMetadataTest {
     }
     
     @Test
+    void assertParseBLRWithCharacterSets() {
+        ByteBuf blr = Unpooled.buffer().writeZero(4).writeByte(4).writeByte(0)
+                .writeByte(BlrConstants.blr_varying2).writeShortLE(1).writeShortLE(10).writeByte(BlrConstants.blr_short).writeByte(0)
+                .writeByte(BlrConstants.blr_long).writeByte(0).writeByte(BlrConstants.blr_short).writeByte(0)
+                .writeByte(BlrConstants.blr_end);
+        assertThat(FirebirdBlrRowMetadata.parseBLR(blr).getColumnCharacterSets(), is(Arrays.asList(1, 0)));
+    }
+    
+    @Test
     void assertParseBLRWhenTruncated() {
         ByteBuf blr = Unpooled.buffer().writeZero(4);
         assertThrows(IndexOutOfBoundsException.class, () -> FirebirdBlrRowMetadata.parseBLR(blr));
