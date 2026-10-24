@@ -95,7 +95,7 @@ public final class DatabaseMetaDataManager {
     public synchronized void dropSchema(final String databaseName, final String schemaName) {
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        if (!database.containsSchema(schemaName)) {
+        if (null == database || !database.containsSchema(schemaName)) {
             return;
         }
         ShardingSphereSchema schema = database.getSchema(schemaName);
@@ -184,7 +184,7 @@ public final class DatabaseMetaDataManager {
     
     private void dropTableOrView(final String databaseName, final String schemaName, final String toBeDroppedTableOrViewName, final boolean isTable) {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-        if (!database.containsSchema(schemaName)) {
+        if (null == database || !database.containsSchema(schemaName)) {
             return;
         }
         if (isTable) {

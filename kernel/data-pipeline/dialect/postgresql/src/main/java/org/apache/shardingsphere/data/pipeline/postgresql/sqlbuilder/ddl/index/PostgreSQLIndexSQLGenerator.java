@@ -23,6 +23,7 @@ import org.postgresql.jdbc.PgArray;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -69,7 +70,7 @@ public final class PostgreSQLIndexSQLGenerator {
         appendColumnDetails(indexData, (Long) indexNode.get("oid"));
         if (templateExecutor.getMajorVersion() >= PG_INDEX_INCLUDE_VERSION) {
             Collection<Map<String, Object>> includeDetails = templateExecutor.executeByTemplate(Collections.singletonMap("idx", indexNode.get("oid")), "component/indexes/%s/include_details.ftl");
-            indexData.put("include", includeDetails.stream().map(each -> each.get("colname")).collect(Collectors.toList()));
+            indexData.put("include", includeDetails.stream().map(each -> each.get("colname")).collect(Collectors.toCollection(ArrayList::new)));
         }
         return doGenerateIndexSQL(indexData);
     }

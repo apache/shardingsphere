@@ -379,7 +379,7 @@ class MCPSQLExecutionFacadeTest {
         WindowItemSegment item = new WindowItemSegment(0, 0);
         item.setPartitionListSegments(List.of(createCurrentFunction("foo_partition")));
         item.setOrderBySegment(expressionOrder(createCurrentFunction("foo_order")));
-        item.setFrameClause(new CommonExpressionSegment(0, 0, "ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW"));
+        item.setFrameClause(new CommonExpressionSegment(0, 0, "ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW", List.of()));
         AggregationProjectionSegment aggregation = new AggregationProjectionSegment(0, 0, AggregationType.SUM, "SUM(logic_db.foo_value())");
         aggregation.getParameters().add(createCurrentFunction("foo_value"));
         aggregation.setWindow(item);
@@ -948,7 +948,7 @@ class MCPSQLExecutionFacadeTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteWithQualifiedCurrentDatabaseCases")
-    void assertExecuteWithQualifiedCurrentDatabase(final String name, final String sql, final SupportedMCPStatement supportedStatement) {
+    void assertExecuteWithQualifiedCurrentDatabase(final String name, final String sql, final SupportedMCPStatement supportedStatement, final String expectedStatementType) {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
@@ -961,8 +961,12 @@ class MCPSQLExecutionFacadeTest {
         MCPJdbcTransactionStatementExecutor transactionExecutor = mock(MCPJdbcTransactionStatementExecutor.class);
         MCPSQLExecutionFacade facade = createFacade(capabilityProvider, coordinator, transactionExecutor, statementExecutor);
         SQLExecutionResult actual = facade.execute(request);
-        assertThat(actual, is(expectedResult));
-        verify(statementExecutor).execute(eq(request), any(), eq(capability));
+        assertThat(actual, sameInstance(expectedResult));
+        ArgumentCaptor<ClassificationResult> actualClassification = ArgumentCaptor.forClass(ClassificationResult.class);
+        verify(statementExecutor).execute(eq(request), actualClassification.capture(), eq(capability));
+        assertThat(actualClassification.getValue().getStatementClass(), is(supportedStatement));
+        assertThat(actualClassification.getValue().getStatementType(), is(expectedStatementType));
+        assertThat(actualClassification.getValue().getNormalizedSql(), is(sql));
         verifyNoInteractions(transactionExecutor);
     }
     
@@ -1165,9 +1169,12 @@ class MCPSQLExecutionFacadeTest {
     
     private static Stream<Arguments> assertExecuteWithQualifiedCurrentDatabaseCases() {
         return Stream.of(
-                Arguments.of("table", "SELECT * FROM logic_db.orders", SupportedMCPStatement.QUERY),
-                Arguments.of("function", "SELECT logic_db.foo_refresh_orders()", SupportedMCPStatement.QUERY),
-                Arguments.of("grant", "GRANT SELECT ON logic_db.orders TO PUBLIC", SupportedMCPStatement.DCL));
+                Arguments.of("table", "SELECT * FROM logic_db.orders", SupportedMCPStatement.QUERY, "SELECT"),
+                Arguments.of("function", "SELECT logic_db.foo_refresh_orders()", SupportedMCPStatement.QUERY, "SELECT"),
+                Arguments.of("grant", "GRANT SELECT ON logic_db.orders TO PUBLIC", SupportedMCPStatement.DCL, "GRANT"),
+                Arguments.of("create function", "CREATE FUNCTION logic_db.foo_function() RETURNS INT RETURN 1", SupportedMCPStatement.DDL, "CREATE"),
+                Arguments.of("create procedure", "CREATE PROCEDURE logic_db.foo_procedure() SELECT 1", SupportedMCPStatement.DDL, "CREATE"),
+                Arguments.of("create trigger", "CREATE TRIGGER logic_db.foo_trigger BEFORE INSERT ON logic_db.foo_table FOR EACH ROW SET @foo_value=1", SupportedMCPStatement.DDL, "CREATE"));
     }
     
     private static Stream<Arguments> assertExecuteExplainWithSyntaxFailureCases() {

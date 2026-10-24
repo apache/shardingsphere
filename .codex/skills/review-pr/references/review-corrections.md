@@ -25,7 +25,7 @@ Use public previous-round feedback only for public PR conclusions.
 For standalone local corrections, inherit the main Skill's task baseline, attributed local delta, authorized evidence boundary and selected mode's output contract.
 Do not expose private review notes, local chat iterations, raw inventory, or internal scratch state.
 
-Before changing an overall conclusion, compare the prior and current effective candidates, requirement sources and versions, applicable exceptions, review focus, evidence identities and finding sets; candidate-type or Git revision labels and a different previous verdict do not establish a changed basis.
+Before changing an overall conclusion, apply the basis comparison and historical-finding procedures in [review-coordination.md](review-coordination.md).
 Correct both unsupported findings and an unsupported overall readiness conclusion, including a previous claim that no issues remain.
 Do not preserve an unsupported previous verdict for consistency.
 
@@ -60,7 +60,7 @@ Classify every finding first reported after an earlier formal review:
 Prove the classification from the previous and current effective candidates and their applicable requirements, focus and decisive facts.
 Identify a changed requirement or review scope separately and cite the decision establishing it; a later rejection of an earlier approved design does not by itself prove an earlier code defect.
 Do not describe an earlier-candidate problem as newly introduced.
-For a previous-review miss, acknowledge it directly and inspect the complete effective candidate for the same omitted structure before rerunning the full Completion Gate and returning the complete remaining blocker set.
+For a previous-review miss, acknowledge it directly and inspect the complete effective candidate for the same omitted structure, then follow [review-coordination.md](review-coordination.md) before returning the complete remaining blocker set.
 
 ## Challenged Findings
 

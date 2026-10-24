@@ -45,6 +45,7 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
+import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -59,6 +60,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -69,6 +71,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -155,11 +158,56 @@ class ShardingSQLRouterIT {
         }
     }
     
+    @Test
+    void assertRouteDatabaseOnlyJoin() {
+        RouteContext actual = routeDatabaseOnlyJoin("SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.user_id = i.user_id", Collections.emptyList());
+        assertThat(actual.getRouteUnits().size(), is(3));
+        assertThat(getRouteUnitSignatures(actual), is(createRouteUnits(
+                "ds_0:t_order=t_order,t_order_item=t_order_item", "ds_1:t_order=t_order,t_order_item=t_order_item", "ds_2:t_order=t_order,t_order_item=t_order_item")));
+    }
+    
+    @Test
+    void assertRouteDatabaseOnlyJoinWithShardingCondition() {
+        RouteContext actual = routeDatabaseOnlyJoin("SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.user_id = i.user_id AND o.user_id = ?",
+                Collections.singletonList(1));
+        assertThat(actual.getRouteUnits().size(), is(1));
+        assertThat(getRouteUnitSignatures(actual), is(createRouteUnits("ds_1:t_order=t_order,t_order_item=t_order_item")));
+    }
+    
+    private static RouteContext routeDatabaseOnlyJoin(final String sql, final List<Object> params) {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        ShardingRuleConfiguration config = new ShardingRuleConfiguration();
+        Collection<ShardingSphereTable> tables = new ArrayList<>(2);
+        for (String each : Arrays.asList("t_order", "t_order_item")) {
+            config.getTables().add(new ShardingTableRuleConfiguration(each, String.format("<LITERAL>ds_0.%s, ds_1.%s, ds_2.%s", each, each, each)));
+            tables.add(new ShardingSphereTable(each, Arrays.asList(new ShardingSphereColumn("order_id", Types.BIGINT, false, false, false, true, false, false),
+                    new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        }
+        config.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "database_mod"));
+        config.getShardingAlgorithms().put("database_mod", new AlgorithmConfiguration("CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "STANDARD"),
+                new Property("algorithmClassName", ModShardingAlgorithm.class.getName()), new Property("sharding-count", "2"))));
+        Map<String, DataSource> dataSources = new LinkedHashMap<>(3, 1F);
+        for (String each : Arrays.asList("ds_0", "ds_1", "ds_2")) {
+            dataSources.put(each, new MockedDataSource());
+        }
+        ShardingRule shardingRule = new ShardingRule(config, dataSources, mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        ShardingSphereSchema schema = new ShardingSphereSchema(DATABASE_NAME, databaseType, tables, Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DATABASE_NAME, databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS),
+                new RuleMetaData(Collections.singleton(shardingRule)), Collections.singleton(schema), props);
+        return route(sql, params, database, props);
+    }
+    
     private static RouteContext route(final String sql, final List<Object> params) {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         ShardingRule shardingRule = createShardingRule();
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         ShardingSphereDatabase database = createDatabase(databaseType, shardingRule, props);
+        return route(sql, params, database, props);
+    }
+    
+    private static RouteContext route(final String sql, final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
+        DatabaseType databaseType = database.getProtocolType();
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), globalRuleMetaData, props);
         SQLParserEngine parserEngine = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()).getSQLParserEngine(databaseType);
@@ -167,7 +215,7 @@ class ShardingSQLRouterIT {
         ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);
         connectionContext.setCurrentDatabaseName(DATABASE_NAME);
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, params, new HintValueContext(), connectionContext, metaData);
-        return new SQLRouteEngine(Collections.singleton(shardingRule), props).route(queryContext, globalRuleMetaData, database);
+        return new SQLRouteEngine(database.getRuleMetaData().getRules(), props).route(queryContext, globalRuleMetaData, database);
     }
     
     private static ShardingSphereDatabase createDatabase(final DatabaseType databaseType, final ShardingRule shardingRule, final ConfigurationProperties props) {
@@ -239,21 +287,13 @@ class ShardingSQLRouterIT {
     private static List<Set<String>> getOriginalDataNodeSignatures(final RouteContext routeContext) {
         List<Set<String>> result = new LinkedList<>();
         for (Collection<DataNode> each : routeContext.getOriginalDataNodes()) {
-            Set<String> dataNodes = new TreeSet<>();
-            for (DataNode dataNode : each) {
-                dataNodes.add(dataNode.getDataSourceName() + "." + dataNode.getTableName());
-            }
-            result.add(dataNodes);
+            result.add(each.stream().map(dataNode -> dataNode.getDataSourceName() + "." + dataNode.getTableName()).collect(Collectors.toCollection(TreeSet::new)));
         }
         return result;
     }
     
     private static List<Set<String>> createOriginalDataNodes(final String... dataNodes) {
-        List<Set<String>> result = new LinkedList<>();
-        for (String each : dataNodes) {
-            result.add(Collections.singleton(each));
-        }
-        return result;
+        return Arrays.stream(dataNodes).map(Collections::singleton).collect(Collectors.toList());
     }
     
     private static Set<String> createRouteUnits(final String... routeUnits) {

@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ReadwriteSplittingStatusWorkflowRequestTest {
     
@@ -34,6 +35,11 @@ class ReadwriteSplittingStatusWorkflowRequestTest {
         ReadwriteSplittingStatusWorkflowRequest actual = ReadwriteSplittingStatusWorkflowRequest.merge(previous, current);
         assertThat(actual.getRuleName(), is("readwrite_ds"));
         assertThat(actual.getStorageUnit(), is("read_ds_0"));
+    }
+    
+    @Test
+    void assertMergeWithNullRequests() {
+        assertNull(ReadwriteSplittingStatusWorkflowRequest.merge(null, null));
     }
     
     @Test

@@ -23,8 +23,7 @@ options {
 
 parameterMarker
     : QUESTION_ literalsType?
-    // TODO Only digits allowed after $, not a number
-    | DOLLAR_ NUMBER_
+    | DOLLAR_ NUMBER_ {$NUMBER_.text.matches("[0-9]+") }?
     ;
 
 reservedKeyword
@@ -116,7 +115,7 @@ literalsType
     ;
 
 identifier
-    : UNICODE_ESCAPE? IDENTIFIER_ uescape? | unreservedWord
+    : UNICODE_ESCAPE? IDENTIFIER_ uescape? | unreservedWord | jsonFunctionKeyword
     ;
 
 uescape
@@ -139,6 +138,7 @@ unreservedWord
     | ASSIGNMENT
     | AT
     | ATTACH
+    | ATOMIC
     | ATTRIBUTE
     | BACKWARD
     | BEFORE
@@ -146,6 +146,25 @@ unreservedWord
     | BY
     | BYTEA
     | BOX
+    | SMALLSERIAL
+    | SERIAL
+    | BIGSERIAL
+    | CIDR
+    | DATE
+    | FLOAT4
+    | FLOAT8
+    | FORMAT
+    | INET
+    | INT2
+    | INT4
+    | INT8
+    | LINE
+    | MACADDR
+    | MACADDR8
+    | MICROSECOND
+    | TSQUERY
+    | TSVECTOR
+    | VARBIT
     | CACHE
     | CALL
     | CALLED
@@ -166,6 +185,7 @@ unreservedWord
     | COMMITTED
     | CONFIGURATION
     | CONFLICT
+    | CONNECT
     | CONNECTION
     | CONSTRAINTS
     | CONTENT
@@ -268,10 +288,12 @@ unreservedWord
     | LOCK
     | LOCKED
     | LOGGED
+    | LOGIN
     | LSEG
     | MACADDR
     | MACADDR8
     | MAIN
+    | MAINTAIN
     | MAPPING
     | MATCH
     | MATCHED
@@ -301,6 +323,7 @@ unreservedWord
     | NOWAIT
     | NULLS
     | OBJECT
+    | OBJECTS
     | OF
     | OFF
     | OIDS
@@ -355,8 +378,10 @@ unreservedWord
     | REPLACE
     | REPLICA
     | RESET
+    | RETURN
     | RESTART
     | RESTRICT
+    | RETURN
     | RETURNS
     | REVOKE
     | ROLE
@@ -383,7 +408,7 @@ unreservedWord
     | SHARE
     | SHOW
     | SIMPLE
-//    | SKIP
+    | SKIP_SYMBOL
     | SNAPSHOT
     | SQL
     | STABLE
@@ -428,6 +453,7 @@ unreservedWord
     | UNLOGGED
     | UNTIL
     | UPDATE
+    | USAGE
     | VACUUM
     | VALID
     | VALIDATE
@@ -451,10 +477,39 @@ unreservedWord
     | YES
     | ZONE
     | JSON
+    | ABSENT
+    | ATOMIC
+    | BREADTH
+    | CONDITIONAL
+    | DEPTH
+    | EMPTY
+    | ENFORCED
+    | ERROR
+    | IGNORE
+    | INDENT
+    | KEEP
+    | KEYS
+    | LOG_VERBOSITY
+    | NESTED
+    | OMIT
+    | ON_ERROR
+    | PERIOD
+    | QUOTES
+    | REJECT_LIMIT
+    | SCALAR
+    | SILENT
+    | SOURCE
+    | STOP
+    | STRING
+    | TARGET
+    | UNCONDITIONAL
+    | UTF8
+    | VIRTUAL
     | PARAM
     | TABLE
     | CONSTRAINT
     | COLLATION
+    | USAGE
     | SOURCE
     | TARGET
     ;
@@ -557,9 +612,9 @@ patternMatchingOperator
     | SIMILAR TO
     | NOT SIMILAR TO
     | TILDE_
-    | NOT_ TILDE_
-    | TILDE_ ASTERISK_
-    | NOT_ TILDE_ ASTERISK_
+    | REGEX_NOT_MATCH_
+    | REGEX_MATCH_CASE_INSENSITIVE_
+    | REGEX_NOT_MATCH_CASE_INSENSITIVE_
     ;
 
 cursorName
@@ -571,6 +626,7 @@ aExpr
     | aExpr TYPE_CAST_ typeName
     | aExpr COLLATE anyName
     | aExpr AT TIME ZONE aExpr
+    | aExpr AT LOCAL
     | PLUS_ aExpr
     | MINUS_ aExpr
     | aExpr PLUS_ aExpr
@@ -579,10 +635,11 @@ aExpr
     | aExpr SLASH_ aExpr
     | aExpr MOD_ aExpr
     | aExpr CARET_ aExpr
+    | TILDE_ aExpr
     | aExpr AMPERSAND_ aExpr
     | aExpr VERTICAL_BAR_ aExpr
     | aExpr qualOp aExpr
-    | qualOp aExpr
+    | {QUESTION_ != _input.LA(1)}? qualOp aExpr
     | aExpr qualOp
     | aExpr comparisonOperator aExpr
     | NOT aExpr
@@ -614,6 +671,7 @@ aExpr
     | UNIQUE selectWithParens
     | aExpr IS DOCUMENT
     | aExpr IS NOT DOCUMENT
+    | aExpr IS NOT? JSON jsonValueType? jsonUniqueKeys?
     | aExpr IS NORMALIZED
     | aExpr IS unicodeNormalForm NORMALIZED
     | aExpr IS NOT NORMALIZED
@@ -628,8 +686,12 @@ bExpr
     | bExpr TYPE_CAST_ typeName
     | PLUS_ bExpr
     | MINUS_ bExpr
+    | bExpr CARET_ bExpr
+    | bExpr (ASTERISK_ | SLASH_ | MOD_) bExpr
+    | bExpr (PLUS_ | MINUS_) bExpr
+    | TILDE_ bExpr
     | bExpr qualOp bExpr
-    | qualOp bExpr
+    | {QUESTION_ != _input.LA(1)}? qualOp bExpr
     | bExpr qualOp
     | bExpr IS DISTINCT FROM bExpr
     | bExpr IS NOT DISTINCT FROM bExpr
@@ -669,6 +731,7 @@ optIndirection
 indirectionEl
     : DOT_ attrName
     | DOT_ ASTERISK_
+    | DOT_ASTERISK_
     | LBT_ aExpr RBT_
     | LBT_ sliceBound? COLON_ sliceBound? RBT_
     ;
@@ -709,6 +772,10 @@ columnref
 qualOp
     : jsonOperator
     | geometricOperator
+    | CUSTOM_OPERATOR_
+    | NOT_
+    | AT_
+    | DEQ_
     | OPERATOR LP_ anyOperator RP_
     ;
 
@@ -717,8 +784,12 @@ subqueryOp
     | OPERATOR LP_ anyOperator RP_
     | LIKE
     | NOT LIKE
+    | ILIKE
+    | NOT ILIKE
     | TILDE_
-    | NOT_ TILDE_
+    | REGEX_NOT_MATCH_
+    | REGEX_MATCH_CASE_INSENSITIVE_
+    | REGEX_NOT_MATCH_CASE_INSENSITIVE_
     ;
 
 allOp
@@ -773,6 +844,9 @@ op
     | TYPE_CAST_
     | ILIKE_
     | NOT_ILIKE_
+    | REGEX_NOT_MATCH_
+    | REGEX_MATCH_CASE_INSENSITIVE_
+    | REGEX_NOT_MATCH_CASE_INSENSITIVE_
     | UNICODE_ESCAPE
     | JSON_EXTRACT_
     | JSON_EXTRACT_TEXT_
@@ -797,6 +871,7 @@ op
     | GEOMETRIC_INTERSECT_
     | GEOMETRIC_PERPENDICULAR_
     | GEOMETRIC_SAME_AS_ )+
+    | CUSTOM_OPERATOR_
     ;
 
 mathOperator
@@ -929,7 +1004,7 @@ paramName
 funcArgExpr
     : aExpr
     | paramName CQ_ aExpr
-    | paramName GTE_ aExpr
+    | paramName NAMED_ARGUMENT_ aExpr
     ;
 
 typeList
@@ -954,7 +1029,12 @@ funcName
 aexprConst
     : numberConst
     | STRING_
+    | UNICODE_ESCAPE STRING_ uescape?
+    | BIT_NUM_
+    | HEX_DIGIT_
     | BEGIN_DOLLAR_STRING_CONSTANT DOLLAR_TEXT* END_DOLLAR_STRING_CONSTANT
+    | INTERVAL STRING_ optInterval
+    | INTERVAL LP_ NUMBER_ RP_ STRING_ optInterval
     | funcName STRING_
     | funcName LP_ funcArgList sortClause? RP_ STRING_
     | constTypeName STRING_
@@ -964,7 +1044,7 @@ aexprConst
     ;
 
 numberConst
-    : (PLUS_ | MINUS_)? NUMBER_
+    : (PLUS_ | MINUS_)? (NUMBER_ | HEX_NUMBER_ | BINARY_NUMBER_ | OCTAL_NUMBER_)
     ;
 
 qualifiedName
@@ -972,7 +1052,7 @@ qualifiedName
     ;
 
 colId
-    : identifier
+    : identifier | colNameKeyword
     ;
 
 channelName
@@ -980,7 +1060,7 @@ channelName
     ;
 
 typeFunctionName
-    : identifier
+    : UNICODE_ESCAPE? IDENTIFIER_ uescape?
     | unreservedWord
     | typeFuncNameKeyword
     | INT4RANGE
@@ -1033,7 +1113,8 @@ xmlNamespaceEl
     ;
 
 funcExpr
-    : funcApplication withinGroupClause? filterClause? overClause?
+    : jsonAggregateFunction filterClause? overClause?
+    | funcApplication withinGroupClause? filterClause? overClause?
     | functionExprCommonSubexpr
     ;
 
@@ -1054,7 +1135,8 @@ ordinality
     ;
 
 functionExprCommonSubexpr
-    : COLLATION FOR LP_ aExpr RP_
+    : jsonFunction
+    | COLLATION FOR LP_ aExpr RP_
     | CURRENT_DATE
     | CURRENT_TIME
     | CURRENT_TIME LP_ NUMBER_ RP_
@@ -1097,7 +1179,122 @@ functionExprCommonSubexpr
     | XMLPI LP_ NAME identifier RP_
     | XMLPI LP_ NAME identifier COMMA_ aExpr RP_
     | XMLROOT LP_ aExpr COMMA_ xmlRootVersion xmlRootStandalone? RP_
-    | XMLSERIALIZE LP_ documentOrContent aExpr AS simpleTypeName RP_
+    | XMLSERIALIZE LP_ documentOrContent aExpr AS simpleTypeName (NO? INDENT)? RP_
+    ;
+
+jsonValueType
+    : VALUE | SCALAR | ARRAY | OBJECT
+    ;
+
+jsonFormat
+    : FORMAT JSON (ENCODING UTF8)?
+    ;
+
+jsonValueExpr
+    : aExpr jsonFormat?
+    ;
+
+jsonNullClause
+    : (NULL | ABSENT) ON NULL
+    ;
+
+jsonUniqueKeys
+    : (WITH | WITHOUT) UNIQUE KEYS?
+    ;
+
+jsonReturningClause
+    : RETURNING typeName jsonFormat?
+    ;
+
+jsonNameAndValue
+    : cExpr VALUE jsonValueExpr
+    | aExpr COLON_ jsonValueExpr
+    ;
+
+jsonFunction
+    : JSON_OBJECT LP_ funcArgList RP_
+    | JSON_OBJECT LP_ jsonNameAndValue (COMMA_ jsonNameAndValue)* jsonNullClause? jsonUniqueKeys? jsonReturningClause? RP_
+    | JSON_OBJECT LP_ jsonReturningClause? RP_
+    | JSON_ARRAY LP_ jsonValueExpr (COMMA_ jsonValueExpr)* jsonNullClause? jsonReturningClause? RP_
+    | JSON_ARRAY LP_ selectNoParens jsonFormat? jsonReturningClause? RP_
+    | JSON_ARRAY LP_ jsonReturningClause? RP_
+    | JSON LP_ jsonValueExpr jsonUniqueKeys? RP_
+    | JSON_SCALAR LP_ aExpr RP_
+    | JSON_SERIALIZE LP_ jsonValueExpr jsonReturningClause? RP_
+    | JSON_EXISTS LP_ jsonValueExpr COMMA_ aExpr jsonPassingClause? jsonExistsErrorClause? RP_
+    | JSON_VALUE LP_ jsonValueExpr COMMA_ aExpr jsonPassingClause? (RETURNING typeName)? jsonValueEmptyClause? jsonValueErrorClause? RP_
+    | JSON_QUERY LP_ jsonValueExpr COMMA_ aExpr jsonPassingClause? jsonReturningClause? jsonWrapperClause? jsonQuotesClause? jsonQueryEmptyClause? jsonQueryErrorClause? RP_
+    ;
+
+jsonAggregateFunction
+    : JSON_ARRAYAGG LP_ jsonValueExpr sortClause? jsonNullClause? jsonReturningClause? RP_
+    | JSON_OBJECTAGG LP_ jsonNameAndValue jsonNullClause? jsonUniqueKeys? jsonReturningClause? RP_
+    ;
+
+jsonPassingClause
+    : PASSING jsonPassingArgument (COMMA_ jsonPassingArgument)*
+    ;
+
+jsonPassingArgument
+    : aExpr AS colId
+    ;
+
+jsonWrapperClause
+    : WITHOUT ARRAY? WRAPPER
+    | WITH (CONDITIONAL | UNCONDITIONAL)? ARRAY? WRAPPER
+    ;
+
+jsonQuotesClause
+    : (KEEP | OMIT) QUOTES (ON SCALAR STRING)?
+    ;
+
+jsonValueBehavior
+    : ERROR | NULL | DEFAULT aExpr
+    ;
+
+jsonQueryBehavior
+    : jsonValueBehavior | EMPTY (ARRAY | OBJECT)?
+    ;
+
+jsonValueEmptyClause
+    : jsonValueBehavior ON EMPTY
+    ;
+
+jsonValueErrorClause
+    : jsonValueBehavior ON ERROR
+    ;
+
+jsonQueryEmptyClause
+    : jsonQueryBehavior ON EMPTY
+    ;
+
+jsonQueryErrorClause
+    : jsonQueryBehavior ON ERROR
+    ;
+
+jsonExistsErrorClause
+    : (ERROR | TRUE | FALSE | UNKNOWN) ON ERROR
+    ;
+
+jsonTable
+    : JSON_TABLE LP_ jsonValueExpr COMMA_ aExpr (AS colId)? jsonPassingClause? COLUMNS LP_ jsonTableColumn (COMMA_ jsonTableColumn)* RP_ jsonTableErrorClause? RP_
+    ;
+
+jsonTableColumn
+    : colId FOR ORDINALITY
+    | colId typeName jsonFormat? (PATH jsonTablePath)? jsonWrapperClause? jsonQuotesClause? jsonQueryEmptyClause? jsonQueryErrorClause?
+    | colId typeName EXISTS (PATH jsonTablePath)? jsonExistsErrorClause?
+    | NESTED PATH? jsonTablePath (AS colId)? COLUMNS LP_ jsonTableColumn (COMMA_ jsonTableColumn)* RP_
+    ;
+
+jsonTablePath
+    : STRING_
+    | UNICODE_ESCAPE STRING_ uescape?
+    | BEGIN_DOLLAR_STRING_CONSTANT DOLLAR_TEXT* END_DOLLAR_STRING_CONSTANT
+    ;
+
+jsonTableErrorClause
+    : (ERROR | EMPTY ARRAY?) ON ERROR
     ;
 
 typeName
@@ -1292,6 +1489,7 @@ substrList
     | aExpr substrFor substrFrom
     | aExpr substrFrom
     | aExpr substrFor
+    | aExpr SIMILAR aExpr ESCAPE aExpr
     | exprList
     |
     ;
@@ -1339,7 +1537,7 @@ xmlRootStandalone
     ;
 
 rowsFromItem
-    : functionExprWindowless columnDefList
+    : functionExprWindowless columnDefList?
     ;
 
 rowsFromList
@@ -1482,7 +1680,7 @@ defArg
     : funcType
     | reservedKeyword
     | qualAllOp
-    | NUMBER_
+    | numericOnly
     | STRING_
     | NONE
     | funcName (LP_ funcArgsList RP_ | LP_ RP_)
@@ -1546,6 +1744,19 @@ nonReservedWord
     | typeFuncNameKeyword
     ;
 
+jsonFunctionKeyword
+    : JSON_ARRAY
+    | JSON_ARRAYAGG
+    | JSON_EXISTS
+    | JSON_OBJECT
+    | JSON_OBJECTAGG
+    | JSON_QUERY
+    | JSON_SCALAR
+    | JSON_SERIALIZE
+    | JSON_TABLE
+    | JSON_VALUE
+    ;
+
 colNameKeyword
     : BETWEEN
     | BIGINT
@@ -1565,6 +1776,7 @@ colNameKeyword
     | INT
     | INTEGER
     | INTERVAL
+    | jsonFunctionKeyword
     | LEAST
     | NATIONAL
     | NCHAR

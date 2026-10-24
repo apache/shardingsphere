@@ -47,9 +47,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Convert YAML configuration executor.
@@ -131,29 +133,10 @@ public final class ConvertYamlConfigurationExecutor implements DistSQLQueryExecu
     }
     
     private String getDataSourcePoolProps(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourcePoolProperties customDataSourcePoolProps) {
-        StringBuilder result = new StringBuilder();
-        result.append(getDataSourcePoolProps(poolPropertySynonyms.getStandardProperties()));
-        if (!customDataSourcePoolProps.getProperties().isEmpty()) {
-            result.append(",");
-            result.append(getDataSourcePoolProps(customDataSourcePoolProps.getProperties()));
-        }
-        return result.toString();
-    }
-    
-    private String getDataSourcePoolProps(final Map<String, Object> props) {
-        StringBuilder result = new StringBuilder();
-        Iterator<Entry<String, Object>> iterator = props.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<String, Object> entry = iterator.next();
-            if (null == entry.getValue()) {
-                continue;
-            }
-            result.append(String.format(DistSQLScriptConstants.PROPERTY, entry.getKey(), entry.getValue()));
-            if (iterator.hasNext()) {
-                result.append(",");
-            }
-        }
-        return result.toString();
+        Map<String, Object> props = new LinkedHashMap<>(poolPropertySynonyms.getStandardProperties());
+        props.putAll(customDataSourcePoolProps.getProperties());
+        return props.entrySet().stream().filter(each -> null != each.getValue())
+                .map(each -> String.format(DistSQLScriptConstants.PROPERTY, each.getKey(), each.getValue())).collect(Collectors.joining(","));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

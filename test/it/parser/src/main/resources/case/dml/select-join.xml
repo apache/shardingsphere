@@ -3883,4 +3883,41 @@
             </join-table>
         </from>
     </select>
+
+    <select sql-case-id="select_join_using_table_aliases_postgresql_regression">
+        <projections start-index="7" stop-index="10">
+            <column-projection name="id" start-index="7" stop-index="10">
+                <owner name="f" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
+        <from>
+            <join-table join-type="INNER" start-index="17" stop-index="49">
+                <left>
+                    <simple-table name="foo" alias="f" start-index="17" stop-index="24" />
+                </left>
+                <right>
+                    <simple-table name="bar" alias="b" start-index="31" stop-index="38" />
+                </right>
+                <using-columns name="id" start-index="47" stop-index="48" />
+            </join-table>
+        </from>
+    </select>
+    <select sql-case-id="select_join_using_alias_postgresql_regression">
+        <projections start-index="7" stop-index="15">
+            <column-projection name="id" start-index="7" stop-index="15">
+                <owner name="joined" start-index="7" stop-index="12" />
+            </column-projection>
+        </projections>
+        <from>
+            <join-table join-type="INNER" start-index="22" stop-index="64" using-alias="joined" using-alias-start-index="59" using-alias-stop-index="64">
+                <left>
+                    <simple-table name="foo" alias="f" start-index="22" stop-index="29" />
+                </left>
+                <right>
+                    <simple-table name="bar" alias="b" start-index="36" stop-index="43" />
+                </right>
+                <using-columns name="id" start-index="52" stop-index="53" />
+            </join-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

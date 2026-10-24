@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -32,7 +31,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,8 +46,7 @@ class FirebirdStatementMemoryStrictlyFetchSizeSetterTest {
     @Test
     void assertSetFetchSizeWithDefaultValue() throws SQLException {
         Statement statement = mock(Statement.class);
-        ContextManager contextManager = mockContextManager(-1);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE)).thenReturn(-1);
         fetchSizeSetter.setFetchSize(statement);
         verify(statement).setFetchSize(1);
     }
@@ -57,15 +54,8 @@ class FirebirdStatementMemoryStrictlyFetchSizeSetterTest {
     @Test
     void assertSetFetchSizeWithCustomValue() throws SQLException {
         Statement statement = mock(Statement.class);
-        ContextManager contextManager = mockContextManager(20);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE)).thenReturn(20);
         fetchSizeSetter.setFetchSize(statement);
         verify(statement).setFetchSize(20);
-    }
-    
-    private ContextManager mockContextManager(final int configuredFetchSize) {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE)).thenReturn(configuredFetchSize);
-        return result;
     }
 }

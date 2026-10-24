@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Ca
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
@@ -71,7 +72,7 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     public ASTNode visitCallArgument(final CallArgumentContext ctx) {
         if (null == ctx.positionalNotation()) {
             String text = ctx.namedNotation().start.getInputStream().getText(new Interval(ctx.namedNotation().start.getStartIndex(), ctx.namedNotation().stop.getStopIndex()));
-            return new CommonExpressionSegment(ctx.namedNotation().getStart().getStartIndex(), ctx.namedNotation().getStop().getStopIndex(), text);
+            return new CommonExpressionSegment(ctx.namedNotation().getStart().getStartIndex(), ctx.namedNotation().getStop().getStopIndex(), text, Collections.emptyList());
         }
         return visit(ctx.positionalNotation().aExpr());
     }
@@ -108,6 +109,8 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
             result.setInsert((InsertStatement) visit(ctx.insert()));
         } else if (null != ctx.update()) {
             result.setUpdate((UpdateStatement) visit(ctx.update()));
+        } else if (null != ctx.merge()) {
+            result.setMerge((MergeStatement) visit(ctx.merge()));
         } else {
             result.setDelete((DeleteStatement) visit(ctx.delete()));
         }

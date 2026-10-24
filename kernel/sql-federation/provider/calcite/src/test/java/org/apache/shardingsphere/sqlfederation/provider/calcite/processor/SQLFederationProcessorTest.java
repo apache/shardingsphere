@@ -65,6 +65,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFeder
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.ExecutorBindContext;
+import org.apache.shardingsphere.sqlfederation.executor.context.ExecutorContext;
 import org.apache.shardingsphere.sqlfederation.provider.calcite.resultset.SQLFederationResultSet;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,7 +80,6 @@ import org.mockito.MockedStatic;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -88,9 +88,11 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -246,15 +248,18 @@ class SQLFederationProcessorTest {
         Enumerable<Object> enumerable = mock(Enumerable.class);
         when(enumerable.enumerator()).thenReturn(enumerator);
         when(bindable.bind(any())).thenReturn(enumerable);
+        ArgumentCaptor<DataContext> dataContextCaptor = ArgumentCaptor.forClass(DataContext.class);
         try (
                 MockedStatic<SQLFederationExecutionPlan> mockedExecutionPlan = mockStatic(SQLFederationExecutionPlan.class);
                 MockedStatic<DatabaseTypedSPILoader> mockedSpiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(physicalPlan, Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
             mockedSpiLoader.when(() -> DatabaseTypedSPILoader
                     .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
-            ResultSet result = processor.executePlan(executionPlan, converter, federationContext, rootSchema);
-            ((SQLFederationResultSet) result).close();
+            ResultSet actual = processor.executePlan(executionPlan, converter, federationContext, rootSchema);
+            ((SQLFederationResultSet) actual).close();
         }
+        verify(bindable).bind(dataContextCaptor.capture());
+        assertTrue(((ExecutorBindContext) dataContextCaptor.getValue()).getParameters().isEmpty());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -335,47 +340,64 @@ class SQLFederationProcessorTest {
         }
     }
     
-    @SuppressWarnings("unchecked")
     @Test
-    void assertExecutePlanPreviewAndNonPreview() {
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
-        JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
-        SQLFederationContext federationContext = createFederationContext(false, null);
-        Collection<ExecutionUnit> previewExecutionUnits = federationContext.getPreviewExecutionUnits();
-        previewExecutionUnits.clear();
-        CompilerContext compilerContext = mock(CompilerContext.class);
+    void assertExecutePlanWithPreview() {
+        SQLFederationContext federationContext = createFederationContext(true, null);
         SchemaPlus rootSchema = mockSchemaTreeWithTable();
         DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
         when(schemaOption.getDefaultSchema()).thenReturn(Optional.of(schemaName));
+        SQLFederationExecutionPlan executionPlan = createExecutionPlan();
+        SQLFederationRelConverter converter = mock(SQLFederationRelConverter.class);
+        Bindable<Object> bindable = mockBindable();
+        ExecutionUnit expected = mock(ExecutionUnit.class);
         try (
-                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (constructed, context) -> {
+                MockedConstruction<ExecutorContext> ignoredExecutorContext = mockConstruction(ExecutorContext.class,
+                        (constructed, context) -> when(constructed.getPreviewExecutionUnits()).thenReturn(Collections.singleton(expected)));
+                MockedConstruction<DatabaseTypeRegistry> ignoredRegistry = mockConstruction(DatabaseTypeRegistry.class, (constructed, context) -> {
                     DialectDatabaseMetaData dialectMeta = mock(DialectDatabaseMetaData.class);
                     when(dialectMeta.getSchemaOption()).thenReturn(schemaOption);
                     when(constructed.getDialectDatabaseMetaData()).thenReturn(dialectMeta);
-                })) {
-            processor.prepare(prepareEngine, callback, databaseName, schemaName, federationContext, compilerContext, rootSchema);
-        }
-        SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
-        EnumerableRel physicalPlan = mock(EnumerableRel.class);
-        when(executionPlan.getPhysicalPlan()).thenReturn(physicalPlan);
-        when(executionPlan.getResultColumnType()).thenReturn(mock(RelDataType.class));
-        SQLFederationRelConverter converter = mock(SQLFederationRelConverter.class);
-        Bindable<Object> bindable = mock(Bindable.class);
-        Enumerator<Object> enumerator = mock(Enumerator.class);
-        Enumerable<Object> enumerable = mock(Enumerable.class);
-        when(enumerable.enumerator()).thenReturn(enumerator);
-        when(bindable.bind(any())).thenReturn(enumerable);
-        try (
+                });
                 MockedStatic<SQLFederationExecutionPlan> mockedExecutionPlan = mockStatic(SQLFederationExecutionPlan.class);
                 MockedStatic<DatabaseTypedSPILoader> mockedSpiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(physicalPlan, Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
+            processor.prepare(mock(), mock(), databaseName, schemaName, federationContext, mock(CompilerContext.class), rootSchema);
+            mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
             mockedSpiLoader.when(() -> DatabaseTypedSPILoader
                     .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
-            ResultSet previewResult = processor.executePlan(executionPlan, converter, federationContext, rootSchema);
-            ((SQLFederationResultSet) previewResult).close();
-            ResultSet normalResult = processor.executePlan(executionPlan, converter, federationContext, rootSchema);
-            ((SQLFederationResultSet) normalResult).close();
+            ResultSet actual = processor.executePlan(executionPlan, converter, federationContext, rootSchema);
+            ((SQLFederationResultSet) actual).close();
         }
+        assertThat(federationContext.getPreviewExecutionUnits(), contains(expected));
+    }
+    
+    @Test
+    void assertExecutePlanWithoutPreview() {
+        SQLFederationContext federationContext = createFederationContext(false, null);
+        SchemaPlus rootSchema = mockSchemaTreeWithTable();
+        DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
+        when(schemaOption.getDefaultSchema()).thenReturn(Optional.of(schemaName));
+        SQLFederationExecutionPlan executionPlan = createExecutionPlan();
+        SQLFederationRelConverter converter = mock(SQLFederationRelConverter.class);
+        Bindable<Object> bindable = mockBindable();
+        ExecutionUnit expected = mock(ExecutionUnit.class);
+        try (
+                MockedConstruction<ExecutorContext> ignoredExecutorContext = mockConstruction(ExecutorContext.class,
+                        (constructed, context) -> when(constructed.getPreviewExecutionUnits()).thenReturn(Collections.singleton(expected)));
+                MockedConstruction<DatabaseTypeRegistry> ignoredRegistry = mockConstruction(DatabaseTypeRegistry.class, (constructed, context) -> {
+                    DialectDatabaseMetaData dialectMeta = mock(DialectDatabaseMetaData.class);
+                    when(dialectMeta.getSchemaOption()).thenReturn(schemaOption);
+                    when(constructed.getDialectDatabaseMetaData()).thenReturn(dialectMeta);
+                });
+                MockedStatic<SQLFederationExecutionPlan> mockedExecutionPlan = mockStatic(SQLFederationExecutionPlan.class);
+                MockedStatic<DatabaseTypedSPILoader> mockedSpiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            processor.prepare(mock(), mock(), databaseName, schemaName, federationContext, mock(CompilerContext.class), rootSchema);
+            mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
+            mockedSpiLoader.when(() -> DatabaseTypedSPILoader
+                    .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
+            ResultSet actual = processor.executePlan(executionPlan, converter, federationContext, rootSchema);
+            ((SQLFederationResultSet) actual).close();
+        }
+        assertTrue(federationContext.getPreviewExecutionUnits().isEmpty());
     }
     
     @Test

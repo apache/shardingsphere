@@ -99,6 +99,7 @@
     <sql-case id="alter_database_set_managedlocation" value="ALTER DATABASE test_db SET MANAGEDLOCATION 'hdfs://namenode:8020/user/hive/managed/test_db';" db-types="Hive" />
     <sql-case id="alter_schema_set_managedlocation" value="ALTER SCHEMA test_db SET MANAGEDLOCATION 'hdfs://namenode:8020/user/hive/managed/another_test_db';" db-types="Hive" />
     <sql-case id="alter_database_set_lc_messages" value="ALTER DATABASE &quot;regression&quot; SET lc_messages TO 'C'" db-types="PostgreSQL" />
+    <sql-case id="alter_database_refresh_collation_version" value="ALTER DATABASE &quot;foo_db&quot; REFRESH COLLATION VERSION;" db-types="PostgreSQL" />
     <sql-case id="alter_database_set_data_quota" value="ALTER DATABASE example_db SET DATA QUOTA 10995116277760" db-types="Doris" />
     <sql-case id="alter_database_set_data_quota_with_unit" value="ALTER DATABASE example_db SET DATA QUOTA 100G" db-types="Doris" />
     <sql-case id="alter_database_set_data_quota_with_two_letter_unit" value="ALTER DATABASE example_db SET DATA QUOTA 1GB" db-types="Doris" />

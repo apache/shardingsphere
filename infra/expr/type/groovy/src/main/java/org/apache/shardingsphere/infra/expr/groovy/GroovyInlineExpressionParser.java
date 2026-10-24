@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +52,10 @@ import java.util.stream.Collectors;
 public final class GroovyInlineExpressionParser implements InlineExpressionParser {
     
     private static final String INLINE_EXPRESSION_KEY = "inlineExpression";
+    
+    private static final Pattern INLINE_EXPRESSION_SPLIT_PATTERN = Pattern.compile("\\s*,\\s*");
+    
+    private static final Pattern CONSTANT_EXPRESSION_QUOTES_PATTERN = Pattern.compile("(^\")|(\"$)");
     
     private static final GroovyShell SHELL = new GroovyShell();
     
@@ -94,7 +99,7 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
             return Collections.emptyList();
         }
         if (isConstantExpression(inlineExpression)) {
-            return Arrays.stream(inlineExpression.split("\\s*,\\s*")).map(String::trim).filter(each -> !each.isEmpty()).collect(Collectors.toList());
+            return Arrays.stream(INLINE_EXPRESSION_SPLIT_PATTERN.split(inlineExpression)).map(String::trim).filter(each -> !each.isEmpty()).collect(Collectors.toList());
         }
         return flatten(evaluate(GroovyUtils.split(handlePlaceHolder(inlineExpression))));
     }
@@ -135,7 +140,7 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
     
     private Object evaluate(final String expression) {
         if (isConstantExpression(expression)) {
-            return expression.replaceAll("^\"|\"$", "");
+            return CONSTANT_EXPRESSION_QUOTES_PATTERN.matcher(expression).replaceAll("");
         }
         Script script = scriptCache.get(expression, SHELL::parse);
         return null == script ? expression : script.run();

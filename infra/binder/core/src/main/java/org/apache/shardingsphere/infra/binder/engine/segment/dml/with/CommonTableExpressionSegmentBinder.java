@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableB
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.DifferenceInColumnCountOfSelectListAndColumnNameListException;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.DuplicateCommonTableExpressionAliasException;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
@@ -67,6 +68,7 @@ public final class CommonTableExpressionSegmentBinder {
      */
     public static CommonTableExpressionSegment bind(final CommonTableExpressionSegment segment, final SQLStatementBinderContext binderContext,
                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts, final boolean recursive) {
+        ShardingSpherePreconditions.checkState(null == segment.getDataModification(), () -> new UnsupportedSQLOperationException("Data-modifying common table expressions"));
         if (segment.getAliasName().isPresent()) {
             ShardingSpherePreconditions.checkState(!binderContext.getCommonTableExpressionsSegmentsUniqueAliases().contains(segment.getAliasName().get()),
                     () -> new DuplicateCommonTableExpressionAliasException(segment.getAliasName().get()));
@@ -82,8 +84,8 @@ public final class CommonTableExpressionSegmentBinder {
         segment.getAliasSegment().ifPresent(subqueryTableSegment::setAlias);
         SubqueryTableSegment boundSubquerySegment =
                 SubqueryTableSegmentBinder.bind(subqueryTableSegment, binderContext, LinkedHashMultimap.create(), tableBinderContexts, true);
-        CommonTableExpressionSegment result = new CommonTableExpressionSegment(
-                segment.getStartIndex(), segment.getStopIndex(), boundSubquerySegment.getAliasSegment().orElse(null), boundSubquerySegment.getSubquery());
+        CommonTableExpressionSegment result = new CommonTableExpressionSegment(segment.getStartIndex(), segment.getStopIndex(), boundSubquerySegment.getAliasSegment().orElse(null),
+                boundSubquerySegment.getSubquery(), null);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts =
                 createCurrentTableBinderContexts(segment.getColumns(), binderContext, boundSubquerySegment.getSubquery());
         segment.getColumns().forEach(each -> result.getColumns().add(ColumnSegmentBinder.bind(each,

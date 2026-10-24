@@ -133,8 +133,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         List<PostgreSQLColumnDescription> result = new ArrayList<>();
         for (ProjectionSegment each : returningSegment.getProjections().getProjections()) {
             if (each instanceof ShorthandProjectionSegment) {
-                table.getAllColumns().stream()
-                        .map(column -> new PostgreSQLColumnDescription(column.getName(), 0, column.getDataType(), estimateColumnLength(column.getDataType()), "")).forEach(result::add);
+                appendShorthandColumns(table, result);
             }
             if (each instanceof ColumnProjectionSegment) {
                 ColumnProjectionSegment segment = (ColumnProjectionSegment) each;
@@ -149,6 +148,12 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
         applyColumnTypeOIDs(result, loadColumnTypeOIDs(preparedStatement, result.size()));
         return new PostgreSQLRowDescriptionPacket(result);
+    }
+    
+    private void appendShorthandColumns(final ShardingSphereTable table, final Collection<PostgreSQLColumnDescription> columns) {
+        for (ShardingSphereColumn each : table.getAllColumns()) {
+            columns.add(new PostgreSQLColumnDescription(each.getName(), 0, each.getDataType(), estimateColumnLength(each.getDataType()), ""));
+        }
     }
     
     private ShardingSphereColumn generateDefaultColumn(final ColumnProjectionSegment segment) {

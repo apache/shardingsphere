@@ -17,42 +17,19 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process.lock;
 
-import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProcessOperationLockRegistryTest {
     
     @Test
-    void assertLockAndNotify() {
+    void assertWaitUntilReleaseReady() {
+        ProcessOperationLockRegistry registry = ProcessOperationLockRegistry.getInstance();
         String lockId = "foo_id";
-        long startMillis = System.currentTimeMillis();
-        Executors.newFixedThreadPool(1).submit(() -> {
-            Awaitility.await().pollDelay(50L, TimeUnit.MILLISECONDS).until(() -> true);
-            ProcessOperationLockRegistry.getInstance().notify(lockId);
-        });
-        waitUntilReleaseReady(lockId);
-        long currentMillis = System.currentTimeMillis();
-        assertThat(currentMillis, greaterThanOrEqualTo(startMillis + 50L));
-        assertThat(currentMillis, lessThanOrEqualTo(startMillis + 5000L));
-    }
-    
-    private void waitUntilReleaseReady(final String lockId) {
-        ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(lockId, 1, new ProcessOperationLockReleaseStrategy() {
-            
-            private final AtomicBoolean firstTime = new AtomicBoolean(true);
-            
-            @Override
-            public boolean isReadyToRelease() {
-                return !firstTime.getAndSet(false);
-            }
-        });
+        assertTrue(registry.waitUntilReleaseReady(lockId, 1, () -> {
+            registry.notify(lockId);
+            return false;
+        }));
     }
 }

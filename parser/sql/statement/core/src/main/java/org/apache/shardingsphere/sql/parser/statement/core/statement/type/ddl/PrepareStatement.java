@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.S
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
@@ -44,24 +45,30 @@ public final class PrepareStatement extends DDLStatement {
     
     private final DeleteStatement delete;
     
+    private final MergeStatement merge;
+    
     private final SQLStatementAttributes attributes;
     
     @Builder
-    private PrepareStatement(final DatabaseType databaseType, final SelectStatement select, final InsertStatement insert, final UpdateStatement update, final DeleteStatement delete) {
+    private PrepareStatement(final DatabaseType databaseType, final SelectStatement select, final InsertStatement insert, final UpdateStatement update, final DeleteStatement delete,
+                             final MergeStatement merge) {
         super(databaseType);
         this.select = select;
         this.insert = insert;
         this.update = update;
         this.delete = delete;
-        attributes = createAttributes(select, insert, update, delete);
+        this.merge = merge;
+        attributes = createAttributes(select, insert, update, delete, merge);
     }
     
-    private SQLStatementAttributes createAttributes(final SelectStatement select, final InsertStatement insert, final UpdateStatement update, final DeleteStatement delete) {
+    private SQLStatementAttributes createAttributes(final SelectStatement select, final InsertStatement insert, final UpdateStatement update, final DeleteStatement delete,
+                                                    final MergeStatement merge) {
         TableExtractor tableExtractor = new TableExtractor();
         Optional.ofNullable(select).ifPresent(tableExtractor::extractTablesFromSelect);
         Optional.ofNullable(insert).ifPresent(tableExtractor::extractTablesFromInsert);
         Optional.ofNullable(update).ifPresent(tableExtractor::extractTablesFromUpdate);
         Optional.ofNullable(delete).ifPresent(tableExtractor::extractTablesFromDelete);
+        Optional.ofNullable(merge).ifPresent(tableExtractor::extractTablesFromMerge);
         return new SQLStatementAttributes(new TableSQLStatementAttribute(tableExtractor.getRewriteTables()));
     }
     
@@ -99,5 +106,14 @@ public final class PrepareStatement extends DDLStatement {
      */
     public Optional<DeleteStatement> getDelete() {
         return Optional.ofNullable(delete);
+    }
+    
+    /**
+     * Get merge statement.
+     *
+     * @return merge statement
+     */
+    public Optional<MergeStatement> getMerge() {
+        return Optional.ofNullable(merge);
     }
 }

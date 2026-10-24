@@ -57,5 +57,9 @@
     <sql-case id="delete_with_where" value="DELETE FROM orders WHERE order_id = 9527;" db-types="Hive" />
     <sql-case id="delete_without_where_sql92" value="DELETE FROM t_order" db-types="SQL92" />
     <sql-case id="delete_with_where_sql92" value="DELETE FROM t_order WHERE order_id = 1" db-types="SQL92" />
+
+    <sql-case id="delete_current_of_postgresql_regression" value="DELETE FROM foo WHERE CURRENT OF foo_cursor" db-types="PostgreSQL" />
+    <sql-case id="delete_with_returning_postgresql_regression" value="WITH seed(id) AS (SELECT ?) DELETE FROM foo WHERE id = ? RETURNING id, ?" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="delete_with_returning_aliases_postgresql_regression" value="WITH seed(id) AS (SELECT ?) DELETE FROM foo WHERE id = ? RETURNING WITH (OLD AS old_row, NEW AS new_row) old_row.id, new_row.id, ?" db-types="PostgreSQL" case-types="Placeholder" />
     <sql-case id="delete_current_of_quoted_pg" value="delete from t_order where current of &quot;Foo&quot;" db-types="PostgreSQL" />
 </sql-cases>

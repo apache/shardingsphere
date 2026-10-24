@@ -53,7 +53,8 @@ class TypedPropertyValueTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("getInvalidNumberValueArguments")
     void assertGetInvalidNumberValue(final String name, final TypedPropertyKey key) {
-        assertThrows(TypedPropertyValueException.class, () -> new TypedPropertyValue(key, "test"));
+        TypedPropertyValueException actual = assertThrows(TypedPropertyValueException.class, () -> new TypedPropertyValue(key, "test"));
+        assertThat(actual.getMessage(), is(String.format("Value `test` of `%s` cannot convert to type `%s`", key.getKey(), key.getType().getName())));
     }
     
     @Test

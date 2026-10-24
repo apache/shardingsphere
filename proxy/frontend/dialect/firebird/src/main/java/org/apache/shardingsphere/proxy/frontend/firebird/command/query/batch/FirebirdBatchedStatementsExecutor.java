@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
+import com.google.common.primitives.Ints;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -117,53 +117,51 @@ public final class FirebirdBatchedStatementsExecutor {
         int batchMessageIndex = 0;
         if (parameterSetsIterator.hasNext()) {
             List<Object> firstGroupOfParam = parameterSetsIterator.next();
-            sqlStatementContext = createSQLStatementContext(firstGroupOfParam, preparedStatement.getHintValueContext());
-            executionContext = createExecutionContext(createQueryContext(sqlStatementContext, firstGroupOfParam, preparedStatement.getHintValueContext()));
+            sqlStatementContext = createSQLStatementContext(firstGroupOfParam);
+            executionContext = createExecutionContext(createQueryContext(sqlStatementContext, firstGroupOfParam));
             addExecutionUnitParams(executionContext, batchMessageIndex++);
         }
         anyExecutionContext = executionContext;
-        prepareForRestOfParametersSet(parameterSetsIterator, sqlStatementContext, preparedStatement.getHintValueContext(), batchMessageIndex);
+        prepareForRestOfParametersSet(parameterSetsIterator, sqlStatementContext, batchMessageIndex);
     }
     
-    private SQLStatementContext createSQLStatementContext(final List<Object> params, final HintValueContext hintValueContext) {
-        SQLStatementContext result = new SQLBindEngine(
-                metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), hintValueContext).bind(preparedStatement.getSqlStatementContext().getSqlStatement());
+    private SQLStatementContext createSQLStatementContext(final List<Object> params) {
+        SQLStatementContext result = new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), preparedStatement.getHintValueContext())
+                .bind(preparedStatement.getSqlStatementContext().getSqlStatement());
         if (result instanceof ParameterAware) {
             ((ParameterAware) result).bindParameters(params);
         }
         return result;
     }
     
-    private void prepareForRestOfParametersSet(final Iterator<List<Object>> paramSetsIterator, final SQLStatementContext sqlStatementContext,
-                                               final HintValueContext hintValueContext, final int firstBatchMessageIndex) {
+    private void prepareForRestOfParametersSet(final Iterator<List<Object>> paramSetsIterator, final SQLStatementContext sqlStatementContext, final int firstBatchMessageIndex) {
         int batchMessageIndex = firstBatchMessageIndex;
         while (paramSetsIterator.hasNext()) {
             List<Object> eachGroupOfParam = paramSetsIterator.next();
             if (sqlStatementContext instanceof ParameterAware) {
                 ((ParameterAware) sqlStatementContext).bindParameters(eachGroupOfParam);
             }
-            ExecutionContext eachExecutionContext = createExecutionContext(createQueryContext(sqlStatementContext, eachGroupOfParam, hintValueContext));
+            ExecutionContext eachExecutionContext = createExecutionContext(createQueryContext(sqlStatementContext, eachGroupOfParam));
             addExecutionUnitParams(eachExecutionContext, batchMessageIndex++);
         }
     }
     
     private void addExecutionUnitParams(final ExecutionContext executionContext, final int batchMessageIndex) {
         for (ExecutionUnit each : executionContext.getExecutionUnits()) {
-            List<List<Object>> params = executionUnitParams.computeIfAbsent(each, k -> new LinkedList<>());
-            params.add(each.getSqlUnit().getParameters());
-            List<Integer> batchMessageIndexes = executionUnitBatchMessageIndexes.computeIfAbsent(each, k -> new LinkedList<>());
-            batchMessageIndexes.add(batchMessageIndex);
+            executionUnitParams.computeIfAbsent(each, key -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
+            executionUnitBatchMessageIndexes.computeIfAbsent(each, key -> new LinkedList<>()).add(batchMessageIndex);
         }
-    }
-    
-    private QueryContext createQueryContext(final SQLStatementContext sqlStatementContext, final List<Object> params, final HintValueContext hintValueContext) {
-        return new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, hintValueContext, connectionSession.getConnectionContext(), metaDataContexts.getMetaData());
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
         ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(connectionSession.getCurrentDatabaseName());
         SQLAuditEngine.audit(queryContext, currentDatabase);
         return kernelProcessor.generateExecutionContext(queryContext, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
+    }
+    
+    private QueryContext createQueryContext(final SQLStatementContext sqlStatementContext, final List<Object> params) {
+        return new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(), connectionSession.getConnectionContext(),
+                metaDataContexts.getMetaData());
     }
     
     /**
@@ -235,14 +233,12 @@ public final class FirebirdBatchedStatementsExecutor {
     private List<BatchExecutionUnitResult> executeBatchedPreparedStatements(final List<BatchExecution> batchExecutions) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getUsedDatabaseName());
-        DatabaseType protocolType = database.getProtocolType();
         JDBCExecutorCallback<BatchExecutionUnitResult> callback =
-                new BatchedStatementsJDBCExecutorCallback(protocolType, database.getResourceMetaData(), preparedStatement.getSqlStatementContext().getSqlStatement(), isExceptionThrown);
-        return isHaltedOnFirstFailure() ? executeInBatchMessageOrder(batchExecutions, callback) : jdbcExecutor.execute(executionGroupContext, callback);
+                new BatchedStatementsJDBCExecutorCallback(database.getProtocolType(), database.getResourceMetaData(), preparedStatement.getSqlStatementContext().getSqlStatement(), isExceptionThrown);
+        return multiError ? jdbcExecutor.execute(executionGroupContext, callback) : executeInBatchMessageOrder(batchExecutions, callback);
     }
     
-    private List<BatchExecutionUnitResult> executeInBatchMessageOrder(final List<BatchExecution> batchExecutions,
-                                                                      final JDBCExecutorCallback<BatchExecutionUnitResult> callback) throws SQLException {
+    private List<BatchExecutionUnitResult> executeInBatchMessageOrder(final List<BatchExecution> batchExecutions, final JDBCExecutorCallback<BatchExecutionUnitResult> callback) throws SQLException {
         List<BatchExecutionUnitResult> result = new LinkedList<>();
         for (BatchExecution each : batchExecutions) {
             addPendingBatch(each);
@@ -337,10 +333,7 @@ public final class FirebirdBatchedStatementsExecutor {
         for (ExecutionGroup<JDBCExecutionUnit> eachGroup : executionGroupContext.getInputGroups()) {
             executionUnits.addAll(eachGroup.getInputs());
         }
-        if (!isHaltedOnFirstFailure()) {
-            return createWholeUnitBatchExecutions(executionUnits);
-        }
-        return createBatchExecutionsInMessageOrder(executionUnits);
+        return multiError ? createWholeUnitBatchExecutions(executionUnits) : createBatchExecutionsInMessageOrder(executionUnits);
     }
     
     private List<BatchExecution> createWholeUnitBatchExecutions(final Collection<JDBCExecutionUnit> executionUnits) throws SQLException {
@@ -371,16 +364,11 @@ public final class FirebirdBatchedStatementsExecutor {
         return result;
     }
     
-    private boolean isHaltedOnFirstFailure() {
-        return !multiError;
-    }
-    
     private void mergeUpdateCounts(final int[] result, final List<Integer> batchMessageIndexes, final int[] updateCounts) {
         int countSize = Math.min(batchMessageIndexes.size(), updateCounts.length);
         for (int i = 0; i < countSize; i++) {
-            int updateCount = updateCounts[i];
             int batchMessageIndex = batchMessageIndexes.get(i);
-            result[batchMessageIndex] = mergeUpdateCount(result[batchMessageIndex], updateCount);
+            result[batchMessageIndex] = mergeUpdateCount(result[batchMessageIndex], updateCounts[i]);
         }
     }
     
@@ -399,8 +387,7 @@ public final class FirebirdBatchedStatementsExecutor {
     
     private final class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<BatchExecutionUnitResult> {
         
-        private BatchedStatementsJDBCExecutorCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
-                                                      final boolean isExceptionThrown) {
+        private BatchedStatementsJDBCExecutorCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
             super(protocolType, resourceMetaData, sqlStatement, isExceptionThrown);
         }
         
@@ -416,15 +403,15 @@ public final class FirebirdBatchedStatementsExecutor {
             while (true) {
                 int executedCount = updateCounts.size();
                 try {
-                    addAll(updateCounts, statement.executeBatch());
-                    return createResult(updateCounts, failures);
+                    updateCounts.addAll(Ints.asList(statement.executeBatch()));
+                    return new BatchExecutionUnitResult(Ints.toArray(updateCounts), failures);
                 } catch (final SQLException ex) {
                     int[] executedUpdateCounts = getExecutedUpdateCounts(ex);
-                    addAll(updateCounts, executedUpdateCounts);
+                    updateCounts.addAll(Ints.asList(executedUpdateCounts));
                     registerFailures(failures, ex, updateCounts, executedCount, params.size() - executedCount > executedUpdateCounts.length);
                 }
                 if (!multiError || updateCounts.size() >= params.size()) {
-                    return createResult(updateCounts, failures);
+                    return new BatchExecutionUnitResult(Ints.toArray(updateCounts), failures);
                 }
                 statement.clearBatch();
                 addBatchedParameters(statement, params.subList(updateCounts.size(), params.size()));
@@ -465,24 +452,7 @@ public final class FirebirdBatchedStatementsExecutor {
             for (SQLException each = ex.getNextException(); null != each; each = each.getNextException()) {
                 chainedCauses.add(each);
             }
-            if (chainedCauses.size() == failedCount) {
-                return chainedCauses;
-            }
-            return Collections.nCopies(failedCount, ex);
-        }
-        
-        private void addAll(final List<Integer> updateCounts, final int[] executedUpdateCounts) {
-            for (int each : executedUpdateCounts) {
-                updateCounts.add(each);
-            }
-        }
-        
-        private BatchExecutionUnitResult createResult(final List<Integer> updateCounts, final Map<Integer, SQLException> failures) {
-            int[] result = new int[updateCounts.size()];
-            for (int i = 0; i < result.length; i++) {
-                result[i] = updateCounts.get(i);
-            }
-            return new BatchExecutionUnitResult(result, failures);
+            return chainedCauses.size() == failedCount ? chainedCauses : Collections.nCopies(failedCount, ex);
         }
         
         @Override

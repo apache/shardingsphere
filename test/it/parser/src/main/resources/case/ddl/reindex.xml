@@ -24,5 +24,9 @@
     <reindex sql-case-id="reindex_index" />
     <reindex sql-case-id="reindex_schema" />
     <reindex sql-case-id="reindex_system" />
+    <reindex sql-case-id="reindex_system_without_name" />
+    <reindex sql-case-id="reindex_database_without_name" />
+    <reindex sql-case-id="reindex_system_without_name_with_options" />
+    <reindex sql-case-id="reindex_database_without_name_with_options" />
     <reindex sql-case-id="reindex_table" />
 </sql-parser-test-cases>
