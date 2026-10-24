@@ -69,8 +69,7 @@ substring(pg_catalog.array_to_string(tst.reloptions, ',') FROM 'autovacuum_freez
 rel.reloptions AS reloptions, tst.reloptions AS toast_reloptions, NULL AS reloftype, NULL AS typname,
 typ.typrelid AS typoid, rel.relrowsecurity as rlspolicy, rel.relforcerowsecurity as forcerlspolicy,
 (CASE WHEN rel.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable,
-ARRAY[]::varchar[] AS seclabels,
-(CASE WHEN rel.oid <= ${ datlastsysoid?c}::oid THEN true ElSE false END) AS is_sys_table
+ARRAY[]::varchar[] AS seclabels
 
 FROM pg_catalog.pg_class rel
 LEFT OUTER JOIN pg_catalog.pg_tablespace spc on spc.oid=rel.reltablespace

@@ -15,4 +15,4 @@
   ~ limitations under the License.
   -->
 
-SELECT oid AS did, datlastsysoid FROM pg_catalog.pg_database WHERE datname = '${databaseName}';
+SELECT oid AS did FROM pg_catalog.pg_database WHERE datname = '${databaseName}';
