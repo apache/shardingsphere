@@ -475,6 +475,52 @@ class FirebirdPrepareStatementCommandExecutorTest {
         verify(contentPayload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
     }
     
+    @Test
+    void assertDescribeReturningOldAndNewShorthand() throws Exception {
+        when(packet.getSQL()).thenReturn("UPDATE foo_tbl SET id = 1 RETURNING OLD.*, NEW.*");
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(4));
+    }
+    
+    @Test
+    void assertDescribeDerivedTableShorthand() throws Exception {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
+        ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
+        ShardingSphereTable originalTable = new ShardingSphereTable("foo_tbl", Arrays.asList(idColumn, new ShardingSphereColumn("content", Types.BLOB, false, false, true, true, false, true)),
+                Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable derivedTable = new ShardingSphereTable("s", Collections.singleton(idColumn), Collections.emptyList(), Collections.emptyList());
+        database.addSchema(new ShardingSphereSchema("foo_db", databaseType, Arrays.asList(originalTable, derivedTable), Collections.emptyList()));
+        when(database.findDefaultSchema()).thenCallRealMethod();
+        when(packet.getSQL()).thenReturn("SELECT s.* FROM (SELECT id FROM foo_tbl) s");
+        when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
+    }
+    
+    @Test
+    void assertDescribeUnqualifiedDerivedTableShorthand() throws Exception {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
+        ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
+        ShardingSphereTable originalTable = new ShardingSphereTable("foo_tbl", Arrays.asList(idColumn, new ShardingSphereColumn("content", Types.BLOB, false, false, true, true, false, true)),
+                Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable derivedTable = new ShardingSphereTable("s", Collections.singleton(idColumn), Collections.emptyList(), Collections.emptyList());
+        database.addSchema(new ShardingSphereSchema("foo_db", databaseType, Arrays.asList(originalTable, derivedTable), Collections.emptyList()));
+        when(database.findDefaultSchema()).thenCallRealMethod();
+        when(packet.getSQL()).thenReturn("SELECT * FROM (SELECT id FROM foo_tbl) s");
+        when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
+    }
+    
+    private HintValueContext createDataSourceHintValueContext() {
+        HintValueContext result = new HintValueContext();
+        result.setDataSourceName("foo_ds");
+        return result;
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("describeWithSchemaReplacementArguments")
     void assertDescribeWithSchemaReplacement(final String name, final String sql, final FirebirdSQLInfoPacketType describeType) throws Exception {

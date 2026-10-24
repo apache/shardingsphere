@@ -410,6 +410,49 @@ class MySQLComStmtPrepareExecutorTest {
     }
     
     @Test
+    void assertPrepareSelectByProbeOKPacketColumnCountMatchesDefinitions() throws Exception {
+        String sql = "SELECT id, name, age FROM foo_db.user";
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
+        int connectionId = 6;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
+        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        int physicalColumnCount = 3;
+        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(actualPreparedStatement.getMetaData()).thenReturn(resultSetMetaData);
+        when(resultSetMetaData.getColumnCount()).thenReturn(physicalColumnCount);
+        for (int i = 1; i <= physicalColumnCount; i++) {
+            when(resultSetMetaData.getColumnName(i)).thenReturn("col_" + i);
+            when(resultSetMetaData.getColumnLabel(i)).thenReturn("col_" + i);
+            when(resultSetMetaData.getColumnType(i)).thenReturn(Types.VARCHAR);
+            when(resultSetMetaData.getColumnTypeName(i)).thenReturn("VARCHAR");
+            when(resultSetMetaData.getColumnDisplaySize(i)).thenReturn(255);
+            when(resultSetMetaData.getScale(i)).thenReturn(0);
+            when(resultSetMetaData.isSigned(i)).thenReturn(false);
+            when(resultSetMetaData.isNullable(i)).thenReturn(ResultSetMetaData.columnNullable);
+            when(resultSetMetaData.isAutoIncrement(i)).thenReturn(false);
+            when(resultSetMetaData.getTableName(i)).thenReturn("user");
+        }
+        when(MySQLPreparedStatementMetadataFactory.load(eq(connectionSession), any(MySQLServerPreparedStatement.class))).thenReturn(actualPreparedStatement);
+        Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+        assertThat(actualIterator.next(), isA(MySQLComStmtPrepareOKPacket.class));
+        int columnDefinitionCount = 0;
+        while (actualIterator.hasNext()) {
+            DatabasePacket next = actualIterator.next();
+            if (next instanceof MySQLColumnDefinition41Packet) {
+                columnDefinitionCount++;
+            }
+        }
+        assertThat("OK packet column count must equal column definition count", columnDefinitionCount, is(physicalColumnCount));
+        MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
+    }
+    
+    @Test
     void assertPrepareNotAllowedStatement() {
         when(packet.getSQL()).thenReturn("begin");
         ContextManager contextManager = mockContextManager();

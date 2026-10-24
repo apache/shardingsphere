@@ -531,6 +531,46 @@ class PostgreSQLComDescribeExecutorTest {
     }
     
     @Test
+    void assertDescribeWithUnexpandedShorthandUsesPhysicalColumnCount() throws SQLException {
+        when(packet.getType()).thenReturn('S');
+        when(packet.getName()).thenReturn("foo_shorthand");
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn((SelectStatement) SQL_PARSER_ENGINE.parse("SELECT * FROM t_order", false));
+        when(sqlStatementContext.containsDerivedProjections()).thenReturn(true);
+        ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
+        when(projectionsContext.getExpandProjections()).thenReturn(Collections.nCopies(1, mock(Projection.class)));
+        when(projectionsContext.containsUnexpandedShorthandProjection()).thenReturn(true);
+        when(sqlStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
+        int physicalColumnCount = 4;
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnCount()).thenReturn(physicalColumnCount);
+        when(resultSetMetaData.getColumnName(anyInt())).thenAnswer(invocation -> "col_" + invocation.getArgument(0));
+        when(resultSetMetaData.getColumnType(anyInt())).thenReturn(Types.INTEGER);
+        when(resultSetMetaData.getColumnDisplaySize(anyInt())).thenReturn(11);
+        when(resultSetMetaData.getColumnTypeName(anyInt())).thenReturn("int4");
+        when(preparedStatement.getMetaData()).thenReturn(resultSetMetaData);
+        when(preparedStatement.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement("SELECT * FROM t_order")).thenReturn(preparedStatement);
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
+        when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        ConnectionContext connectionContext = mock(ConnectionContext.class);
+        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of(DATABASE_NAME));
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement("foo_shorthand",
+                new PostgreSQLServerPreparedStatement("SELECT * FROM t_order", sqlStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList()));
+        columnTypeOIDs = Collections.emptyMap();
+        Iterator<DatabasePacket> actual = executor.execute().iterator();
+        actual.next();
+        List<PostgreSQLColumnDescription> actualColumns = getColumnDescriptions((PostgreSQLRowDescriptionPacket) actual.next());
+        assertThat(actualColumns.size(), is(physicalColumnCount));
+    }
+    
+    @Test
     void assertDescribeSelectPreparedStatementWithNullMetaData() throws SQLException {
         when(packet.getType()).thenReturn('S');
         String statementId = "S_null_metadata";
