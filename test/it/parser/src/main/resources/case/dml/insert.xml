@@ -4748,6 +4748,78 @@
         </values>
     </insert>
 
+    <insert sql-case-id="insert_string_literal_with_introducer_firebird">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="37">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="status" start-index="31" stop-index="36" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="47" stop-index="47" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression text="_UTF8 'abc'" start-index="50" stop-index="60" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_string_literal_with_collate_firebird">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="37">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="status" start-index="31" stop-index="36" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="47" stop-index="47" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression text="'abc' COLLATE UNICODE" start-index="50" stop-index="70" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_non_ascii_string_literal_with_introducer_firebird">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="37">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="status" start-index="31" stop-index="36" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="47" stop-index="47" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression text="_ISO8859_1 'é'" start-index="50" stop-index="63" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_hexadecimal_literal_with_introducer_firebird">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="37">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="status" start-index="31" stop-index="36" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="47" stop-index="47" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression text="_OCTETS x'4142'" start-index="50" stop-index="64" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
     <insert sql-case-id="insert_with_geom_collection_function">
         <table name="t1" start-index="12" stop-index="13" />
         <columns start-index="14" stop-index="14" />

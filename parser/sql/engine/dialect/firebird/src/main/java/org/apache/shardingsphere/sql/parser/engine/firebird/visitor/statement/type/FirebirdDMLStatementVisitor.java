@@ -59,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Sele
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SingleTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SkipValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableReferenceContext;
@@ -200,9 +201,19 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     public ASTNode visitAssignmentValues(final AssignmentValuesContext ctx) {
         List<ExpressionSegment> segments = new LinkedList<>();
         for (AssignmentValueContext each : ctx.assignmentValue()) {
-            segments.add((ExpressionSegment) visit(each));
+            segments.add(isStringLiteralWithCharacterSetOrCollation(each)
+                    ? new CommonExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), getOriginalText(each), Collections.emptyList())
+                    : (ExpressionSegment) visit(each));
         }
         return new InsertValuesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), segments);
+    }
+    
+    private boolean isStringLiteralWithCharacterSetOrCollation(final AssignmentValueContext ctx) {
+        ParserRuleContext current = ctx;
+        while (!(current instanceof StringLiteralsContext) && 1 == current.getChildCount() && current.getChild(0) instanceof ParserRuleContext) {
+            current = (ParserRuleContext) current.getChild(0);
+        }
+        return current instanceof StringLiteralsContext && (null != ((StringLiteralsContext) current).characterSetName() || null != ((StringLiteralsContext) current).collateClause());
     }
     
     @Override
