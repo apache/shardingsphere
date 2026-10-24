@@ -361,6 +361,46 @@ class FirebirdPrepareStatementCommandExecutorTest {
         return result;
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("describeArithmeticExpressionTypeArguments")
+    void assertDescribeArithmeticExpressionType(final String name, final String sql, final FirebirdBinaryColumnType columnType) throws Exception {
+        ShardingSphereColumn startDateColumn = new ShardingSphereColumn("start_date", Types.DATE, false, false, false, true, false, true);
+        ShardingSphereColumn endDateColumn = new ShardingSphereColumn("end_date", Types.DATE, false, false, false, true, false, true);
+        ShardingSphereColumn startTimeColumn = new ShardingSphereColumn("start_time", Types.TIME, false, false, false, true, false, true);
+        ShardingSphereColumn createdAtColumn = new ShardingSphereColumn("created_at", Types.TIMESTAMP, false, false, false, true, false, true);
+        ShardingSphereColumn priceColumn = new ShardingSphereColumn("price", Types.DOUBLE, false, false, false, true, false, true);
+        ProxyContext.getInstance().getContextManager().getDatabase("foo_db").getSchema("foo_db").putTable(new ShardingSphereTable("bar_tbl",
+                Arrays.asList(startDateColumn, endDateColumn, startTimeColumn, createdAtColumn, priceColumn), Collections.emptyList(), Collections.emptyList()));
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.SELECT,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(payload);
+        verify(payload).writeInt4LE(columnType.getValue() + 1);
+        verify(payload).writeInt4LE(columnType.getLength());
+    }
+    
+    private static Stream<Arguments> describeArithmeticExpressionTypeArguments() {
+        return Stream.of(
+                Arguments.of("Integer arithmetic", "SELECT id * 2 FROM foo_tbl", FirebirdBinaryColumnType.INT64),
+                Arguments.of("Date subtraction", "SELECT end_date - start_date FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Nested date subtraction", "SELECT start_date + 1 - end_date FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Date plus integer", "SELECT start_date + 1 FROM bar_tbl", FirebirdBinaryColumnType.DATE),
+                Arguments.of("Time plus integer", "SELECT start_time + 60 FROM bar_tbl", FirebirdBinaryColumnType.TIME),
+                Arguments.of("Timestamp subtraction", "SELECT created_at - start_date FROM bar_tbl", FirebirdBinaryColumnType.NUMERIC),
+                Arguments.of("Approximate numeric arithmetic", "SELECT price * 2 FROM bar_tbl", FirebirdBinaryColumnType.DOUBLE));
+    }
+    
     @Test
     void assertDescribeLiterals() throws Exception {
         when(packet.getSQL()).thenReturn("SELECT 'it''s', 1 AS one FROM foo_tbl");

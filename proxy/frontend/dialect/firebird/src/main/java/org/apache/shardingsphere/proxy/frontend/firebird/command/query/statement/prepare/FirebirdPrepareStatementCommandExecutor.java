@@ -247,7 +247,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) each).getOriginalColumn().getValue());
                 processColumn(describeColumns, requestedItems, table, column, ((ColumnProjection) each).getOwner().orElse(null), each.getAlias().orElse(null), ++columnCount);
             } else if (each instanceof ExpressionProjection) {
-                processExpressionProjection((ExpressionProjection) each, describeColumns, requestedItems, ++columnCount);
+                processExpressionProjection((ExpressionProjection) each, database, schema, describeColumns, requestedItems, ++columnCount);
             } else if (each instanceof AggregationProjection) {
                 String functionName = ((AggregationProjection) each).getType().name();
                 processCustomColumn(null, functionName, each.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, ++columnCount);
@@ -420,30 +420,33 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return false;
     }
     
-    private void processExpressionProjection(final ExpressionProjection expr, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,
-                                             final int columnCount) {
+    private void processExpressionProjection(final ExpressionProjection expr, final Supplier<ShardingSphereDatabase> database, final Supplier<Optional<ShardingSphereSchema>> schema,
+                                             final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
         ExpressionSegment exprSegment = expr.getExpressionSegment().getExpr();
         if (exprSegment instanceof FunctionSegment) {
             String functionName = ((FunctionSegment) exprSegment).getFunctionName();
             processCustomColumn(null, functionName, expr.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, columnCount);
         } else if (exprSegment instanceof BinaryOperationExpression) {
             String operationName = getOperationName(((BinaryOperationExpression) exprSegment).getOperator());
-            int operationType = getOperationType(((BinaryOperationExpression) exprSegment).getOperator());
+            int operationType = getOperationType((BinaryOperationExpression) exprSegment, database, schema);
             processCustomColumn(null, operationName, expr.getAlias().orElse(null), operationType, describeColumns, requestedItems, columnCount);
         } else if (exprSegment instanceof LiteralExpressionSegment) {
             Object value = ((LiteralExpressionSegment) exprSegment).getLiterals();
-            int type = Types.NULL;
-            if (value instanceof String) {
-                type = Types.VARCHAR;
-            } else if (value instanceof Integer) {
-                type = Types.INTEGER;
-            } else if (value instanceof Long) {
-                type = Types.BIGINT;
-            } else if (value instanceof Number) {
-                type = Types.NUMERIC;
-            }
-            processLiteralColumn(value, expr.getAlias().orElse(null), type, describeColumns, requestedItems, columnCount);
+            processLiteralColumn(value, expr.getAlias().orElse(null), getLiteralType(value), describeColumns, requestedItems, columnCount);
         }
+    }
+    
+    private int getLiteralType(final Object value) {
+        if (value instanceof String) {
+            return Types.VARCHAR;
+        }
+        if (value instanceof Integer) {
+            return Types.INTEGER;
+        }
+        if (value instanceof Long) {
+            return Types.BIGINT;
+        }
+        return value instanceof Number ? Types.NUMERIC : Types.NULL;
     }
     
     private int getFunctionType(final String functionName) {
@@ -481,18 +484,73 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
-    private int getOperationType(final String operationType) {
-        switch (operationType) {
+    private int getOperationType(final BinaryOperationExpression expr, final Supplier<ShardingSphereDatabase> database, final Supplier<Optional<ShardingSphereSchema>> schema) {
+        switch (expr.getOperator()) {
             case "||":
                 return Types.VARCHAR;
             case "+":
             case "-":
             case "*":
             case "/":
-                return Types.BIGINT;
+                return getArithmeticType(expr.getOperator(), getOperandType(expr.getLeft(), database, schema), getOperandType(expr.getRight(), database, schema));
             default:
                 return Types.INTEGER;
         }
+    }
+    
+    private int getOperandType(final ExpressionSegment operand, final Supplier<ShardingSphereDatabase> database, final Supplier<Optional<ShardingSphereSchema>> schema) {
+        if (operand instanceof ColumnSegment) {
+            ColumnSegmentBoundInfo boundInfo = ((ColumnSegment) operand).getColumnBoundInfo();
+            if (boundInfo.getOriginalTable().getValue().isEmpty()) {
+                return Types.NULL;
+            }
+            ShardingSphereColumn column = getTable(boundInfo.getOriginalTable().getValue(), database, schema).getColumn(boundInfo.getOriginalColumn().getValue());
+            return null == column ? Types.NULL : column.getDataType();
+        }
+        if (operand instanceof LiteralExpressionSegment) {
+            return getLiteralType(((LiteralExpressionSegment) operand).getLiterals());
+        }
+        if (operand instanceof FunctionSegment) {
+            return getFunctionType(((FunctionSegment) operand).getFunctionName());
+        }
+        if (operand instanceof BinaryOperationExpression) {
+            return getOperationType((BinaryOperationExpression) operand, database, schema);
+        }
+        return Types.NULL;
+    }
+    
+    // follow Firebird dialect 3 result types, the fetched row data is encoded with the type the backend returns
+    private int getArithmeticType(final String operator, final int leftType, final int rightType) {
+        if (isDateTimeType(leftType) && isDateTimeType(rightType)) {
+            if (!"-".equals(operator)) {
+                return Types.TIMESTAMP;
+            }
+            return Types.DATE == leftType && Types.DATE == rightType ? Types.INTEGER : Types.NUMERIC;
+        }
+        if (isDateTimeType(leftType)) {
+            return leftType;
+        }
+        if (isDateTimeType(rightType)) {
+            return rightType;
+        }
+        return isApproximateNumericType(leftType) || isApproximateNumericType(rightType) ? Types.DOUBLE : Types.BIGINT;
+    }
+    
+    private boolean isDateTimeType(final int dataType) {
+        switch (dataType) {
+            case Types.DATE:
+            case Types.TIME:
+            case Types.TIMESTAMP:
+            case Types.TIME_WITH_TIMEZONE:
+            case Types.TIMESTAMP_WITH_TIMEZONE:
+                return true;
+            default:
+                return false;
+        }
+    }
+    
+    private boolean isApproximateNumericType(final int dataType) {
+        return Types.FLOAT == dataType || Types.REAL == dataType || Types.DOUBLE == dataType;
     }
     
     @HighFrequencyInvocation
