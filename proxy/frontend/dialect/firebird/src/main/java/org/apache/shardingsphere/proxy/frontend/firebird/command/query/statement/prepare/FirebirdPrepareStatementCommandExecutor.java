@@ -405,6 +405,12 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return result;
     }
     
+    private void putAffectedColumn(final ColumnSegment column, final ExpressionSegment value, final Map<Integer, ColumnSegment> affectedColumns) {
+        if (value instanceof ParameterMarkerExpressionSegment) {
+            affectedColumns.put(((ParameterMarkerExpressionSegment) value).getParameterMarkerIndex(), column);
+        }
+    }
+    
     @HighFrequencyInvocation
     private Collection<WhereSegment> getWhereSegments(final WhereContextAvailable sqlStatementContext) {
         if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
@@ -429,12 +435,6 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private void appendBranchWhereSegments(final SelectStatement branch, final Collection<WhereSegment> whereSegments) {
         branch.getWhere().filter(whereSegment -> !whereSegments.contains(whereSegment)).ifPresent(whereSegments::add);
         appendCombineWhereSegments(branch, whereSegments);
-    }
-    
-    private void putAffectedColumn(final ColumnSegment column, final ExpressionSegment value, final Map<Integer, ColumnSegment> affectedColumns) {
-        if (value instanceof ParameterMarkerExpressionSegment) {
-            affectedColumns.put(((ParameterMarkerExpressionSegment) value).getParameterMarkerIndex(), column);
-        }
     }
     
     private void processExpr(final ExpressionSegment expr, final Map<Integer, ColumnSegment> affectedColumns) {
