@@ -344,8 +344,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     
     @Test
     void assertDescribeCommonTableExpressionWithDerivedTableSelect() throws Exception {
-        FirebirdReturnColumnPacket actualColumnPacket =
-                describeSingleColumn("WITH foo_cte (n) AS (SELECT derived_tbl.n FROM (SELECT 'foo' AS n FROM foo_tbl) derived_tbl) SELECT n FROM foo_cte");
+        FirebirdReturnColumnPacket actualColumnPacket = describeSingleColumn("WITH foo_cte (n) AS (SELECT derived_tbl.n FROM (SELECT 'foo' AS n FROM foo_tbl) derived_tbl) SELECT n FROM foo_cte");
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         actualColumnPacket.write(payload);
         verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
@@ -353,11 +352,37 @@ class FirebirdPrepareStatementCommandExecutorTest {
     
     @Test
     void assertDescribeDerivedTableFromCommonTableExpressionSelect() throws Exception {
-        FirebirdReturnColumnPacket actualColumnPacket =
-                describeSingleColumn("WITH foo_cte (n) AS (SELECT 'foo' FROM foo_tbl) SELECT derived_tbl.n FROM (SELECT n FROM foo_cte) derived_tbl");
+        FirebirdReturnColumnPacket actualColumnPacket = describeSingleColumn("WITH foo_cte (n) AS (SELECT 'foo' FROM foo_tbl) SELECT derived_tbl.n FROM (SELECT n FROM foo_cte) derived_tbl");
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         actualColumnPacket.write(payload);
         verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeDerivedTableWithScalarSubquerySelect() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT (SELECT 2 AS m FROM foo_tbl) AS m, derived_tbl.n FROM (SELECT 'foo' AS n FROM foo_tbl) derived_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.SELECT,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.ALIAS,
+                FirebirdSQLInfoPacketType.ALIAS,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPacketPayload scalarSubqueryPayload = mock(FirebirdPacketPayload.class);
+        when(scalarSubqueryPayload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        actualReturnPacket.getDescribeSelect().get(0).write(scalarSubqueryPayload);
+        verify(scalarSubqueryPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        verify(scalarSubqueryPayload).writeBytes("m".getBytes(StandardCharsets.UTF_8));
+        FirebirdPacketPayload derivedColumnPayload = mock(FirebirdPacketPayload.class);
+        when(derivedColumnPayload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        actualReturnPacket.getDescribeSelect().get(1).write(derivedColumnPayload);
+        verify(derivedColumnPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        verify(derivedColumnPayload).writeBytes("n".getBytes(StandardCharsets.UTF_8));
     }
     
     @Test
