@@ -37,6 +37,8 @@ import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyR
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.postgresql.replication.LogSequenceNumber;
@@ -145,8 +147,9 @@ class PostgreSQLPipelineSQLBuilderTest {
         assertThat(sqlBuilder.wrapWithPageQuery("SELECT * FROM foo_tbl"), is("SELECT * FROM foo_tbl LIMIT ?"));
     }
     
-    @Test
-    void assertBuildCreateTableSQLs() throws SQLException {
+    @ParameterizedTest
+    @ValueSource(strings = {"'a;b'", "E'owner''s;comment'", "$$a;b$$", "'😀;value'"})
+    void assertBuildCreateTableSQLs(final String defaultValue) throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getDatabaseMajorVersion()).thenReturn(10);
         when(connection.getMetaData().getDatabaseMinorVersion()).thenReturn(1);
@@ -169,11 +172,12 @@ class PostgreSQLPipelineSQLBuilderTest {
                 MockedConstruction<PostgreSQLConstraintsPropertiesAppender> ignoredConstraintsAppender = mockConstruction(PostgreSQLConstraintsPropertiesAppender.class);
                 MockedConstruction<PostgreSQLIndexSQLGenerator> ignoredIndexGenerator =
                         mockConstruction(PostgreSQLIndexSQLGenerator.class, (mocked, mockContext) -> when(mocked.generate(materials)).thenReturn("CREATE INDEX foo_index"))) {
-            freemarkerManager.when(() -> PostgreSQLPipelineFreemarkerManager.getSQLByVersion(materials, "component/table/%s/create.ftl", 10, 1)).thenReturn("CREATE TABLE foo;");
+            freemarkerManager.when(() -> PostgreSQLPipelineFreemarkerManager.getSQLByVersion(materials, "component/table/%s/create.ftl", 10, 1))
+                    .thenReturn("CREATE TABLE foo (note text DEFAULT " + defaultValue + ");");
             Collection<String> actual = sqlBuilder.buildCreateTableSQLs(dataSource, "public", "foo_tbl");
             List<String> actualList = actual.stream().map(String::trim).toList();
             assertThat(actualList.size(), is(2));
-            assertThat(actualList.get(0), is("CREATE TABLE foo"));
+            assertThat(actualList.get(0), is("CREATE TABLE foo (note text DEFAULT " + defaultValue + ")"));
             assertThat(actualList.get(1), is("CREATE INDEX foo_index"));
             assertThat(arrayColumn.get("cltype"), is("int4"));
             assertTrue((boolean) arrayColumn.get("hasSqrBracket"));
