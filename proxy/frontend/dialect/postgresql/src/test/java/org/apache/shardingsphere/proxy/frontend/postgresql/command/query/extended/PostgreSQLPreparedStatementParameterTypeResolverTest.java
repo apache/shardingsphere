@@ -195,6 +195,24 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         assertThat(actual.get(0), sameInstance(expected));
     }
     
+    @Test
+    void assertResolveUnspecifiedParameterValuesWithJoinUsingColumn() {
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT 1 FROM foo_tbl AS a LEFT JOIN foo_tbl AS b USING (id) WHERE id=? AND a.k=?", Arrays.asList(0, 1));
+        PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("010");
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement,
+                Arrays.asList(expected, new PostgreSQLTypeUnspecifiedSQLParameter("2")));
+        assertThat(actual.get(0), sameInstance(expected));
+        assertThat(actual.get(1), is(2L));
+    }
+    
+    @Test
+    void assertResolveUnspecifiedParameterValuesWithNaturalJoinColumn() {
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT 1 FROM foo_tbl AS a NATURAL JOIN foo_tbl AS b WHERE id=?", Collections.singletonList(0));
+        PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("010");
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Collections.singletonList(expected));
+        assertThat(actual.get(0), sameInstance(expected));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("resolveUnspecifiedParameterValuesWithUnresolvedTextArguments")
     void assertResolveUnspecifiedParameterValuesWithUnresolvedText(final String name, final String text) {

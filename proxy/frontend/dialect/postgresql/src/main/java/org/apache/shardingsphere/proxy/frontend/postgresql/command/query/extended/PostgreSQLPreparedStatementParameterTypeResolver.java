@@ -32,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -43,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
@@ -55,6 +57,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,6 +65,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,6 +89,7 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
      * such as an overloaded function argument, keeps the type the database infers from all of its occurrences.
      * Only columns of physical tables are used, and an IN list is used only when all of its values are parameters or literals,
      * because a derived column or another typed value in the list can make the database infer a different type.
+     * Columns with the name of a JOIN USING or NATURAL JOIN column are not used either, because the merged column can have the type of the other joined column.
      * Only plain decimal integer text is resolved, because Java decodes it to the same value as PostgreSQL integer input.
      * JDBC BIGINT columns can also be oid columns, whose input reads a leading zero as octal and wraps negative numbers,
      * so their text is resolved only without a minus sign or leading zeros, where oid and int8 input give the same value.
@@ -143,11 +148,12 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         if (sqlStatement instanceof InsertStatement) {
             putInsertValuesColumnTypes(database, (InsertStatement) sqlStatement, result);
         }
+        Collection<String> usingColumnNames = getUsingColumnNames(sqlStatement);
         if (sqlStatement instanceof UpdateStatement) {
             putSetAssignmentColumnTypes(database, (UpdateStatement) sqlStatement, result);
         }
         for (WhereSegment each : SQLStatementContextExtractor.getAllWhereSegments(preparedStatement.getSqlStatementContext())) {
-            putWhereColumnTypes(database, each, result);
+            putWhereColumnTypes(database, usingColumnNames, each, result);
         }
         return result;
     }
@@ -202,17 +208,34 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         parameterMarkerColumnTypes.computeIfAbsent(parameterMarker.getParameterMarkerIndex(), unused -> new HashSet<>()).add(columnType);
     }
     
+    private static Collection<String> getUsingColumnNames(final SQLStatement sqlStatement) {
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromSQLStatement(sqlStatement);
+        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        for (JoinTableSegment each : tableExtractor.getJoinTables()) {
+            addColumnNames(each.getUsing(), result);
+            addColumnNames(each.getDerivedUsing(), result);
+        }
+        return result;
+    }
+    
+    private static void addColumnNames(final Collection<ColumnSegment> columns, final Collection<String> columnNames) {
+        for (ColumnSegment each : columns) {
+            columnNames.add(each.getIdentifier().getValue());
+        }
+    }
+    
     private static void putSetAssignmentColumnTypes(final ShardingSphereDatabase database, final UpdateStatement updateStatement, final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
         for (ColumnAssignmentSegment each : updateStatement.getSetAssignment().getAssignments()) {
             if (1 == each.getColumns().size()) {
-                putColumnType(database, each.getColumns().get(0), each.getValue(), parameterMarkerColumnTypes);
+                putColumnType(database, Collections.emptySet(), each.getColumns().get(0), each.getValue(), parameterMarkerColumnTypes);
             }
         }
     }
     
-    private static void putColumnType(final ShardingSphereDatabase database, final ExpressionSegment column, final ExpressionSegment value,
+    private static void putColumnType(final ShardingSphereDatabase database, final Collection<String> usingColumnNames, final ExpressionSegment column, final ExpressionSegment value,
                                       final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
-        if (column instanceof ColumnSegment && value instanceof ParameterMarkerExpressionSegment) {
+        if (column instanceof ColumnSegment && value instanceof ParameterMarkerExpressionSegment && !usingColumnNames.contains(((ColumnSegment) column).getIdentifier().getValue())) {
             findColumnType(database, ((ColumnSegment) column).getColumnBoundInfo())
                     .ifPresent(columnType -> putParameterColumnType((ParameterMarkerExpressionSegment) value, columnType, parameterMarkerColumnTypes));
         }
@@ -229,39 +252,42 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         return table.containsColumn(columnBoundInfo.getOriginalColumn()) ? Optional.of(table.getColumn(columnBoundInfo.getOriginalColumn()).getDataType()) : Optional.empty();
     }
     
-    private static void putWhereColumnTypes(final ShardingSphereDatabase database, final WhereSegment whereSegment, final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
+    private static void putWhereColumnTypes(final ShardingSphereDatabase database, final Collection<String> usingColumnNames, final WhereSegment whereSegment,
+                                            final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
         for (ExpressionSegment each : ExpressionExtractor.extractAllExpressions(whereSegment.getExpr())) {
-            putPredicateColumnTypes(database, each, parameterMarkerColumnTypes);
+            putPredicateColumnTypes(database, usingColumnNames, each, parameterMarkerColumnTypes);
         }
     }
     
-    private static void putPredicateColumnTypes(final ShardingSphereDatabase database, final ExpressionSegment predicate, final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
+    private static void putPredicateColumnTypes(final ShardingSphereDatabase database, final Collection<String> usingColumnNames, final ExpressionSegment predicate,
+                                                final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
         if (predicate instanceof BinaryOperationExpression) {
             BinaryOperationExpression binaryOperationExpression = (BinaryOperationExpression) predicate;
             if (COMPARE_OPERATORS.contains(binaryOperationExpression.getOperator())) {
-                putColumnType(database, binaryOperationExpression.getLeft(), binaryOperationExpression.getRight(), parameterMarkerColumnTypes);
-                putColumnType(database, binaryOperationExpression.getRight(), binaryOperationExpression.getLeft(), parameterMarkerColumnTypes);
+                putColumnType(database, usingColumnNames, binaryOperationExpression.getLeft(), binaryOperationExpression.getRight(), parameterMarkerColumnTypes);
+                putColumnType(database, usingColumnNames, binaryOperationExpression.getRight(), binaryOperationExpression.getLeft(), parameterMarkerColumnTypes);
             }
             return;
         }
         if (predicate instanceof InExpression) {
-            putInColumnTypes(database, (InExpression) predicate, parameterMarkerColumnTypes);
+            putInColumnTypes(database, usingColumnNames, (InExpression) predicate, parameterMarkerColumnTypes);
             return;
         }
         if (predicate instanceof BetweenExpression) {
             BetweenExpression betweenExpression = (BetweenExpression) predicate;
-            putColumnType(database, betweenExpression.getLeft(), betweenExpression.getBetweenExpr(), parameterMarkerColumnTypes);
-            putColumnType(database, betweenExpression.getLeft(), betweenExpression.getAndExpr(), parameterMarkerColumnTypes);
+            putColumnType(database, usingColumnNames, betweenExpression.getLeft(), betweenExpression.getBetweenExpr(), parameterMarkerColumnTypes);
+            putColumnType(database, usingColumnNames, betweenExpression.getLeft(), betweenExpression.getAndExpr(), parameterMarkerColumnTypes);
         }
     }
     
-    private static void putInColumnTypes(final ShardingSphereDatabase database, final InExpression inExpression, final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
+    private static void putInColumnTypes(final ShardingSphereDatabase database, final Collection<String> usingColumnNames, final InExpression inExpression,
+                                         final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
         Collection<ExpressionSegment> values = inExpression.getExpressionList();
         if (!isParameterMarkersOrLiterals(values)) {
             return;
         }
         for (ExpressionSegment each : values) {
-            putColumnType(database, inExpression.getLeft(), each, parameterMarkerColumnTypes);
+            putColumnType(database, usingColumnNames, inExpression.getLeft(), each, parameterMarkerColumnTypes);
         }
     }
     
