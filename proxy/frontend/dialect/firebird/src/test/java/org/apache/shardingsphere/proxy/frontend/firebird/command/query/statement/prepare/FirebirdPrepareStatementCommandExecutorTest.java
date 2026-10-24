@@ -475,6 +475,54 @@ class FirebirdPrepareStatementCommandExecutorTest {
         verify(contentPayload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
     }
     
+    @Test
+    void assertDescribeInsertSelectParameters() throws Exception {
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) SELECT id + ? FROM foo_tbl WHERE id BETWEEN ? AND ?");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(3));
+        FirebirdPacketPayload projectionPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(0).write(projectionPayload);
+        verify(projectionPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        verify(projectionPayload).writeInt4LE(32765);
+        FirebirdPacketPayload lowerBoundPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(1).write(lowerBoundPayload);
+        verify(lowerBoundPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload upperBoundPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(2).write(upperBoundPayload);
+        verify(upperBoundPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeInsertSelectParametersOfUnionWithThreeBranches() throws Exception {
+        String sql = "INSERT INTO foo_tbl (id) SELECT id FROM foo_tbl WHERE id = ? UNION ALL SELECT id FROM foo_tbl WHERE content = ? UNION ALL SELECT id FROM foo_tbl WHERE id = ?";
+        FirebirdPrepareStatementReturnPacket actual = describeBind(sql);
+        assertThat(actual.getDescribeBind().size(), is(3));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.BLOB);
+        assertParameterType(actual.getDescribeBind().get(2), FirebirdBinaryColumnType.LONG);
+    }
+    
+    @Test
+    void assertDescribeInsertSelectReturningShorthand() throws Exception {
+        ShardingSphereColumn column = new ShardingSphereColumn("bar_id", Types.INTEGER, false, false, true, true, false, true);
+        ProxyContext.getInstance().getContextManager().getDatabase("foo_db").getSchema("foo_db")
+                .putTable(new ShardingSphereTable("bar_tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList()));
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) SELECT bar_id FROM bar_tbl RETURNING *");
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getType(), is(FirebirdSQLInfoReturnValue.SELECT));
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(idPayload);
+        verify(idPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload contentPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(1).write(contentPayload);
+        verify(contentPayload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("describeWithSchemaReplacementArguments")
     void assertDescribeWithSchemaReplacement(final String name, final String sql, final FirebirdSQLInfoPacketType describeType) throws Exception {

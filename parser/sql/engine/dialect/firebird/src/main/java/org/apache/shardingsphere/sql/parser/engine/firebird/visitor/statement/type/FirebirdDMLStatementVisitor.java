@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.From
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.HavingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.InsertContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.InsertSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.JoinedTableContext;
@@ -135,26 +136,27 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        InsertStatement insertValuesStatement = (InsertStatement) visit(ctx.insertValuesClause());
+        InsertStatement insertStatement = (InsertStatement) (null == ctx.insertValuesClause() ? visit(ctx.insertSelectClause()) : visit(ctx.insertValuesClause()));
         InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()))
-                .insertColumns(insertValuesStatement.getInsertColumns().orElse(null)).values(insertValuesStatement.getValues())
+                .insertColumns(insertStatement.getInsertColumns().orElse(null)).insertSelect(insertStatement.getInsertSelect().orElse(null)).values(insertStatement.getValues())
                 .returning(null == ctx.returningClause() ? null : (ReturningSegment) visit(ctx.returningClause())).build();
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertColumnsSegment insertColumns;
-        if (null != ctx.columnNames()) {
-            ColumnNamesContext columnNames = ctx.columnNames();
-            CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
-            insertColumns = new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
-        } else {
-            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
+        return InsertStatement.builder().databaseType(getDatabaseType())
+                .insertColumns(createInsertColumnsSegment(ctx, ctx.columnNames())).values(createInsertValuesSegments(ctx.assignmentValues())).build();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private InsertColumnsSegment createInsertColumnsSegment(final ParserRuleContext ctx, final ColumnNamesContext columnNames) {
+        if (null == columnNames) {
+            return new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
+        CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
+        return new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
@@ -163,6 +165,13 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
             result.add((InsertValuesSegment) visit(each));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
+        SelectContext select = ctx.select();
+        SubquerySegment insertSelect = new SubquerySegment(select.start.getStartIndex(), select.stop.getStopIndex(), (SelectStatement) visit(select), getOriginalText(select));
+        return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(createInsertColumnsSegment(ctx, ctx.columnNames())).insertSelect(insertSelect).build();
     }
     
     @Override
