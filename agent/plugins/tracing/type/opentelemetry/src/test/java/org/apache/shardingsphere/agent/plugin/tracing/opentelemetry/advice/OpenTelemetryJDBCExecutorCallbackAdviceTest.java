@@ -30,6 +30,7 @@ import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.advisor.executor.type.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
@@ -49,12 +50,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -62,6 +66,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -153,26 +158,66 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     @Test
     void assertNestedFailureDoesNotEndOuterSpan() {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
-        JDBCExecutionUnit innerExecutionUnit = new JDBCExecutionUnit(
-                new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit("SELECT 2", Collections.emptyList())), null, executionUnit.getStorageResource());
+        JDBCExecutionUnit innerExecutionUnit = new JDBCExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit("SELECT 2", Collections.emptyList())), null, executionUnit.getStorageResource());
         advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
         advice.beforeMethod(targetObject, null, new Object[]{innerExecutionUnit, false}, "OpenTelemetry");
         advice.onThrowing(targetObject, null, new Object[]{innerExecutionUnit, false}, new IOException("mock"), "OpenTelemetry");
         advice.afterMethod(targetObject, null, new Object[]{innerExecutionUnit, false}, null, "OpenTelemetry");
         advice.afterMethod(targetObject, null, new Object[]{executionUnit, false}, null, "OpenTelemetry");
-        Collection<SpanData> spanItems = testExporter.getFinishedSpanItems();
-        assertThat(spanItems.size(), is(2));
-        SpanData actualInnerSpan = findSpanByStatement(spanItems, "SELECT 2");
-        SpanData actualOuterSpan = findSpanByStatement(spanItems, SQL);
+        Collection<SpanData> actualSpanItems = testExporter.getFinishedSpanItems();
+        assertThat(actualSpanItems.size(), is(2));
+        SpanData actualInnerSpan = findSpanByStatement(actualSpanItems, "SELECT 2");
+        SpanData actualOuterSpan = findSpanByStatement(actualSpanItems, SQL);
         assertThat(actualInnerSpan.getStatus().getStatusCode(), is(StatusCode.ERROR));
         assertThat(actualOuterSpan.getStatus().getStatusCode(), is(StatusCode.OK));
     }
     
     @Test
+    void assertNestedFailedBeforeDoesNotEndOuterSpan() throws Exception {
+        OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
+        InstanceMethodAdviceExecutor executor = new InstanceMethodAdviceExecutor(Collections.singletonMap("OpenTelemetry", Collections.singleton(advice)));
+        JDBCExecutionUnit innerExecutionUnit = new JDBCExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit("SELECT 2", Collections.emptyList())), null, executionUnit.getStorageResource());
+        Method executeMethod = Object.class.getDeclaredMethod("toString");
+        assertThrows(IOException.class, () -> executor.advice(targetObject, executeMethod, new Object[]{executionUnit, false}, () -> {
+            // The inner callback target has no resourceMetaData field, so the inner beforeMethod fails. The executor swallows the failure
+            // and still invokes the completion hooks of the inner invocation, which must not touch the span of the outer invocation.
+            executor.advice(mock(TargetAdviceObject.class), executeMethod, new Object[]{innerExecutionUnit, false}, () -> null);
+            throw new IOException("mock");
+        }));
+        Collection<SpanData> actualSpanItems = testExporter.getFinishedSpanItems();
+        assertThat(actualSpanItems.size(), is(1));
+        SpanData actualOuterSpan = actualSpanItems.iterator().next();
+        assertThat(actualOuterSpan.getAttributes().get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(SQL));
+        assertThat(actualOuterSpan.getStatus().getStatusCode(), is(StatusCode.ERROR));
+        assertThat(actualOuterSpan.getEvents().size(), is(1));
+    }
+    
+    @Test
+    @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
+    void assertPendingSpanIsReclaimedWhenCompletionHooksAreSkipped() {
+        OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
+        registerSpanWithoutCompletionHooks(advice);
+        Field pendingSpansField = OpenTelemetryJDBCExecutorCallbackAdvice.class.getDeclaredField("PENDING_SPANS");
+        pendingSpansField.setAccessible(true);
+        Map<?, ?> pendingSpans = (Map<?, ?>) pendingSpansField.get(null);
+        for (int i = 0; i < 50 && !pendingSpans.isEmpty(); i++) {
+            System.gc();
+            // Reading the map lets the WeakHashMap expunge entries whose keys were collected.
+            TimeUnit.MILLISECONDS.sleep(10L);
+        }
+        assertThat(pendingSpans.size(), is(0));
+    }
+    
+    private void registerSpanWithoutCompletionHooks(final OpenTelemetryJDBCExecutorCallbackAdvice advice) {
+        JDBCExecutionUnit orphanExecutionUnit = new JDBCExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit("SELECT 3", Collections.emptyList())), null, executionUnit.getStorageResource());
+        advice.beforeMethod(targetObject, null, new Object[]{orphanExecutionUnit, false}, "OpenTelemetry");
+        // No onThrowing and no afterMethod follow: the plugin was disabled between the hooks, so the completion hooks are skipped.
+    }
+    
+    @Test
     void assertConcurrentInvocations() throws InterruptedException {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
-        JDBCExecutionUnit otherExecutionUnit = new JDBCExecutionUnit(
-                new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit("SELECT 2", Collections.emptyList())), null, executionUnit.getStorageResource());
+        JDBCExecutionUnit otherExecutionUnit = new JDBCExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit("SELECT 2", Collections.emptyList())), null, executionUnit.getStorageResource());
         CountDownLatch invocationAStarted = new CountDownLatch(1);
         CountDownLatch invocationBStarted = new CountDownLatch(1);
         AtomicReference<Throwable> workerError = new AtomicReference<>();
@@ -210,10 +255,10 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         threadA.join(5000L);
         threadB.join(5000L);
         assertNull(workerError.get());
-        Collection<SpanData> spanItems = testExporter.getFinishedSpanItems();
-        assertThat(spanItems.size(), is(2));
-        SpanData actualSpanA = findSpanByStatement(spanItems, SQL);
-        SpanData actualSpanB = findSpanByStatement(spanItems, "SELECT 2");
+        Collection<SpanData> actualSpanItems = testExporter.getFinishedSpanItems();
+        assertThat(actualSpanItems.size(), is(2));
+        SpanData actualSpanA = findSpanByStatement(actualSpanItems, SQL);
+        SpanData actualSpanB = findSpanByStatement(actualSpanItems, "SELECT 2");
         assertThat(actualSpanA.getStatus().getStatusCode(), is(StatusCode.OK));
         assertThat(actualSpanB.getStatus().getStatusCode(), is(StatusCode.ERROR));
         assertThat(actualSpanA.getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));

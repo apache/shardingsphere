@@ -23,6 +23,9 @@ import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingJDBCExecutorCallbackAdvice;
@@ -32,15 +35,21 @@ import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.Connecti
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * OpenTelemetry JDBC executor callback advice executor.
  */
 public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCExecutorCallbackAdvice<Span> {
     
-    private static final ThreadLocal<Deque<PendingSpan>> ACTIVE_SPANS = ThreadLocal.withInitial(ArrayDeque::new);
+    /**
+     * Pending spans keyed by the execution unit of the invocation that registered them. The per-invocation key keeps concurrent and nested callbacks
+     * isolated, leaves nothing to consume for a completion hook whose {@code beforeMethod} failed before registering a span, and lets a garbage
+     * collection reclaim the state of an invocation whose completion hooks were skipped, e.g. when the plugin was disabled between hooks.
+     */
+    private static final Map<JDBCExecutionUnit, PendingSpan> PENDING_SPANS = Collections.synchronizedMap(new WeakHashMap<>());
     
     @Override
     protected void recordExecuteInfo(final Span parentSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread,
@@ -58,29 +67,33 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
                 .setAttribute(AttributeConstants.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql())
                 .setAttribute(AttributeConstants.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString())
                 .setAttribute(AttributeConstants.SPAN_KIND, AttributeConstants.SPAN_KIND_CLIENT);
-        ACTIVE_SPANS.get().push(new PendingSpan(spanBuilder.startSpan()));
+        PENDING_SPANS.put(executionUnit, new PendingSpan(spanBuilder.startSpan()));
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
-        PendingSpan pending = ACTIVE_SPANS.get().poll();
+        PendingSpan pending = PENDING_SPANS.remove((JDBCExecutionUnit) args[0]);
         if (null != pending) {
-            Span span = pending.getSpan();
-            if (null != pending.getThrowable()) {
-                span.setStatus(StatusCode.ERROR).recordException(pending.getThrowable());
-            } else {
-                span.setStatus(StatusCode.OK);
-            }
-            span.end();
+            endSpan(pending);
         }
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Throwable throwable, final String pluginType) {
-        PendingSpan pending = ACTIVE_SPANS.get().peek();
+        PendingSpan pending = PENDING_SPANS.get((JDBCExecutionUnit) args[0]);
         if (null != pending) {
             pending.setThrowable(throwable);
         }
+    }
+    
+    private void endSpan(final PendingSpan pending) {
+        Span span = pending.getSpan();
+        if (null != pending.getThrowable()) {
+            span.setStatus(StatusCode.ERROR).recordException(pending.getThrowable());
+        } else {
+            span.setStatus(StatusCode.OK);
+        }
+        span.end();
     }
     
     /**
@@ -89,26 +102,13 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
      * {@code finally} block invokes {@code afterMethod}, so {@code afterMethod} is the single
      * exit that ends the span and applies its final status.
      */
+    @Getter
+    @RequiredArgsConstructor
     private static final class PendingSpan {
         
         private final Span span;
         
+        @Setter
         private Throwable throwable;
-        
-        PendingSpan(final Span span) {
-            this.span = span;
-        }
-        
-        Span getSpan() {
-            return span;
-        }
-        
-        Throwable getThrowable() {
-            return throwable;
-        }
-        
-        void setThrowable(final Throwable throwable) {
-            this.throwable = throwable;
-        }
     }
 }
