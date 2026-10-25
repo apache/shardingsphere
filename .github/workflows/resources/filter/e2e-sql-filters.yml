@@ -57,6 +57,14 @@ database_postgresql:
   - 'parser/**/postgresql/**/src/main/**'
   - 'proxy/**/postgresql/**/src/main/**'
 
+database_firebird:
+  - 'database/**/firebird/**/src/main/**'
+  - 'features/**/firebird/**/src/main/**'
+  - 'infra/**/firebird/**/src/main/**'
+  - 'kernel/**/firebird/**/src/main/**'
+  - 'parser/**/firebird/**/src/main/**'
+  - 'proxy/**/firebird/**/src/main/**'
+
 # ---- Feature / Scenario dimension ----
 feature_sharding:
   - 'features/sharding/!(dialect)/**/src/main/**'
