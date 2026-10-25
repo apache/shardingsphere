@@ -94,6 +94,9 @@
     <sql-case id="select_where_with_bit_expr_with_caret" value="SELECT * FROM t_order WHERE t_order.order_id ^ ?" db-types="MySQL" />
     <sql-case id="select_where_with_bit_expr_with_plus_interval" value="SELECT * FROM t_order WHERE t_order.order_id + INTERVAL 1 SECOND" db-types="MySQL" />
     <sql-case id="select_where_with_bit_expr_with_minus_interval" value="SELECT * FROM t_order WHERE t_order.order_id - INTERVAL 1 SECOND" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_plus_asterisk" value="SELECT * FROM t_order WHERE t_order.order_id + ? * ? = ?" db-types="MySQL,SQLServer,Doris" />
+    <sql-case id="select_where_with_bit_expr_with_minus_plus" value="SELECT * FROM t_order WHERE t_order.order_id - ? + ? = ?" db-types="MySQL,SQLServer,Doris" />
+    <sql-case id="select_where_with_bit_expr_with_vertical_bar_ampersand" value="SELECT * FROM t_order WHERE t_order.order_id | ? &amp; ? = ?" db-types="MySQL,Doris" />
     <sql-case id="select_where_with_simple_expr_with_literals" value="SELECT * FROM t_order WHERE ? &lt; order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_column" value="SELECT * FROM t_order WHERE t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_function_call" value="SELECT * FROM t_order WHERE now() &lt; order_id" db-types="MySQL" />

@@ -76,8 +76,7 @@ rel.reloptions AS reloptions, tst.reloptions AS toast_reloptions, rel.reloftype,
 CASE WHEN typ.typname IS NOT NULL THEN (select pg_catalog.quote_ident(nspname) FROM pg_catalog.pg_namespace WHERE oid = ${scid?c}::oid )||'.'||pg_catalog.quote_ident(typ.typname) ELSE typ.typname END AS typname,
 typ.typrelid AS typoid, rel.relrowsecurity as rlspolicy, rel.relforcerowsecurity as forcerlspolicy,
 (CASE WHEN rel.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable,
-(SELECT pg_catalog.array_agg(provider || '=' || label) FROM pg_catalog.pg_seclabels sl1 WHERE sl1.objoid=rel.oid AND sl1.objsubid=0) AS seclabels,
-(CASE WHEN rel.oid <= ${ datlastsysoid?c}::oid THEN true ElSE false END) AS is_sys_table
+(SELECT pg_catalog.array_agg(provider || '=' || label) FROM pg_catalog.pg_seclabels sl1 WHERE sl1.objoid=rel.oid AND sl1.objsubid=0) AS seclabels
 -- Added for partition table
 <#if tid?? >, (CASE WHEN rel.relkind = 'p' THEN pg_catalog.pg_get_partkeydef(${ tid?c }::oid) ELSE '' END) AS partition_scheme </#if>
 FROM pg_catalog.pg_class rel
