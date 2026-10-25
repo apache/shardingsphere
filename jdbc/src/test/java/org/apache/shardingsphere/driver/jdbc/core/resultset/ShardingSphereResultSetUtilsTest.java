@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.junit.jupiter.api.Test;
 
@@ -64,5 +65,44 @@ class ShardingSphereResultSetUtilsTest {
         expected.put("col2", 2);
         Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, null);
         assertThat(actual, is(expected));
+    }
+
+    @Test
+    void assertCreateColumnLabelAndIndexMapWithUnexpandedShorthand() throws SQLException {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
+        when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
+        ShorthandProjection shorthand = new ShorthandProjection(null, Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singletonList(shorthand));
+        when(selectStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnCount()).thenReturn(2);
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("id");
+        when(resultSetMetaData.getColumnLabel(2)).thenReturn("name");
+        Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, resultSetMetaData);
+        Map<String, Integer> expected = new HashMap<>(2, 1F);
+        expected.put("id", 1);
+        expected.put("name", 2);
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    void assertGetVisibleColumnCountWithDerivedProjections() throws SQLException {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
+        when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
+        List<Projection> projections = new ArrayList<>(2);
+        projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
+        projections.add(new ColumnProjection(null, "col2", null, mock(DatabaseType.class)));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
+        when(selectStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
+        assertThat(ShardingSphereResultSetUtils.getVisibleColumnCount(selectStatementContext, null), is(2));
+    }
+
+    @Test
+    void assertGetVisibleColumnCountWithoutDerivedProjections() throws SQLException {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
+        when(selectStatementContext.containsDerivedProjections()).thenReturn(false);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnCount()).thenReturn(5);
+        assertThat(ShardingSphereResultSetUtils.getVisibleColumnCount(selectStatementContext, resultSetMetaData), is(5));
     }
 }
