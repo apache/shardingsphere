@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -124,7 +125,8 @@ class ProjectionsContextTest {
     @MethodSource("aggregationDistinctColumnCounts")
     void assertGetAggregationDistinctProjectionsByColumnIndex(final String name, final int columnCount) {
         AggregationDistinctProjection projection = getAggregationDistinctProjection();
-        Collection<Projection> projections = Arrays.asList(getColumnProjection(), getShorthandProjection(), projection, new DerivedProjection("column", new IdentifierValue("derived"), null));
+        Collection<Projection> projections =
+                Arrays.asList(getColumnProjection(), getShorthandProjection(), projection, new DerivedProjection("column", new IdentifierValue("derived"), mock(SQLSegment.class)));
         ProjectionsContext context = new ProjectionsContext(0, 0, false, projections);
         Map<Integer, AggregationDistinctProjection> actual = context.getAggregationDistinctProjectionsByColumnIndex(columnCount);
         assertThat(actual.size(), is(1));

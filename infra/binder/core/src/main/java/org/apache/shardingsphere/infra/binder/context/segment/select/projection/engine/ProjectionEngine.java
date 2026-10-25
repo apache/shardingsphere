@@ -64,14 +64,8 @@ public final class ProjectionEngine {
     
     private int aggregationDistinctDerivedColumnCount;
     
-    /**
-     * Create projections.
-     *
-     * @param projectionSegments projection segments
-     * @return projections
-     */
     @HighFrequencyInvocation
-    public Collection<Projection> createProjections(final Collection<ProjectionSegment> projectionSegments) {
+    Collection<Projection> createProjections(final Collection<ProjectionSegment> projectionSegments) {
         if (containsAggregationDerivedAliases(projectionSegments)) {
             for (ProjectionSegment each : projectionSegments) {
                 reserveColumnLabels(each);
@@ -176,14 +170,6 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private String getAggregationDistinctDerivedAlias() {
-        String result;
-        do {
-            result = DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++);
-        } while (reservedColumnLabels.contains(result));
-        return result;
-    }
-    
     private Projection createAggregationProjection(final AggregationProjectionSegment projectionSegment) {
         if (projectionSegment.getWindow().isPresent()) {
             return createExpressionProjection(projectionSegment);
@@ -202,6 +188,14 @@ public final class ProjectionEngine {
         ExpressionProjectionSegment expressionSegment =
                 new ExpressionProjectionSegment(projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getExpression(), projectionSegment);
         return new ExpressionProjection(expressionSegment, projectionSegment.getAlias().orElse(null), databaseType);
+    }
+    
+    private String getAggregationDistinctDerivedAlias() {
+        String result;
+        do {
+            result = DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++);
+        } while (reservedColumnLabels.contains(result));
+        return result;
     }
     
     private void appendAverageDistinctDerivedProjection(final AggregationDistinctProjection averageDistinctProjection) {

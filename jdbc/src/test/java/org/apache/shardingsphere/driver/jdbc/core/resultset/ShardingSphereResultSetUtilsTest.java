@@ -61,7 +61,7 @@ class ShardingSphereResultSetUtilsTest {
                 new IdentifierValue("AGGREGATION_DISTINCT_DERIVED_1"), "user_id", databaseType);
         SelectStatementContext context = mock(SelectStatementContext.class);
         when(context.containsDerivedProjections()).thenReturn(true);
-        Collection<Projection> projections = new ArrayList<>(3);
+        Collection<Projection> projections = new ArrayList<>(4);
         projections.add(new ColumnProjection(null, "user_id", null, databaseType));
         projections.add(count);
         projections.add(sum);
@@ -108,6 +108,34 @@ class ShardingSphereResultSetUtilsTest {
         expected.put("user_id", 1);
         expected.put("AGGREGATION_DISTINCT_DERIVED_0", 2);
         expected.put("SUM(DISTINCT user_id)", 3);
+        assertThat(actual, is(expected));
+    }
+    
+    @Test
+    void assertCreateColumnLabelAndIndexMapWithAggregationAfterMultipleShorthands() throws SQLException {
+        DatabaseType databaseType = mock(DatabaseType.class);
+        AggregationDistinctProjection count = new AggregationDistinctProjection(0, 0, AggregationType.COUNT,
+                new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(DISTINCT user_id)"),
+                new IdentifierValue("AGGREGATION_DISTINCT_DERIVED_0"), "user_id", databaseType);
+        ShorthandProjection first = new ShorthandProjection(new IdentifierValue("foo_table"), Collections.singletonList(new ColumnProjection("foo_table", "foo_id", null, databaseType)));
+        ShorthandProjection second = new ShorthandProjection(new IdentifierValue("bar_table"), Collections.singletonList(new ColumnProjection("bar_table", "bar_id", null, databaseType)));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.asList(first, second, count));
+        projectionsContext.setAggregationDistinctColumnsRewritten(true);
+        SelectStatementContext context = mock(SelectStatementContext.class);
+        when(context.containsDerivedProjections()).thenReturn(true);
+        when(context.getProjectionsContext()).thenReturn(projectionsContext);
+        ResultSetMetaData returnedMetadata = mock(ResultSetMetaData.class);
+        when(returnedMetadata.getColumnCount()).thenReturn(4);
+        when(returnedMetadata.getColumnLabel(1)).thenReturn("foo_id");
+        when(returnedMetadata.getColumnLabel(2)).thenReturn("foo_added");
+        when(returnedMetadata.getColumnLabel(3)).thenReturn("bar_id");
+        when(returnedMetadata.getColumnLabel(4)).thenReturn("aggregation_distinct_derived_0");
+        Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(context, returnedMetadata);
+        Map<String, Integer> expected = new HashMap<>(4, 1F);
+        expected.put("foo_id", 1);
+        expected.put("foo_added", 2);
+        expected.put("bar_id", 3);
+        expected.put("COUNT(DISTINCT user_id)", 4);
         assertThat(actual, is(expected));
     }
     
@@ -234,7 +262,7 @@ class ShardingSphereResultSetUtilsTest {
     void assertCreateColumnLabelAndIndexMapUsesProjectionsWhenDerivedColumnAppended() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        Collection<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(3);
         projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "col2", null, mock(DatabaseType.class)));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
@@ -257,7 +285,7 @@ class ShardingSphereResultSetUtilsTest {
     void assertCreateColumnLabelAndIndexMapUsesProjectionsWhenDerivedColumnAppendedInDifferentCase() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        Collection<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(3);
         projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "col2", null, mock(DatabaseType.class)));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
@@ -280,7 +308,7 @@ class ShardingSphereResultSetUtilsTest {
     void assertCreateColumnLabelAndIndexMapFallsBackToResultSetMetaDataWhenDerivedColumnsNotAppended() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        Collection<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(3);
         projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "col2", null, mock(DatabaseType.class)));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
@@ -324,7 +352,7 @@ class ShardingSphereResultSetUtilsTest {
     void assertCreateColumnLabelAndIndexMapUsesProjectionsWhenGroupByDerivedColumnAppended() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        Collection<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(3);
         projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "col2", null, mock(DatabaseType.class)));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
@@ -347,7 +375,7 @@ class ShardingSphereResultSetUtilsTest {
     void assertCreateColumnLabelAndIndexMapFallsBackToResultSetMetaDataWhenDerivedColumnAppendedWithSchemaDrift() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        Collection<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(3);
         projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "col2", null, mock(DatabaseType.class)));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
@@ -372,7 +400,7 @@ class ShardingSphereResultSetUtilsTest {
     void assertCreateColumnLabelAndIndexMapFallsBackToResultSetMetaDataWhenDerivedColumnAppendedWithReorderedColumns() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        Collection<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(3);
         projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "col2", null, mock(DatabaseType.class)));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
@@ -423,7 +451,7 @@ class ShardingSphereResultSetUtilsTest {
     void assertCreateColumnLabelAndIndexMapFallsBackToResultSetMetaDataWhenDerivedColumnAppendedWithRenamedColumn() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        Collection<Projection> projections = new ArrayList<>(3);
+        Collection<Projection> projections = new ArrayList<>(4);
         projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "col2", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "col3", null, mock(DatabaseType.class)));
@@ -476,7 +504,7 @@ class ShardingSphereResultSetUtilsTest {
     void assertCreateColumnLabelAndIndexMapKeepsColumnWhoseNameCollidesWithDerivedAliasUnderSchemaDrift() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        Collection<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(3);
         projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "order_by_derived_0", null, mock(DatabaseType.class)));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
@@ -501,7 +529,7 @@ class ShardingSphereResultSetUtilsTest {
     void assertCreateColumnLabelAndIndexMapKeepsRealDerivedNamedColumnWhenDerivedColumnAppended() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        Collection<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(3);
         projections.add(new ColumnProjection(null, "order_id", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "ORDER_BY_DERIVED_9", null, mock(DatabaseType.class)));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
@@ -524,7 +552,7 @@ class ShardingSphereResultSetUtilsTest {
     void assertCreateColumnLabelAndIndexMapKeepsRealDerivedNamedColumnWhenDerivedColumnAppendedWithSchemaDrift() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        Collection<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(3);
         projections.add(new ColumnProjection(null, "order_id", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "ORDER_BY_DERIVED_9", null, mock(DatabaseType.class)));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);

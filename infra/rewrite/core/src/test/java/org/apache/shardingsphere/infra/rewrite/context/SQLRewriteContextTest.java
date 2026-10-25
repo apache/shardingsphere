@@ -35,7 +35,9 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
@@ -80,7 +82,10 @@ class SQLRewriteContextTest {
     
     @SuppressWarnings("unchecked")
     @BeforeEach
-    void setUp() {
+    void setUp(final TestInfo testInfo) {
+        if (testInfo.getTags().contains("independent-context")) {
+            return;
+        }
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         SQLStatement sqlStatement = mock(SQLStatement.class);
         when(sqlStatement.getDatabaseType()).thenReturn(databaseType);
@@ -93,6 +98,7 @@ class SQLRewriteContextTest {
     }
     
     @Test
+    @Tag("independent-context")
     void assertNewContextResetsAppendedDerivedColumns() {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         projectionsContext.setDerivedColumnsAppended(true);

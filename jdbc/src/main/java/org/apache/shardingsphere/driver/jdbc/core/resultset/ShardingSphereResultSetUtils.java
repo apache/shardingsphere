@@ -105,6 +105,14 @@ public final class ShardingSphereResultSetUtils {
         return result;
     }
     
+    /**
+     * Whether expanded projections describe the returned columns.
+     *
+     * @param sqlStatementContext statement context, or null for administrative passthrough
+     * @param resultSetMetaData backend result metadata
+     * @return whether expanded projections describe the returned columns
+     * @throws SQLException SQL exception
+     */
     static boolean useExpandedProjections(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
         if (!(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
@@ -150,6 +158,12 @@ public final class ShardingSphereResultSetUtils {
         return projection.getColumnLabel().toUpperCase(Locale.ROOT).equals(returnedLabel.toUpperCase(Locale.ROOT));
     }
     
+    /**
+     * Whether the statement context can append derived columns.
+     *
+     * @param sqlStatementContext statement context, or null for administrative passthrough
+     * @return whether derived columns can be appended
+     */
     static boolean mayAppendDerivedColumns(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections();
     }

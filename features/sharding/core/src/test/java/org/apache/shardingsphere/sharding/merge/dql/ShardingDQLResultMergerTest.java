@@ -243,10 +243,7 @@ class ShardingDQLResultMergerTest {
         context.getProjectionsContext().setAggregationDistinctColumnsRewritten(true);
         QueryResult queryResult = mock(QueryResult.class, RETURNS_DEEP_STUBS);
         when(queryResult.getMetaData().getColumnCount()).thenReturn(6);
-        when(queryResult.getMetaData().getColumnLabel(1)).thenReturn("col1");
-        when(queryResult.getMetaData().getColumnLabel(2)).thenReturn("col1");
         when(queryResult.getMetaData().getColumnLabel(3)).thenReturn("col2");
-        when(queryResult.getMetaData().getColumnLabel(4)).thenReturn("col3");
         when(queryResult.getMetaData().getColumnLabel(5)).thenReturn("AGGREGATION_DISTINCT_DERIVED_0");
         when(queryResult.getMetaData().getColumnLabel(6)).thenReturn("AGGREGATION_DISTINCT_DERIVED_0");
         new ShardingDQLResultMerger(mysqlDatabaseType).merge(Arrays.asList(queryResult, queryResult), context, database, mock(ConnectionContext.class));

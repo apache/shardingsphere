@@ -50,6 +50,14 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     private final ClientVisibleColumnLayout clientVisibleColumnLayout;
     
+    /**
+     * Create result metadata for the current execution.
+     *
+     * @param resultSetMetaData backend result metadata
+     * @param database database, or null for administrative passthrough
+     * @param sqlStatementContext statement context, or null for administrative passthrough
+     * @throws SQLException SQL exception
+     */
     @HighFrequencyInvocation
     public ShardingSphereResultSetMetaData(final ResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
@@ -206,6 +214,14 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
         
         private final String[] columnLabels;
         
+        /**
+         * Capture the client-visible layout.
+         *
+         * @param sqlStatementContext statement context, or null for administrative passthrough
+         * @param resultSetMetaData backend result metadata
+         * @return client-visible layout
+         * @throws SQLException SQL exception
+         */
         @HighFrequencyInvocation
         private static ClientVisibleColumnLayout create(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
             if (ShardingSphereResultSetUtils.useExpandedProjections(sqlStatementContext, resultSetMetaData)) {

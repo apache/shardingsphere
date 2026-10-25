@@ -34,7 +34,9 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -104,7 +106,6 @@ class ShardingSphereResultSetTest {
     void assertFindColumnAfterBackendCloseWhenTypeRemainsAvailable() throws SQLException {
         List<ResultSet> resultSets = getResultSets();
         ResultSet backend = resultSets.get(0);
-        when(backend.getType()).thenReturn(ResultSet.TYPE_FORWARD_ONLY);
         ShardingSphereResultSet actual = new ShardingSphereResultSet(resultSets, mergeResultSet, statement, createSQLStatementContext());
         when(backend.isClosed()).thenReturn(true);
         assertThrows(SQLException.class, () -> actual.findColumn("label"));
@@ -114,13 +115,13 @@ class ShardingSphereResultSetTest {
     void assertFindColumnWithCachedColumnsAfterBackendClose() throws SQLException {
         List<ResultSet> resultSets = getResultSets();
         ResultSet backend = resultSets.get(0);
-        when(backend.getType()).thenReturn(ResultSet.TYPE_FORWARD_ONLY);
         ShardingSphereResultSet actual = new ShardingSphereResultSet(resultSets, mergeResultSet, statement, createSQLStatementContext(), Collections.singletonMap("label", 1));
         when(backend.isClosed()).thenReturn(true);
         assertThrows(SQLException.class, () -> actual.findColumn("label"));
     }
     
     @Test
+    @Tag("h2")
     void assertFindColumnAfterClose() throws SQLException {
         JdbcDataSource backend = new JdbcDataSource();
         backend.setURL("jdbc:h2:mem:foo_find_column_closed;MODE=MySQL;DATABASE_TO_UPPER=false");
@@ -145,6 +146,7 @@ class ShardingSphereResultSetTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("implicitCloseOperations")
+    @Tag("h2")
     void assertFindColumnAfterImplicitClose(final String name, final boolean prepared, final String operation) throws SQLException {
         JdbcDataSource backend = new JdbcDataSource();
         backend.setURL("jdbc:h2:mem:foo_find_column_implicit_close;MODE=MySQL;DATABASE_TO_UPPER=false");
@@ -211,6 +213,7 @@ class ShardingSphereResultSetTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("aggregationDistinctQueries")
+    @Tag("h2")
     void assertAggregationDistinctWithSchemaDrift(final String name, final int routeCount, final boolean schemaDrift, final String sql, final String expectedLabel) throws SQLException {
         JdbcDataSource backend = new JdbcDataSource();
         backend.setURL("jdbc:h2:mem:foo_distinct_drift;MODE=MySQL;DATABASE_TO_UPPER=false");
@@ -269,6 +272,7 @@ class ShardingSphereResultSetTest {
     }
     
     @Test
+    @Tag("h2")
     void assertFindColumnAfterPreparedStatementReuseWithSchemaDrift() throws SQLException {
         JdbcDataSource backend = new JdbcDataSource();
         backend.setURL("jdbc:h2:mem:foo_statement_reuse;MODE=MySQL;DATABASE_TO_UPPER=false");
@@ -308,6 +312,7 @@ class ShardingSphereResultSetTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("derivedAliasQueries")
+    @Tag("h2")
     void assertFindColumnWithGenuineDerivedAlias(final String name, final boolean schemaDrift, final String sql, final String expectedLabel,
                                                  final int expectedColumnCount, final int expectedValue) throws SQLException {
         JdbcDataSource backend = new JdbcDataSource();
@@ -352,6 +357,7 @@ class ShardingSphereResultSetTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("aggregationAliasCollisionQueries")
+    @Tag("h2")
     void assertFindColumnWithAggregationAliasCollision(final String name, final int routeCount, final String sql, final int expectedColumnIndex) throws SQLException {
         JdbcDataSource backend = new JdbcDataSource();
         backend.setURL("jdbc:h2:mem:foo_aggregation_alias_collision;MODE=MySQL;DATABASE_TO_UPPER=false");
@@ -399,6 +405,7 @@ class ShardingSphereResultSetTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("mixedAggregationAliasQueries")
+    @Tag("h2")
     void assertMixedAggregationsWithGenuineAliases(final String name, final String sql, final String[] expectedLabels, final int[] expectedValues) throws SQLException {
         JdbcDataSource backend = new JdbcDataSource();
         backend.setURL("jdbc:h2:mem:foo_mixed_aggregation_aliases;MODE=MySQL;DATABASE_TO_UPPER=false");
@@ -447,9 +454,13 @@ class ShardingSphereResultSetTest {
                         new String[]{"COUNT(DISTINCT user_id)", "COUNT(DISTINCT user_id)", "SUM(DISTINCT order_id)", "AVG(DISTINCT user_id)"}, new int[]{1, 1, 7, 8}));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("knownAggregationAliasCollisionQueries")
-    void assertFindColumnWithKnownAggregationAliasCollision(final String name, final boolean schemaDrift) throws SQLException {
+    @Test
+    @Tag("h2")
+    void assertFindColumnWithKnownAggregationAliasCollisionWithoutDrift() throws SQLException {
+        assertFindColumnWithKnownAggregationAliasCollision(false);
+    }
+    
+    private void assertFindColumnWithKnownAggregationAliasCollision(final boolean schemaDrift) throws SQLException {
         JdbcDataSource backend = new JdbcDataSource();
         backend.setURL("jdbc:h2:mem:foo_known_aggregation_alias_collision;MODE=MySQL;DATABASE_TO_UPPER=false");
         try (Connection backendConnection = backend.getConnection(); Statement backendStatement = backendConnection.createStatement()) {
@@ -492,12 +503,15 @@ class ShardingSphereResultSetTest {
         }
     }
     
-    private static Collection<Arguments> knownAggregationAliasCollisionQueries() {
-        return Arrays.asList(Arguments.of("known real column without drift", false), Arguments.of("known real column with drift", true));
+    @Test
+    @Tag("h2")
+    void assertFindColumnWithKnownAggregationAliasCollisionWithDrift() throws SQLException {
+        assertFindColumnWithKnownAggregationAliasCollision(true);
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("aggregationAliasCollisionAfterBindingQueries")
+    @Tag("h2")
     void assertAggregationAliasCollision(final String name, final String aggregate, final boolean afterShorthand, final boolean appendedGroupBy,
                                          final String orderBy, final int expectedFirstOrderId) throws SQLException {
         JdbcDataSource backend = new JdbcDataSource();
@@ -570,7 +584,10 @@ class ShardingSphereResultSetTest {
     }
     
     @BeforeEach
-    void setUp() throws SQLException {
+    void setUp(final TestInfo testInfo) throws SQLException {
+        if (testInfo.getTags().contains("h2")) {
+            return;
+        }
         mergeResultSet = mock(MergedResult.class);
         shardingSphereResultSet = new ShardingSphereResultSet(getResultSets(), mergeResultSet, getShardingSphereStatement(), createSQLStatementContext());
     }

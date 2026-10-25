@@ -48,8 +48,6 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExt
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
@@ -73,9 +71,12 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings({ProxyContext.class, MySQLPreparedStatementMetadataFactory.class})
 class MySQLProjectionMetadataResolverTest {
     
-    @ParameterizedTest(name = "{0}")
-    @CsvSource({"rewritten aggregation collision,true", "single route aggregation collision,false"})
-    void assertResolveProjectionPacketsWithAggregationDistinctSchemaDrift(final String name, final boolean rewritten) throws SQLException {
+    @Test
+    void assertResolveProjectionPacketsWithAggregationDistinctSchemaDriftRewritten() throws SQLException {
+        assertResolveProjectionPacketsWithAggregationDistinctSchemaDrift(true);
+    }
+    
+    private void assertResolveProjectionPacketsWithAggregationDistinctSchemaDrift(final boolean rewritten) throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         AggregationDistinctProjection count = new AggregationDistinctProjection(0, 0, AggregationType.COUNT,
                 new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(DISTINCT user_id)"),
@@ -83,7 +84,7 @@ class MySQLProjectionMetadataResolverTest {
         SelectStatementContext context = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(context.containsDerivedProjections()).thenReturn(true);
         when(context.getTablesContext().getDatabaseName()).thenReturn(Optional.of("foo_db"));
-        Collection<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(3);
         projections.add(new ColumnProjection(null, "user_id", null, databaseType));
         projections.add(count);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
@@ -106,7 +107,6 @@ class MySQLProjectionMetadataResolverTest {
             }
             when(returnedMetadata.getColumnType(columnIndex)).thenReturn(Types.INTEGER);
             when(returnedMetadata.getColumnTypeName(columnIndex)).thenReturn("INT");
-            when(returnedMetadata.getTableName(columnIndex)).thenReturn("");
         }
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.getMetaData()).thenReturn(returnedMetadata);
@@ -143,6 +143,11 @@ class MySQLProjectionMetadataResolverTest {
             payload.readStringLenenc();
         }
         return payload.readStringLenenc();
+    }
+    
+    @Test
+    void assertResolveProjectionPacketsWithAggregationDistinctSchemaDriftSingleRoute() throws SQLException {
+        assertResolveProjectionPacketsWithAggregationDistinctSchemaDrift(false);
     }
     
     @Test
@@ -202,7 +207,6 @@ class MySQLProjectionMetadataResolverTest {
     void assertResolveProjectionPacketsFallsBackToResultSetMetaDataWhenProjectionCountMismatches() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.of("foo_db"));
-        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(mock(Projection.class)));
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(preparedStatement.getMetaData()).thenReturn(resultSetMetaData);
@@ -213,14 +217,12 @@ class MySQLProjectionMetadataResolverTest {
         when(resultSetMetaData.getColumnTypeName(1)).thenReturn("INT");
         when(resultSetMetaData.getColumnDisplaySize(1)).thenReturn(11);
         when(resultSetMetaData.isNullable(1)).thenReturn(ResultSetMetaData.columnNullable);
-        when(resultSetMetaData.getTableName(1)).thenReturn("");
         when(resultSetMetaData.getColumnName(2)).thenReturn("add_test");
         when(resultSetMetaData.getColumnLabel(2)).thenReturn("add_test");
         when(resultSetMetaData.getColumnType(2)).thenReturn(Types.VARCHAR);
         when(resultSetMetaData.getColumnTypeName(2)).thenReturn("VARCHAR");
         when(resultSetMetaData.getColumnDisplaySize(2)).thenReturn(50);
         when(resultSetMetaData.isNullable(2)).thenReturn(ResultSetMetaData.columnNullable);
-        when(resultSetMetaData.getTableName(2)).thenReturn("");
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         MySQLServerPreparedStatement serverPreparedStatement = mock(MySQLServerPreparedStatement.class);
         when(MySQLPreparedStatementMetadataFactory.load(connectionSession, serverPreparedStatement)).thenReturn(preparedStatement);
@@ -245,7 +247,7 @@ class MySQLProjectionMetadataResolverTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.of("foo_db"));
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        Collection<Projection> projections = new ArrayList<>(1);
+        Collection<Projection> projections = new ArrayList<>(2);
         projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
         projectionsContext.getProjections().add(new DerivedProjection("col1", new IdentifierValue("ORDER_BY_DERIVED_0"), mock(SQLSegment.class)));
@@ -264,12 +266,10 @@ class MySQLProjectionMetadataResolverTest {
         when(resultSetMetaData.getColumnTypeName(1)).thenReturn("INT");
         when(resultSetMetaData.getColumnDisplaySize(1)).thenReturn(11);
         when(resultSetMetaData.isNullable(1)).thenReturn(ResultSetMetaData.columnNullable);
-        when(resultSetMetaData.getTableName(1)).thenReturn("");
         when(resultSetMetaData.getColumnType(2)).thenReturn(Types.VARCHAR);
         when(resultSetMetaData.getColumnTypeName(2)).thenReturn("VARCHAR");
         when(resultSetMetaData.getColumnDisplaySize(2)).thenReturn(50);
         when(resultSetMetaData.isNullable(2)).thenReturn(ResultSetMetaData.columnNullable);
-        when(resultSetMetaData.getTableName(2)).thenReturn("");
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         MySQLServerPreparedStatement serverPreparedStatement = mock(MySQLServerPreparedStatement.class);
         when(MySQLPreparedStatementMetadataFactory.load(connectionSession, serverPreparedStatement)).thenReturn(preparedStatement);
@@ -289,14 +289,17 @@ class MySQLProjectionMetadataResolverTest {
         verify(preparedStatement).close();
     }
     
-    @ParameterizedTest(name = "{0}")
-    @CsvSource({"multiple routes, true, ORDER_BY_DERIVED_9", "single route exact alias collision, false, ORDER_BY_DERIVED_0"})
-    void assertResolveProjectionPacketsWithDerivedAliasCollision(final String name, final boolean derivedColumnsAppended, final String columnLabel) throws SQLException {
+    @Test
+    void assertResolveProjectionPacketsWithDerivedAliasCollisionMultipleRoutes() throws SQLException {
+        assertResolveProjectionPacketsWithDerivedAliasCollision(true, "ORDER_BY_DERIVED_9");
+    }
+    
+    private void assertResolveProjectionPacketsWithDerivedAliasCollision(final boolean derivedColumnsAppended, final String columnLabel) throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         SelectStatementContext context = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(context.getTablesContext().getDatabaseName()).thenReturn(Optional.of("foo_db"));
         when(context.containsDerivedProjections()).thenReturn(true);
-        Collection<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(3);
         projections.add(new ColumnProjection(null, "order_id", null, databaseType));
         projections.add(new ColumnProjection(null, columnLabel, null, databaseType));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
@@ -312,7 +315,6 @@ class MySQLProjectionMetadataResolverTest {
                 when(returnedMetadata.getColumnName(columnIndex)).thenReturn(returnedLabels[columnIndex - 1]);
                 when(returnedMetadata.getColumnType(columnIndex)).thenReturn(Types.INTEGER);
                 when(returnedMetadata.getColumnTypeName(columnIndex)).thenReturn("INT");
-                when(returnedMetadata.getTableName(columnIndex)).thenReturn("");
             }
         }
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
@@ -340,6 +342,11 @@ class MySQLProjectionMetadataResolverTest {
     }
     
     @Test
+    void assertResolveProjectionPacketsWithDerivedAliasCollisionSingleRoute() throws SQLException {
+        assertResolveProjectionPacketsWithDerivedAliasCollision(false, "ORDER_BY_DERIVED_0");
+    }
+    
+    @Test
     void assertResolveProjectionPacketsUsesProjectionsWhenAggregationProjectionMismatches() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.of("foo_db"));
@@ -364,7 +371,6 @@ class MySQLProjectionMetadataResolverTest {
         when(resultSetMetaData.getColumnTypeName(1)).thenReturn("DECIMAL");
         when(resultSetMetaData.getColumnDisplaySize(1)).thenReturn(20);
         when(resultSetMetaData.isNullable(1)).thenReturn(ResultSetMetaData.columnNullable);
-        when(resultSetMetaData.getTableName(1)).thenReturn("");
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         MySQLServerPreparedStatement serverPreparedStatement = mock(MySQLServerPreparedStatement.class);
         when(MySQLPreparedStatementMetadataFactory.load(connectionSession, serverPreparedStatement)).thenReturn(preparedStatement);

@@ -23,12 +23,18 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -39,9 +45,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -51,6 +61,78 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ProjectionsContextEngineTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"explicit alias first,AGGREGATION_DISTINCT_DERIVED_0,true", "explicit alias last,AGGREGATION_DISTINCT_DERIVED_0,false",
+            "folded explicit alias first,aggregation_distinct_derived_0,true", "folded explicit alias last,aggregation_distinct_derived_0,false"})
+    void assertCreateProjectionsContextWithAggregationAliasCollision(final String name, final String alias, final boolean explicitFirst) {
+        AggregationDistinctProjectionSegment explicit = new AggregationDistinctProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(DISTINCT user_id)", "user_id");
+        explicit.setAlias(new AliasSegment(0, 0, new IdentifierValue(alias)));
+        AggregationDistinctProjectionSegment generated = new AggregationDistinctProjectionSegment(0, 0, AggregationType.SUM, "SUM(DISTINCT order_id)", "order_id");
+        Collection<ProjectionSegment> segments = explicitFirst ? Arrays.asList(explicit, generated) : Arrays.asList(generated, explicit);
+        Iterator<Projection> actual =
+                new ProjectionsContextEngine(databaseType).createProjectionsContext(createProjectionsSegment(segments), new GroupByContext(Collections.emptyList()),
+                        new OrderByContext(Collections.emptyList(), false)).getProjections().iterator();
+        assertThat(actual.next().getAlias().get().getValue(), is(explicitFirst ? alias : "AGGREGATION_DISTINCT_DERIVED_1"));
+        assertThat(actual.next().getAlias().get().getValue(), is(explicitFirst ? "AGGREGATION_DISTINCT_DERIVED_1" : alias));
+    }
+    
+    private ProjectionsSegment createProjectionsSegment(final Collection<ProjectionSegment> projections) {
+        ProjectionsSegment result = new ProjectionsSegment(0, 0);
+        result.getProjections().addAll(projections);
+        return result;
+    }
+    
+    @Test
+    void assertCreateProjectionsContextWithColumnLabelCollision() {
+        ColumnProjectionSegment column = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("AGGREGATION_DISTINCT_DERIVED_0")));
+        AggregationDistinctProjectionSegment count = new AggregationDistinctProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(DISTINCT user_id)", "user_id");
+        Collection<Projection> actual =
+                new ProjectionsContextEngine(databaseType).createProjectionsContext(createProjectionsSegment(Arrays.asList(count, column)), new GroupByContext(Collections.emptyList()),
+                        new OrderByContext(Collections.emptyList(), false)).getProjections();
+        assertThat(actual.iterator().next().getAlias().get().getValue(), is("AGGREGATION_DISTINCT_DERIVED_1"));
+    }
+    
+    @Test
+    void assertCreateProjectionsContextWithShorthandColumnLabelCollision() {
+        ColumnProjectionSegment column = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("AGGREGATION_DISTINCT_DERIVED_0")));
+        ShorthandProjectionSegment wildcard = new ShorthandProjectionSegment(0, 0);
+        wildcard.getActualProjectionSegments().add(column);
+        AggregationDistinctProjectionSegment count = new AggregationDistinctProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(DISTINCT user_id)", "user_id");
+        Collection<ProjectionSegment> segments = Arrays.asList(count, wildcard);
+        Collection<Projection> actual =
+                new ProjectionsContextEngine(databaseType).createProjectionsContext(createProjectionsSegment(segments), new GroupByContext(Collections.emptyList()),
+                        new OrderByContext(Collections.emptyList(), false)).getProjections();
+        assertThat(actual.iterator().next().getAlias().get().getValue(), is("AGGREGATION_DISTINCT_DERIVED_1"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"distinct average count collision,AVG_DERIVED_COUNT_0,true", "distinct average sum collision,avg_derived_sum_0,true",
+            "average count collision,AVG_DERIVED_COUNT_0,false", "average sum collision,avg_derived_sum_0,false"})
+    void assertCreateProjectionsContextWithAverageAliasCollision(final String name, final String alias, final boolean distinct) {
+        ColumnProjectionSegment column = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id")));
+        column.setAlias(new AliasSegment(0, 0, new IdentifierValue(alias)));
+        AggregationProjectionSegment average = distinct
+                ? new AggregationDistinctProjectionSegment(0, 0, AggregationType.AVG, "AVG(DISTINCT user_id)", "user_id")
+                : new AggregationProjectionSegment(0, 0, AggregationType.AVG, "AVG(user_id)");
+        Collection<Projection> actualProjections =
+                new ProjectionsContextEngine(databaseType).createProjectionsContext(createProjectionsSegment(Arrays.asList(average, column)), new GroupByContext(Collections.emptyList()),
+                        new OrderByContext(Collections.emptyList(), false)).getProjections();
+        AggregationProjection actual = (AggregationProjection) actualProjections.iterator().next();
+        assertThat(actual.getDerivedAggregationProjections().get(0).getAlias().get().getValue(), is("AVG_DERIVED_COUNT_1"));
+        assertThat(actual.getDerivedAggregationProjections().get(1).getAlias().get().getValue(), is("AVG_DERIVED_SUM_1"));
+    }
+    
+    @Test
+    void assertCreateProjectionsContextWithRepeatedAggregations() {
+        AggregationDistinctProjectionSegment first = new AggregationDistinctProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(DISTINCT user_id)", "user_id");
+        AggregationDistinctProjectionSegment second = new AggregationDistinctProjectionSegment(1, 1, AggregationType.COUNT, "COUNT(DISTINCT user_id)", "user_id");
+        Iterator<Projection> actual =
+                new ProjectionsContextEngine(databaseType).createProjectionsContext(createProjectionsSegment(Arrays.asList(first, second)), new GroupByContext(Collections.emptyList()),
+                        new OrderByContext(Collections.emptyList(), false)).getProjections().iterator();
+        assertThat(actual.next().getAlias().get().getValue(), is("AGGREGATION_DISTINCT_DERIVED_0"));
+        assertThat(actual.next().getAlias().get().getValue(), is("AGGREGATION_DISTINCT_DERIVED_1"));
+    }
     
     @Test
     void assertProjectionsContextCreatedProperly() {

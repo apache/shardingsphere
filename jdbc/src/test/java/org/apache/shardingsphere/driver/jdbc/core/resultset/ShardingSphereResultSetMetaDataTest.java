@@ -178,25 +178,26 @@ class ShardingSphereResultSetMetaDataTest {
         assertTrue(sqlStatementContext.containsDerivedProjections());
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(5);
-        stubBackendColumnLabels(resultSetMetaData, "order_id", "add_test", "user_id", "status", "create_time");
         ShardingSphereResultSetMetaData metaData = new ShardingSphereResultSetMetaData(resultSetMetaData, null, sqlStatementContext);
         assertThat(metaData.getColumnCount(), is(5));
     }
     
     private SelectStatementContext createSelectStatementContext(final Collection<String> shorthandColumns) {
-        return createSelectStatementContext(shorthandColumns, (ProjectionSegment) null);
+        return createSelectStatementContext(shorthandColumns, Collections.emptyList());
     }
     
     private SelectStatementContext createSelectStatementContext(final Collection<String> shorthandColumns, final ProjectionSegment extraProjectionSegment) {
+        return createSelectStatementContext(shorthandColumns, Collections.singleton(extraProjectionSegment));
+    }
+    
+    private SelectStatementContext createSelectStatementContext(final Collection<String> shorthandColumns, final Collection<ProjectionSegment> extraProjectionSegments) {
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
         for (String each : shorthandColumns) {
             shorthandProjectionSegment.getActualProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue(each))));
         }
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(shorthandProjectionSegment);
-        if (null != extraProjectionSegment) {
-            projectionsSegment.getProjections().add(extraProjectionSegment);
-        }
+        projectionsSegment.getProjections().addAll(extraProjectionSegments);
         return createSelectStatementContext(projectionsSegment);
     }
     
@@ -204,31 +205,18 @@ class ShardingSphereResultSetMetaDataTest {
         return createSelectStatementContext(projectionsSegment, null);
     }
     
+    /**
+     * Bind projections with an optional GROUP BY clause.
+     *
+     * @param projectionsSegment projections
+     * @param groupBySegment GROUP BY clause, or null when absent
+     * @return bound statement context
+     */
     private SelectStatementContext createSelectStatementContext(final ProjectionsSegment projectionsSegment, final GroupBySegment groupBySegment) {
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("t_order"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment)
                 .from(new SimpleTableSegment(tableNameSegment)).groupBy(groupBySegment).build();
-        ShardingSphereMetaData metaData =
-                new ShardingSphereMetaData(Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
-        SelectStatementContext result = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
-        result.getProjectionsContext().setDerivedColumnsAppended(true);
-        return result;
-    }
-    
-    private SelectStatementContext createSelectStatementContext(final Collection<String> shorthandColumns, final String orderByName) {
-        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
-        for (String each : shorthandColumns) {
-            shorthandProjectionSegment.getActualProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue(each))));
-        }
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.getProjections().add(shorthandProjectionSegment);
-        OrderBySegment orderBySegment = new OrderBySegment(0, 0, Collections.singletonList(
-                new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue(orderByName)), OrderDirection.ASC, NullsOrderType.LAST)));
-        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("t_order"));
-        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment)
-                .from(new SimpleTableSegment(tableNameSegment)).orderBy(orderBySegment).build();
         ShardingSphereMetaData metaData =
                 new ShardingSphereMetaData(Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
         SelectStatementContext result = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
@@ -243,12 +231,6 @@ class ShardingSphereResultSetMetaDataTest {
         when(ruleAttribute.getEnhancedTableNames().contains("t_order")).thenReturn(true);
         when(result.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
         return result;
-    }
-    
-    private void stubBackendColumnLabels(final ResultSetMetaData resultSetMetaData, final String... columnLabels) throws SQLException {
-        for (int columnIndex = 1; columnIndex <= columnLabels.length; columnIndex++) {
-            when(resultSetMetaData.getColumnLabel(columnIndex)).thenReturn(columnLabels[columnIndex - 1]);
-        }
     }
     
     @Test
@@ -267,7 +249,7 @@ class ShardingSphereResultSetMetaDataTest {
         assertTrue(sqlStatementContext.containsDerivedProjections());
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(5);
-        stubBackendColumnLabels(resultSetMetaData, "order_id", "add_test", "user_id", "status", "create_time");
+        when(resultSetMetaData.getColumnLabel(2)).thenReturn("add_test");
         when(resultSetMetaData.getColumnName(2)).thenReturn("foo_added");
         ShardingSphereResultSetMetaData metaData = new ShardingSphereResultSetMetaData(resultSetMetaData, null, sqlStatementContext);
         when(resultSetMetaData.getColumnName(2)).thenThrow(new SQLException("Backend result set is closed"));
@@ -316,7 +298,6 @@ class ShardingSphereResultSetMetaDataTest {
                 .allMatch(each -> each.getDerivedAggregationProjections().isEmpty()));
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(6);
-        stubBackendColumnLabels(resultSetMetaData, "order_id", "user_id", "status", "create_time", "COUNT(*)", "add_test");
         ShardingSphereResultSetMetaData metaData = new ShardingSphereResultSetMetaData(resultSetMetaData, null, sqlStatementContext);
         assertThat(metaData.getColumnCount(), is(6));
     }
@@ -364,12 +345,14 @@ class ShardingSphereResultSetMetaDataTest {
     
     @Test
     void assertGetColumnCountAndLabelFallBackToResultSetMetaDataWhenDerivedColumnAppendedWithSchemaDrift() throws SQLException {
-        SelectStatementContext sqlStatementContext = createSelectStatementContext(Arrays.asList("order_id", "user_id", "status", "create_time"), "sort_key");
+        SelectStatementContext sqlStatementContext = createSelectStatementContextWithOrderBy(Arrays.asList("order_id", "user_id", "status", "create_time"), "sort_key");
         assertTrue(sqlStatementContext.containsDerivedProjections());
         assertTrue(sqlStatementContext.getProjectionsContext().getProjections().stream().anyMatch(DerivedProjection.class::isInstance));
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(6);
-        stubBackendColumnLabels(resultSetMetaData, "order_id", "add_test", "user_id", "status", "create_time", "ORDER_BY_DERIVED_0");
+        when(resultSetMetaData.getColumnLabel(2)).thenReturn("add_test");
+        when(resultSetMetaData.getColumnLabel(5)).thenReturn("create_time");
+        when(resultSetMetaData.getColumnLabel(6)).thenReturn("ORDER_BY_DERIVED_0");
         when(resultSetMetaData.getColumnName(2)).thenReturn("add_test");
         ShardingSphereResultSetMetaData metaData = new ShardingSphereResultSetMetaData(resultSetMetaData, null, sqlStatementContext);
         assertThat(metaData.getColumnCount(), is(5));
@@ -379,12 +362,41 @@ class ShardingSphereResultSetMetaDataTest {
         assertThrows(SQLException.class, () -> metaData.getColumnLabel(6));
     }
     
+    private SelectStatementContext createSelectStatementContextWithOrderBy(final Collection<String> shorthandColumns, final String orderByName) {
+        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
+        for (String each : shorthandColumns) {
+            shorthandProjectionSegment.getActualProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue(each))));
+        }
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(shorthandProjectionSegment);
+        OrderBySegment orderBySegment = new OrderBySegment(0, 0, Collections.singletonList(
+                new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue(orderByName)), OrderDirection.ASC, NullsOrderType.LAST)));
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("t_order"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment)
+                .from(new SimpleTableSegment(tableNameSegment)).orderBy(orderBySegment).build();
+        ShardingSphereMetaData metaData =
+                new ShardingSphereMetaData(Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        SelectStatementContext result = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
+        result.getProjectionsContext().setDerivedColumnsAppended(true);
+        return result;
+    }
+    
+    @Test
+    void assertFallbackColumnLabelLowerBound() throws SQLException {
+        SelectStatementContext sqlStatementContext = createSelectStatementContext(Collections.singletonList("user_id"));
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnCount()).thenReturn(2);
+        ShardingSphereResultSetMetaData metaData = new ShardingSphereResultSetMetaData(resultSetMetaData, null, sqlStatementContext);
+        assertThrows(SQLException.class, () -> metaData.getColumnLabel(0));
+    }
+    
     @Test
     void assertGetColumnCountKeepsDerivedNamedColumnWhenNoDerivedProjections() throws SQLException {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(2);
-        stubBackendColumnLabels(resultSetMetaData, "col1", "order_by_derived_0");
+        when(resultSetMetaData.getColumnLabel(2)).thenReturn("order_by_derived_0");
         ShardingSphereResultSetMetaData metaData = new ShardingSphereResultSetMetaData(resultSetMetaData, null, sqlStatementContext);
         assertThat(metaData.getColumnCount(), is(2));
         assertThat(metaData.getColumnLabel(2), is("order_by_derived_0"));
@@ -392,7 +404,7 @@ class ShardingSphereResultSetMetaDataTest {
     
     @Test
     void assertGetColumnCountAndLabelKeepRealDerivedNamedColumnWhenDerivedColumnAppended() throws SQLException {
-        SelectStatementContext sqlStatementContext = createSelectStatementContext(Arrays.asList("order_id", "ORDER_BY_DERIVED_9"), "sort_key");
+        SelectStatementContext sqlStatementContext = createSelectStatementContextWithOrderBy(Arrays.asList("order_id", "ORDER_BY_DERIVED_9"), "sort_key");
         assertTrue(sqlStatementContext.containsDerivedProjections());
         assertTrue(sqlStatementContext.getProjectionsContext().getProjections().stream().anyMatch(DerivedProjection.class::isInstance));
         assertThat(sqlStatementContext.getProjectionsContext().getExpandProjections().size(), is(2));
@@ -406,9 +418,15 @@ class ShardingSphereResultSetMetaDataTest {
         assertThrows(SQLException.class, () -> metaData.getColumnLabel(3));
     }
     
+    private void stubBackendColumnLabels(final ResultSetMetaData resultSetMetaData, final String... columnLabels) throws SQLException {
+        for (int columnIndex = 1; columnIndex <= columnLabels.length; columnIndex++) {
+            when(resultSetMetaData.getColumnLabel(columnIndex)).thenReturn(columnLabels[columnIndex - 1]);
+        }
+    }
+    
     @Test
     void assertGetColumnCountAndLabelKeepRealDerivedNamedColumnWhenDerivedColumnAppendedWithSchemaDrift() throws SQLException {
-        SelectStatementContext sqlStatementContext = createSelectStatementContext(Arrays.asList("order_id", "ORDER_BY_DERIVED_9"), "sort_key");
+        SelectStatementContext sqlStatementContext = createSelectStatementContextWithOrderBy(Arrays.asList("order_id", "ORDER_BY_DERIVED_9"), "sort_key");
         assertTrue(sqlStatementContext.containsDerivedProjections());
         assertTrue(sqlStatementContext.getProjectionsContext().getProjections().stream().anyMatch(DerivedProjection.class::isInstance));
         assertThat(sqlStatementContext.getProjectionsContext().getExpandProjections().size(), is(2));
@@ -427,7 +445,7 @@ class ShardingSphereResultSetMetaDataTest {
     
     @Test
     void assertReadingAllColumnHeadersReconcilesReturnedMetadataOnce() throws SQLException {
-        SelectStatementContext sqlStatementContext = createSelectStatementContext(Arrays.asList("order_id", "user_id", "status", "create_time"), "sort_key");
+        SelectStatementContext sqlStatementContext = createSelectStatementContextWithOrderBy(Arrays.asList("order_id", "user_id", "status", "create_time"), "sort_key");
         assertTrue(sqlStatementContext.containsDerivedProjections());
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         AtomicInteger countReadCount = new AtomicInteger();

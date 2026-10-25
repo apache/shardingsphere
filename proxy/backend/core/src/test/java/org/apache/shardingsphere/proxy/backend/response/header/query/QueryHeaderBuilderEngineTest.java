@@ -37,7 +37,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Aggr
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -53,6 +52,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,13 +63,9 @@ class QueryHeaderBuilderEngineTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    @BeforeEach
-    void setUp() {
-        when(DatabaseTypedSPILoader.findService(eq(DialectProjectionIdentifierExtractor.class), any())).thenReturn(Optional.empty());
-    }
-    
     @Test
     void assertBuildWithSingleRouteDerivedAliasCollision() throws SQLException {
+        when(DatabaseTypedSPILoader.findService(eq(DialectProjectionIdentifierExtractor.class), any())).thenReturn(Optional.empty());
         DatabaseType mysql = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         SelectStatementContext context = mock(SelectStatementContext.class);
         when(context.containsDerivedProjections()).thenReturn(true);
@@ -82,9 +78,7 @@ class QueryHeaderBuilderEngineTest {
         when(returnedMetadata.getColumnLabel(1)).thenReturn("order_id");
         when(returnedMetadata.getColumnLabel(2)).thenReturn("user_id");
         when(returnedMetadata.getColumnLabel(3)).thenReturn("ORDER_BY_DERIVED_0");
-        when(returnedMetadata.getColumnName(1)).thenReturn("order_id");
-        when(returnedMetadata.getColumnName(2)).thenReturn("user_id");
-        when(returnedMetadata.getColumnName(3)).thenReturn("ORDER_BY_DERIVED_0");
+        lenient().when(returnedMetadata.getColumnName(3)).thenReturn("ORDER_BY_DERIVED_0");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ShardingSphereResultSetMetaData metadata = new ShardingSphereResultSetMetaData(returnedMetadata, database, context);
         assertThat(metadata.getColumnCount(), is(3));
@@ -96,6 +90,7 @@ class QueryHeaderBuilderEngineTest {
     
     @Test
     void assertBuildWithAggregationDistinctSchemaDrift() throws SQLException {
+        when(DatabaseTypedSPILoader.findService(eq(DialectProjectionIdentifierExtractor.class), any())).thenReturn(Optional.empty());
         DatabaseType mysql = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         AggregationDistinctProjection count = new AggregationDistinctProjection(0, 0, AggregationType.COUNT,
                 new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(DISTINCT user_id)"),
@@ -121,10 +116,11 @@ class QueryHeaderBuilderEngineTest {
     
     @Test
     void assertBuildKeepsRealDerivedNamedColumnWhenDerivedColumnAppendedWithSchemaDrift() throws SQLException {
+        when(DatabaseTypedSPILoader.findService(eq(DialectProjectionIdentifierExtractor.class), any())).thenReturn(Optional.empty());
         DatabaseType mysql = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         SelectStatementContext context = mock(SelectStatementContext.class);
         when(context.containsDerivedProjections()).thenReturn(true);
-        Collection<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(3);
         projections.add(new ColumnProjection(null, "order_id", null, mysql));
         projections.add(new ColumnProjection(null, "ORDER_BY_DERIVED_9", null, mysql));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
@@ -137,9 +133,7 @@ class QueryHeaderBuilderEngineTest {
         when(returnedMetadata.getColumnLabel(2)).thenReturn("add_test");
         when(returnedMetadata.getColumnLabel(3)).thenReturn("ORDER_BY_DERIVED_9");
         when(returnedMetadata.getColumnLabel(4)).thenReturn("ORDER_BY_DERIVED_0");
-        when(returnedMetadata.getColumnName(1)).thenReturn("order_id");
-        when(returnedMetadata.getColumnName(2)).thenReturn("add_test");
-        when(returnedMetadata.getColumnName(3)).thenReturn("ORDER_BY_DERIVED_9");
+        lenient().when(returnedMetadata.getColumnName(3)).thenReturn("ORDER_BY_DERIVED_9");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ShardingSphereResultSetMetaData metadata = new ShardingSphereResultSetMetaData(returnedMetadata, database, context);
         QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
