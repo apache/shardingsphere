@@ -25,12 +25,12 @@
         <assertion />
     </test-case>
     
-    <test-case sql="SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
         <assertion parameters="12:int, 1000:int" />
     </test-case>
 
-    <test-case sql="SELECT t_order.order_id,t_order.user_id,status FROM t_order t_order WHERE t_order.user_id = ? AND order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT t_order.order_id,t_order.user_id,status FROM t_order t_order WHERE t_order.user_id = ? AND order_id = ?" db-types="MySQL,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
         <assertion parameters="12:int, 1000:int" expected-data-source-name="read_dataset" />
     </test-case>
@@ -40,7 +40,7 @@
         <assertion parameters="12:int, 1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? AND order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? AND order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, 1001:int" expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -51,11 +51,11 @@
         </assertion>
     </test-case>
 
-    <test-case sql="SELECT * /* this is &#x000D;&#x000A; block comment */ FROM /* this is another &#x000A; block comment */ t_order where status='1'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * /* this is &#x000D;&#x000A; block comment */ FROM /* this is another &#x000A; block comment */ t_order where status='1'" db-types="MySQL,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * -- this is an line comment &#x000D;&#x000A; FROM -- this is another line comment &#x000A; t_order where status='1'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * -- this is an line comment &#x000D;&#x000A; FROM -- this is another line comment &#x000A; t_order where status='1'" db-types="MySQL,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -176,17 +176,17 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_merchant WHERE business_code NOT LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code NOT LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,encrypt"
                scenario-comments="Test single table's LIKE operator percentage wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in simple select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,encrypt"
                scenario-comments="Test single table's LIKE operator underscore wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in simple select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant WHERE business_code NOT LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code NOT LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,encrypt"
                scenario-comments="Test single table's LIKE operator underscore wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in simple select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -240,5 +240,28 @@
     <test-case sql="SELECT * FROM t_order WHERE user_id = ? AND creation_date = ? ORDER BY order_id" db-types="Firebird" scenario-types="db" scenario-comments="Test Firebird DATE parameter.">
         <assertion parameters="10:int, 2017-08-08:date" expected-data-source-name="read_dataset" />
         <assertion parameters="10:int, 2017-08-07:date" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order WHERE merchant_id IS NULL ORDER BY order_id" db-types="Firebird" scenario-types="db" scenario-comments="Test NULL filtering across data sources.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order WHERE merchant_id IS NOT NULL ORDER BY order_id" db-types="Firebird" scenario-types="db" scenario-comments="Test non-NULL filtering across data sources.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order WHERE user_id IN (10, 11) AND order_id BETWEEN 1000 AND 1101 ORDER BY order_id" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test literal IN and BETWEEN across two data sources.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order WHERE user_id = 10 AND order_id NOT IN (1000, 9999) ORDER BY order_id" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test literal NOT IN on one routed data source.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order WHERE user_id = 10 AND order_id NOT BETWEEN 999 AND 1000 ORDER BY order_id" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test literal NOT BETWEEN on one routed data source.">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
 </e2e-test-cases>

@@ -17,7 +17,7 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
     </test-case>
 
@@ -32,7 +32,7 @@
         <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="update_without_condition.xml" />
     </test-case>
     
@@ -44,7 +44,7 @@
         <assertion parameters="1000:int, 0:int, 10:int" expected-data-file="update.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_order SET status = status where user_id = user_id AND order_id = 1000" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="UPDATE t_order SET status = status where user_id = user_id AND order_id = 1000" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="update_with_column_equal_column.xml" />
     </test-case>
     

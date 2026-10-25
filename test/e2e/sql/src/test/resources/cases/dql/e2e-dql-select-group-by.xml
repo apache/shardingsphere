@@ -43,17 +43,17 @@
     
     <test-case sql="SELECT COUNT(order_id) AS orders_count, user_id FROM t_order GROUP BY 2 ORDER BY 2" db-types="MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting" />
     
-    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '%18' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
+    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '%18' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,encrypt"
                scenario-comments="Test single table's LIKE operator percentage wildcard in select group by statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in select group by statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '_1000018' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
+    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '_1000018' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,encrypt"
                scenario-comments="Test single table's LIKE operator underscore wildcard in select group by statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in select group by statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT COUNT(1) FROM t_order WHERE 1 = 2 GROUP BY order_id,user_id ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl"
+    <test-case sql="SELECT COUNT(1) FROM t_order WHERE 1 = 2 GROUP BY order_id,user_id ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl"
                scenario-comments="Test GROUP BY with ORDER BY different fields returns no rows when WHERE condition matches no data">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -85,5 +85,10 @@
 
     <test-case sql="SELECT user_id, COUNT(*) AS user_count FROM t_user GROUP BY user_id ORDER BY user_id" db-types="Hive" scenario-types="mask">
         <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT user_id, COUNT(*) AS ORDER_COUNT FROM t_order GROUP BY user_id HAVING COUNT(*) &gt; 1 ORDER BY user_id" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test HAVING after grouped aggregation across data sources.">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
 </e2e-test-cases>
