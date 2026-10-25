@@ -493,6 +493,36 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeHintedQualifiedWildcard() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT foo_tbl.* FROM foo_tbl");
+        when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(idPayload);
+        verify(idPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeHintedJoinWithQualifiedWildcard() throws Exception {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
+        addSystemSchema(database);
+        ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
+        ShardingSphereColumn blobColumn = new ShardingSphereColumn("content", Types.BLOB, false, false, true, true, false, true);
+        ShardingSphereColumn nameColumn = new ShardingSphereColumn("name", Types.VARCHAR, false, false, true, true, false, true);
+        ShardingSphereTable fooTable = new ShardingSphereTable("foo_tbl", Arrays.asList(idColumn, blobColumn), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable barTable = new ShardingSphereTable("bar_tbl", Arrays.asList(idColumn, nameColumn), Collections.emptyList(), Collections.emptyList());
+        database.addSchema(new ShardingSphereSchema("foo_db", databaseType, Arrays.asList(fooTable, barTable), Collections.emptyList()));
+        when(database.findDefaultSchema()).thenCallRealMethod();
+        when(packet.getSQL()).thenReturn("SELECT bar_tbl.* FROM foo_tbl JOIN bar_tbl ON foo_tbl.id = bar_tbl.id");
+        when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+    }
+    
+    @Test
     void assertDescribeDerivedTableShorthand() throws Exception {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
         ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);

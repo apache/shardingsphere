@@ -410,10 +410,11 @@ class MySQLComStmtPrepareExecutorTest {
     }
     
     @Test
-    void assertPrepareSelectByProbeOKPacketColumnCountMatchesDefinitions() throws Exception {
-        String sql = "SELECT id, name, age FROM foo_db.user";
-        when(packet.getSQL()).thenReturn(sql);
-        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
+    void assertPrepareHintedWildcardOKPacketColumnCountMatchesDefinitions() throws Exception {
+        HintValueContext hintValueContext = new HintValueContext();
+        hintValueContext.setDataSourceName("foo_ds");
+        when(packet.getSQL()).thenReturn("SELECT * FROM foo_db.user");
+        when(packet.getHintValueContext()).thenReturn(hintValueContext);
         int connectionId = 6;
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
         when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
@@ -440,7 +441,12 @@ class MySQLComStmtPrepareExecutorTest {
         }
         when(MySQLPreparedStatementMetadataFactory.load(eq(connectionSession), any(MySQLServerPreparedStatement.class))).thenReturn(actualPreparedStatement);
         Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
-        assertThat(actualIterator.next(), isA(MySQLComStmtPrepareOKPacket.class));
+        MySQLComStmtPrepareOKPacket okPacket = (MySQLComStmtPrepareOKPacket) actualIterator.next();
+        ByteBuf okBuf = Unpooled.buffer();
+        okPacket.write(new MySQLPacketPayload(okBuf, StandardCharsets.UTF_8));
+        okBuf.skipBytes(1 + 4);
+        int okColumnCount = okBuf.readShortLE();
+        okBuf.release();
         int columnDefinitionCount = 0;
         while (actualIterator.hasNext()) {
             DatabasePacket next = actualIterator.next();
@@ -448,7 +454,8 @@ class MySQLComStmtPrepareExecutorTest {
                 columnDefinitionCount++;
             }
         }
-        assertThat("OK packet column count must equal column definition count", columnDefinitionCount, is(physicalColumnCount));
+        assertThat("OK packet column count must match emitted definitions", okColumnCount, is(columnDefinitionCount));
+        assertThat("visible column count must match physical columns", columnDefinitionCount, is(physicalColumnCount));
         MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
     }
     
