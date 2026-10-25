@@ -306,11 +306,6 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return result;
     }
     
-    private Collection<Projection> processShorthandProjection(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
-                                                              final Supplier<Optional<ShardingSphereSchema>> schema, final ShorthandProjection projection) {
-        return resolveShorthandColumns(sqlStatementContext, database, schema, projection);
-    }
-    
     private Collection<Projection> resolveShorthandColumns(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                                            final Supplier<Optional<ShardingSphereSchema>> schema, final ShorthandProjection projection) {
         if (!projection.getActualColumns().isEmpty()) {
@@ -333,16 +328,17 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private boolean isAliasOf(final String alias, final String tableName, final SQLStatementContext sqlStatementContext) {
-        TablesContext tablesContext = sqlStatementContext.getTablesContext();
-        if (null == tablesContext) {
-            return false;
-        }
-        for (SimpleTableSegment each : tablesContext.getSimpleTables()) {
+        for (SimpleTableSegment each : sqlStatementContext.getTablesContext().getSimpleTables()) {
             if (each.getAlias().isPresent() && each.getAlias().get().getValue().equalsIgnoreCase(alias) && each.getTableName().getIdentifier().getValue().equalsIgnoreCase(tableName)) {
                 return true;
             }
         }
         return false;
+    }
+    
+    private Collection<Projection> processShorthandProjection(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                                              final Supplier<Optional<ShardingSphereSchema>> schema, final ShorthandProjection projection) {
+        return resolveShorthandColumns(sqlStatementContext, database, schema, projection);
     }
     
     @HighFrequencyInvocation

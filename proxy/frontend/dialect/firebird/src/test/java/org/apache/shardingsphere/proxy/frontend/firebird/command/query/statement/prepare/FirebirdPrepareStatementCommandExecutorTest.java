@@ -484,6 +484,15 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeHintedOrdinaryTableWildcard() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT * FROM foo_tbl");
+        when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+    }
+    
+    @Test
     void assertDescribeDerivedTableShorthand() throws Exception {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
         ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
@@ -560,6 +569,26 @@ class FirebirdPrepareStatementCommandExecutorTest {
                 Arguments.of("Select columns", "SELECT id, code FROM foo_tbl", FirebirdSQLInfoPacketType.SELECT),
                 Arguments.of("Bind parameters", "SELECT id, code FROM foo_tbl WHERE id = ? AND code = ?", FirebirdSQLInfoPacketType.BIND),
                 Arguments.of("Returning shorthand", "INSERT INTO foo_tbl (id, code) VALUES (1, 2) RETURNING *", FirebirdSQLInfoPacketType.SELECT));
+    }
+    
+    @Test
+    void assertDescribeReturningOldAndNewShorthandColumnTypes() throws Exception {
+        when(packet.getSQL()).thenReturn("UPDATE foo_tbl SET id = 1 RETURNING OLD.*, NEW.*");
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(4));
+        FirebirdPacketPayload oldIdPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(oldIdPayload);
+        verify(oldIdPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload oldContentPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(1).write(oldContentPayload);
+        verify(oldContentPayload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
+        FirebirdPacketPayload newIdPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(2).write(newIdPayload);
+        verify(newIdPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload newContentPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(3).write(newContentPayload);
+        verify(newContentPayload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
     }
     
     @Test

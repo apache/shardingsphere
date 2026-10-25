@@ -44,8 +44,11 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-// AutoMockExtension uses RETURNS_DEEP_STUBS, whose untyped answer for the generic DatabaseTypedSPILoader.getService overload cannot be assigned to QueryHeaderBuilder.
-// These tests therefore stub that overload explicitly.
+/**
+ * {@code AutoMockExtension} uses {@code RETURNS_DEEP_STUBS}, whose untyped answer for the generic
+ * {@code DatabaseTypedSPILoader.getService} overload cannot be assigned to {@code QueryHeaderBuilder}.
+ * These tests therefore stub that overload explicitly via {@code mockStatic}.
+ */
 class QueryHeaderBuilderEngineTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
