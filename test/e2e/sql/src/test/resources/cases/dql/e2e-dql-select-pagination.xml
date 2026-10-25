@@ -26,4 +26,17 @@
                scenario-comments="Test postgresql paging query parameter is null scenario">
         <assertion parameters="1000:int, null:int, null:int" expected-data-source-name="read_dataset" />
     </test-case>
+    
+    <test-case sql="SELECT * FROM t_order ORDER BY order_id OFFSET 5 ROWS FETCH FIRST 3 ROWS ONLY" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test Firebird OFFSET and FETCH across all shards.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order ORDER BY order_id FETCH FIRST 3 ROWS ONLY" db-types="Firebird" scenario-types="db" scenario-comments="Test Firebird FETCH without OFFSET across all shards.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT FIRST 3 SKIP 5 * FROM t_order ORDER BY order_id" db-types="Firebird" scenario-types="db" scenario-comments="Test Firebird FIRST and SKIP across all shards.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 </e2e-test-cases>

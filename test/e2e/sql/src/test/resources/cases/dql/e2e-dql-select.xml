@@ -194,4 +194,51 @@
     <test-case sql="SELECT user_name, telephone FROM t_user" db-types="Hive" scenario-types="mask">
         <assertion expected-data-source-name="expected_dataset" />
     </test-case>
+    
+    <test-case sql="SELECT order_id AS KEY, status AS TEXT, remark AS COMMENT FROM t_order WHERE user_id = ? AND order_id = ?" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test Firebird non-reserved keywords KEY, TEXT and COMMENT as column aliases.">
+        <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT order_id, 'x', 'it''s' AS QUOTED_TEXT FROM t_order WHERE user_id = ? AND order_id = ?" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test Firebird string literals in projection.">
+        <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT order_id, 'C:\dir\' AS DIR_PATH FROM t_order WHERE user_id = ? AND status &lt;&gt; 'C:\dir\' ORDER BY order_id" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test Firebird string literals ending with backslash, which is not an escape character in Firebird.">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? AND status LIKE 'i_it' AND status NOT LIKE 'i\_it' ESCAPE '\' AND status NOT LIKE 'i!_it' ESCAPE '!' ORDER BY order_id" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test Firebird LIKE with backslash and other characters as ESCAPE.">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? AND status STARTING WITH ? ORDER BY order_id" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test Firebird STARTING WITH predicate with parameter.">
+        <assertion parameters="10:int, in:String" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? AND merchant_id IS DISTINCT FROM ? ORDER BY order_id" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test Firebird IS DISTINCT FROM predicate with parameter.">
+        <assertion parameters="10:int, 2:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="10:int, null:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? AND merchant_id IS NOT DISTINCT FROM ? ORDER BY order_id" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test Firebird IS NOT DISTINCT FROM predicate with parameter.">
+        <assertion parameters="10:int, 2:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="10:int, null:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? AND status SIMILAR TO ? ORDER BY order_id" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test Firebird SIMILAR TO predicate with parameter.">
+        <assertion parameters="10:int, in%:String" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? AND creation_date = ? ORDER BY order_id" db-types="Firebird" scenario-types="db" scenario-comments="Test Firebird DATE parameter.">
+        <assertion parameters="10:int, 2017-08-08:date" expected-data-source-name="read_dataset" />
+        <assertion parameters="10:int, 2017-08-07:date" expected-data-source-name="read_dataset" />
+    </test-case>
 </e2e-test-cases>
