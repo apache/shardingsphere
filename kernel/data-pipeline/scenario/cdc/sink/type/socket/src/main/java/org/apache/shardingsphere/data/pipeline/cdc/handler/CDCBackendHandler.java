@@ -28,9 +28,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.api.StreamDataParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
-import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckId;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporterManager;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.PipelineCDCSocketSink;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCExceptionWrapper;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.MissingRequiredStreamDataSourceException;
@@ -41,6 +38,8 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRe
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.ResponseCase;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataResult;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.socket.CDCSocketSinkCreationContext;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.spi.CDCSinkFactory;
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCSchemaTableUtils;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
@@ -123,7 +122,8 @@ public final class CDCBackendHandler {
         CDCJobConfiguration cdcJobConfig = jobConfigManager.getJobConfiguration(jobId);
         ShardingSpherePreconditions.checkNotNull(cdcJobConfig, () -> new PipelineJobNotFoundException(jobId));
         ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getMetaDataContexts().getMetaData().getDatabase(cdcJobConfig.getDatabaseName());
-        jobAPI.start(jobId, new PipelineCDCSocketSink(channel, database, cdcJobConfig.getSchemaTableNames()));
+        CDCSinkFactory sinkFactory = TypedSPILoader.getService(CDCSinkFactory.class, cdcJobConfig.getSinkConfig().getSinkType().name());
+        jobAPI.start(jobId, sinkFactory.create(new CDCSocketSinkCreationContext(channel, database, cdcJobConfig.getSchemaTableNames(), cdcJobConfig.getSinkConfig().getProps())));
         connectionContext.setJobId(jobId);
     }
     
@@ -166,12 +166,6 @@ public final class CDCBackendHandler {
      * @param requestBody request body
      */
     public void processAck(final AckStreamingRequestBody requestBody) {
-        CDCAckId ackId = CDCAckId.unmarshal(requestBody.getAckId());
-        CDCImporter importer = CDCImporterManager.getImporter(ackId.getImporterId());
-        if (null == importer) {
-            log.warn("Could not find importer, ack id: {}", ackId.marshal());
-            return;
-        }
-        importer.ack(ackId.marshal());
+        jobAPI.ack(requestBody.getAckId());
     }
 }

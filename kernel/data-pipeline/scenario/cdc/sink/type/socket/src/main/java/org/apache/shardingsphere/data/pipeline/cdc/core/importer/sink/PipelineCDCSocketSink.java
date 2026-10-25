@@ -17,24 +17,22 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink;
 
+import com.google.common.base.Strings;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.ResponseCase;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
-import org.apache.shardingsphere.data.pipeline.cdc.util.DataRecordResultConvertUtils;
-import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.core.CDCRecordPreparer;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.spi.CDCSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -43,7 +41,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Pipeline CDC socket sink.
  */
-public final class PipelineCDCSocketSink implements PipelineSink {
+public final class PipelineCDCSocketSink implements CDCSink {
     
     private static final long DEFAULT_TIMEOUT_MILLISECONDS = 100L;
     
@@ -54,21 +52,15 @@ public final class PipelineCDCSocketSink implements PipelineSink {
     @Getter
     private final Channel channel;
     
-    private final ShardingSphereDatabase database;
-    
-    private final Map<String, String> tableSchemaNameMap;
+    private final CDCRecordPreparer recordPreparer;
     
     public PipelineCDCSocketSink(final Channel channel, final ShardingSphereDatabase database, final Collection<String> schemaTableNames) {
         this.channel = channel;
-        this.database = database;
-        tableSchemaNameMap = new HashMap<>(schemaTableNames.size(), 1F);
-        schemaTableNames.stream().filter(each -> each.contains(".")).forEach(each -> {
-            String[] split = each.split("\\.");
-            tableSchemaNameMap.put(split[1], split[0]);
-        });
+        recordPreparer = new CDCRecordPreparer(database, schemaTableNames);
     }
     
     @Override
+    @HighFrequencyInvocation
     public PipelineJobUpdateProgress write(final String ackId, final Collection<Record> records) {
         if (records.isEmpty()) {
             return new PipelineJobUpdateProgress(0);
@@ -79,7 +71,7 @@ public final class PipelineCDCSocketSink implements PipelineSink {
         if (!channel.isActive()) {
             return new PipelineJobUpdateProgress(0);
         }
-        Collection<DataRecordResult.Record> resultRecords = getResultRecords(records);
+        Collection<DataRecordResult.Record> resultRecords = recordPreparer.prepare(records);
         DataRecordResult dataRecordResult = DataRecordResult.newBuilder().addAllRecord(resultRecords).setAckId(ackId).build();
         channel.writeAndFlush(CDCResponseUtils.succeed("", ResponseCase.DATA_RECORD_RESULT, dataRecordResult));
         return new PipelineJobUpdateProgress(resultRecords.size());
@@ -101,15 +93,9 @@ public final class PipelineCDCSocketSink implements PipelineSink {
         }
     }
     
-    private Collection<DataRecordResult.Record> getResultRecords(final Collection<Record> records) {
-        Collection<DataRecordResult.Record> result = new LinkedList<>();
-        for (Record each : records) {
-            if (each instanceof DataRecord) {
-                DataRecord dataRecord = (DataRecord) each;
-                result.add(DataRecordResultConvertUtils.convertDataRecordToRecord(database.getName(), tableSchemaNameMap.get(dataRecord.getTableName()), dataRecord));
-            }
-        }
-        return result;
+    @Override
+    public void onFailure(final Throwable cause) {
+        channel.writeAndFlush(CDCResponseUtils.failed("", "", Strings.nullToEmpty(cause.getMessage())));
     }
     
     @Override
