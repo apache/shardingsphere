@@ -34,7 +34,7 @@ literals
     ;
 
 stringLiterals
-    : characterSetName? STRING_ collateClause?
+    : UNDERSCORE_CHARSET? STRING_+ collateClause?
     ;
 
 numberLiterals
@@ -215,9 +215,9 @@ characterSetName
     ;
 
 expr
-    : expr andOperator expr
+    : notOperator expr
+    | expr andOperator expr
     | expr orOperator expr
-    | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
     ;

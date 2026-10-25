@@ -13417,6 +13417,32 @@
         </from>
     </select>
 
+    <select sql-case-id="select_adjacent_string_literals_firebird">
+        <projections start-index="7" stop-index="13">
+            <expression-projection text="ab" start-index="7" stop-index="13">
+                <expr>
+                    <literal-expression value="ab" start-index="7" stop-index="13" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="20" stop-index="26" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_string_literal_with_introducer_firebird">
+        <projections start-index="7" stop-index="16">
+            <expression-projection text="abc" start-index="7" stop-index="16">
+                <expr>
+                    <literal-expression value="abc" start-index="7" stop-index="16" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="23" stop-index="29" />
+        </from>
+    </select>
+
     <select sql-case-id="select_gen_id_with_identifier_firebird">
         <projections start-index="7" stop-index="20">
             <expression-projection text="GEN_ID(seq, 1)" start-index="7" stop-index="20">
