@@ -486,6 +486,24 @@ class ShardingRuleTest {
     }
     
     @Test
+    void assertCreateBindingTablesWithPhysicalAliases() {
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.foo_order");
+        shardingTableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "database_inline"));
+        shardingTableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        ShardingTableRuleConfiguration subTableRuleConfig = new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.foo_order_item");
+        subTableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "database_inline"));
+        subTableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
+        shardingRuleConfig.getTables().add(subTableRuleConfig);
+        shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
+        shardingRuleConfig.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${order_id % 2}"))));
+        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+        assertTrue(actual.findBindingTableRule("t_order").isPresent());
+        assertThat(actual.findBindingTableRule("t_order").get().getShardingTables().size(), is(2));
+    }
+    
+    @Test
     void assertGenerateKeyWithDefaultKeyGenerator() {
         AlgorithmSQLContext generateContext = mock(AlgorithmSQLContext.class);
         when(generateContext.getTableName()).thenReturn("logic_table");
