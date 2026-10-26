@@ -342,9 +342,15 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         PaginationValueSegment rowCount = null;
         PaginationValueSegment offset = null;
         if (null != ctx.rowsClause()) {
-            offset = (PaginationValueSegment) visitLimitValue(ctx.rowsClause().expr(0));
             if (ctx.rowsClause().expr().size() > 1) {
-                rowCount = (PaginationValueSegment) visitLimitValue(ctx.rowsClause().expr(1));
+                if (isNumberLiteralExpression(ctx.rowsClause().expr(0)) && isNumberLiteralExpression(ctx.rowsClause().expr(1))) {
+                    NumberLiteralLimitValueSegment firstValue = (NumberLiteralLimitValueSegment) visitLimitValue(ctx.rowsClause().expr(0));
+                    NumberLiteralLimitValueSegment lastValue = (NumberLiteralLimitValueSegment) visitLimitValue(ctx.rowsClause().expr(1));
+                    offset = firstValue;
+                    rowCount = new NumberLiteralLimitValueSegment(lastValue.getStartIndex(), lastValue.getStopIndex(), lastValue.getValue() - firstValue.getValue() + 1);
+                }
+            } else {
+                rowCount = (PaginationValueSegment) visitLimitValue(ctx.rowsClause().expr(0));
             }
         } else {
             OffsetDefinitionContext offsetDefinition = ctx.offsetDefinition();
@@ -358,6 +364,13 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
     }
     
+    private boolean isNumberLiteralExpression(final ParseTree tree) {
+        if (tree instanceof NumberLiteralsContext) {
+            return true;
+        }
+        return 1 == tree.getChildCount() && isNumberLiteralExpression(tree.getChild(0));
+    }
+
     private ASTNode visitLimitValue(final ParserRuleContext ctx) {
         if (ctx.getChild(0) instanceof NumberLiteralsContext) {
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.getChild(0))).getValue().longValue());
@@ -367,6 +380,9 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
                     new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.getChild(0))).getValue());
             getParameterMarkerSegments().add(result);
             return result;
+        }
+        if (1 == ctx.getChildCount() && ctx.getChild(0) instanceof ParserRuleContext) {
+            return visitLimitValue((ParserRuleContext) ctx.getChild(0));
         }
         return null;
     }
