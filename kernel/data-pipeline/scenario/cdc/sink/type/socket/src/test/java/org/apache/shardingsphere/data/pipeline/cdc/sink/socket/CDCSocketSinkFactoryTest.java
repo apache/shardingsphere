@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.cdc.sink.socket;
 
 import io.netty.channel.Channel;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.PipelineCDCSocketSink;
 import org.apache.shardingsphere.data.pipeline.cdc.sink.spi.CDCSink;
 import org.apache.shardingsphere.data.pipeline.cdc.sink.spi.CDCSinkCreationContext;
 import org.apache.shardingsphere.data.pipeline.cdc.sink.spi.CDCSinkFactory;

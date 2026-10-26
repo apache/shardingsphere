@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.context;
+package org.apache.shardingsphere.data.pipeline.cdc.sink.socket.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * CDC connection context.
+ * Stream database not found exception.
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class CDCConnectionContext {
+public final class StreamDatabaseNotFoundException extends PipelineCDCException {
     
-    private final ShardingSphereUser currentUser;
+    private static final long serialVersionUID = -1064162731346147038L;
     
-    private volatile String database;
-    
-    private volatile String jobId;
+    public StreamDatabaseNotFoundException(final String database) {
+        super(XOpenSQLState.NOT_FOUND, 1, String.format("Database '%s' does not exist.", database));
+    }
 }

@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.exception;
+package org.apache.shardingsphere.data.pipeline.cdc.sink.socket.exception;
 
-import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
+import lombok.Getter;
 
 /**
- * Missing required stream data source exception.
+ * CDC exception wrapper.
  */
-public final class MissingRequiredStreamDataSourceException extends PipelineCDCException {
+@Getter
+public final class CDCExceptionWrapper extends RuntimeException {
     
-    private static final long serialVersionUID = 4003436152767041454L;
+    private static final long serialVersionUID = -929604775277797727L;
     
-    public MissingRequiredStreamDataSourceException() {
-        super(XOpenSQLState.NOT_FOUND, 0, "Can not find stream data source table.");
+    private final String requestId;
+    
+    private final Exception cause;
+    
+    public CDCExceptionWrapper(final String requestId, final Exception cause) {
+        super(cause.getMessage());
+        this.requestId = requestId;
+        this.cause = cause;
     }
 }

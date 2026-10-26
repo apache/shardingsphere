@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink;
+package org.apache.shardingsphere.data.pipeline.cdc.sink.socket;
 
 import com.google.common.base.Strings;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.ResponseCase;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
 import org.apache.shardingsphere.data.pipeline.cdc.sink.core.CDCRecordPreparer;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.socket.generator.CDCResponseUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.sink.spi.CDCSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;

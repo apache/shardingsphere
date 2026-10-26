@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.exception;
+package org.apache.shardingsphere.data.pipeline.cdc.sink.socket.exception;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;

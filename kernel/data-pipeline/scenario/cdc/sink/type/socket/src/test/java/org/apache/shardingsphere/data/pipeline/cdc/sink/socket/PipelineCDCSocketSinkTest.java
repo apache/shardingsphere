@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink;
+package org.apache.shardingsphere.data.pipeline.cdc.sink.socket;
 
 import io.netty.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;

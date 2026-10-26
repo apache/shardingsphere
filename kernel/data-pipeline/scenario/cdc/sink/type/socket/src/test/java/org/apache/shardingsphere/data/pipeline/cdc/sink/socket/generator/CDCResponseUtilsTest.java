@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.generator;
+package org.apache.shardingsphere.data.pipeline.cdc.sink.socket.generator;
 
 import com.google.protobuf.Message;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;

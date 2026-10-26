@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.exception;
+package org.apache.shardingsphere.data.pipeline.cdc.sink.socket.exception;
 
-import lombok.Getter;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * CDC exception wrapper.
+ * CDC login failed exception.
  */
-@Getter
-public final class CDCExceptionWrapper extends RuntimeException {
+public final class CDCLoginFailedException extends PipelineCDCException {
     
-    private static final long serialVersionUID = -929604775277797727L;
+    private static final long serialVersionUID = -2609355980890040117L;
     
-    private final String requestId;
-    
-    private final Exception cause;
-    
-    public CDCExceptionWrapper(final String requestId, final Exception cause) {
-        super(cause.getMessage());
-        this.requestId = requestId;
-        this.cause = cause;
+    public CDCLoginFailedException() {
+        super(XOpenSQLState.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT, 11, "Illegal username or password.");
     }
 }
