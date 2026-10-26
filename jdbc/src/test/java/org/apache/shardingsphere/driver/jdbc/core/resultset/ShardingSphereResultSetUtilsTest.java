@@ -66,7 +66,7 @@ class ShardingSphereResultSetUtilsTest {
         Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, null);
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     void assertCreateColumnLabelAndIndexMapWithUnexpandedShorthand() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
@@ -84,7 +84,7 @@ class ShardingSphereResultSetUtilsTest {
         expected.put("name", 2);
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     void assertGetVisibleColumnCountWithDerivedProjections() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
@@ -96,7 +96,7 @@ class ShardingSphereResultSetUtilsTest {
         when(selectStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
         assertThat(ShardingSphereResultSetUtils.getVisibleColumnCount(selectStatementContext, null), is(2));
     }
-
+    
     @Test
     void assertGetVisibleColumnCountWithoutDerivedProjections() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);

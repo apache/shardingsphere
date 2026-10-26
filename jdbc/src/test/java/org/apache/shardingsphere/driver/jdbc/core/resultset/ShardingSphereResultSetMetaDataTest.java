@@ -42,9 +42,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShardingSphereResultSetMetaDataTest {
-
+    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-
+    
     @Test
     void assertGetTableNameWithNullDatabase() throws SQLException {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
@@ -64,7 +64,7 @@ class ShardingSphereResultSetMetaDataTest {
         String actualTableName = new ShardingSphereResultSetMetaData(resultSetMetaData, database, null).getTableName(1);
         assertThat(actualTableName, is("t_order"));
     }
-
+    
     @Test
     void assertGetColumnCountWithExpandedProjections() throws SQLException {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
@@ -76,7 +76,7 @@ class ShardingSphereResultSetMetaDataTest {
         when(selectStatementContext.getProjectionsContext()).thenReturn(new ProjectionsContext(0, 0, false, projections));
         assertThat(new ShardingSphereResultSetMetaData(resultSetMetaData, null, selectStatementContext).getColumnCount(), is(2));
     }
-
+    
     @Test
     void assertGetColumnCountWithUnexpandedShorthand() throws SQLException {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
@@ -87,14 +87,14 @@ class ShardingSphereResultSetMetaDataTest {
         when(selectStatementContext.getProjectionsContext()).thenReturn(new ProjectionsContext(0, 0, false, Collections.singletonList(shorthand)));
         assertThat(new ShardingSphereResultSetMetaData(resultSetMetaData, null, selectStatementContext).getColumnCount(), is(3));
     }
-
+    
     @Test
     void assertGetColumnCountWithoutDerivedProjections() throws SQLException {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(5);
         assertThat(new ShardingSphereResultSetMetaData(resultSetMetaData, null, null).getColumnCount(), is(5));
     }
-
+    
     @Test
     void assertGetColumnLabelWithExpandedProjections() throws SQLException {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
@@ -105,7 +105,7 @@ class ShardingSphereResultSetMetaDataTest {
         when(selectStatementContext.getProjectionsContext()).thenReturn(new ProjectionsContext(0, 0, false, projections));
         assertThat(new ShardingSphereResultSetMetaData(resultSetMetaData, null, selectStatementContext).getColumnLabel(1), is("alias1"));
     }
-
+    
     @Test
     void assertGetColumnLabelWithUnexpandedShorthandFallsBackToMetaData() throws SQLException {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
@@ -117,7 +117,7 @@ class ShardingSphereResultSetMetaDataTest {
         when(selectStatementContext.getProjectionsContext()).thenReturn(new ProjectionsContext(0, 0, false, Collections.singletonList(shorthand)));
         assertThat(new ShardingSphereResultSetMetaData(resultSetMetaData, null, selectStatementContext).getColumnLabel(1), is("physical_label"));
     }
-
+    
     @Test
     void assertGetColumnNameWithExpandedProjections() throws SQLException {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);

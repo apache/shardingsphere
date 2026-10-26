@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSetMetaData;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class VisibleColumnMappingTest {
-
+    
     @Test
     void assertResolveWithUnexpandedShorthand() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
@@ -59,7 +59,7 @@ class VisibleColumnMappingTest {
         assertThat(mapping.getColumnLabelAndIndexMap().get("Age"), is(3));
         assertNull(mapping.findProjection(1));
     }
-
+    
     @Test
     void assertResolveWithExpandedProjections() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
@@ -76,7 +76,7 @@ class VisibleColumnMappingTest {
         assertThat(mapping.getColumnLabelAndIndexMap().get("COL2"), is(2));
         assertThat(mapping.getExpandProjections().size(), is(2));
     }
-
+    
     @Test
     void assertResolveIfExpandedReturnsNullForUnexpandedShorthand() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
@@ -87,7 +87,7 @@ class VisibleColumnMappingTest {
         when(selectStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
         assertNull(VisibleColumnMapping.resolveIfExpanded(selectStatementContext));
     }
-
+    
     @Test
     void assertResolveIfExpandedReturnsMappingForExpandedProjections() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
@@ -99,7 +99,7 @@ class VisibleColumnMappingTest {
         assertThat(mapping.getColumnCount(), is(1));
         assertThat(mapping.getColumnLabelAndIndexMap().get("col1"), is(1));
     }
-
+    
     @Test
     void assertFindProjectionWithExpandedProjections() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
@@ -114,7 +114,7 @@ class VisibleColumnMappingTest {
         assertThat(mapping.findProjection(1), is(col1));
         assertThat(mapping.findProjection(2), is(col2));
     }
-
+    
     @Test
     void assertFindProjectionReturnsNullWhenPhysicalMetaDataIsAuthoritative() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
