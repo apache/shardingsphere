@@ -27,16 +27,16 @@ import org.apache.shardingsphere.data.pipeline.cdc.api.StreamDataParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporterManager;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.PipelineCDCSocketSink;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCExceptionWrapper;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.MissingRequiredStreamDataSourceException;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.StreamDatabaseNotFoundException;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.socket.CDCSocketSinkCreationContext;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.spi.CDCSink;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.spi.CDCSinkFactory;
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCSchemaTableUtils;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
@@ -75,21 +75,23 @@ import java.util.Set;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({TypedSPILoader.class, DatabaseTypedSPILoader.class, PipelineContextManager.class, CDCSchemaTableUtils.class, PipelineDataNodeUtils.class, PipelineJobIdUtils.class,
-        CDCImporterManager.class})
+@StaticMockSettings({TypedSPILoader.class, DatabaseTypedSPILoader.class, PipelineContextManager.class, CDCSchemaTableUtils.class, PipelineDataNodeUtils.class, PipelineJobIdUtils.class})
 class CDCBackendHandlerTest {
     
     private CDCJobAPI jobAPI;
@@ -98,11 +100,18 @@ class CDCBackendHandlerTest {
     
     private CDCBackendHandler backendHandler;
     
+    private CDCSinkFactory sinkFactory;
+    
+    private CDCSink sink;
+    
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         jobAPI = mock(CDCJobAPI.class);
         jobConfigManager = mock(PipelineJobConfigurationManager.class);
-        when(TypedSPILoader.getService(any(), any())).thenReturn(jobAPI);
+        when(TypedSPILoader.getService(any(), eq("STREAMING"))).thenReturn(jobAPI);
+        sinkFactory = mock(CDCSinkFactory.class);
+        sink = mock(CDCSink.class);
+        when(TypedSPILoader.getService(any(), eq("SOCKET"))).thenReturn(sinkFactory);
         backendHandler = new CDCBackendHandler();
         Plugins.getMemberAccessor().set(CDCBackendHandler.class.getDeclaredField("jobAPI"), backendHandler, jobAPI);
         Plugins.getMemberAccessor().set(CDCBackendHandler.class.getDeclaredField("jobConfigManager"), backendHandler, jobConfigManager);
@@ -118,6 +127,7 @@ class CDCBackendHandlerTest {
     
     @Test
     void assertStreamDataWhenSchemaAvailable() {
+        when(sinkFactory.create(any())).thenReturn(sink);
         ShardingSphereDatabase database = mockDatabase();
         mockDialectMetaData(false);
         Map<String, Set<String>> schemaTableNames = Collections.singletonMap("foo_schema", Collections.singleton("foo_tbl"));
@@ -140,6 +150,7 @@ class CDCBackendHandlerTest {
     
     @Test
     void assertStreamDataWithoutSchema() {
+        when(sinkFactory.create(any())).thenReturn(sink);
         ShardingSphereDatabase database = mockDatabase();
         mockDialectMetaData(true);
         Map<String, Set<String>> schemaTableNames = Collections.singletonMap("", Collections.singleton("foo_tbl"));
@@ -196,9 +207,11 @@ class CDCBackendHandlerTest {
     
     @Test
     void assertStartStreamingSuccess() {
+        when(sinkFactory.create(any())).thenReturn(sink);
         CDCJobConfiguration jobConfig = createJobConfiguration();
         when(jobConfigManager.getJobConfiguration("foo_job")).thenReturn(jobConfig);
-        mockProxyContext(mock(ShardingSphereDatabase.class));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        mockProxyContext(database);
         Channel channel = mock(Channel.class);
         CDCConnectionContext connectionContext = createConnectionContext();
         try (MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class)) {
@@ -206,7 +219,13 @@ class CDCBackendHandlerTest {
             backendHandler.startStreaming("foo_job", connectionContext, channel);
             ArgumentCaptor<PipelineSink> sinkCaptor = ArgumentCaptor.forClass(PipelineSink.class);
             verify(jobAPI).start(eq("foo_job"), sinkCaptor.capture());
-            assertThat(((PipelineCDCSocketSink) sinkCaptor.getValue()).getChannel(), is(channel));
+            assertThat(sinkCaptor.getValue(), sameInstance(sink));
+            ArgumentCaptor<CDCSocketSinkCreationContext> contextCaptor = ArgumentCaptor.forClass(CDCSocketSinkCreationContext.class);
+            verify(sinkFactory).create(contextCaptor.capture());
+            assertThat(contextCaptor.getValue().getChannel(), sameInstance(channel));
+            assertThat(contextCaptor.getValue().getDatabase(), sameInstance(database));
+            assertThat(contextCaptor.getValue().getSchemaTableNames(), sameInstance(jobConfig.getSchemaTableNames()));
+            assertThat(contextCaptor.getValue().getProperties(), sameInstance(jobConfig.getSinkConfig().getProps()));
             assertThat(connectionContext.getJobId(), is("foo_job"));
             jobRegistryMocked.verifyNoInteractions();
         }
@@ -260,6 +279,33 @@ class CDCBackendHandlerTest {
     }
     
     @Test
+    void assertStopStreamingWhenPreviousConnectionClosesAfterReconnect() {
+        CDCJobConfiguration jobConfig = createJobConfiguration();
+        when(jobConfigManager.getJobConfiguration("foo_job")).thenReturn(jobConfig);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        mockProxyContext(database);
+        Channel previousChannel = mockChannel(DefaultChannelId.newInstance());
+        Channel currentChannel = mockChannel(DefaultChannelId.newInstance());
+        PipelineCDCSocketSink previousSink = new PipelineCDCSocketSink(previousChannel, database, jobConfig.getSchemaTableNames());
+        PipelineCDCSocketSink currentSink = new PipelineCDCSocketSink(currentChannel, database, jobConfig.getSchemaTableNames());
+        when(sinkFactory.create(any())).thenReturn(previousSink, currentSink);
+        CDCJob job = mock(CDCJob.class);
+        doAnswer(invocation -> {
+            when(job.getSink()).thenReturn(invocation.getArgument(1));
+            return null;
+        }).when(jobAPI).start(eq("foo_job"), any(PipelineSink.class));
+        try (MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class)) {
+            jobRegistryMocked.when(() -> PipelineJobRegistry.get("foo_job")).thenReturn(job);
+            backendHandler.startStreaming("foo_job", createConnectionContext(), previousChannel);
+            backendHandler.startStreaming("foo_job", createConnectionContext(), currentChannel);
+            backendHandler.stopStreaming("foo_job", previousChannel.id());
+            assertThat(job.getSink(), sameInstance(currentSink));
+            jobRegistryMocked.verify(() -> PipelineJobRegistry.stop("foo_job"), never());
+            verify(jobAPI, never()).disable("foo_job");
+        }
+    }
+    
+    @Test
     void assertDropStreamingWhenJobNotDisabled() {
         JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
         jobConfigPOJO.setDisabled(false);
@@ -275,21 +321,6 @@ class CDCBackendHandlerTest {
         when(PipelineJobIdUtils.getElasticJobConfigurationPOJO("foo_job")).thenReturn(jobConfigPOJO);
         backendHandler.dropStreaming("foo_job");
         verify(jobAPI).drop("foo_job");
-    }
-    
-    @Test
-    void assertProcessAckWhenImporterMissing() {
-        when(CDCImporterManager.getImporter("importer")).thenReturn(null);
-        backendHandler.processAck(AckStreamingRequestBody.newBuilder().setAckId("importer_random").build());
-        verifyNoInteractions(jobAPI);
-    }
-    
-    @Test
-    void assertProcessAckWhenImporterExists() {
-        CDCImporter importer = mock(CDCImporter.class);
-        when(CDCImporterManager.getImporter("importer")).thenReturn(importer);
-        backendHandler.processAck(AckStreamingRequestBody.newBuilder().setAckId("importer_random").build());
-        verify(importer).ack("importer_random");
     }
     
     private ShardingSphereDatabase mockDatabase() {

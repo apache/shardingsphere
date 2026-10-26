@@ -29,17 +29,23 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.Pipeli
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class PipelineCDCSocketSinkTest {
@@ -89,6 +95,55 @@ class PipelineCDCSocketSinkTest {
     }
     
     @Test
+    void assertWriteWhenOnlyFinishedRecords() {
+        Channel channel = mock(Channel.class);
+        when(channel.isWritable()).thenReturn(true);
+        when(channel.isActive()).thenReturn(true);
+        PipelineCDCSocketSink sink = new PipelineCDCSocketSink(channel, mock(), Collections.emptyList());
+        PipelineJobUpdateProgress actual = sink.write("foo_ack", Collections.singletonList(new FinishedRecord(new IngestPlaceholderPosition())));
+        assertThat(actual.getProcessedRecordsCount(), is(0));
+        ArgumentCaptor<CDCResponse> responseCaptor = ArgumentCaptor.forClass(CDCResponse.class);
+        verify(channel).writeAndFlush(responseCaptor.capture());
+        CDCResponse actualResponse = responseCaptor.getValue();
+        assertThat(actualResponse.getStatus(), is(CDCResponse.Status.SUCCEED));
+        assertThat(actualResponse.getResponseCase(), is(CDCResponse.ResponseCase.DATA_RECORD_RESULT));
+        assertThat(actualResponse.getDataRecordResult().getAckId(), is("foo_ack"));
+        assertTrue(actualResponse.getDataRecordResult().getRecordList().isEmpty());
+    }
+    
+    @Test
+    void assertWriteWhenChannelBecomesInactive() {
+        Channel channel = mock(Channel.class);
+        when(channel.isActive()).thenReturn(true, false);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        DataRecord dataRecord = new DataRecord(PipelineSQLOperationType.INSERT, "foo_tbl", new IngestPlaceholderPosition(), 0);
+        PipelineCDCSocketSink sink = new PipelineCDCSocketSink(channel, database, Collections.singletonList("foo_schema.foo_tbl"));
+        assertThat(sink.write("foo_ack", Collections.singletonList(dataRecord)).getProcessedRecordsCount(), is(0));
+        verify(channel, never()).writeAndFlush(any());
+        verifyNoInteractions(database);
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("failureMessageCases")
+    void assertOnFailure(final String name, final String message, final String expectedMessage) {
+        Channel channel = mock(Channel.class);
+        PipelineCDCSocketSink sink = new PipelineCDCSocketSink(channel, mock(), Collections.emptyList());
+        sink.onFailure(new IllegalStateException(message));
+        ArgumentCaptor<CDCResponse> responseCaptor = ArgumentCaptor.forClass(CDCResponse.class);
+        verify(channel).writeAndFlush(responseCaptor.capture());
+        CDCResponse expectedResponse = CDCResponse.newBuilder().setStatus(CDCResponse.Status.FAILED).setRequestId("").setErrorCode("").setErrorMessage(expectedMessage).build();
+        assertThat(responseCaptor.getValue(), is(expectedResponse));
+        verify(channel, never()).close();
+    }
+    
+    private static Stream<Arguments> failureMessageCases() {
+        return Stream.of(
+                Arguments.of("failure with message", "foo_failure", "foo_failure"),
+                Arguments.of("failure without message", null, ""),
+                Arguments.of("failure with empty message", "", ""));
+    }
+    
+    @Test
     void assertClose() {
         Channel channel = mock(Channel.class);
         new PipelineCDCSocketSink(channel, mock(), Collections.singletonList("logic_schema.t_order")).close();
@@ -98,5 +153,6 @@ class PipelineCDCSocketSinkTest {
         assertThat(actualResponse.getStatus(), is(CDCResponse.Status.FAILED));
         assertThat(actualResponse.getErrorCode(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
         assertThat(actualResponse.getErrorMessage(), is("The socket channel is closed."));
+        verify(channel, never()).close();
     }
 }

@@ -26,11 +26,10 @@ import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCJobItemContext;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.PipelineCDCSocketSink;
 import org.apache.shardingsphere.data.pipeline.cdc.core.prepare.CDCJobPreparer;
 import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCTasksRunner;
 import org.apache.shardingsphere.data.pipeline.cdc.engine.CDCJobRunnerCleaner;
-import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseUtils;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.spi.CDCSink;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
@@ -74,7 +73,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -249,12 +247,38 @@ public final class CDCJob implements PipelineJob {
             log.error("Task {} execute failed.", identifier, throwable);
             String jobId = jobItemContext.getJobId();
             PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, jobItemContext.getShardingItem(), throwable);
-            if (jobItemContext.getSink() instanceof PipelineCDCSocketSink) {
-                PipelineCDCSocketSink cdcSink = (PipelineCDCSocketSink) jobItemContext.getSink();
-                cdcSink.getChannel().writeAndFlush(CDCResponseUtils.failed("", "", Optional.ofNullable(throwable.getMessage()).orElse("")));
+            try {
+                if (jobItemContext.getSink() instanceof CDCSink) {
+                    ((CDCSink) jobItemContext.getSink()).onFailure(throwable);
+                }
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException ex) {
+                // CHECKSTYLE:ON
+                if (throwable != ex) {
+                    throwable.addSuppressed(ex);
+                }
             }
-            PipelineJobRegistry.stop(jobId);
-            jobAPI.disable(jobId);
+            try {
+                PipelineJobRegistry.stop(jobId);
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException ex) {
+                // CHECKSTYLE:ON
+                if (throwable != ex) {
+                    throwable.addSuppressed(ex);
+                }
+            }
+            try {
+                jobAPI.disable(jobId);
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException ex) {
+                // CHECKSTYLE:ON
+                if (throwable != ex) {
+                    throwable.addSuppressed(ex);
+                }
+            }
+            if (0 < throwable.getSuppressed().length) {
+                log.warn("Task {} failure handling encountered errors.", identifier, throwable);
+            }
         }
     }
 }
