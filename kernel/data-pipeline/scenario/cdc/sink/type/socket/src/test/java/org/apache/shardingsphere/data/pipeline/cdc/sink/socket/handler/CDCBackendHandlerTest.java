@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.handler;
+package org.apache.shardingsphere.data.pipeline.cdc.sink.socket.handler;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
@@ -26,15 +26,15 @@ import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.api.StreamDataParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
-import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.PipelineCDCSocketSink;
-import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCExceptionWrapper;
-import org.apache.shardingsphere.data.pipeline.cdc.exception.MissingRequiredStreamDataSourceException;
-import org.apache.shardingsphere.data.pipeline.cdc.exception.StreamDatabaseNotFoundException;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.sink.socket.CDCSocketSinkCreationContext;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.socket.PipelineCDCSocketSink;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.socket.context.CDCConnectionContext;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.socket.exception.CDCExceptionWrapper;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.socket.exception.MissingRequiredStreamDataSourceException;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.socket.exception.StreamDatabaseNotFoundException;
 import org.apache.shardingsphere.data.pipeline.cdc.sink.spi.CDCSink;
 import org.apache.shardingsphere.data.pipeline.cdc.sink.spi.CDCSinkFactory;
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCSchemaTableUtils;

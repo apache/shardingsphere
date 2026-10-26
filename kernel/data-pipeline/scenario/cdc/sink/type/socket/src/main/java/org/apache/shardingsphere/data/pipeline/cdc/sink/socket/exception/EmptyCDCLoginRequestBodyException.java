@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.exception;
+package org.apache.shardingsphere.data.pipeline.cdc.sink.socket.exception;
 
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Stream database not found exception.
+ * Empty CDC login request body exception.
  */
-public final class StreamDatabaseNotFoundException extends PipelineCDCException {
+public final class EmptyCDCLoginRequestBodyException extends PipelineCDCException {
     
-    private static final long serialVersionUID = -1064162731346147038L;
+    private static final long serialVersionUID = 6951330476924442374L;
     
-    public StreamDatabaseNotFoundException(final String database) {
-        super(XOpenSQLState.NOT_FOUND, 1, String.format("Database '%s' does not exist.", database));
+    public EmptyCDCLoginRequestBodyException() {
+        super(XOpenSQLState.NOT_FOUND, 10, "CDC Login request body is empty.");
     }
 }
