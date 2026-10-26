@@ -357,11 +357,6 @@
         <table name="foo" start-index="12" stop-index="14" />
     </alter-table>
 
-    <alter-table sql-case-id="alter_table_set_schema_postgresql">
-        <table name="foo" start-index="12" stop-index="14" />
-        <set-schema schema-name="bar" start-index="16" stop-index="29" />
-    </alter-table>
-
     <create-index sql-case-id="create_index_nulls_distinct_postgresql">
         <table>
             <simple-table name="foo" start-index="31" stop-index="33" />

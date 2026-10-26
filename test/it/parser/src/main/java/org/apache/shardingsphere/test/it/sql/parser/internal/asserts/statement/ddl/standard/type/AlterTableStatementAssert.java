@@ -204,8 +204,7 @@ public final class AlterTableStatementAssert {
             assertFalse(setSchemaDefinition.isPresent(), assertContext.getText("Actual set schema definition should not exist."));
         } else {
             assertTrue(setSchemaDefinition.isPresent(), assertContext.getText("Actual set schema definition should exist."));
-            assertThat(assertContext.getText("Schema name assertion error: "),
-                    setSchemaDefinition.get().getSchemaName().getValue(), is(expected.getSetSchemaDefinition().getSchemaName()));
+            assertThat(assertContext.getText("Schema name assertion error: "), setSchemaDefinition.get().getSchemaName().getValue(), is(expected.getSetSchemaDefinition().getSchemaName()));
             SQLSegmentAssert.assertIs(assertContext, setSchemaDefinition.get(), expected.getSetSchemaDefinition());
         }
     }

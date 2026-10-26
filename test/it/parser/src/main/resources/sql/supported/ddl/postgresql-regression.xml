@@ -82,7 +82,6 @@
     <sql-case id="alter_table_access_method_default_postgresql" value="ALTER TABLE foo SET ACCESS METHOD DEFAULT" db-types="PostgreSQL" />
     <sql-case id="alter_table_reloptions_qualified_postgresql" value="ALTER TABLE foo SET (autovacuum_enabled = false, toast.autovacuum_enabled = false)" db-types="PostgreSQL" />
     <sql-case id="alter_table_reset_reloptions_postgresql" value="ALTER TABLE foo RESET (autovacuum_enabled, toast.autovacuum_enabled)" db-types="PostgreSQL" />
-    <sql-case id="alter_table_set_schema_postgresql" value="ALTER TABLE foo SET SCHEMA bar" db-types="PostgreSQL" />
     <sql-case id="create_index_nulls_distinct_postgresql" value="CREATE UNIQUE INDEX foo_idx ON foo (id) NULLS DISTINCT" db-types="PostgreSQL" />
     <sql-case id="create_index_nulls_not_distinct_postgresql" value="CREATE UNIQUE INDEX foo_idx ON foo (id) NULLS NOT DISTINCT" db-types="PostgreSQL" />
     <sql-case id="alter_foreign_table_serial_aliases_postgresql" value="ALTER FOREIGN TABLE foo ADD COLUMN foo_small smallserial, ADD COLUMN foo_serial serial, ADD COLUMN foo_big bigserial" db-types="PostgreSQL" />

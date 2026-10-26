@@ -46,6 +46,7 @@
 1. SQL Parser: Fix No value specified for parameter exception when sql is 'INSERT INTO tableName ON CONFLICT  DO UPDATE set  WHERE ' - [#38668](https://github.com/apache/shardingsphere/pull/38668)
 1. SQL Parser: Preserve parentheses around column projections in PostgreSQL, openGauss, SQLServer, and Hive - [#40010](https://github.com/apache/shardingsphere/pull/40010)
 1. SQL Parser: Fix `ORDER BY` binding for Oracle set operations - [#40019](https://github.com/apache/shardingsphere/pull/40019)
+1. SQL Parser: Capture `ALTER TABLE ... SET SCHEMA` destination schema in PostgreSQL and openGauss - [#40367](https://github.com/apache/shardingsphere/pull/40367)
 1. SQL Binder: Fix columns being incorrectly skipped during binding - [#38350](https://github.com/apache/shardingsphere/pull/38350)
 1. SQL Binder: Fix wrong bind info when order by refer column from with temporary table - [#38353](https://github.com/apache/shardingsphere/pull/38353)
 1. SQL Binder: Fix wrong column label case for PostgreSQL and openGauss function projections - [#39393](https://github.com/apache/shardingsphere/pull/39393)
