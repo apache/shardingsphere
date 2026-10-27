@@ -25,12 +25,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -44,19 +40,21 @@ class ShardingRowCountTokenGeneratorTest {
     
     private final ShardingRowCountTokenGenerator generator = new ShardingRowCountTokenGenerator();
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getNotGenerateSQLTokenContexts")
-    void assertIsNotGenerateSQLToken(final String name, final SQLStatementContext sqlStatementContext) {
-        assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
+    @Test
+    void assertIsNotGenerateSQLTokenWithNotSelectStatementContext() {
+        assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
     }
     
-    private static Stream<Arguments> getNotGenerateSQLTokenContexts() {
-        SelectStatementContext parameterMarkerContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(parameterMarkerContext.getPaginationContext().getRowCountSegment()).thenReturn(Optional.of(mock(ParameterMarkerPaginationValueSegment.class)));
-        return Stream.of(
-                Arguments.of("not select", mock(SQLStatementContext.class)),
-                Arguments.of("without row count", mock(SelectStatementContext.class, RETURNS_DEEP_STUBS)),
-                Arguments.of("parameter marker row count", parameterMarkerContext));
+    @Test
+    void assertIsNotGenerateSQLTokenWithoutRowCountSegment() {
+        assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS)));
+    }
+    
+    @Test
+    void assertIsNotGenerateSQLTokenWithNotNumberLiteralPaginationValueSegment() {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getPaginationContext().getRowCountSegment()).thenReturn(Optional.of(mock(ParameterMarkerPaginationValueSegment.class)));
+        assertFalse(generator.isGenerateSQLToken(selectStatementContext));
     }
     
     @Test
