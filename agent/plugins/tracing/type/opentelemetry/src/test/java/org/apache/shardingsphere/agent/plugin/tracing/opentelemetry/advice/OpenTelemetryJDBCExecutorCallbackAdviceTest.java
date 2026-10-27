@@ -50,7 +50,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -118,10 +117,17 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     }
     
     @AfterEach
+    @SneakyThrows(ReflectiveOperationException.class)
     void clean() {
         GlobalOpenTelemetry.resetForTest();
         parentSpan.end();
         testExporter.reset();
+        getPendingSpans().clear();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static Map<?, ?> getPendingSpans() throws ReflectiveOperationException {
+        return (Map<?, ?>) Plugins.getMemberAccessor().get(OpenTelemetryJDBCExecutorCallbackAdvice.class.getDeclaredField("PENDING_SPANS"), null);
     }
     
     @Test
@@ -172,6 +178,19 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         assertThat(actualOuterSpan.getStatus().getStatusCode(), is(StatusCode.OK));
     }
     
+    private SpanData findSpanByStatement(final Collection<SpanData> spanItems, final String sql) {
+        for (SpanData each : spanItems) {
+            if (sql.equals(each.getAttributes().get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)))) {
+                return each;
+            }
+        }
+        throw new AssertionError("No span found with statement: " + sql);
+    }
+    
+    /**
+     * The inner callback target has no resourceMetaData field, so the inner beforeMethod fails. The executor swallows that failure and still
+     * invokes the completion hooks of the inner invocation, which must not touch the span of the outer invocation.
+     */
     @Test
     void assertNestedFailedBeforeDoesNotEndOuterSpan() throws Exception {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
@@ -179,8 +198,6 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         JDBCExecutionUnit innerExecutionUnit = new JDBCExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit("SELECT 2", Collections.emptyList())), null, executionUnit.getStorageResource());
         Method executeMethod = Object.class.getDeclaredMethod("toString");
         assertThrows(IOException.class, () -> executor.advice(targetObject, executeMethod, new Object[]{executionUnit, false}, () -> {
-            // The inner callback target has no resourceMetaData field, so the inner beforeMethod fails. The executor swallows the failure
-            // and still invokes the completion hooks of the inner invocation, which must not touch the span of the outer invocation.
             executor.advice(mock(TargetAdviceObject.class), executeMethod, new Object[]{innerExecutionUnit, false}, () -> null);
             throw new IOException("mock");
         }));
@@ -192,26 +209,23 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         assertThat(actualOuterSpan.getEvents().size(), is(1));
     }
     
+    /**
+     * Neither onThrowing nor afterMethod runs for this invocation, and no further SQL executes afterwards, so the span is released by the
+     * reclaimer alone. The reclaimer is driven here through its deadline instead of through garbage collection, which keeps the test
+     * independent of the garbage collector policy.
+     */
     @Test
-    @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
-    void assertPendingSpanIsReclaimedWhenCompletionHooksAreSkipped() {
+    @SneakyThrows(ReflectiveOperationException.class)
+    void assertAbandonedSpanIsReclaimedWhenCompletionHooksAreSkipped() {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
-        registerSpanWithoutCompletionHooks(advice);
-        Field pendingSpansField = OpenTelemetryJDBCExecutorCallbackAdvice.class.getDeclaredField("PENDING_SPANS");
-        pendingSpansField.setAccessible(true);
-        Map<?, ?> pendingSpans = (Map<?, ?>) pendingSpansField.get(null);
-        for (int i = 0; i < 50 && !pendingSpans.isEmpty(); i++) {
-            System.gc();
-            // Reading the map lets the WeakHashMap expunge entries whose keys were collected.
-            TimeUnit.MILLISECONDS.sleep(10L);
-        }
-        assertThat(pendingSpans.size(), is(0));
-    }
-    
-    private void registerSpanWithoutCompletionHooks(final OpenTelemetryJDBCExecutorCallbackAdvice advice) {
         JDBCExecutionUnit orphanExecutionUnit = new JDBCExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit("SELECT 3", Collections.emptyList())), null, executionUnit.getStorageResource());
         advice.beforeMethod(targetObject, null, new Object[]{orphanExecutionUnit, false}, "OpenTelemetry");
-        // No onThrowing and no afterMethod follow: the plugin was disabled between the hooks, so the completion hooks are skipped.
+        assertThat(getPendingSpans().size(), is(1));
+        OpenTelemetryJDBCExecutorCallbackAdvice.reclaimAbandonedSpans(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(6L));
+        Collection<SpanData> actualSpanItems = testExporter.getFinishedSpanItems();
+        assertThat(actualSpanItems.size(), is(1));
+        assertThat(actualSpanItems.iterator().next().getAttributes().get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is("SELECT 3"));
+        assertThat(getPendingSpans().size(), is(0));
     }
     
     @Test
@@ -263,15 +277,6 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         assertThat(actualSpanB.getStatus().getStatusCode(), is(StatusCode.ERROR));
         assertThat(actualSpanA.getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
         assertThat(actualSpanB.getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
-    }
-    
-    private SpanData findSpanByStatement(final Collection<SpanData> spanItems, final String sql) {
-        for (SpanData each : spanItems) {
-            if (sql.equals(each.getAttributes().get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)))) {
-                return each;
-            }
-        }
-        throw new AssertionError("No span found with statement: " + sql);
     }
     
     private void assertCommonData(final Collection<SpanData> spanItems, final String expectedParentSpanId) {
