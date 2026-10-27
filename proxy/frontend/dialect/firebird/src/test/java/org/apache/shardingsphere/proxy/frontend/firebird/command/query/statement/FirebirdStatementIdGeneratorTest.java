@@ -23,7 +23,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdStatementIdGeneratorTest {
     
@@ -42,6 +44,23 @@ class FirebirdStatementIdGeneratorTest {
     @Test
     void assertNextStatementId() {
         assertThat(GENERATOR.nextStatementId(1), is(1));
+    }
+    
+    @Test
+    void assertIsStatementAllocated() {
+        assertTrue(GENERATOR.isStatementAllocated(1, GENERATOR.nextStatementId(1)));
+    }
+    
+    @Test
+    void assertIsStatementAllocatedWithNotAllocatedStatement() {
+        assertFalse(GENERATOR.isStatementAllocated(1, 1));
+    }
+    
+    @Test
+    void assertReleaseStatementId() {
+        int statementId = GENERATOR.nextStatementId(1);
+        GENERATOR.releaseStatementId(1, statementId);
+        assertFalse(GENERATOR.isStatementAllocated(1, statementId));
     }
     
     @Test

@@ -26,8 +26,11 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdLastObjectRegistry;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
+import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,10 +48,14 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -60,6 +67,8 @@ class FirebirdFreeStatementCommandExecutorTest {
     private static final int CONNECTION_ID = 1;
     
     private static final int STATEMENT_ID = 1;
+    
+    private static final int INVALID_OBJECT_HANDLE = 0xFFFF;
     
     @Mock
     private FirebirdFreeStatementPacket packet;
@@ -75,6 +84,8 @@ class FirebirdFreeStatementCommandExecutorTest {
     
     @BeforeEach
     void setUp() {
+        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID);
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
         FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
@@ -86,6 +97,8 @@ class FirebirdFreeStatementCommandExecutorTest {
     
     @AfterEach
     void tearDown() {
+        FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
@@ -101,6 +114,20 @@ class FirebirdFreeStatementCommandExecutorTest {
         verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(STATEMENT_ID));
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
         assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
+    }
+    
+    @Test
+    void assertExecuteWithDrop() throws Exception {
+        when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.DROP);
+        new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
+        assertFalse(FirebirdStatementIdGenerator.getInstance().isStatementAllocated(CONNECTION_ID, STATEMENT_ID));
+    }
+    
+    @Test
+    void assertExecuteWithUnprepare() throws Exception {
+        when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.UNPREPARE);
+        new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
+        assertTrue(FirebirdStatementIdGenerator.getInstance().isStatementAllocated(CONNECTION_ID, STATEMENT_ID));
     }
     
     @Test
@@ -121,6 +148,38 @@ class FirebirdFreeStatementCommandExecutorTest {
         new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
         verify(registry).removePreparedStatement(STATEMENT_ID);
         verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(STATEMENT_ID));
+    }
+    
+    @Test
+    void assertExecuteWithLastStatementHandle() throws Exception {
+        FirebirdLastObjectRegistry.getInstance().registerLazySendConnection(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().setLastStatement(CONNECTION_ID, STATEMENT_ID);
+        when(packet.getStatementId()).thenReturn(INVALID_OBJECT_HANDLE);
+        when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.DROP);
+        new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
+        verify(registry).removePreparedStatement(STATEMENT_ID);
+        assertFalse(FirebirdStatementIdGenerator.getInstance().isStatementAllocated(CONNECTION_ID, STATEMENT_ID));
+    }
+    
+    @Test
+    void assertExecuteWithNotAllocatedStatement() throws Exception {
+        when(packet.getStatementId()).thenReturn(0x7FFF);
+        when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.DROP);
+        Collection<DatabasePacket> actual = new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getErrorCode(), is(ISCConstants.isc_bad_req_handle));
+        verify(registry, never()).removePreparedStatement(anyInt());
+    }
+    
+    @Test
+    void assertExecuteWithLastNonStatementObjectHandle() throws Exception {
+        FirebirdLastObjectRegistry.getInstance().registerLazySendConnection(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().setLastStatement(CONNECTION_ID, STATEMENT_ID);
+        FirebirdLastObjectRegistry.getInstance().setLastNonStatementObject(CONNECTION_ID);
+        when(packet.getStatementId()).thenReturn(INVALID_OBJECT_HANDLE);
+        when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.DROP);
+        Collection<DatabasePacket> actual = new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getErrorCode(), is(ISCConstants.isc_bad_req_handle));
+        assertTrue(FirebirdStatementIdGenerator.getInstance().isStatementAllocated(CONNECTION_ID, STATEMENT_ID));
     }
     
     @Test

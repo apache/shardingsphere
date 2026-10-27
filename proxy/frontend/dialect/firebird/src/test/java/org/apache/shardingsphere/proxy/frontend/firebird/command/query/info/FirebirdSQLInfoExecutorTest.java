@@ -25,11 +25,16 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdLastObjectRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.firebirdsql.gds.ISCConstants;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -44,12 +49,15 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdSQLInfoExecutorTest {
+    
+    private static final int CONNECTION_ID = 1;
+    
+    private static final int INVALID_OBJECT_HANDLE = 0xFFFF;
     
     @Mock
     private FirebirdInfoPacket packet;
@@ -57,34 +65,79 @@ class FirebirdSQLInfoExecutorTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
-    @Test
-    void assertExecute() {
-        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
-        FirebirdSQLInfoExecutor executor = new FirebirdSQLInfoExecutor(packet, connectionSession);
-        Collection<DatabasePacket> actual = executor.execute();
-        assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
-        FirebirdGenericResponsePacket responsePacket = (FirebirdGenericResponsePacket) actual.iterator().next();
-        assertThat(responsePacket.getData(), isA(FirebirdSQLInfoReturnPacket.class));
+    @BeforeEach
+    void setUp() {
+        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+    }
+    
+    @AfterEach
+    void tearDown() {
+        FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("sqlStatementProvider")
     void assertExecuteWithRecordsInfo(final String name, final SQLStatement sqlStatement, final long expectedInsertCount, final long expectedUpdateCount, final long expectedDeleteCount) {
-        when(packet.getHandle()).thenReturn(1);
-        ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
+        int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID);
+        when(packet.getHandle()).thenReturn(statementId);
+        ServerPreparedStatementRegistry registry = createPreparedStatementRegistry(statementId, sqlStatement);
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
+        Collection<DatabasePacket> actual = new FirebirdSQLInfoExecutor(packet, connectionSession).execute();
+        FirebirdSQLInfoReturnPacket returnPacket = (FirebirdSQLInfoReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        assertThat(returnPacket.getRecordsInfo().getInsertCount(), is(expectedInsertCount));
+        assertThat(returnPacket.getRecordsInfo().getUpdateCount(), is(expectedUpdateCount));
+        assertThat(returnPacket.getRecordsInfo().getDeleteCount(), is(expectedDeleteCount));
+    }
+    
+    @Test
+    void assertExecuteWithLastStatementHandle() {
+        int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().registerLazySendConnection(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().setLastStatement(CONNECTION_ID, statementId);
+        when(packet.getHandle()).thenReturn(INVALID_OBJECT_HANDLE);
+        ServerPreparedStatementRegistry registry = createPreparedStatementRegistry(statementId, mock(InsertStatement.class));
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
+        Collection<DatabasePacket> actual = new FirebirdSQLInfoExecutor(packet, connectionSession).execute();
+        FirebirdSQLInfoReturnPacket returnPacket = (FirebirdSQLInfoReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        assertThat(returnPacket.getRecordsInfo().getInsertCount(), is(3L));
+    }
+    
+    @Test
+    void assertExecuteWithNotAllocatedStatement() {
+        when(packet.getHandle()).thenReturn(0x7FFF);
+        Collection<DatabasePacket> actual = new FirebirdSQLInfoExecutor(packet, connectionSession).execute();
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getErrorCode(), is(ISCConstants.isc_bad_req_handle));
+    }
+    
+    @Test
+    void assertExecuteWithLastNonStatementObjectHandle() {
+        int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().registerLazySendConnection(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().setLastStatement(CONNECTION_ID, statementId);
+        FirebirdLastObjectRegistry.getInstance().setLastNonStatementObject(CONNECTION_ID);
+        when(packet.getHandle()).thenReturn(INVALID_OBJECT_HANDLE);
+        Collection<DatabasePacket> actual = new FirebirdSQLInfoExecutor(packet, connectionSession).execute();
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getErrorCode(), is(ISCConstants.isc_bad_req_handle));
+    }
+    
+    @Test
+    void assertExecuteWithUnpreparedStatement() {
+        when(packet.getHandle()).thenReturn(FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID));
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
+        Collection<DatabasePacket> actual = new FirebirdSQLInfoExecutor(packet, connectionSession).execute();
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getErrorCode(), is(ISCConstants.isc_unprepared_stmt));
+    }
+    
+    private ServerPreparedStatementRegistry createPreparedStatementRegistry(final int statementId, final SQLStatement sqlStatement) {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         FirebirdServerPreparedStatement preparedStatement = new FirebirdServerPreparedStatement("DML", sqlStatementContext, new HintValueContext());
         preparedStatement.setAffectedRows(3L);
-        registry.addPreparedStatement(1, preparedStatement);
-        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
-        FirebirdSQLInfoExecutor executor = new FirebirdSQLInfoExecutor(packet, connectionSession);
-        Collection<DatabasePacket> actual = executor.execute();
-        FirebirdGenericResponsePacket responsePacket = (FirebirdGenericResponsePacket) actual.iterator().next();
-        FirebirdSQLInfoReturnPacket returnPacket = (FirebirdSQLInfoReturnPacket) responsePacket.getData();
-        assertThat(returnPacket.getRecordsInfo().getInsertCount(), is(expectedInsertCount));
-        assertThat(returnPacket.getRecordsInfo().getUpdateCount(), is(expectedUpdateCount));
-        assertThat(returnPacket.getRecordsInfo().getDeleteCount(), is(expectedDeleteCount));
+        ServerPreparedStatementRegistry result = new ServerPreparedStatementRegistry();
+        result.addPreparedStatement(statementId, preparedStatement);
+        return result;
     }
     
     private static Stream<Arguments> sqlStatementProvider() {

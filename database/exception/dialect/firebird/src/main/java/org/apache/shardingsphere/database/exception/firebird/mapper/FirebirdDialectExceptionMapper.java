@@ -34,11 +34,13 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidRequestHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnpreparedStatementException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
@@ -88,6 +90,12 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof InvalidTransactionHandleException) {
             return toSQLException(FirebirdVendorError.INVALID_TRANSACTION_HANDLE);
+        }
+        if (sqlDialectException instanceof InvalidRequestHandleException) {
+            return toSQLException(FirebirdVendorError.INVALID_REQUEST_HANDLE);
+        }
+        if (sqlDialectException instanceof UnpreparedStatementException) {
+            return toSQLException(FirebirdVendorError.UNPREPARED_STATEMENT);
         }
         if (sqlDialectException instanceof ExcessTransactionsException) {
             return toSQLException(FirebirdVendorError.EXCESS_TRANSACTIONS, ((ExcessTransactionsException) sqlDialectException).getMaxTransactions());

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdLastObjectRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
@@ -64,6 +65,7 @@ class FirebirdCreateBlobCommandExecutorTest {
         FirebirdBlobIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobHandleGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobWriteCache.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @Test
@@ -83,5 +85,13 @@ class FirebirdCreateBlobCommandExecutorTest {
         FirebirdCreateBlobCommandExecutor executor = new FirebirdCreateBlobCommandExecutor(packet, connectionSession);
         FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) executor.execute().iterator().next();
         assertTrue(FirebirdBlobWriteCache.getInstance().isStreamBlob(CONNECTION_ID, actual.getId()));
+    }
+    
+    @Test
+    void assertExecuteAfterAllocatedStatement() {
+        FirebirdLastObjectRegistry.getInstance().registerLazySendConnection(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().setLastStatement(CONNECTION_ID, 1);
+        new FirebirdCreateBlobCommandExecutor(packet, connectionSession).execute();
+        assertThat(FirebirdLastObjectRegistry.getInstance().resolveStatementHandle(CONNECTION_ID, 0xFFFF), is(0xFFFF));
     }
 }

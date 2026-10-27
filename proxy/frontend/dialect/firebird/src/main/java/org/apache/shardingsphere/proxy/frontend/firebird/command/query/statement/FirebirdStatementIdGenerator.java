@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,6 +35,8 @@ public final class FirebirdStatementIdGenerator {
     private static final FirebirdStatementIdGenerator INSTANCE = new FirebirdStatementIdGenerator();
     
     private final Map<Integer, AtomicInteger> connectionRegistry = new ConcurrentHashMap<>();
+    
+    private final Map<Integer, Set<Integer>> allocatedStatementRegistry = new ConcurrentHashMap<>();
     
     /**
      * Get prepared statement registry instance.
@@ -51,6 +54,7 @@ public final class FirebirdStatementIdGenerator {
      */
     public void registerConnection(final int connectionId) {
         connectionRegistry.put(connectionId, new AtomicInteger());
+        allocatedStatementRegistry.put(connectionId, ConcurrentHashMap.newKeySet());
     }
     
     /**
@@ -60,7 +64,30 @@ public final class FirebirdStatementIdGenerator {
      * @return generated statement ID
      */
     public int nextStatementId(final int connectionId) {
-        return getStatementCounter(connectionId).incrementAndGet();
+        int result = getStatementCounter(connectionId).incrementAndGet();
+        getAllocatedStatements(connectionId).add(result);
+        return result;
+    }
+    
+    /**
+     * Judge whether statement is allocated for connection.
+     *
+     * @param connectionId connection ID
+     * @param statementId statement ID
+     * @return is statement allocated or not
+     */
+    public boolean isStatementAllocated(final int connectionId, final int statementId) {
+        return getAllocatedStatements(connectionId).contains(statementId);
+    }
+    
+    /**
+     * Release statement ID for connection.
+     *
+     * @param connectionId connection ID
+     * @param statementId statement ID
+     */
+    public void releaseStatementId(final int connectionId, final int statementId) {
+        getAllocatedStatements(connectionId).remove(statementId);
     }
     
     /**
@@ -80,10 +107,17 @@ public final class FirebirdStatementIdGenerator {
      */
     public void unregisterConnection(final int connectionId) {
         connectionRegistry.remove(connectionId);
+        allocatedStatementRegistry.remove(connectionId);
     }
     
     private AtomicInteger getStatementCounter(final int connectionId) {
         AtomicInteger result = connectionRegistry.get(connectionId);
+        ShardingSpherePreconditions.checkNotNull(result, () -> new IllegalStateException("No statement ID generator found for connectionId: " + connectionId));
+        return result;
+    }
+    
+    private Set<Integer> getAllocatedStatements(final int connectionId) {
+        Set<Integer> result = allocatedStatementRegistry.get(connectionId);
         ShardingSpherePreconditions.checkNotNull(result, () -> new IllegalStateException("No statement ID generator found for connectionId: " + connectionId));
         return result;
     }
