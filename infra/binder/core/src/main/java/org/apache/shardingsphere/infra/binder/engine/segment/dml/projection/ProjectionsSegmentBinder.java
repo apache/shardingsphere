@@ -88,8 +88,7 @@ public final class ProjectionsSegmentBinder {
     
     private static ProjectionSegment bind(final SQLStatementBinderContext binderContext, final TableSegment boundTableSegment, final Collection<ProjectionSegment> boundProjections,
                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
-                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
-                                          final ProjectionSegment projectionSegment) {
+                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts, final ProjectionSegment projectionSegment) {
         try {
             return bind(projectionSegment, binderContext, boundTableSegment, tableBinderContexts, outerTableBinderContexts);
         } catch (final ColumnNotFoundException ignored) {
