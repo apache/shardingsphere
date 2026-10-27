@@ -66,8 +66,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 class ShardingTableRuleStatementCheckerTest {
@@ -81,9 +82,9 @@ class ShardingTableRuleStatementCheckerTest {
     
     @BeforeEach
     void setUp() {
-        when(database.getName()).thenReturn("schema");
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        lenient().when(database.getName()).thenReturn("schema");
+        lenient().when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+        lenient().when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
     }
     
     @Test
@@ -293,6 +294,21 @@ class ShardingTableRuleStatementCheckerTest {
         rules.add(createCompleteAutoTableRule());
         rules.add(createCompleteTableRule());
         assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, rules, true, shardingRuleConfig));
+    }
+    
+    @Test
+    void assertIsValidBindingTableGroupsWithAlphabeticalSuffix() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration orderConfig = new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_${['a','b']}");
+        orderConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "inline_table"));
+        ruleConfig.getTables().add(orderConfig);
+        ShardingTableRuleConfiguration itemConfig = new ShardingTableRuleConfiguration("t_order_item", "ds_0.t_order_item_${['a','b']}");
+        itemConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "inline_table"));
+        ruleConfig.getTables().add(itemConfig);
+        ruleConfig.getShardingAlgorithms().put("inline_table", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "${order_id % 2}"))));
+        Collection<ShardingTableReferenceRuleConfiguration> groups =
+                Collections.singleton(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
+        assertFalse(ShardingTableRuleStatementChecker.isValidBindingTableGroups(groups, ruleConfig));
     }
     
     @Test
