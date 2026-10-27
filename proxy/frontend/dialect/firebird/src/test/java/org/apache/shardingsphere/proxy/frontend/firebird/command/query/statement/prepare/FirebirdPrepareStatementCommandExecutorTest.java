@@ -398,6 +398,10 @@ class FirebirdPrepareStatementCommandExecutorTest {
                 Arguments.of("Date plus integer", "SELECT start_date + 1 FROM bar_tbl", FirebirdBinaryColumnType.DATE),
                 Arguments.of("Time plus integer", "SELECT start_time + 60 FROM bar_tbl", FirebirdBinaryColumnType.TIME),
                 Arguments.of("Timestamp subtraction", "SELECT created_at - start_date FROM bar_tbl", FirebirdBinaryColumnType.NUMERIC),
+                Arguments.of("Current date subtraction", "SELECT CURRENT_DATE - CURRENT_DATE FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Date minus current date", "SELECT end_date - CURRENT_DATE FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Date minus local timestamp", "SELECT end_date - LOCALTIMESTAMP FROM bar_tbl", FirebirdBinaryColumnType.NUMERIC),
+                Arguments.of("Null arithmetic", "SELECT NULL + NULL FROM bar_tbl", FirebirdBinaryColumnType.LONG),
                 Arguments.of("Approximate numeric arithmetic", "SELECT price * 2 FROM bar_tbl", FirebirdBinaryColumnType.DOUBLE));
     }
     

@@ -436,7 +436,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
-    private int getLiteralType(final Object value) {
+    private int getLiteralType(@Nullable final Object value) {
         if (value instanceof String) {
             return Types.VARCHAR;
         }
@@ -460,7 +460,12 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             case "gen_id":
             case "count":
                 return Types.BIGINT;
+            case "current_date":
+                return Types.DATE;
+            case "localtime":
+                return Types.TIME;
             case "current_timestamp":
+            case "localtimestamp":
                 return Types.TIMESTAMP;
             default:
                 return Types.INTEGER;
@@ -492,10 +497,17 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             case "-":
             case "*":
             case "/":
+                if (isNullLiteral(expr.getLeft()) && isNullLiteral(expr.getRight())) {
+                    return Types.INTEGER;
+                }
                 return getArithmeticType(expr.getOperator(), getOperandType(expr.getLeft(), database, schema), getOperandType(expr.getRight(), database, schema));
             default:
                 return Types.INTEGER;
         }
+    }
+    
+    private boolean isNullLiteral(final ExpressionSegment operand) {
+        return operand instanceof LiteralExpressionSegment && null == ((LiteralExpressionSegment) operand).getLiterals();
     }
     
     private int getOperandType(final ExpressionSegment operand, final Supplier<ShardingSphereDatabase> database, final Supplier<Optional<ShardingSphereSchema>> schema) {
@@ -519,7 +531,6 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return Types.NULL;
     }
     
-    // follow Firebird dialect 3 result types, the fetched row data is encoded with the type the backend returns
     private int getArithmeticType(final String operator, final int leftType, final int rightType) {
         if (isDateTimeType(leftType) && isDateTimeType(rightType)) {
             if (!"-".equals(operator)) {
