@@ -51,6 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ShardingProjectionsTokenGeneratorTest {
@@ -111,6 +112,7 @@ class ShardingProjectionsTokenGeneratorTest {
         when(selectStatementContext.getProjectionsContext().getStopIndex()).thenReturn(2);
         when(selectStatementContext.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(databaseType).build());
         ProjectionsToken actual = generator.generateSQLToken(selectStatementContext);
+        verify(selectStatementContext.getProjectionsContext()).setDerivedColumnsAppended(true);
         assertThat(actual.toString(routeUnit),
                 is(", foo_agg_expr AS foo_agg_alias , foo_tbl_0.foo_derived_col AS foo_derived_alias , bar_derived_col AS bar_derived_alias , other_expr AS other_alias "));
     }

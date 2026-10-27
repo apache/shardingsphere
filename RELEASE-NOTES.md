@@ -92,6 +92,7 @@
 1. Proxy: Add error handling for unknown or closed BLOB handles and ids in Firebird - [#39773](https://github.com/apache/shardingsphere/pull/39773)
 1. Proxy: Fix startup failure when storage units set `dataSourceClassName` to `com.zaxxer.hikari.HikariDataSource` - [#40303](https://github.com/apache/shardingsphere/issues/40303)
 1. JDBC & Proxy: Remove default MySQL prepared statement query properties when creating data sources - [#38593](https://github.com/apache/shardingsphere/pull/38593)
+1. JDBC & Proxy: Fix wrong result column labels and count when metadata drifts from backend schema - [#39613](https://github.com/apache/shardingsphere/pull/39613)
 1. Mode: Fix rule metadata not removed from memory after dropping rules in Etcd cluster mode - [#38561](https://github.com/apache/shardingsphere/pull/38561)
 1. Pipeline: Fix MySQL JSON literal decoding in migration - [#38622](https://github.com/apache/shardingsphere/pull/38622)
 1. Pipeline: Fix MySQL zero-value temporal binlog decoding with fractional precision in migration - [#38629](https://github.com/apache/shardingsphere/pull/38629)

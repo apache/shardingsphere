@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.rewrite.context;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -34,7 +35,9 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
@@ -79,7 +82,10 @@ class SQLRewriteContextTest {
     
     @SuppressWarnings("unchecked")
     @BeforeEach
-    void setUp() {
+    void setUp(final TestInfo testInfo) {
+        if (testInfo.getTags().contains("independent-context")) {
+            return;
+        }
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         SQLStatement sqlStatement = mock(SQLStatement.class);
         when(sqlStatement.getDatabaseType()).thenReturn(databaseType);
@@ -89,6 +95,21 @@ class SQLRewriteContextTest {
         when(collectionSQLTokenGenerator.generateSQLTokens(sqlStatementContext)).thenReturn(Collections.singleton(sqlToken));
         when(database.getName()).thenReturn("foo_db");
         when(database.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("test", mock(DatabaseType.class))));
+    }
+    
+    @Test
+    @Tag("independent-context")
+    void assertNewContextResetsAppendedDerivedColumns() {
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
+        projectionsContext.setDerivedColumnsAppended(true);
+        projectionsContext.setAggregationDistinctColumnsRewritten(true);
+        SelectStatementContext statementContext = mock(SelectStatementContext.class);
+        when(statementContext.getProjectionsContext()).thenReturn(projectionsContext);
+        QueryContext queryContext = mock(QueryContext.class);
+        when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
+        new SQLRewriteContext(database, queryContext);
+        assertFalse(projectionsContext.isDerivedColumnsAppended());
+        assertFalse(projectionsContext.isAggregationDistinctColumnsRewritten());
     }
     
     @Test

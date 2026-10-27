@@ -48,12 +48,15 @@ public final class ShardingAggregationDistinctTokenGenerator implements Collecti
         for (AggregationDistinctProjection each : sqlStatementContext.getProjectionsContext().getAggregationDistinctProjections()) {
             result.add(generateSQLToken(each));
         }
+        sqlStatementContext.getProjectionsContext().setAggregationDistinctColumnsRewritten(!result.isEmpty());
         return result;
     }
     
     private AggregationDistinctToken generateSQLToken(final AggregationDistinctProjection projection) {
         Preconditions.checkArgument(projection.getAlias().isPresent());
-        String derivedAlias = DerivedColumn.isDerivedColumnName(projection.getAlias().get().getValue()) ? projection.getAlias().get().getValue() : null;
+        String derivedAlias = DerivedColumn.isDerivedColumnName(projection.getAlias().get().getValue()) && !projection.getAggregationSegment().getAlias().isPresent()
+                ? projection.getAlias().get().getValue()
+                : null;
         return new AggregationDistinctToken(projection.getStartIndex(), projection.getStopIndex(), projection.getDistinctInnerExpression(), derivedAlias);
     }
 }
