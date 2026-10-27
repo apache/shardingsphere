@@ -470,6 +470,7 @@
     <sql-case id="select_subquery_with_with_firebird" value="SELECT * FROM (WITH t AS (SELECT 1) SELECT * FROM t) sub" db-types="Firebird"/>
     <sql-case id="select_adjacent_string_literals_firebird" value="SELECT 'a' 'b' FROM t_order" db-types="Firebird"/>
     <sql-case id="select_string_literal_with_introducer_firebird" value="SELECT _utf8'abc' FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_hexadecimal_literal_with_introducer_firebird" value="SELECT _utf8 X'616263' FROM t_order" db-types="Firebird"/>
     <sql-case id="select_not_expression_sql92" value="SELECT NOT (1=1) FROM t_order" db-types="SQL92" />
     <sql-case id="select_where_is_true_sql92" value="SELECT * FROM t_order WHERE active IS TRUE" db-types="SQL92" />
     <sql-case id="select_where_is_false_sql92" value="SELECT * FROM t_order WHERE active IS FALSE" db-types="SQL92" />

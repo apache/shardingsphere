@@ -13443,6 +13443,19 @@
         </from>
     </select>
 
+    <select sql-case-id="select_hexadecimal_literal_with_introducer_firebird">
+        <projections start-index="7" stop-index="21">
+            <expression-projection text="_utf8X'616263'" start-index="7" stop-index="21">
+                <expr>
+                    <common-expression text="_utf8X'616263'" start-index="7" stop-index="21" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="28" stop-index="34" />
+        </from>
+    </select>
+
     <select sql-case-id="select_gen_id_with_identifier_firebird">
         <projections start-index="7" stop-index="20">
             <expression-projection text="GEN_ID(seq, 1)" start-index="7" stop-index="20">

@@ -47,11 +47,11 @@ dateTimeLiterals
     ;
 
 hexadecimalLiterals
-    : characterSetName? HEX_DIGIT_ collateClause?
+    : UNDERSCORE_CHARSET? HEX_DIGIT_ collateClause?
     ;
 
 bitValueLiterals
-    : characterSetName? BIT_NUM_ collateClause?
+    : UNDERSCORE_CHARSET? BIT_NUM_ collateClause?
     ;
 
 booleanLiterals
