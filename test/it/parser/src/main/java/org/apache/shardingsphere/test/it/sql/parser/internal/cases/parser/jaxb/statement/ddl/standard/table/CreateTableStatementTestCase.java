@@ -39,7 +39,10 @@ import java.util.List;
 @Getter
 @Setter
 public final class CreateTableStatementTestCase extends SQLParserTestCase {
-    
+
+    @XmlAttribute(name = "if-not-exists")
+    private Boolean ifNotExists;
+
     @XmlAttribute
     private Boolean temporary;
     

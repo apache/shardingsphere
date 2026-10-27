@@ -33,7 +33,13 @@ public final class ExpectedDataType extends ExpectedBaseSimpleExpression {
     
     @XmlAttribute
     private String value;
-    
+
+    @XmlAttribute(name = "length-present")
+    private Boolean lengthPresent;
+
+    @XmlAttribute
+    private Integer scale;
+
     @XmlElement
     private ExpectedDataTypeLength dataLength;
 }
