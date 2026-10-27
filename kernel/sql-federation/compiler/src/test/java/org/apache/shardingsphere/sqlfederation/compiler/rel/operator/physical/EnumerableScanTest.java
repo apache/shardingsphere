@@ -102,10 +102,10 @@ class EnumerableScanTest {
     }
     
     @Test
-    void assertConstructorWithUnqualifiedTableNameDatabaseType() {
+    void assertConstructorWithDefaultSchemaQualifiedDatabaseType() {
         LogicalTableScan pushDownNode = LogicalTableScan.create(cluster, relOptTable, Collections.emptyList());
         EnumerableScan scan = new EnumerableScan(cluster, cluster.traitSet(), relOptTable, pushDownNode, "Oracle");
-        assertThat(scan.getSqlString().getSql().replace(System.lineSeparator(), " "), is("SELECT * FROM \"tbl\""));
+        assertThat(scan.getSqlString().getSql().replace(System.lineSeparator(), " "), is("SELECT * FROM \"TEST\".\"tbl\""));
     }
     
     @Test

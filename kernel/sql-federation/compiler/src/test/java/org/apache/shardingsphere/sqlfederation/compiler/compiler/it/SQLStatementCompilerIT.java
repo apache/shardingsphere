@@ -23,6 +23,7 @@ import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -275,27 +276,40 @@ class SQLStatementCompilerIT {
         assertThat(actual, containsString(expectedScan));
     }
     
+    @Test
+    void assertCompileWithOracleCrossDatabaseJoin() {
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "Oracle"))
+                .parse("SELECT a.ORDER_ID FROM logic_db.T_ORDER a JOIN Other_Db.T_ORDER b ON a.ORDER_ID = b.ORDER_ID", false);
+        String actual = createOracleSQLStatementCompiler().compile(sqlStatement, "Oracle").getPhysicalPlan().explain().replaceAll(System.lineSeparator(), " ");
+        assertThat(actual, containsString("EnumerableScan(table=[[logic_db, T_ORDER]], sql=[SELECT * FROM \"LOGIC_DB\".\"T_ORDER\"]"));
+        assertThat(actual, containsString("EnumerableScan(table=[[Other_Db, T_ORDER]], sql=[SELECT * FROM \"OTHER_DB\".\"T_ORDER\"]"));
+    }
+    
     private SQLStatementCompiler createOracleSQLStatementCompiler() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        Collection<ShardingSphereSchema> schemas = new LinkedList<>(SystemSchemaBuilder.build("logic_db", databaseType, props).values());
         ShardingSphereTable orderTable = new ShardingSphereTable("T_ORDER",
                 Collections.singleton(new ShardingSphereColumn("ORDER_ID", Types.BIGINT, true, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereTable viewsTable = new ShardingSphereTable("ALL_VIEWS",
                 Collections.singleton(new ShardingSphereColumn("VIEW_NAME", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        schemas.add(new ShardingSphereSchema("LOGIC_DB", databaseType, Arrays.asList(orderTable, viewsTable), Collections.emptyList()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("logic_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), schemas, props);
-        CompilerContext compilerContext = new CompilerContext(
-                mock(SQLParserRule.class), CalciteSchemaBuilder.build(Collections.singleton(database)), new CalciteConnectionConfigImpl(new Properties()), getOperatorTables());
+        Collection<ShardingSphereDatabase> databases = Arrays.asList(
+                createOracleDatabase("logic_db", databaseType, props, Arrays.asList(orderTable, viewsTable)), createOracleDatabase("Other_Db", databaseType, props, Collections.singleton(orderTable)));
+        CompilerContext compilerContext = new CompilerContext(mock(SQLParserRule.class), CalciteSchemaBuilder.build(databases), new CalciteConnectionConfigImpl(new Properties()), getOperatorTables());
         return new SQLStatementCompiler(new SQLFederationRelConverter(compilerContext, Arrays.asList(Collections.singletonList("logic_db"), Arrays.asList("logic_db", "SYS")),
                 databaseType, EnumerableConvention.INSTANCE), EnumerableConvention.INSTANCE);
     }
     
+    private ShardingSphereDatabase createOracleDatabase(final String name, final DatabaseType databaseType, final ConfigurationProperties props, final Collection<ShardingSphereTable> tables) {
+        Collection<ShardingSphereSchema> schemas = new LinkedList<>(SystemSchemaBuilder.build(name, databaseType, props).values());
+        schemas.add(new ShardingSphereSchema(DefaultSchemaNameResolver.resolveProtocol(databaseType, name), databaseType, tables, Collections.emptyList()));
+        return new ShardingSphereDatabase(name, databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), schemas, props);
+    }
+    
     private static Stream<Arguments> compileWithOracleSystemSchemaArguments() {
         return Stream.of(
-                Arguments.of("user table", "SELECT ORDER_ID FROM T_ORDER", "EnumerableScan(table=[[logic_db, T_ORDER]], sql=[SELECT * FROM \"T_ORDER\"]"),
+                Arguments.of("user table", "SELECT ORDER_ID FROM T_ORDER", "EnumerableScan(table=[[logic_db, T_ORDER]], sql=[SELECT * FROM \"LOGIC_DB\".\"T_ORDER\"]"),
                 Arguments.of("unqualified dictionary view", "SELECT SEQUENCE_NAME FROM ALL_SEQUENCES", "EnumerableScan(table=[[logic_db, SYS, ALL_SEQUENCES]], sql=[SELECT * FROM \"ALL_SEQUENCES\"]"),
-                Arguments.of("user table shadows dictionary view", "SELECT VIEW_NAME FROM ALL_VIEWS", "EnumerableScan(table=[[logic_db, ALL_VIEWS]], sql=[SELECT * FROM \"ALL_VIEWS\"]"));
+                Arguments.of("user table shadows dictionary view", "SELECT VIEW_NAME FROM ALL_VIEWS", "EnumerableScan(table=[[logic_db, ALL_VIEWS]], sql=[SELECT * FROM \"LOGIC_DB\".\"ALL_VIEWS\"]"));
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
