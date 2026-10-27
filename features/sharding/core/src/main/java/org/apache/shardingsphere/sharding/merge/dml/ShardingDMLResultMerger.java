@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dml;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
@@ -32,6 +33,7 @@ import java.util.List;
  */
 public final class ShardingDMLResultMerger implements ResultMerger {
     
+    @HighFrequencyInvocation
     @Override
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database, final ConnectionContext connectionContext) {
         return new IteratorStreamMergedResult(queryResults);

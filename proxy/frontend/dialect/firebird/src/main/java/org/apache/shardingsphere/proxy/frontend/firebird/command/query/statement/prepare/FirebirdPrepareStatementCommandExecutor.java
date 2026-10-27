@@ -74,8 +74,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeLengthSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -117,6 +121,32 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private static final ShardingSphereTable LITERAL_TABLE = new ShardingSphereTable(null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     
     private static final int MAX_VARCHAR_LENGTH = 32765;
+    
+    private static final Map<String, Integer> CAST_DATA_TYPES = new HashMap<>(21, 1F);
+    
+    static {
+        CAST_DATA_TYPES.put("CHAR", Types.CHAR);
+        CAST_DATA_TYPES.put("CHARACTER", Types.CHAR);
+        CAST_DATA_TYPES.put("NCHAR", Types.CHAR);
+        CAST_DATA_TYPES.put("NATIONAL CHAR", Types.CHAR);
+        CAST_DATA_TYPES.put("NATIONAL CHARACTER", Types.CHAR);
+        CAST_DATA_TYPES.put("SMALLINT", Types.SMALLINT);
+        CAST_DATA_TYPES.put("INT", Types.INTEGER);
+        CAST_DATA_TYPES.put("INTEGER", Types.INTEGER);
+        CAST_DATA_TYPES.put("BIGINT", Types.BIGINT);
+        CAST_DATA_TYPES.put("FLOAT", Types.FLOAT);
+        CAST_DATA_TYPES.put("REAL", Types.FLOAT);
+        CAST_DATA_TYPES.put("DOUBLE PRECISION", Types.DOUBLE);
+        CAST_DATA_TYPES.put("NUMERIC", Types.NUMERIC);
+        CAST_DATA_TYPES.put("DEC", Types.DECIMAL);
+        CAST_DATA_TYPES.put("DECIMAL", Types.DECIMAL);
+        CAST_DATA_TYPES.put("DATE", Types.DATE);
+        CAST_DATA_TYPES.put("TIME", Types.TIME);
+        CAST_DATA_TYPES.put("TIMESTAMP", Types.TIMESTAMP);
+        CAST_DATA_TYPES.put("TIME WITH TIME ZONE", Types.TIME_WITH_TIMEZONE);
+        CAST_DATA_TYPES.put("TIMESTAMP WITH TIME ZONE", Types.TIMESTAMP_WITH_TIMEZONE);
+        CAST_DATA_TYPES.put("BOOLEAN", Types.BOOLEAN);
+    }
     
     private final FirebirdPrepareStatementPacket packet;
     
@@ -338,23 +368,20 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             return;
         }
         Map<Integer, ColumnSegment> affectedColumns = findAffectedColumns(sqlStatementContext);
+        Map<Integer, DataTypeSegment> castDataTypes = findCastDataTypes(sqlStatementContext);
         int parametersCount = sqlStatementContext.getSqlStatement().getParameterMarkers().size();
         for (int i = 0; i < parametersCount; i++) {
             ColumnSegment columnSegment = affectedColumns.get(i);
-            if (null == columnSegment) {
+            if (null != columnSegment) {
+                ShardingSphereTable table = getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue(), database, schema);
+                ShardingSphereColumn column = table.getColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue());
+                processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), i + 1);
+            } else if (castDataTypes.containsKey(i)) {
+                processCastParameter(castDataTypes.get(i), describeColumns, requestedItems, i + 1);
+            } else {
                 processUnknownParameter(describeColumns, requestedItems, i + 1);
-                continue;
             }
-            ShardingSphereTable table = getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue(), database, schema);
-            ShardingSphereColumn column = table.getColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue());
-            processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), i + 1);
         }
-    }
-    
-    private void processUnknownParameter(final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final int idx) {
-        ShardingSphereColumn column = new ShardingSphereColumn(null, Types.VARCHAR, false, false, true, true, false, false);
-        String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
-        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, LITERAL_TABLE, column, null, null, owner, MAX_VARCHAR_LENGTH, false, null));
     }
     
     private void processInsertStatement(final InsertStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
@@ -455,6 +482,81 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         if (binary.getLeft() instanceof ColumnSegment) {
             putAffectedColumn((ColumnSegment) binary.getLeft(), binary.getRight(), affectedColumns);
         }
+    }
+    
+    private Map<Integer, DataTypeSegment> findCastDataTypes(final SQLStatementContext sqlStatementContext) {
+        Map<Integer, DataTypeSegment> result = new HashMap<>();
+        findSelectStatement(sqlStatementContext.getSqlStatement()).ifPresent(optional -> putProjectionCastDataTypes(optional, result));
+        if (sqlStatementContext instanceof UpdateStatementContext) {
+            for (ColumnAssignmentSegment each : ((UpdateStatementContext) sqlStatementContext).getSqlStatement().getSetAssignment().getAssignments()) {
+                putCastDataType(each.getValue(), result);
+            }
+        }
+        if (sqlStatementContext instanceof WhereContextAvailable) {
+            for (WhereSegment each : getWhereSegments((WhereContextAvailable) sqlStatementContext)) {
+                putCastDataType(each.getExpr(), result);
+            }
+        }
+        return result;
+    }
+    
+    private Optional<SelectStatement> findSelectStatement(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            return Optional.of((SelectStatement) sqlStatement);
+        }
+        return sqlStatement instanceof InsertStatement ? ((InsertStatement) sqlStatement).getInsertSelect().map(SubquerySegment::getSelect) : Optional.empty();
+    }
+    
+    private void putProjectionCastDataTypes(final SelectStatement selectStatement, final Map<Integer, DataTypeSegment> castDataTypes) {
+        for (ProjectionSegment each : selectStatement.getProjections().getProjections()) {
+            if (each instanceof ExpressionProjectionSegment) {
+                putCastDataType(((ExpressionProjectionSegment) each).getExpr(), castDataTypes);
+            }
+        }
+        selectStatement.getCombine().ifPresent(optional -> {
+            putProjectionCastDataTypes(optional.getLeft().getSelect(), castDataTypes);
+            putProjectionCastDataTypes(optional.getRight().getSelect(), castDataTypes);
+        });
+    }
+    
+    private void putCastDataType(final ExpressionSegment expr, final Map<Integer, DataTypeSegment> castDataTypes) {
+        if (expr instanceof BinaryOperationExpression) {
+            putCastDataType(((BinaryOperationExpression) expr).getLeft(), castDataTypes);
+            putCastDataType(((BinaryOperationExpression) expr).getRight(), castDataTypes);
+            return;
+        }
+        if (!(expr instanceof FunctionSegment)) {
+            return;
+        }
+        List<ExpressionSegment> parameters = new ArrayList<>(((FunctionSegment) expr).getParameters());
+        if ("CAST".equalsIgnoreCase(((FunctionSegment) expr).getFunctionName()) && 2 == parameters.size()
+                && parameters.get(0) instanceof ParameterMarkerExpressionSegment && parameters.get(1) instanceof DataTypeSegment) {
+            castDataTypes.put(((ParameterMarkerExpressionSegment) parameters.get(0)).getParameterMarkerIndex(), (DataTypeSegment) parameters.get(1));
+            return;
+        }
+        for (ExpressionSegment each : parameters) {
+            putCastDataType(each, castDataTypes);
+        }
+    }
+    
+    private void processCastParameter(final DataTypeSegment dataType, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,
+                                      final int idx) {
+        int castDataType = getCastDataType(dataType.getDataTypeName());
+        ShardingSphereColumn column = new ShardingSphereColumn(null, castDataType, false, false, true, true, false, false);
+        String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
+        int columnLength = dataType.getDataTypeLength().map(DataTypeLengthSegment::getPrecision).orElse(Types.CHAR == castDataType ? 1 : MAX_VARCHAR_LENGTH);
+        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, LITERAL_TABLE, column, null, null, owner, columnLength, false, null));
+    }
+    
+    private int getCastDataType(final String dataTypeName) {
+        String upperCaseDataTypeName = dataTypeName.toUpperCase(Locale.ENGLISH);
+        return upperCaseDataTypeName.startsWith("BLOB") ? Types.BLOB : CAST_DATA_TYPES.getOrDefault(upperCaseDataTypeName, Types.VARCHAR);
+    }
+    
+    private void processUnknownParameter(final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final int idx) {
+        ShardingSphereColumn column = new ShardingSphereColumn(null, Types.VARCHAR, false, false, true, true, false, false);
+        String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
+        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, LITERAL_TABLE, column, null, null, owner, MAX_VARCHAR_LENGTH, false, null));
     }
     
     private void processExpressionProjection(final ExpressionProjection expr, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,

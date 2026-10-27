@@ -496,6 +496,23 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeInsertSelectCastParameters() throws Exception {
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id, content) SELECT CAST(? AS INTEGER), CAST(? AS VARCHAR(20)) FROM foo_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(2));
+        FirebirdPacketPayload integerPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(0).write(integerPayload);
+        verify(integerPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload varcharPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(1).write(varcharPayload);
+        verify(varcharPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        verify(varcharPayload).writeInt4LE(20);
+    }
+    
+    @Test
     void assertDescribeInsertSelectParametersOfUnionWithThreeBranches() throws Exception {
         String sql = "INSERT INTO foo_tbl (id) SELECT id FROM foo_tbl WHERE id = ? UNION ALL SELECT id FROM foo_tbl WHERE content = ? UNION ALL SELECT id FROM foo_tbl WHERE id = ?";
         FirebirdPrepareStatementReturnPacket actual = describeBind(sql);

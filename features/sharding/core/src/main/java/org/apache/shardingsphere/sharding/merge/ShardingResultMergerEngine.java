@@ -59,8 +59,7 @@ public final class ShardingResultMergerEngine implements ResultMergerEngine<Shar
     }
     
     private boolean isShardingInsertWithReturning(final ShardingRule shardingRule, final InsertStatement insertStatement) {
-        return insertStatement.getReturning().isPresent()
-                && insertStatement.getTable().map(optional -> shardingRule.isShardingTable(optional.getTableName().getIdentifier().getValue())).orElse(false);
+        return insertStatement.getReturning().isPresent() && insertStatement.getTable().map(optional -> shardingRule.isShardingTable(optional.getTableName().getIdentifier().getValue())).orElse(false);
     }
     
     @Override

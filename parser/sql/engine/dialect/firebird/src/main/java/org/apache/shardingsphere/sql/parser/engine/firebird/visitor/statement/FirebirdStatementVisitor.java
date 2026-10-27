@@ -501,7 +501,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
         ASTNode exprSegment = visit(ctx.expr());
-        if (exprSegment instanceof ColumnSegment || exprSegment instanceof LiteralExpressionSegment) {
+        if (exprSegment instanceof ColumnSegment || exprSegment instanceof LiteralExpressionSegment || exprSegment instanceof ParameterMarkerExpressionSegment) {
             result.getParameters().add((ExpressionSegment) exprSegment);
         }
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
