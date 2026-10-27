@@ -60,6 +60,12 @@
     <sql-case id="clickhouse_select_cast_nullable" value="SELECT CAST(NULL AS Nullable(Int32)), CAST(7 AS Nullable(Int32))" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_numbers" value="SELECT number FROM numbers(3)" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_numbers_alias" value="SELECT n.number FROM numbers(0) AS n" db-types="ClickHouse" />
+    <sql-case id="clickhouse_insert_native_values_header" value="INSERT INTO foo_protocol VALUES" db-types="ClickHouse" />
+    <sql-case id="clickhouse_insert_native_values_columns" value="INSERT INTO foo_protocol (id, payload) VALUES" db-types="ClickHouse" />
+    <sql-case id="clickhouse_insert_native_format_header" value="INSERT INTO foo_protocol FORMAT Native" db-types="ClickHouse" />
+    <sql-case id="clickhouse_insert_native_format_columns" value="INSERT INTO default.foo_protocol (id, payload) FORMAT Native" db-types="ClickHouse" />
+    <sql-case id="clickhouse_insert_native_bare_header" value="INSERT INTO foo_protocol" db-types="ClickHouse" />
+    <sql-case id="clickhouse_insert_select_numbers" value="INSERT INTO foo_protocol (id) SELECT number FROM numbers(2)" db-types="ClickHouse" />
     <sql-case id="clickhouse_cancel_aggregate_comment" value="SELECT sum(number % 7919) FROM numbers(10000000000) /* foo_cancel_probe */" db-types="ClickHouse" />
     <sql-case id="clickhouse_leading_comment" value="/* foo_marker */ SELECT 1" db-types="ClickHouse" />
     <sql-case id="clickhouse_trailing_line_comment" value="SELECT 1 -- foo_marker" db-types="ClickHouse" />

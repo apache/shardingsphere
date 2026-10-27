@@ -1232,6 +1232,50 @@
             </function-table>
         </from>
     </select>
+    <insert sql-case-id="clickhouse_insert_native_values_header">
+        <table name="foo_protocol" start-index="12" stop-index="23" />
+        <columns start-index="24" stop-index="24" />
+    </insert>
+    <insert sql-case-id="clickhouse_insert_native_values_columns">
+        <table name="foo_protocol" start-index="12" stop-index="23" />
+        <columns start-index="25" stop-index="37">
+            <column name="id" start-index="26" stop-index="27" />
+            <column name="payload" start-index="30" stop-index="36" />
+        </columns>
+    </insert>
+    <insert sql-case-id="clickhouse_insert_native_format_header">
+        <table name="foo_protocol" start-index="12" stop-index="23" />
+        <columns start-index="24" stop-index="24" />
+    </insert>
+    <insert sql-case-id="clickhouse_insert_native_format_columns">
+        <table name="foo_protocol" start-index="12" stop-index="31">
+            <owner name="default" start-index="12" stop-index="18" />
+        </table>
+        <columns start-index="33" stop-index="45">
+            <column name="id" start-index="34" stop-index="35" />
+            <column name="payload" start-index="38" stop-index="44" />
+        </columns>
+    </insert>
+    <insert sql-case-id="clickhouse_insert_native_bare_header">
+        <table name="foo_protocol" start-index="12" stop-index="23" />
+        <columns start-index="23" stop-index="23" />
+    </insert>
+    <insert sql-case-id="clickhouse_insert_select_numbers">
+        <table name="foo_protocol" start-index="12" stop-index="23" />
+        <columns start-index="25" stop-index="28">
+            <column name="id" start-index="26" stop-index="27" />
+        </columns>
+        <select>
+            <projections start-index="37" stop-index="42">
+                <column-projection name="number" start-index="37" stop-index="42" />
+            </projections>
+            <from>
+                <function-table start-index="49" stop-index="58">
+                    <table-function function-name="numbers" text="numbers(2)" />
+                </function-table>
+            </from>
+        </select>
+    </insert>
     <select sql-case-id="clickhouse_cancel_aggregate_comment">
         <projections start-index="7" stop-index="24">
             <aggregation-projection type="SUM" expression="sum(number % 7919)" start-index="7" stop-index="24" />

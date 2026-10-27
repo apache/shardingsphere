@@ -24,11 +24,15 @@ insert
     ;
 
 insertValuesClause
-    : columnNames? (VALUES ) assignmentValues (COMMA_ assignmentValues)*
+    : insertColumnNames? (VALUES (assignmentValues (COMMA_ assignmentValues)*)? | FORMAT identifier)?
     ;
 
 insertSelectClause
-    : columnNames? select
+    : insertColumnNames? select
+    ;
+
+insertColumnNames
+    : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
 assignmentValues
