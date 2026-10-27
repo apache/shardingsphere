@@ -45,5 +45,6 @@ Read this reference before reviewing PRs that touch SQL grammar, SQL visitor cla
 
 ## Output Requirements
 
-- In `Coverage`, name the target dialect, related trunk or branch dialects checked, official documentation pages used, and repo docs or examples checked.
+- Record the target dialect, related trunk or branch dialects checked, official documentation pages used, and repo docs or examples checked in private review material.
+- Follow the main Skill's short `Coverage` summary and disclose any missing or failed dialect check that affects the conclusion.
 - If syntax evidence is missing or contradicted, classify the result using the main skill's evidence sufficiency rules instead of guessing.
