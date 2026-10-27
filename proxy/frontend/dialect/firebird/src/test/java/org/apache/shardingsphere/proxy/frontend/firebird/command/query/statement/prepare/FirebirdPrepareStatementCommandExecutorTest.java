@@ -386,6 +386,33 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeRenamedDerivedTableColumnSelect() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT derived_tbl.n, derived_tbl.* FROM (SELECT id AS n FROM foo_tbl) derived_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.SELECT,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.ALIAS,
+                FirebirdSQLInfoPacketType.ALIAS,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPacketPayload explicitColumnPayload = mock(FirebirdPacketPayload.class);
+        when(explicitColumnPayload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        actualReturnPacket.getDescribeSelect().get(0).write(explicitColumnPayload);
+        verify(explicitColumnPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        verify(explicitColumnPayload).writeBytes("n".getBytes(StandardCharsets.UTF_8));
+        FirebirdPacketPayload shorthandColumnPayload = mock(FirebirdPacketPayload.class);
+        when(shorthandColumnPayload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        actualReturnPacket.getDescribeSelect().get(1).write(shorthandColumnPayload);
+        verify(shorthandColumnPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        verify(shorthandColumnPayload).writeBytes("n".getBytes(StandardCharsets.UTF_8));
+    }
+    
+    @Test
     void assertDescribeCommonTableExpressionWithShorthandSelect() throws Exception {
         FirebirdReturnColumnPacket actualColumnPacket = describeSingleColumn("WITH foo_cte (a, b, n) AS (SELECT foo_tbl.*, 'foo' FROM foo_tbl) SELECT n FROM foo_cte");
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);

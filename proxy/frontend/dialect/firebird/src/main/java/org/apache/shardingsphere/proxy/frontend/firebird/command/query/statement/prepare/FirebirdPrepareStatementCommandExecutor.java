@@ -104,12 +104,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.TreeMap;
 import java.util.function.Supplier;
 
 /**
@@ -125,6 +128,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private final ConnectionSession connectionSession;
     
     private ReturningSegment returningSegment;
+    
+    private final Map<SelectStatement, Collection<ColumnSegmentBoundInfo>> shorthandColumnBoundInfos = new IdentityHashMap<>();
+    
+    private final Map<SelectStatement, Map<String, ProjectionSegment>> labeledProjectionSegments = new IdentityHashMap<>();
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
@@ -250,7 +257,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         for (Projection each : getProjections(sqlStatementContext, database, schema)) {
             Optional<Projection> originProjection = findOriginProjection(sqlStatementContext, each);
             Projection projection = originProjection.orElse(each);
-            IdentifierValue columnAlias = originProjection.isPresent() ? new IdentifierValue(each.getColumnLabel()) : each.getAlias().orElse(null);
+            IdentifierValue columnAlias = originProjection.isPresent() || isRenamedColumn(each) ? new IdentifierValue(each.getColumnLabel()) : each.getAlias().orElse(null);
             if (projection instanceof ColumnProjection) {
                 ShardingSphereTable table = getTable(getTableName(sqlStatementContext, (ColumnProjection) projection), database, schema);
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) projection).getOriginalColumn().getValue());
@@ -347,21 +354,25 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private boolean isShorthandExpandedColumn(final SelectStatement select, final ColumnSegmentBoundInfo columnBoundInfo) {
-        for (ProjectionSegment each : select.getProjections().getProjections()) {
-            if (each instanceof ShorthandProjectionSegment && isActualColumn((ShorthandProjectionSegment) each, columnBoundInfo)) {
-                return true;
-            }
-        }
-        return false;
+        return shorthandColumnBoundInfos.computeIfAbsent(select, this::getShorthandColumnBoundInfos).contains(columnBoundInfo);
     }
     
-    private boolean isActualColumn(final ShorthandProjectionSegment shorthandProjection, final ColumnSegmentBoundInfo columnBoundInfo) {
-        for (ProjectionSegment each : shorthandProjection.getActualProjectionSegments()) {
-            if (each instanceof ColumnProjectionSegment && columnBoundInfo == ((ColumnProjectionSegment) each).getColumn().getColumnBoundInfo()) {
-                return true;
+    private Collection<ColumnSegmentBoundInfo> getShorthandColumnBoundInfos(final SelectStatement select) {
+        Collection<ColumnSegmentBoundInfo> result = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (ProjectionSegment each : select.getProjections().getProjections()) {
+            if (each instanceof ShorthandProjectionSegment) {
+                addActualColumnBoundInfos((ShorthandProjectionSegment) each, result);
             }
         }
-        return false;
+        return result;
+    }
+    
+    private void addActualColumnBoundInfos(final ShorthandProjectionSegment shorthandProjection, final Collection<ColumnSegmentBoundInfo> columnBoundInfos) {
+        for (ProjectionSegment each : shorthandProjection.getActualProjectionSegments()) {
+            if (each instanceof ColumnProjectionSegment) {
+                columnBoundInfos.add(((ColumnProjectionSegment) each).getColumn().getColumnBoundInfo());
+            }
+        }
     }
     
     private String getColumnOwnerName(final TableSegment tableSource, final boolean shorthandExpanded) {
@@ -404,14 +415,16 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private Optional<ProjectionSegment> findProjectionSegment(final SelectStatement select, final Collection<ColumnSegment> declaredColumns, final IdentifierValue columnName) {
+        return Optional.ofNullable(labeledProjectionSegments.computeIfAbsent(select, key -> getLabeledProjectionSegments(key, declaredColumns)).get(columnName.getValue()));
+    }
+    
+    private Map<String, ProjectionSegment> getLabeledProjectionSegments(final SelectStatement select, final Collection<ColumnSegment> declaredColumns) {
+        Map<String, ProjectionSegment> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         Iterator<ColumnSegment> columns = declaredColumns.iterator();
         for (ProjectionSegment each : getExpandedProjectionSegments(select)) {
-            String columnLabel = columns.hasNext() ? columns.next().getIdentifier().getValue() : each.getColumnLabel();
-            if (columnLabel.equalsIgnoreCase(columnName.getValue())) {
-                return Optional.of(each);
-            }
+            result.putIfAbsent(columns.hasNext() ? columns.next().getIdentifier().getValue() : each.getColumnLabel(), each);
         }
-        return Optional.empty();
+        return result;
     }
     
     private Collection<ProjectionSegment> getExpandedProjectionSegments(final SelectStatement select) {
@@ -424,6 +437,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             }
         }
         return result;
+    }
+    
+    private boolean isRenamedColumn(final Projection projection) {
+        return projection instanceof ColumnProjection && !projection.getColumnLabel().equalsIgnoreCase(((ColumnProjection) projection).getOriginalColumn().getValue());
     }
     
     private String getTableName(final SQLStatementContext sqlStatementContext, final ColumnProjection projection) {
