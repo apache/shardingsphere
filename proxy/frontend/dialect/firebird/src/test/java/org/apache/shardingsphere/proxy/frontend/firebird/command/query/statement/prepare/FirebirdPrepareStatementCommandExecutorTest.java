@@ -482,6 +482,9 @@ class FirebirdPrepareStatementCommandExecutorTest {
         mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(idPayload);
+        verify(idPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
     }
     
     @Test

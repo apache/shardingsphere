@@ -35,8 +35,8 @@ import java.util.Map;
  * Visible column mapping that resolves the authoritative result shape for a query.
  *
  * <p>This class is the single resolution point for visible column count, label-to-index mapping,
- * and per-column projection availability. All JDBC and Proxy consumers should delegate to this
- * mapping instead of independently checking {@code containsUnexpandedShorthandProjection()}.</p>
+ * and per-column projection availability. JDBC and Proxy consumers that need visible column
+ * shape should delegate to this mapping rather than computing it independently.</p>
  *
  * <p>Two resolution paths exist:</p>
  * <ul>

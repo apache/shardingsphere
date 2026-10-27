@@ -146,7 +146,7 @@ final class ShardingSphereResultSetShorthandProjectionIT {
     
     /**
      * Case 4: SELECT t_order.status AS ORDER_BY_DERIVED_0 FROM t_order WHERE order_id = 1000
-     * User alias matches derived-column prefix â€” must remain visible. Expected: 1 column labeled ORDER_BY_DERIVED_0.
+     * User alias matches derived-column prefix must remain visible. Expected: 1 column labeled ORDER_BY_DERIVED_0.
      */
     @Test
     void assertUserAliasMatchingDerivedPrefix() throws SQLException {
