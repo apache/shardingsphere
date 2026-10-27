@@ -20,11 +20,14 @@ package org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser;
@@ -39,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalUnit;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
@@ -57,6 +61,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataT
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -71,6 +76,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -375,6 +381,9 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         if (null != ctx.functionCall()) {
             return visit(ctx.functionCall());
         }
+        if (null != ctx.arrayExpression()) {
+            return visit(ctx.arrayExpression());
+        }
         if (null != ctx.columnName()) {
             return visit(ctx.columnName());
         }
@@ -403,13 +412,17 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     }
     
     @Override
+    @HighFrequencyInvocation
     public final ASTNode visitAggregationFunction(final ClickHouseStatementParser.AggregationFunctionContext ctx) {
         String aggregationType = ctx.aggregationFunctionName().getText();
-        return AggregationType.isAggregationType(aggregationType)
-                ? createAggregationSegment(ctx, aggregationType)
-                : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        ASTNode result = AggregationType.isAggregationType(aggregationType)
+                ? createAggregationSegment(ctx, aggregationType) : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        if (null != ctx.overClause() && result instanceof AggregationProjectionSegment) {
+            ((AggregationProjectionSegment) result).setWindow((WindowItemSegment) visit(ctx.overClause()));
+        }
+        return result;
     }
-    
+
     private ASTNode createAggregationSegment(final ClickHouseStatementParser.AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         if (null != ctx.distinct()) {
@@ -422,15 +435,24 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         result.getParameters().addAll(getExpressions(ctx));
         return result;
     }
-    
-    private Collection<ExpressionSegment> getExpressions(final ClickHouseStatementParser.AggregationFunctionContext ctx) {
-        return null == ctx.expr() ? Collections.emptyList() : ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
-    }
-    
+
     private String getDistinctExpression(final ClickHouseStatementParser.AggregationFunctionContext ctx) {
-        return IntStream.range(3, ctx.getChildCount() - 1).mapToObj(i -> ctx.getChild(i).getText()).collect(Collectors.joining());
+        StringBuilder result = new StringBuilder();
+        ParseTree end = ctx.RP_();
+        for (int i = 3; i < ctx.getChildCount() && ctx.getChild(i) != end; i++) {
+            result.append(ctx.getChild(i).getText());
+        }
+        return result.toString();
     }
-    
+
+    private Collection<ExpressionSegment> getExpressions(final ClickHouseStatementParser.AggregationFunctionContext ctx) {
+        Collection<ExpressionSegment> result = new ArrayList<>(ctx.expr().size());
+        for (ClickHouseStatementParser.ExprContext each : ctx.expr()) {
+            result.add((ExpressionSegment) visit(each));
+        }
+        return result;
+    }
+
     @Override
     public final ASTNode visitSpecialFunction(final ClickHouseStatementParser.SpecialFunctionContext ctx) {
         return null == ctx.castFunction()
@@ -439,6 +461,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     }
     
     @Override
+    @HighFrequencyInvocation
     public final ASTNode visitCastFunction(final ClickHouseStatementParser.CastFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
         ASTNode exprSegment = visit(ctx.expr());
@@ -446,15 +469,48 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
             result.getParameters().add((ColumnSegment) exprSegment);
         } else if (exprSegment instanceof LiteralExpressionSegment) {
             result.getParameters().add((LiteralExpressionSegment) exprSegment);
+        } else if (exprSegment instanceof ListExpression) {
+            result.getParameters().add((ListExpression) exprSegment);
         }
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
         return result;
     }
     
     @Override
+    @HighFrequencyInvocation
     public final ASTNode visitRegularFunction(final ClickHouseStatementParser.RegularFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx));
-        result.getParameters().addAll(ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
+        for (ClickHouseStatementParser.ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        if (null != ctx.overClause()) {
+            result.setWindow((WindowItemSegment) visit(ctx.overClause()));
+        }
+        return result;
+    }
+
+    @Override
+    @HighFrequencyInvocation
+    public final ASTNode visitOverClause(final ClickHouseStatementParser.OverClauseContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        Collection<ExpressionSegment> partitions = new ArrayList<>(ctx.expr().size());
+        for (ClickHouseStatementParser.ExprContext each : ctx.expr()) {
+            partitions.add((ExpressionSegment) visit(each));
+        }
+        result.setPartitionListSegments(partitions);
+        if (null != ctx.orderByClause()) {
+            result.setOrderBySegment((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        return result;
+    }
+
+    @Override
+    @HighFrequencyInvocation
+    public final ASTNode visitArrayExpression(final ClickHouseStatementParser.ArrayExpressionContext ctx) {
+        ListExpression result = new ListExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (ClickHouseStatementParser.ExprContext each : ctx.expr()) {
+            result.getItems().add((ExpressionSegment) visit(each));
+        }
         return result;
     }
     
@@ -481,7 +537,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     @Override
     public final ASTNode visitDataType(final ClickHouseStatementParser.DataTypeContext ctx) {
         DataTypeSegment result = new DataTypeSegment();
-        result.setDataTypeName(((KeywordValue) visit(ctx.dataTypeName())).getValue());
+        result.setDataTypeName(ctx.dataType().isEmpty() && ctx.STRING_().isEmpty() ? ((KeywordValue) visit(ctx.dataTypeName())).getValue() : getOriginalText(ctx));
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         if (null != ctx.dataTypeLength()) {

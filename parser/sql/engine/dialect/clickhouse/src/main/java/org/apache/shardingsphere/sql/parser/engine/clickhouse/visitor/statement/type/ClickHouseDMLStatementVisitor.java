@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement
 
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.DeleteContext;
@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.In
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.SelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.SubqueryContext;
+import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser;
 import org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement.ClickHouseStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.In
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -59,6 +61,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -70,6 +73,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -183,10 +187,27 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     }
     
     @Override
+    @HighFrequencyInvocation
     public ASTNode visitSelect(final ClickHouseStatementParser.SelectContext ctx) {
-        // TODO :Unsupported for withClause.
+        Collection<String> variables = null == ctx.withClause() ? Collections.emptyList() : ((CollectionValue<String>) visit(ctx.withClause())).getValue();
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
+        result.getVariableNames().addAll(variables);
         result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+
+    @Override
+    @HighFrequencyInvocation
+    public ASTNode visitWithClause(final ClickHouseStatementParser.WithClauseContext ctx) {
+        CollectionValue<String> result = new CollectionValue<>();
+        for (ClickHouseStatementParser.WithConstantContext each : ctx.withConstant()) {
+            if (null != each.parameterMarker()) {
+                ParameterMarkerValue marker = (ParameterMarkerValue) visit(each.parameterMarker());
+                getParameterMarkerSegments().add(new ParameterMarkerExpressionSegment(each.parameterMarker().getStart().getStartIndex(), each.parameterMarker().getStop().getStopIndex(),
+                        marker.getValue(), marker.getType()));
+            }
+            result.getValue().add(((IdentifierValue) visit(each.identifier())).getValue());
+        }
         return result;
     }
     
@@ -298,6 +319,12 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
             result.setAlias(alias);
             return result;
         }
+        if (projection instanceof ListExpression) {
+            ListExpression segment = (ListExpression) projection;
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), getOriginalText(ctx.expr()), segment);
+            result.setAlias(alias);
+            return result;
+        }
         // FIXME :For DISTINCT()
         if (projection instanceof ColumnSegment) {
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), (ColumnSegment) projection);
@@ -383,6 +410,13 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitTableFactor(final ClickHouseStatementParser.TableFactorContext ctx) {
+        if (null != ctx.regularFunction()) {
+            FunctionTableSegment result = new FunctionTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (FunctionSegment) visit(ctx.regularFunction()));
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        }
         if (null != ctx.subquery()) {
             SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx.subquery()));

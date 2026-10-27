@@ -17,7 +17,7 @@
 
 grammar BaseRule;
 
-import Symbol, Keyword, ClickHouseKeyword, Literals;
+import Symbol, Keyword, ClickHouseKeyword, Literals, Comments;
 
 parameterMarker
     : QUESTION_
@@ -211,6 +211,11 @@ simpleExpr
     | LBE_ identifier expr RBE_
     | caseExpression
     | intervalExpression
+    | arrayExpression
+    ;
+
+arrayExpression
+    : LBT_ (expr (COMMA_ expr)*)? RBT_
     ;
 
 functionCall
@@ -218,7 +223,7 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause?
     ;
 
 aggregationFunctionName
@@ -254,7 +259,11 @@ trimFunction
     ;
 
 regularFunction
-    : regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause?
+    ;
+
+overClause
+    : OVER LP_ (PARTITION BY expr (COMMA_ expr)*)? orderByClause? RP_
     ;
 
 regularFunctionName
@@ -305,6 +314,8 @@ orderByItem
 dataType
     : dataTypeName dataTypeLength? characterSet? collateClause?
     | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet? collateClause?
+    | dataTypeName LP_ NUMBER_ COMMA_ STRING_ RP_
+    | dataTypeName LP_ dataType (COMMA_ dataType)* RP_
     ;
 
 dataTypeName
@@ -318,6 +329,7 @@ dataTypeName
     | INT64 
     | FLOAT32 
     | FLOAT64
+    | DECIMAL
     | STRING 
     | FIXED_STRING
     | DATE 

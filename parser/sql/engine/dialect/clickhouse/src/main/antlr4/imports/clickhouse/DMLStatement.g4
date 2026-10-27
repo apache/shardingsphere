@@ -65,7 +65,15 @@ singleTableClause
     ;
 
 select
-    : combineClause
+    : withClause? combineClause
+    ;
+
+withClause
+    : WITH withConstant (COMMA_ withConstant)*
+    ;
+
+withConstant
+    : (numberLiterals | stringLiterals | booleanLiterals | nullValueLiterals | parameterMarker) AS identifier
     ;
 
 combineClause
@@ -121,7 +129,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (AS? alias)? | subquery AS? alias columnNames? | LP_ tableReferences RP_
+    : regularFunction (AS? alias)? | tableName (AS? alias)? | subquery AS? alias columnNames? | LP_ tableReferences RP_
     ;
 
 joinedTable
