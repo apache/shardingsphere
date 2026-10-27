@@ -392,8 +392,8 @@ triggerOrder
 expr
     : booleanPrimary
     | expr andOperator expr
-    | expr orOperator expr
     | expr XOR expr
+    | expr orOperator expr
     | notOperator expr
     ;
 
@@ -438,20 +438,13 @@ predicate
     ;
 
 bitExpr
-    : bitExpr VERTICAL_BAR_ bitExpr
+    : bitExpr CARET_ bitExpr
+    | bitExpr (ASTERISK_ | SLASH_ | DIV | MOD | MOD_) bitExpr
+    | bitExpr (PLUS_ | MINUS_) bitExpr
+    | bitExpr (PLUS_ | MINUS_) intervalExpression
+    | bitExpr (SIGNED_LEFT_SHIFT_ | SIGNED_RIGHT_SHIFT_) bitExpr
     | bitExpr AMPERSAND_ bitExpr
-    | bitExpr SIGNED_LEFT_SHIFT_ bitExpr
-    | bitExpr SIGNED_RIGHT_SHIFT_ bitExpr
-    | bitExpr PLUS_ bitExpr
-    | bitExpr MINUS_ bitExpr
-    | bitExpr ASTERISK_ bitExpr
-    | bitExpr SLASH_ bitExpr
-    | bitExpr DIV bitExpr
-    | bitExpr MOD bitExpr
-    | bitExpr MOD_ bitExpr
-    | bitExpr CARET_ bitExpr
-    | bitExpr PLUS_ intervalExpression
-    | bitExpr MINUS_ intervalExpression
+    | bitExpr VERTICAL_BAR_ bitExpr
     | simpleExpr
     ;
 

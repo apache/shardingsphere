@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.test.e2e.sql.framework.metadata.dialect.HiveDialectQueryBehaviorProvider
+org.apache.shardingsphere.test.e2e.sql.framework.metadata.dialect.FirebirdDialectQueryBehaviorProvider

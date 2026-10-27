@@ -87,8 +87,6 @@ public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket 
      * @return Length of packet
      */
     public static int getLength(final FirebirdPacketPayload payload) {
-        int length = 8;
-        length += payload.getBufferLength(length);
-        return length;
+        return 8 + payload.getBufferLength(8);
     }
 }

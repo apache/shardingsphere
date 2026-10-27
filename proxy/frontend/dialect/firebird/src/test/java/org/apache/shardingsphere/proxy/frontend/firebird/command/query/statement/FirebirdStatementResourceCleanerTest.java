@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement;
 
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
@@ -47,7 +46,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -74,7 +72,6 @@ class FirebirdStatementResourceCleanerTest {
     
     @AfterEach
     void tearDown() {
-        FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
@@ -127,14 +124,10 @@ class FirebirdStatementResourceCleanerTest {
     @Test
     void assertCleanBeforeCloseExecutionResources() throws SQLException, BackendConnectionException {
         ConnectionSession actualConnectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
-        ConnectionContext actualConnectionContext = mock(ConnectionContext.class, Answers.RETURNS_DEEP_STUBS);
-        ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
         ProxyBackendHandler actualProxyBackendHandler = mock(ProxyBackendHandler.class);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(actualConnectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
-        when(actualConnectionSession.getConnectionContext()).thenReturn(actualConnectionContext);
-        when(actualConnectionContext.getTransactionContext().getTransactionType()).thenReturn(Optional.of("XA"));
+        when(actualConnectionSession.getConnectionContext().getTransactionContext().getTransactionType()).thenReturn(Optional.of("XA"));
         when(actualConnectionSession.getTransactionStatus().isInConnectionHeldTransaction(any())).thenReturn(true);
         ProxyDatabaseConnectionManager actualConnectionManager = new ProxyDatabaseConnectionManager(actualConnectionSession);
         when(actualConnectionSession.getDatabaseConnectionManager()).thenReturn(actualConnectionManager);
@@ -151,7 +144,7 @@ class FirebirdStatementResourceCleanerTest {
         }).when(actualProxyBackendHandler).close();
         FirebirdStatementResourceCleaner.clean(actualConnectionSession, STATEMENT_ID, true);
         actualConnectionManager.closeExecutionResources();
-        verify(actualProxyBackendHandler, times(1)).close();
+        verify(actualProxyBackendHandler).close();
         verify(actualConnectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(STATEMENT_ID));
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
     }

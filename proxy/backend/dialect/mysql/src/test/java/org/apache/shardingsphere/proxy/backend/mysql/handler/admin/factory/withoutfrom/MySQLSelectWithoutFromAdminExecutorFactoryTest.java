@@ -36,6 +36,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
@@ -43,6 +45,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
@@ -64,40 +67,24 @@ class MySQLSelectWithoutFromAdminExecutorFactoryTest {
         assertThat(actual.get(), isA(MySQLSystemVariableQueryExecutor.class));
     }
     
-    @Test
-    void assertCreateShowConnectionIdExecutor() {
-        SelectStatement selectStatement = createSelectStatement(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "connection_id()")));
-        Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(
-                mockSelectStatementContext(selectStatement), "", null, mock(ShardingSphereMetaData.class));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("specialFunctionArguments")
+    void assertCreateSpecialFunctionExecutor(final String name, final String projectionText, final Class<? extends DatabaseAdminExecutor> expectedType) {
+        SelectStatement selectStatement = createSelectStatement(Collections.singletonList(new ExpressionProjectionSegment(0, 0, projectionText)));
+        Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(mockSelectStatementContext(selectStatement), "", null, mock(ShardingSphereMetaData.class));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(ShowConnectionIdExecutor.class));
+        assertThat(actual.get(), isA(expectedType));
     }
     
-    @Test
-    void assertCreateShowVersionExecutor() {
-        SelectStatement selectStatement = createSelectStatement(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "version()")));
-        Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(
-                mockSelectStatementContext(selectStatement), "", null, mock(ShardingSphereMetaData.class));
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(ShowVersionExecutor.class));
-    }
-    
-    @Test
-    void assertCreateShowCurrentUserExecutor() {
-        SelectStatement selectStatement = createSelectStatement(Collections.singletonList(new ExpressionProjectionSegment(0, 0, ShowCurrentUserExecutor.FUNCTION_NAME_ALIAS)));
-        Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(
-                mockSelectStatementContext(selectStatement), "", null, mock(ShardingSphereMetaData.class));
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(ShowCurrentUserExecutor.class));
-    }
-    
-    @Test
-    void assertCreateShowCurrentDatabaseExecutor() {
-        SelectStatement selectStatement = createSelectStatement(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "database()")));
-        Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(
-                mockSelectStatementContext(selectStatement), "", null, mock(ShardingSphereMetaData.class));
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(ShowCurrentDatabaseExecutor.class));
+    private static Stream<Arguments> specialFunctionArguments() {
+        return Stream.of(
+                Arguments.of("Connection id", "connection_id()", ShowConnectionIdExecutor.class),
+                Arguments.of("Version", "version()", ShowVersionExecutor.class),
+                Arguments.of("Current user function", "current_user()", ShowCurrentUserExecutor.class),
+                Arguments.of("Current user alias", ShowCurrentUserExecutor.FUNCTION_NAME_ALIAS, ShowCurrentUserExecutor.class),
+                Arguments.of("Current database", "database()", ShowCurrentDatabaseExecutor.class),
+                Arguments.of("Space before parentheses", "connection_id ()", ShowConnectionIdExecutor.class),
+                Arguments.of("Tab before parentheses", "version\t()", ShowVersionExecutor.class));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -162,16 +149,6 @@ class MySQLSelectWithoutFromAdminExecutorFactoryTest {
                 mockSelectStatementContext(selectStatement), "", null, metaData);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(UnicastResourceShowExecutor.class));
-    }
-    
-    @Test
-    void assertCreateShowCurrentUserExecutorWithAliasName() {
-        ExpressionProjectionSegment projection = new ExpressionProjectionSegment(0, 0, "current_user");
-        SelectStatement selectStatement = createSelectStatement(Collections.singletonList(projection));
-        Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(
-                mockSelectStatementContext(selectStatement), "", null, mock(ShardingSphereMetaData.class));
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(ShowCurrentUserExecutor.class));
     }
     
     private SelectStatement createSelectStatement(final Iterable<ProjectionSegment> projections) {

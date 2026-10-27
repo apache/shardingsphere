@@ -56,6 +56,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -126,6 +127,13 @@ class DatabaseMetaDataManagerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").containsSchema("foo_schema")).thenReturn(true);
         databaseMetaDataManager.addSchema("foo_db", "foo_schema");
         verify(metaDataContexts.getMetaData().getDatabase("foo_db"), never()).addSchema(any(ShardingSphereSchema.class));
+    }
+    
+    @Test
+    void assertDropSchemaWithNotExistedDatabase() {
+        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(null);
+        assertDoesNotThrow(() -> databaseMetaDataManager.dropSchema("foo_db", "foo_schema"));
+        verifyNoInteractions(globalRule);
     }
     
     @Test
@@ -227,11 +235,25 @@ class DatabaseMetaDataManagerTest {
     }
     
     @Test
+    void assertDropTableWithNotExistedDatabase() {
+        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(null);
+        assertDoesNotThrow(() -> databaseMetaDataManager.dropTable("foo_db", "foo_schema", "foo_tbl"));
+        verifyNoInteractions(globalRule);
+    }
+    
+    @Test
     void assertDropTable() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(createToBeAlteredSchema()));
         databaseMetaDataManager.dropTable("foo_db", "foo_schema", "foo_tbl");
         assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").containsTable("foo_tbl"));
         verify(metaDataContexts.getMetaData().getDatabase("foo_db")).removeDataNode("foo_schema", "foo_tbl");
+    }
+    
+    @Test
+    void assertDropViewWithNotExistedDatabase() {
+        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(null);
+        assertDoesNotThrow(() -> databaseMetaDataManager.dropView("foo_db", "foo_schema", "foo_view"));
+        verifyNoInteractions(globalRule);
     }
     
     @Test

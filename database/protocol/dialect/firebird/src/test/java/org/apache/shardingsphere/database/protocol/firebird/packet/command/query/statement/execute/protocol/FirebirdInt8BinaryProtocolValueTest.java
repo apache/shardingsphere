@@ -55,11 +55,7 @@ class FirebirdInt8BinaryProtocolValueTest {
     }
     
     private static Stream<Arguments> writeArguments() {
-        return Stream.of(
-                Arguments.of("big decimal", BigDecimal.ONE, 1L),
-                Arguments.of("integer", 1, 1L),
-                Arguments.of("big integer", BigInteger.ONE, 1L),
-                Arguments.of("long", 1L, 1L));
+        return Stream.of(Arguments.of("big decimal", BigDecimal.ONE, 1L), Arguments.of("integer", 1, 1L), Arguments.of("big integer", BigInteger.ONE, 1L), Arguments.of("long", 1L, 1L));
     }
     
     @Test

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.gene
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.OptionalLong;
 
 /**
  * Close blob command executor for Firebird.
@@ -44,12 +43,10 @@ public final class FirebirdCloseBlobCommandExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
-        OptionalLong blobId = FirebirdBlobWriteCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
+        long blobId = FirebirdBlobWriteCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle).orElse(0L);
         FirebirdBlobWriteCache.getInstance().closeWrite(connectionSession.getConnectionId(), blobHandle);
         FirebirdBlobReadCache.getInstance().removeBlob(connectionSession.getConnectionId(), blobHandle);
         FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(connectionSession.getConnectionId(), blobHandle);
-        long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;
-        FirebirdGenericResponsePacket response = new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(responseBlobId);
-        return Collections.singleton(response);
+        return Collections.singleton(new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(blobId));
     }
 }

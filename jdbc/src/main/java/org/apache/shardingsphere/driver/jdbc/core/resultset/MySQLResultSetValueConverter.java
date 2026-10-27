@@ -46,7 +46,7 @@ public final class MySQLResultSetValueConverter implements DialectResultSetValue
             switch (convertType.getName()) {
                 case "boolean":
                 case "java.lang.Boolean":
-                    return stringValue.isEmpty() ? false : convertBooleanValue(stringValue, convertType);
+                    return !stringValue.isEmpty() && convertBooleanValue(stringValue, convertType);
                 case "byte":
                 case "java.lang.Byte":
                     return stringValue.isEmpty() ? (byte) 0 : convertByteValue(stringValue, convertType);

@@ -9778,42 +9778,42 @@
                 <expr>
                     <binary-operation-expression text="size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT) / 128.0" start-index="13" stop-index="79">
                         <left>
-                            <binary-operation-expression text="size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT)" start-index="13" stop-index="71">
+                            <binary-operation-expression text="size / 128.0" start-index="13" stop-index="24">
                                 <left>
                                     <column name="size" start-index="13" stop-index="16" />
                                 </left>
                                 <right>
-                                   <binary-operation-expression text="128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT)" start-index="20" stop-index="71">
-                                       <left>
-                                           <literal-expression value="128.0" start-index="20" stop-index="24" />
-                                       </left>
-                                       <right>
-                                           <function function-name="CAST" text="CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT)" start-index="28" stop-index="71">
-                                               <parameter>
-                                                   <function function-name="FILEPROPERTY" text="FILEPROPERTY(name, 'SpaceUsed')" start-index="33" stop-index="63">
-                                                       <parameter>
-                                                           <column name="name" start-index="46" stop-index="49" />
-                                                       </parameter>
-                                                       <parameter>
-                                                           <literal-expression value="SpaceUsed" start-index="52" stop-index="62" />
-                                                       </parameter>
-                                                   </function>
-                                               </parameter>
-                                               <parameter>
-                                                   <data-type value="INT" start-index="68" stop-index="70" />
-                                               </parameter>
-                                           </function>
-                                       </right>
-                                       <operator>-</operator>
-                                   </binary-operation-expression>
+                                    <literal-expression value="128.0" start-index="20" stop-index="24" />
                                 </right>
                                 <operator>/</operator>
                             </binary-operation-expression>
                         </left>
                         <right>
-                            <literal-expression value="128.0" start-index="75" stop-index="79" />
+                            <binary-operation-expression text="CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT) / 128.0" start-index="28" stop-index="79">
+                                <left>
+                                    <function function-name="CAST" text="CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT)" start-index="28" stop-index="71">
+                                        <parameter>
+                                            <function function-name="FILEPROPERTY" text="FILEPROPERTY(name, 'SpaceUsed')" start-index="33" stop-index="63">
+                                                <parameter>
+                                                    <column name="name" start-index="46" stop-index="49" />
+                                                </parameter>
+                                                <parameter>
+                                                    <literal-expression value="SpaceUsed" start-index="52" stop-index="62" />
+                                                </parameter>
+                                            </function>
+                                        </parameter>
+                                        <parameter>
+                                            <data-type value="INT" start-index="68" stop-index="70" />
+                                        </parameter>
+                                    </function>
+                                </left>
+                                <right>
+                                    <literal-expression value="128.0" start-index="75" stop-index="79" />
+                                </right>
+                                <operator>/</operator>
+                            </binary-operation-expression>
                         </right>
-                        <operator>/</operator>
+                        <operator>-</operator>
                     </binary-operation-expression>
                 </expr>
             </expression-projection>
@@ -15831,6 +15831,54 @@
         </from>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+    </select>
+    <select sql-case-id="select_key_alias_with_as_firebird">
+        <from>
+            <simple-table name="t_order" start-index="28" stop-index="34" />
+        </from>
+        <projections start-index="7" stop-index="21">
+            <column-projection name="order_id" alias="KEY" start-index="7" stop-index="21" />
+        </projections>
+    </select>
+    <select sql-case-id="select_text_alias_with_as_firebird">
+        <from>
+            <simple-table name="t_order" start-index="29" stop-index="35" />
+        </from>
+        <projections start-index="7" stop-index="22">
+            <column-projection name="order_id" alias="TEXT" start-index="7" stop-index="22" />
+        </projections>
+    </select>
+    <select sql-case-id="select_comment_alias_with_as_firebird">
+        <from>
+            <simple-table name="t_order" start-index="32" stop-index="38" />
+        </from>
+        <projections start-index="7" stop-index="25">
+            <column-projection name="order_id" alias="COMMENT" start-index="7" stop-index="25" />
+        </projections>
+    </select>
+    <select sql-case-id="select_key_alias_without_as_firebird">
+        <from>
+            <simple-table name="t_order" start-index="25" stop-index="31" />
+        </from>
+        <projections start-index="7" stop-index="18">
+            <column-projection name="order_id" alias="KEY" start-index="7" stop-index="18" />
+        </projections>
+    </select>
+    <select sql-case-id="select_text_alias_without_as_firebird">
+        <from>
+            <simple-table name="t_order" start-index="26" stop-index="32" />
+        </from>
+        <projections start-index="7" stop-index="19">
+            <column-projection name="order_id" alias="TEXT" start-index="7" stop-index="19" />
+        </projections>
+    </select>
+    <select sql-case-id="select_comment_alias_without_as_firebird">
+        <from>
+            <simple-table name="t_order" start-index="29" stop-index="35" />
+        </from>
+        <projections start-index="7" stop-index="22">
+            <column-projection name="order_id" alias="COMMENT" start-index="7" stop-index="22" />
         </projections>
     </select>
 </sql-parser-test-cases>

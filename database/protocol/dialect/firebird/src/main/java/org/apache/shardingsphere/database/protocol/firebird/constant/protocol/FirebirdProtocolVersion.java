@@ -82,8 +82,6 @@ public enum FirebirdProtocolVersion {
      */
     private static final int FB_PROTOCOL_FLAG = 0x8000;
     
-    private static final int FB_PROTOCOL_MASK = ~FB_PROTOCOL_FLAG & 0xFFFF;
-    
     private final int code;
     
     static {
