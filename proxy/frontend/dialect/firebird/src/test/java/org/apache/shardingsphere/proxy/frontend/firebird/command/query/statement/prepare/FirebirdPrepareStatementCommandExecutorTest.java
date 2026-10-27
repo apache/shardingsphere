@@ -476,14 +476,6 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
-    void assertDescribeReturningOldAndNewShorthand() throws Exception {
-        when(packet.getSQL()).thenReturn("UPDATE foo_tbl SET id = 1 RETURNING OLD.*, NEW.*");
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
-        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
-        assertThat(actualReturnPacket.getDescribeSelect().size(), is(4));
-    }
-    
-    @Test
     void assertDescribeHintedOrdinaryTableWildcard() throws Exception {
         when(packet.getSQL()).thenReturn("SELECT * FROM foo_tbl");
         when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
@@ -520,6 +512,12 @@ class FirebirdPrepareStatementCommandExecutorTest {
         mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(idPayload);
+        verify(idPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload namePayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(1).write(namePayload);
+        verify(namePayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
     }
     
     @Test

@@ -293,8 +293,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return result;
     }
     
-    private Collection<Projection> resolveUnexpandedShorthandProjections(final SelectStatementContext selectStatementContext,
-                                                                         final Supplier<ShardingSphereDatabase> database, final Supplier<Optional<ShardingSphereSchema>> schema) {
+    private Collection<Projection> resolveUnexpandedShorthandProjections(final SelectStatementContext selectStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                                                         final Supplier<Optional<ShardingSphereSchema>> schema) {
         Collection<Projection> result = new LinkedList<>();
         for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
             if (each instanceof ShorthandProjection) {

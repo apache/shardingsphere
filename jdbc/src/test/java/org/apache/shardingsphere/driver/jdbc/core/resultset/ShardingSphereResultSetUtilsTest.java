@@ -28,9 +28,9 @@ import org.junit.jupiter.api.Test;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -55,7 +55,7 @@ class ShardingSphereResultSetUtilsTest {
     void assertCreateColumnLabelAndIndexMapWithSelectWithExpandProjections() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        List<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(2);
         projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "col2", null, mock(DatabaseType.class)));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
@@ -89,7 +89,7 @@ class ShardingSphereResultSetUtilsTest {
     void assertGetVisibleColumnCountWithDerivedProjections() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        List<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(2);
         projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "col2", null, mock(DatabaseType.class)));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
@@ -100,7 +100,6 @@ class ShardingSphereResultSetUtilsTest {
     @Test
     void assertGetVisibleColumnCountWithoutDerivedProjections() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        when(selectStatementContext.containsDerivedProjections()).thenReturn(false);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(5);
         assertThat(ShardingSphereResultSetUtils.getVisibleColumnCount(selectStatementContext, resultSetMetaData), is(5));

@@ -433,10 +433,7 @@ class MySQLComStmtPrepareExecutorTest {
             when(resultSetMetaData.getColumnType(i)).thenReturn(Types.VARCHAR);
             when(resultSetMetaData.getColumnTypeName(i)).thenReturn("VARCHAR");
             when(resultSetMetaData.getColumnDisplaySize(i)).thenReturn(255);
-            when(resultSetMetaData.getScale(i)).thenReturn(0);
-            when(resultSetMetaData.isSigned(i)).thenReturn(false);
             when(resultSetMetaData.isNullable(i)).thenReturn(ResultSetMetaData.columnNullable);
-            when(resultSetMetaData.isAutoIncrement(i)).thenReturn(false);
             when(resultSetMetaData.getTableName(i)).thenReturn("user");
         }
         when(MySQLPreparedStatementMetadataFactory.load(eq(connectionSession), any(MySQLServerPreparedStatement.class))).thenReturn(actualPreparedStatement);

@@ -31,8 +31,8 @@ import org.junit.jupiter.api.Test;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -70,7 +70,7 @@ class ShardingSphereResultSetMetaDataTest {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        List<Projection> projections = new ArrayList<>(2);
+        Collection<Projection> projections = new ArrayList<>(2);
         projections.add(new ColumnProjection(null, "col1", null, databaseType));
         projections.add(new ColumnProjection(null, "col2", null, databaseType));
         when(selectStatementContext.getProjectionsContext()).thenReturn(new ProjectionsContext(0, 0, false, projections));
@@ -100,7 +100,7 @@ class ShardingSphereResultSetMetaDataTest {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        List<Projection> projections = new ArrayList<>(1);
+        Collection<Projection> projections = new ArrayList<>(1);
         projections.add(new ColumnProjection(null, "col1", "alias1", databaseType));
         when(selectStatementContext.getProjectionsContext()).thenReturn(new ProjectionsContext(0, 0, false, projections));
         assertThat(new ShardingSphereResultSetMetaData(resultSetMetaData, null, selectStatementContext).getColumnLabel(1), is("alias1"));
@@ -123,7 +123,7 @@ class ShardingSphereResultSetMetaDataTest {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
-        List<Projection> projections = new ArrayList<>(1);
+        Collection<Projection> projections = new ArrayList<>(1);
         projections.add(new ColumnProjection(null, "col1", null, databaseType));
         when(selectStatementContext.getProjectionsContext()).thenReturn(new ProjectionsContext(0, 0, false, projections));
         assertThat(new ShardingSphereResultSetMetaData(resultSetMetaData, null, selectStatementContext).getColumnName(1), is("col1"));
