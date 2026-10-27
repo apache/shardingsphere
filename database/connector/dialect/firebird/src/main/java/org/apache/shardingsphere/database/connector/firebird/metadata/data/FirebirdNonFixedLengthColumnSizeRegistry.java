@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.connector.firebird.metadata.data;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -88,6 +89,7 @@ public final class FirebirdNonFixedLengthColumnSizeRegistry {
      * @param schemaName schema name
      * @return whether column sizes of system tables are refreshed
      */
+    @HighFrequencyInvocation
     public static boolean isSystemTablesRefreshed(final String schemaName) {
         return SYSTEM_TABLE_REFRESHED_SCHEMAS.contains(toKey(schemaName));
     }

@@ -35,6 +35,7 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -80,10 +81,9 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
@@ -103,6 +103,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -253,7 +254,18 @@ class FirebirdPrepareStatementCommandExecutorTest {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("foo_db");
         doReturn(true).when(database).containsSchema(new IdentifierValue("system_tables"));
         doReturn(systemSchema).when(database).getSchema(new IdentifierValue("system_tables"));
-        doReturn(createResourceMetaDataWithSystemTableColumnSize()).when(database).getResourceMetaData();
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.getString("TABLE_NAME")).thenReturn("RDB$RELATIONS");
+        when(resultSet.getString("COLUMN_NAME")).thenReturn("RDB$RELATION_NAME");
+        when(resultSet.getInt("CHAR_LEN")).thenReturn(63);
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
+        when(connectionManager.getConnections("foo_db", "foo_ds", 0, 1, ConnectionMode.CONNECTION_STRICTLY)).thenReturn(Collections.singletonList(connection));
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
+        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
+        doReturn(resourceMetaData).when(database).getResourceMetaData();
         when(packet.getSQL()).thenReturn("SELECT RDB$RELATION_NAME FROM RDB$RELATIONS");
         when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
         when(packet.getCurrentItem()).thenReturn(
@@ -272,22 +284,8 @@ class FirebirdPrepareStatementCommandExecutorTest {
         actual.getDescribeSelect().iterator().next().write(payload);
         verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
         verify(payload).writeInt4LE(63);
+        verify(connection, never()).close();
         assertTrue(FirebirdNonFixedLengthColumnSizeRegistry.isSystemTablesRefreshed("foo_db"));
-    }
-    
-    private ResourceMetaData createResourceMetaDataWithSystemTableColumnSize() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getString("TABLE_NAME")).thenReturn("RDB$RELATIONS");
-        when(resultSet.getString("COLUMN_NAME")).thenReturn("RDB$RELATION_NAME");
-        when(resultSet.getInt("CHAR_LEN")).thenReturn(63);
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        when(dataSource.getConnection().prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
-        StorageUnit storageUnit = mock(StorageUnit.class);
-        when(storageUnit.getDataSource()).thenReturn(dataSource);
-        ResourceMetaData result = mock(ResourceMetaData.class);
-        when(result.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
-        return result;
     }
     
     @Test

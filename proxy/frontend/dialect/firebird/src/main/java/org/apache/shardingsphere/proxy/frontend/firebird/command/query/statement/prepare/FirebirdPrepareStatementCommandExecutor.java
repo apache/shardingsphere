@@ -51,6 +51,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateS
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -94,7 +95,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Sa
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.jspecify.annotations.Nullable;
 
-import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
@@ -344,8 +345,9 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private void refreshSystemTableColumnSizes(final ShardingSphereDatabase database) throws SQLException {
-        DataSource dataSource = database.getResourceMetaData().getStorageUnits().values().iterator().next().getDataSource();
-        FirebirdNonFixedLengthColumnSizeRegistry.refreshSystemTables(database.getName(), new FirebirdSystemTableColumnSizeLoader(dataSource).load());
+        String storageUnitName = database.getResourceMetaData().getStorageUnits().keySet().iterator().next();
+        Connection connection = connectionSession.getDatabaseConnectionManager().getConnections(database.getName(), storageUnitName, 0, 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next();
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshSystemTables(database.getName(), new FirebirdSystemTableColumnSizeLoader(connection).load());
     }
     
     private void processParameters(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,

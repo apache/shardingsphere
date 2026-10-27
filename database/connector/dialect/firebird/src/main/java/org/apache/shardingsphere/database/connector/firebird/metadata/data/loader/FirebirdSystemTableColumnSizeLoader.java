@@ -19,7 +19,6 @@ package org.apache.shardingsphere.database.connector.firebird.metadata.data.load
 
 import lombok.RequiredArgsConstructor;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,7 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Loader for Firebird column sizes of system tables with not fixed length.
+ * Loader for Firebird column sizes of system tables with not fixed length. The caller owns the connection.
  */
 @RequiredArgsConstructor
 public final class FirebirdSystemTableColumnSizeLoader {
@@ -40,7 +39,7 @@ public final class FirebirdSystemTableColumnSizeLoader {
                     + "JOIN RDB$FIELDS f ON rf.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME "
                     + "WHERE rf.RDB$SYSTEM_FLAG = 1 AND f.RDB$FIELD_TYPE IN (14, 37)";
     
-    private final DataSource dataSource;
+    private final Connection connection;
     
     /**
      * Load column sizes of system tables.
@@ -50,10 +49,7 @@ public final class FirebirdSystemTableColumnSizeLoader {
      */
     public Map<String, Map<String, Integer>> load() throws SQLException {
         Map<String, Map<String, Integer>> result = new HashMap<>();
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SELECT_SYSTEM_TABLE_COLUMN_SIZES_SQL);
-                ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_SYSTEM_TABLE_COLUMN_SIZES_SQL); ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 int characterLength = resultSet.getInt("CHAR_LEN");
                 int columnSize = resultSet.wasNull() || characterLength <= 0 ? resultSet.getInt("FIELD_LENGTH") : characterLength;

@@ -22,7 +22,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,13 +32,12 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdSystemTableColumnSizeLoaderTest {
-    
-    @Mock
-    private DataSource dataSource;
     
     @Mock
     private Connection connection;
@@ -52,7 +50,6 @@ class FirebirdSystemTableColumnSizeLoaderTest {
     
     @Test
     void assertLoad() throws SQLException {
-        when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
@@ -60,9 +57,12 @@ class FirebirdSystemTableColumnSizeLoaderTest {
         when(resultSet.getString("COLUMN_NAME")).thenReturn("RDB$RELATION_NAME", "rdb$character_set_name");
         when(resultSet.getInt("CHAR_LEN")).thenReturn(63, 0);
         when(resultSet.getInt("FIELD_LENGTH")).thenReturn(31);
-        Map<String, Map<String, Integer>> actual = new FirebirdSystemTableColumnSizeLoader(dataSource).load();
+        Map<String, Map<String, Integer>> actual = new FirebirdSystemTableColumnSizeLoader(connection).load();
         assertThat(actual.size(), is(2));
         assertThat(actual.get("RDB$RELATIONS"), is(Collections.singletonMap("RDB$RELATION_NAME", 63)));
         assertThat(actual.get("RDB$DATABASE"), is(Collections.singletonMap("RDB$CHARACTER_SET_NAME", 31)));
+        verify(resultSet).close();
+        verify(preparedStatement).close();
+        verify(connection, never()).close();
     }
 }
