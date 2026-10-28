@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rule.attribute.column.ShardingColumnRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
@@ -356,6 +357,19 @@ class ShardingRuleTest {
         Optional<String> actual =
                 new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()).findShardingColumn("column", "other_Table");
         assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    void assertIsShardingColumnWithShardingColumnRuleAttribute() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(createTableRuleConfigWithAllStrategies());
+        shardingRuleConfig.getShardingAlgorithms().put("core_standard_fixture", new AlgorithmConfiguration("CORE.STANDARD.FIXTURE", new Properties()));
+        ShardingColumnRuleAttribute actual =
+                new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()).getAttributes()
+                        .getAttribute(ShardingColumnRuleAttribute.class);
+        assertTrue(actual.isShardingColumn("COLUMN", "logic_Table"));
+        assertFalse(actual.isShardingColumn("other_column", "logic_Table"));
+        assertFalse(actual.isShardingColumn("column", "other_Table"));
     }
     
     @Test

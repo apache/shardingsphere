@@ -55,6 +55,7 @@ import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorith
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.rule.attribute.ShardingDataNodeRuleAttribute;
+import org.apache.shardingsphere.sharding.rule.attribute.ShardingStrategyColumnRuleAttribute;
 import org.apache.shardingsphere.sharding.rule.attribute.ShardingTableNamesRuleAttribute;
 import org.apache.shardingsphere.sharding.rule.checker.ShardingRuleChecker;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -143,7 +144,7 @@ public final class ShardingRule implements DatabaseRule {
         Map<String, DataSource> aggregatedDataSources = new RuleMetaData(builtRules).findAttribute(AggregatedDataSourceRuleAttribute.class)
                 .map(AggregatedDataSourceRuleAttribute::getAggregatedDataSources).orElseGet(() -> PhysicalDataSourceAggregator.getAggregatedDataSources(dataSources, builtRules));
         attributes = new RuleAttributes(new ShardingDataNodeRuleAttribute(shardingTables), new ShardingTableNamesRuleAttribute(shardingTables.values()),
-                new AggregatedDataSourceRuleAttribute(aggregatedDataSources));
+                new ShardingStrategyColumnRuleAttribute(this), new AggregatedDataSourceRuleAttribute(aggregatedDataSources));
         shardingRuleChecker.check(ruleConfig);
     }
     

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.rule.attribute.column.ShardingColumnRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -60,6 +61,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -214,6 +216,24 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("resolveUnspecifiedParameterValuesWithNonShardingColumnArguments")
+    void assertResolveUnspecifiedParameterValuesWithNonShardingColumn(final String name, final String sql, final List<Integer> actualParameterMarkerIndexes) {
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement(sql, actualParameterMarkerIndexes);
+        PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("7");
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Collections.singletonList(expected));
+        assertThat(actual.get(0), sameInstance(expected));
+    }
+    
+    @Test
+    void assertResolveUnspecifiedParameterValuesWithoutShardingColumnRuleAttribute() {
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement(SQL, Collections.singletonList(0));
+        when(ProxyContext.getInstance().getContextManager().getDatabase("postgres").getRuleMetaData().getAttributes(ShardingColumnRuleAttribute.class)).thenReturn(Collections.emptyList());
+        PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("7");
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Collections.singletonList(expected));
+        assertThat(actual.get(0), sameInstance(expected));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("resolveUnspecifiedParameterValuesWithUnresolvedTextArguments")
     void assertResolveUnspecifiedParameterValuesWithUnresolvedText(final String name, final String text) {
         PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement(SQL, Collections.singletonList(0));
@@ -253,7 +273,28 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("k", Types.BIGINT, false, false, false, true, false, false),
                 new ShardingSphereColumn("uuid_col", Types.OTHER, false, false, false, true, false, false),
-                new ShardingSphereColumn("created_at", Types.TIMESTAMP, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("created_at", Types.TIMESTAMP, false, false, false, true, false, false),
+                new ShardingSphereColumn("v", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        Collection<ShardingColumnRuleAttribute> shardingColumnRuleAttributes = mockShardingColumnRuleAttributes();
+        when(database.getRuleMetaData().getAttributes(ShardingColumnRuleAttribute.class)).thenReturn(shardingColumnRuleAttributes);
+    }
+    
+    private Collection<ShardingColumnRuleAttribute> mockShardingColumnRuleAttributes() {
+        ShardingColumnRuleAttribute result = mock(ShardingColumnRuleAttribute.class);
+        lenient().when(result.isShardingColumn("id", "foo_tbl")).thenReturn(true);
+        lenient().when(result.isShardingColumn("k", "foo_tbl")).thenReturn(true);
+        return Collections.singleton(result);
+    }
+    
+    @Test
+    void assertResolveUnspecifiedParameterValuesWithInsertNonShardingColumn() {
+        PostgreSQLServerPreparedStatement preparedStatement = createInsertPreparedStatement("INSERT INTO foo_tbl (id, v) VALUES (?, ?)", Arrays.asList(0, 1));
+        prepareInsertTableMetaData();
+        PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("8");
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement,
+                Arrays.asList(new PostgreSQLTypeUnspecifiedSQLParameter("7"), expected));
+        assertThat(actual.get(0), is(7));
+        assertThat(actual.get(1), sameInstance(expected));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -387,6 +428,14 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         assertThat(preparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.VARCHAR, PostgreSQLBinaryColumnType.INT8)));
     }
     
+    private static Stream<Arguments> resolveUnspecifiedParameterValuesWithNonShardingColumnArguments() {
+        return Stream.of(
+                Arguments.of("non sharding integer column", "SELECT id FROM foo_tbl WHERE v=?", Collections.singletonList(0)),
+                Arguments.of("integer domain column", "SELECT id FROM foo_tbl WHERE domain_v=?", Collections.singletonList(0)),
+                Arguments.of("sharding and non sharding columns", "SELECT id FROM foo_tbl WHERE id=? OR v=?", Arrays.asList(0, 0)),
+                Arguments.of("set assignment of non sharding column", "UPDATE foo_tbl SET v=?", Collections.singletonList(0)));
+    }
+    
     private static Stream<Arguments> resolveUnspecifiedParameterValuesWithUnresolvedTextArguments() {
         return Stream.of(
                 Arguments.of("hexadecimal", "0x1F"),
@@ -427,9 +476,13 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("k", Types.BIGINT, true, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
+                new ShardingSphereColumn("k", Types.BIGINT, true, false, false, true, false, false),
+                new ShardingSphereColumn("v", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("domain_v", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
         when(schema.containsTable(new IdentifierValue("foo_tbl"))).thenReturn(true);
         when(schema.getTable(new IdentifierValue("foo_tbl"))).thenReturn(table);
+        Collection<ShardingColumnRuleAttribute> shardingColumnRuleAttributes = mockShardingColumnRuleAttributes();
+        lenient().when(database.getRuleMetaData().getAttributes(ShardingColumnRuleAttribute.class)).thenReturn(shardingColumnRuleAttributes);
         when(result.getMetaDataContexts().getMetaData().getDatabase("postgres")).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("postgres"))).thenReturn(database);
         when(result.getDatabase("postgres")).thenReturn(database);

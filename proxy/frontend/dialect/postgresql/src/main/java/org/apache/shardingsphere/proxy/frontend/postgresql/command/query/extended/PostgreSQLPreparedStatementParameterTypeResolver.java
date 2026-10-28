@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
+import org.apache.shardingsphere.infra.rule.attribute.column.ShardingColumnRuleAttribute;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
@@ -84,7 +85,9 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
     private static final Pattern BIGINT_TEXT_PATTERN = Pattern.compile("[ \\t\\n\\r\\f\\x0B]*\\+?(0|[1-9][0-9]*)[ \\t\\n\\r\\f\\x0B]*");
     
     /**
-     * Resolve values of unspecified type parameters by the integer columns they are compared with or assigned to.
+     * Resolve values of unspecified type parameters by the integer sharding columns they are compared with or assigned to.
+     * Only sharding columns are used, because routing needs their values, while a parameter of another column, such as a domain over integer with its own operators,
+     * keeps the type the database infers for it.
      * A parameter is resolved only when every occurrence of it is compared with or assigned to a column, so that a parameter also used elsewhere,
      * such as an overloaded function argument, keeps the type the database infers from all of its occurrences.
      * Only columns of physical tables are used, and an IN list is used only when all of its values are parameters or literals,
@@ -143,6 +146,9 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
     
     private static Map<Integer, Collection<Integer>> getParameterMarkerColumnTypes(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase(connectionSession.getUsedDatabaseName());
+        if (database.getRuleMetaData().getAttributes(ShardingColumnRuleAttribute.class).isEmpty()) {
+            return Collections.emptyMap();
+        }
         Map<Integer, Collection<Integer>> result = new HashMap<>(preparedStatement.getActualParameterMarkerIndexes().size(), 1F);
         SQLStatement sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
@@ -167,7 +173,7 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         ShardingSphereTable table = database.getSchema(schemaName).getTable(logicTableName);
         Collection<ShardingSphereIdentifier> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
         for (InsertValuesSegment each : insertStatement.getValues()) {
-            putInsertValueColumnTypes(each, table, columnNamesOfInsert, parameterMarkerColumnTypes);
+            putInsertValueColumnTypes(database, each, table, columnNamesOfInsert, parameterMarkerColumnTypes);
         }
     }
     
@@ -190,18 +196,27 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         return result;
     }
     
-    private static void putInsertValueColumnTypes(final InsertValuesSegment insertValuesSegment, final ShardingSphereTable table, final Collection<ShardingSphereIdentifier> columnNamesOfInsert,
-                                                  final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
+    private static void putInsertValueColumnTypes(final ShardingSphereDatabase database, final InsertValuesSegment insertValuesSegment, final ShardingSphereTable table,
+                                                  final Collection<ShardingSphereIdentifier> columnNamesOfInsert, final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
         Iterator<ShardingSphereIdentifier> columnNames = columnNamesOfInsert.iterator();
         for (ExpressionSegment each : insertValuesSegment.getValues()) {
             if (!columnNames.hasNext()) {
                 return;
             }
             String columnName = columnNames.next().toString();
-            if (each instanceof ParameterMarkerExpressionSegment && table.containsColumn(columnName)) {
+            if (each instanceof ParameterMarkerExpressionSegment && table.containsColumn(columnName) && isShardingColumn(database, columnName, table.getName())) {
                 putParameterColumnType((ParameterMarkerExpressionSegment) each, table.getColumn(columnName).getDataType(), parameterMarkerColumnTypes);
             }
         }
+    }
+    
+    private static boolean isShardingColumn(final ShardingSphereDatabase database, final String columnName, final String tableName) {
+        for (ShardingColumnRuleAttribute each : database.getRuleMetaData().getAttributes(ShardingColumnRuleAttribute.class)) {
+            if (each.isShardingColumn(columnName, tableName)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private static void putParameterColumnType(final ParameterMarkerExpressionSegment parameterMarker, final int columnType, final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
@@ -243,6 +258,9 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
     
     private static Optional<Integer> findColumnType(final ShardingSphereDatabase database, final ColumnSegmentBoundInfo columnBoundInfo) {
         if (TableSourceType.PHYSICAL_TABLE != columnBoundInfo.getTableSourceType()) {
+            return Optional.empty();
+        }
+        if (!isShardingColumn(database, columnBoundInfo.getOriginalColumn().getValue(), columnBoundInfo.getOriginalTable().getValue())) {
             return Optional.empty();
         }
         if (!database.containsSchema(columnBoundInfo.getOriginalSchema()) || !database.getSchema(columnBoundInfo.getOriginalSchema()).containsTable(columnBoundInfo.getOriginalTable())) {
