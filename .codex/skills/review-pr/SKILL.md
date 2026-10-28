@@ -236,6 +236,10 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 
 Use these JSON shapes in local files passed to the arguments, replacing the example values with current evidence and block IDs from the initialized ledger:
 Sources use `rule`, `requirement` or `evidence` roles; `--anchors` takes an anchor-array file shaped like `anchors` below.
+For actual-value naming findings, pass `--rule java-testing.actual-value-naming --applicability <JSON>` with one list entry per affected variable containing `variable`, `operation`, `role`, `declaration`, `operation_call`, and `use`.
+The last three fields are zero-based indices into the finding's existing `anchors`, locating the declaration, tested call, and use or assertion in current candidate code lines; retain the complete test-method context needed to determine their roles.
+Use `actual-value`, `setup`, `expected`, or `unknown` for `role`; confirmation requires complete evidence with `actual-value`, while candidate and withdrawn findings may retain missing or contrary evidence.
+These checks validate the recorded premises and their consistency, not Java semantics; derive applicability from the governing test rule and the complete method.
 
 ```json
 {"focus": "Code Correctness Review", "sources": [{"role": "rule", "origin": "CODE_OF_CONDUCT.md", "path": "CODE_OF_CONDUCT.md"}]}
