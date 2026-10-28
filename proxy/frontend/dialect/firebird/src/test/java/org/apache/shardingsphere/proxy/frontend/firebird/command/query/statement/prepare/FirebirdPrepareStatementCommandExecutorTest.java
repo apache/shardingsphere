@@ -405,6 +405,17 @@ class FirebirdPrepareStatementCommandExecutorTest {
                 Arguments.of("Cast timestamp minus date", "SELECT CAST(created_at AS TIMESTAMP) - end_date FROM bar_tbl", FirebirdBinaryColumnType.NUMERIC),
                 Arguments.of("Cast double arithmetic", "SELECT CAST(2 AS DOUBLE PRECISION) * 2 FROM bar_tbl", FirebirdBinaryColumnType.DOUBLE),
                 Arguments.of("Null arithmetic", "SELECT NULL + NULL FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Date minus null", "SELECT end_date - NULL FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Null minus current date", "SELECT NULL - CURRENT_DATE FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Coalesce date subtraction", "SELECT COALESCE(end_date, start_date) - COALESCE(NULL, start_date) FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Nullif date subtraction", "SELECT NULLIF(end_date, start_date) - NULLIF(start_date, end_date) FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Case date subtraction", "SELECT CASE WHEN price > 0 THEN end_date ELSE start_date END - start_date FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Subquery date subtraction", "SELECT (SELECT start_date FROM bar_tbl) - end_date FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Aggregation subquery date subtraction", "SELECT (SELECT MAX(end_date) FROM bar_tbl) - start_date FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Insert returning date subtraction", "INSERT INTO bar_tbl (price) VALUES (1) RETURNING end_date - CURRENT_DATE", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Update returning date subtraction", "UPDATE bar_tbl SET price = 2 RETURNING end_date - CURRENT_DATE", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Delete returning date subtraction", "DELETE FROM bar_tbl RETURNING end_date - CURRENT_DATE", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Returning date plus integer", "UPDATE bar_tbl SET price = 2 RETURNING end_date + 1", FirebirdBinaryColumnType.DATE),
                 Arguments.of("Approximate numeric arithmetic", "SELECT price * 2 FROM bar_tbl", FirebirdBinaryColumnType.DOUBLE));
     }
     
