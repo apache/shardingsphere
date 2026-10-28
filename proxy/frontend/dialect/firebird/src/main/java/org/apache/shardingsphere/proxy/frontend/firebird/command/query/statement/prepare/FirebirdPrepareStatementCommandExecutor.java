@@ -122,7 +122,9 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private static final int MAX_VARCHAR_LENGTH = 32765;
     
-    private static final Map<String, Integer> CAST_DATA_TYPES = new HashMap<>(21, 1F);
+    private static final int MAX_FLOAT_PRECISION = 24;
+    
+    private static final Map<String, Integer> CAST_DATA_TYPES = new HashMap<>(22, 1F);
     
     static {
         CAST_DATA_TYPES.put("CHAR", Types.CHAR);
@@ -130,6 +132,11 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         CAST_DATA_TYPES.put("NCHAR", Types.CHAR);
         CAST_DATA_TYPES.put("NATIONAL CHAR", Types.CHAR);
         CAST_DATA_TYPES.put("NATIONAL CHARACTER", Types.CHAR);
+        CAST_DATA_TYPES.put("VARCHAR", Types.VARCHAR);
+        CAST_DATA_TYPES.put("CHAR VARYING", Types.VARCHAR);
+        CAST_DATA_TYPES.put("CHARACTER VARYING", Types.VARCHAR);
+        CAST_DATA_TYPES.put("NATIONAL CHAR VARYING", Types.VARCHAR);
+        CAST_DATA_TYPES.put("NATIONAL CHARACTER VARYING", Types.VARCHAR);
         CAST_DATA_TYPES.put("SMALLINT", Types.SMALLINT);
         CAST_DATA_TYPES.put("INT", Types.INTEGER);
         CAST_DATA_TYPES.put("INTEGER", Types.INTEGER);
@@ -137,13 +144,9 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         CAST_DATA_TYPES.put("FLOAT", Types.FLOAT);
         CAST_DATA_TYPES.put("REAL", Types.FLOAT);
         CAST_DATA_TYPES.put("DOUBLE PRECISION", Types.DOUBLE);
-        CAST_DATA_TYPES.put("NUMERIC", Types.NUMERIC);
-        CAST_DATA_TYPES.put("DEC", Types.DECIMAL);
-        CAST_DATA_TYPES.put("DECIMAL", Types.DECIMAL);
         CAST_DATA_TYPES.put("DATE", Types.DATE);
         CAST_DATA_TYPES.put("TIME", Types.TIME);
         CAST_DATA_TYPES.put("TIMESTAMP", Types.TIMESTAMP);
-        CAST_DATA_TYPES.put("TIME WITH TIME ZONE", Types.TIME_WITH_TIMEZONE);
         CAST_DATA_TYPES.put("TIMESTAMP WITH TIME ZONE", Types.TIMESTAMP_WITH_TIMEZONE);
         CAST_DATA_TYPES.put("BOOLEAN", Types.BOOLEAN);
     }
@@ -344,8 +347,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private Collection<String> getReturningTableNames(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof InsertStatementContext) {
-            return ((InsertStatementContext) sqlStatementContext).getSqlStatement().getTable()
-                    .map(optional -> Collections.singleton(optional.getTableName().getIdentifier().getValue())).orElseGet(Collections::emptySet);
+            return ((InsertStatementContext) sqlStatementContext).getSqlStatement().getTable().map(optional -> Collections.singleton(optional.getTableName().getIdentifier().getValue()))
+                    .orElseGet(Collections::emptySet);
         }
         return getTableNames(sqlStatementContext);
     }
@@ -486,7 +489,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private Map<Integer, DataTypeSegment> findCastDataTypes(final SQLStatementContext sqlStatementContext) {
         Map<Integer, DataTypeSegment> result = new HashMap<>();
-        findSelectStatement(sqlStatementContext.getSqlStatement()).ifPresent(optional -> putProjectionCastDataTypes(optional, result));
+        findSelectStatement(sqlStatementContext.getSqlStatement()).ifPresent(selectStatement -> putProjectionCastDataTypes(selectStatement, result));
         if (sqlStatementContext instanceof UpdateStatementContext) {
             for (ColumnAssignmentSegment each : ((UpdateStatementContext) sqlStatementContext).getSqlStatement().getSetAssignment().getAssignments()) {
                 putCastDataType(each.getValue(), result);
@@ -513,9 +516,9 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 putCastDataType(((ExpressionProjectionSegment) each).getExpr(), castDataTypes);
             }
         }
-        selectStatement.getCombine().ifPresent(optional -> {
-            putProjectionCastDataTypes(optional.getLeft().getSelect(), castDataTypes);
-            putProjectionCastDataTypes(optional.getRight().getSelect(), castDataTypes);
+        selectStatement.getCombine().ifPresent(combine -> {
+            putProjectionCastDataTypes(combine.getLeft().getSelect(), castDataTypes);
+            putProjectionCastDataTypes(combine.getRight().getSelect(), castDataTypes);
         });
     }
     
@@ -528,29 +531,39 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         if (!(expr instanceof FunctionSegment)) {
             return;
         }
-        List<ExpressionSegment> parameters = new ArrayList<>(((FunctionSegment) expr).getParameters());
-        if ("CAST".equalsIgnoreCase(((FunctionSegment) expr).getFunctionName()) && 2 == parameters.size()
-                && parameters.get(0) instanceof ParameterMarkerExpressionSegment && parameters.get(1) instanceof DataTypeSegment) {
-            castDataTypes.put(((ParameterMarkerExpressionSegment) parameters.get(0)).getParameterMarkerIndex(), (DataTypeSegment) parameters.get(1));
+        List<ExpressionSegment> params = new ArrayList<>(((FunctionSegment) expr).getParameters());
+        if ("CAST".equalsIgnoreCase(((FunctionSegment) expr).getFunctionName()) && 2 == params.size() && params.get(0) instanceof ParameterMarkerExpressionSegment
+                && params.get(1) instanceof DataTypeSegment) {
+            castDataTypes.put(((ParameterMarkerExpressionSegment) params.get(0)).getParameterMarkerIndex(), (DataTypeSegment) params.get(1));
             return;
         }
-        for (ExpressionSegment each : parameters) {
+        for (ExpressionSegment each : params) {
             putCastDataType(each, castDataTypes);
         }
     }
     
     private void processCastParameter(final DataTypeSegment dataType, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,
                                       final int idx) {
-        int castDataType = getCastDataType(dataType.getDataTypeName());
-        ShardingSphereColumn column = new ShardingSphereColumn(null, castDataType, false, false, true, true, false, false);
+        Optional<Integer> castDataType = findCastDataType(dataType);
+        if (!castDataType.isPresent()) {
+            processUnknownParameter(describeColumns, requestedItems, idx);
+            return;
+        }
+        ShardingSphereColumn column = new ShardingSphereColumn(null, castDataType.get(), false, false, true, true, false, false);
         String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
-        int columnLength = dataType.getDataTypeLength().map(DataTypeLengthSegment::getPrecision).orElse(Types.CHAR == castDataType ? 1 : MAX_VARCHAR_LENGTH);
+        int columnLength = dataType.getDataTypeLength().map(DataTypeLengthSegment::getPrecision).orElse(Types.CHAR == castDataType.get() ? 1 : MAX_VARCHAR_LENGTH);
         describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, LITERAL_TABLE, column, null, null, owner, columnLength, false, null));
     }
     
-    private int getCastDataType(final String dataTypeName) {
-        String upperCaseDataTypeName = dataTypeName.toUpperCase(Locale.ENGLISH);
-        return upperCaseDataTypeName.startsWith("BLOB") ? Types.BLOB : CAST_DATA_TYPES.getOrDefault(upperCaseDataTypeName, Types.VARCHAR);
+    private Optional<Integer> findCastDataType(final DataTypeSegment dataType) {
+        String dataTypeName = dataType.getDataTypeName().toUpperCase(Locale.ENGLISH);
+        if (dataTypeName.startsWith("BLOB")) {
+            return Optional.of(Types.BLOB);
+        }
+        if ("FLOAT".equals(dataTypeName) && dataType.getDataTypeLength().map(DataTypeLengthSegment::getPrecision).orElse(0) > MAX_FLOAT_PRECISION) {
+            return Optional.of(Types.DOUBLE);
+        }
+        return Optional.ofNullable(CAST_DATA_TYPES.get(dataTypeName));
     }
     
     private void processUnknownParameter(final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final int idx) {
