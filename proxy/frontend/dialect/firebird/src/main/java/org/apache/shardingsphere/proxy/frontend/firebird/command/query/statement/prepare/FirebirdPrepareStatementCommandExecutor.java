@@ -257,7 +257,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         for (Projection each : getProjections(sqlStatementContext, database, schema)) {
             Optional<Projection> originProjection = findOriginProjection(sqlStatementContext, each);
             Projection projection = originProjection.orElse(each);
-            IdentifierValue columnAlias = originProjection.isPresent() || isRenamedColumn(each) ? new IdentifierValue(each.getColumnLabel()) : each.getAlias().orElse(null);
+            IdentifierValue columnAlias = isTemporaryTableColumn(each) ? new IdentifierValue(each.getColumnLabel()) : each.getAlias().orElse(null);
             if (projection instanceof ColumnProjection) {
                 ShardingSphereTable table = getTable(getTableName(sqlStatementContext, (ColumnProjection) projection), database, schema);
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) projection).getOriginalColumn().getValue());
@@ -383,8 +383,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return tableSegment instanceof SimpleTableSegment ? ((SimpleTableSegment) tableSegment).getTableName().getIdentifier().getValue() : "";
     }
     
-    private Optional<ProjectionSegment> findSourceProjectionSegment(final List<CommonTableExpressionSegment> commonTableExpressions, final TableSegment tableSource,
-                                                                    final IdentifierValue columnName) {
+    private Optional<ProjectionSegment> findSourceProjectionSegment(final List<CommonTableExpressionSegment> commonTableExpressions, final TableSegment tableSource, final IdentifierValue columnName) {
         if (tableSource instanceof SubqueryTableSegment) {
             SubqueryTableSegment subqueryTable = (SubqueryTableSegment) tableSource;
             return findDerivedColumnOrigin(commonTableExpressions, subqueryTable.getSubquery().getSelect(), subqueryTable.getColumns(), columnName);
@@ -439,8 +438,12 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return result;
     }
     
-    private boolean isRenamedColumn(final Projection projection) {
-        return projection instanceof ColumnProjection && !projection.getColumnLabel().equalsIgnoreCase(((ColumnProjection) projection).getOriginalColumn().getValue());
+    private boolean isTemporaryTableColumn(final Projection projection) {
+        if (!(projection instanceof ColumnProjection)) {
+            return false;
+        }
+        ColumnSegmentBoundInfo columnBoundInfo = ((ColumnProjection) projection).getColumnBoundInfo();
+        return null != columnBoundInfo && TableSourceType.TEMPORARY_TABLE == columnBoundInfo.getTableSourceType();
     }
     
     private String getTableName(final SQLStatementContext sqlStatementContext, final ColumnProjection projection) {
@@ -452,6 +455,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return null != returningSegment && ("OLD".equalsIgnoreCase(tableName) || "NEW".equalsIgnoreCase(tableName));
     }
     
+    @HighFrequencyInvocation
     private ShardingSphereTable getTable(final String tableName, final Supplier<ShardingSphereDatabase> database, final Supplier<Optional<ShardingSphereSchema>> schema) {
         ShardingSphereTable result = schema.get().map(optional -> optional.getTable(tableName)).orElse(null);
         if (null == result) {
