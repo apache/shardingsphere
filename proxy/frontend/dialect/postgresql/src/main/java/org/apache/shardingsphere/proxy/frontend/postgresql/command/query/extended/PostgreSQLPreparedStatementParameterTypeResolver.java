@@ -87,7 +87,7 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
     /**
      * Resolve values of unspecified type parameters by the integer sharding columns they are compared with or assigned to.
      * Only sharding columns are used, because routing needs their values, while a parameter of another column, such as a domain over integer with its own operators,
-     * keeps the type the database infers for it.
+     * keeps the type the database infers for it. NOT IN and NOT BETWEEN are not used either, because routing ignores them.
      * A parameter is resolved only when every occurrence of it is compared with or assigned to a column, so that a parameter also used elsewhere,
      * such as an overloaded function argument, keeps the type the database infers from all of its occurrences.
      * Only columns of physical tables are used, and an IN list is used only when all of its values are parameters or literals,
@@ -291,7 +291,7 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
             putInColumnTypes(database, usingColumnNames, (InExpression) predicate, parameterMarkerColumnTypes);
             return;
         }
-        if (predicate instanceof BetweenExpression) {
+        if (predicate instanceof BetweenExpression && !((BetweenExpression) predicate).isNot()) {
             BetweenExpression betweenExpression = (BetweenExpression) predicate;
             putColumnType(database, usingColumnNames, betweenExpression.getLeft(), betweenExpression.getBetweenExpr(), parameterMarkerColumnTypes);
             putColumnType(database, usingColumnNames, betweenExpression.getLeft(), betweenExpression.getAndExpr(), parameterMarkerColumnTypes);
@@ -301,7 +301,7 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
     private static void putInColumnTypes(final ShardingSphereDatabase database, final Collection<String> usingColumnNames, final InExpression inExpression,
                                          final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
         Collection<ExpressionSegment> values = inExpression.getExpressionList();
-        if (!isParameterMarkersOrLiterals(values)) {
+        if (inExpression.isNot() || !isParameterMarkersOrLiterals(values)) {
             return;
         }
         for (ExpressionSegment each : values) {

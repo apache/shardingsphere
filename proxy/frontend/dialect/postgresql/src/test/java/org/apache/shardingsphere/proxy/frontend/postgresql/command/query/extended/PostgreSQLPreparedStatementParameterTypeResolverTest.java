@@ -77,6 +77,8 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -224,6 +226,15 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         assertThat(actual.get(0), sameInstance(expected));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("resolveUnspecifiedParameterValuesWithNegatedPredicateArguments")
+    void assertResolveUnspecifiedParameterValuesWithNegatedPredicate(final String name, final String sql, final List<Integer> actualParameterMarkerIndexes) {
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement(sql, actualParameterMarkerIndexes);
+        PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("7");
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Collections.singletonList(expected));
+        assertThat(actual.get(0), sameInstance(expected));
+    }
+    
     @Test
     void assertResolveUnspecifiedParameterValuesWithoutShardingColumnRuleAttribute() {
         PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement(SQL, Collections.singletonList(0));
@@ -311,9 +322,16 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
     void assertResolveUnspecifiedParameterValuesWithInsertTableNotFound() {
         PostgreSQLServerPreparedStatement preparedStatement = createInsertPreparedStatement("INSERT INTO foo_tbl (id) VALUES (?)", Collections.singletonList(0));
         when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("postgres");
+        when(database.getDefaultSchemaName()).thenReturn("public");
+        when(database.containsSchema("public")).thenReturn(true);
+        Collection<ShardingColumnRuleAttribute> shardingColumnRuleAttributes = mockShardingColumnRuleAttributes();
+        when(database.getRuleMetaData().getAttributes(ShardingColumnRuleAttribute.class)).thenReturn(shardingColumnRuleAttributes);
         PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("7");
         List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Collections.singletonList(expected));
         assertThat(actual.get(0), sameInstance(expected));
+        verify(database.getSchema("public")).containsTable("foo_tbl");
+        verify(database.getSchema("public"), never()).getTable("foo_tbl");
     }
     
     @Test
@@ -434,6 +452,12 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
                 Arguments.of("integer domain column", "SELECT id FROM foo_tbl WHERE domain_v=?", Collections.singletonList(0)),
                 Arguments.of("sharding and non sharding columns", "SELECT id FROM foo_tbl WHERE id=? OR v=?", Arrays.asList(0, 0)),
                 Arguments.of("set assignment of non sharding column", "UPDATE foo_tbl SET v=?", Collections.singletonList(0)));
+    }
+    
+    private static Stream<Arguments> resolveUnspecifiedParameterValuesWithNegatedPredicateArguments() {
+        return Stream.of(
+                Arguments.of("not in", "SELECT id FROM foo_tbl WHERE id NOT IN (?)", Collections.singletonList(0)),
+                Arguments.of("not between", "SELECT id FROM foo_tbl WHERE id NOT BETWEEN ? AND ?", Arrays.asList(0, 0)));
     }
     
     private static Stream<Arguments> resolveUnspecifiedParameterValuesWithUnresolvedTextArguments() {
