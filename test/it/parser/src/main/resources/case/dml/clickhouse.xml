@@ -1182,4 +1182,321 @@
             </expression-projection>
         </projections>
     </select>
+    <select sql-case-id="clickhouse_select_cast_nullable">
+        <projections start-index="7" stop-index="63">
+            <expression-projection text="CAST(NULL AS Nullable(Int32))" start-index="7" stop-index="35">
+                <expr>
+                    <function function-name="CAST" text="CAST(NULL AS Nullable(Int32))" start-index="7" stop-index="35">
+                        <parameter>
+                            <literal-expression value="null" start-index="12" stop-index="15" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="Nullable(Int32)" start-index="20" stop-index="34" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="CAST(7 AS Nullable(Int32))" start-index="38" stop-index="63">
+                <expr>
+                    <function function-name="CAST" text="CAST(7 AS Nullable(Int32))" start-index="38" stop-index="63">
+                        <parameter>
+                            <literal-expression value="7" start-index="43" stop-index="43" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="Nullable(Int32)" start-index="48" stop-index="62" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="clickhouse_select_numbers">
+        <projections start-index="7" stop-index="12">
+            <column-projection name="number" start-index="7" stop-index="12" />
+        </projections>
+        <from>
+            <function-table start-index="19" stop-index="28">
+                <table-function function-name="numbers" text="numbers(3)" start-index="19" stop-index="28" />
+            </function-table>
+        </from>
+    </select>
+    <select sql-case-id="clickhouse_select_numbers_alias">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="number" start-index="7" stop-index="14">
+                <owner name="n" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
+        <from>
+            <function-table start-index="21" stop-index="35" table-alias="n">
+                <table-function function-name="numbers" text="numbers(0)" start-index="21" stop-index="30" />
+            </function-table>
+        </from>
+    </select>
+    <insert sql-case-id="clickhouse_insert_native_values_header">
+        <table name="foo_protocol" start-index="12" stop-index="23" />
+        <columns start-index="24" stop-index="24" />
+    </insert>
+    <insert sql-case-id="clickhouse_insert_native_values_columns">
+        <table name="foo_protocol" start-index="12" stop-index="23" />
+        <columns start-index="25" stop-index="37">
+            <column name="id" start-index="26" stop-index="27" />
+            <column name="payload" start-index="30" stop-index="36" />
+        </columns>
+    </insert>
+    <insert sql-case-id="clickhouse_insert_native_format_header">
+        <table name="foo_protocol" start-index="12" stop-index="23" />
+        <columns start-index="24" stop-index="24" />
+    </insert>
+    <insert sql-case-id="clickhouse_insert_native_format_columns">
+        <table name="foo_protocol" start-index="12" stop-index="31">
+            <owner name="default" start-index="12" stop-index="18" />
+        </table>
+        <columns start-index="33" stop-index="45">
+            <column name="id" start-index="34" stop-index="35" />
+            <column name="payload" start-index="38" stop-index="44" />
+        </columns>
+    </insert>
+    <insert sql-case-id="clickhouse_insert_native_bare_header">
+        <table name="foo_protocol" start-index="12" stop-index="23" />
+        <columns start-index="23" stop-index="23" />
+    </insert>
+    <insert sql-case-id="clickhouse_insert_select_numbers">
+        <table name="foo_protocol" start-index="12" stop-index="23" />
+        <columns start-index="25" stop-index="28">
+            <column name="id" start-index="26" stop-index="27" />
+        </columns>
+        <select>
+            <projections start-index="37" stop-index="42">
+                <column-projection name="number" start-index="37" stop-index="42" />
+            </projections>
+            <from>
+                <function-table start-index="49" stop-index="58">
+                    <table-function function-name="numbers" text="numbers(2)" />
+                </function-table>
+            </from>
+        </select>
+    </insert>
+    <select sql-case-id="clickhouse_cancel_aggregate_comment">
+        <projections start-index="7" stop-index="24">
+            <aggregation-projection type="SUM" expression="sum(number % 7919)" start-index="7" stop-index="24" />
+        </projections>
+        <from>
+            <function-table start-index="31" stop-index="50">
+                <table-function function-name="numbers" text="numbers(10000000000)" />
+            </function-table>
+        </from>
+    </select>
+    <select sql-case-id="clickhouse_leading_comment">
+        <projections start-index="24" stop-index="24">
+            <expression-projection text="1" start-index="24" stop-index="24">
+                <expr>
+                    <literal-expression value="1" start-index="24" stop-index="24" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="clickhouse_trailing_line_comment">
+        <projections start-index="7" stop-index="7">
+            <expression-projection text="1" start-index="7" stop-index="7">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="7" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="clickhouse_function_argument_comment">
+        <projections start-index="7" stop-index="12">
+            <column-projection name="number" start-index="7" stop-index="12" />
+        </projections>
+        <from>
+            <function-table start-index="19" stop-index="42">
+                <table-function function-name="numbers" text="numbers(/* foo_arg */ 3)" />
+            </function-table>
+        </from>
+    </select>
+    <select sql-case-id="clickhouse_window_row_number">
+        <projections start-index="7" stop-index="73">
+            <column-projection name="number" alias="foo_value" start-index="7" stop-index="25" />
+            <expression-projection text="row_number() OVER (ORDER BY number)" alias="foo_rank" start-index="27" stop-index="73">
+                <expr>
+                    <function function-name="row_number" text="row_number() OVER (ORDER BY number)" start-index="27" stop-index="61">
+                        <window-item start-index="40" stop-index="61">
+                            <order-by start-index="46" stop-index="60">
+                                <column-item name="number" order-direction="ASC" start-index="55" stop-index="60" />
+                            </order-by>
+                        </window-item>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <order-by start-index="91" stop-index="105">
+            <column-item name="number" order-direction="ASC" start-index="100" stop-index="105" />
+        </order-by>
+        <from>
+            <function-table start-index="80" stop-index="89">
+                <table-function function-name="numbers" text="numbers(5)" start-index="80" stop-index="89" />
+            </function-table>
+        </from>
+    </select>
+    <select sql-case-id="clickhouse_window_aggregate">
+        <projections start-index="7" stop-index="65">
+            <aggregation-projection type="SUM" expression="sum(number) OVER (PARTITION BY number ORDER BY number DESC)" start-index="7" stop-index="65">
+                <window-item start-index="19" stop-index="65">
+                    <partition-by>
+                        <column name="number" start-index="38" stop-index="43" />
+                    </partition-by>
+                    <order-by start-index="45" stop-index="64">
+                        <column-item name="number" order-direction="DESC" start-index="54" stop-index="59" />
+                    </order-by>
+                </window-item>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <function-table start-index="72" stop-index="81">
+                <table-function function-name="numbers" text="numbers(3)" start-index="72" stop-index="81" />
+            </function-table>
+        </from>
+    </select>
+    <select sql-case-id="clickhouse_window_distinct">
+        <projections start-index="7" stop-index="34">
+            <aggregation-distinct-projection type="SUM" expression="sum(DISTINCT number) OVER ()" start-index="7" stop-index="34" distinct-inner-expression="number">
+                <window-item start-index="28" stop-index="34" />
+            </aggregation-distinct-projection>
+        </projections>
+        <from>
+            <function-table start-index="41" stop-index="50">
+                <table-function function-name="numbers" text="numbers(3)" start-index="41" stop-index="50" />
+            </function-table>
+        </from>
+    </select>
+    <select sql-case-id="clickhouse_array_empty_cast">
+        <projections start-index="7" stop-index="44">
+            <expression-projection text="CAST([] AS Array(UInt64))" alias="foo_empty" start-index="7" stop-index="44">
+                <expr>
+                    <function function-name="CAST" text="CAST([] AS Array(UInt64))" start-index="7" stop-index="31">
+                        <parameter>
+                            <list-expression start-index="12" stop-index="13" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="Array(UInt64)" start-index="18" stop-index="30" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="clickhouse_array_nested">
+        <projections start-index="7" stop-index="30">
+            <expression-projection text="[[1,2],[]]" alias="foo_nested" start-index="7" stop-index="30">
+                <expr>
+                    <list-expression start-index="7" stop-index="16">
+                        <items>
+                            <list-expression start-index="8" stop-index="12">
+                                <items>
+                                    <literal-expression value="1" start-index="9" stop-index="9" />
+                                </items>
+                                <items>
+                                    <literal-expression value="2" start-index="11" stop-index="11" />
+                                </items>
+                            </list-expression>
+                        </items>
+                        <items>
+                            <list-expression start-index="14" stop-index="15" />
+                        </items>
+                    </list-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="clickhouse_array_parameter" parameters="7">
+        <projections start-index="7" stop-index="25">
+            <expression-projection text="[?,1]" alias="foo_values" start-index="7" stop-index="25">
+                <expr>
+                    <list-expression start-index="7" stop-index="11">
+                        <items>
+                            <parameter-marker-expression parameter-index="0" start-index="8" stop-index="8" />
+                        </items>
+                        <items>
+                            <literal-expression value="1" start-index="10" stop-index="10" />
+                        </items>
+                    </list-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="clickhouse_array_unaliased">
+        <projections start-index="7" stop-index="11">
+            <expression-projection text="[1,2]" start-index="7" stop-index="11">
+                <expr>
+                    <list-expression start-index="7" stop-index="11">
+                        <items>
+                            <literal-expression value="1" start-index="8" stop-index="8" />
+                        </items>
+                        <items>
+                            <literal-expression value="2" start-index="10" stop-index="10" />
+                        </items>
+                    </list-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="clickhouse_with_constant">
+        <variable-name>foo_limit</variable-name>
+        <projections start-index="27" stop-index="45">
+            <column-projection name="number" alias="foo_value" start-index="27" stop-index="45" />
+        </projections>
+        <from>
+            <function-table start-index="52" stop-index="61">
+                <table-function function-name="numbers" text="numbers(5)" start-index="52" stop-index="61" />
+            </function-table>
+        </from>
+        <where start-index="63" stop-index="86">
+            <expr>
+                <binary-operation-expression start-index="69" stop-index="86">
+                    <left>
+                        <column name="number" start-index="69" stop-index="74" />
+                    </left>
+                    <operator>&lt;</operator>
+                    <right>
+                        <column name="foo_limit" start-index="78" stop-index="86" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by start-index="88" stop-index="102">
+            <column-item name="number" order-direction="ASC" start-index="97" stop-index="102" />
+        </order-by>
+    </select>
+    <select sql-case-id="clickhouse_with_parameters" parameters="2, 1">
+        <variable-name>foo_limit</variable-name>
+        <projections start-index="27" stop-index="32">
+            <column-projection name="number" start-index="27" stop-index="32" />
+        </projections>
+        <from>
+            <function-table start-index="39" stop-index="48">
+                <table-function function-name="numbers" text="numbers(3)" start-index="39" stop-index="48" />
+            </function-table>
+        </from>
+        <where start-index="50" stop-index="65">
+            <expr>
+                <binary-operation-expression start-index="56" stop-index="65">
+                    <left>
+                        <column name="number" start-index="56" stop-index="61" />
+                    </left>
+                    <operator>&lt;</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="1" start-index="65" stop-index="65" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    <select sql-case-id="clickhouse_with_multiple_constants">
+        <variable-name>foo_text</variable-name>
+        <variable-name>foo_nullable</variable-name>
+        <projections start-index="58" stop-index="78">
+            <column-projection name="foo_text" start-index="58" stop-index="65" />
+            <column-projection name="foo_nullable" start-index="67" stop-index="78" />
+        </projections>
+    </select>
 </sql-parser-test-cases>

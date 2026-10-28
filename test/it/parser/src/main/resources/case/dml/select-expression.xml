@@ -5393,7 +5393,9 @@
                                         <order-by start-index="17" stop-index="26">
                                             <index-item start-index="26" stop-index="26" index="1" order-direction="ASC" />
                                         </order-by>
-                                        <limit start-index="28" stop-index="52" with-ties="true" row-count-implicit="true" />
+                                        <limit start-index="28" stop-index="52" with-ties="true" row-count-implicit="true">
+                                            <row-count value="1" start-index="40" stop-index="39" />
+                                        </limit>
                                     </select>
                                 </subquery>
                             </expression>
@@ -5504,7 +5506,9 @@
                                             <order-by start-index="49" stop-index="58">
                                                 <index-item start-index="58" stop-index="58" index="1" order-direction="ASC" />
                                             </order-by>
-                                            <limit start-index="60" stop-index="84" with-ties="true" row-count-implicit="true" />
+                                            <limit start-index="60" stop-index="84" with-ties="true" row-count-implicit="true">
+                                                <row-count value="1" start-index="72" stop-index="71" />
+                                            </limit>
                                         </select>
                                     </subquery>
                                 </expression>

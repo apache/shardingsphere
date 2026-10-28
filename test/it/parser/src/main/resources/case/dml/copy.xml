@@ -90,4 +90,80 @@
         <column name="id" start-index="13" stop-index="14" />
         <column name="name" start-index="17" stop-index="20" />
     </copy>
+
+    <copy sql-case-id="copy_on_error_options_pg">
+        <table name="t" start-index="5" stop-index="5" />
+    </copy>
+
+    <copy sql-case-id="copy_json_array_option_pg">
+        <table name="t" start-index="5" stop-index="5" />
+    </copy>
+
+    <copy sql-case-id="copy_header_match_default_pg">
+        <table name="t" start-index="5" stop-index="5" />
+    </copy>
+
+    <copy sql-case-id="copy_set_null_option_pg">
+        <table name="t" start-index="5" stop-index="5" />
+    </copy>
+
+    <copy sql-case-id="copy_list_option_pg">
+        <table name="t" start-index="5" stop-index="5" />
+    </copy>
+
+    <copy sql-case-id="copy_numeric_option_pg">
+        <table name="t" start-index="5" stop-index="5" />
+    </copy>
+
+    <copy sql-case-id="copy_star_option_pg">
+        <table name="t" start-index="5" stop-index="5" />
+    </copy>
+
+    <copy sql-case-id="copy_default_keyword_option_pg">
+        <table name="t" start-index="5" stop-index="5" />
+    </copy>
+
+    <copy sql-case-id="copy_argumentless_option_pg">
+        <table name="t" start-index="5" stop-index="5" />
+    </copy>
+
+    <copy sql-case-id="copy_reserved_option_name_pg">
+        <table name="t" start-index="5" stop-index="5" />
+    </copy>
+
+    <copy sql-case-id="copy_legacy_json_pg">
+        <table name="t" start-index="5" stop-index="5" />
+    </copy>
+
+    <copy sql-case-id="copy_old_options_control_pg">
+        <table name="t" start-index="5" stop-index="5" />
+        <column name="a" start-index="7" stop-index="7" />
+        <column name="b" start-index="9" stop-index="9" />
+    </copy>
+
+    <copy sql-case-id="copy_query_json_option_pg">
+        <query start-index="6" stop-index="13">
+            <select>
+                <projections start-index="13" stop-index="13">
+                    <expression-projection text="1" start-index="13" stop-index="13">
+                        <expr>
+                            <literal-expression value="1" start-index="13" stop-index="13" />
+                        </expr>
+                    </expression-projection>
+                </projections>
+            </select>
+        </query>
+    </copy>
+    <copy sql-case-id="copy_quoted_format_pg">
+        <table name="foo_table" start-index="5" stop-index="13" />
+    </copy>
+    <copy sql-case-id="copy_numeric_header_pg">
+        <table name="foo_table" start-index="5" stop-index="13" />
+    </copy>
+    <copy sql-case-id="copy_positive_header_pg">
+        <table name="foo_table" start-index="5" stop-index="13" />
+    </copy>
+    <copy sql-case-id="copy_negative_zero_header_pg">
+        <table name="foo_table" start-index="5" stop-index="13" />
+    </copy>
 </sql-parser-test-cases>
