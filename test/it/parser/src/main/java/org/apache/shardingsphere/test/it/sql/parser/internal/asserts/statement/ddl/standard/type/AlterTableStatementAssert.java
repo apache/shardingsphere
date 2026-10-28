@@ -199,17 +199,6 @@ public final class AlterTableStatementAssert {
         }
     }
     
-    private static void assertSetSchemaDefinition(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
-        Optional<SetSchemaDefinitionSegment> setSchemaDefinition = actual.getSetSchemaDefinition();
-        if (null == expected.getSetSchemaDefinition()) {
-            assertFalse(setSchemaDefinition.isPresent(), assertContext.getText("Actual set schema definition should not exist."));
-        } else {
-            assertTrue(setSchemaDefinition.isPresent(), assertContext.getText("Actual set schema definition should exist."));
-            assertThat(assertContext.getText("Schema name assertion error: "), setSchemaDefinition.get().getSchemaName().getValue(), is(expected.getSetSchemaDefinition().getSchemaName()));
-            SQLSegmentAssert.assertIs(assertContext, setSchemaDefinition.get(), expected.getSetSchemaDefinition());
-        }
-    }
-    
     private static void assertProperties(final SQLCaseAssertContext assertContext, final PropertiesSegment actual, final ExpectedProperties expected) {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
         assertThat(assertContext.getText("Properties size assertion error: "), actual.getProperties().size(), is(expected.getProperties().size()));
@@ -222,6 +211,17 @@ public final class AlterTableStatementAssert {
         assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), is(expected.getKey()));
         assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), is(expected.getValue()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
+    }
+    
+    private static void assertSetSchemaDefinition(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        Optional<SetSchemaDefinitionSegment> setSchemaDefinition = actual.getSetSchemaDefinition();
+        if (null == expected.getSetSchemaDefinition()) {
+            assertFalse(setSchemaDefinition.isPresent(), assertContext.getText("Actual set schema definition should not exist."));
+        } else {
+            assertTrue(setSchemaDefinition.isPresent(), assertContext.getText("Actual set schema definition should exist."));
+            assertThat(assertContext.getText("Schema name assertion error: "), setSchemaDefinition.get().getSchemaName().getValue(), is(expected.getSetSchemaDefinition().getSchemaName()));
+            SQLSegmentAssert.assertIs(assertContext, setSchemaDefinition.get(), expected.getSetSchemaDefinition());
+        }
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
