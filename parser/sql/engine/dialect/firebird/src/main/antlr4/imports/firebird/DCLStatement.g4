@@ -91,6 +91,10 @@ createRole
     : CREATE ROLE roleName
     ;
 
+dropRole
+    : DROP ROLE roleName
+    ;
+
 createUser
     : CREATE USER login PASSWORD password
     firstNameClause? middleNameClause? lastNameClause?
