@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.free;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
+import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -44,6 +48,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.stream.Stream;
 
@@ -150,13 +155,14 @@ class FirebirdFreeStatementCommandExecutorTest {
         verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(STATEMENT_ID));
     }
     
-    @Test
-    void assertExecuteWithLastStatementHandle() throws Exception {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidObjectHandles")
+    void assertExecuteWithLastStatementHandle(final String scenario, final int encodedHandle) throws Exception {
         FirebirdLastObjectRegistry.getInstance().registerLazySendConnection(CONNECTION_ID);
         FirebirdLastObjectRegistry.getInstance().setLastStatement(CONNECTION_ID, STATEMENT_ID);
-        when(packet.getStatementId()).thenReturn(INVALID_OBJECT_HANDLE);
-        when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.DROP);
-        new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
+        ByteBuf byteBuf = Unpooled.buffer().writeInt(FirebirdCommandPacketType.FREE_STATEMENT.getValue()).writeInt(encodedHandle).writeInt(FirebirdFreeStatementPacket.DROP);
+        FirebirdFreeStatementPacket freeStatementPacket = new FirebirdFreeStatementPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
+        new FirebirdFreeStatementCommandExecutor(freeStatementPacket, connectionSession).execute();
         verify(registry).removePreparedStatement(STATEMENT_ID);
         assertFalse(FirebirdStatementIdGenerator.getInstance().isStatementAllocated(CONNECTION_ID, STATEMENT_ID));
     }
@@ -192,5 +198,11 @@ class FirebirdFreeStatementCommandExecutorTest {
         return Stream.of(
                 Arguments.of("execute_dropCleansPreparedStatementAndFetchResources", FirebirdFreeStatementPacket.DROP),
                 Arguments.of("execute_unprepareCleansPreparedStatementAndFetchResources", FirebirdFreeStatementPacket.UNPREPARE));
+    }
+    
+    private static Stream<Arguments> invalidObjectHandles() {
+        return Stream.of(
+                Arguments.of("execute_dropResolvesUnsignedInvalidObjectHandle", INVALID_OBJECT_HANDLE),
+                Arguments.of("execute_dropResolvesSignExtendedInvalidObjectHandle", 0xFFFFFFFF));
     }
 }

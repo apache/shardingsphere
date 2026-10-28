@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.Map;
 import java.util.Set;
@@ -69,6 +70,7 @@ public final class FirebirdLastObjectRegistry {
      * @param connectionId connection ID
      * @param statementHandle statement handle
      */
+    @HighFrequencyInvocation
     public void setLastStatement(final int connectionId, final int statementHandle) {
         lastStatementHandles.put(connectionId, statementHandle);
     }
@@ -78,6 +80,7 @@ public final class FirebirdLastObjectRegistry {
      *
      * @param connectionId connection ID
      */
+    @HighFrequencyInvocation
     public void setLastNonStatementObject(final int connectionId) {
         lastStatementHandles.remove(connectionId);
     }
@@ -85,15 +88,21 @@ public final class FirebirdLastObjectRegistry {
     /**
      * Resolve statement handle, replacing the invalid object handle with the statement allocated last on a lazy send connection.
      *
+     * <p>Clients encoding the handle as a 16-bit XDR short sign-extend it, so a negative handle is read as its unsigned 16-bit value,
+     * the same way as the Firebird server does.</p>
+     *
      * @param connectionId connection ID
      * @param statementHandle statement handle received from the client
      * @return resolved statement handle, or the received handle when it is not replaced
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/remote/protocol.cpp#L512-L516">Firebird remote protocol handle decoding</a>
      */
+    @HighFrequencyInvocation
     public int resolveStatementHandle(final int connectionId, final int statementHandle) {
-        if (INVALID_OBJECT_HANDLE != statementHandle || !lazySendConnections.contains(connectionId)) {
-            return statementHandle;
+        int result = statementHandle < 0 ? statementHandle & 0xFFFF : statementHandle;
+        if (INVALID_OBJECT_HANDLE != result || !lazySendConnections.contains(connectionId)) {
+            return result;
         }
-        return lastStatementHandles.getOrDefault(connectionId, statementHandle);
+        return lastStatementHandles.getOrDefault(connectionId, result);
     }
     
     /**

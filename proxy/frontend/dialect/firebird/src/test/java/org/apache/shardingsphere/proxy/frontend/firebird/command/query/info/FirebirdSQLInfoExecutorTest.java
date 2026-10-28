@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
+import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -44,6 +49,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.stream.Stream;
 
@@ -91,17 +97,30 @@ class FirebirdSQLInfoExecutorTest {
         assertThat(returnPacket.getRecordsInfo().getDeleteCount(), is(expectedDeleteCount));
     }
     
-    @Test
-    void assertExecuteWithLastStatementHandle() {
+    private ServerPreparedStatementRegistry createPreparedStatementRegistry(final int statementId, final SQLStatement sqlStatement) {
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        FirebirdServerPreparedStatement preparedStatement = new FirebirdServerPreparedStatement("DML", sqlStatementContext, new HintValueContext());
+        preparedStatement.setAffectedRows(3L);
+        ServerPreparedStatementRegistry result = new ServerPreparedStatementRegistry();
+        result.addPreparedStatement(statementId, preparedStatement);
+        return result;
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidObjectHandleProvider")
+    void assertExecuteWithLastStatementHandle(final String name, final int encodedHandle) {
         int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID);
         FirebirdLastObjectRegistry.getInstance().registerLazySendConnection(CONNECTION_ID);
         FirebirdLastObjectRegistry.getInstance().setLastStatement(CONNECTION_ID, statementId);
-        when(packet.getHandle()).thenReturn(INVALID_OBJECT_HANDLE);
+        ByteBuf byteBuf = Unpooled.buffer().writeInt(FirebirdCommandPacketType.INFO_SQL.getValue()).writeInt(encodedHandle).writeInt(0)
+                .writeInt(1).writeByte(FirebirdSQLInfoPacketType.RECORDS.getCode()).writeZero(3).writeInt(100);
+        FirebirdInfoPacket infoPacket = new FirebirdInfoPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8), FirebirdSQLInfoPacketType::valueOf);
         ServerPreparedStatementRegistry registry = createPreparedStatementRegistry(statementId, mock(InsertStatement.class));
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
-        Collection<DatabasePacket> actual = new FirebirdSQLInfoExecutor(packet, connectionSession).execute();
-        FirebirdSQLInfoReturnPacket returnPacket = (FirebirdSQLInfoReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
-        assertThat(returnPacket.getRecordsInfo().getInsertCount(), is(3L));
+        Collection<DatabasePacket> actual = new FirebirdSQLInfoExecutor(infoPacket, connectionSession).execute();
+        FirebirdSQLInfoReturnPacket actualReturnPacket = (FirebirdSQLInfoReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        assertThat(actualReturnPacket.getRecordsInfo().getInsertCount(), is(3L));
     }
     
     @Test
@@ -130,20 +149,16 @@ class FirebirdSQLInfoExecutorTest {
         assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getErrorCode(), is(ISCConstants.isc_unprepared_stmt));
     }
     
-    private ServerPreparedStatementRegistry createPreparedStatementRegistry(final int statementId, final SQLStatement sqlStatement) {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        FirebirdServerPreparedStatement preparedStatement = new FirebirdServerPreparedStatement("DML", sqlStatementContext, new HintValueContext());
-        preparedStatement.setAffectedRows(3L);
-        ServerPreparedStatementRegistry result = new ServerPreparedStatementRegistry();
-        result.addPreparedStatement(statementId, preparedStatement);
-        return result;
-    }
-    
     private static Stream<Arguments> sqlStatementProvider() {
         return Stream.of(
                 Arguments.of("insert", mock(InsertStatement.class), 3L, 0L, 0L),
                 Arguments.of("update", mock(UpdateStatement.class), 0L, 3L, 0L),
                 Arguments.of("delete", mock(DeleteStatement.class), 0L, 0L, 3L));
+    }
+    
+    private static Stream<Arguments> invalidObjectHandleProvider() {
+        return Stream.of(
+                Arguments.of("unsigned", INVALID_OBJECT_HANDLE),
+                Arguments.of("signExtended", 0xFFFFFFFF));
     }
 }

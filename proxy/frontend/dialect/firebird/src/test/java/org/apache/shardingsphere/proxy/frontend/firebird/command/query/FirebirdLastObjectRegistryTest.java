@@ -44,6 +44,18 @@ class FirebirdLastObjectRegistryTest {
     }
     
     @Test
+    void assertResolveStatementHandleWithSignExtendedLastStatement() {
+        REGISTRY.registerLazySendConnection(CONNECTION_ID);
+        REGISTRY.setLastStatement(CONNECTION_ID, 3);
+        assertThat(REGISTRY.resolveStatementHandle(CONNECTION_ID, 0xFFFFFFFF), is(3));
+    }
+    
+    @Test
+    void assertResolveStatementHandleWithSignExtendedHandle() {
+        assertThat(REGISTRY.resolveStatementHandle(CONNECTION_ID, 0xFFFF8001), is(0x8001));
+    }
+    
+    @Test
     void assertResolveStatementHandleWithValidHandle() {
         REGISTRY.registerLazySendConnection(CONNECTION_ID);
         REGISTRY.setLastStatement(CONNECTION_ID, 3);
