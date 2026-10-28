@@ -29,16 +29,16 @@ import javax.xml.bind.annotation.XmlElement;
  */
 @Getter
 public final class ExpectedCreateTableOptionDefinition {
-
+    
     @XmlAttribute(name = "assert-indices")
     private boolean assertIndices;
-
+    
     @XmlAttribute(name = "start-index")
     private int startIndex;
-
+    
     @XmlAttribute(name = "stop-index")
     private int stopIndex;
-
+    
     @XmlElement(name = "engine")
     private ExpectedEngineClause engine;
     

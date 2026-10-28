@@ -46,7 +46,7 @@ public final class ClickHouseDDLStatementVisitor extends ClickHouseStatementVisi
     public ClickHouseDDLStatementVisitor(final DatabaseType databaseType) {
         super(databaseType);
     }
-
+    
     @Override
     public ASTNode visitCreateTable(final ClickHouseStatementParser.CreateTableContext ctx) {
         Collection<ColumnDefinitionSegment> columns = new ArrayList<>(ctx.columnDefinition().size());
@@ -57,14 +57,14 @@ public final class ClickHouseDDLStatementVisitor extends ClickHouseStatementVisi
                 .ifNotExists(null != ctx.ifNotExists()).temporary(null != ctx.TEMPORARY()).columnDefinitions(columns)
                 .createTableOption(null == ctx.tableEngineClause() ? null : (CreateTableOptionSegment) visit(ctx.tableEngineClause())).build();
     }
-
+    
     @Override
     public ASTNode visitColumnDefinition(final ClickHouseStatementParser.ColumnDefinitionContext ctx) {
         boolean notNull = null != ctx.NOT() || null == ctx.NULL() && !"Nullable".equalsIgnoreCase(ctx.dataType().dataTypeName().getText());
         return new ColumnDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ColumnSegment) visit(ctx.columnName()),
                 (DataTypeSegment) visit(ctx.dataType()), false, notNull, getOriginalText(ctx));
     }
-
+    
     @Override
     public ASTNode visitTableEngineClause(final ClickHouseStatementParser.TableEngineClauseContext ctx) {
         CreateTableOptionSegment result = new CreateTableOptionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
@@ -72,7 +72,7 @@ public final class ClickHouseDDLStatementVisitor extends ClickHouseStatementVisi
         result.setEngine(new EngineSegment(engine.start.getStartIndex(), engine.stop.getStopIndex(), ((IdentifierValue) visit(engine.identifier())).getValue()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitDropTable(final ClickHouseStatementParser.DropTableContext ctx) {
         return new DropTableStatement(getDatabaseType(), Collections.singletonList((SimpleTableSegment) visit(ctx.tableName())), null != ctx.ifExists(), null != ctx.TEMPORARY(), false);

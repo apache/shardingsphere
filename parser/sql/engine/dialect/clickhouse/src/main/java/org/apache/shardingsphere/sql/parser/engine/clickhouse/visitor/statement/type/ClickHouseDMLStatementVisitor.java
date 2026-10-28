@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.ExprContext;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.In
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.SelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.SubqueryContext;
-import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser;
 import org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement.ClickHouseStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -117,14 +117,15 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     @HighFrequencyInvocation
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         InsertColumnsSegment insertColumns = null == ctx.insertColumnNames()
-                ? new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()) : createInsertColumns(ctx.insertColumnNames());
+                ? new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList())
+                : createInsertColumns(ctx.insertColumnNames());
         List<InsertValuesSegment> values = new ArrayList<>(ctx.assignmentValues().size());
         for (AssignmentValuesContext each : ctx.assignmentValues()) {
             values.add((InsertValuesSegment) visit(each));
         }
         return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(insertColumns).values(values).build();
     }
-
+    
     private InsertColumnsSegment createInsertColumns(final InsertColumnNamesContext ctx) {
         Collection<ColumnSegment> columns = new ArrayList<>(ctx.columnName().size());
         for (ClickHouseStatementParser.ColumnNameContext each : ctx.columnName()) {
@@ -132,12 +133,13 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
         }
         return new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columns);
     }
-
+    
     @Override
     @HighFrequencyInvocation
     public ASTNode visitInsertSelectClause(final ClickHouseStatementParser.InsertSelectClauseContext ctx) {
         InsertColumnsSegment insertColumns = null == ctx.insertColumnNames()
-                ? new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()) : createInsertColumns(ctx.insertColumnNames());
+                ? new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList())
+                : createInsertColumns(ctx.insertColumnNames());
         SelectStatement select = (SelectStatement) visit(ctx.select());
         SubquerySegment subquery = new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), select, getOriginalText(ctx.select()));
         return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(insertColumns).insertSelect(subquery).build();
@@ -213,7 +215,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
-
+    
     @Override
     @HighFrequencyInvocation
     public ASTNode visitWithClause(final ClickHouseStatementParser.WithClauseContext ctx) {

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
@@ -42,7 +41,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalUnit;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
@@ -416,13 +414,14 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     public final ASTNode visitAggregationFunction(final ClickHouseStatementParser.AggregationFunctionContext ctx) {
         String aggregationType = ctx.aggregationFunctionName().getText();
         ASTNode result = AggregationType.isAggregationType(aggregationType)
-                ? createAggregationSegment(ctx, aggregationType) : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+                ? createAggregationSegment(ctx, aggregationType)
+                : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
         if (null != ctx.overClause() && result instanceof AggregationProjectionSegment) {
             ((AggregationProjectionSegment) result).setWindow((WindowItemSegment) visit(ctx.overClause()));
         }
         return result;
     }
-
+    
     private ASTNode createAggregationSegment(final ClickHouseStatementParser.AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         if (null != ctx.distinct()) {
@@ -435,7 +434,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         result.getParameters().addAll(getExpressions(ctx));
         return result;
     }
-
+    
     private String getDistinctExpression(final ClickHouseStatementParser.AggregationFunctionContext ctx) {
         StringBuilder result = new StringBuilder();
         ParseTree end = ctx.RP_();
@@ -444,7 +443,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return result.toString();
     }
-
+    
     private Collection<ExpressionSegment> getExpressions(final ClickHouseStatementParser.AggregationFunctionContext ctx) {
         Collection<ExpressionSegment> result = new ArrayList<>(ctx.expr().size());
         for (ClickHouseStatementParser.ExprContext each : ctx.expr()) {
@@ -452,7 +451,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitSpecialFunction(final ClickHouseStatementParser.SpecialFunctionContext ctx) {
         return null == ctx.castFunction()
@@ -488,7 +487,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return result;
     }
-
+    
     @Override
     @HighFrequencyInvocation
     public final ASTNode visitOverClause(final ClickHouseStatementParser.OverClauseContext ctx) {
@@ -503,7 +502,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return result;
     }
-
+    
     @Override
     @HighFrequencyInvocation
     public final ASTNode visitArrayExpression(final ClickHouseStatementParser.ArrayExpressionContext ctx) {

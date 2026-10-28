@@ -36,10 +36,10 @@ import java.util.List;
 @Getter
 @Setter
 public final class ExpectedColumnDefinition extends AbstractExpectedSQLSegment {
-
+    
     @XmlAttribute
     private String text;
-
+    
     @XmlAttribute
     private String type;
     
