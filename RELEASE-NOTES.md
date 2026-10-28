@@ -70,6 +70,7 @@
 1. JDBC: Fix stale generated values leaking into prepared statement executeBatch calls without pending batches - [#38160](https://github.com/apache/shardingsphere/pull/38160)
 1. JDBC: Fix MySQL-compatible typed string conversion for `ResultSet#getObject(index, Class<T>)` - [#38444](https://github.com/apache/shardingsphere/pull/38444)
 1. JDBC: Fix statement close invalidating live result sets of other statements on the same connection - [#39503](https://github.com/apache/shardingsphere/pull/39503)
+1. JDBC: Fix select * is not supported for associated query - [#39131](https://github.com/apache/shardingsphere/pull/39131)
 1. Proxy: Resolve MySQL prepared statement parameter columns for where clause - [#38382](https://github.com/apache/shardingsphere/pull/38382)
 1. Proxy: Resolve PostgreSQL prepared statement parameter types before bind - [#38384](https://github.com/apache/shardingsphere/pull/38384)
 1. Proxy: Exclude derived projections from PostgreSQL prepared statement row descriptions - [#40194](https://github.com/apache/shardingsphere/issues/40194)

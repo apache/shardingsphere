@@ -36,6 +36,8 @@ public final class ShardingSphereResultSetUtils {
     /**
      * Create column label and index map.
      *
+     * <p>Delegates to {@link VisibleColumnMapping} for SELECT statements with derived projections.</p>
+     *
      * @param sqlStatementContext SQL statement context
      * @param resultSetMetaData meta data of result set
      * @return column label and index map
@@ -43,12 +45,29 @@ public final class ShardingSphereResultSetUtils {
      */
     public static Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
         if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
-            return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getColumnLabelAndIndexMap();
+            return VisibleColumnMapping.resolve((SelectStatementContext) sqlStatementContext, resultSetMetaData).getColumnLabelAndIndexMap();
         }
         Map<String, Integer> result = new CaseInsensitiveMap<>(resultSetMetaData.getColumnCount(), 1F);
         for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
         }
         return result;
+    }
+    
+    /**
+     * Get visible column count.
+     *
+     * <p>Delegates to {@link VisibleColumnMapping} for SELECT statements with derived projections.</p>
+     *
+     * @param selectStatementContext select statement context
+     * @param resultSetMetaData physical result set meta data
+     * @return visible column count
+     * @throws SQLException SQL exception
+     */
+    public static int getVisibleColumnCount(final SelectStatementContext selectStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
+        if (selectStatementContext.containsDerivedProjections()) {
+            return VisibleColumnMapping.resolve(selectStatementContext, resultSetMetaData).getColumnCount();
+        }
+        return resultSetMetaData.getColumnCount();
     }
 }
