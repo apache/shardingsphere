@@ -164,6 +164,16 @@ assert_all_field_eq() {
   assert_eq "$desc" "0" "$violations"
 }
 
+assert_non_firebird_jobs_preserved() {
+  local desc="$1" expected_outputs="$2" actual_outputs="$3"
+  local key
+  for key in smoke-matrix target-matrix; do
+    assert_eq "$desc: $key preserves non-Firebird jobs with Firebird changes" \
+      "$(get_output "$expected_outputs" "$key" | jq -c '[.include[] | select(.database != "Firebird")]')" \
+      "$(get_output "$actual_outputs" "$key" | jq -c '[.include[] | select(.database != "Firebird")]')"
+  done
+}
+
 # Verify all three dimensions cover the expected range
 assert_all_dimensions() {
   local label="$1" matrix_json="$2" expected_database_count="${3:-2}"
@@ -313,13 +323,7 @@ echo "--- #9: adapter_jdbc only ---"
 outputs=$(run_script "$(build_filters adapter_jdbc=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_all_field_eq "#9: smoke all adapter=jdbc" "$smoke" "adapter" "jdbc"
-expected_outputs="$outputs"
-outputs=$(run_script "$(build_filters adapter_jdbc=true database_firebird=true)")
-for key in smoke-matrix target-matrix; do
-  assert_eq "#9: $key preserves JDBC jobs with Firebird changes" \
-    "$(get_output "$expected_outputs" "$key" | jq -c '[.include[] | select(.database != "Firebird")]')" \
-    "$(get_output "$outputs" "$key" | jq -c '[.include[] | select(.database != "Firebird")]')"
-done
+assert_non_firebird_jobs_preserved "#9: JDBC" "$outputs" "$(run_script "$(build_filters adapter_jdbc=true database_firebird=true)")"
 
 echo ""
 echo "--- #10: database_mysql only ---"
@@ -345,13 +349,7 @@ for proxy in false true; do
   outputs=$(run_script "$(build_filters mode_standalone=true "adapter_proxy=$proxy")")
   smoke=$(get_output "$outputs" "smoke-matrix")
   assert_all_field_eq "#12: smoke all mode=Standalone" "$smoke" "mode" "Standalone"
-  expected_outputs="$outputs"
-  outputs=$(run_script "$(build_filters mode_standalone=true "adapter_proxy=$proxy" database_firebird=true)")
-  for key in smoke-matrix target-matrix; do
-    assert_eq "#12: $key preserves Standalone jobs with Firebird changes" \
-      "$(get_output "$expected_outputs" "$key" | jq -c '[.include[] | select(.database != "Firebird")]')" \
-      "$(get_output "$outputs" "$key" | jq -c '[.include[] | select(.database != "Firebird")]')"
-  done
+  assert_non_firebird_jobs_preserved "#12: Standalone" "$outputs" "$(run_script "$(build_filters mode_standalone=true "adapter_proxy=$proxy" database_firebird=true)")"
 done
 
 echo ""
@@ -370,13 +368,7 @@ echo "--- #14: mode_core only ---"
 outputs=$(run_script "$(build_filters mode_core=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_eq "#14: smoke has both modes" "2" "$(echo "$smoke" | jq '[.include[].mode] | unique | length')"
-expected_outputs="$outputs"
-outputs=$(run_script "$(build_filters mode_core=true database_firebird=true)")
-for key in smoke-matrix target-matrix; do
-  assert_eq "#14: $key preserves mode core jobs with Firebird changes" \
-    "$(get_output "$expected_outputs" "$key" | jq -c '[.include[] | select(.database != "Firebird")]')" \
-    "$(get_output "$outputs" "$key" | jq -c '[.include[] | select(.database != "Firebird")]')"
-done
+assert_non_firebird_jobs_preserved "#14: mode core" "$outputs" "$(run_script "$(build_filters mode_core=true database_firebird=true)")"
 
 # ============================================================
 # D. Feature scenario mapping
