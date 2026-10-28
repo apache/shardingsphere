@@ -48,6 +48,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
+import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -78,6 +79,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
@@ -106,10 +108,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.TreeMap;
@@ -132,6 +136,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private final Map<SelectStatement, Collection<ColumnSegmentBoundInfo>> shorthandColumnBoundInfos = new IdentityHashMap<>();
     
     private final Map<SelectStatement, Map<String, ProjectionSegment>> labeledProjectionSegments = new IdentityHashMap<>();
+    
+    private final Map<SelectStatement, Map<String, ProjectionSegment>> caseInsensitiveLabeledProjectionSegments = new IdentityHashMap<>();
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
@@ -257,7 +263,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         for (Projection each : getProjections(sqlStatementContext, database, schema)) {
             Optional<Projection> originProjection = findOriginProjection(sqlStatementContext, each);
             Projection projection = originProjection.orElse(each);
-            IdentifierValue columnAlias = isTemporaryTableColumn(each) ? new IdentifierValue(each.getColumnLabel()) : each.getAlias().orElse(null);
+            IdentifierValue columnAlias = isTemporaryTableColumn(each) ? each.getAlias().orElseGet(((ColumnProjection) each)::getName) : each.getAlias().orElse(null);
             if (projection instanceof ColumnProjection) {
                 ShardingSphereTable table = getTable(getTableName(sqlStatementContext, (ColumnProjection) projection), database, schema);
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) projection).getOriginalColumn().getValue());
@@ -280,7 +286,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             if (selectStatementContext.getProjectionsContext().containsUnexpandedShorthandProjection()) {
                 return resolveUnexpandedShorthandProjections(selectStatementContext, database, schema);
             }
-            return selectStatementContext.getProjectionsContext().getExpandProjections();
+            return expandShorthandProjections(selectStatementContext);
         }
         if (null == returningSegment) {
             return Collections.emptyList();
@@ -344,6 +350,59 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return false;
     }
     
+    private Collection<Projection> expandShorthandProjections(final SelectStatementContext selectStatementContext) {
+        Collection<Projection> result = new LinkedList<>();
+        for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
+            if (each instanceof ShorthandProjection) {
+                result.addAll(getShorthandColumns(selectStatementContext.getSqlStatement(), (ShorthandProjection) each));
+            } else if (!(each instanceof DerivedProjection)) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private Collection<Projection> getShorthandColumns(final SelectStatement select, final ShorthandProjection projection) {
+        Optional<SubqueryTableSegment> subqueryTable = findShorthandSubqueryTable(select, projection.getOwner().orElse(null));
+        if (!subqueryTable.isPresent() || !subqueryTable.get().getColumns().isEmpty()) {
+            return projection.getActualColumns();
+        }
+        IdentifierValue subqueryTableName = subqueryTable.get().getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
+        Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(subqueryTable.get().getSubquery().getSelect().getProjections().getProjections(),
+                subqueryTableName, select.getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
+        ProjectionEngine projectionEngine = new ProjectionEngine(select.getDatabaseType());
+        Collection<Projection> result = new LinkedList<>();
+        for (ProjectionSegment each : subqueryProjections) {
+            if (each.isVisible()) {
+                projectionEngine.createProjection(each).ifPresent(result::add);
+            }
+        }
+        return result;
+    }
+    
+    private Optional<SubqueryTableSegment> findShorthandSubqueryTable(final SelectStatement select, @Nullable final IdentifierValue owner) {
+        if (null == owner) {
+            return select.getFrom().filter(SubqueryTableSegment.class::isInstance).map(SubqueryTableSegment.class::cast);
+        }
+        Collection<TableSegment> tableSources = new LinkedList<>();
+        select.getFrom().ifPresent(from -> addTableSources(from, tableSources));
+        for (TableSegment each : tableSources) {
+            if (each instanceof SubqueryTableSegment && owner.getValue().equalsIgnoreCase(each.getAliasName().orElse(""))) {
+                return Optional.of((SubqueryTableSegment) each);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private void addTableSources(final TableSegment tableSegment, final Collection<TableSegment> tableSources) {
+        if (tableSegment instanceof JoinTableSegment) {
+            addTableSources(((JoinTableSegment) tableSegment).getLeft(), tableSources);
+            addTableSources(((JoinTableSegment) tableSegment).getRight(), tableSources);
+        } else if (tableSegment instanceof SimpleTableSegment || tableSegment instanceof SubqueryTableSegment) {
+            tableSources.add(tableSegment);
+        }
+    }
+    
     private Collection<Projection> processShorthandProjection(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                                               final Supplier<Optional<ShardingSphereSchema>> schema, final ShorthandProjection projection) {
         return resolveShorthandColumns(sqlStatementContext, database, schema, projection);
@@ -381,15 +440,6 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             }
         }
         return Optional.empty();
-    }
-    
-    private void addTableSources(final TableSegment tableSegment, final Collection<TableSegment> tableSources) {
-        if (tableSegment instanceof JoinTableSegment) {
-            addTableSources(((JoinTableSegment) tableSegment).getLeft(), tableSources);
-            addTableSources(((JoinTableSegment) tableSegment).getRight(), tableSources);
-        } else if (tableSegment instanceof SimpleTableSegment || tableSegment instanceof SubqueryTableSegment) {
-            tableSources.add(tableSegment);
-        }
     }
     
     private boolean isShorthandExpandedColumn(final SelectStatement select, final ColumnSegmentBoundInfo columnBoundInfo) {
@@ -453,11 +503,13 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private Optional<ProjectionSegment> findProjectionSegment(final SelectStatement select, final Collection<ColumnSegment> declaredColumns, final IdentifierValue columnName) {
-        return Optional.ofNullable(labeledProjectionSegments.computeIfAbsent(select, key -> getLabeledProjectionSegments(key, declaredColumns)).get(columnName.getValue()));
+        Map<String, ProjectionSegment> labeledSegments = labeledProjectionSegments.computeIfAbsent(select, key -> getLabeledProjectionSegments(key, declaredColumns));
+        ProjectionSegment result = labeledSegments.get(columnName.getValue());
+        return null == result ? findCaseInsensitiveProjectionSegment(select, labeledSegments, columnName) : Optional.of(result);
     }
     
     private Map<String, ProjectionSegment> getLabeledProjectionSegments(final SelectStatement select, final Collection<ColumnSegment> declaredColumns) {
-        Map<String, ProjectionSegment> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, ProjectionSegment> result = new LinkedHashMap<>();
         Iterator<ColumnSegment> columns = declaredColumns.iterator();
         for (ProjectionSegment each : getExpandedProjectionSegments(select)) {
             result.putIfAbsent(columns.hasNext() ? columns.next().getIdentifier().getValue() : each.getColumnLabel(), each);
@@ -473,6 +525,18 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             } else {
                 result.add(each);
             }
+        }
+        return result;
+    }
+    
+    private Optional<ProjectionSegment> findCaseInsensitiveProjectionSegment(final SelectStatement select, final Map<String, ProjectionSegment> labeledSegments, final IdentifierValue columnName) {
+        return Optional.ofNullable(caseInsensitiveLabeledProjectionSegments.computeIfAbsent(select, key -> getCaseInsensitiveLabeledProjectionSegments(labeledSegments)).get(columnName.getValue()));
+    }
+    
+    private Map<String, ProjectionSegment> getCaseInsensitiveLabeledProjectionSegments(final Map<String, ProjectionSegment> labeledSegments) {
+        Map<String, ProjectionSegment> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (Entry<String, ProjectionSegment> each : labeledSegments.entrySet()) {
+            result.putIfAbsent(each.getKey(), each.getValue());
         }
         return result;
     }
