@@ -49,6 +49,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.stream.Stream;
 
@@ -155,14 +156,24 @@ class FirebirdFreeStatementCommandExecutorTest {
         verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(STATEMENT_ID));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidObjectHandles")
-    void assertExecuteWithLastStatementHandle(final String scenario, final int encodedHandle) throws Exception {
+    @Test
+    void assertExecuteWithLastStatementHandle() throws Exception {
+        dropWithLastStatementHandle(INVALID_OBJECT_HANDLE);
+        verify(registry).removePreparedStatement(STATEMENT_ID);
+        assertFalse(FirebirdStatementIdGenerator.getInstance().isStatementAllocated(CONNECTION_ID, STATEMENT_ID));
+    }
+    
+    private void dropWithLastStatementHandle(final int encodedHandle) throws SQLException {
         FirebirdLastObjectRegistry.getInstance().registerLazySendConnection(CONNECTION_ID);
         FirebirdLastObjectRegistry.getInstance().setLastStatement(CONNECTION_ID, STATEMENT_ID);
         ByteBuf byteBuf = Unpooled.buffer().writeInt(FirebirdCommandPacketType.FREE_STATEMENT.getValue()).writeInt(encodedHandle).writeInt(FirebirdFreeStatementPacket.DROP);
         FirebirdFreeStatementPacket freeStatementPacket = new FirebirdFreeStatementPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
         new FirebirdFreeStatementCommandExecutor(freeStatementPacket, connectionSession).execute();
+    }
+    
+    @Test
+    void assertExecuteWithSignExtendedLastStatementHandle() throws Exception {
+        dropWithLastStatementHandle(0xFFFFFFFF);
         verify(registry).removePreparedStatement(STATEMENT_ID);
         assertFalse(FirebirdStatementIdGenerator.getInstance().isStatementAllocated(CONNECTION_ID, STATEMENT_ID));
     }
@@ -198,11 +209,5 @@ class FirebirdFreeStatementCommandExecutorTest {
         return Stream.of(
                 Arguments.of("execute_dropCleansPreparedStatementAndFetchResources", FirebirdFreeStatementPacket.DROP),
                 Arguments.of("execute_unprepareCleansPreparedStatementAndFetchResources", FirebirdFreeStatementPacket.UNPREPARE));
-    }
-    
-    private static Stream<Arguments> invalidObjectHandles() {
-        return Stream.of(
-                Arguments.of("execute_dropResolvesUnsignedInvalidObjectHandle", INVALID_OBJECT_HANDLE),
-                Arguments.of("execute_dropResolvesSignExtendedInvalidObjectHandle", 0xFFFFFFFF));
     }
 }

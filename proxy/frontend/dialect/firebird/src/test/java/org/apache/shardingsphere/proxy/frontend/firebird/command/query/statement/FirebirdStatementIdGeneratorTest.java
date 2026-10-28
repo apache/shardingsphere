@@ -20,6 +20,10 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
+
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -44,6 +48,15 @@ class FirebirdStatementIdGeneratorTest {
     @Test
     void assertNextStatementId() {
         assertThat(GENERATOR.nextStatementId(1), is(1));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertNextStatementIdAfterInvalidObjectHandle() throws ReflectiveOperationException {
+        Map<Integer, AtomicInteger> registry = (Map<Integer, AtomicInteger>) Plugins.getMemberAccessor().get(FirebirdStatementIdGenerator.class.getDeclaredField("connectionRegistry"), GENERATOR);
+        registry.get(1).set(0xFFFE);
+        assertThat(GENERATOR.nextStatementId(1), is(0x10000));
+        assertFalse(GENERATOR.isStatementAllocated(1, 0xFFFF));
     }
     
     @Test

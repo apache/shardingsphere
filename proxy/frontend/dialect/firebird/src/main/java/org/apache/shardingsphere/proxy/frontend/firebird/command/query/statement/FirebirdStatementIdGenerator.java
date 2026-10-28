@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Map;
@@ -33,6 +34,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class FirebirdStatementIdGenerator {
     
     private static final FirebirdStatementIdGenerator INSTANCE = new FirebirdStatementIdGenerator();
+    
+    private static final int INVALID_OBJECT_HANDLE = 0xFFFF;
     
     private final Map<Integer, AtomicInteger> connectionRegistry = new ConcurrentHashMap<>();
     
@@ -60,11 +63,14 @@ public final class FirebirdStatementIdGenerator {
     /**
      * Generate next statement ID for connection.
      *
+     * <p>The invalid object handle {@code 0xFFFF} is skipped like the Firebird server does, because clients send it on a lazy send
+     * connection to refer to the object allocated last.</p>
+     *
      * @param connectionId connection ID
      * @return generated statement ID
      */
     public int nextStatementId(final int connectionId) {
-        int result = getStatementCounter(connectionId).incrementAndGet();
+        int result = getStatementCounter(connectionId).updateAndGet(each -> INVALID_OBJECT_HANDLE == each + 1 ? each + 2 : each + 1);
         getAllocatedStatements(connectionId).add(result);
         return result;
     }
@@ -88,6 +94,7 @@ public final class FirebirdStatementIdGenerator {
      * @param statementId statement ID
      * @return is statement allocated or not
      */
+    @HighFrequencyInvocation
     public boolean isStatementAllocated(final int connectionId, final int statementId) {
         return getAllocatedStatements(connectionId).contains(statementId);
     }
@@ -98,6 +105,7 @@ public final class FirebirdStatementIdGenerator {
      * @param connectionId connection ID
      * @param statementId statement ID
      */
+    @HighFrequencyInvocation
     public void releaseStatementId(final int connectionId, final int statementId) {
         getAllocatedStatements(connectionId).remove(statementId);
     }
