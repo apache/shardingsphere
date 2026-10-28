@@ -877,4 +877,23 @@ WHERE time_id &gt;=  TO_DATE('01-JAN-1998','dd-mon-yyyy')
     <sql-case id="create_table_check_validation_pg" value="CREATE TABLE t (a int, CONSTRAINT c CHECK (a &gt; 0) NO INHERIT NOT VALID)" db-types="PostgreSQL" />
 
     <sql-case id="create_table_check_validation_order_pg" value="CREATE TABLE t (a int, CONSTRAINT c CHECK (a &gt; 0) NOT VALID NO INHERIT)" db-types="PostgreSQL" />
+    <sql-case id="clickhouse_create_memory" value="CREATE TABLE foo_protocol (id UInt64, payload String, amount Nullable(Int32)) ENGINE = Memory" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_mergetree" value="CREATE TABLE IF NOT EXISTS foo_protocol (id UInt64, payload Nullable(String)) ENGINE = MergeTree() ORDER BY id" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_temporary" value="CREATE TEMPORARY TABLE foo_protocol (id UInt8) ENGINE = Memory" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_decimal" value="CREATE TABLE foo_protocol (value Decimal(38, 8)) ENGINE = Memory" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_datetime64_timezone" value="CREATE TABLE foo_protocol (value DateTime64(6, 'UTC')) ENGINE = Memory" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_datetime_timezone" value="CREATE TABLE foo_protocol (value DateTime('Asia/Shanghai')) ENGINE = Memory" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_if_not_exists_uint8" value="CREATE TABLE IF NOT EXISTS foo_protocol (id UInt8) ENGINE = Memory" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_temporary_default_engine" value="CREATE TEMPORARY TABLE foo_protocol (id UInt8)" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_mergetree_uint8" value="CREATE TABLE foo_protocol (id UInt8) ENGINE = MergeTree() ORDER BY id" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_explicit_not_null" value="CREATE TABLE foo_protocol (id UInt8 NOT NULL)" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_implicit_not_null" value="CREATE TABLE foo_protocol (id UInt8)" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_nullable_uint8" value="CREATE TABLE foo_protocol (id Nullable(UInt8))" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_explicit_null" value="CREATE TABLE foo_protocol (id UInt8 NULL)" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_decimal_precision" value="CREATE TABLE foo_protocol (value Decimal(38, 8))" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_datetime64_precision" value="CREATE TABLE foo_protocol (value DateTime64(6))" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_datetime64_zone" value="CREATE TABLE foo_protocol (value DateTime64(6, 'UTC'))" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_datetime_zone" value="CREATE TABLE foo_protocol (value DateTime('Asia/Shanghai'))" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_nullable_decimal" value="CREATE TABLE foo_protocol (value Nullable(Decimal(38, 8)))" db-types="ClickHouse" />
+    <sql-case id="clickhouse_create_array_nullable_datetime64" value="CREATE TABLE foo_protocol (value Array(Nullable(DateTime64(6, 'UTC'))))" db-types="ClickHouse" />
 </sql-cases>

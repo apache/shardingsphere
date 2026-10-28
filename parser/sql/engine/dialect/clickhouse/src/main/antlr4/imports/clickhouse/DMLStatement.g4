@@ -24,11 +24,15 @@ insert
     ;
 
 insertValuesClause
-    : columnNames? (VALUES ) assignmentValues (COMMA_ assignmentValues)*
+    : insertColumnNames? (VALUES (assignmentValues (COMMA_ assignmentValues)*)? | FORMAT identifier)?
     ;
 
 insertSelectClause
-    : columnNames? select
+    : insertColumnNames? select
+    ;
+
+insertColumnNames
+    : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
 assignmentValues
@@ -65,7 +69,15 @@ singleTableClause
     ;
 
 select
-    : combineClause
+    : withClause? combineClause
+    ;
+
+withClause
+    : WITH withConstant (COMMA_ withConstant)*
+    ;
+
+withConstant
+    : (numberLiterals | stringLiterals | booleanLiterals | nullValueLiterals | parameterMarker) AS identifier
     ;
 
 combineClause
@@ -121,7 +133,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (AS? alias)? | subquery AS? alias columnNames? | LP_ tableReferences RP_
+    : regularFunction (AS? alias)? | tableName (AS? alias)? | subquery AS? alias columnNames? | LP_ tableReferences RP_
     ;
 
 joinedTable
