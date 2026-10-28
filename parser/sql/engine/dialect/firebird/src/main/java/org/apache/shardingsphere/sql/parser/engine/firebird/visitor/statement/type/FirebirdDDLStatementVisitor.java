@@ -50,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Drop
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ExecuteStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ModifyColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.FirebirdStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.CreateDefinitionSegment;
@@ -62,6 +63,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
@@ -83,6 +85,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -161,7 +164,7 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitDropConstraintSpecification(final DropConstraintSpecificationContext ctx) {
-        return new DropConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintSegment) visit(ctx.constraintDefinition().constraintName()));
+        return new DropConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintSegment) visit(ctx.constraintName()));
     }
     
     @SuppressWarnings("unchecked")
@@ -173,6 +176,10 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
         }
         if (null != ctx.primaryKeyOption()) {
             result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.primaryKeyOption().columnNames())).getValue());
+        }
+        if (null != ctx.uniqueOption()) {
+            result.setUniqueKey(true);
+            result.getIndexColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.uniqueOption().columnNames())).getValue());
         }
         if (null != ctx.foreignKeyOption()) {
             result.setReferencedTable((SimpleTableSegment) visit(ctx.foreignKeyOption().referenceDefinition().tableName()));
@@ -222,6 +229,12 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
         }
         if (null != ctx.dropColumnSpecification()) {
             result.getValue().add((DropColumnDefinitionSegment) visit(ctx.dropColumnSpecification()));
+        }
+        if (null != ctx.addConstraintSpecification()) {
+            result.getValue().add((AddConstraintDefinitionSegment) visit(ctx.addConstraintSpecification()));
+        }
+        if (null != ctx.dropConstraintSpecification()) {
+            result.getValue().add((DropConstraintDefinitionSegment) visit(ctx.dropConstraintSpecification()));
         }
         return result;
     }
@@ -322,7 +335,16 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
-        return new ExecuteStatement(getDatabaseType());
+        ExecuteStatement result = new ExecuteStatement(getDatabaseType());
+        if (null != ctx.executeBlock() && null != ctx.executeBlock().inputArgumentList()) {
+            for (ParameterMarkerContext each : ctx.executeBlock().inputArgumentList().parameterMarker()) {
+                ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(each);
+                getParameterMarkerSegments()
+                        .add(new ParameterMarkerExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), parameterMarker.getValue(), parameterMarker.getType()));
+            }
+        }
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
     }
     
     @Override

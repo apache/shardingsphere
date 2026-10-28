@@ -42,6 +42,7 @@
     <sql-case id="select_pagination_with_first_skip" value="SELECT FIRST 1 SKIP 1 1 a FROM t_order" db-types="Firebird" />
     <sql-case id="select_pagination_with_skip" value="SELECT SKIP 1 1 a FROM t_order" db-types="Firebird" />
     <sql-case id="select_pagination_with_first_skip_parameters_firebird" value="SELECT FIRST ? SKIP ? user_id FROM t_order" db-types="Firebird" />
+    <sql-case id="select_pagination_with_first_parameter_and_projection_parameter_firebird" value="SELECT FIRST ? CAST(? AS INTEGER) FROM t_order" db-types="Firebird" case-types="Placeholder" />
     <sql-case id="select_pagination_with_offset_and_fetch_firebird" value="SELECT * FROM t_order OFFSET 100000 ROWS FETCH FIRST 10 ROWS ONLY" db-types="Firebird" />
     <sql-case id="select_pagination_with_order_by_offset_and_fetch_firebird" value="SELECT * FROM t_order ORDER BY order_id OFFSET 100000 ROWS FETCH FIRST 10 ROWS ONLY" db-types="Firebird" />
     <sql-case id="select_pagination_with_where_parameter_offset_and_fetch_firebird" value="SELECT * FROM t_order WHERE user_id = ? ORDER BY order_id OFFSET ? ROWS FETCH FIRST ? ROWS ONLY" db-types="Firebird" />

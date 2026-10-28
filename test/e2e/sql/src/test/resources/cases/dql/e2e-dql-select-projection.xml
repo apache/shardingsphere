@@ -71,4 +71,32 @@
     <test-case sql="SELECT item_id, (SELECT order_id FROM t_order WHERE user_id = ? AND order_id = ?) AS order_id FROM  t_order_item i WHERE i.user_id = ? AND i.order_id = ?" db-types="MySQL" scenario-types="db">
         <assertion parameters="10:int, 1000:long, 10:int, 1000:long" expected-data-source-name="read_dataset" />
     </test-case>
+    
+    <test-case sql="SELECT T.*, T.status status_new FROM t_order T WHERE T.user_id = ? AND T.order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT T.order_id, T.status status_new FROM t_order T WHERE T.user_id = ? AND T.order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT t_order.status FROM t_order WHERE user_id = ? ORDER BY t_order.order_id ASC" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT t_order.status AS ORDER_BY_DERIVED_0 FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT t_order.status AS ORDER_BY_DERIVED_0 FROM t_order WHERE user_id = ? ORDER BY t_order.order_id ASC" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT COUNT(DISTINCT user_id) FROM t_order" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT o.order_id, i.* FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? AND o.order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
+    </test-case>
 </e2e-test-cases>

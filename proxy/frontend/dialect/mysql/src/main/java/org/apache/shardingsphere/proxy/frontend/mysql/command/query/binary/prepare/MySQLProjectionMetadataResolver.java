@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtils;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -75,8 +76,9 @@ public final class MySQLProjectionMetadataResolver {
             ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
             ShardingSphereResultSetMetaData resultSetMetaData = new ShardingSphereResultSetMetaData(actualResultSetMetaData, database, selectStatementContext);
             QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
-            Collection<MySQLPacket> result = new ArrayList<>(selectStatementContext.getProjectionsContext().getExpandProjections().size());
-            for (int columnIndex = 1; columnIndex <= selectStatementContext.getProjectionsContext().getExpandProjections().size(); columnIndex++) {
+            int visibleColumnCount = ShardingSphereResultSetUtils.getVisibleColumnCount(selectStatementContext, actualResultSetMetaData);
+            Collection<MySQLPacket> result = new ArrayList<>(visibleColumnCount);
+            for (int columnIndex = 1; columnIndex <= visibleColumnCount; columnIndex++) {
                 QueryHeader queryHeader = queryHeaderBuilderEngine.build(selectStatementContext, resultSetMetaData, database, columnIndex);
                 result.add(createMySQLColumnDefinition41Packet(queryHeader, characterSet));
             }

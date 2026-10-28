@@ -41,7 +41,7 @@ from resolve_review_scope import (
 
 
 LEDGER_KIND = "review-pr-coverage-ledger"
-LEDGER_VERSION = 4
+LEDGER_VERSION = 5
 LEDGER_FILE_NAME = "ledger.json"
 FILE_STATUSES = frozenset({"pending", "reviewed", "churn-only", "test-only-reviewed", "not-applicable", "blocked"})
 FINAL_FILE_STATUSES = FILE_STATUSES - {"pending"}
@@ -51,6 +51,7 @@ FINDING_STATUSES = frozenset({"candidate", "confirmed", "withdrawn", "review-inc
 PASS_FOCUSES = ("root-cause", "blast-radius", "tests-runtime", "convergence")
 REVIEW_FOCUSES = ("Code Correctness Review", "Mergeability Review", "CI Review")
 SOURCE_ROLES = frozenset({"rule", "requirement", "evidence"})
+ACTUAL_VALUE_RULE = "java-testing.actual-value-naming"
 
 
 def ledger_root() -> Path:
@@ -128,6 +129,7 @@ def validate_schema(ledger: object) -> None:
         ("finding", ledger["findings"], {
             "id": str, "status": str, "origin": str, "fix_boundary": str, "evidence": list, "full_path": list,
             "counter_evidence": list, "necessity": str, "scope_proof": str, "files": list, "reason": str, "anchors": list,
+            "rule": str, "applicability": list,
         }),
         ("pass", ledger["passes"], {
             "focus": str, "new_findings": int, "review_revision": int, "basis_fingerprint": str,
@@ -549,6 +551,10 @@ def apply_add_finding(ledger: dict[str, Any], args: argparse.Namespace) -> None:
         raise RuntimeError("Finding anchors material must be a list")
     for anchor in anchors:
         validate_anchor_shape(anchor)
+    applicability = json.loads(Path(args.applicability).read_text(encoding="utf-8")) if args.applicability else []
+    if not isinstance(applicability, list):
+        raise RuntimeError("Finding applicability material must be a list")
+    existing = next((each for each in ledger["findings"] if args.id == each["id"]), None)
     finding = {
         "id": args.id,
         "status": args.status,
@@ -562,14 +568,48 @@ def apply_add_finding(ledger: dict[str, Any], args: argparse.Namespace) -> None:
         "files": args.file or [],
         "reason": args.reason or "",
         "anchors": [capture_anchor(each, ledger) for each in anchors],
+        "rule": args.rule if args.rule is not None else existing["rule"] if existing else "",
+        "applicability": applicability,
     }
-    existing = next((each for each in ledger["findings"] if args.id == each["id"]), None)
+    errors = actual_value_errors(finding, finding["anchors"])
+    if errors:
+        raise RuntimeError("; ".join(errors))
     if existing:
         existing.update(finding)
     else:
         ledger["findings"].append(finding)
     sync_file_findings(ledger)
     ledger["review_revision"] += 1
+
+
+def actual_value_errors(finding: dict[str, Any], anchors: list[dict[str, Any]], rule: str | None = None) -> list[str]:
+    if ACTUAL_VALUE_RULE != (finding.get("rule", "") if rule is None else rule):
+        return []
+    proof = finding.get("applicability", [])
+    if not isinstance(proof, list):
+        return [f"{finding['id']} actual-value applicability must be a list"]
+    errors = []
+    if "confirmed" == finding["status"] and not proof:
+        errors.append(f"{finding['id']} actual-value naming requires applicability evidence")
+    for index, entry in enumerate(proof):
+        label = f"{finding['id']} applicability[{index}]"
+        if (not isinstance(entry, dict) or any(not has_text(entry.get(key)) for key in ("variable", "operation", "role"))
+                or any(type(entry.get(key)) is not int for key in ("declaration", "operation_call", "use"))):
+            errors.append(f"{label} needs variable, operation, role and declaration/operation_call/use anchor indexes")
+            continue
+        if entry["role"] not in {"actual-value", "setup", "expected", "unknown"}:
+            errors.append(f"{label} has an unsupported variable role: {entry['role']}")
+        for key in ("declaration", "operation_call", "use"):
+            position = entry[key]
+            if position < 0 or position >= len(anchors):
+                errors.append(f"{label} {key} anchor index is outside the evidence list")
+                continue
+            anchor = anchors[position]
+            if "candidate" != anchor["side"] or anchor["start_line"] < 1:
+                errors.append(f"{label} {key} must reference current candidate lines")
+        if "confirmed" == finding["status"] and "actual-value" != entry["role"]:
+            errors.append(f"{finding['id']} cannot confirm actual-value naming for a {entry['role']} variable: {entry['variable']}")
+    return errors
 
 
 def cmd_add_pass(args: argparse.Namespace) -> int:
@@ -703,6 +743,7 @@ def _validate_ledger(ledger: dict[str, Any], incomplete_result: bool = False, cu
         unknown_files = [file_path for file_path in each["files"] if file_path not in scope_files]
         if unknown_files:
             result.append(f"{each['id']} references files outside scope: {', '.join(unknown_files)}")
+        result.extend(actual_value_errors(each, each["anchors"]))
         if "confirmed" == each["status"]:
             if not each["anchors"]:
                 result.append(f"{each['id']} confirmed finding is missing real source anchors")
@@ -922,6 +963,8 @@ def validate_session(session: Any) -> list[str]:
                       for source in record["ledger"]["basis"]["sources"]}
     known_reviews = {}
     original_findings = set()
+    original_rules = {}
+    canonical_rules = {}
     prior_ids = set()
     final_groups = []
     for index, review_round in enumerate(session["rounds"]):
@@ -932,6 +975,7 @@ def validate_session(session: Any) -> list[str]:
         known_reviews.update((each["reviewer"], each) for each in stage)
         for record in stage:
             original_findings.update((record["reviewer"], each["id"]) for each in record["ledger"]["findings"])
+            original_rules.update(((record["reviewer"], each["id"]), each["rule"]) for each in record["ledger"]["findings"])
         audited_reviewers = []
         for report_review in review_round["report_reviews"]:
             if not isinstance(report_review, dict) or not has_text(report_review.get("reviewer")):
@@ -960,6 +1004,11 @@ def validate_session(session: Any) -> list[str]:
                 if key in members:
                     errors.append("An original finding has multiple dispositions")
                 members[key] = finding["id"]
+            inherited_rule = canonical_rules.get(finding["id"]) == ACTUAL_VALUE_RULE or any(
+                original_rules.get((each["reviewer"], each["finding"])) == ACTUAL_VALUE_RULE for each in finding["members"])
+            rule = ACTUAL_VALUE_RULE if inherited_rule else finding.get("rule", "")
+            canonical_rules[finding["id"]] = rule
+            errors.extend(actual_value_errors(finding, [each["anchor"] for each in finding["evidence"]], rule))
         if set(members) != original_findings:
             errors.append("Every historical candidate requires exactly one explicit disposition")
         if prior_ids - groups.keys():
@@ -1065,6 +1114,8 @@ def build_parser() -> argparse.ArgumentParser:
     finding.add_argument("--file", action="append", help="Repository-relative scope file")
     finding.add_argument("--reason", help="Reason for an incomplete or non-blocking classification")
     finding.add_argument("--anchors", help="JSON real source anchors supporting this finding or unavailable-evidence proof")
+    finding.add_argument("--rule", choices=(ACTUAL_VALUE_RULE,), help="Rule whose semantic applicability requires explicit proof")
+    finding.add_argument("--applicability", help="JSON variable roles and indexes into the finding anchors")
     finding.set_defaults(func=cmd_add_finding)
     review_pass = subparsers.add_parser("add-pass", help="Record a required review pass")
     review_pass.add_argument("--ledger", required=True, help="Ledger file or directory")
