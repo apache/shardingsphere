@@ -25,6 +25,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,17 +42,23 @@ class FirebirdNonFixedLengthColumnSizeRegistryTest {
     
     private Map<String, Map<String, Integer>> columnSizes;
     
+    private Collection<String> systemTableRefreshedSchemas;
+    
     @BeforeEach
     @SuppressWarnings("unchecked")
     void setUp() throws ReflectiveOperationException {
         columnSizes = (Map<String, Map<String, Integer>>) Plugins.getMemberAccessor()
                 .get(FirebirdNonFixedLengthColumnSizeRegistry.class.getDeclaredField("COLUMN_SIZES"), FirebirdNonFixedLengthColumnSizeRegistry.class);
         columnSizes.clear();
+        systemTableRefreshedSchemas = (Collection<String>) Plugins.getMemberAccessor()
+                .get(FirebirdNonFixedLengthColumnSizeRegistry.class.getDeclaredField("SYSTEM_TABLE_REFRESHED_SCHEMAS"), FirebirdNonFixedLengthColumnSizeRegistry.class);
+        systemTableRefreshedSchemas.clear();
     }
     
     @AfterEach
     void tearDown() {
         columnSizes.clear();
+        systemTableRefreshedSchemas.clear();
     }
     
     @ParameterizedTest(name = "{0}")
@@ -85,6 +92,19 @@ class FirebirdNonFixedLengthColumnSizeRegistryTest {
         result.put("size_col", 64);
         result.put(null, 128);
         return result;
+    }
+    
+    @Test
+    void assertRefreshSystemTables() {
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshSystemTables("schema_s", Collections.singletonMap("RDB$RELATIONS", Collections.singletonMap("rdb$relation_name", 63)));
+        assertThat(columnSizes.get("SCHEMA_S.RDB$RELATIONS"), is(Collections.singletonMap("RDB$RELATION_NAME", 63)));
+        assertTrue(FirebirdNonFixedLengthColumnSizeRegistry.isSystemTablesRefreshed("schema_s"));
+    }
+    
+    @Test
+    void assertIsSystemTablesRefreshedWithoutRefresh() {
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshSystemTables("schema_s", Collections.emptyMap());
+        assertFalse(FirebirdNonFixedLengthColumnSizeRegistry.isSystemTablesRefreshed("schema_t"));
     }
     
     @ParameterizedTest(name = "{0}")
