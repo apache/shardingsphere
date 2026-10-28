@@ -79,8 +79,8 @@ public final class WithClauseAssert {
             ColumnAssert.assertIs(assertContext, each, expected.getColumns().get(count));
             count++;
         }
-        assertColumns(assertContext, actual.getSearchColumns(), expected.getSearchColumns());
-        assertColumns(assertContext, actual.getCycleColumns(), expected.getCycleColumns());
+        assertColumns(assertContext, actual.getSearchColumns(), expected.getSearchColumns(), expected.getSearchColumnCount());
+        assertColumns(assertContext, actual.getCycleColumns(), expected.getCycleColumns(), expected.getCycleColumnCount());
         if (null != expected.getSubquery()) {
             ExpressionAssert.assertSubquery(assertContext, actual.getSubquery(), expected.getSubquery());
         }
@@ -102,8 +102,19 @@ public final class WithClauseAssert {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
-    private static void assertColumns(final SQLCaseAssertContext assertContext, final Collection<ColumnSegment> actual, final List<ExpectedColumn> expected) {
-        if (expected.isEmpty()) {
+    /**
+     * Assert common table expression key columns.
+     *
+     * @param assertContext assert context
+     * @param actual actual key columns
+     * @param expected expected key columns
+     * @param expectedCount expected count, or {@code null} when the fixture does not specify a count
+     */
+    private static void assertColumns(final SQLCaseAssertContext assertContext, final Collection<ColumnSegment> actual, final List<ExpectedColumn> expected, final Integer expectedCount) {
+        if (null != expectedCount) {
+            assertThat(assertContext.getText("Common table expression expected key count assertion error: "), expected.size(), is(expectedCount));
+        }
+        if (null == expectedCount && expected.isEmpty()) {
             return;
         }
         assertThat(assertContext.getText("Common table expression search/cycle key count assertion error: "), actual.size(), is(expected.size()));

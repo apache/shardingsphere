@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtils;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
@@ -313,7 +314,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     
     private int getColumnCount(final SQLStatementContext sqlStatementContext, final QueryResult queryResultSample) throws SQLException {
         return containsDerivedProjections
-                ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size()
+                ? ShardingSphereResultSetUtils.getVisibleColumnCount((SelectStatementContext) sqlStatementContext, queryResultSample.getMetaData().getResultSetMetaData())
                 : queryResultSample.getMetaData().getColumnCount();
     }
     

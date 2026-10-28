@@ -34,6 +34,7 @@
 1. SQL Parser: Preserve MySQL `ALTER TABLE MODIFY COLUMN` nullability metadata - [#39421](https://github.com/apache/shardingsphere/pull/39421)
 1. SQL Parser: Preserve Firebird `CREATE TABLE` column nullability metadata - [#39423](https://github.com/apache/shardingsphere/pull/39423)
 1. SQL Parser: Fix Firebird parsing of KEY, TEXT and COMMENT column aliases - [#40262](https://github.com/apache/shardingsphere/issues/40262)
+1. SQL Parser: Fix incorrect Firebird AST for NOT precedence, string literals, FULL and NATURAL joins, FIRST parameters, ALTER TABLE constraints and EXECUTE BLOCK parameters - [#40355](https://github.com/apache/shardingsphere/issues/40355)
 1. SQL Parser: Preserve openGauss `CREATE TABLE` column nullability metadata - [#39425](https://github.com/apache/shardingsphere/pull/39425)
 1. SQL Parser: Preserve Hive `CREATE TABLE` column nullability metadata - [#39428](https://github.com/apache/shardingsphere/pull/39428)
 1. SQL Parser: Preserve SQLServer `ALTER TABLE ALTER COLUMN` nullability metadata - [#39430](https://github.com/apache/shardingsphere/pull/39430)
@@ -46,6 +47,7 @@
 1. SQL Parser: Fix No value specified for parameter exception when sql is 'INSERT INTO tableName ON CONFLICT  DO UPDATE set  WHERE ' - [#38668](https://github.com/apache/shardingsphere/pull/38668)
 1. SQL Parser: Preserve parentheses around column projections in PostgreSQL, openGauss, SQLServer, and Hive - [#40010](https://github.com/apache/shardingsphere/pull/40010)
 1. SQL Parser: Fix `ORDER BY` binding for Oracle set operations - [#40019](https://github.com/apache/shardingsphere/pull/40019)
+1. SQL Parser: Capture `ALTER TABLE ... SET SCHEMA` destination schema in PostgreSQL and openGauss - [#40367](https://github.com/apache/shardingsphere/pull/40367)
 1. SQL Binder: Fix columns being incorrectly skipped during binding - [#38350](https://github.com/apache/shardingsphere/pull/38350)
 1. SQL Binder: Fix wrong bind info when order by refer column from with temporary table - [#38353](https://github.com/apache/shardingsphere/pull/38353)
 1. SQL Binder: Fix wrong column label case for PostgreSQL and openGauss function projections - [#39393](https://github.com/apache/shardingsphere/pull/39393)
@@ -68,6 +70,7 @@
 1. JDBC: Fix stale generated values leaking into prepared statement executeBatch calls without pending batches - [#38160](https://github.com/apache/shardingsphere/pull/38160)
 1. JDBC: Fix MySQL-compatible typed string conversion for `ResultSet#getObject(index, Class<T>)` - [#38444](https://github.com/apache/shardingsphere/pull/38444)
 1. JDBC: Fix statement close invalidating live result sets of other statements on the same connection - [#39503](https://github.com/apache/shardingsphere/pull/39503)
+1. JDBC: Fix select * is not supported for associated query - [#39131](https://github.com/apache/shardingsphere/pull/39131)
 1. Proxy: Resolve MySQL prepared statement parameter columns for where clause - [#38382](https://github.com/apache/shardingsphere/pull/38382)
 1. Proxy: Resolve PostgreSQL prepared statement parameter types before bind - [#38384](https://github.com/apache/shardingsphere/pull/38384)
 1. Proxy: Exclude derived projections from PostgreSQL prepared statement row descriptions - [#40194](https://github.com/apache/shardingsphere/issues/40194)
@@ -129,6 +132,7 @@
 ### Enhancements
 
 1. SQL Binder: Enhance ORDER BY column resolution with current-query scope precedence over correlated outer scopes - [#40342](https://github.com/apache/shardingsphere/pull/40342)
+1. SQL Binder: Avoid quadratic projection binding overhead for statements with many projections - [#40332](https://github.com/apache/shardingsphere/issues/40332)
 1. SQL Parser: Support additional MySQL CREATE TABLE, CREATE FUNCTION, CREATE TRIGGER, INSTALL COMPONENT, LOAD XML, GET DIAGNOSTICS and SELECT syntax - [#40120](https://github.com/apache/shardingsphere/pull/40120)
 1. Metadata: Support view table type in openGauss meta data loader - [#39097](https://github.com/apache/shardingsphere/pull/39097)
 1. Build: Support compiling and using ShardingSphere under OpenJDK 26 - [#38625](https://github.com/apache/shardingsphere/issues/38625)

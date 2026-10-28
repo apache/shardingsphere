@@ -297,11 +297,12 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
-        SelectStatement.SelectStatementBuilder selectStatementBuilder = SelectStatement.builder().databaseType(getDatabaseType()).projections(projections);
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = SelectStatement.builder().databaseType(getDatabaseType());
         if (null != ctx.firstSkipClause()) {
             selectStatementBuilder.limit((LimitSegment) visit(ctx.firstSkipClause()));
         }
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
+        selectStatementBuilder.projections(projections);
         if (!ctx.selectSpecification().isEmpty()) {
             projections.setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
         }
@@ -531,6 +532,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setRight((TableSegment) visit(ctx.tableFactor()));
         result.setJoinType(getJoinType(ctx));
+        result.setNatural(null != ctx.NATURAL());
         if (null != ctx.joinSpecification()) {
             visitJoinSpecification(ctx.joinSpecification(), result);
         }
@@ -543,6 +545,9 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         }
         if (null != ctx.RIGHT()) {
             return JoinType.RIGHT.name();
+        }
+        if (null != ctx.FULL()) {
+            return JoinType.FULL.name();
         }
         return null == ctx.CROSS() ? JoinType.INNER.name() : JoinType.CROSS.name();
     }

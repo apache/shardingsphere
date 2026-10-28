@@ -28,6 +28,9 @@ import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.config.YamlCDCJob
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.config.YamlCDCJobConfiguration.YamlSinkConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.swapper.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
+import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckId;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporterManager;
 import org.apache.shardingsphere.data.pipeline.cdc.core.pojo.CDCJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
@@ -63,6 +66,7 @@ import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTas
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -297,6 +301,22 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         jobConfigPOJO.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
         jobConfigPOJO.getProps().remove("stop_time");
         PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobConfigPOJO.getJobName())).updateJobConfiguration(jobConfigPOJO);
+    }
+    
+    /**
+     * Acknowledge streamed records and update progress through their importer.
+     *
+     * @param ackId acknowledgement ID containing the importer ID
+     */
+    @HighFrequencyInvocation
+    public void ack(final String ackId) {
+        CDCAckId parsedAckId = CDCAckId.unmarshal(ackId);
+        CDCImporter importer = CDCImporterManager.getImporter(parsedAckId.getImporterId());
+        if (null == importer) {
+            log.warn("Could not find importer, ack id: {}", parsedAckId.marshal());
+            return;
+        }
+        importer.ack(parsedAckId.marshal());
     }
     
     /**

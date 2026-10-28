@@ -93,8 +93,8 @@ python3 .codex/skills/gen-ut/scripts/scan_quality_rules.py --json \
   <ResolvedTestFileSet>
 ```
 
-The scanner labels semantic or partly semantic rules as `semanticReviewRequired=true`. Resolve them through source inspection and record evidence; zero mechanical violations alone is not `R10-A`.
-In JSON output, review the `manual` and `hybrid` rules and their `reviews` entries.
+Complete the semantic reviews required by `R14` and `R15` from source and record evidence; zero mechanical violations alone is not `R10-A`.
+In JSON output, inspect `rules` for mechanical results, `candidates` for parameterization groups, and `reviews` for source locations and files without resolved target public-method information.
 Inspect actual argument sets for every standard JUnit source, including external or dynamic providers; source-code call counts do not prove executed row counts.
 Review every test against the test-value rule in `CODE_OF_CONDUCT.md`, independently of method names.
 Review `switch`, `Consumer`, nested-type, and assertion-control-flow candidates in parameterized tests against the rule in `CODE_OF_CONDUCT.md` for combining cases that invoke the same method under test and use the same form of assertion.

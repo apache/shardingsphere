@@ -276,7 +276,11 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private Collection<Projection> getProjections(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                                   final Supplier<Optional<ShardingSphereSchema>> schema) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
+            SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
+            if (selectStatementContext.getProjectionsContext().containsUnexpandedShorthandProjection()) {
+                return resolveUnexpandedShorthandProjections(selectStatementContext, database, schema);
+            }
+            return selectStatementContext.getProjectionsContext().getExpandProjections();
         }
         if (null == returningSegment) {
             return Collections.emptyList();
@@ -294,13 +298,34 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return result;
     }
     
-    private Collection<Projection> processShorthandProjection(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
-                                                              final Supplier<Optional<ShardingSphereSchema>> schema, final ShorthandProjection projection) {
+    private Collection<Projection> resolveUnexpandedShorthandProjections(final SelectStatementContext selectStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                                                         final Supplier<Optional<ShardingSphereSchema>> schema) {
+        TableSegment from = selectStatementContext.getSqlStatement().getFrom().orElse(null);
+        Collection<Projection> result = new LinkedList<>();
+        for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
+            if (each instanceof ShorthandProjection && from instanceof SubqueryTableSegment && ((ShorthandProjection) each).getActualColumns().isEmpty()) {
+                result.addAll(selectStatementContext.getSubqueryContexts().get(((SubqueryTableSegment) from).getSubquery().getStartIndex()).getProjectionsContext().getExpandProjections());
+            } else if (each instanceof ShorthandProjection) {
+                result.addAll(resolveShorthandColumns(selectStatementContext, database, schema, (ShorthandProjection) each));
+            } else if (!(each instanceof DerivedProjection)) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private Collection<Projection> resolveShorthandColumns(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                                           final Supplier<Optional<ShardingSphereSchema>> schema, final ShorthandProjection projection) {
         if (!projection.getActualColumns().isEmpty()) {
             return projection.getActualColumns();
         }
         Collection<Projection> result = new LinkedList<>();
+        Optional<IdentifierValue> owner = projection.getOwner();
         for (String tableName : getTableNames(sqlStatementContext)) {
+            if (sqlStatementContext instanceof SelectStatementContext && owner.isPresent() && !owner.get().getValue().equalsIgnoreCase(tableName)
+                    && !isAliasOf(owner.get().getValue(), tableName, sqlStatementContext)) {
+                continue;
+            }
             ShardingSphereTable table = getTable(tableName, database, schema);
             table.getAllColumns().forEach(each -> {
                 ColumnSegmentBoundInfo info = new ColumnSegmentBoundInfo(null, new IdentifierValue(table.getName()), new IdentifierValue(each.getName()), TableSourceType.PHYSICAL_TABLE);
@@ -308,6 +333,20 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             });
         }
         return result;
+    }
+    
+    private boolean isAliasOf(final String alias, final String tableName, final SQLStatementContext sqlStatementContext) {
+        for (SimpleTableSegment each : sqlStatementContext.getTablesContext().getSimpleTables()) {
+            if (each.getAlias().isPresent() && each.getAlias().get().getValue().equalsIgnoreCase(alias) && each.getTableName().getIdentifier().getValue().equalsIgnoreCase(tableName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private Collection<Projection> processShorthandProjection(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                                              final Supplier<Optional<ShardingSphereSchema>> schema, final ShorthandProjection projection) {
+        return resolveShorthandColumns(sqlStatementContext, database, schema, projection);
     }
     
     @HighFrequencyInvocation
