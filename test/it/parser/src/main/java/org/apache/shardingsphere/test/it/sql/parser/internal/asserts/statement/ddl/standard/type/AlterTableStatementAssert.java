@@ -50,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Che
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ModifyTableCommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ReplaceTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.SetSchemaDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.TableRollbackDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -122,6 +123,7 @@ public final class AlterTableStatementAssert {
         assertTable(assertContext, actual, expected);
         assertRenameTable(assertContext, actual, expected);
         assertReplaceTable(assertContext, actual, expected);
+        assertSetSchemaDefinition(assertContext, actual, expected);
         assertAddColumnDefinitions(assertContext, actual, expected);
         assertAddConstraintDefinitions(assertContext, actual, expected);
         assertModifyConstraintDefinitions(assertContext, actual, expected);
@@ -193,6 +195,17 @@ public final class AlterTableStatementAssert {
                 assertProperties(assertContext, actualReplaceTable.getProperties(), expected.getReplaceTable().getProperties());
             }
             SQLSegmentAssert.assertIs(assertContext, actualReplaceTable, expected.getReplaceTable());
+        }
+    }
+    
+    private static void assertSetSchemaDefinition(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        Optional<SetSchemaDefinitionSegment> setSchemaDefinition = actual.getSetSchemaDefinition();
+        if (null == expected.getSetSchemaDefinition()) {
+            assertFalse(setSchemaDefinition.isPresent(), assertContext.getText("Actual set schema definition should not exist."));
+        } else {
+            assertTrue(setSchemaDefinition.isPresent(), assertContext.getText("Actual set schema definition should exist."));
+            assertThat(assertContext.getText("Schema name assertion error: "), setSchemaDefinition.get().getSchemaName().getValue(), is(expected.getSetSchemaDefinition().getSchemaName()));
+            SQLSegmentAssert.assertIs(assertContext, setSchemaDefinition.get(), expected.getSetSchemaDefinition());
         }
     }
     
