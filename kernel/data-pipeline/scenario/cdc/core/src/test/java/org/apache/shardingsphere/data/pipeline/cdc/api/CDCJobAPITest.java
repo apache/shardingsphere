@@ -24,6 +24,8 @@ import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.config.YamlCDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.swapper.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporterManager;
 import org.apache.shardingsphere.data.pipeline.cdc.core.pojo.CDCJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
@@ -102,6 +104,7 @@ import java.util.stream.IntStream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -121,7 +124,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({PipelineAPIFactory.class, PipelineJobIdUtils.class})
+@StaticMockSettings({PipelineAPIFactory.class, PipelineJobIdUtils.class, CDCImporterManager.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class CDCJobAPITest {
     
@@ -522,6 +525,19 @@ class CDCJobAPITest {
             jobRegistryMocked.verify(() -> PipelineJobRegistry.stop("foo_job"));
             assertTrue(jobConfigPOJO.isDisabled());
         }
+    }
+    
+    @Test
+    void assertAckWhenImporterMissing() {
+        assertDoesNotThrow(() -> jobAPI.ack("foo_bar"));
+    }
+    
+    @Test
+    void assertAckWhenImporterExists() {
+        CDCImporter importer = mock(CDCImporter.class);
+        when(CDCImporterManager.getImporter("foo")).thenReturn(importer);
+        jobAPI.ack("foo_bar");
+        verify(importer).ack("foo_bar");
     }
     
     private PipelineJobConfigurationManager mockPersistedJobConfiguration(final CDCJobConfiguration jobConfig) throws ReflectiveOperationException {

@@ -46,6 +46,7 @@ public final class AlterTableStatementBinder implements SQLStatementBinder<Alter
                 .replaceTable(sqlStatement.getReplaceTable().orElse(null)).convertTableDefinition(sqlStatement.getConvertTableDefinition().orElse(null))
                 .modifyCollectionRetrieval(sqlStatement.getModifyCollectionRetrieval().orElse(null)).algorithmSegment(sqlStatement.getGetAlgorithmSegment().orElse(null))
                 .lockTableSegment(sqlStatement.getLockTableSegment().orElse(null)).dropPrimaryKeyDefinition(sqlStatement.getDropPrimaryKeyDefinition().orElse(null))
+                .setSchemaDefinition(sqlStatement.getSetSchemaDefinition().orElse(null))
                 .setPropertiesDefinitions(sqlStatement.getSetPropertiesDefinitions()).enableFeatureDefinitions(sqlStatement.getEnableFeatureDefinitions())
                 .modifyTableCommentDefinitions(sqlStatement.getModifyTableCommentDefinitions()).modifyEngineDefinitions(sqlStatement.getModifyEngineDefinitions())
                 .modifyDistributionDefinitions(sqlStatement.getModifyDistributionDefinitions()).addColumnDefinitions(sqlStatement.getAddColumnDefinitions())

@@ -1269,6 +1269,17 @@
         </modify-column>
     </alter-table>
 
+    <alter-table sql-case-id="alter_table_add_unique_key_firebird" add-constraint-count="1">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-constraint constraint-name="uk_order_id" start-index="24" stop-index="63">
+            <index-column name="order_id" start-index="55" stop-index="62" />
+        </add-constraint>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_constraint_firebird" drop-constraint-count="1">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+
     <alter-table sql-case-id="alter_table_alter_column_for_sqlserver">
         <table name="t_order" start-index="12" stop-index="18" />
         <modify-column>
@@ -1298,6 +1309,7 @@
 
     <alter-table sql-case-id="alter_table_set_schema">
         <table name="t_order" start-index="12" stop-index="18" />
+        <set-schema schema-name="yourschema" start-index="20" stop-index="40" />
     </alter-table>
 
     <alter-table sql-case-id="alter_table_attach_partition">

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.response.header.query;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.VisibleColumnMapping;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -99,14 +100,11 @@ public final class QueryHeaderBuilderEngine {
         if (!(sqlStatementContext instanceof SelectStatementContext) || !((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
             return null;
         }
-        checkColumnIndex(sqlStatementContext, columnIndex);
-        return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(columnIndex - 1);
-    }
-    
-    private void checkColumnIndex(final SQLStatementContext sqlStatementContext, final int columnIndex) {
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
-            ShardingSpherePreconditions.checkState(columnIndex <= ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size(),
-                    () -> new ColumnIndexOutOfRangeException(columnIndex));
+        VisibleColumnMapping mapping = VisibleColumnMapping.resolveIfExpanded((SelectStatementContext) sqlStatementContext);
+        if (null == mapping) {
+            return null;
         }
+        ShardingSpherePreconditions.checkState(columnIndex <= mapping.getColumnCount(), () -> new ColumnIndexOutOfRangeException(columnIndex));
+        return mapping.findProjection(columnIndex);
     }
 }

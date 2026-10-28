@@ -40,7 +40,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Avoid using `this` modifier except for assignment statements where constructor parameters have the same name as global variables.
 - Local variables must not be declared as `final`, including ordinary local variables, `for` loop variables, enhanced `for` loop variables and try-with-resources resources.
 - Lambda parameters should not be marked as `final`.
-- Declare every class `final` unless it is an abstract class intended for inheritance.
+- Declare every production class `final` unless it is an abstract class intended for inheritance.
 - Extract nested loops into separate methods.
 - The order of member variable definitions and parameter passing should remain consistent across all classes and methods.
 - Use guard clauses for invalid inputs, missing states and exceptional conditions so that the normal execution path uses positive conditions and minimal nesting.
@@ -74,7 +74,8 @@ The following code of conduct is based on full compliance with the [Apache Softw
 
 ## Unit Testing Standards
 
-- Test code and production code need to follow the same coding standards.
+- Test code and production code need to follow the same coding standards, except for class finality.
+- Classes whose names end with `Test` must not be declared `final`.
 - Unit tests need to follow the AIR (Automatic, Independent, Repeatable) design philosophy.
    - Automatic: Unit tests should be fully automated, not interactive. Manual inspection of output results is forbidden, use of `System.out`, `log`, etc. is not allowed, assertions must be used for verification.
    - Independent: Forbid mutual calls between unit test cases, forbid dependency on execution order. Each unit test can run independently.

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDLoader;
 import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDResolver;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtils;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -264,7 +265,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         Map<Integer, Integer> columnTypeOIDs = ColumnTypeOIDLoader.load(actualPreparedStatement.getConnection(), resultSetMetaData, columnTypeOIDResolver);
         SQLStatementContext sqlStatementContext = logicPreparedStatement.getSqlStatementContext();
         int columnCount = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()
-                ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size()
+                ? ShardingSphereResultSetUtils.getVisibleColumnCount((SelectStatementContext) sqlStatementContext, resultSetMetaData)
                 : resultSetMetaData.getColumnCount();
         List<PostgreSQLColumnDescription> columnDescriptions = new ArrayList<>(columnCount);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {

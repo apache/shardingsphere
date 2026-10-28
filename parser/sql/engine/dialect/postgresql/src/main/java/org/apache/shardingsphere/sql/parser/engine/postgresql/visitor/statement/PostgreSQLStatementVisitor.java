@@ -2206,7 +2206,8 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.selectLimitValue()) {
             return (LimitValueSegment) visit(ctx.selectLimitValue());
         }
-        return null;
+        int startIndex = ctx.rowOrRows().start.getStartIndex();
+        return new NumberLiteralLimitValueSegment(startIndex, startIndex - 1, 1L);
     }
     
     private LimitSegment createLimitSegmentWhenRowCountOrOffsetAbsent(final SelectLimitContext ctx) {

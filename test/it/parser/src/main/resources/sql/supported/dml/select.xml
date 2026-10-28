@@ -468,6 +468,9 @@
     <sql-case id="select_comma_join_firebird" value="SELECT * FROM t_order a, t_order_item b" db-types="Firebird"/>
     <sql-case id="select_subquery_table_firebird" value="SELECT * FROM (SELECT 1) sub" db-types="Firebird"/>
     <sql-case id="select_subquery_with_with_firebird" value="SELECT * FROM (WITH t AS (SELECT 1) SELECT * FROM t) sub" db-types="Firebird"/>
+    <sql-case id="select_adjacent_string_literals_firebird" value="SELECT 'a' 'b' FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_string_literal_with_introducer_firebird" value="SELECT _utf8'abc' FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_hexadecimal_literal_with_introducer_firebird" value="SELECT _utf8 X'616263' FROM t_order" db-types="Firebird"/>
     <sql-case id="select_not_expression_sql92" value="SELECT NOT (1=1) FROM t_order" db-types="SQL92" />
     <sql-case id="select_where_is_true_sql92" value="SELECT * FROM t_order WHERE active IS TRUE" db-types="SQL92" />
     <sql-case id="select_where_is_false_sql92" value="SELECT * FROM t_order WHERE active IS FALSE" db-types="SQL92" />
@@ -606,6 +609,42 @@
     <sql-case id="select_where_is_distinct_from_and_equal_firebird" value="SELECT order_id FROM t_order WHERE status IS DISTINCT FROM ? AND order_id = ?" db-types="Firebird" />
     <sql-case id="select_with_schema_database_link_and_alias_oracle" value="SELECT * FROM userinfo.subs_rateplan@PJZW x" db-types="Oracle" />
     <sql-case id="select_with_dotted_database_link_oracle" value="SELECT * FROM userinfo.subs_rateplan@PJZW.EXAMPLE.COM x" db-types="Oracle" />
+
+    <sql-case id="select_cte_search_depth_pg" value="WITH RECURSIVE t(a) AS (SELECT 1) SEARCH DEPTH FIRST BY a SET seq SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_search_breadth_pg" value="WITH RECURSIVE t(a,b) AS (SELECT 1,2) SEARCH BREADTH FIRST BY a,b SET seq SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_cycle_default_pg" value="WITH RECURSIVE t(a) AS (SELECT 1) CYCLE a SET marked USING path SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_cycle_values_pg" value="WITH RECURSIVE t(a) AS (SELECT 1) CYCLE a SET marked TO 'Y' DEFAULT 'N' USING path SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_search_cycle_pg" value="WITH RECURSIVE t(a) AS (SELECT 1) SEARCH DEPTH FIRST BY a SET seq CYCLE a SET marked TO TRUE DEFAULT FALSE USING path SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_search_cycle_quoted_pg" value="WITH RECURSIVE t(a) AS (SELECT 1) SEARCH BREADTH FIRST BY a SET &quot;seq&quot; CYCLE a SET &quot;marked&quot; USING &quot;path&quot; SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_search_inferred_columns_pg" value="WITH RECURSIVE t AS (SELECT 1 AS a) SEARCH DEPTH FIRST BY a SET seq SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_search_cycle_parameter_pg" value="WITH RECURSIVE t(a) AS (SELECT $1) SEARCH BREADTH FIRST BY a SET seq CYCLE a SET marked USING path SELECT * FROM t" db-types="PostgreSQL" case-types="Placeholder" />
+
+    <sql-case id="select_cte_search_cycle_keywords_pg" value="SELECT breadth, depth FROM breadth AS depth" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_search_cycle_old_control_pg" value="WITH t(a) AS (SELECT 1) SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_fetch_first_implicit_pg" value="SELECT 1 FETCH FIRST ROW ONLY" db-types="PostgreSQL" />
+
+    <sql-case id="select_fetch_next_implicit_pg" value="SELECT 1 FETCH NEXT ROWS ONLY" db-types="PostgreSQL" />
+
+    <sql-case id="select_fetch_ties_implicit_pg" value="SELECT 1 ORDER BY 1 FETCH FIRST ROWS WITH TIES" db-types="PostgreSQL" />
+
+    <sql-case id="select_offset_fetch_implicit_pg" value="SELECT 1 OFFSET 2 ROWS FETCH FIRST ROW ONLY" db-types="PostgreSQL" />
+
+    <sql-case id="select_fetch_offset_implicit_pg" value="SELECT 1 FETCH NEXT ROW ONLY OFFSET 2 ROWS" db-types="PostgreSQL" />
+
+    <sql-case id="select_fetch_implicit_offset_parameter_pg" value="SELECT 1 OFFSET $1 ROWS FETCH NEXT ROWS ONLY" db-types="PostgreSQL" case-types="Placeholder" />
+
+    <sql-case id="select_fetch_explicit_control_pg" value="SELECT 1 FETCH FIRST 3 ROWS ONLY" db-types="PostgreSQL" />
+
+    <sql-case id="select_limit_offset_fetch_control_pg" value="SELECT 1 LIMIT 3 OFFSET 2" db-types="PostgreSQL" />
     <sql-case id="select_key_alias_with_as_firebird" value="SELECT order_id AS KEY FROM t_order" db-types="Firebird" />
     <sql-case id="select_text_alias_with_as_firebird" value="SELECT order_id AS TEXT FROM t_order" db-types="Firebird" />
     <sql-case id="select_comment_alias_with_as_firebird" value="SELECT order_id AS COMMENT FROM t_order" db-types="Firebird" />
