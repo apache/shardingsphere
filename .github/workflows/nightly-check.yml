@@ -164,10 +164,29 @@ jobs:
     name: Check - OWASP
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
-    timeout-minutes: 40
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
+      - name: Set OWASP Cache Key
+        id: owasp-cache-key
+        run: |
+          version=$(sed -n 's/.*<dependency-check-maven\.version>\(.*\)<\/dependency-check-maven\.version>.*/\1/p' pom.xml)
+          echo "prefix=${{ runner.os }}-owasp-${version}-" >> "$GITHUB_OUTPUT"
+      - name: Restore OWASP Database
+        id: owasp-cache
+        uses: actions/cache/restore@v5.0.1
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: ${{ steps.owasp-cache-key.outputs.prefix }}${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: ${{ steps.owasp-cache-key.outputs.prefix }}
+      - name: Update OWASP Database
+        run: ./mvnw -N dependency-check:update-only -DnvdApiKey=${{ secrets.NIST_NVD_API_KEY }}
+      - name: Save OWASP Database
+        uses: actions/cache/save@v5.0.1
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: ${{ steps.owasp-cache.outputs.cache-primary-key }}
       - name: Run OWASP Check
         # https://nvd.nist.gov/developers/request-an-api-key
         run: ./mvnw clean dependency-check:aggregate -DnvdApiKey=${{ secrets.NIST_NVD_API_KEY }}
