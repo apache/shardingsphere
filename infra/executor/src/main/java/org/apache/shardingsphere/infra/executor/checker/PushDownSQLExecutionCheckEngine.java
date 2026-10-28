@@ -52,7 +52,7 @@ public final class PushDownSQLExecutionCheckEngine {
         String storageType = storageUnits.get(executionUnits.iterator().next().getDataSourceName()).getStorageType().getType();
         for (ExecutionUnit each : executionUnits) {
             ShardingSpherePreconditions.checkState(storageType.equals(storageUnits.get(each.getDataSourceName()).getStorageType().getType()),
-                    () -> new UnsupportedSQLOperationException("SELECT across different storage database types in ordinary push down execution").toSQLException());
+                    () -> new UnsupportedSQLOperationException("SELECT across different storage database types in push down execution").toSQLException());
         }
     }
 }
