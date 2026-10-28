@@ -2295,7 +2295,9 @@
         <order-by start-index="19" stop-index="29">
             <column-item name="id" order-direction="ASC" start-index="28" stop-index="29" />
         </order-by>
-        <limit start-index="31" stop-index="50" row-count-implicit="true" />
+        <limit start-index="31" stop-index="50" row-count-implicit="true">
+            <row-count value="1" start-index="43" stop-index="42" />
+        </limit>
     </select>
     <select sql-case-id="select_fetch_implicit_ties_postgresql_regression">
         <projections start-index="7" stop-index="8">
@@ -2307,7 +2309,9 @@
         <order-by start-index="19" stop-index="29">
             <column-item name="id" order-direction="ASC" start-index="28" stop-index="29" />
         </order-by>
-        <limit start-index="31" stop-index="54" with-ties="true" row-count-implicit="true" />
+        <limit start-index="31" stop-index="54" with-ties="true" row-count-implicit="true">
+            <row-count value="1" start-index="42" stop-index="41" />
+        </limit>
     </select>
     <select sql-case-id="select_offset_fetch_implicit_postgresql_regression" parameters="1">
         <projections start-index="7" stop-index="8">
@@ -2321,6 +2325,7 @@
         </order-by>
         <limit start-index="31" stop-index="63" row-count-implicit="true">
             <offset parameter-index="0" start-index="38" stop-index="38" />
+            <row-count value="1" start-index="56" stop-index="55" />
         </limit>
     </select>
     <select sql-case-id="select_fetch_offset_parameters_postgresql_regression" parameters="1, 2">
