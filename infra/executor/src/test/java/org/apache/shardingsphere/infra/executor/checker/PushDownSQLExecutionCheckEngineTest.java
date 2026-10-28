@@ -102,7 +102,7 @@ class PushDownSQLExecutionCheckEngineTest {
         ShardingSphereDatabase database = createDatabase("MySQL", Arrays.asList(firstStorageType, secondStorageType));
         ExecutionContext executionContext = createExecutionContext(mock(SelectStatement.class), Arrays.asList(0, 1));
         SQLException actual = assertThrows(SQLException.class, () -> new PushDownSQLExecutionCheckEngine().check(database, executionContext));
-        assertThat(actual.getMessage(), is("Unsupported SQL operation: SELECT across different storage database types in ordinary push down execution."));
+        assertThat(actual.getMessage(), is("Unsupported SQL operation: SELECT across different storage database types in push down execution."));
         assertThat(actual.getSQLState(), is("0A000"));
         assertThat(actual.getErrorCode(), is(30001));
     }
