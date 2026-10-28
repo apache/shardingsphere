@@ -2341,6 +2341,50 @@ policy_assertions = [{source = "standalone-audit", statements = ["When the scope
 critical = true
 
 [[cases]]
+id = "review_test_actual_naming_distinguishes_setup"
+group = "review / semantic applicability"
+description = "Distinguishes a directly asserted factory output from a factory-created preparation object and a direct assertion."
+phase = "finding-scoped Java test naming review"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "Perform a read-only review limited to actual-value naming in the following complete synthetic Java test methods, using only the supplied material and without an overall readiness verdict. Supporting types are `record Index(List<String> names) { Optional<String> lookup(int position) { return Optional.of(names.get(position)); } }` and `class IndexFactory { static Index create(List<String> names) { return new Index(names); } }`. Test A is `void assertCreate() { Index expected = new Index(List.of(\"id\")); Index mapping = IndexFactory.create(List.of(\"id\")); assertThat(mapping, is(expected)); }`. Test B is `void assertLookup() { Index mapping = IndexFactory.create(List.of(\"id\")); Optional<String> actual = mapping.lookup(0); assertThat(actual, is(Optional.of(\"id\"))); }`. Test C is `void assertLookupDirectly() { Index mapping = IndexFactory.create(List.of(\"id\")); assertThat(mapping.lookup(0), is(Optional.of(\"id\"))); }`. Decide whether to rename the local `mapping` in A and B to `actual`, classify its role in B, and decide whether C's inline lookup assertion should remain direct or introduce an actual local. Do not edit. Format the summary as exactly four lines in this order, one field per line, with no extra text or duplicate fields: `[A]=<rename|keep>`; `[B]=<rename|keep>`; `[B-role]=<output|setup>`; `[C]=<direct|introduce local>`. Select one value per field. Copy each field name and selected literal value exactly as shown, omitting the angle brackets and alternative values. Separate fields with exactly one newline, with no blank lines or leading or trailing whitespace."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["[A]=rename", "[B]=keep", "[B-role]=setup", "[C]=direct"]
+forbidden_summary_terms = ["[A]=keep", "[B]=rename", "[B-role]=output", "[C]=introduce local"]
+max_summary_chars = 53
+required_summary_prefix = "[A]=rename\n[B]=keep\n[B-role]=setup\n[C]=direct"
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "java-testing", statements = ["Name a local variable that stores the value produced by the operation under test with the `actual` prefix; use `actual` when no additional domain distinction is needed.", "Do not name that local variable `result` when it supplies the actual value to an assertion.", "Keep a direct assertion when the tested expression is clear; do not introduce an `actual` local whose only purpose is to satisfy the naming rule.", "The returned-value rules in `java-naming.md` continue to govern a test helper's own return flow; the actual-value rule overrides them only for a local value asserted as the result of the operation under test."]}]
+critical = true
+
+[[cases]]
+id = "review_test_actual_naming_withdraws_repeated_setup_finding"
+group = "review / corrections"
+description = "Rechecks a repeated naming finding against the tested operation while retaining the independently valid finding."
+phase = "finding-scoped review correction"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "Perform a read-only correction limited to actual-value naming in two complete synthetic Java test methods, using only the supplied material and without an overall readiness verdict. Supporting types are `record Index(List<String> names) { Optional<String> lookup(int position) { return Optional.of(names.get(position)); } }` and `class IndexFactory { static Index create(List<String> names) { return new Index(names); } }`. Test A is `void assertCreate() { Index expected = new Index(List.of(\"id\")); Index mapping = IndexFactory.create(List.of(\"id\")); assertThat(mapping, is(expected)); }`. Test B is `void assertLookup() { Index mapping = IndexFactory.create(List.of(\"id\")); Optional<String> actual = mapping.lookup(0); assertThat(actual, is(Optional.of(\"id\"))); }`. Two previous review reports independently requested renaming `mapping` to `actual` in both A and B. Classify the role of `mapping` in B from the complete method, then decide whether to retain or withdraw each naming request. Do not edit. Format the summary as exactly three lines in this order, one field per line, with no extra text or duplicate fields: `[B-role]=<output|setup>`; `[A]=<retain|withdraw>`; `[B]=<retain|withdraw>`. Select one value per field. Copy each field name and selected literal value exactly as shown, omitting the angle brackets and alternative values. Separate fields with exactly one newline, with no blank lines or leading or trailing whitespace."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["[B-role]=setup", "[A]=retain", "[B]=withdraw"]
+forbidden_summary_terms = ["[B-role]=output", "[A]=withdraw", "[B]=retain"]
+max_summary_chars = 43
+required_summary_prefix = "[B-role]=setup\n[A]=retain\n[B]=withdraw"
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "java-testing", statements = ["Name a local variable that stores the value produced by the operation under test with the `actual` prefix; use `actual` when no additional domain distinction is needed.", "The returned-value rules in `java-naming.md` continue to govern a test helper's own return flow; the actual-value rule overrides them only for a local value asserted as the result of the operation under test."]}, {source = "review-pr-corrections", statements = ["Recheck the complete production or test path and strongest counter-evidence.", "Retain the finding only if every required assumption remains supported.", "If an assumption is disproved or unsupported, withdraw the blocker or change\nthe result to incomplete."]}, {source = "review-pr-coordination", statements = ["For an actual-value naming finding, determine the operation under test and each variable's role from the complete test method before comparing that assessment with the proposed rename."]}]
+critical = true
+
+[[cases]]
 id = "java_test_empty_assertion_requires_collection_or_map"
 group = "coding / regular"
 description = "Rewrites an empty Collection assertion without treating every size method as a Collection or Map contract."
