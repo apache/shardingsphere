@@ -123,6 +123,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private static final int MAX_VARCHAR_LENGTH = 32765;
     
+    private static final int MAX_BYTES_PER_CHARACTER = 4;
+    
     private static final int MAX_FLOAT_PRECISION = 24;
     
     private static final Map<String, Integer> CAST_DATA_TYPES = new HashMap<>(22, 1F);
@@ -415,7 +417,11 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             if (null != columnSegment) {
                 ShardingSphereTable table = getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue(), database, schema);
                 ShardingSphereColumn column = table.getColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue());
-                processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), i + 1);
+                if (null != column && isTextBoundDataType(column.getDataType())) {
+                    processUnknownParameter(describeColumns, requestedItems, i + 1);
+                } else {
+                    processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), i + 1);
+                }
             } else if (castDataTypes.containsKey(i)) {
                 processCastParameter(castDataTypes.get(i), describeColumns, requestedItems, i + 1);
             } else {
@@ -579,6 +585,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
+    private boolean isTextBoundDataType(final int dataType) {
+        return Types.DECIMAL == dataType || Types.NUMERIC == dataType || Types.TIME_WITH_TIMEZONE == dataType;
+    }
+    
     private void processCastParameter(final DataTypeSegment dataType, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,
                                       final int idx) {
         Optional<Integer> castDataType = findCastDataType(dataType);
@@ -588,7 +598,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         ShardingSphereColumn column = new ShardingSphereColumn(null, castDataType.get(), false, false, true, true, false, false);
         String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
-        int columnLength = dataType.getDataTypeLength().map(DataTypeLengthSegment::getPrecision).orElse(Types.CHAR == castDataType.get() ? 1 : MAX_VARCHAR_LENGTH);
+        int columnLength = dataType.getDataTypeLength().map(each -> Math.min(each.getPrecision() * MAX_BYTES_PER_CHARACTER, MAX_VARCHAR_LENGTH))
+                .orElse(Types.CHAR == castDataType.get() ? MAX_BYTES_PER_CHARACTER : MAX_VARCHAR_LENGTH);
         describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, LITERAL_TABLE, column, null, null, owner, columnLength, false, null));
     }
     

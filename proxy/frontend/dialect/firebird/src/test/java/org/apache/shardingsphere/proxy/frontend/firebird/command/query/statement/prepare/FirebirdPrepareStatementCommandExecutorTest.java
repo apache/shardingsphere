@@ -509,7 +509,47 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPacketPayload varcharPayload = mock(FirebirdPacketPayload.class);
         actualReturnPacket.getDescribeBind().get(1).write(varcharPayload);
         verify(varcharPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        verify(varcharPayload).writeInt4LE(80);
+    }
+    
+    @Test
+    void assertDescribeCharacterCastParametersWithMultibyteLength() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT CAST(? AS VARCHAR(5) CHARACTER SET UTF8), CAST(? AS CHAR), CAST(? AS VARCHAR(10000)) FROM foo_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(3));
+        FirebirdPacketPayload varcharPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(0).write(varcharPayload);
+        verify(varcharPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
         verify(varcharPayload).writeInt4LE(20);
+        FirebirdPacketPayload charPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(1).write(charPayload);
+        verify(charPayload).writeInt4LE(4);
+        FirebirdPacketPayload maxVarcharPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(2).write(maxVarcharPayload);
+        verify(maxVarcharPayload).writeInt4LE(32765);
+    }
+    
+    @Test
+    void assertDescribeExactNumericAndTimeWithTimeZoneColumnParametersAsVarchar() throws Exception {
+        ShardingSphereColumn amountColumn = new ShardingSphereColumn("amount", Types.DECIMAL, false, false, true, true, false, true);
+        ShardingSphereColumn startTimeColumn = new ShardingSphereColumn("start_time", Types.TIME_WITH_TIMEZONE, false, false, true, true, false, true);
+        ProxyContext.getInstance().getContextManager().getDatabase("foo_db").getSchema("foo_db")
+                .putTable(new ShardingSphereTable("bar_tbl", Arrays.asList(amountColumn, startTimeColumn), Collections.emptyList(), Collections.emptyList()));
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) SELECT 1 FROM bar_tbl WHERE amount BETWEEN ? AND ? AND start_time = ?");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(3));
+        for (FirebirdReturnColumnPacket each : actualReturnPacket.getDescribeBind()) {
+            FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+            each.write(payload);
+            verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+            verify(payload).writeInt4LE(32765);
+        }
     }
     
     @Test
