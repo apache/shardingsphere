@@ -5023,3 +5023,44 @@ required_summary_prefix = "```markdown\n### Summary\n"
 critical = true
 policy_binding_profile = "review-pr"
 policy_assertions = [{source = "review-pr", statements = ["Return every review output as one complete copy-ready Markdown report in a fenced block labelled `markdown`, in both output modes and every review round.", "Never include internal drafts, reasoning traces, private context, local absolute paths, temporary paths, credentials, raw long logs, or emojis.", "Begin the Formal Review with `### Summary` before `### Result`, explaining the concrete problem or goal motivating the PR, the affected scenario or impact, the actual change mechanism, the direction assessment and material limits in two to four concise sentences.", "Explain how the mechanism addresses that purpose, and distinguish verified effects from intended benefits that the evidence does not establish.", "For a defect, trace the failing path to the violated contract and its maintained owner; for another PR type, establish the goal and responsibilities it must preserve.", "Trace the patch's actual mechanism and compare it with a repair or reuse path in that owner; record why the chosen boundary addresses the cause or accepted goal and what remains outside scope.", "In `### Coverage`, give a short verification summary, normally one to three lines, with the candidate type and baseline or head, reviewed scope, relevant check status, CI scope, and material gaps or failures.", "Keep the complete requirements and project-commitment basis, behavior clusters, discovery lenses, independent assessments and stages, adjudication and resolution of differences, file inventory, verification commands and exit codes, and `Not Applicable` checks with their bases in private review material.", "`Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`."]}, {source = "review-pr-sql-parser", statements = ["Record the target dialect, related trunk or branch dialects checked, official documentation pages used, and repo docs or examples checked in private review material.", "Follow the main Skill's short `Coverage` summary and disclose any missing or failed dialect check that affects the conclusion.", "When the PR or review comment mentions a concrete SQL syntax form, cite the exact official documentation page that supports that form."]}]
+
+[[cases]]
+id = "review_priority_three_levels"
+group = "review-pr finding priority"
+description = "Uses only three priority levels and places ordinary and minor issues in P2."
+phase = "read-only priority classification"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "Answer this self-contained review-policy question using only the supplied synthetic facts and bound rules; do not inspect files, run commands, edit anything or produce a Formal Review report. Each independent finding already passes the Finding Proof Gate and requires correction. A is an unconditional defect corrupting stored data across the core service and requires immediate action. B is a serious incorrect-result failure for a supported query shape that needs prompt correction, with no critical exposure or widespread outage. C is an ordinary limited-impact defect requiring routine correction. D is a required coding-standard correction with no runtime impact. Classify their priorities using the current policy. Return exactly A=<priority>; B=<priority>; C=<priority>; D=<priority>, with no other text."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A=P0", "B=P1", "C=P2", "D=P2"]
+forbidden_summary_terms = ["P3"]
+critical = true
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["For each reported issue, prefix its title with `[P0]`, `[P1]`, or `[P2]` according to the proven impact and urgency.", "P0 (urgent): Critical failures requiring immediate action, such as severe data loss, critical security exposure, or widespread core-service outage.", "P1 (high): Serious failures on supported paths that require prompt correction and do not meet P0.", "P2 (normal): All other warranted issues, including ordinary or minor defects and violations of applicable coding standards.", "Priority expresses impact and urgency; determine proof, blocking status, feedback mode and overall result using the existing review gates."]}]
+
+[[cases]]
+id = "review_priority_p2_can_block"
+group = "review-pr finding priority"
+description = "Reports a low-impact required style correction with a P2 title while preserving the blocking review result."
+phase = "read-only formal priority output"
+ordinary_loop = false
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "Produce an English Formal Review using only these supplied synthetic facts; do not inspect files, run commands, query services or edit anything. Public candidate priority123 changes only src/main/java/example/Foo.java to remove duplicated parsing through its existing converter, preserving supported behavior and adding no API, configuration or project commitment. One confirmed finding passes every Finding Proof Gate condition: current-head Spotless exited 1 because line 20 contains trailing whitespace, contrary to an applicable repository standard. This ordinary low-impact correction has no runtime effect. The current source and Spotless report identify that exact path and line; Checkstyle passed all applicable files. All other discovery, risk, independent assessment, evidence and Completion Gate requirements are complete with no other finding or gap. CI was not requested or reviewed. Return the complete Formal Review report for this candidate."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["### Result", "Review Result: Not Mergeable", "Feedback Mode: Change Request", "Blocking Issues: 1", "### Blocking Issues", "[P2]", "Evidence", "Impact", "Required Change", "### Coverage", "priority123", "Foo.java"]
+forbidden_summary_terms = ["Review Result: Mergeable", "Review Result: Review Incomplete", "[P0]", "[P1]", "P3"]
+required_summary_prefix = "```markdown\n### Summary\n"
+critical = true
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["Return every review output as one complete copy-ready Markdown report in a fenced block labelled `markdown`, in both output modes and every review round.", "Begin the Formal Review with `### Summary` before `### Result`, explaining the concrete problem or goal motivating the PR, the affected scenario or impact, the actual change mechanism, the direction assessment and material limits in two to four concise sentences.", "Explain how the mechanism addresses that purpose, and distinguish verified effects from intended benefits that the evidence does not establish.", "If Checkstyle or Spotless fails on an applicable PR-impact file, return `Not Mergeable` with `Feedback Mode: Change Request`.", "`Not Mergeable`: `### Result` with exactly one `Review Result: Not Mergeable` line, one `Feedback Mode`, a `Blocking Issues: N` line, and a concise reason; `### Blocking Issues`; `### Coverage`.", "`Evidence`: current public or sanitized verification anchor.", "`Impact`: concrete failing behavior or contract.", "`Required Change` for Change Request, or `Discussion Needed` for Needs Discussion.", "For each reported issue, prefix its title with `[P0]`, `[P1]`, or `[P2]` according to the proven impact and urgency.", "P0 (urgent): Critical failures requiring immediate action, such as severe data loss, critical security exposure, or widespread core-service outage.", "P1 (high): Serious failures on supported paths that require prompt correction and do not meet P0.", "P2 (normal): All other warranted issues, including ordinary or minor defects and violations of applicable coding standards.", "Priority expresses impact and urgency; determine proof, blocking status, feedback mode and overall result using the existing review gates."]}]
