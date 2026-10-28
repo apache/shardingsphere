@@ -33,6 +33,7 @@ import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.advisor.executor.type.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
+import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.OpenTelemetryTracingPluginLifecycleService;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.fixture.JDBCExecutorCallbackFixture;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
@@ -66,6 +67,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -210,22 +212,41 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     }
     
     /**
-     * Neither onThrowing nor afterMethod runs for this invocation, and no further SQL executes afterwards, so the span is released by the
-     * reclaimer alone. The reclaimer is driven here through its deadline instead of through garbage collection, which keeps the test
-     * independent of the garbage collector policy.
+     * The span of a running invocation must survive the check that releases abandoned spans, however long the invocation takes. The advice
+     * executor skips the completion hooks of an invocation only while the plugin is disabled, so an enabled plugin leaves every registered
+     * span untouched and the invocation still ends its own span with its own outcome.
      */
     @Test
     @SneakyThrows(ReflectiveOperationException.class)
-    void assertAbandonedSpanIsReclaimedWhenCompletionHooksAreSkipped() {
+    void assertRunningInvocationKeepsItsSpan() {
+        OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
+        JDBCExecutionUnit slowExecutionUnit = new JDBCExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit("SELECT 3", Collections.emptyList())), null, executionUnit.getStorageResource());
+        advice.beforeMethod(targetObject, null, new Object[]{slowExecutionUnit, false}, "OpenTelemetry");
+        OpenTelemetryJDBCExecutorCallbackAdvice.endAbandonedSpans();
+        assertThat(getPendingSpans().size(), is(1));
+        assertThat(testExporter.getFinishedSpanItems().size(), is(0));
+        advice.afterMethod(targetObject, null, new Object[]{slowExecutionUnit, false}, null, "OpenTelemetry");
+        Collection<SpanData> actualSpanItems = testExporter.getFinishedSpanItems();
+        assertThat(actualSpanItems.size(), is(1));
+        assertThat(actualSpanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.OK));
+        assertTrue(getPendingSpans().isEmpty());
+    }
+    
+    /**
+     * A span whose completion hooks never ran is released when the plugin stops, so that it does not outlive the tracing it was started for.
+     */
+    @Test
+    @SneakyThrows(ReflectiveOperationException.class)
+    void assertPendingSpanIsReleasedWhenPluginStops() {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
         JDBCExecutionUnit orphanExecutionUnit = new JDBCExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit("SELECT 3", Collections.emptyList())), null, executionUnit.getStorageResource());
         advice.beforeMethod(targetObject, null, new Object[]{orphanExecutionUnit, false}, "OpenTelemetry");
         assertThat(getPendingSpans().size(), is(1));
-        OpenTelemetryJDBCExecutorCallbackAdvice.reclaimAbandonedSpans(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(6L));
+        new OpenTelemetryTracingPluginLifecycleService().close();
         Collection<SpanData> actualSpanItems = testExporter.getFinishedSpanItems();
         assertThat(actualSpanItems.size(), is(1));
         assertThat(actualSpanItems.iterator().next().getAttributes().get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is("SELECT 3"));
-        assertThat(getPendingSpans().size(), is(0));
+        assertTrue(getPendingSpans().isEmpty());
     }
     
     @Test
