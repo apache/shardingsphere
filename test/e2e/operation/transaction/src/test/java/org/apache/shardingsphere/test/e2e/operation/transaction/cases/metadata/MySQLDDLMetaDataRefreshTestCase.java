@@ -54,9 +54,7 @@ public final class MySQLDDLMetaDataRefreshTestCase extends BaseTransactionTestCa
     }
     
     private void assertMetaDataRefreshedBeforeTransactionEnds() throws SQLException {
-        try (
-                Connection connection = getDataSource().getConnection();
-                Connection queryConnection = getDataSource().getConnection()) {
+        try (Connection connection = getDataSource().getConnection(); Connection queryConnection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
             executeWithLog(connection, String.format("ALTER TABLE account ADD COLUMN %s INT;", ADDED_COLUMN_NAME));
             awaitColumnPresence(queryConnection, true, "Implicitly committed column is not refreshed into meta data while the transaction is still open.");

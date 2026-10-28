@@ -315,6 +315,20 @@ class ProxyBackendTransactionManagerTest {
     }
     
     @Test
+    void assertCommitReleasesConnectionsBeforeReconcilingDeferredMetaData() throws SQLException {
+        when(transactionStatus.isInTransaction()).thenReturn(true);
+        when(ConnectionSavepointManager.getInstance()).thenReturn(mock(ConnectionSavepointManager.class));
+        mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
+        transactionManager.commit();
+        InOrder inOrder = inOrder(localTransactionManager, databaseConnectionManager, deferredMetaDataRefreshContext);
+        inOrder.verify(localTransactionManager).commit();
+        inOrder.verify(databaseConnectionManager).closeConnections(false);
+        inOrder.verify(deferredMetaDataRefreshContext).reconcile(ProxyContext.getInstance().getContextManager());
+    }
+    
+    @Test
     void assertCommitStillReconciliesDeferredMetaDataWhenUnderlyingCommitPartiallyFailed() throws SQLException {
         when(transactionStatus.isInTransaction()).thenReturn(true);
         when(ConnectionSavepointManager.getInstance()).thenReturn(mock(ConnectionSavepointManager.class));

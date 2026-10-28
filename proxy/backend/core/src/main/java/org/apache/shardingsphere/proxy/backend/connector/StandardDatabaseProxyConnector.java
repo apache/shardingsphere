@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.EmptyRuleException;
@@ -57,6 +58,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -65,6 +67,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefreshEngine;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine;
 import org.apache.shardingsphere.mode.metadata.refresher.util.SchemaRefreshUtils;
+import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
@@ -269,9 +272,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     
     private boolean isDeferrableTableDDL(final ExecutionContext executionContext) {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        boolean isTableDDL = sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement
-                || sqlStatement instanceof DropTableStatement || sqlStatement instanceof RenameTableStatement;
-        if (!isTableDDL) {
+        if (!isDeferrableTableDDLStatement(sqlStatement)) {
             return false;
         }
         Collection<RouteUnit> routeUnits = executionContext.getRouteContext().getRouteUnits();
@@ -286,6 +287,23 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             }
         }
         return true;
+    }
+    
+    /**
+     * Check whether the statement is a table DDL whose metadata refresh can be deferred to the end of the transaction.
+     *
+     * <p>{@code ALTER TABLE ... SET SCHEMA} is excluded: the parser captures its destination schema, but the proxy has
+     * no reconciliation path that moves a table's metadata to a different schema, so deferring it would silently lose
+     * the table's metadata at commit rather than fail fast as the pre-existing restriction does.</p>
+     *
+     * @param sqlStatement SQL statement
+     * @return whether the statement is a deferrable table DDL
+     */
+    private boolean isDeferrableTableDDLStatement(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof AlterTableStatement) {
+            return !((AlterTableStatement) sqlStatement).getSetSchemaDefinition().isPresent();
+        }
+        return sqlStatement instanceof CreateTableStatement || sqlStatement instanceof DropTableStatement || sqlStatement instanceof RenameTableStatement;
     }
     
     private boolean isCurrentTransactionCommitRequired(final SQLStatement sqlStatement) {
@@ -322,7 +340,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             IdentifierValue tableName = each.getTableName().getIdentifier();
             SimpleTableSegment schemaSource = renameSchemaSources.getOrDefault(each, each);
             String schemaName = getBoundSchemaName(schemaSource).map(optional -> SchemaRefreshUtils.getActualSchemaName(database, optional)).orElse(defaultSchemaName);
-            databaseConnectionManager.getDeferredMetaDataRefreshContext().add(database.getName(), schemaName, findLogicDataSourceName(routeUnits, tableName), tableName);
+            databaseConnectionManager.getDeferredMetaDataRefreshContext().add(database.getName(), schemaName, findLogicDataSourceName(routeUnits, schemaName, tableName), tableName);
         }
     }
     
@@ -339,12 +357,14 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof AlterTableStatement) {
             AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
-            return alterTableStatement.getRenameTable().<Map<SimpleTableSegment, SimpleTableSegment>>map(
-                    optional -> Collections.singletonMap(optional, alterTableStatement.getTable())).orElseGet(Collections::emptyMap);
+            return alterTableStatement.getRenameTable()
+                    .<Map<SimpleTableSegment, SimpleTableSegment>>map(optional -> Collections.singletonMap(optional, alterTableStatement.getTable()))
+                    .orElseGet(Collections::emptyMap);
         }
         if (sqlStatement instanceof RenameTableStatement) {
-            Map<SimpleTableSegment, SimpleTableSegment> result = new HashMap<>();
-            for (RenameTableDefinitionSegment each : ((RenameTableStatement) sqlStatement).getRenameTables()) {
+            Collection<RenameTableDefinitionSegment> renameTables = ((RenameTableStatement) sqlStatement).getRenameTables();
+            Map<SimpleTableSegment, SimpleTableSegment> result = new HashMap<>(renameTables.size());
+            for (RenameTableDefinitionSegment each : renameTables) {
                 result.put(each.getRenameTable(), each.getTable());
             }
             return result;
@@ -356,7 +376,14 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         return tableSegment.getTableName().getTableBoundInfo().map(TableSegmentBoundInfo::getOriginalSchema).filter(originalSchema -> !Strings.isNullOrEmpty(originalSchema.getValue()));
     }
     
-    private String findLogicDataSourceName(final Collection<RouteUnit> routeUnits, final IdentifierValue tableName) {
+    private String findLogicDataSourceName(final Collection<RouteUnit> routeUnits, final String schemaName, final IdentifierValue tableName) {
+        String candidateTableName = TableRefreshUtils.getTableLoadCandidateName(database, tableName);
+        for (MutableDataNodeRuleAttribute each : database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class)) {
+            Optional<DataNode> dataNode = each.findTableDataNode(schemaName, candidateTableName);
+            if (dataNode.isPresent()) {
+                return dataNode.get().getDataSourceName();
+            }
+        }
         for (RouteUnit each : routeUnits) {
             if (each.getLogicTableNames().stream().anyMatch(tableName.getValue()::equalsIgnoreCase)) {
                 return each.getDataSourceMapper().getLogicName();
