@@ -401,6 +401,9 @@ class FirebirdPrepareStatementCommandExecutorTest {
                 Arguments.of("Current date subtraction", "SELECT CURRENT_DATE - CURRENT_DATE FROM bar_tbl", FirebirdBinaryColumnType.LONG),
                 Arguments.of("Date minus current date", "SELECT end_date - CURRENT_DATE FROM bar_tbl", FirebirdBinaryColumnType.LONG),
                 Arguments.of("Date minus local timestamp", "SELECT end_date - LOCALTIMESTAMP FROM bar_tbl", FirebirdBinaryColumnType.NUMERIC),
+                Arguments.of("Cast date subtraction", "SELECT CAST('2026-10-28' AS DATE) - CAST(start_date AS DATE) FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Cast timestamp minus date", "SELECT CAST(created_at AS TIMESTAMP) - end_date FROM bar_tbl", FirebirdBinaryColumnType.NUMERIC),
+                Arguments.of("Cast double arithmetic", "SELECT CAST(2 AS DOUBLE PRECISION) * 2 FROM bar_tbl", FirebirdBinaryColumnType.DOUBLE),
                 Arguments.of("Null arithmetic", "SELECT NULL + NULL FROM bar_tbl", FirebirdBinaryColumnType.LONG),
                 Arguments.of("Approximate numeric arithmetic", "SELECT price * 2 FROM bar_tbl", FirebirdBinaryColumnType.DOUBLE));
     }

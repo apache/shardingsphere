@@ -75,6 +75,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -436,19 +437,6 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
-    private int getLiteralType(@Nullable final Object value) {
-        if (value instanceof String) {
-            return Types.VARCHAR;
-        }
-        if (value instanceof Integer) {
-            return Types.INTEGER;
-        }
-        if (value instanceof Long) {
-            return Types.BIGINT;
-        }
-        return value instanceof Number ? Types.NUMERIC : Types.NULL;
-    }
-    
     private int getFunctionType(final String functionName) {
         // TODO add proper coalesce and other conditional functions return types
         switch (functionName.toLowerCase(Locale.ENGLISH)) {
@@ -523,12 +511,43 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             return getLiteralType(((LiteralExpressionSegment) operand).getLiterals());
         }
         if (operand instanceof FunctionSegment) {
-            return getFunctionType(((FunctionSegment) operand).getFunctionName());
+            String functionName = ((FunctionSegment) operand).getFunctionName();
+            return "cast".equalsIgnoreCase(functionName) ? getCastType((FunctionSegment) operand) : getFunctionType(functionName);
         }
         if (operand instanceof BinaryOperationExpression) {
             return getOperationType((BinaryOperationExpression) operand, database, schema);
         }
         return Types.NULL;
+    }
+    
+    private int getCastType(final FunctionSegment castFunction) {
+        for (ExpressionSegment each : castFunction.getParameters()) {
+            if (each instanceof DataTypeSegment) {
+                return getDataTypeNameType(((DataTypeSegment) each).getDataTypeName());
+            }
+        }
+        return Types.NULL;
+    }
+    
+    private int getDataTypeNameType(final String dataTypeName) {
+        switch (dataTypeName.toUpperCase(Locale.ENGLISH)) {
+            case "DATE":
+                return Types.DATE;
+            case "TIME":
+                return Types.TIME;
+            case "TIMESTAMP":
+                return Types.TIMESTAMP;
+            case "TIME WITH TIME ZONE":
+                return Types.TIME_WITH_TIMEZONE;
+            case "TIMESTAMP WITH TIME ZONE":
+                return Types.TIMESTAMP_WITH_TIMEZONE;
+            case "FLOAT":
+            case "REAL":
+            case "DOUBLE PRECISION":
+                return Types.DOUBLE;
+            default:
+                return Types.NULL;
+        }
     }
     
     private int getArithmeticType(final String operator, final int leftType, final int rightType) {
@@ -562,6 +581,19 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private boolean isApproximateNumericType(final int dataType) {
         return Types.FLOAT == dataType || Types.REAL == dataType || Types.DOUBLE == dataType;
+    }
+    
+    private int getLiteralType(@Nullable final Object value) {
+        if (value instanceof String) {
+            return Types.VARCHAR;
+        }
+        if (value instanceof Integer) {
+            return Types.INTEGER;
+        }
+        if (value instanceof Long) {
+            return Types.BIGINT;
+        }
+        return value instanceof Number ? Types.NUMERIC : Types.NULL;
     }
     
     @HighFrequencyInvocation
