@@ -1358,6 +1358,54 @@
         </where>
     </select>
 
+    <select sql-case-id="select_where_with_expr_with_not_or_firebird" parameters="1,2">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="75">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="75">
+                    <left>
+                        <not-expression start-index="28" stop-index="51">
+                            <expr>
+                                <binary-operation-expression start-index="32" stop-index="51">
+                                    <left>
+                                        <column name="order_id" start-index="32" stop-index="47">
+                                            <owner name="t_order" start-index="32" stop-index="38" />
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1" start-index="51" stop-index="51" />
+                                        <parameter-marker-expression parameter-index="0" start-index="51" stop-index="51" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </not-expression>
+                    </left>
+                    <operator>OR</operator>
+                    <right>
+                        <binary-operation-expression start-index="56" stop-index="75">
+                            <left>
+                                <literal-expression value="2" start-index="56" stop-index="56" />
+                                <parameter-marker-expression parameter-index="1" start-index="56" stop-index="56" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <column name="order_id" start-index="60" stop-index="75">
+                                    <owner name="t_order" start-index="60" stop-index="66" />
+                                </column>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_where_with_expr_with_not_sign" parameters="1">
         <from start-index="14" stop-index="20">
             <simple-table name="t_order" start-index="14" stop-index="20" />

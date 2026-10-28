@@ -2126,6 +2126,26 @@
         </from>
     </select>
 
+    <select sql-case-id="select_pagination_with_first_parameter_and_projection_parameter_firebird" parameters="1, 2">
+        <limit start-index="7" stop-index="13">
+            <row-count value="1" parameter-index="0" start-index="13" stop-index="13" />
+        </limit>
+        <projections start-index="15" stop-index="32">
+            <expression-projection text="CAST(? AS INTEGER)" start-index="15" stop-index="32">
+                <expr>
+                    <function function-name="CAST" text="CAST(? AS INTEGER)" start-index="15" stop-index="32">
+                        <parameter>
+                            <data-type value="INTEGER" start-index="25" stop-index="31" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="39" stop-index="45" />
+        </from>
+    </select>
+
     <select sql-case-id="select_pagination_with_where_parameter_offset_and_fetch_firebird" parameters="1, 2, 3">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />

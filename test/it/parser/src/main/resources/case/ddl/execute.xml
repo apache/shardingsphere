@@ -19,4 +19,5 @@
 <sql-parser-test-cases>
     <execute sql-case-id="execute_with_expected_db_table" />
     <execute sql-case-id="execute_without_parameter" />
+    <execute sql-case-id="execute_block_with_parameter_firebird" parameters="1" />
 </sql-parser-test-cases>

@@ -89,6 +89,9 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "modify-constraint")
     private final List<ExpectedConstraintDefinition> modifyConstraints = new LinkedList<>();
     
+    @XmlAttribute(name = "drop-constraint-count")
+    private Integer dropConstraintCount;
+    
     @XmlElement(name = "modify-column")
     private final List<ExpectedModifyColumnDefinition> modifyColumns = new LinkedList<>();
     

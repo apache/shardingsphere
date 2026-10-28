@@ -127,6 +127,7 @@ public final class AlterTableStatementAssert {
         assertAddColumnDefinitions(assertContext, actual, expected);
         assertAddConstraintDefinitions(assertContext, actual, expected);
         assertModifyConstraintDefinitions(assertContext, actual, expected);
+        assertDropConstraintDefinitions(assertContext, actual, expected);
         assertModifyColumnDefinitions(assertContext, actual, expected);
         assertChangeColumnDefinitions(assertContext, actual, expected);
         assertDropColumns(assertContext, actual, expected);
@@ -288,6 +289,12 @@ public final class AlterTableStatementAssert {
                         each.getConstraintName().getIdentifier().getValue(), is(expectedConstraintDefinition.getConstraintName()));
             }
             count++;
+        }
+    }
+    
+    private static void assertDropConstraintDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        if (null != expected.getDropConstraintCount()) {
+            assertThat(assertContext.getText("Drop constraint definitions size assertion error: "), actual.getDropConstraintDefinitions().size(), is(expected.getDropConstraintCount()));
         }
     }
     
