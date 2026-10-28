@@ -319,7 +319,8 @@ logs, or emojis.
 
 Use this format for both public-PR and local-candidate reviews.
 
-Begin the Formal Review with `### Summary` before `### Result`, explaining the problem or goal, actual change mechanism, direction assessment and material limits in two to four concise sentences.
+Begin the Formal Review with `### Summary` before `### Result`, explaining the concrete problem or goal motivating the PR, the affected scenario or impact, the actual change mechanism, the direction assessment and material limits in two to four concise sentences.
+Explain how the mechanism addresses that purpose, and distinguish verified effects from intended benefits that the evidence does not establish.
 Keep a required `### Correction` first, then give the current summary and result using only verified facts.
 
 - `Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`.
