@@ -89,7 +89,8 @@ public final class EnumerableScanImplementor implements ScanImplementor {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         DatabaseType databaseType = sqlStatementContext.getSqlStatement().getDatabaseType();
         Collection<String> systemSchemas = new SystemDatabase(databaseType).getSystemSchemas();
-        if (sqlStatementContext.getTablesContext().getSchemaNames().stream().anyMatch(systemSchemas::contains)) {
+        if (sqlStatementContext.getTablesContext().getSchemaNames().stream().anyMatch(systemSchemas::contains)
+                && !new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().isSystemSchemaQueriedFromStorage()) {
             return createMemoryEnumerable(sqlStatementContext, databaseType, table);
         }
         QueryContext scanQueryContext = createQueryContext(queryContext.getMetaData(), scanContext, databaseType, queryContext.isUseCache());

@@ -102,6 +102,13 @@ class EnumerableScanTest {
     }
     
     @Test
+    void assertConstructorWithDefaultSchemaQualifiedDatabaseType() {
+        LogicalTableScan pushDownNode = LogicalTableScan.create(cluster, relOptTable, Collections.emptyList());
+        EnumerableScan scan = new EnumerableScan(cluster, cluster.traitSet(), relOptTable, pushDownNode, "Oracle");
+        assertThat(scan.getSqlString().getSql().replace(System.lineSeparator(), " "), is("SELECT * FROM \"TEST\".\"tbl\""));
+    }
+    
+    @Test
     void assertCopyKeepsSqlAndRowType() {
         SqlString sqlString = new SqlString(SQLDialectFactory.getSQLDialect("MySQL"), "SELECT 1");
         EnumerableScan copied = (EnumerableScan) new EnumerableScan(cluster, cluster.traitSet(), relOptTable, sqlString, rowType).copy(cluster.traitSet(), Collections.emptyList());

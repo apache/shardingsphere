@@ -19,9 +19,11 @@ package org.apache.shardingsphere.infra.metadata.identifier;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
@@ -57,6 +59,17 @@ public final class DatabaseIdentifierContext {
      */
     public boolean matchesMetaData(final IdentifierScope identifierScope, final String storedName, final IdentifierValue identifier) {
         return metaDataPolicySet.getPolicy(identifierScope).matches(storedName, identifier.getValue(), identifier.getQuoteCharacter());
+    }
+    
+    /**
+     * Get protocol lookup mode.
+     *
+     * @param identifierScope identifier scope
+     * @param quoteCharacter quote character
+     * @return protocol lookup mode
+     */
+    public LookupMode getProtocolLookupMode(final IdentifierScope identifierScope, final QuoteCharacter quoteCharacter) {
+        return protocolPolicySet.getPolicy(identifierScope).getLookupMode(quoteCharacter);
     }
     
     /**

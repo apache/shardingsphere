@@ -21,6 +21,7 @@ import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.junit.jupiter.api.Test;
@@ -55,8 +56,10 @@ class CompilerContextTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         when(result.getName()).thenReturn("foo_db");
-        when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(result.getProtocolType()).thenReturn(databaseType);
+        when(result.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_db", databaseType)));
         return result;
     }
 }

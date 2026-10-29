@@ -55,6 +55,33 @@ public interface DialectSchemaOption {
     Optional<String> getDefaultSystemSchema();
     
     /**
+     * Judge whether the default system schema takes precedence over the current schema when resolving an unqualified table name.
+     *
+     * @return system schema takes precedence over current schema or not
+     */
+    default boolean isSystemSchemaPreferredOverCurrentSchema() {
+        return true;
+    }
+    
+    /**
+     * Judge whether an unqualified table name that is the target of a DDL statement, such as {@code DROP TABLE} or {@code ALTER TABLE}, resolves to the default system schema.
+     *
+     * @return DDL target resolves to default system schema or not
+     */
+    default boolean isDDLTargetResolvedToSystemSchema() {
+        return true;
+    }
+    
+    /**
+     * Judge whether federated queries on system schema tables are executed on storage units instead of reading in-memory system table data.
+     *
+     * @return system schema queried from storage or not
+     */
+    default boolean isSystemSchemaQueriedFromStorage() {
+        return false;
+    }
+    
+    /**
      * Get schema semantics.
      *
      * @return schema semantics
