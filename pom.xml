@@ -54,18 +54,20 @@
     <properties>
         <!-- Environments -->
         <java.version>8</java.version>
-        <compile.java.version>21</compile.java.version>
-        <maven.compiler.source>${compile.java.version}</maven.compiler.source>
+        <build.jdk.version>21</build.jdk.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        
+        <maven.compiler.source>${build.jdk.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.version.range>[3.0.4,)</maven.version.range>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <remoteresources.skip>true</remoteresources.skip>
-        <jacoco.skip>true</jacoco.skip>
-        <argLine />
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <maven.enforcer.fail>true</maven.enforcer.fail>
+        
+        <remoteresources.skip>true</remoteresources.skip>
+        <jacoco.skip>true</jacoco.skip>
+        <argLine />
         <shade.package>org.apache.shardingsphere.shade</shade.package>
         <antlr.output.directory>${basedir}/target/generated-sources/antlr4</antlr.output.directory>
         
@@ -799,7 +801,7 @@
                                         <version>${maven.version.range}</version>
                                     </requireMavenVersion>
                                     <requireJavaVersion>
-                                        <version>[${compile.java.version},)</version>
+                                        <version>[${build.jdk.version},)</version>
                                     </requireJavaVersion>
                                 </rules>
                                 <fail>${maven.enforcer.fail}</fail>
