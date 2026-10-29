@@ -2732,6 +2732,33 @@
         </returning>
     </update>
 
+    <update sql-case-id="update_octets_columns_with_parameters_firebird" parameters="x'09090909', x'00ff80'">
+        <table start-index="7" stop-index="14">
+            <simple-table name="t_octets" start-index="7" stop-index="14" />
+        </table>
+        <set start-index="16" stop-index="25">
+            <assignment start-index="20" stop-index="25">
+                <column name="co" start-index="20" stop-index="21" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="25" stop-index="25" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="27" stop-index="38">
+            <expr>
+                <binary-operation-expression start-index="33" stop-index="38">
+                    <left>
+                        <column name="vo" start-index="33" stop-index="34" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="1" start-index="38" stop-index="38" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+
     <update sql-case-id="update_with_option_label_hint">
         <table start-index="7" stop-index="16">
             <simple-table name="DimProduct" start-index="7" stop-index="16" />

@@ -13417,6 +13417,35 @@
         </from>
     </select>
 
+    <select sql-case-id="select_octets_columns_firebird">
+        <projections start-index="7" stop-index="16">
+            <column-projection name="id" start-index="7" stop-index="8" />
+            <column-projection name="vo" start-index="11" stop-index="12" />
+            <column-projection name="co" start-index="15" stop-index="16" />
+        </projections>
+        <from>
+            <simple-table name="t_octets" start-index="23" stop-index="30" />
+        </from>
+        <where start-index="32" stop-index="55">
+            <expr>
+                <between-expression start-index="38" stop-index="55">
+                    <left>
+                        <column name="id" start-index="38" stop-index="39" />
+                    </left>
+                    <between-expr>
+                        <literal-expression value="1" start-index="49" stop-index="49" />
+                    </between-expr>
+                    <and-expr>
+                        <literal-expression value="3" start-index="55" stop-index="55" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="id" start-index="66" stop-index="67" />
+        </order-by>
+    </select>
+
     <select sql-case-id="select_adjacent_string_literals_firebird">
         <projections start-index="7" stop-index="13">
             <expression-projection text="ab" start-index="7" stop-index="13">

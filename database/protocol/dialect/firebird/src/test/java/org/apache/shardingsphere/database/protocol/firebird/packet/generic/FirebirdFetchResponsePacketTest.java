@@ -131,6 +131,24 @@ class FirebirdFetchResponsePacketTest {
     }
     
     @Test
+    void assertWriteWithTextCellData() {
+        ByteBuf actual = Unpooled.buffer();
+        try {
+            FirebirdPacketPayload packetPayload = new FirebirdPacketPayload(actual, StandardCharsets.UTF_8);
+            BinaryRow row = new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.TEXT, new byte[]{0x01, 0x02, (byte) 0xff})));
+            FirebirdFetchResponsePacket.getFetchRowPacket(row).write(packetPayload);
+            assertThat(actual.readableBytes(), is(20));
+            actual.skipBytes(16);
+            assertThat(actual.readByte(), is((byte) 0x01));
+            assertThat(actual.readByte(), is((byte) 0x02));
+            assertThat(actual.readByte(), is((byte) 0xff));
+            assertThat(actual.readByte(), is((byte) 0x00));
+        } finally {
+            actual.release();
+        }
+    }
+    
+    @Test
     void assertWriteWithNullCellData() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         FirebirdFetchResponsePacket.getFetchRowPacket(new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.LONG, null)))).write(payload);

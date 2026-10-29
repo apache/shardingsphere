@@ -38,40 +38,49 @@ public final class FirebirdBlrRowMetadata {
     
     private final List<FirebirdBinaryColumnType> columnTypes;
     
+    private final List<Integer> columnCharsets;
+    
+    private final List<Integer> columnLengths;
+    
     /**
      * Parse FirebirdBlrRowMetadata from BLR buffer.
+     *
+     * <p>Character set and length are kept for {@code blr_text2} and {@code blr_varying2} columns; other columns get {@code 0}.</p>
      *
      * @param blrBuffer BLR buffer
      * @return row binary
      */
     public static FirebirdBlrRowMetadata parseBLR(final ByteBuf blrBuffer) {
-        return new FirebirdBlrRowMetadata(blrBuffer.readableBytes(), parse(blrBuffer));
-    }
-    
-    private static List<FirebirdBinaryColumnType> parse(final ByteBuf blrBuffer) {
         ByteBuf buffer = blrBuffer.duplicate();
         if (!buffer.isReadable()) {
-            return new ArrayList<>(0);
+            return new FirebirdBlrRowMetadata(blrBuffer.readableBytes(), new ArrayList<>(0), new ArrayList<>(0), new ArrayList<>(0));
         }
         buffer.skipBytes(4);
         int length = buffer.readUnsignedByte();
         length += 256 * buffer.readUnsignedByte();
-        List<FirebirdBinaryColumnType> result = new ArrayList<>(length / 2);
+        List<FirebirdBinaryColumnType> columnTypes = new ArrayList<>(length / 2);
+        List<Integer> columnCharsets = new ArrayList<>(length / 2);
+        List<Integer> columnLengths = new ArrayList<>(length / 2);
         int blrType = buffer.readUnsignedByte();
         while (blrType != BlrConstants.blr_end) {
             FirebirdBinaryColumnType type = FirebirdBinaryColumnType.valueOfBLRType(blrType);
-            result.add(type);
-            buffer.skipBytes(getSkipCount(type) + 2);
+            columnTypes.add(type);
+            if (FirebirdBinaryColumnType.VARYING == type || FirebirdBinaryColumnType.TEXT == type) {
+                columnCharsets.add(buffer.readUnsignedShortLE());
+                columnLengths.add(buffer.readUnsignedShortLE());
+            } else {
+                columnCharsets.add(0);
+                columnLengths.add(0);
+                buffer.skipBytes(getSkipCount(type));
+            }
+            buffer.skipBytes(2);
             blrType = buffer.readUnsignedByte();
         }
-        return result;
+        return new FirebirdBlrRowMetadata(blrBuffer.readableBytes(), columnTypes, columnCharsets, columnLengths);
     }
     
     private static int getSkipCount(final FirebirdBinaryColumnType type) {
         switch (type) {
-            case VARYING:
-            case TEXT:
-                return 4;
             case NULL:
             case LEGACY_TEXT:
             case LEGACY_VARYING:
