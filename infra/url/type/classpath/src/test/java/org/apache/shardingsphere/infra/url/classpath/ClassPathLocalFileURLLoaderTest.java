@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.url.classpath;
 
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.url.spi.ShardingSphereLocalFileURLLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -27,6 +29,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 class ClassPathLocalFileURLLoaderTest {
+    
+    private final ShardingSphereLocalFileURLLoader loader = TypedSPILoader.getService(ShardingSphereLocalFileURLLoader.class, "classpath:");
     
     @Test
     @EnabledOnOs({OS.LINUX, OS.MAC})
@@ -41,6 +45,6 @@ class ClassPathLocalFileURLLoaderTest {
     }
     
     private void assertGetContent(final int expectedLength) {
-        assertThat(new ClassPathLocalFileURLLoader().load("config/classpath/fixture.yaml", new Properties()).length(), is(expectedLength));
+        assertThat(loader.load("config/classpath/fixture.yaml", new Properties()).length(), is(expectedLength));
     }
 }
