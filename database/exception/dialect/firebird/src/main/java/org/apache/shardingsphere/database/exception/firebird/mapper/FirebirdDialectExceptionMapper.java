@@ -26,6 +26,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.databa
 import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
+import org.apache.shardingsphere.database.exception.firebird.exception.connection.LoginErrorException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
@@ -63,6 +64,9 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof AccessDeniedException) {
             return toSQLException(FirebirdVendorError.LOGIN_FAILED);
+        }
+        if (sqlDialectException instanceof LoginErrorException) {
+            return toSQLException(FirebirdVendorError.LOGIN_ERROR);
         }
         if (sqlDialectException instanceof InvalidBatchHandleException) {
             return toSQLException(FirebirdVendorError.INVALID_BATCH_HANDLE);

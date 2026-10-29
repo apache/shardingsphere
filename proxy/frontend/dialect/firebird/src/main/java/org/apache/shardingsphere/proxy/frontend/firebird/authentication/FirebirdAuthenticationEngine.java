@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.exception.core.exception.connection.Ac
 import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.database.exception.firebird.exception.connection.LoginErrorException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdAuthenticationMethod;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
@@ -101,6 +102,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         ShardingSphereUser user = rule.findUser(new Grantee(username, "")).orElseThrow(() -> new AccessDeniedException(username, connectPacket.getHost(), true));
         FirebirdAuthenticationMethod plugin = FirebirdAuthenticationMethod.valueOf(getPluginName(rule, user));
         if (plugin != connectPacket.getPlugin()) {
+            ShardingSpherePreconditions.checkState(FirebirdAuthenticationMethod.LEGACY_AUTH == plugin, LoginErrorException::new);
             acceptPacket.setAcceptDataPacket(new byte[0], "", plugin, 0, "");
         } else if (FirebirdAuthenticationMethod.LEGACY_AUTH != plugin) {
             authData = new FirebirdSRPAuthenticationData(plugin.getHashAlgorithm(), username, user.getPassword(), connectPacket.getAuthData());
