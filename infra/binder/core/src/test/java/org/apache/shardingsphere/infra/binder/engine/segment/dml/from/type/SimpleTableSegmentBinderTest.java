@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
@@ -79,6 +80,16 @@ class SimpleTableSegmentBinderTest {
         assertThat(actual.getTableName().getTableBoundInfo().get().getOriginalDatabase().getValue(), is("foo_db"));
         assertThat(actual.getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("yanyi"));
         assertTrue(((SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next()).isSkipColumnBind());
+    }
+    
+    @Test
+    void assertBindUnknownOwnerWithoutCurrentDatabase() {
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(11, 19, new IdentifierValue("foo_table")));
+        simpleTableSegment.setOwner(new OwnerSegment(0, 9, new IdentifierValue("unknown_db")));
+        HintValueContext hintValueContext = new HintValueContext();
+        hintValueContext.setSkipMetadataValidate(true);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(createMetaData(), null, hintValueContext, SelectStatement.builder().databaseType(databaseType).build());
+        assertThrows(UnknownDatabaseException.class, () -> SimpleTableSegmentBinder.bind(simpleTableSegment, binderContext, LinkedHashMultimap.create()));
     }
     
     @Test

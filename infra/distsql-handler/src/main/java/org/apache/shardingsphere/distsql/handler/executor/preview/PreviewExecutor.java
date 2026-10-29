@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.context.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.executor.aware.DistSQLExecutorConnectionContextAware;
-import org.apache.shardingsphere.distsql.handler.executor.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.executor.preview.spi.PreviewExecutionUnitGenerator;
 import org.apache.shardingsphere.distsql.handler.executor.spi.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.type.rul.sql.PreviewStatement;
@@ -55,9 +54,7 @@ import java.util.stream.Collectors;
  * Preview executor.
  */
 @Setter
-public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatement>, DistSQLExecutorDatabaseAware, DistSQLExecutorConnectionContextAware {
-    
-    private ShardingSphereDatabase database;
+public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatement>, DistSQLExecutorConnectionContextAware {
     
     private DistSQLConnectionContext connectionContext;
     
@@ -70,19 +67,21 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     public Collection<LocalDataQueryResultRow> getRows(final PreviewStatement sqlStatement, final ContextManager contextManager) {
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
         String toBePreviewedSQL = sqlStatement.getSql();
-        SQLStatement toBePreviewedStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(database.getProtocolType()).parse(toBePreviewedSQL, false);
+        SQLStatement toBePreviewedStatement =
+                metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(connectionContext.getProtocolType()).parse(toBePreviewedSQL, false);
         HintValueContext hintValueContext = connectionContext.getQueryContext().getHintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
         String currentDatabaseName = connectionContext.getQueryContext().getConnectionContext().getCurrentDatabaseName().orElse(null);
         SQLStatementContext toBePreviewedStatementContext = new SQLBindEngine(metaData, currentDatabaseName, hintValueContext).bind(toBePreviewedStatement);
-        QueryContext queryContext = new QueryContext(
-                toBePreviewedStatementContext, toBePreviewedSQL, Collections.emptyList(), hintValueContext, connectionContext.getQueryContext().getConnectionContext(), metaData);
         if (toBePreviewedStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent()
                 && toBePreviewedStatementContext instanceof CursorHeldSQLStatementContext) {
             setUpCursorDefinition((CursorHeldSQLStatementContext) toBePreviewedStatementContext);
         }
+        QueryContext queryContext = new QueryContext(
+                toBePreviewedStatementContext, toBePreviewedSQL, Collections.emptyList(), hintValueContext, connectionContext.getQueryContext().getConnectionContext(), metaData);
+        ShardingSphereDatabase database = queryContext.getUsedDatabaseNames().size() > 1 ? contextManager.getDatabase(currentDatabaseName) : queryContext.getUsedDatabase();
         ShardingSpherePreconditions.checkState(database.isComplete(), () -> new EmptyRuleException(database.getName()));
-        Collection<ExecutionUnit> executionUnits = getExecutionUnits(contextManager, metaData, queryContext);
+        Collection<ExecutionUnit> executionUnits = getExecutionUnits(contextManager, metaData, queryContext, database);
         return executionUnits.stream().map(each -> new LocalDataQueryResultRow(each.getDataSourceName(), each.getSqlUnit().getSql())).collect(Collectors.toList());
     }
     
@@ -97,7 +96,8 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
         toBePreviewedStatementContext.setCursorStatementContext(cursorStatementContext);
     }
     
-    private Collection<ExecutionUnit> getExecutionUnits(final ContextManager contextManager, final ShardingSphereMetaData metaData, final QueryContext queryContext) {
+    private Collection<ExecutionUnit> getExecutionUnits(final ContextManager contextManager, final ShardingSphereMetaData metaData, final QueryContext queryContext,
+                                                        final ShardingSphereDatabase database) {
         for (PreviewExecutionUnitGenerator each : ShardingSphereServiceLoader.getServiceInstances(PreviewExecutionUnitGenerator.class)) {
             Optional<Collection<ExecutionUnit>> result = each.generate(database, queryContext, contextManager, connectionContext);
             if (result.isPresent()) {
