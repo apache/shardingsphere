@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.resource;
 
-import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpecification;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.MCPResourceController;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
@@ -43,8 +42,6 @@ import java.util.Map;
 public final class MCPResourceSpecificationFactory {
     
     private static final String JSON_CONTENT_TYPE = "application/json";
-    
-    private final McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
     
     private final Collection<MCPResourceDescriptor> descriptors;
     
@@ -117,7 +114,7 @@ public final class MCPResourceSpecificationFactory {
     private ReadResourceResult readResource(final String sessionId, final McpSchema.ReadResourceRequest request) {
         try {
             Map<String, Object> payload = controller.handle(sessionId, request.uri()).toPayload();
-            return new ReadResourceResult(Collections.singletonList(new TextResourceContents(request.uri(), JSON_CONTENT_TYPE, jsonMapper.writeValueAsString(payload))));
+            return new ReadResourceResult(Collections.singletonList(new TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonEngine.marshal(payload))));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
