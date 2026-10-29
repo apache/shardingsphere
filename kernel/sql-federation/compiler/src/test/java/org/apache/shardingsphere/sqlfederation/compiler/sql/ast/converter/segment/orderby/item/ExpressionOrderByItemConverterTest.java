@@ -29,6 +29,9 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExt
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
 
 import java.util.Optional;
 
@@ -90,5 +93,21 @@ class ExpressionOrderByItemConverterTest {
         assertThat(nullsLastCall, isA(SqlBasicCall.class));
         assertThat(nullsLastCall.getOperator(), is(SqlStdOperatorTable.NULLS_LAST));
         assertThat(nullsLastCall.getOperandList().get(0), is(expectedNode));
+    }
+    
+    @ParameterizedTest(name = "DESC NULLS {0}")
+    @NullSource
+    @EnumSource(value = NullsOrderType.class, names = {"FIRST", "LAST"})
+    void assertConvertDescending(final NullsOrderType nullsOrderType) {
+        ExpressionSegment expression = mock(ExpressionSegment.class);
+        SqlNode expected = mock(SqlNode.class);
+        when(ExpressionConverter.convert(expression)).thenReturn(Optional.of(expected));
+        SqlBasicCall actual = (SqlBasicCall) ExpressionOrderByItemConverter.convert(new ExpressionOrderByItemSegment(0, 0, "foo_expr", OrderDirection.DESC, nullsOrderType, expression)).get();
+        if (null != nullsOrderType) {
+            assertThat(actual.getOperator(), is(NullsOrderType.FIRST == nullsOrderType ? SqlStdOperatorTable.NULLS_FIRST : SqlStdOperatorTable.NULLS_LAST));
+            actual = actual.operand(0);
+        }
+        assertThat(actual.getOperator(), is(SqlStdOperatorTable.DESC));
+        assertThat(actual.operand(0), is(expected));
     }
 }
