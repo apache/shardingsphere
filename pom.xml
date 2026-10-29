@@ -107,7 +107,7 @@
         <bval.version>2.0.6</bval.version>
         
         <netty.version>4.2.19.Final</netty.version>
-        <bouncycastle.version>1.84</bouncycastle.version>
+        <bouncycastle-bom.version>1.86.2</bouncycastle-bom.version>
         
         <curator.version>5.7.0</curator.version>
         <zookeeper.version>3.9.6</zookeeper.version>
@@ -436,13 +436,10 @@
             
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpkix-jdk18on</artifactId>
-                <version>${bouncycastle.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bctls-jdk18on</artifactId>
-                <version>${bouncycastle.version}</version>
+                <artifactId>bc-jdk18on-bom</artifactId>
+                <version>${bouncycastle-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             
             <dependency>
