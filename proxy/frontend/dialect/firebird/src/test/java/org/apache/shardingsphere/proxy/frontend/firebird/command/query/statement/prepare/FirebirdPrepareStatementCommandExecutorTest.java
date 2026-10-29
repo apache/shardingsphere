@@ -66,6 +66,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
@@ -162,6 +163,18 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(preparedStatement.getSql(), is("SELECT 1"));
         assertThat(preparedStatement.getSqlStatementContext(), isA(SelectStatementContext.class));
+    }
+    
+    @ParameterizedTest
+    @CsvSource(value = {
+            "UPDATE OR INSERT INTO foo_tbl (id) VALUES (1) RETURNING id|SELECT",
+            "INSERT INTO foo_tbl (id) VALUES (1) RETURNING id|EXEC_PROCEDURE",
+            "UPDATE OR INSERT INTO foo_tbl (id) VALUES (1)|INSERT"
+    }, delimiter = '|')
+    void assertExecuteInsertStatementType(final String sql, final FirebirdSQLInfoReturnValue expected) throws Exception {
+        when(packet.getSQL()).thenReturn(sql);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getType(), is(expected));
     }
     
     private FirebirdPrepareStatementReturnPacket executeAndGetReturnPacket() throws SQLException {

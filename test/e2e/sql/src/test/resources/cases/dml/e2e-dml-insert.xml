@@ -17,6 +17,14 @@
   -->
 
 <e2e-test-cases>
+    <test-case sql="UPDATE OR INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, 1, 'test', '2017-08-08')" db-types="Firebird" scenario-types="db">
+        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
+    </test-case>
+
+    <test-case sql="UPDATE OR INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, NULL, 'test', '2017-08-08')" db-types="Firebird" scenario-types="db">
+        <assertion parameters="1000:int, 10:int, update:String" expected-data-file="update_or_insert_existing.xml" />
+    </test-case>
+
     <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, 1, 'test', '2017-08-08')" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
         <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />

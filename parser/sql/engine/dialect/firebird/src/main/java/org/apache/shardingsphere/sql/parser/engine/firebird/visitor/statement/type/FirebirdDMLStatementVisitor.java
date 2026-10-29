@@ -137,7 +137,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     public ASTNode visitInsert(final InsertContext ctx) {
         InsertStatement insertValuesStatement = (InsertStatement) visit(ctx.insertValuesClause());
         InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()))
-                .insertColumns(insertValuesStatement.getInsertColumns().orElse(null)).values(insertValuesStatement.getValues())
+                .insertColumns(insertValuesStatement.getInsertColumns().orElse(null)).updateOrInsert(null != ctx.UPDATE()).values(insertValuesStatement.getValues())
                 .returning(null == ctx.returningClause() ? null : (ReturningSegment) visit(ctx.returningClause())).build();
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;

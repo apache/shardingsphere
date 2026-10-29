@@ -4748,7 +4748,7 @@
         </values>
     </insert>
 
-    <insert sql-case-id="update_or_insert_without_matching_firebird" parameters="1, 1">
+    <insert sql-case-id="update_or_insert_without_matching_firebird" parameters="1, 1" update-or-insert="true">
         <table name="t_order" start-index="22" stop-index="28" />
         <columns start-index="30" stop-index="48">
             <column name="order_id" start-index="31" stop-index="38" />

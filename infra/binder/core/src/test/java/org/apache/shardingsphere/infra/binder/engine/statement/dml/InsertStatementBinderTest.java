@@ -59,6 +59,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -78,11 +79,13 @@ class InsertStatementBinderTest {
                 .values(Collections.singletonList(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
                         new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK")))))
                 .overwrite(true)
+                .updateOrInsert(true)
                 .errorLogging(errorLogging)
                 .build();
         InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), insertStatement));
         assertThat(actual, not(insertStatement));
         assertTrue(actual.isOverwrite());
+        assertTrue(actual.isUpdateOrInsert());
         assertThat(actual.getErrorLogging().get(), is(errorLogging));
         assertTrue(actual.getTable().isPresent());
         assertTrue(insertStatement.getTable().isPresent());
@@ -150,6 +153,7 @@ class InsertStatementBinderTest {
                 .build();
         InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), insertStatement));
         assertThat(actual, not(insertStatement));
+        assertFalse(actual.isUpdateOrInsert());
         assertTrue(actual.getTable().isPresent());
         assertTrue(insertStatement.getTable().isPresent());
         assertThat(actual.getTable().get().getTableName(), not(insertStatement.getTable().get().getTableName()));

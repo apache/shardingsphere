@@ -81,7 +81,7 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
                         optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null))
                 .exec(sqlStatement.getExec().orElse(null)).withTableHint(sqlStatement.getWithTableHint().orElse(null))
                 .rowSetFunction(sqlStatement.getRowSetFunction().orElse(null)).ignore(sqlStatement.isIgnore()).replace(sqlStatement.isReplace())
-                .overwrite(sqlStatement.isOverwrite()).values(new LinkedList<>(boundValues)).build();
+                .overwrite(sqlStatement.isOverwrite()).updateOrInsert(sqlStatement.isUpdateOrInsert()).values(new LinkedList<>(boundValues)).build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         if (!sqlStatement.getInsertColumns().isPresent() || sqlStatement.getInsertColumns().get().getColumns().isEmpty()) {
             tableBinderContexts.values().forEach(each -> result.getDerivedInsertColumns().addAll(getVisibleColumns(each.getProjectionSegments())));

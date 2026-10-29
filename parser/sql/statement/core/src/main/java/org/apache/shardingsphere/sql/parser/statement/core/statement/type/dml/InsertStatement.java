@@ -93,6 +93,8 @@ public final class InsertStatement extends DMLStatement {
     
     private final boolean overwrite;
     
+    private final boolean updateOrInsert;
+    
     private final Collection<InsertValuesSegment> values;
     
     private final Collection<ColumnSegment> derivedInsertColumns;
@@ -106,7 +108,7 @@ public final class InsertStatement extends DMLStatement {
                             final MultiTableInsertType multiTableInsertType, final MultiTableInsertIntoSegment multiTableInsertInto,
                             final MultiTableConditionalIntoSegment multiTableConditionalInto, final WhereSegment where, final ExecSegment exec,
                             final WithTableHintSegment withTableHint, final FunctionSegment rowSetFunction, final boolean ignore, final boolean replace,
-                            final boolean overwrite, final Collection<InsertValuesSegment> values, final Collection<ColumnSegment> derivedInsertColumns) {
+                            final boolean overwrite, final boolean updateOrInsert, final Collection<InsertValuesSegment> values, final Collection<ColumnSegment> derivedInsertColumns) {
         super(databaseType);
         this.table = table;
         this.insertColumns = insertColumns;
@@ -128,6 +130,7 @@ public final class InsertStatement extends DMLStatement {
         this.ignore = ignore;
         this.replace = replace;
         this.overwrite = overwrite;
+        this.updateOrInsert = updateOrInsert;
         this.values = null == values ? new LinkedList<>() : values;
         this.derivedInsertColumns = null == derivedInsertColumns ? new LinkedList<>() : derivedInsertColumns;
         attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));

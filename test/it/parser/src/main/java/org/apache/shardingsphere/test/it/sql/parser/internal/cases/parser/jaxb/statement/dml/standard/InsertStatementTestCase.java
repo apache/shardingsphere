@@ -39,6 +39,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.where.ExpectedWhereClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.with.ExpectedWithClause;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -47,6 +48,9 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class InsertStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "update-or-insert")
+    private boolean updateOrInsert;
     
     @XmlElement
     private ExpectedSimpleTable table;

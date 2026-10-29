@@ -73,6 +73,11 @@ public final class InsertStatementAssert {
      * @param expected expected insert statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        if (expected.isUpdateOrInsert()) {
+            assertTrue(actual.isUpdateOrInsert(), assertContext.getText("Expected UPDATE OR INSERT."));
+        } else {
+            assertFalse(actual.isUpdateOrInsert(), assertContext.getText("Expected an ordinary INSERT."));
+        }
         assertTable(assertContext, actual, expected);
         assertInsertColumnsClause(assertContext, actual, expected);
         assertDerivedInsertColumns(assertContext, actual, expected);
