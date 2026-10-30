@@ -76,4 +76,4 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Run Apache Rat
-        run: ./mvnw apache-rat:check -Pcheck -T1
+        run: ./mvnw apache-rat:check -Pcheck -T1C
