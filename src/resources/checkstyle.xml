@@ -48,13 +48,6 @@
             <property name="checks" value="FinalClass" />
             <property name="query" value="//CLASS_DEF[./MODIFIERS/LITERAL_PRIVATE]" />
         </module>
-        <module name="SuppressionXpathSingleFilter">
-            <property name="files" value="[/\\]GroupByStreamMergedResult\.java$" />
-            <property name="checks" value="IllegalType" />
-            <property name="message" value="^Do not declare Map\.Entry as a parameter\.$" />
-            <property name="query"
-                      value="//CLASS_DEF[./IDENT[@text='GroupByStreamMergedResult']]/OBJBLOCK/METHOD_DEF[./MODIFIERS/LITERAL_PRIVATE and ./IDENT[@text=('aggregate', 'setAggregationValueToCurrentRow')]]/PARAMETERS/PARAMETER_DEF[./IDENT[@text='aggregationEntries']]/TYPE[./IDENT[@text='Collection']]//IDENT[@text='Entry']" />
-        </module>
         
         <!-- Annotations -->
         <module name="AnnotationLocation">
