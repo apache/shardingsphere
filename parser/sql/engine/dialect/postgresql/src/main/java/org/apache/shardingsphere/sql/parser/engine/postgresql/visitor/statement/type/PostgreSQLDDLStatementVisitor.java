@@ -191,6 +191,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Pr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.QualifiedNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RefreshMatViewStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ReindexContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RelationExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RelativeCountContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameTableSpecificationContext;
@@ -732,10 +733,13 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         return new DropTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue(), null != ctx.ifExists(), containsCascade);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNamesClause())).getValue(), Collections.emptyList());
+        Collection<SimpleTableSegment> tables = new ArrayList<>(ctx.relationExprList().relationExpr().size());
+        for (RelationExprContext each : ctx.relationExprList().relationExpr()) {
+            tables.add((SimpleTableSegment) visit(each.qualifiedName()));
+        }
+        return new TruncateStatement(getDatabaseType(), tables, Collections.emptyList());
     }
     
     @Override

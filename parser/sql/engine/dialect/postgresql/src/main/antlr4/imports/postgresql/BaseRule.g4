@@ -2103,7 +2103,7 @@ encoding
     ;
 
 genericSet
-    : varName (EQ_|TO) (varList | DEFAULT)
+    : varName (EQ_|TO) (varList | DEFAULT | NULL)
     ;
 
 variableResetStmt

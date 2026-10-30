@@ -19,4 +19,11 @@
 
 <sql-parser-test-cases>
     <checkpoint sql-case-id="checkpoint" />
+    <checkpoint sql-case-id="checkpoint_flag_option_pg" />
+
+    <checkpoint sql-case-id="checkpoint_multiple_options_pg" />
+
+    <checkpoint sql-case-id="checkpoint_option_string_pg" />
+
+    <checkpoint sql-case-id="checkpoint_unknown_option_pg" />
 </sql-parser-test-cases>
