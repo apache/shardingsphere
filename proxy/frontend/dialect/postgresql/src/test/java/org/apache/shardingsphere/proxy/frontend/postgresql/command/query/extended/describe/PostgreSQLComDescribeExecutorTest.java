@@ -31,6 +31,8 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDLoader;
 import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDResolver;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -58,6 +60,7 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extende
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
@@ -471,6 +474,100 @@ class PostgreSQLComDescribeExecutorTest {
             assertThat(actualColumnDescription.getColumnLength(), is(expectedColumnDescription.getColumnLength()));
             assertThat(actualColumnDescription.getTypeOID(), is(expectedColumnDescription.getTypeOID()));
         }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("derivedProjections")
+    void assertDescribeWithDerivedProjections(final String name, final String sql, final int visibleColumnCount, final int physicalColumnCount, final String firstColumnName) throws SQLException {
+        when(packet.getType()).thenReturn('S');
+        when(packet.getName()).thenReturn("foo_describe");
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn((SelectStatement) SQL_PARSER_ENGINE.parse(sql, false));
+        when(sqlStatementContext.containsDerivedProjections()).thenReturn(true);
+        ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
+        when(projectionsContext.getExpandProjections()).thenReturn(Collections.nCopies(visibleColumnCount, mock(Projection.class)));
+        when(sqlStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnCount()).thenReturn(physicalColumnCount);
+        when(resultSetMetaData.getColumnName(anyInt())).thenAnswer(invocation -> 1 == (int) invocation.getArgument(0) ? firstColumnName : "foo_column_" + invocation.getArgument(0));
+        when(resultSetMetaData.getColumnType(anyInt())).thenReturn(Types.INTEGER);
+        when(resultSetMetaData.getColumnDisplaySize(anyInt())).thenReturn(11);
+        when(resultSetMetaData.getColumnTypeName(anyInt())).thenReturn("int4");
+        when(preparedStatement.getMetaData()).thenReturn(resultSetMetaData);
+        when(preparedStatement.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
+        when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        ConnectionContext connectionContext = mock(ConnectionContext.class);
+        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of(DATABASE_NAME));
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement("foo_describe",
+                new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList()));
+        columnTypeOIDs = Collections.singletonMap(1, 2249);
+        Iterator<DatabasePacket> actual = executor.execute().iterator();
+        actual.next();
+        List<PostgreSQLColumnDescription> actualColumns = getColumnDescriptions((PostgreSQLRowDescriptionPacket) actual.next());
+        assertThat(actualColumns.size(), is(visibleColumnCount));
+        assertThat(actualColumns.get(0).getColumnName(), is(firstColumnName));
+        assertThat(actualColumns.get(0).getTypeOID(), is(2249));
+        for (int i = 1; i < actualColumns.size(); i++) {
+            assertThat(actualColumns.get(i).getColumnIndex(), is(i + 1));
+            assertThat(actualColumns.get(i).getColumnName(), is("foo_column_" + (i + 1)));
+            assertThat(actualColumns.get(i).getTypeOID(), is(PostgreSQLBinaryColumnType.INT4.getValue()));
+        }
+    }
+    
+    private static Stream<Arguments> derivedProjections() {
+        return Stream.of(
+                Arguments.of("order by projection", "SELECT id FROM t_order ORDER BY k", 1, 2, "foo_id"),
+                Arguments.of("aggregation projections", "SELECT AVG(id) FROM t_order", 1, 3, "foo_average"),
+                Arguments.of("expanded shorthand", "SELECT * FROM t_order ORDER BY id + 1", 4, 5, "foo_id"),
+                Arguments.of("user alias resembling a derived column", "SELECT id AS order_by_derived_0 FROM t_order ORDER BY k", 1, 2, "order_by_derived_0"));
+    }
+    
+    @Test
+    void assertDescribeWithUnexpandedShorthandUsesPhysicalColumnCount() throws SQLException {
+        when(packet.getType()).thenReturn('S');
+        when(packet.getName()).thenReturn("foo_shorthand");
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn((SelectStatement) SQL_PARSER_ENGINE.parse("SELECT * FROM t_order", false));
+        when(sqlStatementContext.containsDerivedProjections()).thenReturn(true);
+        ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
+        when(projectionsContext.getExpandProjections()).thenReturn(Collections.nCopies(1, mock(Projection.class)));
+        when(projectionsContext.containsUnexpandedShorthandProjection()).thenReturn(true);
+        when(sqlStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
+        int physicalColumnCount = 4;
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnCount()).thenReturn(physicalColumnCount);
+        when(resultSetMetaData.getColumnName(anyInt())).thenAnswer(invocation -> "col_" + invocation.getArgument(0));
+        when(resultSetMetaData.getColumnType(anyInt())).thenReturn(Types.INTEGER);
+        when(resultSetMetaData.getColumnDisplaySize(anyInt())).thenReturn(11);
+        when(resultSetMetaData.getColumnTypeName(anyInt())).thenReturn("int4");
+        when(preparedStatement.getMetaData()).thenReturn(resultSetMetaData);
+        when(preparedStatement.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement("SELECT * FROM t_order")).thenReturn(preparedStatement);
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
+        when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        ConnectionContext connectionContext = mock(ConnectionContext.class);
+        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of(DATABASE_NAME));
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement("foo_shorthand",
+                new PostgreSQLServerPreparedStatement("SELECT * FROM t_order", sqlStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList()));
+        columnTypeOIDs = Collections.emptyMap();
+        Iterator<DatabasePacket> actual = executor.execute().iterator();
+        actual.next();
+        List<PostgreSQLColumnDescription> actualColumns = getColumnDescriptions((PostgreSQLRowDescriptionPacket) actual.next());
+        assertThat(actualColumns.size(), is(physicalColumnCount));
     }
     
     @Test

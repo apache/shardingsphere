@@ -1097,6 +1097,68 @@
             </expr>
         </where>
     </select>
+    <select sql-case-id="select_where_with_expr_with_xor_or" parameters="1,2,3">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="96">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="96">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="72">
+                            <left>
+                                <binary-operation-expression start-index="28" stop-index="47">
+                                    <left>
+                                        <column name="order_id" start-index="28" stop-index="43">
+                                            <owner name="t_order" start-index="28" stop-index="34" />
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1" start-index="47" stop-index="47" />
+                                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>XOR</operator>
+                            <right>
+                                <binary-operation-expression start-index="53" stop-index="72">
+                                    <left>
+                                        <literal-expression value="2" start-index="53" stop-index="53" />
+                                        <parameter-marker-expression parameter-index="1" start-index="53" stop-index="53" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <column name="order_id" start-index="57" stop-index="72">
+                                            <owner name="t_order" start-index="57" stop-index="63" />
+                                        </column>
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>OR</operator>
+                    <right>
+                        <binary-operation-expression start-index="77" stop-index="96">
+                            <left>
+                                <literal-expression value="3" start-index="77" stop-index="77" />
+                                <parameter-marker-expression parameter-index="2" start-index="77" stop-index="77" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <column name="order_id" start-index="81" stop-index="96">
+                                    <owner name="t_order" start-index="81" stop-index="87" />
+                                </column>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 
     <select sql-case-id="select_where_with_expr_with_and" parameters="1,2">
         <from start-index="14" stop-index="20">
@@ -1292,6 +1354,54 @@
                         </binary-operation-expression>
                     </expr>
                 </not-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_with_expr_with_not_or_firebird" parameters="1,2">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="75">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="75">
+                    <left>
+                        <not-expression start-index="28" stop-index="51">
+                            <expr>
+                                <binary-operation-expression start-index="32" stop-index="51">
+                                    <left>
+                                        <column name="order_id" start-index="32" stop-index="47">
+                                            <owner name="t_order" start-index="32" stop-index="38" />
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1" start-index="51" stop-index="51" />
+                                        <parameter-marker-expression parameter-index="0" start-index="51" stop-index="51" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </not-expression>
+                    </left>
+                    <operator>OR</operator>
+                    <right>
+                        <binary-operation-expression start-index="56" stop-index="75">
+                            <left>
+                                <literal-expression value="2" start-index="56" stop-index="56" />
+                                <parameter-marker-expression parameter-index="1" start-index="56" stop-index="56" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <column name="order_id" start-index="60" stop-index="75">
+                                    <owner name="t_order" start-index="60" stop-index="66" />
+                                </column>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
             </expr>
         </where>
     </select>
@@ -2165,6 +2275,135 @@
                             </value>
                             <interval-unit>SECOND</interval-unit>
                         </interval-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_with_bit_expr_with_plus_asterisk" parameters="1,2,3">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="55">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="55">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="51">
+                            <left>
+                                <column name="order_id" start-index="28" stop-index="43">
+                                    <owner name="t_order" start-index="28" stop-index="34" />
+                                </column>
+                            </left>
+                            <operator>+</operator>
+                            <right>
+                                <binary-operation-expression start-index="47" stop-index="51">
+                                    <left>
+                                        <literal-expression value="1" start-index="47" stop-index="47" />
+                                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47" />
+                                    </left>
+                                    <operator>*</operator>
+                                    <right>
+                                        <literal-expression value="2" start-index="51" stop-index="51" />
+                                        <parameter-marker-expression parameter-index="1" start-index="51" stop-index="51" />
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="3" start-index="55" stop-index="55" />
+                        <parameter-marker-expression parameter-index="2" start-index="55" stop-index="55" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_with_bit_expr_with_minus_plus" parameters="1,2,3">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="55">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="55">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="51">
+                            <left>
+                                <binary-operation-expression start-index="28" stop-index="47">
+                                    <left>
+                                        <column name="order_id" start-index="28" stop-index="43">
+                                            <owner name="t_order" start-index="28" stop-index="34" />
+                                        </column>
+                                    </left>
+                                    <operator>-</operator>
+                                    <right>
+                                        <literal-expression value="1" start-index="47" stop-index="47" />
+                                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>+</operator>
+                            <right>
+                                <literal-expression value="2" start-index="51" stop-index="51" />
+                                <parameter-marker-expression parameter-index="1" start-index="51" stop-index="51" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="3" start-index="55" stop-index="55" />
+                        <parameter-marker-expression parameter-index="2" start-index="55" stop-index="55" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_with_bit_expr_with_vertical_bar_ampersand" parameters="1,2,3">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="55">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="55">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="51">
+                            <left>
+                                <column name="order_id" start-index="28" stop-index="43">
+                                    <owner name="t_order" start-index="28" stop-index="34" />
+                                </column>
+                            </left>
+                            <operator>|</operator>
+                            <right>
+                                <binary-operation-expression start-index="47" stop-index="51">
+                                    <left>
+                                        <literal-expression value="1" start-index="47" stop-index="47" />
+                                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47" />
+                                    </left>
+                                    <operator>&amp;</operator>
+                                    <right>
+                                        <literal-expression value="2" start-index="51" stop-index="51" />
+                                        <parameter-marker-expression parameter-index="1" start-index="51" stop-index="51" />
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="3" start-index="55" stop-index="55" />
+                        <parameter-marker-expression parameter-index="2" start-index="55" stop-index="55" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -3209,10 +3448,12 @@
         <from>
             <function-table>
                 <table-function function-name="cypher" text="cypher('sharding_test_1', $$ CREATE (n) $$)">
-                    <parameter>
+                    <function-parameter>
                         <literal-expression value="sharding_test_1" start-index="21" stop-index="37" />
-                        <common-expression literal-text="$$ CREATE (n) $$" start-index="40" stop-index="55"/>
-                    </parameter>
+                    </function-parameter>
+                    <function-parameter>
+                        <common-expression literal-text="$$ CREATE (n) $$" start-index="40" stop-index="55" />
+                    </function-parameter>
                 </table-function>
             </function-table>
         </from>
@@ -4288,5 +4529,1468 @@
         <group-by>
             <column-item name="k" start-index="87" stop-index="87" />
         </group-by>
+    </select>
+
+    <select sql-case-id="select_postgresql_numeric_literals">
+        <projections start-index="7" stop-index="108">
+            <expression-projection start-index="7" stop-index="11" text="1_000">
+                <expr>
+                    <literal-expression start-index="7" stop-index="11" value="1000" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="14" stop-index="15" text=".5">
+                <expr>
+                    <literal-expression start-index="14" stop-index="15" value="0.5" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="18" stop-index="19" text="4.">
+                <expr>
+                    <literal-expression start-index="18" stop-index="19" value="4" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="22" stop-index="29" text="4664.E+5">
+                <expr>
+                    <literal-expression start-index="22" stop-index="29" value="4.664E+8" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="32" stop-index="35" text="0x2a">
+                <expr>
+                    <literal-expression start-index="32" stop-index="35" value="42" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="38" stop-index="42" text="0X_FF">
+                <expr>
+                    <literal-expression start-index="38" stop-index="42" value="255" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="45" stop-index="49" text="0o_77">
+                <expr>
+                    <literal-expression start-index="45" stop-index="49" value="63" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="52" stop-index="55" text="0O17">
+                <expr>
+                    <literal-expression start-index="52" stop-index="55" value="15" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="58" stop-index="64" text="0b_1010">
+                <expr>
+                    <literal-expression start-index="58" stop-index="64" value="10" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="67" stop-index="70" text="0B11">
+                <expr>
+                    <literal-expression start-index="67" stop-index="70" value="3" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="73" stop-index="77" text="-0x2A">
+                <expr>
+                    <literal-expression start-index="73" stop-index="77" value="-42" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="80" stop-index="84" text="+0o10">
+                <expr>
+                    <literal-expression start-index="80" stop-index="84" value="8" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="87" stop-index="108" text="0xffffffffffffffffffff">
+                <expr>
+                    <literal-expression start-index="87" stop-index="108" value="1208925819614629174706175" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_bit_literals">
+        <projections start-index="7" stop-index="52">
+            <expression-projection start-index="7" stop-index="13" text="B'1010'">
+                <expr>
+                    <common-expression start-index="7" stop-index="13" text="B'1010'" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="16" stop-index="18" text="b''">
+                <expr>
+                    <common-expression start-index="16" stop-index="18" text="b''" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="21" stop-index="25" text="X'2a'">
+                <expr>
+                    <common-expression start-index="21" stop-index="25" text="X'2a'" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="28" stop-index="30" text="x''">
+                <expr>
+                    <common-expression start-index="28" stop-index="30" text="x''" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="33" stop-index="42" text="B'10'&#10;'01'">
+                <expr>
+                    <common-expression start-index="33" stop-index="42" text="B'10'&#10;'01'" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="45" stop-index="52" text="X'2'&#10;'a'">
+                <expr>
+                    <common-expression start-index="45" stop-index="52" text="X'2'&#10;'a'" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_string_continuation">
+        <projections start-index="7" stop-index="46">
+            <expression-projection start-index="7" stop-index="17" text="'foo'&#10;'bar'">
+                <expr>
+                    <literal-expression start-index="7" stop-index="17" value="foobar" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="20" stop-index="31" text="E'foo'&#10;'bar'">
+                <expr>
+                    <literal-expression start-index="20" stop-index="31" value="foobar" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="34" stop-index="38" text="'a\b'">
+                <expr>
+                    <literal-expression start-index="34" stop-index="38" value="a\b" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="41" stop-index="46" text="'a''b'">
+                <expr>
+                    <literal-expression start-index="41" stop-index="46" value="a''b" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_escaped_identifiers">
+        <projections start-index="7" stop-index="81">
+            <column-projection name="foo&quot;bar" start-delimiter="&quot;" end-delimiter="&quot;" start-index="7" stop-index="16" />
+            <column-projection name="foo&quot;&quot;bar" start-delimiter="&quot;" end-delimiter="&quot;" start-index="19" stop-index="30" />
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="33" stop-index="51" />
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="54" stop-index="81" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_unicode_identifier_controls">
+        <projections start-index="7" stop-index="211">
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="7" stop-index="35" />
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="38" stop-index="69" />
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="72" stop-index="103" />
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="106" stop-index="139" />
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="142" stop-index="179" />
+            <column-projection name="data" start-delimiter="&quot;" end-delimiter="&quot;" start-index="182" stop-index="211" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_unicode_strings">
+        <projections start-index="7" stop-index="69">
+            <expression-projection start-index="7" stop-index="25" text="U&amp;'d\0061t\+000061'">
+                <expr>
+                    <literal-expression start-index="7" stop-index="25" value="data" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="28" stop-index="55" text="U&amp;'d!0061t!0061' UESCAPE '!'">
+                <expr>
+                    <literal-expression start-index="28" stop-index="55" value="data" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="58" stop-index="69" text="U&amp;'foo\\bar'">
+                <expr>
+                    <literal-expression start-index="58" stop-index="69" value="foo\bar" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_custom_binary_operators">
+        <projections start-index="7" stop-index="92">
+            <expression-projection start-index="7" stop-index="12" text="1 *= 2">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="12" text="1 *= 2">
+                        <left>
+                            <literal-expression start-index="7" stop-index="7" value="1" />
+                        </left>
+                        <operator>*=</operator>
+                        <right>
+                            <literal-expression start-index="12" stop-index="12" value="2" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="15" stop-index="21" text="1 *&lt;= 2">
+                <expr>
+                    <binary-operation-expression start-index="15" stop-index="21" text="1 *&lt;= 2">
+                        <left>
+                            <literal-expression start-index="15" stop-index="15" value="1" />
+                        </left>
+                        <operator>*&lt;=</operator>
+                        <right>
+                            <literal-expression start-index="21" stop-index="21" value="2" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="24" stop-index="29" text="1 ^@ 2">
+                <expr>
+                    <binary-operation-expression start-index="24" stop-index="29" text="1 ^@ 2">
+                        <left>
+                            <literal-expression start-index="24" stop-index="24" value="1" />
+                        </left>
+                        <operator>^@</operator>
+                        <right>
+                            <literal-expression start-index="29" stop-index="29" value="2" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="32" stop-index="38" text="1 ~&lt;~ 2">
+                <expr>
+                    <binary-operation-expression start-index="32" stop-index="38" text="1 ~&lt;~ 2">
+                        <left>
+                            <literal-expression start-index="32" stop-index="32" value="1" />
+                        </left>
+                        <operator>~&lt;~</operator>
+                        <right>
+                            <literal-expression start-index="38" stop-index="38" value="2" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="41" stop-index="47" text="1 &lt;&lt;&lt; 2">
+                <expr>
+                    <binary-operation-expression start-index="41" stop-index="47" text="1 &lt;&lt;&lt; 2">
+                        <left>
+                            <literal-expression start-index="41" stop-index="41" value="1" />
+                        </left>
+                        <operator>&lt;&lt;&lt;</operator>
+                        <right>
+                            <literal-expression start-index="47" stop-index="47" value="2" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="50" stop-index="56" text="1 === 2">
+                <expr>
+                    <binary-operation-expression start-index="50" stop-index="56" text="1 === 2">
+                        <left>
+                            <literal-expression start-index="50" stop-index="50" value="1" />
+                        </left>
+                        <operator>===</operator>
+                        <right>
+                            <literal-expression start-index="56" stop-index="56" value="2" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="59" stop-index="64" text="1 @- 2">
+                <expr>
+                    <binary-operation-expression start-index="59" stop-index="64" text="1 @- 2">
+                        <left>
+                            <literal-expression start-index="59" stop-index="59" value="1" />
+                        </left>
+                        <operator>@-</operator>
+                        <right>
+                            <literal-expression start-index="64" stop-index="64" value="2" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="67" stop-index="92" text="1 OPERATOR(pg_catalog.+) 2">
+                <expr>
+                    <binary-operation-expression start-index="67" stop-index="92" text="1 OPERATOR(pg_catalog.+) 2">
+                        <left>
+                            <literal-expression start-index="67" stop-index="67" value="1" />
+                        </left>
+                        <operator>OPERATOR(pg_catalog.+)</operator>
+                        <right>
+                            <literal-expression start-index="92" stop-index="92" value="2" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_custom_prefix_operators" parameters="1,2,3,4">
+        <projections start-index="7" stop-index="26">
+            <expression-projection start-index="7" stop-index="9" text="@ ?">
+                <expr>
+                    <unary-operation-expression start-index="7" stop-index="9" text="@ ?">
+                        <operator>@</operator>
+                        <expr>
+                            <parameter-marker-expression start-index="9" stop-index="9" parameter-index="0" />
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="12" stop-index="15" text="|/ ?">
+                <expr>
+                    <unary-operation-expression start-index="12" stop-index="15" text="|/ ?">
+                        <operator>|/</operator>
+                        <expr>
+                            <parameter-marker-expression start-index="15" stop-index="15" parameter-index="1" />
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="18" stop-index="21" text="!! ?">
+                <expr>
+                    <unary-operation-expression start-index="18" stop-index="21" text="!! ?">
+                        <operator>!!</operator>
+                        <expr>
+                            <parameter-marker-expression start-index="21" stop-index="21" parameter-index="2" />
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="24" stop-index="26" text="~ ?">
+                <expr>
+                    <unary-operation-expression start-index="24" stop-index="26" text="~ ?">
+                        <operator>~</operator>
+                        <expr>
+                            <parameter-marker-expression start-index="26" stop-index="26" parameter-index="3" />
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_block_operator_comment">
+        <projections start-index="7" stop-index="16">
+            <expression-projection start-index="7" stop-index="16" text="1+/*foo*/2">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="16" text="1+/*foo*/2">
+                        <left>
+                            <literal-expression start-index="7" stop-index="7" value="1" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <literal-expression start-index="16" stop-index="16" value="2" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <comment start-index="9" stop-index="15" text="/*foo*/" />
+    </select>
+
+    <select sql-case-id="select_postgresql_line_operator_comment">
+        <projections start-index="7" stop-index="15">
+            <expression-projection start-index="7" stop-index="15" text="1+--foo&#10;2">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="15" text="1+--foo&#10;2">
+                        <left>
+                            <literal-expression start-index="7" stop-index="7" value="1" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <literal-expression start-index="15" stop-index="15" value="2" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <comment start-index="9" stop-index="14" text="--foo&#10;" />
+    </select>
+
+    <select sql-case-id="select_postgresql_adjacent_unary_operator">
+        <projections start-index="7" stop-index="10">
+            <expression-projection start-index="7" stop-index="10" text="1+-2">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="10" text="1+-2">
+                        <left>
+                            <literal-expression start-index="7" stop-index="7" value="1" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <literal-expression start-index="9" stop-index="10" value="-2" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_record_rows" parameters="1,2">
+        <projections start-index="7" stop-index="30">
+            <expression-projection start-index="7" stop-index="15" text="ROW(1, ?)">
+                <expr>
+                    <row-expression start-index="7" stop-index="15" text="ROW(1, ?)">
+                        <items>
+                            <literal-expression start-index="11" stop-index="11" value="1" />
+                        </items>
+                        <items>
+                            <parameter-marker-expression start-index="14" stop-index="14" parameter-index="0" />
+                        </items>
+                    </row-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="18" stop-index="23" text="2, ?">
+                <expr>
+                    <row-expression start-index="18" stop-index="23" text="(2, ?)">
+                        <items>
+                            <literal-expression start-index="19" stop-index="19" value="2" />
+                        </items>
+                        <items>
+                            <parameter-marker-expression start-index="22" stop-index="22" parameter-index="1" />
+                        </items>
+                    </row-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="26" stop-index="30" text="ROW()">
+                <expr>
+                    <row-expression start-index="26" stop-index="30" text="ROW()" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_at_local" parameters="1">
+        <projections start-index="7" stop-index="16">
+            <expression-projection start-index="7" stop-index="16" text="? AT LOCAL">
+                <expr>
+                    <common-expression start-index="7" stop-index="16" text="? AT LOCAL" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_record_indirection" parameters="1">
+        <projections start-index="7" stop-index="19">
+            <expression-projection start-index="7" stop-index="19" text="(ROW(1, ?)).*">
+                <expr>
+                    <common-expression start-index="7" stop-index="19" text="(ROW(1, ?)).*" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_record_column_wildcard">
+        <projections start-index="7" stop-index="16">
+            <expression-projection start-index="7" stop-index="16" text="ROW(foo.*)">
+                <expr>
+                    <row-expression start-index="7" stop-index="16" text="ROW(foo.*)">
+                        <items>
+                            <column start-index="11" stop-index="15" name="*">
+                                <owner start-index="11" stop-index="13" name="foo" />
+                            </column>
+                        </items>
+                    </row-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table start-index="23" stop-index="36" name="t_order" alias="foo" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_postgresql_record_function_wildcard" parameters="1">
+        <projections start-index="7" stop-index="23">
+            <expression-projection start-index="7" stop-index="23" text="(foo_record(?)).*">
+                <expr>
+                    <common-expression start-index="7" stop-index="23" text="(foo_record(?)).*" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_is_json_value" parameters="1">
+        <projections start-index="7" stop-index="38">
+            <expression-projection start-index="7" stop-index="38" text="? IS JSON VALUE WITH UNIQUE KEYS">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="38" text="? IS JSON VALUE WITH UNIQUE KEYS">
+                        <left>
+                            <parameter-marker-expression start-index="7" stop-index="7" parameter-index="0" />
+                        </left>
+                        <operator>IS</operator>
+                        <right>
+                            <literal-expression start-index="12" stop-index="38" value="JSON VALUE WITH UNIQUE KEYS" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_is_json_scalar" parameters="1">
+        <projections start-index="7" stop-index="39">
+            <expression-projection start-index="7" stop-index="39" text="? IS JSON SCALAR WITH UNIQUE KEYS">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="39" text="? IS JSON SCALAR WITH UNIQUE KEYS">
+                        <left>
+                            <parameter-marker-expression start-index="7" stop-index="7" parameter-index="0" />
+                        </left>
+                        <operator>IS</operator>
+                        <right>
+                            <literal-expression start-index="12" stop-index="39" value="JSON SCALAR WITH UNIQUE KEYS" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_is_json_array" parameters="1">
+        <projections start-index="7" stop-index="38">
+            <expression-projection start-index="7" stop-index="38" text="? IS JSON ARRAY WITH UNIQUE KEYS">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="38" text="? IS JSON ARRAY WITH UNIQUE KEYS">
+                        <left>
+                            <parameter-marker-expression start-index="7" stop-index="7" parameter-index="0" />
+                        </left>
+                        <operator>IS</operator>
+                        <right>
+                            <literal-expression start-index="12" stop-index="38" value="JSON ARRAY WITH UNIQUE KEYS" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_is_json_object" parameters="1">
+        <projections start-index="7" stop-index="39">
+            <expression-projection start-index="7" stop-index="39" text="? IS JSON OBJECT WITH UNIQUE KEYS">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="39" text="? IS JSON OBJECT WITH UNIQUE KEYS">
+                        <left>
+                            <parameter-marker-expression start-index="7" stop-index="7" parameter-index="0" />
+                        </left>
+                        <operator>IS</operator>
+                        <right>
+                            <literal-expression start-index="12" stop-index="39" value="JSON OBJECT WITH UNIQUE KEYS" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_is_json_any" parameters="1">
+        <projections start-index="7" stop-index="32">
+            <expression-projection start-index="7" stop-index="32" text="? IS JSON WITH UNIQUE KEYS">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="32" text="? IS JSON WITH UNIQUE KEYS">
+                        <left>
+                            <parameter-marker-expression start-index="7" stop-index="7" parameter-index="0" />
+                        </left>
+                        <operator>IS</operator>
+                        <right>
+                            <literal-expression start-index="12" stop-index="32" value="JSON WITH UNIQUE KEYS" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_is_not_json" parameters="1">
+        <projections start-index="7" stop-index="40">
+            <expression-projection start-index="7" stop-index="40" text="? IS NOT JSON ARRAY WITHOUT UNIQUE">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="40" text="? IS NOT JSON ARRAY WITHOUT UNIQUE">
+                        <left>
+                            <parameter-marker-expression start-index="7" stop-index="7" parameter-index="0" />
+                        </left>
+                        <operator>IS</operator>
+                        <right>
+                            <literal-expression start-index="12" stop-index="40" value="NOT JSON ARRAY WITHOUT UNIQUE" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_ilike_any" parameters="1">
+        <projections start-index="7" stop-index="38">
+            <expression-projection start-index="7" stop-index="38" text="? ILIKE ANY(ARRAY['foo', 'bar'])">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="38" text="? ILIKE ANY(ARRAY['foo', 'bar'])">
+                        <left>
+                            <parameter-marker-expression start-index="7" stop-index="7" parameter-index="0" />
+                        </left>
+                        <operator>ILIKE ANY</operator>
+                        <right>
+                            <list-expression start-index="19" stop-index="37">
+                                <items>
+                                    <common-expression start-index="19" stop-index="37" text="ARRAY['foo', 'bar']" />
+                                </items>
+                            </list-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_not_ilike_all" parameters="1">
+        <projections start-index="7" stop-index="42">
+            <expression-projection start-index="7" stop-index="42" text="? NOT ILIKE ALL(ARRAY['foo', 'bar'])">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="42" text="? NOT ILIKE ALL(ARRAY['foo', 'bar'])">
+                        <left>
+                            <parameter-marker-expression start-index="7" stop-index="7" parameter-index="0" />
+                        </left>
+                        <operator>NOT ILIKE ALL</operator>
+                        <right>
+                            <list-expression start-index="23" stop-index="41">
+                                <items>
+                                    <common-expression start-index="23" stop-index="41" text="ARRAY['foo', 'bar']" />
+                                </items>
+                            </list-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_keyword_identifiers">
+        <projections start-index="7" stop-index="19">
+            <column-projection start-index="7" stop-index="13" name="out">
+                <owner start-index="7" stop-index="9" name="foo" />
+            </column-projection>
+            <column-projection start-index="16" stop-index="19" name="cidr" />
+        </projections>
+        <from>
+            <simple-table start-index="26" stop-index="39" name="t_order" alias="foo" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_postgresql_regex_operator_tokens">
+        <projections start-index="7" stop-index="64">
+            <expression-projection start-index="7" stop-index="18" text="'foo' ~ '^f'">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="18" text="'foo' ~ '^f'">
+                        <left>
+                            <literal-expression start-index="7" stop-index="11" value="foo" />
+                        </left>
+                        <operator>~</operator>
+                        <right>
+                            <list-expression start-index="15" stop-index="18">
+                                <items>
+                                    <literal-expression start-index="15" stop-index="18" value="^f" />
+                                </items>
+                            </list-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="21" stop-index="33" text="'foo' !~ '^b'">
+                <expr>
+                    <binary-operation-expression start-index="21" stop-index="33" text="'foo' !~ '^b'">
+                        <left>
+                            <literal-expression start-index="21" stop-index="25" value="foo" />
+                        </left>
+                        <operator>!~</operator>
+                        <right>
+                            <list-expression start-index="30" stop-index="33">
+                                <items>
+                                    <literal-expression start-index="30" stop-index="33" value="^b" />
+                                </items>
+                            </list-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="36" stop-index="48" text="'foo' ~* '^F'">
+                <expr>
+                    <binary-operation-expression start-index="36" stop-index="48" text="'foo' ~* '^F'">
+                        <left>
+                            <literal-expression start-index="36" stop-index="40" value="foo" />
+                        </left>
+                        <operator>~*</operator>
+                        <right>
+                            <list-expression start-index="45" stop-index="48">
+                                <items>
+                                    <literal-expression start-index="45" stop-index="48" value="^F" />
+                                </items>
+                            </list-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="51" stop-index="64" text="'foo' !~* '^B'">
+                <expr>
+                    <binary-operation-expression start-index="51" stop-index="64" text="'foo' !~* '^B'">
+                        <left>
+                            <literal-expression start-index="51" stop-index="55" value="foo" />
+                        </left>
+                        <operator>!~*</operator>
+                        <right>
+                            <list-expression start-index="61" stop-index="64">
+                                <items>
+                                    <literal-expression start-index="61" stop-index="64" value="^B" />
+                                </items>
+                            </list-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_unicode_escape_controls">
+        <projections start-index="7" stop-index="211">
+            <expression-projection start-index="7" stop-index="35" text="U&amp;'d!0061t!0061' UESCAPE E'!'">
+                <expr>
+                    <literal-expression start-index="7" stop-index="35" value="data" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="38" stop-index="69" text="U&amp;'d!0061t!0061' UESCAPE E'\041'">
+                <expr>
+                    <literal-expression start-index="38" stop-index="69" value="data" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="72" stop-index="103" text="U&amp;'d!0061t!0061' UESCAPE E'\x21'">
+                <expr>
+                    <literal-expression start-index="72" stop-index="103" value="data" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="106" stop-index="139" text="U&amp;'d!0061t!0061' UESCAPE E'\u0021'">
+                <expr>
+                    <literal-expression start-index="106" stop-index="139" value="data" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="142" stop-index="179" text="U&amp;'d!0061t!0061' UESCAPE E'\U00000021'">
+                <expr>
+                    <literal-expression start-index="142" stop-index="179" value="data" />
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="182" stop-index="211" text="U&amp;'d\0061t\0061' UESCAPE E'\\'">
+                <expr>
+                    <literal-expression start-index="182" stop-index="211" value="data" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_collate_subquery_with_ties" parameters="1">
+        <projections start-index="7" stop-index="65">
+            <expression-projection start-index="7" stop-index="65" text="(SELECT ? ORDER BY 1 FETCH FIRST ROW WITH TIES) COLLATE &quot;C&quot;">
+                <expr>
+                    <collate-expression start-index="7" stop-index="65">
+                        <collate-name>
+                            <literal-expression start-index="63" stop-index="65" value="&quot;C&quot;" />
+                        </collate-name>
+                    </collate-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_postgresql_common_array_children" parameters="1,1">
+        <projections start-index="7" stop-index="48">
+            <expression-projection start-index="7" stop-index="48" text="ARRAY[JSON_ARRAYAGG(? RETURNING jsonb), ?]">
+                <expr>
+                    <common-expression start-index="7" stop-index="48" text="ARRAY[JSON_ARRAYAGG(? RETURNING jsonb), ?]">
+                        <children>
+                            <expression>
+                                <function start-index="13" stop-index="44" function-name="JSON_ARRAYAGG" text="JSON_ARRAYAGG(? RETURNING jsonb)">
+                                    <parameter>
+                                        <parameter-marker-expression start-index="27" stop-index="27" parameter-index="0" />
+                                    </parameter>
+                                </function>
+                            </expression>
+                            <expression>
+                                <parameter-marker-expression start-index="47" stop-index="47" parameter-index="1" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="55" stop-index="57" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_common_subscript_children" parameters="1,1">
+        <projections start-index="7" stop-index="43">
+            <expression-projection start-index="7" stop-index="43" text="(JSON_ARRAYAGG(? RETURNING jsonb))[?]">
+                <expr>
+                    <common-expression start-index="7" stop-index="43" text="(JSON_ARRAYAGG(? RETURNING jsonb))[?]">
+                        <children>
+                            <expression>
+                                <function start-index="8" stop-index="39" function-name="JSON_ARRAYAGG" text="JSON_ARRAYAGG(? RETURNING jsonb)">
+                                    <parameter>
+                                        <parameter-marker-expression start-index="22" stop-index="22" parameter-index="0" />
+                                    </parameter>
+                                </function>
+                            </expression>
+                            <expression>
+                                <parameter-marker-expression start-index="42" stop-index="42" parameter-index="1" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="50" stop-index="52" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_common_operator_children" parameters="1,1">
+        <projections start-index="7" stop-index="50">
+            <expression-projection start-index="7" stop-index="50" text="(JSON_ARRAYAGG(? RETURNING jsonb) -&gt; ?)::int">
+                <expr>
+                    <type-cast-expression start-index="7" stop-index="50">
+                        <expression>
+                            <common-expression start-index="8" stop-index="44" text="JSON_ARRAYAGG(? RETURNING jsonb) -&gt; ?">
+                                <children>
+                                    <expression>
+                                        <function start-index="8" stop-index="39" function-name="JSON_ARRAYAGG" text="JSON_ARRAYAGG(? RETURNING jsonb)">
+                                            <parameter>
+                                                <parameter-marker-expression start-index="22" stop-index="22" parameter-index="0" />
+                                            </parameter>
+                                        </function>
+                                    </expression>
+                                    <expression>
+                                        <parameter-marker-expression start-index="44" stop-index="44" parameter-index="1" />
+                                    </expression>
+                                </children>
+                            </common-expression>
+                        </expression>
+                        <data-type>int</data-type>
+                    </type-cast-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="57" stop-index="59" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_common_qualified_slice_children" parameters="1,1,1">
+        <projections start-index="7" stop-index="21">
+            <expression-projection start-index="7" stop-index="21" text="foo.a[? : ?][?]">
+                <expr>
+                    <common-expression start-index="7" stop-index="21" text="foo.a[? : ?][?]">
+                        <children>
+                            <expression>
+                                <column start-index="7" stop-index="11" name="a">
+                                    <owner start-index="7" stop-index="9" name="foo" />
+                                </column>
+                            </expression>
+                            <expression>
+                                <parameter-marker-expression start-index="13" stop-index="13" parameter-index="0" />
+                            </expression>
+                            <expression>
+                                <parameter-marker-expression start-index="17" stop-index="17" parameter-index="1" />
+                            </expression>
+                            <expression>
+                                <parameter-marker-expression start-index="20" stop-index="20" parameter-index="2" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="28" stop-index="30" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_common_scalar_subscript_children" parameters="1,1">
+        <projections start-index="7" stop-index="26">
+            <expression-projection start-index="7" stop-index="26" text="(SELECT ARRAY[?])[?]">
+                <expr>
+                    <common-expression start-index="7" stop-index="26" text="(SELECT ARRAY[?])[?]">
+                        <children>
+                            <expression>
+                                <subquery start-index="7" stop-index="23" text="(SELECT ARRAY[?])">
+                                    <select>
+                                        <projections start-index="15" stop-index="22">
+                                            <expression-projection start-index="15" stop-index="22" text="ARRAY[?]">
+                                                <expr>
+                                                    <common-expression start-index="15" stop-index="22" text="ARRAY[?]">
+                                                        <children>
+                                                            <expression>
+                                                                <parameter-marker-expression start-index="21" stop-index="21" parameter-index="0" />
+                                                            </expression>
+                                                        </children>
+                                                    </common-expression>
+                                                </expr>
+                                            </expression-projection>
+                                        </projections>
+                                    </select>
+                                </subquery>
+                            </expression>
+                            <expression>
+                                <parameter-marker-expression start-index="25" stop-index="25" parameter-index="1" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_postgresql_common_subquery_operator_children" parameters="1,1">
+        <projections start-index="7" stop-index="58">
+            <expression-projection start-index="7" stop-index="58" text="(SELECT ? ORDER BY 1 FETCH FIRST ROW WITH TIES) || ?">
+                <expr>
+                    <common-expression start-index="7" stop-index="58" text="(SELECT ? ORDER BY 1 FETCH FIRST ROW WITH TIES) || ?">
+                        <children>
+                            <expression>
+                                <subquery start-index="7" stop-index="53" text="(SELECT ? ORDER BY 1 FETCH FIRST ROW WITH TIES)">
+                                    <select>
+                                        <projections start-index="15" stop-index="15">
+                                            <expression-projection start-index="15" stop-index="15" text="?">
+                                                <expr>
+                                                    <parameter-marker-expression start-index="15" stop-index="15" parameter-index="0" />
+                                                </expr>
+                                            </expression-projection>
+                                        </projections>
+                                        <order-by start-index="17" stop-index="26">
+                                            <index-item start-index="26" stop-index="26" index="1" order-direction="ASC" />
+                                        </order-by>
+                                        <limit start-index="28" stop-index="52" with-ties="true" row-count-implicit="true">
+                                            <row-count value="1" start-index="40" stop-index="39" />
+                                        </limit>
+                                    </select>
+                                </subquery>
+                            </expression>
+                            <expression>
+                                <parameter-marker-expression start-index="58" stop-index="58" parameter-index="1" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_postgresql_common_between_children" parameters="1">
+        <projections start-index="7" stop-index="7">
+            <expression-projection start-index="7" stop-index="7" text="1">
+                <expr>
+                    <literal-expression start-index="7" stop-index="7" value="1" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <having start-index="18" stop-index="86">
+            <expr>
+                <between-expression start-index="25" stop-index="86">
+                    <left>
+                        <literal-expression start-index="25" stop-index="25" value="1" />
+                    </left>
+                    <between-expr>
+                        <common-expression start-index="35" stop-index="80" text="-(JSON_ARRAYAGG(? RETURNING jsonb) -&gt;&gt; 0)::int">
+                            <children>
+                                <expression>
+                                    <type-cast-expression start-index="36" stop-index="80">
+                                        <expression>
+                                            <common-expression start-index="37" stop-index="74" text="JSON_ARRAYAGG(? RETURNING jsonb) -&gt;&gt; 0">
+                                                <children>
+                                                    <expression>
+                                                        <function start-index="37" stop-index="68" function-name="JSON_ARRAYAGG" text="JSON_ARRAYAGG(? RETURNING jsonb)">
+                                                            <parameter>
+                                                                <parameter-marker-expression start-index="51" stop-index="51" parameter-index="0" />
+                                                            </parameter>
+                                                        </function>
+                                                    </expression>
+                                                    <expression>
+                                                        <literal-expression start-index="74" stop-index="74" value="0" />
+                                                    </expression>
+                                                </children>
+                                            </common-expression>
+                                        </expression>
+                                        <data-type>int</data-type>
+                                    </type-cast-expression>
+                                </expression>
+                            </children>
+                        </common-expression>
+                    </between-expr>
+                    <and-expr>
+                        <literal-expression start-index="86" stop-index="86" value="1" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </having>
+        <from>
+            <simple-table name="foo" start-index="14" stop-index="16" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_is_distinct_expression_children" parameters="1,1">
+        <projections start-index="7" stop-index="61">
+            <expression-projection start-index="7" stop-index="61" text="? IS NOT DISTINCT FROM JSON_ARRAYAGG(? RETURNING jsonb)">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="61" text="? IS NOT DISTINCT FROM JSON_ARRAYAGG(? RETURNING jsonb)">
+                        <left>
+                            <parameter-marker-expression start-index="7" stop-index="7" parameter-index="0" />
+                        </left>
+                        <operator>IS NOT DISTINCT FROM</operator>
+                        <right>
+                            <function start-index="30" stop-index="61" function-name="JSON_ARRAYAGG" text="JSON_ARRAYAGG(? RETURNING jsonb)">
+                                <parameter>
+                                    <parameter-marker-expression start-index="44" stop-index="44" parameter-index="1" />
+                                </parameter>
+                            </function>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="68" stop-index="70" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_common_window_frame_children" parameters="1">
+        <projections start-index="7" stop-index="96">
+            <aggregation-projection start-index="7" stop-index="96" type="COUNT" expression="COUNT(*) OVER (ORDER BY id ROWS (SELECT ? ORDER BY 1 FETCH FIRST ROW WITH TIES) PRECEDING)">
+                <window-item start-index="21" stop-index="96">
+                    <order-by start-index="22" stop-index="32">
+                        <column-item start-index="31" stop-index="32" name="id" order-direction="ASC" />
+                    </order-by>
+                    <frame>
+                        <common-expression start-index="34" stop-index="95" text="ROWS(SELECT?ORDERBY1FETCHFIRSTROWWITHTIES)PRECEDING">
+                            <children>
+                                <expression>
+                                    <subquery start-index="39" stop-index="85" text="(SELECT ? ORDER BY 1 FETCH FIRST ROW WITH TIES)">
+                                        <select>
+                                            <projections start-index="47" stop-index="47">
+                                                <expression-projection start-index="47" stop-index="47" text="?">
+                                                    <expr>
+                                                        <parameter-marker-expression start-index="47" stop-index="47" parameter-index="0" />
+                                                    </expr>
+                                                </expression-projection>
+                                            </projections>
+                                            <order-by start-index="49" stop-index="58">
+                                                <index-item start-index="58" stop-index="58" index="1" order-direction="ASC" />
+                                            </order-by>
+                                            <limit start-index="60" stop-index="84" with-ties="true" row-count-implicit="true">
+                                                <row-count value="1" start-index="72" stop-index="71" />
+                                            </limit>
+                                        </select>
+                                    </subquery>
+                                </expression>
+                            </children>
+                        </common-expression>
+                    </frame>
+                </window-item>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="103" stop-index="105" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_between_signed_literal_compatibility">
+        <projections start-index="7" stop-index="29">
+            <expression-projection start-index="7" stop-index="29" text="1 BETWEEN -(2) AND +(3)">
+                <expr>
+                    <between-expression start-index="7" stop-index="29">
+                        <left>
+                            <literal-expression start-index="7" stop-index="7" value="1" />
+                        </left>
+                        <between-expr>
+                            <literal-expression start-index="17" stop-index="20" value="-(2)" />
+                        </between-expr>
+                        <and-expr>
+                            <common-expression start-index="26" stop-index="29" text="+(3)">
+                                <children>
+                                    <expression>
+                                        <literal-expression start-index="28" stop-index="28" value="3" />
+                                    </expression>
+                                </children>
+                            </common-expression>
+                        </and-expr>
+                    </between-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_postgresql_between_signed_plus_literal_compatibility">
+        <projections start-index="7" stop-index="26">
+            <expression-projection start-index="7" stop-index="26" text="1 BETWEEN +(3) AND 4">
+                <expr>
+                    <between-expression start-index="7" stop-index="26">
+                        <left>
+                            <literal-expression start-index="7" stop-index="7" value="1" />
+                        </left>
+                        <between-expr>
+                            <literal-expression start-index="17" stop-index="20" value="+(3)" />
+                        </between-expr>
+                        <and-expr>
+                            <literal-expression start-index="26" stop-index="26" value="4" />
+                        </and-expr>
+                    </between-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_between_arithmetic_precedence">
+        <projections start-index="7" stop-index="8">
+            <column-projection start-index="7" stop-index="8" name="id" />
+        </projections>
+        <from>
+            <simple-table start-index="15" stop-index="21" name="t_order" />
+        </from>
+        <where start-index="23" stop-index="60">
+            <expr>
+                <between-expression start-index="29" stop-index="60">
+                    <left>
+                        <column start-index="29" stop-index="30" name="id" />
+                    </left>
+                    <between-expr>
+                        <binary-operation-expression start-index="40" stop-index="52">
+                            <left>
+                                <literal-expression start-index="40" stop-index="40" value="1" />
+                            </left>
+                            <operator>+</operator>
+                            <right>
+                                <binary-operation-expression start-index="44" stop-index="52">
+                                    <left>
+                                        <literal-expression start-index="44" stop-index="44" value="2" />
+                                    </left>
+                                    <operator>*</operator>
+                                    <right>
+                                        <binary-operation-expression start-index="48" stop-index="52">
+                                            <left>
+                                                <literal-expression start-index="48" stop-index="48" value="3" />
+                                            </left>
+                                            <operator>^</operator>
+                                            <right>
+                                                <literal-expression start-index="52" stop-index="52" value="4" />
+                                            </right>
+                                        </binary-operation-expression>
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </between-expr>
+                    <and-expr>
+                        <literal-expression start-index="58" stop-index="60" value="100" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+    </select>
+    <select sql-case-id="select_postgresql_between_arithmetic_associativity">
+        <projections start-index="7" stop-index="8">
+            <column-projection start-index="7" stop-index="8" name="id" />
+        </projections>
+        <from>
+            <simple-table start-index="15" stop-index="21" name="t_order" />
+        </from>
+        <where start-index="23" stop-index="69">
+            <expr>
+                <between-expression start-index="29" stop-index="69">
+                    <left>
+                        <column start-index="29" stop-index="30" name="id" />
+                    </left>
+                    <between-expr>
+                        <binary-operation-expression start-index="40" stop-index="61">
+                            <left>
+                                <binary-operation-expression start-index="40" stop-index="57">
+                                    <left>
+                                        <binary-operation-expression start-index="40" stop-index="53">
+                                            <left>
+                                                <binary-operation-expression start-index="40" stop-index="49">
+                                                    <left>
+                                                        <binary-operation-expression start-index="40" stop-index="45">
+                                                            <left>
+                                                                <literal-expression start-index="40" stop-index="41" value="12" />
+                                                            </left>
+                                                            <operator>/</operator>
+                                                            <right>
+                                                                <literal-expression start-index="45" stop-index="45" value="3" />
+                                                            </right>
+                                                        </binary-operation-expression>
+                                                    </left>
+                                                    <operator>*</operator>
+                                                    <right>
+                                                        <literal-expression start-index="49" stop-index="49" value="2" />
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </left>
+                                            <operator>%</operator>
+                                            <right>
+                                                <literal-expression start-index="53" stop-index="53" value="5" />
+                                            </right>
+                                        </binary-operation-expression>
+                                    </left>
+                                    <operator>-</operator>
+                                    <right>
+                                        <literal-expression start-index="57" stop-index="57" value="1" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>+</operator>
+                            <right>
+                                <literal-expression start-index="61" stop-index="61" value="2" />
+                            </right>
+                        </binary-operation-expression>
+                    </between-expr>
+                    <and-expr>
+                        <literal-expression start-index="67" stop-index="69" value="100" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+    </select>
+    <select sql-case-id="select_postgresql_between_power_associativity">
+        <projections start-index="7" stop-index="8">
+            <column-projection start-index="7" stop-index="8" name="id" />
+        </projections>
+        <from>
+            <simple-table start-index="15" stop-index="21" name="t_order" />
+        </from>
+        <where start-index="23" stop-index="57">
+            <expr>
+                <between-expression start-index="29" stop-index="57">
+                    <left>
+                        <column start-index="29" stop-index="30" name="id" />
+                    </left>
+                    <between-expr>
+                        <binary-operation-expression start-index="40" stop-index="49">
+                            <left>
+                                <binary-operation-expression start-index="40" stop-index="45">
+                                    <left>
+                                        <literal-expression start-index="40" stop-index="41" value="-2" />
+                                    </left>
+                                    <operator>^</operator>
+                                    <right>
+                                        <literal-expression start-index="45" stop-index="45" value="3" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>^</operator>
+                            <right>
+                                <literal-expression start-index="49" stop-index="49" value="2" />
+                            </right>
+                        </binary-operation-expression>
+                    </between-expr>
+                    <and-expr>
+                        <literal-expression start-index="55" stop-index="57" value="100" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+    </select>
+    <select sql-case-id="select_postgresql_between_prefix_arithmetic" parameters="1, 2">
+        <projections start-index="7" stop-index="8">
+            <column-projection start-index="7" stop-index="8" name="id" />
+        </projections>
+        <from>
+            <simple-table start-index="15" stop-index="21" name="t_order" />
+        </from>
+        <where start-index="23" stop-index="53">
+            <expr>
+                <between-expression start-index="29" stop-index="53">
+                    <left>
+                        <column start-index="29" stop-index="30" name="id" />
+                    </left>
+                    <between-expr>
+                        <unary-operation-expression start-index="40" stop-index="45" text="~? + ?">
+                            <operator>~</operator>
+                            <expr>
+                                <binary-operation-expression start-index="41" stop-index="45">
+                                    <left>
+                                        <parameter-marker-expression start-index="41" stop-index="41" parameter-index="0" />
+                                    </left>
+                                    <operator>+</operator>
+                                    <right>
+                                        <parameter-marker-expression start-index="45" stop-index="45" parameter-index="1" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </unary-operation-expression>
+                    </between-expr>
+                    <and-expr>
+                        <literal-expression start-index="51" stop-index="53" value="100" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+    </select>
+    <select sql-case-id="select_postgresql_usage_identifier">
+        <projections start-index="7" stop-index="22">
+            <column-projection start-index="7" stop-index="11" name="usage" />
+            <column-projection start-index="14" stop-index="22" name="usage">
+                <owner start-index="14" stop-index="16" name="foo" />
+            </column-projection>
+        </projections>
+        <from>
+            <simple-table start-index="29" stop-index="42" name="t_order" alias="foo" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_privilege_keyword_identifiers">
+        <projections start-index="7" stop-index="29">
+            <column-projection start-index="7" stop-index="14" name="maintain" />
+            <column-projection start-index="17" stop-index="23" name="objects" />
+            <column-projection start-index="26" stop-index="29" name="skip" />
+        </projections>
+        <from>
+            <simple-table start-index="36" stop-index="38" name="foo" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_prefix_arithmetic_precedence">
+        <projections start-index="7" stop-index="12">
+            <expression-projection start-index="7" stop-index="12" text="~1 + 2">
+                <expr>
+                    <unary-operation-expression start-index="7" stop-index="12" text="~1 + 2">
+                        <operator>~</operator>
+                        <expr>
+                            <binary-operation-expression start-index="8" stop-index="12">
+                                <left>
+                                    <literal-expression start-index="8" stop-index="8" value="1" />
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <literal-expression start-index="12" stop-index="12" value="2" />
+                                </right>
+                            </binary-operation-expression>
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_postgresql_prefix_arithmetic_parameters" parameters="1, 2">
+        <projections start-index="7" stop-index="12">
+            <expression-projection start-index="7" stop-index="12" text="~? + ?">
+                <expr>
+                    <unary-operation-expression start-index="7" stop-index="12" text="~? + ?">
+                        <operator>~</operator>
+                        <expr>
+                            <binary-operation-expression start-index="8" stop-index="12">
+                                <left>
+                                    <parameter-marker-expression start-index="8" stop-index="8" parameter-index="0" />
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <parameter-marker-expression start-index="12" stop-index="12" parameter-index="1" />
+                                </right>
+                            </binary-operation-expression>
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_postgresql_serial_alias_identifiers">
+        <projections start-index="7" stop-index="36">
+            <column-projection start-index="7" stop-index="17" name="smallserial" />
+            <column-projection start-index="20" stop-index="25" name="serial" />
+            <column-projection start-index="28" stop-index="36" name="bigserial" />
+        </projections>
+        <from>
+            <simple-table start-index="43" stop-index="45" name="foo" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_json_keyword_identifiers">
+        <projections start-index="7" stop-index="138">
+            <column-projection start-index="7" stop-index="16" name="json_array" />
+            <column-projection start-index="19" stop-index="31" name="json_arrayagg" />
+            <column-projection start-index="34" stop-index="44" name="json_exists" />
+            <column-projection start-index="47" stop-index="57" name="json_object" />
+            <column-projection start-index="60" stop-index="73" name="json_objectagg" />
+            <column-projection start-index="76" stop-index="85" name="json_query" />
+            <column-projection start-index="88" stop-index="98" name="json_scalar" />
+            <column-projection start-index="101" stop-index="114" name="json_serialize" />
+            <column-projection start-index="117" stop-index="126" name="json_table" />
+            <column-projection start-index="129" stop-index="138" name="json_value" />
+        </projections>
+        <from>
+            <simple-table start-index="145" stop-index="169" name="json_table" alias="json_scalar" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_common_concat_frontier" parameters="1, 2, 3, 4, 5">
+        <projections start-index="7" stop-index="57">
+            <expression-projection start-index="7" stop-index="41" text="? || (? || ?) || foo_values(? || ?)">
+                <expr>
+                    <common-expression start-index="7" stop-index="41" text="? || (? || ?) || foo_values(? || ?)">
+                        <children>
+                            <expression>
+                                <parameter-marker-expression start-index="7" stop-index="7" parameter-index="0" />
+                            </expression>
+                            <expression>
+                                <parameter-marker-expression start-index="13" stop-index="13" parameter-index="1" />
+                            </expression>
+                            <expression>
+                                <parameter-marker-expression start-index="18" stop-index="18" parameter-index="2" />
+                            </expression>
+                            <expression>
+                                <function start-index="24" stop-index="41" function-name="foo_values" text="foo_values(? || ?)">
+                                    <parameter>
+                                        <common-expression start-index="35" stop-index="40" text="? || ?">
+                                            <children>
+                                                <expression>
+                                                    <parameter-marker-expression start-index="35" stop-index="35" parameter-index="3" />
+                                                </expression>
+                                                <expression>
+                                                    <parameter-marker-expression start-index="40" stop-index="40" parameter-index="4" />
+                                                </expression>
+                                            </children>
+                                        </common-expression>
+                                    </parameter>
+                                </function>
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="44" stop-index="57" text="B'10' || B'01'">
+                <expr>
+                    <common-expression start-index="44" stop-index="57" text="B'10' || B'01'">
+                        <children>
+                            <expression>
+                                <common-expression start-index="44" stop-index="48" text="B'10'" />
+                            </expression>
+                            <expression>
+                                <common-expression start-index="53" stop-index="57" text="B'01'" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_postgresql_custom_operator_comment_boundaries" parameters="1, 2, 3, 4">
+        <projections start-index="7" stop-index="34">
+            <expression-projection start-index="7" stop-index="20" text="? #-/*block*/?">
+                <expr>
+                    <common-expression start-index="7" stop-index="20" text="? #-/*block*/?">
+                        <children>
+                            <expression>
+                                <parameter-marker-expression start-index="7" stop-index="7" parameter-index="0" />
+                            </expression>
+                            <expression>
+                                <parameter-marker-expression start-index="20" stop-index="20" parameter-index="1" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="23" stop-index="34" text="? @+--line&#10;?">
+                <expr>
+                    <binary-operation-expression start-index="23" stop-index="34" text="? @+--line&#10;?">
+                        <left>
+                            <parameter-marker-expression start-index="23" stop-index="23" parameter-index="2" />
+                        </left>
+                        <operator>@+</operator>
+                        <right>
+                            <parameter-marker-expression start-index="34" stop-index="34" parameter-index="3" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <comment start-index="11" stop-index="19" text="/*block*/" />
+        <comment start-index="27" stop-index="33" text="--line&#10;" />
+    </select>
+    <select sql-case-id="select_postgresql_custom_operator_internal_dash_slash" parameters="1, 2">
+        <projections start-index="7" stop-index="13">
+            <expression-projection start-index="7" stop-index="13" text="? #-/ ?">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="13" text="? #-/ ?">
+                        <left>
+                            <parameter-marker-expression start-index="7" stop-index="7" parameter-index="0" />
+                        </left>
+                        <operator>#-/</operator>
+                        <right>
+                            <parameter-marker-expression start-index="13" stop-index="13" parameter-index="1" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 </sql-parser-test-cases>

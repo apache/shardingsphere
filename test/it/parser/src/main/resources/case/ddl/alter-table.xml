@@ -1269,6 +1269,17 @@
         </modify-column>
     </alter-table>
 
+    <alter-table sql-case-id="alter_table_add_unique_key_firebird" add-constraint-count="1">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-constraint constraint-name="uk_order_id" start-index="24" stop-index="63">
+            <index-column name="order_id" start-index="55" stop-index="62" />
+        </add-constraint>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_constraint_firebird" drop-constraint-count="1">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+
     <alter-table sql-case-id="alter_table_alter_column_for_sqlserver">
         <table name="t_order" start-index="12" stop-index="18" />
         <modify-column>
@@ -1298,6 +1309,7 @@
 
     <alter-table sql-case-id="alter_table_set_schema">
         <table name="t_order" start-index="12" stop-index="18" />
+        <set-schema schema-name="yourschema" start-index="20" stop-index="40" />
     </alter-table>
 
     <alter-table sql-case-id="alter_table_attach_partition">
@@ -3876,5 +3888,184 @@
         <table-rollback start-index="18" stop-index="38">
             <snapshot-id value="1111" start-index="35" stop-index="38" />
         </table-rollback>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_reset_option_pg">
+        <table name="t" start-index="12" stop-index="12" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_reset_options_namespace_pg">
+        <table name="t" start-index="12" stop-index="12" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_column_reset_option_pg">
+        <table name="t" start-index="12" stop-index="12" />
+        <modify-column>
+            <column-definition start-index="14" stop-index="46" not-null="false">
+                <column name="c" start-index="27" stop-index="27" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_column_reset_without_column_pg">
+        <table name="t" start-index="12" stop-index="12" />
+        <modify-column>
+            <column-definition start-index="14" stop-index="49" not-null="false">
+                <column name="c" start-index="20" stop-index="20" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_reset_set_control_pg">
+        <table name="t" start-index="12" stop-index="12" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_reset_value_control_pg">
+        <table name="t" start-index="12" stop-index="12" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_column_reset_value_control_pg">
+        <table name="t" start-index="12" stop-index="12" />
+        <modify-column>
+            <column-definition start-index="14" stop-index="52" not-null="false">
+                <column name="c" start-index="27" stop-index="27" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_not_enforced_pg">
+        <table name="foo_table" start-index="12" stop-index="20" />
+        <add-constraint constraint-name="positive" start-index="26" stop-index="81" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_constraint_enforced_pg">
+        <table name="foo_table" start-index="12" stop-index="20" />
+        <modify-constraint constraint-name="positive" start-index="22" stop-index="55" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_constraint_attribute_order_pg">
+        <table name="foo_table" start-index="12" stop-index="20" />
+        <modify-constraint constraint-name="positive" start-index="22" stop-index="76" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_temporal_pk_pg">
+        <table name="foo_table" start-index="12" stop-index="20" />
+        <add-constraint primary-key-column-count="2" constraint-name="foo_pk" start-index="26" stop-index="86">
+            <primary-key-column name="id" start-index="57" stop-index="58" />
+            <primary-key-column name="valid_at" start-index="61" stop-index="68" />
+        </add-constraint>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_temporal_unique_pg">
+        <table name="foo_table" start-index="12" stop-index="20" />
+        <add-constraint primary-key-column-count="0" constraint-name="foo_unique" start-index="26" stop-index="85" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_temporal_foreign_key_pg">
+        <table name="foo_table" start-index="12" stop-index="20" />
+        <add-constraint primary-key-column-count="0" constraint-name="foo_fk" start-index="26" stop-index="122">
+            <referenced-table name="parent_table" start-index="89" stop-index="100" />
+        </add-constraint>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_expression_pg">
+        <table name="t" start-index="12" stop-index="12" />
+        <modify-column>
+            <column-definition start-index="14" stop-index="55" not-null="false">
+                <column name="b" start-index="27" stop-index="27" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_expression_without_column_pg">
+        <table name="t" start-index="12" stop-index="12" />
+        <modify-column>
+            <column-definition start-index="14" stop-index="46" not-null="false">
+                <column name="b" start-index="20" stop-index="20" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_expression_qualified_pg">
+        <table name="t" start-index="17" stop-index="19">
+            <owner name="s" start-index="17" stop-index="17" />
+        </table>
+        <modify-column>
+            <column-definition start-index="21" stop-index="66" not-null="false">
+                <column name="b" start-index="34" stop-index="36" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_expression_function_pg">
+        <table name="t" start-index="12" stop-index="12" />
+        <modify-column>
+            <column-definition start-index="14" stop-index="75" not-null="false">
+                <column name="b" start-index="27" stop-index="27" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_expression_multiple_pg">
+        <table name="t" start-index="12" stop-index="12" />
+        <modify-column>
+            <column-definition start-index="14" stop-index="53" not-null="false">
+                <column name="b" start-index="27" stop-index="27" />
+            </column-definition>
+        </modify-column>
+        <modify-column>
+            <column-definition start-index="56" stop-index="95" not-null="false">
+                <column name="c" start-index="69" stop-index="69" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_expression_default_control_pg">
+        <table name="t" start-index="12" stop-index="12" />
+        <modify-column>
+            <column-definition start-index="14" stop-index="47" not-null="false">
+                <column name="b" start-index="27" stop-index="27" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_storage_compression_pg">
+        <table name="t" start-index="12" stop-index="12" />
+        <add-column>
+            <column-definition type="text" start-index="25" stop-index="60" not-null="false">
+                <column name="f" />
+                <data-type value="text" start-index="27" stop-index="30" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_not_null_constraint_pg" add-constraint-count="1">
+        <table name="t" start-index="12" stop-index="12" />
+        <add-constraint primary-key-column-count="0" start-index="18" stop-index="27" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_not_null_no_inherit_pg" add-constraint-count="1">
+        <table name="t" start-index="12" stop-index="12" />
+        <add-constraint primary-key-column-count="0" start-index="18" stop-index="52" constraint-name="nn" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_not_null_validation_pg" add-constraint-count="1">
+        <table name="t" start-index="12" stop-index="12" />
+        <add-constraint primary-key-column-count="0" start-index="18" stop-index="62" constraint-name="nn" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_constraint_validation_pg" add-constraint-count="0">
+        <table name="t" start-index="12" stop-index="12" />
+        <modify-constraint constraint-name="nn" start-index="14" stop-index="42" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_constraint_no_inherit_pg" add-constraint-count="0">
+        <table name="t" start-index="12" stop-index="12" />
+        <modify-constraint constraint-name="nn" start-index="14" stop-index="43" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_constraint_inherit_pg" add-constraint-count="0">
+        <table name="t" start-index="12" stop-index="12" />
+        <modify-constraint constraint-name="nn" start-index="14" stop-index="40" />
     </alter-table>
 </sql-parser-test-cases>

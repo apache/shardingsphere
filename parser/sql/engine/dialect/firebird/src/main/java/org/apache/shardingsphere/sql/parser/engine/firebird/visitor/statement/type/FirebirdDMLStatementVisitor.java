@@ -34,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Comb
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.EscapedTableReferenceContext;
-import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FirstSkipClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FirstValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FromClauseContext;
@@ -44,8 +43,12 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Inse
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.JoinedTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.MergeContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.OffsetDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.OrderByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.QualifiedShorthandContext;
@@ -134,20 +137,8 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     public ASTNode visitInsert(final InsertContext ctx) {
         InsertStatement insertValuesStatement = (InsertStatement) visit(ctx.insertValuesClause());
         InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()))
-                .insertColumns(insertValuesStatement.getInsertColumns().orElse(null)).insertSelect(insertValuesStatement.getInsertSelect().orElse(null))
-                .setAssignment(insertValuesStatement.getSetAssignment().orElse(null)).onDuplicateKeyColumns(insertValuesStatement.getOnDuplicateKeyColumns().orElse(null))
-                .valueReference(insertValuesStatement.getValueReference().orElse(null))
-                .returning(null == ctx.returningClause() ? insertValuesStatement.getReturning().orElse(null) : (ReturningSegment) visit(ctx.returningClause()))
-                .output(insertValuesStatement.getOutput().orElse(null)).with(insertValuesStatement.getWith().orElse(null))
-                .multiTableInsertType(insertValuesStatement.getMultiTableInsertType().orElse(null))
-                .multiTableInsertInto(insertValuesStatement.getMultiTableInsertInto().orElse(null))
-                .multiTableConditionalInto(insertValuesStatement.getMultiTableConditionalInto().orElse(null)).where(insertValuesStatement.getWhere().orElse(null))
-                .exec(insertValuesStatement.getExec().orElse(null)).withTableHint(insertValuesStatement.getWithTableHint().orElse(null))
-                .rowSetFunction(insertValuesStatement.getRowSetFunction().orElse(null)).ignore(insertValuesStatement.isIgnore()).replace(insertValuesStatement.isReplace())
-                .values(new LinkedList<>(insertValuesStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertValuesStatement.getDerivedInsertColumns())).build();
-        result.addParameterMarkers(insertValuesStatement.getParameterMarkers());
-        result.getVariableNames().addAll(insertValuesStatement.getVariableNames());
-        result.getComments().addAll(insertValuesStatement.getComments());
+                .insertColumns(insertValuesStatement.getInsertColumns().orElse(null)).values(insertValuesStatement.getValues())
+                .returning(null == ctx.returningClause() ? null : (ReturningSegment) visit(ctx.returningClause())).build();
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
@@ -225,11 +216,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitAssignmentValue(final AssignmentValueContext ctx) {
-        ExprContext expr = ctx.expr();
-        if (null != expr) {
-            return visit(expr);
-        }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return null == ctx.expr() ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList()) : visit(ctx.expr());
     }
     
     @Override
@@ -257,11 +244,12 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
+        WithSegment withSegment = null == ctx.withClause() ? null : (WithSegment) visit(ctx.withClause());
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
-        result.addParameterMarkers(getParameterMarkerSegments());
-        if (null != ctx.withClause()) {
-            result = createSelectStatementBuilder(result).with((WithSegment) visit(ctx.withClause())).build();
+        if (null != withSegment) {
+            result = createSelectStatementBuilder(result).with(withSegment).build();
         }
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -276,8 +264,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         for (int i = 1; i < ctx.selectClause().size(); i++) {
             SelectClauseContext rightContext = ctx.selectClause(i);
             SelectStatement rightSelect = (SelectStatement) visit(rightContext);
-            boolean liftTrailingOrderBy = i == ctx.selectClause().size() - 1 && null != rightContext.orderByClause();
-            OrderBySegment trailingOrderBy = liftTrailingOrderBy ? rightSelect.getOrderBy().orElse(null) : null;
+            OrderBySegment trailingOrderBy = i == ctx.selectClause().size() - 1 ? rightSelect.getOrderBy().orElse(null) : null;
             if (null != trailingOrderBy) {
                 rightSelect = createSelectStatementBuilder(rightSelect).orderBy(null).build();
             }
@@ -291,12 +278,6 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         return result;
     }
     
-    private CombineType getCombineType(final CombineClauseContext ctx, final SelectClauseContext rightContext) {
-        ParseTree previous = ctx.getChild(ctx.children.indexOf(rightContext) - 1);
-        boolean isUnionAll = previous instanceof TerminalNode && FirebirdStatementParser.ALL == ((TerminalNode) previous).getSymbol().getType();
-        return isUnionAll ? CombineType.UNION_ALL : CombineType.UNION;
-    }
-    
     private SubquerySegment createCombineRightSubquery(final SelectClauseContext rightContext, final SelectStatement rightSelect, final boolean excludeTrailingOrderBy) {
         int stopIndex = excludeTrailingOrderBy ? getStopIndexBefore(rightContext, rightContext.orderByClause()) : rightContext.stop.getStopIndex();
         return new SubquerySegment(rightContext.start.getStartIndex(), stopIndex, rightSelect,
@@ -308,19 +289,25 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         return previous instanceof TerminalNode ? ((TerminalNode) previous).getSymbol().getStopIndex() : ((ParserRuleContext) previous).stop.getStopIndex();
     }
     
+    private CombineType getCombineType(final CombineClauseContext ctx, final SelectClauseContext rightContext) {
+        ParseTree previous = ctx.getChild(ctx.children.indexOf(rightContext) - 1);
+        boolean isUnionAll = previous instanceof TerminalNode && FirebirdStatementParser.ALL == ((TerminalNode) previous).getSymbol().getType();
+        return isUnionAll ? CombineType.UNION_ALL : CombineType.UNION;
+    }
+    
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
-        SelectStatement.SelectStatementBuilder selectStatementBuilder = SelectStatement.builder().databaseType(getDatabaseType()).projections(projections);
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = SelectStatement.builder().databaseType(getDatabaseType());
         if (null != ctx.firstSkipClause()) {
             selectStatementBuilder.limit((LimitSegment) visit(ctx.firstSkipClause()));
         }
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
+        selectStatementBuilder.projections(projections);
         if (!ctx.selectSpecification().isEmpty()) {
             projections.setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
         }
         if (null != ctx.fromClause()) {
-            TableSegment tableSegment = (TableSegment) visit(ctx.fromClause());
-            selectStatementBuilder.from(tableSegment);
+            selectStatementBuilder.from((TableSegment) visit(ctx.fromClause()));
         }
         if (null != ctx.whereClause()) {
             selectStatementBuilder.where((WhereSegment) visit(ctx.whereClause()));
@@ -334,22 +321,55 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         if (null != ctx.havingClause()) {
             selectStatementBuilder.having((HavingSegment) visit(ctx.havingClause()));
         }
+        if (null != ctx.limitClause()) {
+            selectStatementBuilder.limit((LimitSegment) visit(ctx.limitClause()));
+        }
         return selectStatementBuilder.build();
+    }
+    
+    private boolean isDistinct(final SelectSpecificationContext ctx) {
+        return ((BooleanLiteralValue) visit(ctx.duplicateSpecification())).getValue();
     }
     
     @Override
     public ASTNode visitFirstSkipClause(final FirstSkipClauseContext ctx) {
+        PaginationValueSegment rowCount = null == ctx.firstValue() ? null : (PaginationValueSegment) visit(ctx.firstValue());
+        PaginationValueSegment offset = null == ctx.skipValue() ? null : (PaginationValueSegment) visit(ctx.skipValue());
+        return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+    }
+    
+    @Override
+    public ASTNode visitLimitClause(final LimitClauseContext ctx) {
         PaginationValueSegment rowCount = null;
         PaginationValueSegment offset = null;
-        if (null != ctx.FIRST()) {
-            rowCount = (PaginationValueSegment) visit(ctx.firstValue());
-            if (null != ctx.SKIP_()) {
-                offset = (PaginationValueSegment) visit(ctx.skipValue());
+        if (null != ctx.rowsClause()) {
+            offset = (PaginationValueSegment) visitLimitValue(ctx.rowsClause().expr(0));
+            if (ctx.rowsClause().expr().size() > 1) {
+                rowCount = (PaginationValueSegment) visitLimitValue(ctx.rowsClause().expr(1));
             }
-        } else if (null != ctx.SKIP_()) {
-            offset = (PaginationValueSegment) visit(ctx.skipValue());
+        } else {
+            OffsetDefinitionContext offsetDefinition = ctx.offsetDefinition();
+            if (null != offsetDefinition.offsetClause()) {
+                offset = (PaginationValueSegment) visitLimitValue(offsetDefinition.offsetClause().limitOffset());
+            }
+            if (null != offsetDefinition.fetchClause()) {
+                rowCount = (PaginationValueSegment) visitLimitValue(offsetDefinition.fetchClause().limitRowCount());
+            }
         }
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+    }
+    
+    private ASTNode visitLimitValue(final ParserRuleContext ctx) {
+        if (ctx.getChild(0) instanceof NumberLiteralsContext) {
+            return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.getChild(0))).getValue().longValue());
+        }
+        if (ctx.getChild(0) instanceof ParameterMarkerContext) {
+            ParameterMarkerSegment result =
+                    new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.getChild(0))).getValue());
+            getParameterMarkerSegments().add(result);
+            return result;
+        }
+        return null;
     }
     
     @Override
@@ -378,12 +398,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitHavingClause(final HavingClauseContext ctx) {
-        ExpressionSegment expr = (ExpressionSegment) visit(ctx.expr());
-        return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
-    }
-    
-    private boolean isDistinct(final SelectSpecificationContext ctx) {
-        return ((BooleanLiteralValue) visit(ctx.duplicateSpecification())).getValue();
+        return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
     }
     
     @Override
@@ -393,15 +408,13 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitProjections(final ProjectionsContext ctx) {
-        Collection<ProjectionSegment> projections = new LinkedList<>();
+        ProjectionsSegment result = new ProjectionsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         if (null != ctx.unqualifiedShorthand()) {
-            projections.add(new ShorthandProjectionSegment(ctx.unqualifiedShorthand().getStart().getStartIndex(), ctx.unqualifiedShorthand().getStop().getStopIndex()));
+            result.getProjections().add(new ShorthandProjectionSegment(ctx.unqualifiedShorthand().getStart().getStartIndex(), ctx.unqualifiedShorthand().getStop().getStopIndex()));
         }
         for (ProjectionContext each : ctx.projection()) {
-            projections.add((ProjectionSegment) visit(each));
+            result.getProjections().add((ProjectionSegment) visit(each));
         }
-        ProjectionsSegment result = new ProjectionsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        result.getProjections().addAll(projections);
         return result;
     }
     
@@ -425,31 +438,14 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         return createProjection(ctx, alias);
     }
     
-    @Override
-    public ASTNode visitAlias(final AliasContext ctx) {
-        return null == ctx.identifier()
-                ? new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.STRING_().getText()))
-                : new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
-    }
-    
     private ASTNode createProjection(final ProjectionContext ctx, final AliasSegment alias) {
         ASTNode projection = visit(ctx.expr());
         if (projection instanceof AggregationProjectionSegment) {
             ((AggregationProjectionSegment) projection).setAlias(alias);
             return projection;
         }
-        if (projection instanceof ExpressionProjectionSegment) {
-            ((ExpressionProjectionSegment) projection).setAlias(alias);
-            return projection;
-        }
-        if (projection instanceof FunctionSegment) {
-            FunctionSegment segment = (FunctionSegment) projection;
-            ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText(), segment);
-            result.setAlias(alias);
-            return result;
-        }
-        if (projection instanceof CommonExpressionSegment) {
-            CommonExpressionSegment segment = (CommonExpressionSegment) projection;
+        if (projection instanceof FunctionSegment || projection instanceof CommonExpressionSegment) {
+            ExpressionSegment segment = (ExpressionSegment) projection;
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText(), segment);
             result.setAlias(alias);
             return result;
@@ -463,7 +459,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         if (projection instanceof SubqueryExpressionSegment) {
             SubqueryExpressionSegment subqueryExpressionSegment = (SubqueryExpressionSegment) projection;
             String text = ctx.start.getInputStream().getText(new Interval(subqueryExpressionSegment.getStartIndex(), subqueryExpressionSegment.getStopIndex()));
-            SubqueryProjectionSegment result = new SubqueryProjectionSegment(((SubqueryExpressionSegment) projection).getSubquery(), text);
+            SubqueryProjectionSegment result = new SubqueryProjectionSegment(subqueryExpressionSegment.getSubquery(), text);
             result.setAlias(alias);
             return result;
         }
@@ -476,8 +472,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
             return result;
         }
         if (projection instanceof ParameterMarkerExpressionSegment) {
-            ParameterMarkerExpressionSegment result = (ParameterMarkerExpressionSegment) projection;
-            result.setAlias(alias);
+            ((ParameterMarkerExpressionSegment) projection).setAlias(alias);
             return projection;
         }
         ExpressionSegment column = (ExpressionSegment) projection;
@@ -488,6 +483,11 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     }
     
     @Override
+    public ASTNode visitAlias(final AliasContext ctx) {
+        return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.getText()));
+    }
+    
+    @Override
     public ASTNode visitFromClause(final FromClauseContext ctx) {
         return visit(ctx.tableReferences());
     }
@@ -495,10 +495,8 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
         TableSegment result = (TableSegment) visit(ctx.escapedTableReference(0));
-        if (ctx.escapedTableReference().size() > 1) {
-            for (int i = 1; i < ctx.escapedTableReference().size(); i++) {
-                result = generateJoinTableSourceFromEscapedTableReference(ctx.escapedTableReference(i), result);
-            }
+        for (int i = 1; i < ctx.escapedTableReference().size(); i++) {
+            result = generateJoinTableSourceFromEscapedTableReference(ctx.escapedTableReference(i), result);
         }
         return result;
     }
@@ -520,16 +518,47 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
-        TableSegment result;
-        TableSegment left;
-        left = (TableSegment) visit(ctx.tableFactor());
-        if (!ctx.joinedTable().isEmpty()) {
-            for (JoinedTableContext each : ctx.joinedTable()) {
-                left = visitJoinedTable(each, left);
-            }
+        TableSegment result = (TableSegment) visit(ctx.tableFactor());
+        for (JoinedTableContext each : ctx.joinedTable()) {
+            result = visitJoinedTable(each, result);
         }
-        result = left;
         return result;
+    }
+    
+    private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final TableSegment tableSegment) {
+        JoinTableSegment result = new JoinTableSegment();
+        result.setLeft(tableSegment);
+        result.setStartIndex(tableSegment.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        result.setRight((TableSegment) visit(ctx.tableFactor()));
+        result.setJoinType(getJoinType(ctx));
+        result.setNatural(null != ctx.NATURAL());
+        if (null != ctx.joinSpecification()) {
+            visitJoinSpecification(ctx.joinSpecification(), result);
+        }
+        return result;
+    }
+    
+    private String getJoinType(final JoinedTableContext ctx) {
+        if (null != ctx.LEFT()) {
+            return JoinType.LEFT.name();
+        }
+        if (null != ctx.RIGHT()) {
+            return JoinType.RIGHT.name();
+        }
+        if (null != ctx.FULL()) {
+            return JoinType.FULL.name();
+        }
+        return null == ctx.CROSS() ? JoinType.INNER.name() : JoinType.CROSS.name();
+    }
+    
+    private void visitJoinSpecification(final JoinSpecificationContext ctx, final JoinTableSegment joinTableSource) {
+        if (null != ctx.expr()) {
+            joinTableSource.setCondition((ExpressionSegment) visit(ctx.expr()));
+        }
+        if (null != ctx.USING()) {
+            joinTableSource.setUsing(ctx.columnNames().columnName().stream().map(each -> (ColumnSegment) visit(each)).collect(Collectors.toList()));
+        }
     }
     
     @Override
@@ -561,47 +590,9 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         return visit(ctx.tableReferences());
     }
     
-    private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final TableSegment tableSegment) {
-        JoinTableSegment result = new JoinTableSegment();
-        result.setLeft(tableSegment);
-        result.setStartIndex(tableSegment.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        TableSegment right = (TableSegment) visit(ctx.tableFactor());
-        result.setRight(right);
-        result.setJoinType(getJoinType(ctx));
-        if (null != ctx.joinSpecification()) {
-            visitJoinSpecification(ctx.joinSpecification(), result);
-        }
-        return result;
-    }
-    
-    private String getJoinType(final JoinedTableContext ctx) {
-        if (null != ctx.LEFT()) {
-            return JoinType.LEFT.name();
-        } else if (null != ctx.RIGHT()) {
-            return JoinType.RIGHT.name();
-        } else if (null != ctx.INNER()) {
-            return JoinType.INNER.name();
-        } else if (null != ctx.CROSS()) {
-            return JoinType.CROSS.name();
-        }
-        return JoinType.INNER.name();
-    }
-    
-    private void visitJoinSpecification(final JoinSpecificationContext ctx, final JoinTableSegment joinTableSource) {
-        if (null != ctx.expr()) {
-            ExpressionSegment condition = (ExpressionSegment) visit(ctx.expr());
-            joinTableSource.setCondition(condition);
-        }
-        if (null != ctx.USING()) {
-            joinTableSource.setUsing(ctx.columnNames().columnName().stream().map(each -> (ColumnSegment) visit(each)).collect(Collectors.toList()));
-        }
-    }
-    
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
-        ExpressionSegment segment = (ExpressionSegment) visit(ctx.expr());
-        return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), segment);
+        return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
     }
     
     @Override
@@ -615,22 +606,18 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
+        WithSegment withSegment = null == ctx.withClause() ? null : (WithSegment) visit(ctx.withClause());
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
-        if (null != ctx.withClause()) {
-            result = createSelectStatementBuilder(result).with((WithSegment) visit(ctx.withClause())).build();
+        if (null != withSegment) {
+            result = createSelectStatementBuilder(result).with(withSegment).build();
         }
         return result;
     }
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        return MergeStatement.builder()
-                .databaseType(getDatabaseType())
-                .target((TableSegment) visit(ctx.intoClause()))
-                .source((TableSegment) visit(ctx.usingClause()))
-                // add mergeWhenNotMatched and mergeWhenMatched part
-                // add RETURNING part
-                .build();
+        // TODO add mergeWhenNotMatched, mergeWhenMatched and RETURNING part
+        return MergeStatement.builder().databaseType(getDatabaseType()).target((TableSegment) visit(ctx.intoClause())).source((TableSegment) visit(ctx.usingClause())).build();
     }
     
     private SelectStatement.SelectStatementBuilder createSelectStatementBuilder(final SelectStatement selectStatement) {

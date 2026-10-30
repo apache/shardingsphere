@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningAr
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -139,22 +138,16 @@ public final class ShardingPlanningRequestBinder {
         workflowPlanningArguments.applyStringArgument("component_name", request::setComponentName);
     }
     
-    private void replaceValues(final Collection<String> target, final Object value) {
-        List<String> values = createStringList(value);
+    private void replaceValues(final Collection<String> target, final String value) {
+        Collection<String> values = createStringList(value);
         if (!values.isEmpty()) {
             target.clear();
             target.addAll(values);
         }
     }
     
-    private List<String> createStringList(final Object value) {
-        if (value instanceof List) {
-            return ((List<?>) value).stream().map(String::valueOf).map(String::trim).filter(each -> !each.isEmpty()).toList();
-        }
-        if (null == value) {
-            return List.of();
-        }
-        return Stream.of(String.valueOf(value).split(",")).map(String::trim).filter(each -> !each.isEmpty()).toList();
+    private Collection<String> createStringList(final String value) {
+        return Stream.of(value.split(",")).map(String::trim).filter(each -> !each.isEmpty()).toList();
     }
     
 }

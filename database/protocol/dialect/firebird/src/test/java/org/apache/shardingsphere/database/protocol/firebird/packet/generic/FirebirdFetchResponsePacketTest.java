@@ -34,6 +34,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -84,8 +85,6 @@ class FirebirdFetchResponsePacketTest {
     @Test
     void assertWriteWithNonNullCellData() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.writerIndex()).thenReturn(0);
-        when(byteBuf.writeZero(4)).thenReturn(byteBuf);
         BinaryRow row = new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.LONG, 123)));
         try (MockedStatic<FirebirdBinaryProtocolValueFactory> mocked = mockStatic(FirebirdBinaryProtocolValueFactory.class)) {
             mocked.when(() -> FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.LONG)).thenReturn(protocolValue);
@@ -93,7 +92,8 @@ class FirebirdFetchResponsePacketTest {
             verify(payload).writeInt4(FirebirdCommandPacketType.FETCH_RESPONSE.getValue());
             verify(payload).writeInt4(ISCConstants.FETCH_OK);
             verify(payload).writeInt4(1);
-            verify(byteBuf).writeZero(4);
+            verify(byteBuf).writeZero(1);
+            verify(payload).writePadding(1);
             verify(protocolValue).write(payload, 123);
         }
     }
@@ -111,14 +111,32 @@ class FirebirdFetchResponsePacketTest {
     }
     
     @Test
+    void assertWriteWithTimestampWithTimeZoneCellData() {
+        ByteBuf actual = Unpooled.buffer();
+        try {
+            FirebirdPacketPayload packetPayload = new FirebirdPacketPayload(actual, StandardCharsets.UTF_8);
+            BinaryRow row = new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.TIMESTAMP_TZ, OffsetDateTime.parse("2024-01-02T00:15:30.123400+02:00"))));
+            FirebirdFetchResponsePacket.getFetchRowPacket(row).write(packetPayload);
+            assertThat(actual.readableBytes(), is(28));
+            assertThat(actual.readInt(), is(66));
+            assertThat(actual.readInt(), is(0));
+            assertThat(actual.readInt(), is(1));
+            assertThat(actual.readInt(), is(0));
+            assertThat(actual.readInt(), is(60310));
+            assertThat(actual.readInt(), is(801301234));
+            assertThat(actual.readInt(), is(1559));
+        } finally {
+            actual.release();
+        }
+    }
+    
+    @Test
     void assertWriteWithNullCellData() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.writerIndex()).thenReturn(0);
-        when(byteBuf.writeZero(4)).thenReturn(byteBuf);
-        when(byteBuf.getByte(0)).thenReturn((byte) 0);
         FirebirdFetchResponsePacket.getFetchRowPacket(new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.LONG, null)))).write(payload);
         verify(payload).writeInt4(FirebirdCommandPacketType.FETCH_RESPONSE.getValue());
         verify(payload).writeInt4(ISCConstants.FETCH_OK);
+        verify(payload).writePadding(1);
         verify(byteBuf).setByte(0, 1);
     }
     

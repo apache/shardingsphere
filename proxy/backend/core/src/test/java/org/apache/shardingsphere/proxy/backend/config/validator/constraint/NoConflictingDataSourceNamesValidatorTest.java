@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.config.validator.constraint;
 
 import org.apache.bval.jsr.ApacheValidationProvider;
+import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoadResult;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.ProxyDatabaseConfiguration;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -41,6 +40,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -80,22 +80,17 @@ class NoConflictingDataSourceNamesValidatorTest {
     }
     
     private static ProxyConfigurationLoadResult createConfig(final Collection<String> globalDataSourceNames, final Map<String, Collection<String>> databaseDataSourceNames) {
-        YamlProxyServerConfiguration serverConfig = new YamlProxyServerConfiguration();
-        serverConfig.setDataSources(createDataSources(globalDataSourceNames));
-        Map<String, YamlProxyDatabaseConfiguration> databaseConfigs = new LinkedHashMap<>(databaseDataSourceNames.size(), 1F);
+        Map<String, ProxyDatabaseConfiguration> databaseConfigs = new LinkedHashMap<>(databaseDataSourceNames.size(), 1F);
         for (Entry<String, Collection<String>> entry : databaseDataSourceNames.entrySet()) {
-            YamlProxyDatabaseConfiguration databaseConfig = new YamlProxyDatabaseConfiguration();
-            databaseConfig.setDatabaseName(entry.getKey());
-            databaseConfig.setDataSources(createDataSources(entry.getValue()));
-            databaseConfigs.put(entry.getKey(), databaseConfig);
+            databaseConfigs.put(entry.getKey(), new ProxyDatabaseConfiguration(entry.getKey(), createDataSources(entry.getValue()), Collections.emptyList()));
         }
-        return new ProxyConfigurationLoadResult(serverConfig, databaseConfigs);
+        return new ProxyConfigurationLoadResult(null, createDataSources(globalDataSourceNames), Collections.emptyList(), new Properties(), databaseConfigs);
     }
     
-    private static Map<String, YamlProxyDataSourceConfiguration> createDataSources(final Collection<String> dataSourceNames) {
-        Map<String, YamlProxyDataSourceConfiguration> result = new HashMap<>(dataSourceNames.size(), 1F);
+    private static Map<String, DataSourceConfiguration> createDataSources(final Collection<String> dataSourceNames) {
+        Map<String, DataSourceConfiguration> result = new HashMap<>(dataSourceNames.size(), 1F);
         for (String each : dataSourceNames) {
-            result.put(each, new YamlProxyDataSourceConfiguration());
+            result.put(each, mock(DataSourceConfiguration.class));
         }
         return result;
     }

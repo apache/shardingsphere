@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,10 +35,11 @@ class PostgreSQLPipelineFreemarkerManagerTest {
     
     private static final Pattern PATTERN = Pattern.compile("\\s+");
     
-    @Test
-    void assertGetSQLByDefaultVersion() {
-        String actual = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(Collections.singletonMap("databaseName", "foo_db"), "component/table/%s/get_database_id.ftl", 10, 0);
-        String expected = "\n" + "SELECT oid AS did, datlastsysoid FROM pg_catalog.pg_database WHERE datname = 'foo_db';" + "\n";
+    @ParameterizedTest(name = "PostgreSQL {0}")
+    @ValueSource(ints = {10, 11, 12, 13, 14, 15, 16, 17})
+    void assertGetSQLByDefaultVersion(final int majorVersion) {
+        String actual = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(Collections.singletonMap("databaseName", "foo_db"), "component/table/%s/get_database_id.ftl", majorVersion, 0);
+        String expected = "\nSELECT oid AS did FROM pg_catalog.pg_database WHERE datname = 'foo_db';\n";
         assertThat(actual, is(expected));
     }
     

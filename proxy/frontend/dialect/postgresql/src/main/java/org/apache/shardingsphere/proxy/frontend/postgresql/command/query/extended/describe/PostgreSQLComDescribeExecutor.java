@@ -28,6 +28,9 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDLoader;
 import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDResolver;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtils;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -173,8 +176,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         List<PostgreSQLColumnDescription> result = new ArrayList<>();
         for (ProjectionSegment each : returningSegment.getProjections().getProjections()) {
             if (each instanceof ShorthandProjectionSegment) {
-                table.getAllColumns().stream()
-                        .map(column -> new PostgreSQLColumnDescription(column.getName(), 0, column.getDataType(), estimateColumnLength(column.getDataType()), "")).forEach(result::add);
+                appendShorthandColumns(table, result);
             }
             if (each instanceof ColumnProjectionSegment) {
                 ColumnProjectionSegment segment = (ColumnProjectionSegment) each;
@@ -189,6 +191,12 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
         applyColumnTypeOIDs(result, loadColumnTypeOIDs(preparedStatement, result.size()));
         return new PostgreSQLRowDescriptionPacket(result);
+    }
+    
+    private void appendShorthandColumns(final ShardingSphereTable table, final Collection<PostgreSQLColumnDescription> columns) {
+        for (ShardingSphereColumn each : table.getAllColumns()) {
+            columns.add(new PostgreSQLColumnDescription(each.getName(), 0, each.getDataType(), estimateColumnLength(each.getDataType()), ""));
+        }
     }
     
     private ShardingSphereColumn generateDefaultColumn(final ColumnProjectionSegment segment) {
@@ -255,8 +263,12 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             return;
         }
         Map<Integer, Integer> columnTypeOIDs = ColumnTypeOIDLoader.load(actualPreparedStatement.getConnection(), resultSetMetaData, columnTypeOIDResolver);
-        List<PostgreSQLColumnDescription> columnDescriptions = new ArrayList<>(resultSetMetaData.getColumnCount());
-        for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
+        SQLStatementContext sqlStatementContext = logicPreparedStatement.getSqlStatementContext();
+        int columnCount = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()
+                ? ShardingSphereResultSetUtils.getVisibleColumnCount((SelectStatementContext) sqlStatementContext, resultSetMetaData)
+                : resultSetMetaData.getColumnCount();
+        List<PostgreSQLColumnDescription> columnDescriptions = new ArrayList<>(columnCount);
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             String columnName = resultSetMetaData.getColumnName(columnIndex);
             int columnType = resultSetMetaData.getColumnType(columnIndex);
             int columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);

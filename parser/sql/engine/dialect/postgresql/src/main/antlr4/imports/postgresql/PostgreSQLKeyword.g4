@@ -19,6 +19,46 @@ lexer grammar PostgreSQLKeyword;
 
 import Alphabet;
 
+ABSENT: A B S E N T;
+ATOMIC: A T O M I C;
+BREADTH: B R E A D T H;
+CONDITIONAL: C O N D I T I O N A L;
+DEPTH: D E P T H;
+EMPTY: E M P T Y;
+ENFORCED: E N F O R C E D;
+ERROR: E R R O R;
+IGNORE: I G N O R E;
+INDENT: I N D E N T;
+JSON_ARRAY: J S O N UL_ A R R A Y;
+JSON_ARRAYAGG: J S O N UL_ A R R A Y A G G;
+JSON_EXISTS: J S O N UL_ E X I S T S;
+JSON_OBJECT: J S O N UL_ O B J E C T;
+JSON_OBJECTAGG: J S O N UL_ O B J E C T A G G;
+JSON_QUERY: J S O N UL_ Q U E R Y;
+JSON_SCALAR: J S O N UL_ S C A L A R;
+JSON_SERIALIZE: J S O N UL_ S E R I A L I Z E;
+JSON_TABLE: J S O N UL_ T A B L E;
+JSON_VALUE: J S O N UL_ V A L U E;
+KEEP: K E E P;
+KEYS: K E Y S;
+LOG_VERBOSITY: L O G UL_ V E R B O S I T Y;
+NESTED: N E S T E D;
+OMIT: O M I T;
+ON_ERROR: O N UL_ E R R O R;
+PERIOD: P E R I O D;
+QUOTES: Q U O T E S;
+REJECT_LIMIT: R E J E C T UL_ L I M I T;
+RETURN: R E T U R N;
+SCALAR: S C A L A R;
+SILENT: S I L E N T;
+SOURCE: S O U R C E;
+STOP: S T O P;
+STRING: S T R I N G;
+TARGET: T A R G E T;
+UNCONDITIONAL: U N C O N D I T I O N A L;
+UTF8: U T F '8';
+VIRTUAL: V I R T U A L;
+
 ADMIN
     : A D M I N
     ;
@@ -299,6 +339,10 @@ MAIN
     : M A I N
     ;
 
+MAINTAIN
+    : M A I N T A I N
+    ;
+
 MATCH
     : M A T C H
     ;
@@ -321,6 +365,10 @@ NULLS
 
 OBJECT
     : O B J E C T
+    ;
+
+OBJECTS
+    : O B J E C T S
     ;
 
 OIDS
@@ -1213,9 +1261,9 @@ NEW
     : N E W
     ;
 
-//SKIP
-//    : S K I P
-//    ;
+SKIP_SYMBOL
+    : S K I P
+    ;
 
 PREPARED
     : P R E P A R E D
@@ -1472,3 +1520,4 @@ ASENSITIVE
 DESCRIPTOR
     : D E S C R I P T O R
     ;
+

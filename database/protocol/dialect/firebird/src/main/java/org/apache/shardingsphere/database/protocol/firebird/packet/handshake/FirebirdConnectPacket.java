@@ -56,7 +56,8 @@ public final class FirebirdConnectPacket extends FirebirdPacket {
     private final List<FirebirdProtocol> userProtocols = new ArrayList<>();
     
     public FirebirdConnectPacket(final FirebirdPacketPayload payload) {
-        opCode = FirebirdCommandPacketType.valueOf(payload.readInt4());
+        opCode = FirebirdCommandPacketType.CONNECT;
+        payload.skipReserved(4);
         connectVersion = payload.readInt4();
         archType = FirebirdArchType.valueOf(payload.readInt4());
         database = payload.readString();

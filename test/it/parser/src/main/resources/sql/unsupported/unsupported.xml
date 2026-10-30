@@ -365,6 +365,38 @@
     <sql-case id="unsupported_oracle_forall_string_body" value="BEGIN FORALL i IN 1..v.COUNT 'DELETE FROM foo_table'; END;" db-types="Oracle" />
     <sql-case id="unsupported_oracle_forall_parenthesized_body" value="BEGIN FORALL i IN 1..v.COUNT (v(i)); END;" db-types="Oracle" />
     <sql-case id="assert_select_order_by_before_and_after_for_update_oracle" value="SELECT 1 FROM DUAL ORDER BY 1 FOR UPDATE NOWAIT ORDER BY 1" db-types="Oracle" />
+    <sql-case id="unsupported_postgresql_parameter_marker_with_underscore" value="SELECT $1_0" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_parameter_marker_with_decimal" value="SELECT $1.2" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_parameter_marker_with_radix_integer" value="SELECT $0x10" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_string_continuation_without_newline" value="SELECT 'foo' 'bar'" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_json_value_with_empty_array" value="SELECT JSON_VALUE('{}','$' EMPTY ARRAY ON EMPTY)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_json_exists_with_returning" value="SELECT JSON_EXISTS('{}','$' RETURNING int)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_json_table_without_columns" value="SELECT * FROM JSON_TABLE('{}','$' COLUMNS ())" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_join_using_alias_with_column_names" value="SELECT * FROM foo JOIN bar USING(id) AS j(renamed)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_explain_create_table_without_as" value="EXPLAIN CREATE TABLE foo(id int)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_cycle_parameter_marker" value="WITH RECURSIVE walk(id) AS (SELECT 1 UNION ALL SELECT id FROM walk WHERE id &lt; 3) CYCLE id SET is_cycle TO $1 DEFAULT false USING path_col SELECT id FROM walk" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_inline_references_with_period" value="CREATE TABLE foo(id int REFERENCES bar(id, PERIOD valid_at));" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_foreign_key_period_before_columns" value="CREATE TABLE foo(id int, valid_at int, FOREIGN KEY(PERIOD valid_at, id) REFERENCES bar(id, PERIOD valid_at));" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_statistics_if_not_exists_without_name" value="CREATE STATISTICS IF NOT EXISTS ON id FROM foo;" db-types="PostgreSQL" case-types="literal" />
     <!-- TODO open this case when MySQLStatement change to SEMI_? EOF -->
     <!--    <sql-case id="assert_parse_multi_statements" value="SHOW VARIABLES LIKE 'sql_mode'; SELECT COUNT(*) AS support_ndb FROM information_schema;" db-types="MySQL" />-->
+    <sql-case id="unsupported_postgresql_revoke_inherit_option_for_privilege" value="REVOKE INHERIT OPTION FOR SELECT ON foo FROM foo_role" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_revoke_set_option_for_privilege" value="REVOKE SET OPTION FOR SELECT ON foo FROM foo_role" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_revoke_grant_option_for_role" value="REVOKE GRANT OPTION FOR foo_reader FROM foo_user" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_create_table_column_names_without_as" value="CREATE TABLE foo (id)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_json_array_empty_null_clause" value="SELECT JSON_ARRAY(NULL ON NULL)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_json_object_empty_unique_clause" value="SELECT JSON_OBJECT(WITH UNIQUE KEYS)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_json_table_numeric_column_path" value="SELECT * FROM JSON_TABLE('{}', '$' COLUMNS (foo_id int PATH 1))" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_json_table_parameter_nested_path" value="SELECT * FROM JSON_TABLE('{}', '$' COLUMNS (NESTED ? COLUMNS (foo_id int)))" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_json_arrayagg_extra_argument" value="SELECT JSON_ARRAYAGG(1, 2)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_json_objectagg_comma_arguments" value="SELECT JSON_OBJECTAGG(1, 2)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_json_scalar_extra_argument" value="SELECT JSON_SCALAR(1, 2)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_json_exists_missing_path" value="SELECT JSON_EXISTS('{}')" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_json_arrayagg_filter_window" value="SELECT JSON_ARRAYAGG(?) FILTER (WHERE ?) OVER ()" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_json_arrayagg_filter_without_window" value="SELECT JSON_ARRAYAGG(?) FILTER (WHERE ?)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_reindex_schema_without_name" value="REINDEX SCHEMA;" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_reindex_schema_without_name_with_options" value="REINDEX (VERBOSE) SCHEMA;" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_security_label_without_role_name" value="SECURITY LABEL ON ROLE IS 'foo_label';" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_copy_format_without_value" value="COPY t_order TO STDOUT (FORMAT);" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_copy_header_unquoted_value" value="COPY t_order FROM STDIN (HEADER wrong_choice);" db-types="PostgreSQL" case-types="literal" />
 </sql-cases>

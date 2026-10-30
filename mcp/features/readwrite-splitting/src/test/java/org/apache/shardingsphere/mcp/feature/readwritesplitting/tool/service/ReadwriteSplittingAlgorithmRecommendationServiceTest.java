@@ -22,10 +22,14 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -35,24 +39,24 @@ class ReadwriteSplittingAlgorithmRecommendationServiceTest {
     
     private final ReadwriteSplittingAlgorithmRecommendationService service = new ReadwriteSplittingAlgorithmRecommendationService();
     
-    @Test
-    void assertRecommendSpecifiedAlgorithm() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertRecommendAlgorithmCases")
+    void assertRecommendAlgorithm(final String name, final String algorithmType, final List<Map<String, Object>> algorithmRows, final String expectedType, final String expectedReason) {
         ReadwriteSplittingRuleWorkflowRequest request = new ReadwriteSplittingRuleWorkflowRequest();
-        request.setLoadBalancerType("round_robin");
-        List<AlgorithmCandidate> actual = service.recommendLoadBalanceAlgorithms(
-                request, List.of(Map.of("type", "ROUND_ROBIN")), new LinkedList<>());
-        assertThat(actual.getFirst().getAlgorithmType(), is("ROUND_ROBIN"));
+        request.setLoadBalancerType(algorithmType);
+        List<AlgorithmCandidate> actual = service.recommendLoadBalanceAlgorithms(request, algorithmRows, new LinkedList<>());
+        assertThat(actual.getFirst().getAlgorithmType(), is(expectedType));
         assertThat(actual.getFirst().getAlgorithmRole(), is("primary"));
+        assertThat(actual.getFirst().getRecommendationReason(), is(expectedReason));
     }
     
-    @Test
-    void assertRecommendDefaultAlgorithm() {
-        ReadwriteSplittingRuleWorkflowRequest request = new ReadwriteSplittingRuleWorkflowRequest();
-        List<AlgorithmCandidate> actual = service.recommendLoadBalanceAlgorithms(
-                request, List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN")), new LinkedList<>());
-        assertThat(actual.getFirst().getAlgorithmType(), is("ROUND_ROBIN"));
-        assertThat(actual.getFirst().getRecommendationReason(), is(
-                "Selected from algorithms reported by the current Proxy using MCP's built-in load-balance preference order."));
+    private static Stream<Arguments> assertRecommendAlgorithmCases() {
+        return Stream.of(
+                Arguments.of("specified algorithm", "round_robin", List.of(Map.of("type", "ROUND_ROBIN")), "ROUND_ROBIN", "User specified load-balance algorithm."),
+                Arguments.of("default algorithm", "", List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN")), "ROUND_ROBIN",
+                        "Selected from algorithms reported by the current Proxy using MCP's built-in load-balance preference order."),
+                Arguments.of("first available algorithm", "", List.of(Map.of("type", "FOO_ALGORITHM")), "FOO_ALGORITHM",
+                        "Selected from algorithms reported by the current Proxy using MCP's built-in load-balance preference order."));
     }
     
     @Test
@@ -62,5 +66,14 @@ class ReadwriteSplittingAlgorithmRecommendationServiceTest {
         List<WorkflowIssue> issues = new LinkedList<>();
         assertTrue(service.recommendLoadBalanceAlgorithms(request, List.of(Map.of("type", "RANDOM")), issues).isEmpty());
         assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_NOT_FOUND));
+    }
+    
+    @Test
+    void assertRecommendWithoutAlgorithms() {
+        List<WorkflowIssue> issues = new LinkedList<>();
+        List<AlgorithmCandidate> actual = service.recommendLoadBalanceAlgorithms(new ReadwriteSplittingRuleWorkflowRequest(), List.of(), issues);
+        assertTrue(actual.isEmpty());
+        assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_NOT_FOUND));
+        assertThat(issues.getFirst().getMessage(), is("No load-balance algorithm is available from the current Proxy."));
     }
 }

@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.model;
 
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShadowRuleWorkflowRequestTest {
     
@@ -40,5 +42,23 @@ class ShadowRuleWorkflowRequestTest {
         assertThat(actual.getTableName(), is("t_order"));
         assertThat(actual.getTable(), is("t_order"));
         assertThat(actual.getAlgorithmProperties().get("operation"), is("insert"));
+    }
+    
+    @Test
+    void assertMergeFromBaseRequest() {
+        WorkflowRequest previous = new WorkflowRequest();
+        previous.setDatabase("foo_db");
+        ShadowRuleWorkflowRequest current = new ShadowRuleWorkflowRequest();
+        current.setTableName("foo_table");
+        ShadowRuleWorkflowRequest actual = ShadowRuleWorkflowRequest.merge(previous, current);
+        assertThat(actual.getDatabase(), is("foo_db"));
+        assertThat(actual.getTable(), is("foo_table"));
+    }
+    
+    @Test
+    void assertGetAlgorithmProperties() {
+        ShadowRuleWorkflowRequest request = new ShadowRuleWorkflowRequest();
+        request.putAlgorithmProperties(Map.of("foo_key", "foo_value"));
+        assertTrue(request.getAlgorithmProperties("assisted").isEmpty());
     }
 }

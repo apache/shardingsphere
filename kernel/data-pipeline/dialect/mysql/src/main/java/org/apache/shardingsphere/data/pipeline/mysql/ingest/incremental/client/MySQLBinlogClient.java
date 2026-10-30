@@ -33,6 +33,7 @@ import io.netty.util.concurrent.Promise;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ThreadUtils;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.PlaceholderBinlogEvent;
@@ -55,6 +56,7 @@ import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.proxy.frontend.netty.ChannelAttrInitializer;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -346,8 +348,8 @@ public final class MySQLBinlogClient {
                 blockingEventQueue.put(records);
                 return;
             }
-            if (msg instanceof MySQLBaseBinlogEvent) {
-                lastBinlogEvent.set((MySQLBaseBinlogEvent) msg);
+            if (msg instanceof MySQLBaseBinlogEvent binlogEvent) {
+                lastBinlogEvent.set(binlogEvent);
                 blockingEventQueue.put(Collections.singletonList(lastBinlogEvent.get()));
             }
         }
@@ -375,14 +377,14 @@ public final class MySQLBinlogClient {
         }
         
         @SneakyThrows(InterruptedException.class)
-        private synchronized void reconnect() {
+        private void reconnect() {
             log.info("Reconnect failure count: {}", continuousFailureCount.get());
             if (continuousFailureCount.get() >= 5) {
                 log.error("MySQL binlog client failed permanently, lastBinlogEvent: {}", JsonEngine.marshal(lastBinlogEvent.get()));
                 closeChannel(true);
                 return;
             }
-            wait(2000L * (continuousFailureCount.get() + 1));
+            ThreadUtils.sleep(Duration.ofMillis(2000L * (continuousFailureCount.get() + 1)));
             try {
                 reconnectWithRetry();
                 // CHECKSTYLE:OFF
@@ -407,7 +409,7 @@ public final class MySQLBinlogClient {
                     if (reconnectTimes > 3) {
                         throw ex;
                     }
-                    wait(1000L << reconnectTimes);
+                    ThreadUtils.sleep(Duration.ofMillis(1000L << reconnectTimes));
                 }
             }
         }

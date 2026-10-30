@@ -142,4 +142,13 @@
         <table name="t_drop_a" start-index="11" stop-index="18" />
         <table name="t_drop_b" start-index="21" stop-index="28" />
     </drop-table>
+    <drop-table sql-case-id="clickhouse_drop_table" temporary="false" if-exists="false">
+        <table name="foo_protocol" start-index="11" stop-index="22" />
+    </drop-table>
+    <drop-table sql-case-id="clickhouse_drop_temporary_if_exists" temporary="true">
+        <table name="foo_protocol" start-index="31" stop-index="42" />
+    </drop-table>
+    <drop-table sql-case-id="clickhouse_drop_temporary_if_exists_sync" temporary="true" if-exists="true">
+        <table name="foo_protocol" start-index="31" stop-index="42" />
+    </drop-table>
 </sql-parser-test-cases>

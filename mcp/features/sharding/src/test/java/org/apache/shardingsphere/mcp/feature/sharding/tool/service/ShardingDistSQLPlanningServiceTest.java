@@ -196,6 +196,43 @@ class ShardingDistSQLPlanningServiceTest {
         assertThat(new ShardingDistSQLPlanningService().planComponentCleanup(request).getSql(), is("DROP SHARDING KEY GENERATOR `snowflake_generator`"));
     }
     
+    @Test
+    void assertPlanTableReferenceRuleDrop() {
+        ShardingWorkflowRequest request = new ShardingWorkflowRequest();
+        request.setRuleName("foo_reference");
+        RuleArtifact actual = new ShardingDistSQLPlanningService().planTableReferenceRule(request, "drop");
+        assertThat(actual.getSql(), is("DROP SHARDING TABLE REFERENCE RULE `foo_reference`"));
+    }
+    
+    @Test
+    void assertPlanDefaultStrategyDrop() {
+        ShardingWorkflowRequest request = new ShardingWorkflowRequest();
+        request.setDefaultStrategyType("table");
+        RuleArtifact actual = new ShardingDistSQLPlanningService().planDefaultStrategy(request, "drop");
+        assertThat(actual.getSql(), is("DROP DEFAULT SHARDING TABLE STRATEGY"));
+    }
+    
+    @Test
+    void assertPlanKeyGeneratorDrop() {
+        ShardingWorkflowRequest request = new ShardingWorkflowRequest();
+        request.setKeyGeneratorName("foo_generator");
+        RuleArtifact actual = new ShardingDistSQLPlanningService().planKeyGenerator(request, "drop");
+        assertThat(actual.getSql(), is("DROP SHARDING KEY GENERATOR `foo_generator`"));
+    }
+    
+    @Test
+    void assertPlanTableRuleWithAuditors() {
+        ShardingWorkflowRequest request = new ShardingWorkflowRequest();
+        request.setTable("foo_table");
+        request.setDataNodes("foo_ds.foo_table");
+        request.setColumn("foo_column");
+        request.setAlgorithmType("INLINE");
+        request.getAuditorNames().addAll(List.of("foo_auditor", "bar_auditor"));
+        RuleArtifact actual = new ShardingDistSQLPlanningService().planTableRule(request, "create");
+        assertThat(actual.getSql(), is("CREATE SHARDING TABLE RULE `foo_table`(DATANODES('foo_ds.foo_table'), TABLE_STRATEGY(TYPE='standard', SHARDING_COLUMN=`foo_column`, "
+                + "SHARDING_ALGORITHM(TYPE(NAME='inline'))), AUDIT_STRATEGY(TYPE(NAME='foo_auditor'), TYPE(NAME='bar_auditor'), ALLOW_HINT_DISABLE=FALSE))"));
+    }
+    
     private ShardingWorkflowRequest createTableRuleRequest() {
         ShardingWorkflowRequest result = new ShardingWorkflowRequest();
         result.setTable("t_order");

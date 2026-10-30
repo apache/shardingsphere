@@ -40,7 +40,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Avoid using `this` modifier except for assignment statements where constructor parameters have the same name as global variables.
 - Local variables must not be declared as `final`, including ordinary local variables, `for` loop variables, enhanced `for` loop variables and try-with-resources resources.
 - Lambda parameters should not be marked as `final`.
-- Declare every class `final` unless it is an abstract class intended for inheritance.
+- Declare every production class `final` unless it is an abstract class intended for inheritance.
 - Extract nested loops into separate methods.
 - The order of member variable definitions and parameter passing should remain consistent across all classes and methods.
 - Use guard clauses for invalid inputs, missing states and exceptional conditions so that the normal execution path uses positive conditions and minimal nesting.
@@ -74,7 +74,8 @@ The following code of conduct is based on full compliance with the [Apache Softw
 
 ## Unit Testing Standards
 
-- Test code and production code need to follow the same coding standards.
+- Test code and production code need to follow the same coding standards, except for class finality.
+- Classes whose names end with `Test` must not be declared `final`.
 - Unit tests need to follow the AIR (Automatic, Independent, Repeatable) design philosophy.
    - Automatic: Unit tests should be fully automated, not interactive. Manual inspection of output results is forbidden, use of `System.out`, `log`, etc. is not allowed, assertions must be used for verification.
    - Independent: Forbid mutual calls between unit test cases, forbid dependency on execution order. Each unit test can run independently.
@@ -87,14 +88,14 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Unit tests must exercise behavior through public APIs only. Reflection-based invocation of private members is forbidden. If tests must access fields via reflection, use `Plugins.getMemberAccessor()` and limit reflection to `Field` access only.
 - Tests that modify static state must restore the original state after each test.
 - Obtain SPI implementations through the project loader by default. If the class under test implements `TypedSPI` or `DatabaseTypedSPI`, instantiate it through `TypedSPILoader` or `DatabaseTypedSPILoader`, not with `new`.
+- Do not write separate tests for methods that only return constants, directly return fields, or simply delegate calls.
 - Every unit-test class must directly test a corresponding production class and be named `<ProductionClassName>Test`, using the exact simple name of the production class. This class-name rule is mandatory and is independent of scenario-focused test-method naming.
 - When a production method is covered by only one test case, name that test method `assert<MethodName>` without extra suffixes, and prefer isolating one public production method per dedicated test method; when practical, keep test method ordering aligned with the corresponding production methods.
-- For parameterized tests, provide display names via parameters and use `"{0}"` as the display-name template.
 - Keep test names concise and scenario-focused; avoid `ReturnsXXX` and wording that restates the expected result instead of naming the scenario.
 - Assertions must directly express the tested contract. Use `not` or `containsString` only when the contract requires inequality or substring matching; do not use them when an exact value or a more specific matcher is available.
 - Default to direct Mockito mocks. Use a private helper only for repeated local setup and a standalone fixture only for a stable external or packaged test boundary. Give fixtures the narrowest practical visibility, keep them in the nearest owning test package or module, and do not create cross-module test APIs for convenience. Delete or inline thin mock wrappers.
 - Data assertion standards should follow:
-   - Boolean type assertions should use `assertTrue` and `assertFalse`;
+   - Boolean assertions must use `assertTrue` or `assertFalse`;
    - Null value assertions should use `assertNull` and `assertNotNull`;
    - Non-boolean, non-null value equality assertions must use `assertThat(actual, is(expected))`;
    - Type assertions must use `assertThat(actual, isA(ExpectedType.class))`;
@@ -111,6 +112,10 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - For deep chained interactions, use Mockito’s `RETURNS_DEEP_STUBS` instead of layering intermediate mocks.
 - Test data should use standardized prefixes (e.g., `foo_`/`bar_`) to clearly identify their test purpose
 - Use `PropertiesBuilder` simplify `Properties` building.
+- Parameterized tests:
+   - Parameterized test display names must distinguish test scenarios;
+   - Provide at least three meaningful argument sets for each parameterized test;
+   - Only combine cases that invoke the same method under test and use the same form of assertion.
 
 ## SQL Parsing Standards
 

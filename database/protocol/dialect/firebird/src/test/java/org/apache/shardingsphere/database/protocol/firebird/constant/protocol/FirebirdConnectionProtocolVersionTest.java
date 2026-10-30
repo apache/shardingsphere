@@ -36,8 +36,7 @@ class FirebirdConnectionProtocolVersionTest {
     @Test
     void assertSetAndGetProtocolVersion() {
         FirebirdConnectionProtocolVersion.getInstance().setProtocolVersion(CONNECTION_ID, FirebirdProtocolVersion.PROTOCOL_VERSION17);
-        assertThat(FirebirdConnectionProtocolVersion.getInstance().getProtocolVersion(CONNECTION_ID),
-                is(FirebirdProtocolVersion.PROTOCOL_VERSION17));
+        assertThat(FirebirdConnectionProtocolVersion.getInstance().getProtocolVersion(CONNECTION_ID), is(FirebirdProtocolVersion.PROTOCOL_VERSION17));
     }
     
     @Test

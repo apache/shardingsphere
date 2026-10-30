@@ -53,7 +53,6 @@ import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnec
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Authentication engine for Firebird.
@@ -92,6 +91,31 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         }
     }
     
+    private AuthenticationResult processConnect(final ChannelHandlerContext context, final FirebirdPacketPayload payload, final AuthorityRule rule) {
+        FirebirdConnectPacket connectPacket = new FirebirdConnectPacket(payload);
+        FirebirdAcceptPacket acceptPacket = new FirebirdAcceptPacket(connectPacket.getUserProtocols());
+        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(FirebirdCharacterSets.findCharacterSet("NONE"));
+        FirebirdConnectionProtocolVersion.getInstance().setProtocolVersion(connectionId, acceptPacket.getProtocol().getVersion());
+        context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).set(acceptPacket.getProtocol().getVersion());
+        String username = connectPacket.getLogin();
+        ShardingSphereUser user = rule.findUser(new Grantee(username, "")).orElseThrow(() -> new AccessDeniedException(username, connectPacket.getHost(), true));
+        FirebirdAuthenticationMethod plugin = FirebirdAuthenticationMethod.valueOf(getPluginName(rule, user));
+        if (plugin != connectPacket.getPlugin()) {
+            acceptPacket.setAcceptDataPacket(new byte[0], "", plugin, 0, "");
+        } else if (FirebirdAuthenticationMethod.LEGACY_AUTH != plugin) {
+            authData = new FirebirdSRPAuthenticationData(plugin.getHashAlgorithm(), username, user.getPassword(), connectPacket.getAuthData());
+            acceptPacket.setAcceptDataPacket(authData.getSalt(), authData.getPublicKeyHex(), plugin, 0, "");
+        }
+        context.writeAndFlush(acceptPacket);
+        currentAuthResult = AuthenticationResultBuilder.continued(username, connectPacket.getHost(), connectPacket.getDatabase(), Collections.emptyMap());
+        return currentAuthResult;
+    }
+    
+    private String getPluginName(final AuthorityRule rule, final ShardingSphereUser user) {
+        String pluginName = rule.getAuthenticatorType(user);
+        return pluginName.isEmpty() ? Arrays.stream(FirebirdAuthenticatorType.values()).filter(AuthenticatorType::isDefault).findAny().orElseThrow(IllegalArgumentException::new).name() : pluginName;
+    }
+    
     private AuthenticationResult processAttach(final ChannelHandlerContext context, final FirebirdPacketPayload payload, final AuthorityRule rule) {
         FirebirdAttachPacket attachPacket = new FirebirdAttachPacket(payload);
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseAttachCharset(attachPacket.getEncoding()));
@@ -115,41 +139,9 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         ShardingSpherePreconditions.checkState(
                 Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(databaseName),
                 () -> new UnknownDatabaseException(databaseName));
-        Grantee grantee = new Grantee(username, "");
-        ShardingSphereUser user = rule.findUser(grantee).orElseThrow(() -> new AccessDeniedException(username, "", true));
+        ShardingSphereUser user = rule.findUser(new Grantee(username, "")).orElseThrow(() -> new AccessDeniedException(username, "", true));
         boolean authenticated = new AuthenticatorFactory<>(FirebirdAuthenticatorType.class, rule)
                 .newInstance(user).authenticate(user, new Object[]{attachPacket.getEncPassword(), authData, attachPacket.getAuthData()});
         ShardingSpherePreconditions.checkState(authenticated, () -> new AccessDeniedException(username, "", true));
-    }
-    
-    private AuthenticationResult processConnect(final ChannelHandlerContext context, final FirebirdPacketPayload payload, final AuthorityRule rule) {
-        FirebirdConnectPacket connectPacket = new FirebirdConnectPacket(payload);
-        FirebirdAcceptPacket acceptPacket = new FirebirdAcceptPacket(connectPacket.getUserProtocols());
-        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(FirebirdCharacterSets.findCharacterSet("NONE"));
-        FirebirdConnectionProtocolVersion.getInstance().setProtocolVersion(connectionId, acceptPacket.getProtocol().getVersion());
-        context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).set(acceptPacket.getProtocol().getVersion());
-        String username = connectPacket.getLogin();
-        Grantee grantee = new Grantee(username, "");
-        Optional<ShardingSphereUser> user = rule.findUser(grantee);
-        ShardingSpherePreconditions.checkState(user.isPresent(), () -> new AccessDeniedException(username, connectPacket.getHost(), true));
-        FirebirdAuthenticationMethod plugin = FirebirdAuthenticationMethod.valueOf(getPluginName(rule, user.get()));
-        FirebirdAuthenticationMethod userPlugin = connectPacket.getPlugin();
-        if (plugin != userPlugin) {
-            acceptPacket.setAcceptDataPacket(new byte[0], "", plugin, 0, "");
-        } else if (plugin != FirebirdAuthenticationMethod.LEGACY_AUTH) {
-            authData = new FirebirdSRPAuthenticationData(plugin.getHashAlgorithm(), username, user.get().getPassword(), connectPacket.getAuthData());
-            acceptPacket.setAcceptDataPacket(authData.getSalt(), authData.getPublicKeyHex(), plugin, 0, "");
-        }
-        context.writeAndFlush(acceptPacket);
-        currentAuthResult = AuthenticationResultBuilder.continued(username, connectPacket.getHost(), connectPacket.getDatabase(), Collections.emptyMap());
-        return currentAuthResult;
-    }
-    
-    private String getPluginName(final AuthorityRule rule, final ShardingSphereUser user) {
-        String pluginName = rule.getAuthenticatorType(user);
-        return pluginName.isEmpty()
-                // default plugin name
-                ? Arrays.stream(FirebirdAuthenticatorType.class.getEnumConstants()).filter(AuthenticatorType::isDefault).findAny().orElseThrow(IllegalArgumentException::new).name()
-                : pluginName;
     }
 }

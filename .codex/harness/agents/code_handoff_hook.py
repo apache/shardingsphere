@@ -34,6 +34,7 @@ PATCH_FILE_PATTERN = re.compile(r"^\*\*\* (?:Add|Delete|Update) File: (.+)$", re
 FIELD_PATTERN = r"(?P<emphasis>\*\*)?{label}:(?(emphasis)(?:\*\*)?)[ \t]*(?P<value>.*?)"
 FIELD_PREFIX_PATTERN = re.compile(r"^[ \t]*(?:[-*][ \t]+)?(?:#{1,6}[ \t]+)?")
 FENCE_PATTERN = re.compile(r"(?:`{3,}[^`]*|~{3,}.*)")
+FENCE_OPEN_PATTERN = re.compile(r"^ {0,3}(?P<fence>`{3,}|~{3,})(?P<info>.*)$")
 SHELL_TOOL_NAMES = frozenset({"Bash", "exec_command", "write_stdin"})
 PASSING_RESULT = "Mergeable"
 PAUSED_RESULTS = frozenset({"Not Mergeable", "Review Incomplete"})
@@ -220,7 +221,7 @@ def _path_digest(path: Path) -> str:
 
 def validate_handoff(message: Any) -> list[str]:
     """Return every missing or invalid successful code handoff element."""
-    failures = _validate_handoff_evidence(message, frozenset({PASSING_RESULT}))
+    failures = _validate_handoff_evidence(message, frozenset({PASSING_RESULT}), require_review=True)
     if not isinstance(message, str):
         return failures
     statuses = _field_values(message, "Task Status")
@@ -228,6 +229,8 @@ def validate_handoff(message: Any) -> list[str]:
     legacy_passing_review = not statuses and results == [PASSING_RESULT]
     if ["Completed"] != statuses and not legacy_passing_review:
         failures.append("exactly one Task Status: Completed or legacy Review Result: Mergeable")
+    if not _field_value(message, "Commit Message"):
+        failures.append("nonempty Commit Message")
     return failures
 
 
@@ -246,16 +249,50 @@ def validate_paused_handoff(message: Any) -> list[str]:
     return failures
 
 
-def _validate_handoff_evidence(message: Any, allowed_results: frozenset[str]) -> list[str]:
+def _validate_handoff_evidence(message: Any, allowed_results: frozenset[str], require_review: bool = False) -> list[str]:
     if not isinstance(message, str) or not message.strip():
         return ["nonempty handoff"]
     failures = []
     results = _field_values(message, "Review Result")
     if results and (len(results) != 1 or results[0] not in allowed_results):
         failures.append("exactly one allowed Review Result when declared")
-    if not _field_value(message, "Evidence") and not _section_content(message, "### Evidence"):
+    if require_review and not results:
+        failures.append("exactly one Review Result: Mergeable")
+    reports = _markdown_review_reports(message)
+    if results and len(reports) != 1:
+        failures.append("one complete review report in a markdown-labelled fenced block")
+    if require_review and len(reports) == 1:
+        for section in ("Result", "Evidence", "Coverage"):
+            if not _section_content(reports[0], f"### {section}"):
+                failures.append(f"review {section}")
+        if _field_values(reports[0], "Commit Message"):
+            failures.append("Commit Message must be separate from the review report")
+    if not require_review and not _field_value(message, "Evidence") and not _section_content(message, "### Evidence"):
         failures.append("Evidence")
     return failures
+
+
+def _markdown_review_reports(message: str) -> list[str]:
+    result = []
+    fence = ""
+    language = ""
+    content = []
+    for line in message.splitlines():
+        if fence:
+            if re.fullmatch(rf" {{0,3}}{re.escape(fence[0])}{{{len(fence)},}}[ \t]*", line):
+                report = "\n".join(content)
+                if language == "markdown" and _field_values(report, "Review Result"):
+                    result.append(report)
+                fence = ""
+            else:
+                content.append(line)
+            continue
+        opening = FENCE_OPEN_PATTERN.fullmatch(line)
+        if opening and not (opening.group("fence").startswith("`") and "`" in opening.group("info")):
+            fence = opening.group("fence")
+            language = opening.group("info").strip()
+            content = []
+    return result
 
 
 def _field_values(message: str, label: str) -> list[str]:
@@ -297,9 +334,9 @@ def _continuation_reason(passing_failures: list[str], paused_failures: list[str]
     passing = ", ".join(passing_failures)
     paused = ", ".join(paused_failures)
     return (
-        "The code-writing task has an unresolved handoff. Report Task Status: Completed with Evidence after required checks and review. "
+        "The code-writing task has an unresolved handoff. Report Task Status: Completed with a nonempty Commit Message after required checks and full review. "
         f"Passing handoff failures: {passing}. "
-        "A declared Formal Review must be Mergeable before completion. "
+        "Completion requires one actual Review Result: Mergeable report in a markdown-labelled fenced block with Result, Evidence and Coverage. "
         "If an exact user decision, authority, or unavailable evidence blocks continuation, report "
         f"Task Status: Awaiting User with Evidence and Required User Action; pause failures: {paused}."
     )

@@ -24,6 +24,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementBaseVisitor;
@@ -57,13 +58,11 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Owne
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.PredicateContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.RegularFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SimpleExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SpecialFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableNamesContext;
-import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.VariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
@@ -90,7 +89,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
@@ -116,6 +114,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -164,7 +163,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     
     @Override
     public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
-        return new StringLiteralValue(ctx.getText());
+        return new StringLiteralValue(ctx.STRING_().stream().map(each -> new StringLiteralValue(each.getText())).collect(Collectors.toList()));
     }
     
     @Override
@@ -196,18 +195,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     
     @Override
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
-        UnreservedWordContext unreservedWord = ctx.unreservedWord();
-        return null == unreservedWord ? new IdentifierValue(ctx.getText()) : visit(unreservedWord);
-    }
-    
-    @Override
-    public final ASTNode visitUnreservedWord(final UnreservedWordContext ctx) {
         return new IdentifierValue(ctx.getText());
-    }
-    
-    @Override
-    public final ASTNode visitSchemaName(final SchemaNameContext ctx) {
-        return visit(ctx.identifier());
     }
     
     @Override
@@ -268,8 +256,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     private ASTNode createBinaryOperationExpression(final ExprContext ctx, final String operator) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.expr(0));
         ExpressionSegment right = (ExpressionSegment) visit(ctx.expr(1));
-        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, getOriginalText(ctx));
     }
     
     @Override
@@ -292,10 +279,8 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
             int startIndex = null == operatorToken ? ctx.IS().getSymbol().getStopIndex() + 2 : operatorToken.getStartIndex();
             rightText = rightText + ctx.start.getInputStream().getText(new Interval(startIndex, ctx.stop.getStopIndex()));
             ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 2, ctx.stop.getStopIndex(), rightText);
-            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
             ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
-            String operator = "IS";
-            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, "IS", getOriginalText(ctx));
         }
         if (null != ctx.comparisonOperator() || null != ctx.SAFE_EQ_()) {
             return createCompareSegment(ctx);
@@ -305,16 +290,12 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     
     private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
-        ExpressionSegment right;
-        if (null != ctx.predicate()) {
-            right = (ExpressionSegment) visit(ctx.predicate());
-        } else {
-            right = new SubqueryExpressionSegment(
-                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())));
-        }
+        ExpressionSegment right = null == ctx.predicate()
+                ? new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()),
+                        getOriginalText(ctx.subquery())))
+                : (ExpressionSegment) visit(ctx.predicate());
         String operator = null == ctx.SAFE_EQ_() ? ctx.comparisonOperator().getText() : ctx.SAFE_EQ_().getText();
-        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, getOriginalText(ctx));
     }
     
     @Override
@@ -328,18 +309,10 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         if (null != ctx.LIKE()) {
             return createBinaryOperationExpressionFromLike(ctx);
         }
-        return visit(ctx.bitExpr(0));
-    }
-    
-    private BinaryOperationExpression createBinaryOperationExpressionFromLike(final PredicateContext ctx) {
-        ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
-        ListExpression right = new ListExpression(ctx.simpleExpr(0).start.getStartIndex(), ctx.simpleExpr().get(ctx.simpleExpr().size() - 1).stop.getStopIndex());
-        for (SimpleExprContext each : ctx.simpleExpr()) {
-            right.getItems().add((ExpressionSegment) visit(each));
+        if (null != ctx.STARTING() || null != ctx.DISTINCT() || null != ctx.SIMILAR()) {
+            return createBinaryOperationExpressionFromPredicate(ctx);
         }
-        String operator = null == ctx.NOT() ? "LIKE" : "NOT LIKE";
-        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+        return visit(ctx.bitExpr(0));
     }
     
     private InExpression createInSegment(final PredicateContext ctx) {
@@ -355,16 +328,47 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
             }
             right = listExpression;
         }
-        boolean not = null != ctx.NOT();
-        return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
+        return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, null != ctx.NOT());
     }
     
     private BetweenExpression createBetweenSegment(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
-        boolean not = null != ctx.NOT();
-        return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
+        return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, null != ctx.NOT());
+    }
+    
+    private BinaryOperationExpression createBinaryOperationExpressionFromLike(final PredicateContext ctx) {
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
+        ListExpression right = new ListExpression(ctx.simpleExpr(0).start.getStartIndex(), ctx.simpleExpr().get(ctx.simpleExpr().size() - 1).stop.getStopIndex());
+        for (SimpleExprContext each : ctx.simpleExpr()) {
+            right.getItems().add((ExpressionSegment) visit(each));
+        }
+        String operator = null == ctx.NOT() ? "LIKE" : "NOT LIKE";
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, getOriginalText(ctx));
+    }
+    
+    private BinaryOperationExpression createBinaryOperationExpressionFromPredicate(final PredicateContext ctx) {
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
+        ExpressionSegment right = null == ctx.ESCAPE() ? (ExpressionSegment) visit(ctx.bitExpr(1)) : createEscapedPattern(ctx);
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, getPredicateOperator(ctx), getOriginalText(ctx));
+    }
+    
+    private ListExpression createEscapedPattern(final PredicateContext ctx) {
+        ListExpression result = new ListExpression(ctx.bitExpr(1).start.getStartIndex(), ctx.bitExpr(2).stop.getStopIndex());
+        result.getItems().add((ExpressionSegment) visit(ctx.bitExpr(1)));
+        result.getItems().add((ExpressionSegment) visit(ctx.bitExpr(2)));
+        return result;
+    }
+    
+    private String getPredicateOperator(final PredicateContext ctx) {
+        if (null != ctx.STARTING()) {
+            return null == ctx.NOT() ? "STARTING WITH" : "NOT STARTING WITH";
+        }
+        if (null != ctx.DISTINCT()) {
+            return null == ctx.NOT() ? "IS DISTINCT FROM" : "IS NOT DISTINCT FROM";
+        }
+        return null == ctx.NOT() ? "SIMILAR TO" : "NOT SIMILAR TO";
     }
     
     @Override
@@ -375,8 +379,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         ExpressionSegment left = (ExpressionSegment) visit(ctx.getChild(0));
         ExpressionSegment right = (ExpressionSegment) visit(ctx.getChild(2));
         String operator = ctx.getChild(1).getText();
-        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, getOriginalText(ctx));
     }
     
     @Override
@@ -399,13 +402,12 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
             return segment;
         }
         if (null != ctx.literals()) {
-            return SQLUtils.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
+            return SQLUtils.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, getOriginalText(ctx));
         }
         if (null != ctx.CONCAT_()) {
             ExpressionSegment left = (ExpressionSegment) visit(ctx.simpleExpr(0));
             ExpressionSegment right = (ExpressionSegment) visit(ctx.simpleExpr(1));
-            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, ctx.CONCAT_().getText(), text);
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, ctx.CONCAT_().getText(), getOriginalText(ctx));
         }
         if (null != ctx.intervalExpression()) {
             return visit(ctx.intervalExpression());
@@ -427,14 +429,13 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         if (null != ctx.variable()) {
             return visit(ctx.variable());
         }
-        return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText());
+        return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText(), Collections.emptyList());
     }
     
     @Override
     public final ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
         IntervalUnit intervalUnit = IntervalUnit.valueOf(ctx.intervalUnit().getText().toUpperCase());
-        return new IntervalExpression(ctx.INTERVAL().getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()), intervalUnit,
-                getOriginalText(ctx));
+        return new IntervalExpression(ctx.INTERVAL().getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()), intervalUnit, getOriginalText(ctx));
     }
     
     @Override
@@ -453,10 +454,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     
     @Override
     public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
-        String aggregationType = ctx.aggregationFunctionName().getText();
-        return AggregationType.isAggregationType(aggregationType)
-                ? createAggregationSegment(ctx, aggregationType)
-                : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return createAggregationSegment(ctx, ctx.aggregationFunctionName().getText());
     }
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
@@ -472,23 +470,20 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         return result;
     }
     
-    private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {
-        if (null == ctx.expr()) {
-            return Collections.emptyList();
-        }
-        Collection<ExpressionSegment> result = new LinkedList<>();
-        for (ExprContext each : ctx.expr()) {
-            result.add((ExpressionSegment) visit(each));
-        }
-        return result;
-    }
-    
     private String getDistinctExpression(final AggregationFunctionContext ctx) {
         StringBuilder result = new StringBuilder();
         for (int i = 3; i < ctx.getChildCount() - 1; i++) {
             result.append(ctx.getChild(i).getText());
         }
         return result.toString();
+    }
+    
+    private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        for (ExprContext each : ctx.expr()) {
+            result.add((ExpressionSegment) visit(each));
+        }
+        return result;
     }
     
     @Override
@@ -506,10 +501,8 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
         ASTNode exprSegment = visit(ctx.expr());
-        if (exprSegment instanceof ColumnSegment) {
-            result.getParameters().add((ColumnSegment) exprSegment);
-        } else if (exprSegment instanceof LiteralExpressionSegment) {
-            result.getParameters().add((LiteralExpressionSegment) exprSegment);
+        if (exprSegment instanceof ColumnSegment || exprSegment instanceof LiteralExpressionSegment) {
+            result.getParameters().add((ExpressionSegment) exprSegment);
         }
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
         return result;
@@ -539,8 +532,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     @Override
     public ASTNode visitCompleteRegularFunction(final CompleteRegularFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx));
-        Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
-        result.getParameters().addAll(expressionSegments);
+        result.getParameters().addAll(ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
         return result;
     }
     
@@ -552,8 +544,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     
     @Override
     public ASTNode visitContextVariables(final ContextVariablesContext ctx) {
-        String text = getOriginalText(ctx);
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), text);
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), getOriginalText(ctx));
     }
     
     @Override
@@ -577,18 +568,25 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     @Override
     public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
         OrderDirection orderDirection = null == ctx.DESC() ? OrderDirection.ASC : OrderDirection.DESC;
+        NullsOrderType nullsOrderType = generateNullsOrderType(ctx);
         if (null != ctx.numberLiterals()) {
             return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
-                    SQLUtils.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, null);
-        } else {
-            ASTNode expr = visitExpr(ctx.expr());
-            if (expr instanceof ColumnSegment) {
-                return new ColumnOrderByItemSegment((ColumnSegment) expr, orderDirection, null);
-            } else {
-                return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(),
-                        ctx.expr().getStop().getStopIndex(), getOriginalText(ctx.expr()), orderDirection, null, (ExpressionSegment) expr);
-            }
+                    SQLUtils.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, nullsOrderType);
         }
+        ASTNode expr = visitExpr(ctx.expr());
+        if (expr instanceof ColumnSegment) {
+            return new ColumnOrderByItemSegment((ColumnSegment) expr, orderDirection, nullsOrderType);
+        }
+        return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(), ctx.expr().getStop().getStopIndex(), getOriginalText(ctx.expr()), orderDirection, nullsOrderType,
+                (ExpressionSegment) expr);
+    }
+    
+    @Nullable
+    private NullsOrderType generateNullsOrderType(final OrderByItemContext ctx) {
+        if (null == ctx.FIRST() && null == ctx.LAST()) {
+            return null;
+        }
+        return null == ctx.FIRST() ? NullsOrderType.LAST : NullsOrderType.FIRST;
     }
     
     @Override
@@ -601,8 +599,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         if (null != ctx.dataTypeLength()) {
-            DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.dataTypeLength());
-            result.setDataLength(dataTypeLengthSegment);
+            result.setDataLength((DataTypeLengthSegment) visit(ctx.dataTypeLength()));
         }
         return result;
     }
@@ -622,9 +619,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         appendClause(result, ctx.blobSegmentSizeClause());
         appendClause(result, ctx.characterSet());
         if (null != ctx.blobAbbreviatedAttributes()) {
-            result.append(" (")
-                    .append(getOriginalText(ctx.blobAbbreviatedAttributes()).trim())
-                    .append(')');
+            result.append(" (").append(getOriginalText(ctx.blobAbbreviatedAttributes()).trim()).append(')');
         }
         return result.toString();
     }
@@ -641,11 +636,8 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStartIndex());
         List<TerminalNode> numbers = ctx.NUMBER_();
-        if (numbers.size() == 1) {
-            result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
-        }
-        if (numbers.size() == 2) {
-            result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
+        result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
+        if (2 == numbers.size()) {
             result.setScale(Integer.parseInt(numbers.get(1).getText()));
         }
         return result;
@@ -664,10 +656,9 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     @Override
     public ASTNode visitCteClause(final CteClauseContext ctx) {
         CommonTableExpressionSegment result = new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (AliasSegment) visit(ctx.alias()),
-                new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())));
+                new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())), null);
         if (null != ctx.columnNames()) {
-            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(ctx.columnNames());
-            result.getColumns().addAll(columns.getValue());
+            result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
         }
         return result;
     }

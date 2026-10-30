@@ -16,31 +16,31 @@
 # limitations under the License.
 #
 
-# Usage: generate-remaining-matrix.sh '<filter-json>' '<full-matrix-json>' '<smoke-matrix-json>'
-# Generates the Stage 2 matrix by subtracting smoke combinations from the full matrix.
+# Usage: generate-remaining-matrix.sh '<filter-json>' '<target-matrix-json>' '<smoke-matrix-json>'
+# Generates the remaining-tests matrix by subtracting smoke combinations from the target matrix.
 # Output: writes matrix=<JSON>, has-remaining-jobs=<true|false> to $GITHUB_OUTPUT
 
 set -euo pipefail
 
 FILTER_JSON="$1"
-FULL_MATRIX="$2"
+TARGET_MATRIX="$2"
 SMOKE_MATRIX="$3"
 
 # Parse completed jobs from smoke matrix
 COMPLETED_JOBS=$(echo "$SMOKE_MATRIX" | jq -c '.include // []')
 
-if [ -z "$FULL_MATRIX" ]; then
+if [[ -z "$TARGET_MATRIX" ]]; then
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-remaining-jobs=false" >> "$GITHUB_OUTPUT"
   exit 0
 fi
 
-# Subtract Stage 1 completed jobs from the full matrix
+# Subtract Stage 1 completed jobs from the target matrix
 REMAINING_JOBS=$(jq -cn \
-  --argjson full "$FULL_MATRIX" \
+  --argjson target "$TARGET_MATRIX" \
   --argjson completed "$COMPLETED_JOBS" \
   '[
-    $full.include[] as $job |
+    $target.include[] as $job |
     select(
       [$completed[] | select(
         .adapter == $job.adapter and
@@ -55,7 +55,7 @@ REMAINING_JOBS=$(jq -cn \
 
 JOB_COUNT=$(echo "$REMAINING_JOBS" | jq 'length')
 
-if [ "$JOB_COUNT" -eq 0 ]; then
+if [[ "$JOB_COUNT" -eq 0 ]]; then
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-remaining-jobs=false" >> "$GITHUB_OUTPUT"
   exit 0

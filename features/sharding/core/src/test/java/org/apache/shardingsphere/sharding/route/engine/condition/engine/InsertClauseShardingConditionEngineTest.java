@@ -117,11 +117,11 @@ class InsertClauseShardingConditionEngineTest {
     }
     
     private InsertValueContext createInsertValueContextAsCommonExpressionSegmentEmptyText() {
-        return new InsertValueContext(Collections.singleton(new CommonExpressionSegment(0, 10, "null")), Collections.emptyList(), 0);
+        return new InsertValueContext(Collections.singleton(new CommonExpressionSegment(0, 10, "null", Collections.emptyList())), Collections.emptyList(), 0);
     }
     
     private InsertValueContext createInsertValueContextAsCommonExpressionSegmentWithNow() {
-        return new InsertValueContext(Collections.singleton(new CommonExpressionSegment(0, 10, "now()")), Collections.emptyList(), 0);
+        return new InsertValueContext(Collections.singleton(new CommonExpressionSegment(0, 10, "now()", Collections.emptyList())), Collections.emptyList(), 0);
     }
     
     @Test

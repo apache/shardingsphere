@@ -38,8 +38,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -103,10 +105,11 @@ public final class SQLUtils {
      *
      * <p>remove special char for SQL expression</p>
      *
-     * @param value SQL expression
-     * @return exactly SQL expression
+     * @param value SQL expression, or {@code null}
+     * @return exactly SQL expression, or {@code null} if {@code value} is {@code null}
      */
-    public static String getExactlyValue(final String value) {
+    @Nullable
+    public static String getExactlyValue(@Nullable final String value) {
         return null == value ? null : tryGetRealContentInBackticks(CharMatcher.anyOf(EXCLUDED_CHARACTERS).removeFrom(value));
     }
     
@@ -115,11 +118,12 @@ public final class SQLUtils {
      *
      * <p>remove special char for SQL expression</p>
      *
-     * @param value SQL expression
+     * @param value SQL expression, or {@code null}
      * @param reservedCharacters characters to be reserved
-     * @return exactly SQL expression
+     * @return exactly SQL expression, or {@code null} if {@code value} is {@code null}
      */
-    public static String getExactlyValue(final String value, final String reservedCharacters) {
+    @Nullable
+    public static String getExactlyValue(@Nullable final String value, final String reservedCharacters) {
         if (null == value) {
             return null;
         }
@@ -287,9 +291,9 @@ public final class SQLUtils {
             return new TemporalLiteralExpressionSegment(startIndex, stopIndex, ((DateTimeLiteralValue) astNode).getDateTimeValue(), text);
         }
         if (astNode instanceof OtherLiteralValue) {
-            return new CommonExpressionSegment(startIndex, stopIndex, ((OtherLiteralValue) astNode).getValue());
+            return new CommonExpressionSegment(startIndex, stopIndex, ((OtherLiteralValue) astNode).getValue(), Collections.emptyList());
         }
-        return new CommonExpressionSegment(startIndex, stopIndex, text);
+        return new CommonExpressionSegment(startIndex, stopIndex, text, Collections.emptyList());
     }
     
     /**

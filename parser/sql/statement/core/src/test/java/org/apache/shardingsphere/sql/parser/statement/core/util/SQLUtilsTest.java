@@ -84,6 +84,11 @@ class SQLUtilsTest {
     }
     
     @Test
+    void assertGetExactlyValueWithReservedCharactersUsingNull() {
+        assertNull(SQLUtils.getExactlyValue(null, "`"));
+    }
+    
+    @Test
     void assertGetExactlyExpressionUsingAndReturningNull() {
         assertNull(SQLUtils.getExactlyExpression(null));
     }

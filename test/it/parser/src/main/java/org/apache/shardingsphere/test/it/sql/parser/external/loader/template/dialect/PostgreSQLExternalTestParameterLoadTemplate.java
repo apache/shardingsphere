@@ -38,14 +38,19 @@ import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestPara
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.ExternalTestParameterLoadTemplate;
 
 import java.nio.CharBuffer;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -125,6 +130,9 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
     
     private static final class ScriptReader extends BaseErrorListener {
         
+        private static final Pattern PSQL_VARIABLE_PATTERN =
+                Pattern.compile(":(?:[A-Za-z_0-9\\x80-\\uFFFF]+|'[A-Za-z_0-9\\x80-\\uFFFF]+'|\"[A-Za-z_0-9\\x80-\\uFFFF]+\"|\\{\\?[A-Za-z_0-9\\x80-\\uFFFF]+\\})");
+        
         private final List<String> lines;
         
         private final DatabaseType databaseType;
@@ -139,9 +147,29 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
         
         private final List<ScriptStatement> statements = new ArrayList<>();
         
+        private final Deque<ConditionalBlock> conditionals = new ArrayDeque<>();
+        
+        private final StringBuilder normalizedSQL = new StringBuilder();
+        
+        private int conditionalStart = -1;
+        
+        private int conditionalStatementStart;
+        
+        private int conditionalReplayEnd;
+        
+        private boolean conditionalEchoAll;
+        
+        private boolean conditionalFallback;
+        
         private int start = -1;
         
+        private int variableEnd = -1;
+        
         private int parentheses;
+        
+        private int jsonObjectParentheses;
+        
+        private int brackets;
         
         private int atomicBlocks;
         
@@ -160,6 +188,10 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
         private boolean unsafe;
         
         private boolean clientBuffer;
+        
+        private boolean clientStatement;
+        
+        private boolean emptyQuotedIdentifier;
         
         private boolean echoAll = true;
         
@@ -186,7 +218,14 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
         }
         
         private List<ScriptStatement> read() {
-            for (Token token = lexer.nextToken(); Token.EOF != token.getType(); token = lexer.nextToken()) {
+            for (Token token = lexer.nextToken();; token = lexer.nextToken()) {
+                if (Token.EOF == token.getType()) {
+                    if (conditionalStart >= 0) {
+                        rewindConditional(input.size());
+                        continue;
+                    }
+                    break;
+                }
                 markQuotedLines(token);
                 if (Token.DEFAULT_CHANNEL != token.getChannel()) {
                     if (start < 0) {
@@ -195,6 +234,9 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
                     continue;
                 }
                 String kind = lexer.getVocabulary().getSymbolicName(token.getType());
+                if ("DQ_".equals(kind) || "IDENTIFIER_".equals(kind) && '"' == input.LA(1) && '"' == input.LA(token.getStartIndex() - input.index())) {
+                    readQuotedIdentifier(token);
+                }
                 if ("BACKSLASH_".equals(kind) && readCommand(token.getStartIndex())) {
                     continue;
                 }
@@ -202,10 +244,15 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
                     start = token.getStartIndex();
                 }
                 readBlock(kind, token);
-                readCopy(kind);
-                previousKind = kind;
+                if (!isInactive()) {
+                    readCopy(kind);
+                }
+                previousKind = "IDENTIFIER_".equals(kind) && isJsonObjectConstructor(token) ? "JSON_OBJECT" : kind;
                 if ("COLON_".equals(kind)) {
                     unsafe = true;
+                    if (!isInactive() && 0 == brackets && 0 == jsonObjectParentheses) {
+                        readClientVariable(token.getStartIndex());
+                    }
                 }
                 if ("SEMI_".equals(kind) && (clientBuffer || 0 == parentheses && 0 == atomicBlocks)) {
                     submit(token.getStopIndex() + 1, token.getStopIndex() + 1, true);
@@ -217,6 +264,18 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             return statements;
         }
         
+        private void rewindConditional(final int end) {
+            statements.subList(conditionalStatementStart, statements.size()).clear();
+            reset();
+            conditionals.clear();
+            echoAll = conditionalEchoAll;
+            conditionalReplayEnd = end;
+            Arrays.fill(quotedLines, lineAt(conditionalStart), lineAt(end - 1) + 1, false);
+            lexer.reset();
+            seek(conditionalStart);
+            conditionalStart = -1;
+        }
+        
         private void markQuotedLines(final Token token) {
             if (lexer.getLine() > token.getLine()) {
                 int lastLine = lineAt(token.getStopIndex());
@@ -224,6 +283,33 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
                     quotedLines[i] = true;
                 }
             }
+        }
+        
+        private void readQuotedIdentifier(final Token token) {
+            clientStateKnown = false;
+            input.seek(token.getStartIndex() + 1);
+            boolean empty = true;
+            boolean closed = false;
+            while (Token.EOF != input.LA(1)) {
+                int character = input.LA(1);
+                input.consume();
+                if ('"' == character) {
+                    if ('"' != input.LA(1)) {
+                        closed = true;
+                        break;
+                    }
+                    input.consume();
+                }
+                empty = false;
+            }
+            if (closed && empty) {
+                emptyQuotedIdentifier = true;
+            }
+            int lastLine = lineAt(input.index() - 1);
+            for (int i = token.getLine(); i <= lastLine; i++) {
+                quotedLines[i] = true;
+            }
+            seek(input.index());
         }
         
         private List<String> getEcho(final int firstLine, final int lastLine) {
@@ -234,19 +320,44 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             int line = lineAt(offset);
             int end = lineStarts[line] + lines.get(line).length();
             String command = input.getText(Interval.of(offset + 1, end - 1));
+            String name = command.split("\\s|\\\\", 2)[0];
+            boolean compoundCommand = command.indexOf('\\') >= 0;
+            if (compoundCommand && (!conditionals.isEmpty() || command.contains("\\if"))) {
+                if (conditionalStart >= 0) {
+                    rewindConditional(input.size());
+                    return true;
+                }
+                conditionalReplayEnd = input.size();
+            }
+            if (offset >= conditionalReplayEnd && readConditional(name, command, offset, end, compoundCommand)) {
+                return true;
+            }
+            if (isInactive()) {
+                if (start >= 0) {
+                    submit(offset, end, false);
+                } else {
+                    statements.add(new ScriptStatement("", lines.subList(line, line + 1), false));
+                }
+                seek(Math.min(input.size(), end + 1));
+                return true;
+            }
             if (command.startsWith(";")) {
                 unsafe = true;
                 clientBuffer = true;
+                clientStatement = true;
                 firstToken = true;
                 previousKind = "";
                 seek(offset + 2);
                 return true;
             }
-            String name = command.split("\\s|\\\\", 2)[0];
-            if (command.indexOf('\\') >= 0) {
+            if (start >= 0 && compoundCommand) {
                 unsafe = true;
                 clientBuffer = true;
+                clientStatement = true;
                 return false;
+            }
+            if (compoundCommand && !"copy".equals(name)) {
+                clientStateKnown = false;
             }
             if (Arrays.asList("g", "gx", "gset", "gexec").contains(name)) {
                 boolean copy = pendingCopy;
@@ -263,11 +374,13 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             if (start >= 0) {
                 unsafe = true;
                 clientBuffer = true;
+                clientStatement = true;
                 return false;
             }
             if ("copy".equals(name)) {
                 start = offset;
                 unsafe = true;
+                clientStatement = true;
                 boolean copy = isCopyFromStdin(command);
                 pendingCopy = copy;
                 submit(end, end, false);
@@ -284,6 +397,86 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             }
             seek(Math.min(input.size(), end + 1));
             return true;
+        }
+        
+        private boolean readConditional(final String name, final String command, final int offset, final int end, final boolean compoundCommand) {
+            if (!Arrays.asList("if", "elif", "else", "endif").contains(name)) {
+                return false;
+            }
+            int line = lineAt(offset);
+            boolean standalone = !compoundCommand && !clientBuffer && input.getText(Interval.of(lineStarts[line], offset - 1)).trim().isEmpty();
+            boolean inactive = isInactive();
+            if ("if".equals(name)) {
+                int condition = readCondition(command.substring(name.length()).trim());
+                boolean unknown = !standalone || start >= 0 && !inactive || condition < 0 || !conditionals.isEmpty() && conditionals.peek().unknown;
+                if (conditionals.isEmpty() && !unknown) {
+                    conditionalStart = lineStarts[line];
+                    conditionalStatementStart = statements.size();
+                    conditionalEchoAll = echoAll;
+                    conditionalFallback = false;
+                }
+                ConditionalBlock block = new ConditionalBlock(inactive);
+                block.unknown = unknown;
+                block.matched = !unknown && 1 == condition;
+                block.inactive = inactive || !unknown && 0 == condition;
+                conditionals.push(block);
+            } else if (conditionals.isEmpty()) {
+                return false;
+            } else {
+                ConditionalBlock block = conditionals.peek();
+                if (("else".equals(name) || "endif".equals(name)) && !command.substring(name.length()).trim().isEmpty() || block.elseBranch && !"endif".equals(name)) {
+                    conditionalFallback = true;
+                }
+                if ("endif".equals(name)) {
+                    conditionals.pop();
+                } else if ("else".equals(name)) {
+                    block.inactive = block.parentInactive || !block.unknown && block.matched;
+                    block.elseBranch = true;
+                } else {
+                    int condition = block.matched ? 0 : readCondition(command.substring(name.length()).trim());
+                    block.unknown |= condition < 0;
+                    block.inactive = block.parentInactive || !block.unknown && (block.matched || 0 == condition);
+                    block.matched |= !block.unknown && 1 == condition;
+                }
+            }
+            if (conditionalStart < 0) {
+                return false;
+            }
+            if (!standalone || start >= 0 && !inactive) {
+                conditionalFallback = true;
+            }
+            if (conditionals.isEmpty() && conditionalFallback) {
+                rewindConditional(Math.min(input.size(), end + 1));
+                return true;
+            }
+            if (start >= 0) {
+                if (inactive) {
+                    statements.add(new ScriptStatement("", getEcho(lineAt(start), line - 1), false));
+                }
+                reset();
+            }
+            statements.add(new ScriptStatement("", lines.subList(line, line + 1), false));
+            clientStateKnown = false;
+            if (conditionals.isEmpty()) {
+                conditionalStart = -1;
+            }
+            seek(Math.min(input.size(), end + 1));
+            return true;
+        }
+        
+        private boolean isInactive() {
+            return !conditionals.isEmpty() && conditionals.peek().inactive;
+        }
+        
+        private int readCondition(final String expression) {
+            String value = expression.toLowerCase(Locale.ENGLISH);
+            if (!value.isEmpty() && ("true".startsWith(value) || "yes".startsWith(value) || "on".equals(value) || "1".equals(value))) {
+                return 1;
+            }
+            if (!value.isEmpty() && ("false".startsWith(value) || "no".startsWith(value) || "off".startsWith(value) && value.length() > 1 || "0".equals(value))) {
+                return 0;
+            }
+            return -1;
         }
         
         private boolean isCopyFromStdin(final String command) {
@@ -322,10 +515,12 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
         }
         
         private void readBlock(final String kind, final Token token) {
-            if ("LP_".equals(kind)) {
-                parentheses++;
-            } else if ("RP_".equals(kind) && parentheses > 0) {
-                parentheses--;
+            if ("LP_".equals(kind) || "RP_".equals(kind)) {
+                readParentheses(kind);
+            } else if ("LBT_".equals(kind)) {
+                brackets++;
+            } else if ("RBT_".equals(kind) && brackets > 0) {
+                brackets--;
             } else if ("BEGIN".equals(previousKind) && "ATOMIC".equalsIgnoreCase(token.getText())) {
                 atomicBlocks++;
             } else if (atomicBlocks > 0 && "CASE".equals(kind)) {
@@ -336,6 +531,20 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
                 } else {
                     atomicBlocks--;
                 }
+            }
+        }
+        
+        private void readParentheses(final String kind) {
+            if ("LP_".equals(kind)) {
+                parentheses++;
+                if (0 == jsonObjectParentheses && ("JSON_OBJECT".equals(previousKind) || "JSON_OBJECTAGG".equals(previousKind))) {
+                    jsonObjectParentheses = parentheses;
+                }
+            } else if (parentheses > 0) {
+                if (jsonObjectParentheses == parentheses) {
+                    jsonObjectParentheses = 0;
+                }
+                parentheses--;
             }
         }
         
@@ -350,6 +559,39 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             if (copyStatement && 0 == parentheses && "TO".equals(previousKind) && "STDOUT".equals(kind)) {
                 copyOutput = true;
             }
+        }
+        
+        private boolean isJsonObjectConstructor(final Token token) {
+            String identifier = token.getText();
+            return "JSON_OBJECT".equalsIgnoreCase(identifier) || "JSON_OBJECTAGG".equalsIgnoreCase(identifier);
+        }
+        
+        private void readClientVariable(final int offset) {
+            int line = lineAt(offset);
+            Matcher matcher = PSQL_VARIABLE_PATTERN.matcher(lines.get(line)).region(offset - lineStarts[line], lines.get(line).length());
+            if (!matcher.lookingAt()) {
+                return;
+            }
+            String variable = matcher.group();
+            String replacement;
+            switch (variable.charAt(1)) {
+                case '\'':
+                    replacement = "'foo'";
+                    break;
+                case '"':
+                    replacement = "\"foo\"";
+                    break;
+                case '{':
+                    replacement = "TRUE";
+                    break;
+                default:
+                    clientStatement = true;
+                    seek(offset + variable.length());
+                    return;
+            }
+            normalizedSQL.append(input.getText(Interval.of(variableEnd < 0 ? start : variableEnd, offset - 1))).append(replacement);
+            variableEnd = offset + variable.length();
+            seek(variableEnd);
         }
         
         private void submit(final int sqlEnd, final int echoEnd, final boolean filterable) {
@@ -368,14 +610,27 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
                     seek(Math.min(input.size(), lineStarts[marker] + lines.get(marker).length() + 1));
                 }
             }
-            statements.add(new ScriptStatement(input.getText(Interval.of(start, end - 1)).trim(), getEcho(firstLine, lastLine),
-                    filterable && exclusive && !unsafe && !copyOutput && echoAll && clientStateKnown));
+            statements.add(new ScriptStatement(getSQL(end), getEcho(firstLine, lastLine), filterable && exclusive && !unsafe && !copyOutput && echoAll && clientStateKnown));
             reset();
+        }
+        
+        private String getSQL(final int end) {
+            if (isInactive() || clientStatement || emptyQuotedIdentifier) {
+                return "";
+            }
+            if (variableEnd < 0) {
+                return input.getText(Interval.of(start, end - 1)).trim();
+            }
+            return normalizedSQL.append(input.getText(Interval.of(variableEnd, end - 1))).toString().trim();
         }
         
         private void reset() {
             start = -1;
+            variableEnd = -1;
+            normalizedSQL.setLength(0);
             parentheses = 0;
+            jsonObjectParentheses = 0;
+            brackets = 0;
             atomicBlocks = 0;
             caseBlocks = 0;
             previousKind = "";
@@ -384,7 +639,9 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             copyOutput = false;
             pendingCopy = false;
             unsafe = false;
+            emptyQuotedIdentifier = false;
             clientBuffer = false;
+            clientStatement = false;
         }
         
         @Override
@@ -393,6 +650,20 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             if (start < 0) {
                 start = ((LexerNoViableAltException) ex).getStartIndex();
             }
+        }
+        
+        @RequiredArgsConstructor
+        private static final class ConditionalBlock {
+            
+            private final boolean parentInactive;
+            
+            private boolean inactive;
+            
+            private boolean matched;
+            
+            private boolean unknown;
+            
+            private boolean elseBranch;
         }
     }
 }

@@ -152,6 +152,8 @@
     <sql-case id="alter_table_alter_column_drop_not_null_opengauss" value="ALTER TABLE t_order ALTER COLUMN column4 DROP NOT NULL" db-types="openGauss" />
     <sql-case id="alter_table_alter_column_set_not_null_firebird" value="ALTER TABLE t_order ALTER COLUMN column4 SET NOT NULL" db-types="Firebird" />
     <sql-case id="alter_table_alter_column_drop_not_null_firebird" value="ALTER TABLE t_order ALTER COLUMN column4 DROP NOT NULL" db-types="Firebird" />
+    <sql-case id="alter_table_add_unique_key_firebird" value="ALTER TABLE t_order ADD CONSTRAINT uk_order_id UNIQUE (order_id)" db-types="Firebird" />
+    <sql-case id="alter_table_drop_constraint_firebird" value="ALTER TABLE t_order DROP CONSTRAINT uk_order_id" db-types="Firebird" />
     <sql-case id="alter_table_alter_column_for_sqlserver" value="ALTER TABLE t_order ALTER COLUMN column4 VARCHAR(20)" db-types="SQLServer" />
     <sql-case id="alter_table_alter_column_not_null_sqlserver" value="ALTER TABLE t_order ALTER COLUMN column4 VARCHAR(20) NOT NULL" db-types="SQLServer" />
     <sql-case id="alter_table_alter_column_null_sqlserver" value="ALTER TABLE t_order ALTER COLUMN column4 VARCHAR(20) NULL" db-types="SQLServer" />
@@ -491,4 +493,30 @@
     <sql-case id="alter_table_execute_cherry_pick" value="ALTER table test EXECUTE CHERRY-PICK 8602659039622823857;" db-types="Hive" />
     <sql-case id="alter_execute_rollback_timestamp" value="ALTER TABLE ice_t EXECUTE ROLLBACK('2022-05-12 00:00:00')" db-types="Hive" />
     <sql-case id="alter_execute_rollback_snapshot_id" value="ALTER TABLE ice_t EXECUTE ROLLBACK(1111);" db-types="Hive" />
+    <sql-case id="alter_table_reset_option_pg" value="ALTER TABLE t RESET (fillfactor)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_reset_options_namespace_pg" value="ALTER TABLE t RESET (autovacuum_enabled, toast.autovacuum_enabled)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_column_reset_option_pg" value="ALTER TABLE t ALTER COLUMN c RESET (n_distinct)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_column_reset_without_column_pg" value="ALTER TABLE t ALTER c RESET (n_distinct_inherited)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_reset_set_control_pg" value="ALTER TABLE t SET (fillfactor = 70)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_reset_value_control_pg" value="ALTER TABLE t RESET (fillfactor = 70)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_column_reset_value_control_pg" value="ALTER TABLE t ALTER COLUMN c RESET (n_distinct = 0.1)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_not_enforced_pg" value="ALTER TABLE foo_table ADD CONSTRAINT positive CHECK (a &gt; 0) NOT ENFORCED NOT VALID" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="alter_table_constraint_enforced_pg" value="ALTER TABLE foo_table ALTER CONSTRAINT positive ENFORCED" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="alter_table_constraint_attribute_order_pg" value="ALTER TABLE foo_table ALTER CONSTRAINT positive INITIALLY DEFERRED DEFERRABLE" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="alter_table_temporal_pk_pg" value="ALTER TABLE foo_table ADD CONSTRAINT foo_pk PRIMARY KEY (id, valid_at WITHOUT OVERLAPS)" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="alter_table_temporal_unique_pg" value="ALTER TABLE foo_table ADD CONSTRAINT foo_unique UNIQUE (id, valid_at WITHOUT OVERLAPS)" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="alter_table_temporal_foreign_key_pg" value="ALTER TABLE foo_table ADD CONSTRAINT foo_fk FOREIGN KEY (id, PERIOD valid_at) REFERENCES parent_table (id, PERIOD valid_at)" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="alter_table_set_expression_pg" value="ALTER TABLE t ALTER COLUMN b SET EXPRESSION AS (a * 100)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set_expression_without_column_pg" value="ALTER TABLE t ALTER b SET EXPRESSION AS (a * 3)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set_expression_qualified_pg" value="ALTER TABLE ONLY s.t ALTER COLUMN &quot;b&quot; SET EXPRESSION AS (NULL::int)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set_expression_function_pg" value="ALTER TABLE t ALTER COLUMN b SET EXPRESSION AS (nullif(a, 1) + nullif(c, 2))" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set_expression_multiple_pg" value="ALTER TABLE t ALTER COLUMN b SET EXPRESSION AS (a * 2), ALTER COLUMN c SET EXPRESSION AS (a * 3)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set_expression_default_control_pg" value="ALTER TABLE t ALTER COLUMN b SET DEFAULT (a * 2)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_storage_compression_pg" value="ALTER TABLE t ADD COLUMN f text STORAGE MAIN COMPRESSION pglz" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_not_null_constraint_pg" value="ALTER TABLE t ADD NOT NULL a" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_not_null_no_inherit_pg" value="ALTER TABLE t ADD CONSTRAINT nn NOT NULL a NO INHERIT" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_not_null_validation_pg" value="ALTER TABLE t ADD CONSTRAINT nn NOT NULL a NOT VALID NO INHERIT" db-types="PostgreSQL" />
+    <sql-case id="alter_table_modify_constraint_validation_pg" value="ALTER TABLE t ALTER CONSTRAINT nn NOT VALID" db-types="PostgreSQL" />
+    <sql-case id="alter_table_modify_constraint_no_inherit_pg" value="ALTER TABLE t ALTER CONSTRAINT nn NO INHERIT" db-types="PostgreSQL" />
+    <sql-case id="alter_table_modify_constraint_inherit_pg" value="ALTER TABLE t ALTER CONSTRAINT nn INHERIT" db-types="PostgreSQL" />
 </sql-cases>

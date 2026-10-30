@@ -70,6 +70,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * Calcite SQL federation executor.
@@ -82,6 +83,8 @@ public final class CalciteSQLFederationExecutor implements SQLFederationExecutor
     private static final Collection<Class<?>> NEED_THROW_EXCEPTION_TYPES = Arrays.asList(SQLExecutionInterruptedException.class, SQLIntegrityConstraintViolationException.class);
     
     private static final int MAX_ERROR_MESSAGE_LENGTH = 5000;
+    
+    private static final Pattern EXECUTION_PLAN_ID_PATTERN = Pattern.compile(", id = \\d+");
     
     private final String currentDatabaseName;
     
@@ -183,7 +186,7 @@ public final class CalciteSQLFederationExecutor implements SQLFederationExecutor
     
     private void logExecutionPlan(final SQLFederationExecutionPlan executionPlan, final ConfigurationProperties props) {
         if (props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
-            log.info("SQL Federation Execution Plan: {}", RelOptUtil.toString(executionPlan.getPhysicalPlan(), SqlExplainLevel.ALL_ATTRIBUTES).replaceAll(", id = \\d+", ""));
+            log.info("SQL Federation Execution Plan: {}", EXECUTION_PLAN_ID_PATTERN.matcher(RelOptUtil.toString(executionPlan.getPhysicalPlan(), SqlExplainLevel.ALL_ATTRIBUTES)).replaceAll(""));
         }
     }
     

@@ -207,8 +207,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
                 }
             case "bytea":
                 return decodeHex(readNextString(data).substring(2));
-            case "json":
-            case "jsonb":
+            case "json", "jsonb":
                 return readNextJson(data);
             default:
                 return readNextString(data);

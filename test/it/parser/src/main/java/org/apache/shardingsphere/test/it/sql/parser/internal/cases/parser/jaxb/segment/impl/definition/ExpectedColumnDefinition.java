@@ -38,6 +38,9 @@ import java.util.List;
 public final class ExpectedColumnDefinition extends AbstractExpectedSQLSegment {
     
     @XmlAttribute
+    private String text;
+    
+    @XmlAttribute
     private String type;
     
     @XmlAttribute(name = "primary-key")

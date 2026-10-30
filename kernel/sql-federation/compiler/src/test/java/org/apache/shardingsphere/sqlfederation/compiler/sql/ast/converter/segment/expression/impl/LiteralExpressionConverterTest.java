@@ -17,13 +17,19 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl;
 
+import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.runtime.CalciteException;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNumericLiteral;
+import org.apache.calcite.sql.SqlTimestampLiteral;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.TimeString;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -35,6 +41,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -42,6 +49,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class LiteralExpressionConverterTest {
     
@@ -78,7 +87,7 @@ class LiteralExpressionConverterTest {
     
     @Test
     void assertConvertApproximateNumber() {
-        SqlNumericLiteral actual = (SqlNumericLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, new Float("1.5")), null).orElse(null);
+        SqlNumericLiteral actual = (SqlNumericLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, Float.valueOf("1.5")), null).orElse(null);
         assertNotNull(actual);
         assertFalse(actual.isExact());
     }
@@ -162,11 +171,23 @@ class LiteralExpressionConverterTest {
         assertThat(actual.getTypeName(), is(SqlTypeName.TIME));
     }
     
-    @Test
-    void assertConvertLocalDateTime() {
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, LocalDateTime.of(2020, 1, 1, 1, 1, 1)), null).orElse(null);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getLocalDateTimeArguments")
+    void assertConvertLocalDateTime(final String name, final LocalDateTime dateTime, @Nullable final RelDataType dataType, final String expectedTimestamp, final int expectedPrecision) {
+        SqlTimestampLiteral actual = (SqlTimestampLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, dateTime), dataType).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getTypeName(), is(SqlTypeName.TIMESTAMP));
+        assertThat(actual.getTimestamp().toString(), is(expectedTimestamp));
+        assertThat(actual.getPrec(), is(expectedPrecision));
+    }
+    
+    private static Stream<Arguments> getLocalDateTimeArguments() {
+        RelDataType dataType = mock(RelDataType.class);
+        when(dataType.getScale()).thenReturn(6);
+        return Stream.of(
+                Arguments.of("without fraction", LocalDateTime.of(2020, 1, 1, 1, 1, 1), null, "2020-01-01 01:01:01", 0),
+                Arguments.of("inferred fractional precision", LocalDateTime.of(2020, 1, 1, 1, 1, 1, 123000000), null, "2020-01-01 01:01:01.123", 4),
+                Arguments.of("data type precision", LocalDateTime.of(2020, 1, 1, 1, 1, 1, 123000000), dataType, "2020-01-01 01:01:01.123", 6));
     }
     
     @Test

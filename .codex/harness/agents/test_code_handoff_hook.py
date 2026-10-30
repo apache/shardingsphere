@@ -45,7 +45,7 @@ class CodeHandoffHookTest(unittest.TestCase):
             self.assertEqual("block", actual["decision"])
             self.assertIn("Task Status: Completed", actual["reason"])
             self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(
-                "Task Status: Completed\nEvidence: Focused tests passed; bounded self-review found no issue.",
+                "Task Status: Completed\n" + self._mergeable_handoff(),
             ), state_directory))
             self.assertEqual([], list(state_directory.iterdir()))
 
@@ -64,33 +64,94 @@ class CodeHandoffHookTest(unittest.TestCase):
             actual = code_handoff_hook.process_event(self._stop_event("Documentation updated."), state_directory)
             self.assertEqual("block", actual["decision"])
 
-    def test_bounded_formal_review_summary_is_accepted(self) -> None:
+    def test_completed_handoff_requires_full_report_and_commit_message(self) -> None:
         actual = code_handoff_hook.validate_handoff(
             "Task Status: Completed\nReview Result: Mergeable\n"
             "Evidence: Focused tests passed; Formal Review covered the original baseline and task delta."
         )
-        self.assertEqual([], actual)
+        self.assertEqual([
+            "one complete review report in a markdown-labelled fenced block", "nonempty Commit Message",
+        ], actual)
 
     def test_passing_formal_review_requires_evidence(self) -> None:
         actual = code_handoff_hook.validate_handoff(self._mergeable_handoff(
             evidence="", commit_message="",
         ))
-        self.assertEqual(["Evidence"], actual)
+        self.assertEqual(["review Evidence", "nonempty Commit Message"], actual)
 
-    def test_legacy_formal_review_accepts_unfenced_unbold_report(self) -> None:
-        actual = code_handoff_hook.validate_handoff(
-            self._mergeable_handoff().replace("**Review Result: Mergeable**", "Review Result: Mergeable")
-            .replace("```markdown\n", "").replace("```text\n", "").replace("```bash\n", "").replace("```", ""),
-        )
-        self.assertEqual([], actual)
-
-    def test_legacy_formal_review_accepts_no_git_artifacts(self) -> None:
+    def test_formal_review_requires_markdown_fence(self) -> None:
         handoff = self._mergeable_handoff()
-        actual = code_handoff_hook.validate_handoff(handoff[:handoff.index("```text")])
+        invalid_messages = (
+            handoff.replace("```markdown", "```"), handoff.replace("```markdown", "```text"),
+            handoff.replace("```markdown\n", "").replace("```text\n", "").replace("```bash\n", "").replace("```", ""),
+            handoff[:handoff.index("```\n\n```text")],
+            handoff.replace("```markdown", "````markdown", 1),
+            "```text\n" + handoff + "\n```",
+        )
+        for message in invalid_messages:
+            with self.subTest(message=message):
+                self.assertIn("one complete review report in a markdown-labelled fenced block", code_handoff_hook.validate_handoff(message))
+
+    def test_formal_review_accepts_no_git_commands(self) -> None:
+        handoff = self._mergeable_handoff()
+        actual = code_handoff_hook.validate_handoff(handoff[:handoff.index("```bash")])
         self.assertEqual([], actual)
+
+    def test_formal_review_accepts_standard_fence_lengths_and_indentation(self) -> None:
+        handoff = self._mergeable_handoff()
+        report, artifacts = handoff.split("```\n\n```text", 1)
+        for opening, closing in (("````markdown", "````"), ("```markdown", "````"), ("~~~markdown", "~~~"), ("   ```markdown", "   ```")):
+            with self.subTest(opening=opening, closing=closing):
+                message = report.replace("```markdown", opening, 1) + closing + "\n\n```text" + artifacts
+                self.assertEqual([], code_handoff_hook.validate_handoff(message))
+
+    def test_review_sections_cannot_be_supplied_outside_report(self) -> None:
+        handoff = self._mergeable_handoff()
+        for section, content in (
+            ("Result", "**Review Result: Mergeable**\n\nThe complete standalone Code Correctness Review found no blocking issue."),
+            ("Evidence", "- Focused tests and task-delta inspection passed."),
+            ("Coverage", "Standalone local candidate; original baseline and every attributed task file were reviewed."),
+        ):
+            with self.subTest(section=section):
+                message = handoff.replace(f"### {section}\n\n{content}", "") + f"\n### {section}\n\n{content}"
+                self.assertTrue(code_handoff_hook.validate_handoff(message))
+
+    def test_completed_handoff_requires_separate_nonempty_commit_message(self) -> None:
+        handoff = self._mergeable_handoff()
+        invalid_messages = (
+            self._mergeable_handoff(commit_message=""), self._mergeable_handoff(commit_message="```"),
+            self._mergeable_handoff(commit_message="~~~markdown"), handoff[:handoff.index("```text")],
+            handoff[:handoff.index("```text")].replace("### Coverage", "Commit Message: Complete implementation\n\n### Coverage"),
+        )
+        for message in invalid_messages:
+            with self.subTest(message=message):
+                self.assertTrue(code_handoff_hook.validate_handoff(message))
+
+    def test_missing_review_keeps_pending_until_handoff_is_complete(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            state_directory = Path(directory)
+            code_handoff_hook.process_event(self._post_tool_event("*** Update File: Foo.java"), state_directory)
+            message = "Task Status: Completed\n" + self._mergeable_handoff().replace("**Review Result: Mergeable**", "")
+            actual = code_handoff_hook.process_event(self._stop_event(message), state_directory)
+            self.assertEqual("block", actual["decision"])
+            self.assertIn("exactly one Review Result: Mergeable", actual["reason"])
+            self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
+            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff()), state_directory))
+            self.assertEqual([], list(state_directory.iterdir()))
+
+    def test_missing_commit_message_keeps_pending_until_handoff_is_complete(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            state_directory = Path(directory)
+            code_handoff_hook.process_event(self._post_tool_event("*** Update File: Foo.java"), state_directory)
+            actual = code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff(commit_message="")), state_directory)
+            self.assertEqual("block", actual["decision"])
+            self.assertIn("nonempty Commit Message", actual["reason"])
+            self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
+            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff()), state_directory))
+            self.assertEqual([], list(state_directory.iterdir()))
 
     def test_legacy_formal_review_accepts_triple_emphasis(self) -> None:
-        for result_line in ("***Review Result: Mergeable***", "- ***Review Result: Mergeable***", "* ***Review Result: Mergeable***"):
+        for result_line in ("Review Result: Mergeable", "***Review Result: Mergeable***", "- ***Review Result: Mergeable***", "* ***Review Result: Mergeable***"):
             with self.subTest(result_line=result_line):
                 actual = code_handoff_hook.validate_handoff(
                     self._mergeable_handoff().replace("**Review Result: Mergeable**", result_line),
@@ -114,7 +175,7 @@ class CodeHandoffHookTest(unittest.TestCase):
             with self.subTest(field=field), tempfile.TemporaryDirectory() as directory:
                 state_directory = Path(directory)
                 code_handoff_hook.process_event(self._post_tool_event("*** Update File: Foo.java"), state_directory)
-                message = f"Task Status: Completed\nEvidence: Focused tests passed.\n{field}"
+                message = f"Task Status: Completed\n{self._mergeable_handoff()}\n{field}"
                 actual = code_handoff_hook.process_event(self._stop_event(message), state_directory)
                 self.assertEqual("block", actual["decision"])
                 self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
@@ -179,7 +240,7 @@ class CodeHandoffHookTest(unittest.TestCase):
                     "Required User Action: Authorize publishing the reviewed candidate."
                 )
                 if result is not None:
-                    message += f"\nReview Result: {result}"
+                    message += f"\n```markdown\n### Result\nReview Result: {result}\n```"
                 self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(message), state_directory))
                 self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
 
@@ -194,7 +255,7 @@ class CodeHandoffHookTest(unittest.TestCase):
                 state_directory = Path(directory)
                 code_handoff_hook.process_event(self._post_tool_event("*** Update File: Foo.java"), state_directory)
                 message = (
-                    f"{status_line}\nReview Result: Mergeable\n"
+                    f"{status_line}\n```markdown\n### Result\nReview Result: Mergeable\n```\n"
                     "***Evidence: Verification and Formal Review passed; publishing needs authority.***\n"
                     "***Required User Action: Authorize publishing the reviewed candidate.***"
                 )
@@ -225,12 +286,22 @@ class CodeHandoffHookTest(unittest.TestCase):
                 state_directory = Path(directory)
                 code_handoff_hook.process_event(self._post_tool_event("*** Update File: Foo.java"), state_directory)
                 message = (
-                    f"{status_line}\nReview Result: Mergeable\n"
+                    f"{status_line}\n```markdown\n### Result\nReview Result: Mergeable\n```\n"
                     "Evidence: Verification and Formal Review passed; publishing needs authority.\n"
                     "Required User Action: Authorize publishing the reviewed candidate."
                 )
                 self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(message), state_directory))
                 self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
+
+    def test_user_wait_requires_markdown_for_declared_review(self) -> None:
+        for result in ("Mergeable", "Not Mergeable", "Review Incomplete"):
+            with self.subTest(result=result):
+                actual = code_handoff_hook.validate_paused_handoff(
+                    "Task Status: Awaiting User\nEvidence: Publishing needs the user's authority.\n"
+                    "Required User Action: Authorize publishing the reviewed candidate.\n"
+                    f"Review Result: {result}",
+                )
+                self.assertEqual(["one complete review report in a markdown-labelled fenced block"], actual)
 
     def test_handoff_without_completed_status_or_legacy_passing_result_is_rejected(self) -> None:
         invalid_messages = (

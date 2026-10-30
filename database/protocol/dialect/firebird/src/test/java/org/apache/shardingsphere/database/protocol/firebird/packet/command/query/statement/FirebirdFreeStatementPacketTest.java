@@ -53,7 +53,6 @@ class FirebirdFreeStatementPacketTest {
     
     @Test
     void assertWrite() {
-        when(payload.readInt4()).thenReturn(5, FirebirdFreeStatementPacket.DROP);
         FirebirdFreeStatementPacket packet = new FirebirdFreeStatementPacket(payload);
         FirebirdPacketPayload writePayload = mock(FirebirdPacketPayload.class);
         packet.write((PacketPayload) writePayload);

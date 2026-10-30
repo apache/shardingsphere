@@ -48,10 +48,33 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MCPJdbcTransactionStatementExecutorTest {
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("unsupportedTransactionCases")
+    void assertExecuteWithUnsupportedTransactionCapability(final String name, final SupportedMCPStatement statementClass, final String statementType, final String expectedMessage) {
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        when(sessionManager.hasSession("foo_session")).thenReturn(true);
+        MCPDatabaseCapability capability = mock(MCPDatabaseCapability.class);
+        ClassificationResult classification = new ClassificationResult(statementClass, statementType, statementType, "foo_savepoint", List.of(), false);
+        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class,
+                () -> new MCPJdbcTransactionStatementExecutor(sessionManager).execute("foo_session", "foo_db", capability, classification));
+        assertThat(actual.getMessage(), is(expectedMessage));
+        verify(sessionManager, never()).getTransactionResourceManager();
+    }
+    
+    private static Stream<Arguments> unsupportedTransactionCases() {
+        return Stream.of(
+                Arguments.of("begin", SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "Transaction control is not supported."),
+                Arguments.of("commit", SupportedMCPStatement.TRANSACTION_CONTROL, "COMMIT", "Transaction control is not supported."),
+                Arguments.of("rollback", SupportedMCPStatement.TRANSACTION_CONTROL, "ROLLBACK", "Transaction control is not supported."),
+                Arguments.of("rollback savepoint", SupportedMCPStatement.SAVEPOINT, "ROLLBACK TO SAVEPOINT", "Savepoint is not supported."),
+                Arguments.of("release savepoint", SupportedMCPStatement.SAVEPOINT, "RELEASE SAVEPOINT", "Savepoint is not supported."));
+    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteCases")

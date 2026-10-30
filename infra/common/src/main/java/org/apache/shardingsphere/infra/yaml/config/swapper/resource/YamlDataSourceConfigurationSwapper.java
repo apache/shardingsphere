@@ -18,16 +18,12 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper.resource;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 
-import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * YAML data source configuration swapper.
@@ -39,34 +35,22 @@ public final class YamlDataSourceConfigurationSwapper {
     private static final String CUSTOM_POOL_PROPS_KEY = "customPoolProps";
     
     /**
-     * Swap to data sources from YAML data sources.
-     *
-     * @param yamlDataSources YAML data sources map
-     * @return data sources
-     */
-    public Map<String, DataSource> swapToDataSources(final Map<String, Map<String, Object>> yamlDataSources) {
-        return swapToDataSources(yamlDataSources, true);
-    }
-    
-    /**
-     * Swap to data sources from YAML data sources.
-     *
-     * @param yamlDataSources YAML data sources map
-     * @param cacheEnabled cache enabled
-     * @return data sources
-     */
-    public Map<String, DataSource> swapToDataSources(final Map<String, Map<String, Object>> yamlDataSources, final boolean cacheEnabled) {
-        return DataSourcePoolCreator.create(yamlDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapToDataSourcePoolProperties(entry.getValue()))), cacheEnabled);
-    }
-    
-    /**
      * Get data source pool properties.
      *
      * @param yamlRootConfig YAML root configuration
      * @return data source name to data source pool properties map
      */
     public Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final YamlRootConfiguration yamlRootConfig) {
-        Map<String, Map<String, Object>> yamlDataSourceConfigs = yamlRootConfig.getDataSources();
+        return getDataSourcePoolPropertiesMap(yamlRootConfig.getDataSources());
+    }
+    
+    /**
+     * Get data source pool properties.
+     *
+     * @param yamlDataSourceConfigs YAML data source configurations
+     * @return data source name to data source pool properties map
+     */
+    public Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final Map<String, Map<String, Object>> yamlDataSourceConfigs) {
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(yamlDataSourceConfigs.size(), 1F);
         yamlDataSourceConfigs.forEach((key, value) -> result.put(key, swapToDataSourcePoolProperties(value)));
         return result;

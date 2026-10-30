@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.constant.buffer.type;
 
-import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.FirebirdParameterBuffer;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,7 +42,6 @@ class FirebirdDatabaseParameterBufferTypeTest {
     
     @Test
     void assertCreateBuffer() {
-        FirebirdParameterBuffer buffer = FirebirdDatabaseParameterBufferType.createBuffer();
-        assertNotNull(buffer);
+        assertNotNull(FirebirdDatabaseParameterBufferType.createBuffer());
     }
 }

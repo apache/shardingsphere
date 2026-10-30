@@ -175,6 +175,7 @@ public final class SelectStatementAssert {
             assertFalse(limitSegment.isPresent(), assertContext.getText("Actual limit segment should not exist."));
         } else {
             assertTrue(limitSegment.isPresent(), assertContext.getText("Actual limit segment should exist."));
+            LimitClauseAssert.assertFetch(assertContext, limitSegment.get(), expected.getLimitClause());
             LimitClauseAssert.assertOffset(assertContext, limitSegment.get().getOffset().orElse(null), expected.getLimitClause().getOffset());
             LimitClauseAssert.assertRowCount(assertContext, limitSegment.get().getRowCount().orElse(null), expected.getLimitClause().getRowCount());
             SQLSegmentAssert.assertIs(assertContext, limitSegment.get(), expected.getLimitClause());

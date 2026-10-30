@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.infra.metadata.statistics.collector.postgresql.table;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.postgresql.PostgreSQLTableStatisticsCollector;
@@ -36,8 +38,10 @@ public final class PostgreSQLPgClassTableStatisticsCollector implements PostgreS
     
     @Override
     public Collection<Map<String, Object>> collect(final String databaseName, final String schemaName, final String tableName, final ShardingSphereMetaData metaData) {
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        ShardingSpherePreconditions.checkNotNull(database, () -> new IllegalStateException(String.format("Database '%s' does not exist.", databaseName)));
         Collection<Map<String, Object>> result = new LinkedList<>();
-        ShardingSphereSchema publicSchema = metaData.getDatabase(databaseName).getSchema(PUBLIC_SCHEMA);
+        ShardingSphereSchema publicSchema = database.getSchema(PUBLIC_SCHEMA);
         if (null != publicSchema) {
             for (ShardingSphereTable each : publicSchema.getAllTables()) {
                 Map<String, Object> columnValues = new CaseInsensitiveMap<>(4, 1F);

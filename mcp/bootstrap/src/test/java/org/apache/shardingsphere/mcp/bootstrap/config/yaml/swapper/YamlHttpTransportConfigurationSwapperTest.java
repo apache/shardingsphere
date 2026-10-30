@@ -22,6 +22,8 @@ import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceCo
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlSessionAttributionSourceConfiguration;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -136,6 +138,25 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertThat(actual.getSessionAttributionSource().getSubjectHeader(), is("X-Test-Subject"));
         assertThat(actual.getSessionAttributionSource().getSourceHeader(), is("X-Test-Source"));
         assertThat(actual.getSessionAttributionSource().getAttributeHeaderPrefix(), is("X-Test-Attr-"));
+    }
+    
+    @ParameterizedTest(name = "HTTP token symbol {0}")
+    @ValueSource(chars = {'!', '#', '$', '%', '&', '\'', '*', '+', '-', '.', '^', '_', '`', '|', '~'})
+    void assertSwapToObjectWithSessionAttributionHeaderSymbol(final char symbol) {
+        String expectedSubjectHeader = "X-Foo" + symbol;
+        YamlHttpTransportConfiguration yamlConfig = createYamlConfig("127.0.0.1", 18088, "/mcp");
+        yamlConfig.setSessionAttributionSource(createSessionAttributionSource(expectedSubjectHeader, "X-Test-Source", "X-Test-Attr-"));
+        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig);
+        assertThat(actual.getSessionAttributionSource().getSubjectHeader(), is(expectedSubjectHeader));
+    }
+    
+    @ParameterizedTest(name = "invalid HTTP header {0}")
+    @ValueSource(strings = {"X-Foo Bar", "X-Foo\tBar", "X-FooéBar", "X-Foo١Bar"})
+    void assertSwapToObjectWithInvalidSessionAttributionHeaderCharacter(final String subjectHeader) {
+        YamlHttpTransportConfiguration yamlConfig = createYamlConfig("127.0.0.1", 18088, "/mcp");
+        yamlConfig.setSessionAttributionSource(createSessionAttributionSource(subjectHeader, "X-Test-Source", "X-Test-Attr-"));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("MCP HTTP transport configuration property `sessionAttributionSource.subjectHeader` must be a valid HTTP header name."));
     }
     
     @Test

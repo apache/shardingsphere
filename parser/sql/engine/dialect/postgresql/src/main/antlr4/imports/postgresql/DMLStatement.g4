@@ -53,6 +53,7 @@ insertColumnItem
 optOnConflict
     : ON CONFLICT optConfExpr DO UPDATE SET setClauseList whereClause?
     | ON CONFLICT optConfExpr DO NOTHING
+    | ON CONFLICT optConfExpr DO SELECT forLockingStrength? whereClause?
     ;
 
 optConfExpr
@@ -76,7 +77,7 @@ setClause
     ;
 
 setTarget
-    : colId
+    : colId optIndirection
     ;
 
 setTargetList
@@ -85,7 +86,11 @@ setTargetList
     ;
 
 returningClause
-    : RETURNING targetList
+    : RETURNING (WITH LP_ returningOption (COMMA_ returningOption)* RP_)? targetList
+    ;
+
+returningOption
+    : (OLD | NEW) AS colId
     ;
 
 delete
@@ -112,7 +117,8 @@ mergeUsingClause
 
 mergeWhenClause
     : WHEN MATCHED (AND aExpr)? THEN mergeMatchedThenClause
-    | WHEN NOT MATCHED (AND aExpr)? THEN mergeNotMatchedThenClause
+    | WHEN NOT MATCHED BY SOURCE (AND aExpr)? THEN mergeMatchedThenClause
+    | WHEN NOT MATCHED (BY TARGET)? (AND aExpr)? THEN mergeNotMatchedThenClause
     ;
 
 mergeMatchedThenClause
@@ -185,7 +191,15 @@ cteList
     ;
 
 commonTableExpr
-    :  alias optNameList AS optMaterialized LP_ preparableStmt RP_
+    : alias optNameList AS optMaterialized LP_ preparableStmt RP_ searchClause? cycleClause?
+    ;
+
+searchClause
+    : SEARCH (BREADTH | DEPTH) FIRST BY nameList SET colId
+    ;
+
+cycleClause
+    : CYCLE nameList SET colId (TO aexprConst DEFAULT aexprConst)? USING colId
     ;
 
 optMaterialized
@@ -201,6 +215,7 @@ preparableStmt
     | insert
     | update
     | delete
+    | merge
     ;
 
 forLockingClause
@@ -289,14 +304,14 @@ targetList
 targetEl
     : colId DOT_ASTERISK_
     | aExpr AS colLabel
-    | aExpr identifier
     | aExpr
+    | aExpr identifier
     | ASTERISK_
     | colId DOT_ASTERISK_ AS identifier
     ;
 
 groupClause
-    : GROUP BY groupByList
+    : GROUP BY (ALL | DISTINCT)? groupByList
     ;
 
 groupByList
@@ -398,6 +413,8 @@ tableReference
     | LATERAL functionTable funcAliasClause?
     | xmlTable aliasClause?
     | LATERAL xmlTable aliasClause?
+    | jsonTable aliasClause?
+    | LATERAL jsonTable aliasClause?
     | selectWithParens aliasClause?
     | LATERAL selectWithParens aliasClause?
     | tableReference joinedTable
@@ -433,7 +450,7 @@ joinOuter
     ;
 
 joinQual
-    : USING LP_ nameList RP_
+    : USING LP_ nameList RP_ (AS colId)?
     | ON aExpr
     ;
 
@@ -467,7 +484,9 @@ dostmtOptList
     ;
 
 dostmtOptItem
-    : STRING_ | LANGUAGE nonReservedWordOrSconst
+    : STRING_
+    | BEGIN_DOLLAR_STRING_CONSTANT DOLLAR_TEXT* END_DOLLAR_STRING_CONSTANT
+    | LANGUAGE nonReservedWordOrSconst
     ;
 
 copy
@@ -483,26 +502,52 @@ copyOptionList
     ;
 
 copyOption
-    : FORMAT identifier
+    : FORMAT (identifier | BINARY | STRING_)
     | FREEZE booleanValue?
     | DELIMITER STRING_
     | NULL STRING_
-    | HEADER booleanValue?
+    | DEFAULT STRING_
+    | HEADER (booleanValue | MATCH | STRING_ | numericOnly)?
     | QUOTE STRING_
     | ESCAPE STRING_
     | FORCE_QUOTE (columnNames | ASTERISK_)
-    | FORCE_NOT_NULL columnNames
-    | FORCE_NULL columnNames
+    | FORCE_NOT_NULL (columnNames | ASTERISK_)
+    | FORCE_NULL (columnNames | ASTERISK_)
+    | ON_ERROR (STOP | IGNORE)
+    | REJECT_LIMIT NUMBER_
     | ENCODING STRING_
+    | LOG_VERBOSITY (DEFAULT | VERBOSE | SILENT)
+    | {FORMAT != _input.LA(1) && HEADER != _input.LA(1)}? colLabel copyOptionArgument?
+    ;
+
+copyOptionArgument
+    : booleanOrString
+    | numericOnly
+    | ASTERISK_
+    | DEFAULT
+    | LP_ booleanOrString (COMMA_ booleanOrString)* RP_
     ;
 
 
 copyWithTableOrQueryBinaryCsv
-    : COPY (qualifiedName columnNames? | LP_ preparableStmt RP_) (FROM | TO) (fileName | STDIN | STDOUT) (WITH? BINARY? (DELIMITER AS? STRING_)? (NULL AS? STRING_)? (CSV HEADER? (QUOTE AS? STRING_)? (ESCAPE AS? STRING_)? (FORCE NOT NULL columnName (COMMA_ columnName)*)? (FORCE QUOTE (columnName (COMMA_ columnName)* | ASTERISK_))?)?)?
+    : COPY (qualifiedName columnNames? | LP_ preparableStmt RP_) (FROM | TO) (fileName | STDIN | STDOUT) WITH? copyLegacyOption*
+    ;
+
+copyLegacyOption
+    : BINARY
+    | FREEZE
+    | DELIMITER AS? STRING_
+    | NULL AS? STRING_
+    | CSV
+    | JSON
+    | HEADER
+    | QUOTE AS? STRING_
+    | ESCAPE AS? STRING_
+    | FORCE QUOTE (columnName (COMMA_ columnName)* | ASTERISK_)
+    | FORCE NOT NULL columnName (COMMA_ columnName)*
+    | ENCODING STRING_
     ;
 
 copyWithTableBinary
     : COPY BINARY? qualifiedName (FROM | TO) (fileName | STDIN | STDOUT) (USING? DELIMITERS STRING_)? (WITH NULL AS STRING_)?
     ;
-
-

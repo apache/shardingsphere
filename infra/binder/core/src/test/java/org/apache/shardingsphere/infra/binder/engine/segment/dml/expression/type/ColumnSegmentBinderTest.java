@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
@@ -44,12 +45,20 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedConstruction;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -64,6 +73,144 @@ class ColumnSegmentBinderTest {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         return new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("orderByScopeCases")
+    void assertBindWithOrderByScope(final String name, final SegmentType type, final String qualifier, final String projectionColumn, final String localColumn, final String localOwner,
+                                    final boolean active, final String expectedTable) {
+        SQLStatementBinderContext binderContext = createBinderContext();
+        if (active) {
+            binderContext.setOrderByFromTableBinderContexts(createOrderScope(localOwner, localColumn, "local_table"));
+        }
+        ColumnSegment column = new ColumnSegment(20, 26, new IdentifierValue("user_id"));
+        if (null != qualifier) {
+            column.setOwner(new OwnerSegment(10, 18, new IdentifierValue(qualifier)));
+        }
+        ColumnSegment actual = ColumnSegmentBinder.bind(column, type, binderContext, createOrderScope("", projectionColumn, "projected_table"), createOrderScope("scope", "user_id", "outer_table"));
+        assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is(expectedTable));
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("user_id"));
+        assertThat(actual.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.PHYSICAL_TABLE));
+    }
+    
+    private static Stream<Arguments> orderByScopeCases() {
+        return Stream.of(
+                Arguments.of("local column before outer", SegmentType.ORDER_BY, null, "email", "user_id", "scope", true, "local_table"),
+                Arguments.of("projection before local", SegmentType.ORDER_BY, null, "user_id", "user_id", "scope", true, "projected_table"),
+                Arguments.of("real outer reference", SegmentType.ORDER_BY, null, "email", "email", "scope", true, "outer_table"),
+                Arguments.of("no active local scope", SegmentType.ORDER_BY, null, "email", "user_id", "scope", false, "outer_table"),
+                Arguments.of("nested projection ignores order scope", SegmentType.PROJECTION, null, "email", "user_id", "scope", true, "outer_table"),
+                Arguments.of("qualified local alias shadows outer", SegmentType.ORDER_BY, "scope", "email", "user_id", "scope", true, "local_table"),
+                Arguments.of("qualified outer alias", SegmentType.ORDER_BY, "scope", "email", "user_id", "local_alias", true, "outer_table"),
+                Arguments.of("qualified inactive scope", SegmentType.ORDER_BY, "scope", "email", "user_id", "scope", false, "outer_table"),
+                Arguments.of("qualified nested projection", SegmentType.PROJECTION, "scope", "email", "user_id", "scope", true, "outer_table"));
+    }
+    
+    private static Multimap<CaseInsensitiveString, TableSegmentBinderContext> createOrderScope(final String owner, final String column, final String table) {
+        ColumnSegment boundColumn = new ColumnSegment(0, 0, new IdentifierValue(column));
+        boundColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
+                new IdentifierValue(table), new IdentifierValue(column), TableSourceType.PHYSICAL_TABLE));
+        return ImmutableMultimap.of(CaseInsensitiveString.of(owner),
+                new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundColumn)), TableSourceType.PHYSICAL_TABLE));
+    }
+    
+    @Test
+    void assertBindAmbiguousLocalOrderByColumnBeforeOuter() {
+        SQLStatementBinderContext binderContext = createBinderContext();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> localScopes = LinkedHashMultimap.create();
+        localScopes.putAll(createOrderScope("left_table", "user_id", "left_table"));
+        localScopes.putAll(createOrderScope("right_table", "user_id", "right_table"));
+        binderContext.setOrderByFromTableBinderContexts(localScopes);
+        assertThrows(AmbiguousColumnException.class, () -> ColumnSegmentBinder.bind(new ColumnSegment(20, 26, new IdentifierValue("user_id")), SegmentType.ORDER_BY,
+                binderContext, createOrderScope("", "email", "projected_table"), createOrderScope("scope", "user_id", "outer_table")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("columnBoundInfoCases")
+    void assertCreateColumnSegmentBoundInfo(final String name, final String originalTable, final ColumnSegment input, final String expectedTable, final String expectedColumn,
+                                            final String expectedDatabase, final String expectedSchema, final OwnerSegment expectedOwner) {
+        ColumnSegment column = new ColumnSegment(20, 26, new IdentifierValue("logical_column"));
+        column.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("stale_db"), new IdentifierValue("stale_schema")),
+                new IdentifierValue(originalTable), new IdentifierValue("logical_column"), TableSourceType.PHYSICAL_TABLE));
+        ColumnSegmentBoundInfo actual = ColumnSegmentBinder.createColumnSegmentBoundInfo(column, input, TableSourceType.TEMPORARY_TABLE);
+        assertThat(actual.getOriginalDatabase().getValue(), is(expectedDatabase));
+        assertThat(actual.getOriginalSchema().getValue(), is(expectedSchema));
+        assertThat(actual.getOriginalTable().getValue(), is(expectedTable));
+        assertThat(actual.getOriginalColumn().getValue(), is(expectedColumn));
+        assertThat(actual.getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+        assertThat(actual.getOwner(), is(expectedOwner));
+        if (null != input) {
+            assertThat(actual, not(sameInstance(input.getColumnBoundInfo())));
+        }
+    }
+    
+    private static Stream<Arguments> columnBoundInfoCases() {
+        ColumnSegment input = new ColumnSegment(0, 0, new IdentifierValue("source_column"));
+        input.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("source_db"), new IdentifierValue("source_schema")),
+                new IdentifierValue("source_table"), new IdentifierValue("source_column"), TableSourceType.PHYSICAL_TABLE));
+        ColumnSegment ownedInput = new ColumnSegment(0, 0, new IdentifierValue("source_column"));
+        ownedInput.setColumnBoundInfo(input.getColumnBoundInfo());
+        OwnerSegment owner = new OwnerSegment(0, 0, new IdentifierValue("source_alias"));
+        ownedInput.setOwner(owner);
+        return Stream.of(
+                Arguments.of("no source clears database", "explicit_table", null, "explicit_table", "logical_column", "", "", null),
+                Arguments.of("source restores table and column", "", input, "source_table", "source_column", "source_db", "source_schema", null),
+                Arguments.of("explicit table preserved", "explicit_table", input, "explicit_table", "source_column", "source_db", "source_schema", null),
+                Arguments.of("source owner forwarded", "", ownedInput, "source_table", "source_column", "source_db", "source_schema", owner));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("declaredVariableCases")
+    void assertBindDeclaredVariable(final String name, final String columnName, final String owner, final Collection<String> variableNames) {
+        SQLStatementBinderContext binderContext = createBinderContext();
+        when(binderContext.getSqlStatement().getVariableNames()).thenReturn(variableNames);
+        ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue(columnName));
+        if (null != owner) {
+            column.setOwner(new OwnerSegment(0, 0, new IdentifierValue(owner)));
+        }
+        ColumnSegment actual = ColumnSegmentBinder.bind(column, SegmentType.PROJECTION, binderContext, ImmutableMultimap.of(), ImmutableMultimap.of());
+        assertTrue(actual.isVariable());
+    }
+    
+    private static Stream<Arguments> declaredVariableCases() {
+        return Stream.of(
+                Arguments.of("declared variable", "var_value", null, Collections.singleton("var_value")),
+                Arguments.of("case insensitive second variable", "VAR_VALUE", null, Arrays.asList("unused", "var_value")),
+                Arguments.of("record variable owner", "field_name", "row_value", Collections.singleton("row_value")));
+    }
+    
+    @Test
+    void assertBindOuterColumnFromEarlierMatchingScope() {
+        SQLStatementBinderContext binderContext = createBinderContext();
+        binderContext.setOrderByFromTableBinderContexts(createOrderScope("local_alias", "email", "local_table"));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerScopes = LinkedHashMultimap.create();
+        outerScopes.putAll(createOrderScope("first_scope", "user_id", "first_table"));
+        outerScopes.putAll(createOrderScope("last_scope", "other_column", "last_table"));
+        ColumnSegment actual = ColumnSegmentBinder.bind(new ColumnSegment(0, 0, new IdentifierValue("user_id")), SegmentType.ORDER_BY,
+                binderContext, createOrderScope("", "email", "projected_table"), outerScopes);
+        assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("first_table"));
+    }
+    
+    @Test
+    void assertBindUnknownQualifiedOrderByColumn() {
+        SQLStatementBinderContext binderContext = createBinderContext();
+        binderContext.setOrderByFromTableBinderContexts(createOrderScope("local_alias", "user_id", "local_table"));
+        ColumnSegment column = new ColumnSegment(20, 26, new IdentifierValue("user_id"));
+        column.setOwner(new OwnerSegment(0, 18, new IdentifierValue("missing_scope")));
+        assertThrows(ColumnNotFoundException.class, () -> ColumnSegmentBinder.bind(column, SegmentType.ORDER_BY,
+                binderContext, createOrderScope("", "email", "projected_table"), createOrderScope("outer_alias", "user_id", "outer_table")));
+    }
+    
+    @Test
+    void assertBindQualifiedExternalOrderByColumn() {
+        SQLStatementBinderContext binderContext = createBinderContext();
+        binderContext.setOrderByFromTableBinderContexts(createOrderScope("local_alias", "user_id", "local_table"));
+        binderContext.getExternalTableBinderContexts().putAll(createOrderScope("external_alias", "user_id", "external_table"));
+        ColumnSegment column = new ColumnSegment(20, 26, new IdentifierValue("user_id"));
+        column.setOwner(new OwnerSegment(0, 18, new IdentifierValue("external_alias")));
+        ColumnSegment actual = ColumnSegmentBinder.bind(column, SegmentType.ORDER_BY, binderContext,
+                createOrderScope("", "email", "projected_table"), createOrderScope("outer_alias", "user_id", "outer_table"));
+        assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("external_table"));
     }
     
     @Test

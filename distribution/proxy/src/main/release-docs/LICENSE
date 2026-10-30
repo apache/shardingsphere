@@ -237,7 +237,7 @@ The text of each license is the standard Apache 2.0 license.
     failsafe 3.3.2: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.3: https://github.com/google/guava, Apache 2.0
     freemarker 2.3.35: https://freemarker.apache.org/, Apache 2.0
-    groovy 4.0.22: https://groovy.apache.org/, Apache 2.0
+    groovy 4.0.33: https://groovy.apache.org/, Apache 2.0
     grpc-api 1.75.0: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-context 1.75.0: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-core 1.75.0: https://github.com/grpc/grpc-java, Apache 2.0
@@ -355,10 +355,10 @@ MIT licenses
 The following components are provided under the MIT License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    bcpkix-jdk18on 1.84: https://www.bouncycastle.org, MIT
-    bcprov-jdk18on 1.84: https://www.bouncycastle.org, MIT
-    bctls-jdk18on 1.84: https://www.bouncycastle.org, MIT
-    bcutil-jdk18on 1.84: https://www.bouncycastle.org, MIT
+    bcpkix-jdk18on 1.86: https://www.bouncycastle.org, MIT
+    bcprov-jdk18on 1.86: https://www.bouncycastle.org, MIT
+    bctls-jdk18on 1.86.2: https://www.bouncycastle.org, MIT
+    bcutil-jdk18on 1.86: https://www.bouncycastle.org, MIT
     checker-qual 3.39.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
     jul-to-slf4j 2.0.17: https://www.slf4j.org, MIT
     slf4j-api 2.0.17: https://www.slf4j.org, MIT

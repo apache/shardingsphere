@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
@@ -82,13 +83,26 @@ class SimpleTableSegmentBinderTest {
     }
     
     @Test
+    void assertBindUnknownOwnerWithoutCurrentDatabase() {
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(11, 19, new IdentifierValue("foo_table")));
+        simpleTableSegment.setOwner(new OwnerSegment(0, 9, new IdentifierValue("unknown_db")));
+        HintValueContext hintValueContext = new HintValueContext();
+        hintValueContext.setSkipMetadataValidate(true);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(createMetaData(), null, hintValueContext, SelectStatement.builder().databaseType(databaseType).build());
+        assertThrows(UnknownDatabaseException.class, () -> SimpleTableSegmentBinder.bind(simpleTableSegment, binderContext, LinkedHashMultimap.create()));
+    }
+    
+    @Test
     void assertBindWithDBLinkContainsDBLink() {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_not_exists")));
+        simpleTableSegment.setAt(new IdentifierValue("@"));
         simpleTableSegment.setDbLink(new IdentifierValue("foo_db_link"));
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        SimpleTableSegmentBinder.bind(simpleTableSegment,
+        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment,
                 new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).build()), tableBinderContexts);
+        assertThat(actual.getAt().get().getValue(), is("@"));
+        assertThat(actual.getDbLink().get().getValue(), is("foo_db_link"));
         SimpleTableSegmentBinderContext tableSegmentBinderContext = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
         assertTrue(tableSegmentBinderContext.isContainsDBLink());
     }
