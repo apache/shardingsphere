@@ -29,6 +29,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdDoubleBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdInt8BinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdTimeTZBinaryProtocolValue;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdTimestampTZBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 import java.math.BigDecimal;
@@ -146,8 +147,11 @@ public final class FirebirdSliceResponsePacket extends FirebirdPacket {
         if (FirebirdBinaryColumnType.DEC34 == columnType) {
             return new FirebirdDecFloatBinaryProtocolValue(FirebirdBinaryColumnType.DEC34);
         }
-        if (FirebirdBinaryColumnType.TIME_TZ == columnType) {
+        if (FirebirdBinaryColumnType.TIME_TZ == columnType || FirebirdBinaryColumnType.TIME_TZ_EX == columnType) {
             return new FirebirdTimeTZBinaryProtocolValue();
+        }
+        if (FirebirdBinaryColumnType.TIMESTAMP_TZ == columnType || FirebirdBinaryColumnType.TIMESTAMP_TZ_EX == columnType) {
+            return new FirebirdTimestampTZBinaryProtocolValue();
         }
         if (FirebirdBinaryColumnType.D_FLOAT == columnType) {
             return new FirebirdDoubleBinaryProtocolValue();

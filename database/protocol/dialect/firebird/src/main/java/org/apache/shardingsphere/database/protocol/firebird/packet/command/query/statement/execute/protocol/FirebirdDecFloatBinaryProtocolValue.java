@@ -59,6 +59,13 @@ public final class FirebirdDecFloatBinaryProtocolValue implements FirebirdBinary
     
     @Override
     public void write(final FirebirdPacketPayload payload, final Object value) {
+        if (value instanceof Double || value instanceof Float) {
+            double doubleValue = ((Number) value).doubleValue();
+            if (!Double.isFinite(doubleValue)) {
+                payload.writeBytes(FirebirdBinaryColumnType.DEC16 == columnType ? Decimal64.valueOf(doubleValue).toBytes() : Decimal128.valueOf(doubleValue).toBytes());
+                return;
+            }
+        }
         BigDecimal decimal = toBigDecimal(value);
         payload.writeBytes(FirebirdBinaryColumnType.DEC16 == columnType ? Decimal64.valueOf(decimal).toBytes() : Decimal128.valueOf(decimal).toBytes());
     }
