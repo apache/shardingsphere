@@ -18,4 +18,8 @@
 
 <sql-cases>
     <sql-case id="checkpoint" value="CHECKPOINT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="checkpoint_flag_option_pg" value="CHECKPOINT (FLUSH_UNLOGGED)" db-types="PostgreSQL" />
+    <sql-case id="checkpoint_multiple_options_pg" value="CHECKPOINT (MODE FAST, FLUSH_UNLOGGED FALSE)" db-types="PostgreSQL" />
+    <sql-case id="checkpoint_option_string_pg" value="CHECKPOINT (MODE WRONG)" db-types="PostgreSQL" />
+    <sql-case id="checkpoint_unknown_option_pg" value="CHECKPOINT (WRONG)" db-types="PostgreSQL" />
 </sql-cases>

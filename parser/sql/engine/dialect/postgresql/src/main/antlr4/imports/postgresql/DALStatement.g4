@@ -49,7 +49,7 @@ timeZoneClause
     ;
 
 configurationParameterClause
-    : varName (TO | EQ_) (varList | DEFAULT)
+    : varName (TO | EQ_) (varList | DEFAULT | NULL)
     ;
 
 resetParameter
@@ -139,7 +139,7 @@ vacuum
     ;
 
 checkpoint
-    : CHECKPOINT
+    : CHECKPOINT (LP_ vacAnalyzeOptionList RP_)?
     ;
 
 emptyStatement
