@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.distsql.handler.executor.configuration.imports;
 
 import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDatabaseConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.swapper.YamlDatabaseConfigurationSwapper;
 import org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.exception.generic.FileIOException;
@@ -35,14 +36,14 @@ public final class ImportDatabaseConfigurationExecutor implements DistSQLUpdateE
     
     @Override
     public void executeUpdate(final ImportDatabaseConfigurationStatement sqlStatement, final ContextManager contextManager) {
-        YamlDatabaseConfiguration yamlConfig = getYamlDatabaseConfiguration(sqlStatement);
-        new MetaDataImportExecutor(contextManager).importDatabaseConfigurations(Collections.singletonList(yamlConfig));
+        DatabaseConfigurationImportInput databaseConfig = getDatabaseConfiguration(sqlStatement);
+        new MetaDataImportExecutor(contextManager).importDatabaseConfigurations(Collections.singletonList(databaseConfig));
     }
     
-    private YamlDatabaseConfiguration getYamlDatabaseConfiguration(final ImportDatabaseConfigurationStatement sqlStatement) {
+    private DatabaseConfigurationImportInput getDatabaseConfiguration(final ImportDatabaseConfigurationStatement sqlStatement) {
         File file = new File(sqlStatement.getFilePath());
         try {
-            return YamlEngine.unmarshal(file, YamlDatabaseConfiguration.class);
+            return new YamlDatabaseConfigurationSwapper().swap(YamlEngine.unmarshal(file, YamlDatabaseConfiguration.class));
         } catch (final IOException ignore) {
             throw new FileIOException(file);
         }

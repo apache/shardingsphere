@@ -19,10 +19,12 @@ package org.apache.shardingsphere.proxy.backend.util;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.handler.executor.configuration.export.model.ExportedMetaData;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.imports.DatabaseConfigurationImportInput;
 import org.apache.shardingsphere.distsql.handler.executor.configuration.imports.MetaDataImportExecutor;
 import org.apache.shardingsphere.distsql.handler.executor.configuration.imports.YamlDatabaseConfigurationImportExecutor;
 import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDatabaseConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlExportedServerConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.swapper.YamlDatabaseConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
@@ -34,22 +36,28 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,14 +81,16 @@ class MetaDataImportExecutorTest {
             mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlDatabaseConfiguration.class))).thenReturn(databaseConfig);
             executor.importClusterConfigurations(exportedMetaData);
         }
-        verify(databaseConfigImportExecutor).importDatabaseConfiguration(databaseConfig);
+        ArgumentCaptor<DatabaseConfigurationImportInput> captor = ArgumentCaptor.forClass(DatabaseConfigurationImportInput.class);
+        verify(databaseConfigImportExecutor).importDatabaseConfiguration(captor.capture());
+        assertThat(captor.getValue().getDatabaseName(), is("logic_db"));
     }
     
     @Test
     void assertImportClusterConfigurations() {
         MetaDataManagerPersistService metaDataManagerService = mock(MetaDataManagerPersistService.class);
         when(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()).thenReturn(metaDataManagerService);
-        final ExportedMetaData exportedMetaData = createExportedMetaData();
+        ExportedMetaData exportedMetaData = createExportedMetaData();
         MetaDataImportExecutor executor = new MetaDataImportExecutor(contextManager);
         setField(executor, "databaseConfigImportExecutor", databaseConfigImportExecutor);
         YamlRuleConfigurationSwapperEngine swapperEngine = mock(YamlRuleConfigurationSwapperEngine.class);
@@ -97,11 +107,50 @@ class MetaDataImportExecutorTest {
             mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlDatabaseConfiguration.class))).thenReturn(databaseConfig);
             executor.importClusterConfigurations(exportedMetaData);
         }
-        verify(metaDataManagerService).alterGlobalRuleConfiguration(ruleConfig);
-        verify(metaDataManagerService).alterProperties(props);
-        ArgumentCaptor<YamlDatabaseConfiguration> captor = ArgumentCaptor.forClass(YamlDatabaseConfiguration.class);
-        verify(databaseConfigImportExecutor).importDatabaseConfiguration(captor.capture());
+        InOrder inOrder = inOrder(metaDataManagerService, databaseConfigImportExecutor);
+        inOrder.verify(metaDataManagerService).alterGlobalRuleConfiguration(ruleConfig);
+        inOrder.verify(metaDataManagerService).alterProperties(props);
+        ArgumentCaptor<DatabaseConfigurationImportInput> captor = ArgumentCaptor.forClass(DatabaseConfigurationImportInput.class);
+        inOrder.verify(databaseConfigImportExecutor).importDatabaseConfiguration(captor.capture());
         assertThat(captor.getValue().getDatabaseName(), is("logic_db"));
+    }
+    
+    @Test
+    void assertImportClusterConfigurationsWhenDatabaseConversionFails() {
+        MetaDataImportExecutor executor = new MetaDataImportExecutor(contextManager);
+        setField(executor, "databaseConfigImportExecutor", databaseConfigImportExecutor);
+        YamlDatabaseConfigurationSwapper databaseConfigSwapper = mock(YamlDatabaseConfigurationSwapper.class);
+        setField(executor, "databaseConfigSwapper", databaseConfigSwapper);
+        YamlDatabaseConfiguration firstYamlConfig = new YamlDatabaseConfiguration();
+        YamlDatabaseConfiguration secondYamlConfig = new YamlDatabaseConfiguration();
+        when(databaseConfigSwapper.swap(firstYamlConfig)).thenReturn(new DatabaseConfigurationImportInput("foo_db", Collections.emptyMap(), Collections.emptyList()));
+        when(databaseConfigSwapper.swap(secondYamlConfig)).thenThrow(IllegalStateException.class);
+        ExportedMetaData exportedMetaData = createExportedMetaData();
+        Map<String, String> databases = new LinkedHashMap<>(2, 1F);
+        databases.put("foo_db", "foo_database_yaml");
+        databases.put("bar_db", "bar_database_yaml");
+        exportedMetaData.setDatabases(databases);
+        try (MockedStatic<YamlEngine> mockedStatic = mockStatic(YamlEngine.class)) {
+            mockedStatic.when(() -> YamlEngine.unmarshal("foo_database_yaml", YamlDatabaseConfiguration.class)).thenReturn(firstYamlConfig);
+            mockedStatic.when(() -> YamlEngine.unmarshal("bar_database_yaml", YamlDatabaseConfiguration.class)).thenReturn(secondYamlConfig);
+            assertThrows(IllegalStateException.class, () -> executor.importClusterConfigurations(exportedMetaData));
+        }
+        verifyNoInteractions(contextManager, databaseConfigImportExecutor);
+    }
+    
+    @Test
+    void assertImportClusterConfigurationsWhenServerConversionFails() {
+        MetaDataImportExecutor executor = new MetaDataImportExecutor(contextManager);
+        setField(executor, "databaseConfigImportExecutor", databaseConfigImportExecutor);
+        YamlRuleConfigurationSwapperEngine swapperEngine = mock(YamlRuleConfigurationSwapperEngine.class);
+        setField(executor, "ruleConfigSwapperEngine", swapperEngine);
+        when(swapperEngine.swapToRuleConfigurations(anyCollection())).thenThrow(IllegalStateException.class);
+        try (MockedStatic<YamlEngine> mockedStatic = mockStatic(YamlEngine.class)) {
+            mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlDatabaseConfiguration.class))).thenReturn(new YamlDatabaseConfiguration());
+            mockedStatic.when(() -> YamlEngine.unmarshal(anyString(), eq(YamlExportedServerConfiguration.class))).thenReturn(new YamlExportedServerConfiguration());
+            assertThrows(IllegalStateException.class, () -> executor.importClusterConfigurations(createExportedMetaData()));
+        }
+        verifyNoInteractions(contextManager, databaseConfigImportExecutor);
     }
     
     @Test

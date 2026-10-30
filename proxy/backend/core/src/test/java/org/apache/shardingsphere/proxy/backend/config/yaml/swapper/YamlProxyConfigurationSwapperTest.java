@@ -17,63 +17,89 @@
 
 package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoadResult;
-import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
+import org.apache.shardingsphere.proxy.backend.config.ProxyDatabaseConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
 
 class YamlProxyConfigurationSwapperTest {
     
     @Test
-    void assertSwap() throws IOException {
-        ProxyConfigurationLoadResult loadResult = ProxyConfigurationLoader.load("/conf/swap");
-        ProxyConfiguration actual = new YamlProxyConfigurationSwapper().swap(loadResult);
-        assertDataSources(actual);
-        assertDatabaseRules(actual);
-        assertAuthorityRuleConfiguration(actual);
-        assertProxyConfigurationProps(actual);
+    void assertSwapServerConfiguration() throws IOException {
+        YamlProxyServerConfiguration yamlConfig = YamlEngine.unmarshal(new File(getClass().getResource("/conf/swap/global.yaml").getFile()), YamlProxyServerConfiguration.class);
+        YamlProxyDataSourceConfiguration yamlDataSourceConfig = new YamlProxyDataSourceConfiguration();
+        yamlDataSourceConfig.setDataSourceClassName("non.existent.DataSource");
+        yamlDataSourceConfig.setUrl("jdbc:h2:mem:global_ds");
+        yamlConfig.setDataSources(Collections.singletonMap("global_ds", yamlDataSourceConfig));
+        yamlConfig.getRules().add(yamlConfig.getAuthority());
+        try (
+                MockedStatic<DataSourcePoolCreator> mockedPoolCreator = mockStatic(DataSourcePoolCreator.class);
+                MockedConstruction<DataSourceGeneratedDatabaseConfiguration> mockedDatabaseConfigs = mockConstruction(DataSourceGeneratedDatabaseConfiguration.class)) {
+            ProxyConfigurationLoadResult actual = new YamlProxyConfigurationSwapper().swap(yamlConfig, Collections.emptyMap());
+            assertThat(actual.getModeConfiguration().getType(), is("Cluster"));
+            assertThat(actual.getDataSources().get("global_ds").getConnection().getDataSourceClassName(), is("non.existent.DataSource"));
+            assertThat(actual.getDataSources().get("global_ds").getConnection().getUrl(), is("jdbc:h2:mem:global_ds"));
+            AuthorityRuleConfiguration actualAuthorityRule = (AuthorityRuleConfiguration) actual.getRules().iterator().next();
+            assertThat(actualAuthorityRule.getUsers().size(), is(1));
+            assertThat(actualAuthorityRule.getUsers().iterator().next().getPassword(), is("123"));
+            assertThat(actual.getProperties().size(), is(1));
+            assertThat(actual.getProperties().getProperty("bar"), is("bar_value"));
+            mockedPoolCreator.verifyNoInteractions();
+            assertTrue(mockedDatabaseConfigs.constructed().isEmpty());
+        }
     }
     
-    private void assertDataSources(final ProxyConfiguration proxyConfig) {
-        Map<String, DatabaseConfiguration> actual = proxyConfig.getDatabaseConfigurations();
-        assertThat(actual.size(), is(1));
-        HikariDataSource dataSource = (HikariDataSource) actual.get("swapper_test").getDataSources().get(new StorageNode("foo_db"));
-        assertThat(dataSource.getJdbcUrl(), is("jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1"));
-        assertThat(dataSource.getUsername(), is("sa"));
-        assertThat(dataSource.getPassword(), is(""));
-        assertThat(dataSource.getConnectionTimeout(), is(250L));
-        assertThat(dataSource.getIdleTimeout(), is(30000L));
-        assertThat(dataSource.getMaxLifetime(), is(600000L));
-        assertThat(dataSource.getMaximumPoolSize(), is(5));
-        assertThat(dataSource.getMinimumIdle(), is(4));
-        assertTrue(dataSource.isReadOnly());
+    @Test
+    void assertSwapDatabaseConfiguration() throws IOException {
+        YamlProxyDatabaseConfiguration yamlConfig = YamlEngine.unmarshal(
+                new File(getClass().getResource("/conf/swap/database-readwrite-splitting.yaml").getFile()), YamlProxyDatabaseConfiguration.class);
+        try (
+                MockedStatic<DataSourcePoolCreator> mockedPoolCreator = mockStatic(DataSourcePoolCreator.class);
+                MockedConstruction<DataSourceGeneratedDatabaseConfiguration> mockedDatabaseConfigs = mockConstruction(DataSourceGeneratedDatabaseConfiguration.class)) {
+            ProxyDatabaseConfiguration actual = new YamlProxyConfigurationSwapper().swap(yamlConfig);
+            assertThat(actual.getDatabaseName(), is("swapper_test"));
+            assertDataSources(actual);
+            assertThat(actual.getRules().size(), is(1));
+            assertReadwriteSplittingRuleConfiguration((ReadwriteSplittingRuleConfiguration) actual.getRules().iterator().next());
+            mockedPoolCreator.verifyNoInteractions();
+            assertTrue(mockedDatabaseConfigs.constructed().isEmpty());
+        }
     }
     
-    private void assertDatabaseRules(final ProxyConfiguration proxyConfig) {
-        Map<String, DatabaseConfiguration> actual = proxyConfig.getDatabaseConfigurations();
-        assertThat(actual.size(), is(1));
-        Collection<RuleConfiguration> ruleConfigs = actual.get("swapper_test").getRuleConfigurations();
-        assertThat(ruleConfigs.size(), is(1));
-        assertReadwriteSplittingRuleConfiguration((ReadwriteSplittingRuleConfiguration) ruleConfigs.iterator().next());
+    private void assertDataSources(final ProxyDatabaseConfiguration actual) {
+        assertThat(actual.getDataSources().size(), is(1));
+        DataSourceConfiguration actualDataSourceConfig = actual.getDataSources().get("foo_db");
+        assertThat(actualDataSourceConfig.getConnection().getUrl(), is("jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1"));
+        assertThat(actualDataSourceConfig.getConnection().getUsername(), is("sa"));
+        assertThat(actualDataSourceConfig.getConnection().getPassword(), is(""));
+        assertThat(actualDataSourceConfig.getPool().getConnectionTimeoutMilliseconds(), is(250L));
+        assertThat(actualDataSourceConfig.getPool().getIdleTimeoutMilliseconds(), is(30000L));
+        assertThat(actualDataSourceConfig.getPool().getMaxLifetimeMilliseconds(), is(600000L));
+        assertThat(actualDataSourceConfig.getPool().getMaxPoolSize(), is(5));
+        assertThat(actualDataSourceConfig.getPool().getMinPoolSize(), is(4));
+        assertTrue(actualDataSourceConfig.getPool().getReadOnly());
     }
     
     private void assertReadwriteSplittingRuleConfiguration(final ReadwriteSplittingRuleConfiguration actual) {
@@ -87,22 +113,5 @@ class YamlProxyConfigurationSwapperTest {
         assertThat(loadBalancer.getProps().size(), is(1));
         assertThat(loadBalancer.getProps().getProperty("foo"), is("foo_value"));
         assertThat(loadBalancer.getType(), is("ROUND_ROBIN"));
-    }
-    
-    private void assertAuthorityRuleConfiguration(final ProxyConfiguration proxyConfig) {
-        Optional<AuthorityRuleConfiguration> actual = findAuthorityRuleConfiguration(proxyConfig.getGlobalConfiguration().getRules());
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getUsers().size(), is(1));
-        assertThat(actual.get().getUsers().iterator().next().getPassword(), is("123"));
-    }
-    
-    private Optional<AuthorityRuleConfiguration> findAuthorityRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs) {
-        return globalRuleConfigs.stream().filter(AuthorityRuleConfiguration.class::isInstance).findFirst().map(AuthorityRuleConfiguration.class::cast);
-    }
-    
-    private void assertProxyConfigurationProps(final ProxyConfiguration proxyConfig) {
-        Properties actual = proxyConfig.getGlobalConfiguration().getProperties();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.getProperty("bar"), is("bar_value"));
     }
 }
