@@ -17,10 +17,20 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.view;
 
+import lombok.Getter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Drop materialized view statement test case.
  */
 public final class DropMaterializedViewStatementTestCase extends SQLParserTestCase {
+    
+    @Getter
+    @XmlElement(name = "view")
+    private final List<ExpectedSimpleTable> views = new LinkedList<>();
 }

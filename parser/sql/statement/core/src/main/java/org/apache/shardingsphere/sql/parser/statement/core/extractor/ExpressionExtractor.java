@@ -172,6 +172,11 @@ public final class ExpressionExtractor {
             if (each instanceof FunctionSegment) {
                 extractParameterMarkerExpressions(segments, ((FunctionSegment) each).getParameters());
             }
+            if (each instanceof AggregationProjectionSegment) {
+                AggregationProjectionSegment aggregation = (AggregationProjectionSegment) each;
+                extractParameterMarkerExpressions(segments, aggregation.getParameters());
+                aggregation.getFilter().ifPresent(filter -> extractParameterMarkerExpressions(segments, Collections.singleton(filter)));
+            }
             if (each instanceof TypeCastExpression) {
                 extractParameterMarkerExpressions(segments, Collections.singleton(((TypeCastExpression) each).getExpression()));
             }
@@ -272,6 +277,7 @@ public final class ExpressionExtractor {
             for (ExpressionSegment each : ((AggregationProjectionSegment) expression).getParameters()) {
                 result.addAll(extractColumns(each, containsSubQuery));
             }
+            ((AggregationProjectionSegment) expression).getFilter().ifPresent(filter -> result.addAll(extractColumns(filter, containsSubQuery)));
         }
         if (expression instanceof BetweenExpression) {
             result.addAll(extractColumns(((BetweenExpression) expression).getLeft(), containsSubQuery));

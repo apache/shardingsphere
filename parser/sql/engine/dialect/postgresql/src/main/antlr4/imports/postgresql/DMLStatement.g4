@@ -73,7 +73,13 @@ setClauseList
 
 setClause
     : setTarget EQ_ aExpr
-    | LP_ setTargetList RP_ EQ_ aExpr
+    | LP_ setTargetList RP_ EQ_ setClauseValue
+    ;
+
+setClauseValue
+    : LP_ exprList RP_
+    | ROW LP_ exprList RP_
+    | aExpr
     ;
 
 setTarget

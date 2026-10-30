@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
@@ -39,7 +40,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -48,7 +53,12 @@ import java.util.LinkedList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -110,5 +120,60 @@ class AssignmentSegmentBinderTest {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         return new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
+    }
+    
+    @Nested
+    @ExtendWith(AutoMockExtension.class)
+    @StaticMockSettings(ExpressionSegmentBinder.class)
+    class ConflictScope {
+        
+        @Test
+        void assertBindOnConflictNewScope() {
+            LiteralExpressionSegment value = new LiteralExpressionSegment(0, 0, 1);
+            OnDuplicateKeyColumnsSegment segment = createOnConflictAssignment(value);
+            SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), SelectStatement.builder().build());
+            when(ExpressionSegmentBinder.bind(eq(value), any(), eq(binderContext), any(), any())).thenAnswer(invocation -> {
+                assertTrue(binderContext.isExcludedTableAvailable());
+                return value;
+            });
+            OnDuplicateKeyColumnsSegment actual = AssignmentSegmentBinder.bind(segment, binderContext, createTableBinderContexts(), LinkedHashMultimap.create());
+            assertThat(actual.getColumns().iterator().next().getValue(), sameInstance(value));
+            assertFalse(binderContext.isExcludedTableAvailable());
+        }
+        
+        private OnDuplicateKeyColumnsSegment createOnConflictAssignment(final LiteralExpressionSegment value) {
+            ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), value);
+            return new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignment));
+        }
+        
+        @Test
+        void assertBindOnConflictInheritedScope() {
+            LiteralExpressionSegment value = new LiteralExpressionSegment(0, 0, 1);
+            OnDuplicateKeyColumnsSegment segment = createOnConflictAssignment(value);
+            SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), SelectStatement.builder().build());
+            binderContext.setExcludedTableAvailable(true);
+            when(ExpressionSegmentBinder.bind(eq(value), any(), eq(binderContext), any(), any())).thenAnswer(invocation -> {
+                assertTrue(binderContext.isExcludedTableAvailable());
+                return value;
+            });
+            OnDuplicateKeyColumnsSegment actual = AssignmentSegmentBinder.bind(segment, binderContext, createTableBinderContexts(), LinkedHashMultimap.create());
+            assertThat(actual.getColumns().iterator().next().getValue(), sameInstance(value));
+            assertTrue(binderContext.isExcludedTableAvailable());
+        }
+        
+        @Test
+        void assertBindOnConflictFailure() {
+            LiteralExpressionSegment value = new LiteralExpressionSegment(0, 0, 1);
+            OnDuplicateKeyColumnsSegment segment = createOnConflictAssignment(value);
+            SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), SelectStatement.builder().build());
+            IllegalStateException failure = new IllegalStateException("foo_binding_failure");
+            when(ExpressionSegmentBinder.bind(eq(value), any(), eq(binderContext), any(), any())).thenAnswer(invocation -> {
+                assertTrue(binderContext.isExcludedTableAvailable());
+                throw failure;
+            });
+            assertThat(assertThrows(IllegalStateException.class,
+                    () -> AssignmentSegmentBinder.bind(segment, binderContext, createTableBinderContexts(), LinkedHashMultimap.create())), sameInstance(failure));
+            assertFalse(binderContext.isExcludedTableAvailable());
+        }
     }
 }

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.readwritesplitting.route.qualified.QualifiedReadwriteSplittingDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
@@ -42,7 +43,7 @@ public final class QualifiedReadwriteSplittingPrimaryDataSourceRouter implements
     
     private boolean isWriteRouteStatement(final SQLStatementContext sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        return containsLockSegment(sqlStatement) || containsLastInsertIdProjection(sqlStatementContext) || !isSelectStatement(sqlStatement);
+        return containsLockSegment(sqlStatement) || containsLastInsertIdProjection(sqlStatementContext) || containsDataModification(sqlStatement) || !isSelectStatement(sqlStatement);
     }
     
     private boolean containsLockSegment(final SQLStatement sqlStatement) {
@@ -51,6 +52,18 @@ public final class QualifiedReadwriteSplittingPrimaryDataSourceRouter implements
     
     private boolean containsLastInsertIdProjection(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).getProjectionsContext().isContainsLastInsertIdProjection();
+    }
+    
+    private boolean containsDataModification(final SQLStatement sqlStatement) {
+        if (!(sqlStatement instanceof SelectStatement) || !((SelectStatement) sqlStatement).getWith().isPresent()) {
+            return false;
+        }
+        for (CommonTableExpressionSegment each : ((SelectStatement) sqlStatement).getWith().get().getCommonTableExpressions()) {
+            if (null != each.getDataModification()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private boolean isSelectStatement(final SQLStatement sqlStatement) {

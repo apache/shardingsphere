@@ -97,7 +97,7 @@ public final class ColumnSegmentBinder {
     public static ColumnSegment bind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        if (isExcludedColumn(segment, parentSegmentType)) {
+        if (isExcludedColumn(segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)) {
             return segment;
         }
         ColumnSegment columnSegment = createNestedObjectColumnSegment(segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts).orElse(segment);
@@ -143,8 +143,14 @@ public final class ColumnSegmentBinder {
         return result;
     }
     
-    private static boolean isExcludedColumn(final ColumnSegment segment, final SegmentType parentSegmentType) {
-        return SegmentType.SET_ASSIGNMENT == parentSegmentType && segment.getOwner().isPresent() && EXCLUDED_TABLE_NAME.equalsIgnoreCase(segment.getOwner().get().getIdentifier().getValue());
+    private static boolean isExcludedColumn(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
+                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        if (!segment.getOwner().isPresent() || !EXCLUDED_TABLE_NAME.equalsIgnoreCase(segment.getOwner().get().getIdentifier().getValue())) {
+            return false;
+        }
+        return SegmentType.SET_ASSIGNMENT == parentSegmentType || binderContext.isExcludedTableAvailable()
+                && getTableBinderContextByOwner(EXCLUDED_TABLE_NAME, tableBinderContexts, outerTableBinderContexts, binderContext, parentSegmentType).isEmpty();
     }
     
     private static ColumnSegment copy(final ColumnSegment segment) {

@@ -71,7 +71,8 @@ class UpdateStatementBinderTest {
     void assertBind() {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         ErrorLoggingSegment errorLogging = new ErrorLoggingSegment(0, 0, null, null, "UNLIMITED");
-        ReturningSegment returning = new ReturningSegment(0, 0, new ProjectionsSegment(0, 0));
+        ReturningSegment returning = new ReturningSegment(8, 23, new ProjectionsSegment(18, 23));
+        returning.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(18, 23, new IdentifierValue("status"))));
         UpdateStatement updateStatement = UpdateStatement.builder()
                 .databaseType(databaseType)
                 .table(simpleTableSegment)
@@ -83,7 +84,12 @@ class UpdateStatementBinderTest {
         UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), updateStatement));
         assertThat(actual, not(updateStatement));
         assertThat(actual.getErrorLogging().get(), is(errorLogging));
-        assertThat(actual.getReturning().get(), is(returning));
+        ReturningSegment actualReturning = actual.getReturning().get();
+        assertThat(actualReturning.getStartIndex(), is(returning.getStartIndex()));
+        assertThat(actualReturning.getStopIndex(), is(returning.getStopIndex()));
+        ColumnSegment actualReturningColumn = ((ColumnProjectionSegment) actualReturning.getProjections().getProjections().iterator().next()).getColumn();
+        assertThat(actualReturningColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actualReturningColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
         assertThat(actual.getTable(), not(updateStatement.getTable()));
         assertThat(actual.getTable(), isA(SimpleTableSegment.class));
         assertTrue(actual.getWhere().isPresent());

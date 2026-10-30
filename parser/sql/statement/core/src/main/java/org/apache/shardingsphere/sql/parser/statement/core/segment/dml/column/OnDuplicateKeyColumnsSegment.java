@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * On duplicate key columns segment.
@@ -36,4 +37,12 @@ public final class OnDuplicateKeyColumnsSegment implements SQLSegment {
     private final int stopIndex;
     
     private final Collection<ColumnAssignmentSegment> columns;
+    
+    private final Collection<ColumnSegment> conflictColumns;
+    
+    private final Collection<ColumnSegment> conflictWhereColumns;
+    
+    public OnDuplicateKeyColumnsSegment(final int startIndex, final int stopIndex, final Collection<ColumnAssignmentSegment> columns) {
+        this(startIndex, stopIndex, columns, Collections.emptyList(), Collections.emptyList());
+    }
 }

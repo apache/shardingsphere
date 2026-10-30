@@ -70,6 +70,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Al
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterUserMappingContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AnyNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BackwardAllContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BackwardContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BackwardCountContext;
@@ -1288,9 +1289,14 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         return new DropOperatorStatement(getDatabaseType());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropMaterializedView(final DropMaterializedViewContext ctx) {
-        return new DropMaterializedViewStatement(getDatabaseType());
+        DropMaterializedViewStatement result = new DropMaterializedViewStatement(getDatabaseType());
+        for (AnyNameContext each : ctx.anyNameList().anyName()) {
+            result.getViews().add(createTableSegment(((CollectionValue<NameSegment>) visit(each)).getValue().iterator()));
+        }
+        return result;
     }
     
     @Override
@@ -1571,7 +1577,13 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
-        return new CreateMaterializedViewStatement(getDatabaseType());
+        CreateMaterializedViewStatement result = new CreateMaterializedViewStatement(getDatabaseType());
+        result.setView((SimpleTableSegment) visit(ctx.createMvTarget().qualifiedName()));
+        result.setViewDefinition(getOriginalText(ctx.select()));
+        SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
+        result.setSelect(selectStatement);
+        result.addParameterMarkers(selectStatement.getParameterMarkers());
+        return result;
     }
     
     @Override

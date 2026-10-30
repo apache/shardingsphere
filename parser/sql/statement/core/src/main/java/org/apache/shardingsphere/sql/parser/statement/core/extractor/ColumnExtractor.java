@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -353,8 +354,20 @@ public final class ColumnExtractor {
      * @param containsSubQuery whether contains subquery
      */
     public static void extractFromSelectStatement(final Collection<ColumnSegment> columnSegments, final SelectStatement statement, final boolean containsSubQuery) {
-        extractFromProjections(columnSegments, statement.getProjections().getProjections(), containsSubQuery);
+        if (statement.getValues().isEmpty()) {
+            extractFromProjections(columnSegments, statement.getProjections().getProjections(), containsSubQuery);
+        } else {
+            for (InsertValuesSegment each : statement.getValues()) {
+                extractFromValues(columnSegments, each, containsSubQuery);
+            }
+        }
         extractFromSelectStatementWithoutProjection(columnSegments, statement, containsSubQuery);
+    }
+    
+    private static void extractFromValues(final Collection<ColumnSegment> columnSegments, final InsertValuesSegment values, final boolean containsSubQuery) {
+        for (ExpressionSegment each : values.getValues()) {
+            columnSegments.addAll(ExpressionExtractor.extractColumns(each, containsSubQuery));
+        }
     }
     
     /**

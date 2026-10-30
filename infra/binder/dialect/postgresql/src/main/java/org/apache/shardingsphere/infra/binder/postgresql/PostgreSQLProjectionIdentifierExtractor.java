@@ -19,11 +19,17 @@ package org.apache.shardingsphere.infra.binder.postgresql;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
@@ -48,7 +54,14 @@ public final class PostgreSQLProjectionIdentifierExtractor implements DialectPro
         if (!(expressionSegment instanceof ExpressionProjectionSegment)) {
             return "?column?";
         }
+        IdentifierValue defaultColumnLabel = ((ExpressionProjectionSegment) expressionSegment).getDefaultColumnLabel();
+        if (null != defaultColumnLabel) {
+            return getIdentifierValue(defaultColumnLabel);
+        }
         ExpressionSegment innerExpressionSegment = ((ExpressionProjectionSegment) expressionSegment).getExpr();
+        while (innerExpressionSegment instanceof TypeCastExpression) {
+            innerExpressionSegment = ((TypeCastExpression) innerExpressionSegment).getExpression();
+        }
         if (innerExpressionSegment instanceof FunctionSegment) {
             return getColumnNameFromFunctionSegment((FunctionSegment) innerExpressionSegment);
         }
@@ -71,8 +84,27 @@ public final class PostgreSQLProjectionIdentifierExtractor implements DialectPro
     
     @Override
     public String getColumnNameFromSubquery(final SubqueryProjectionSegment subquerySegment) {
-        // TODO support subquery projection
-        return subquerySegment.getText();
+        return getColumnNameFromProjection(subquerySegment.getSubquery().getSelect().getProjections().getProjections().iterator().next(),
+                new ProjectionIdentifierExtractEngine(subquerySegment.getSubquery().getSelect().getDatabaseType()));
+    }
+    
+    private String getColumnNameFromProjection(final ProjectionSegment projection, final ProjectionIdentifierExtractEngine extractEngine) {
+        if (projection instanceof AliasAvailable && ((AliasAvailable) projection).getAlias().isPresent()) {
+            return extractEngine.getIdentifierValue(((AliasAvailable) projection).getAlias().get());
+        }
+        if (projection instanceof ShorthandProjectionSegment) {
+            return getColumnNameFromProjection(((ShorthandProjectionSegment) projection).getActualProjectionSegments().iterator().next(), extractEngine);
+        }
+        if (projection instanceof ColumnProjectionSegment) {
+            return extractEngine.getIdentifierValue(((ColumnProjectionSegment) projection).getColumn().getIdentifier());
+        }
+        if (projection instanceof AggregationProjectionSegment) {
+            return getColumnNameFromFunction(((AggregationProjectionSegment) projection).getType().name(), ((AggregationProjectionSegment) projection).getExpression());
+        }
+        if (projection instanceof SubqueryProjectionSegment) {
+            return getColumnNameFromSubquery((SubqueryProjectionSegment) projection);
+        }
+        return projection instanceof ExpressionSegment ? getColumnNameFromExpression((ExpressionSegment) projection) : projection.getColumnLabel();
     }
     
     @Override

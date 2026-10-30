@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.WithTableHintSegment;
@@ -41,7 +42,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.S
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.AllowNotUseDatabaseSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.WithSQLStatementAttribute;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -87,6 +90,8 @@ public final class SelectStatement extends DMLStatement {
     
     private final WithTableHintSegment withTableHint;
     
+    private final Collection<InsertValuesSegment> values;
+    
     private final Collection<FunctionSegment> transformSegments = new LinkedList<>();
     
     private final SQLStatementAttributes attributes;
@@ -96,7 +101,7 @@ public final class SelectStatement extends DMLStatement {
                             final HierarchicalQuerySegment hierarchicalQuery, final GroupBySegment groupBy, final HavingSegment having, final OrderBySegment orderBy,
                             final CombineSegment combine, final WithSegment with, final SubqueryType subqueryType, final LimitSegment limit, final LockSegment lock,
                             final WindowSegment window, final TableSegment into, final ModelSegment model, final OutfileSegment outfile,
-                            final boolean intoVariables, final WithTableHintSegment withTableHint) {
+                            final boolean intoVariables, final WithTableHintSegment withTableHint, @Nullable final Collection<InsertValuesSegment> values) {
         super(databaseType);
         this.projections = projections;
         this.from = from;
@@ -116,6 +121,7 @@ public final class SelectStatement extends DMLStatement {
         this.outfile = outfile;
         this.intoVariables = intoVariables;
         this.withTableHint = withTableHint;
+        this.values = null == values ? Collections.emptyList() : values;
         attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with), new AllowNotUseDatabaseSQLStatementAttribute(null == from));
     }
     
@@ -209,7 +215,9 @@ public final class SelectStatement extends DMLStatement {
     public SelectStatement withSubqueryType(final SubqueryType subqueryType) {
         SelectStatement result = builder().databaseType(getDatabaseType()).projections(projections).from(from).where(where).hierarchicalQuery(hierarchicalQuery)
                 .groupBy(groupBy).having(having).orderBy(orderBy).combine(combine).with(with).subqueryType(subqueryType).limit(limit).lock(lock).window(window)
-                .into(into).model(model).outfile(outfile).intoVariables(intoVariables).withTableHint(withTableHint).build();
+                .into(into).model(model).outfile(outfile).intoVariables(intoVariables).withTableHint(withTableHint)
+                .values(values)
+                .build();
         result.getTransformSegments().addAll(transformSegments);
         return result;
     }

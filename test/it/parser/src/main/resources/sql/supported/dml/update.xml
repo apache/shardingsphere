@@ -24,7 +24,7 @@
     <sql-case id="update_without_alias" value="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?" />
     <sql-case id="update_with_alias" value="UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?" db-types="MySQL,H2,openGauss,Oracle,Doris" />
     <sql-case id="update_with_unicode_escape_alias" value="UPDATE t_order AS u SET status = ? WHERE u.order_id = ? AND u.user_id = ?" db-types="PostgreSQL,openGauss" />
-    <sql-case id="update_equal_with_geography" value="UPDATE t_order SET start_time = ?, status = 0, start_point = ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')'), rule = ?::jsonb, discount_type = ?, order_type = ? WHERE user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
+    <sql-case id="update_equal_with_geography" value="UPDATE t_order SET start_time = ?, status = 0, start_point = ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')'), rule = ?::jsonb, discount_type = ?, order_type = ? WHERE user_id = ? AND order_id = ?" db-types="openGauss" />
     <sql-case id="update_without_condition" value="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,H2,Doris" />
     <sql-case id="update_without_condition_sql92" value="UPDATE t_order o SET o.status = 'finished'" db-types="SQL92" />
     <sql-case id="update_with_extra_keywords" value="UPDATE LOW_PRIORITY IGNORE t_order SET status = ? WHERE order_id = ? AND user_id = ?" db-types="MySQL,Doris" />
@@ -99,4 +99,5 @@
     <sql-case id="update_array_parameter_pg" value="UPDATE t_order SET status[$1] = $2" db-types="PostgreSQL" case-types="Placeholder" />
     <sql-case id="update_member_target_pg" value="UPDATE t_order SET status.value = 'foo'" db-types="PostgreSQL" />
     <sql-case id="update_indirection_parameters_postgresql_regression" value="UPDATE foo SET items[?] = ?, span[?:?] = ?" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="update_equal_with_geography_postgresql" value="UPDATE t_order SET start_time = ?, status = 0, start_point = ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')'), rule = ?::jsonb, discount_type = ?, order_type = ? WHERE user_id = ? AND order_id = ?" db-types="PostgreSQL" />
 </sql-cases>

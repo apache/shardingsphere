@@ -55,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.List
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -145,6 +146,11 @@ public final class ExpressionSegmentBinder {
         }
         if (segment instanceof UnaryOperationExpression) {
             return UnaryOperationExpressionBinder.bind((UnaryOperationExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        }
+        if (segment instanceof TypeCastExpression) {
+            TypeCastExpression typeCastExpression = (TypeCastExpression) segment;
+            return new TypeCastExpression(segment.getStartIndex(), segment.getStopIndex(), typeCastExpression.getText(),
+                    bind(typeCastExpression.getExpression(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts), typeCastExpression.getDataType());
         }
         if (segment instanceof CollateExpression) {
             return CollateExpressionBinder.bind((CollateExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DialectSQLOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -67,9 +69,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
 
 import java.sql.Types;
@@ -84,8 +91,11 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -95,6 +105,29 @@ import static org.mockito.Mockito.when;
 class SelectStatementBinderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    @Test
+    void assertBindDistinctOnProjectionAlias() {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 20);
+        ColumnProjectionSegment column = new ColumnProjectionSegment(new ColumnSegment(0, 8, new IdentifierValue("user_name")));
+        column.setAlias(new AliasSegment(12, 18, new IdentifierValue("foo_name")));
+        projections.getProjections().add(column);
+        projections.getDistinctOnItems().add(new ColumnSegment(0, 7, new IdentifierValue("foo_name")));
+        SelectStatement statement = SelectStatement.builder().databaseType(databaseType).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("t_user")))).build();
+        SelectStatement actual = new SelectStatementBinder().bind(statement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), statement, Collections.emptyList()));
+        ColumnSegment actualColumn = (ColumnSegment) actual.getProjections().getDistinctOnItems().iterator().next();
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("user_name"));
+    }
+    
+    @Test
+    void assertBindSelectInto() {
+        SimpleTableSegment into = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("created_table")));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).into(into).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(),
+                "foo_db", new HintValueContext(), selectStatement, Collections.emptyList()));
+        assertThat(actual.getInto().orElse(null), is(into));
+    }
     
     @Test
     void assertBind() {
@@ -673,4 +706,65 @@ class SelectStatementBinderTest {
         when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tUser)).thenReturn(true);
         return result;
     }
+    
+    @Nested
+    @ExtendWith(AutoMockExtension.class)
+    @StaticMockSettings(ExpressionSegmentBinder.class)
+    class ValuesExpressions {
+        
+        @Test
+        void assertBindLaterValuesExpression() {
+            ParameterMarkerExpressionSegment firstMarker = new ParameterMarkerExpressionSegment(8, 8, 0);
+            ParameterMarkerExpressionSegment secondMarker = new ParameterMarkerExpressionSegment(60, 60, 1);
+            SubqueryExpressionSegment expression = mock(SubqueryExpressionSegment.class);
+            SubqueryExpressionSegment boundExpression = mock(SubqueryExpressionSegment.class);
+            ProjectionsSegment projections = new ProjectionsSegment(7, 62);
+            ExpressionProjectionSegment projection = new ExpressionProjectionSegment(8, 8, "?", firstMarker);
+            projection.setDefaultColumnLabel(new IdentifierValue("column1"));
+            projections.getProjections().add(projection);
+            SelectStatement statement = SelectStatement.builder().databaseType(databaseType).projections(projections)
+                    .values(Arrays.asList(new InsertValuesSegment(7, 9, Collections.singletonList(firstMarker)), new InsertValuesSegment(16, 62, Collections.singletonList(expression)))).build();
+            statement.addParameterMarkers(Arrays.asList(firstMarker, secondMarker));
+            when(ExpressionSegmentBinder.bind(eq(firstMarker), any(), any(), any(), any())).thenReturn(firstMarker);
+            when(ExpressionSegmentBinder.bind(eq(expression), any(), any(), any(), any())).thenReturn(boundExpression);
+            SelectStatement actual = new SelectStatementBinder().bind(statement, new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), statement));
+            assertThat(actual.getValues().size(), is(2));
+            InsertValuesSegment actualSecond = new ArrayList<>(actual.getValues()).get(1);
+            assertThat(actualSecond.getValues().size(), is(1));
+            assertThat(actualSecond.getValues().get(0), sameInstance(boundExpression));
+            assertThat(actualSecond.getStartIndex(), is(16));
+            assertThat(actualSecond.getStopIndex(), is(62));
+            assertThat(actual.getParameterCount(), is(2));
+        }
+    }
+    
+    @Nested
+    class NestedValues {
+        
+        @ParameterizedTest
+        @ValueSource(ints = {1, 3, 10})
+        void assertBindNestedValuesWithoutDuplicatingSubqueries(final int depth) {
+            ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+            projections.getProjections().add(new ExpressionProjectionSegment(0, 0, "1", new LiteralExpressionSegment(0, 0, 1)));
+            SelectStatement statement = SelectStatement.builder().databaseType(databaseType).projections(projections).build();
+            for (int i = 0; i < depth; i++) {
+                SubqueryExpressionSegment expression = new SubqueryExpressionSegment(new SubquerySegment(0, 0, statement, "SELECT 1"));
+                ExpressionProjectionSegment projection = new ExpressionProjectionSegment(0, 0, "(SELECT 1)", expression);
+                projection.setDefaultColumnLabel(new IdentifierValue("column1"));
+                ProjectionsSegment valuesProjections = new ProjectionsSegment(0, 0);
+                valuesProjections.getProjections().add(projection);
+                statement = SelectStatement.builder().databaseType(databaseType).projections(valuesProjections)
+                        .values(Collections.singletonList(new InsertValuesSegment(0, 0, Collections.singletonList(expression)))).build();
+            }
+            SelectStatement actual = new SelectStatementBinder().bind(statement, new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), statement));
+            for (int i = 0; i < depth; i++) {
+                ExpressionProjectionSegment actualProjection = (ExpressionProjectionSegment) actual.getProjections().getProjections().iterator().next();
+                assertThat(actualProjection.getExpr(), sameInstance(actual.getValues().iterator().next().getValues().get(0)));
+                assertThat(actualProjection.getDefaultColumnLabel().getValue(), is("column1"));
+                actual = ((SubqueryExpressionSegment) actualProjection.getExpr()).getSubquery().getSelect();
+            }
+            assertTrue(actual.getValues().isEmpty());
+        }
+    }
+    
 }

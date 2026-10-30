@@ -67,6 +67,9 @@ public final class SQLStatementBinderContext {
     
     private final Collection<String> modelColumnNames = new CaseInsensitiveSet<>();
     
+    @Setter
+    private boolean excludedTableAvailable;
+    
     public SQLStatementBinderContext(final ShardingSphereMetaData metaData, final String currentDatabaseName, final HintValueContext hintValueContext, final SQLStatement sqlStatement) {
         this(metaData, currentDatabaseName, hintValueContext, sqlStatement, Collections.emptyList());
     }

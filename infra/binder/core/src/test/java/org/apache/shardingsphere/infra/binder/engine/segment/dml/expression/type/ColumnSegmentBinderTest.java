@@ -44,7 +44,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -539,5 +541,55 @@ class ColumnSegmentBinderTest {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("SYSTEM_USER"));
         ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, bindContext, tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual, is(columnSegment));
+    }
+    
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    class ExcludedScope {
+        
+        @Test
+        void assertBindExcludedInNestedScope() {
+            SQLStatementBinderContext binderContext = createExcludedBinderContext(true);
+            ColumnSegment column = new ColumnSegment(9, 15, new IdentifierValue("user_id"));
+            column.setOwner(new OwnerSegment(0, 7, new IdentifierValue("excluded")));
+            ColumnSegment actual = ColumnSegmentBinder.bind(column, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
+            assertThat(actual, sameInstance(column));
+        }
+        
+        private SQLStatementBinderContext createExcludedBinderContext(final boolean available) {
+            SelectStatement statement = SelectStatement.builder().databaseType(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).build();
+            SQLStatementBinderContext result = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), statement);
+            result.setExcludedTableAvailable(available);
+            return result;
+        }
+        
+        @Test
+        void assertBindExcludedOutsideConflictScope() {
+            SQLStatementBinderContext binderContext = createExcludedBinderContext(false);
+            ColumnSegment column = new ColumnSegment(9, 15, new IdentifierValue("user_id"));
+            column.setOwner(new OwnerSegment(0, 7, new IdentifierValue("excluded")));
+            assertThrows(ColumnNotFoundException.class,
+                    () -> ColumnSegmentBinder.bind(column, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create()));
+        }
+        
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("getExcludedOwners")
+        void assertBindRealExcludedOwner(final String name, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> localContexts,
+                                         final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerContexts, final String expectedTable) {
+            ColumnSegment column = new ColumnSegment(9, 15, new IdentifierValue("user_id"));
+            column.setOwner(new OwnerSegment(0, 7, new IdentifierValue("excluded")));
+            ColumnSegment actual = ColumnSegmentBinder.bind(column, SegmentType.PROJECTION, createExcludedBinderContext(true), localContexts, outerContexts);
+            assertThat(actual, not(sameInstance(column)));
+            assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is(expectedTable));
+            assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("user_id"));
+        }
+        
+        private Stream<Arguments> getExcludedOwners() {
+            Multimap<CaseInsensitiveString, TableSegmentBinderContext> local = createOrderScope("excluded", "user_id", "foo_local");
+            Multimap<CaseInsensitiveString, TableSegmentBinderContext> outer = createOrderScope("excluded", "user_id", "bar_outer");
+            return Stream.of(Arguments.of("local owner", local, LinkedHashMultimap.create(), "foo_local"),
+                    Arguments.of("outer owner", LinkedHashMultimap.create(), outer, "bar_outer"),
+                    Arguments.of("local owner shadows outer", local, outer, "foo_local"));
+        }
     }
 }

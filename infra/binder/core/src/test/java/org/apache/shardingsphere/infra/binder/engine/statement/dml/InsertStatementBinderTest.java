@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ErrorLoggingSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
@@ -46,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -53,6 +56,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -293,4 +297,26 @@ class InsertStatementBinderTest {
         when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tOrder)).thenReturn(true);
         return result;
     }
+    
+    @Nested
+    class ReturningProjections {
+        
+        @Test
+        void assertBindReturningShorthand() {
+            ShorthandProjectionSegment shorthand = new ShorthandProjectionSegment(50, 50);
+            ProjectionsSegment projections = new ProjectionsSegment(50, 50);
+            projections.getProjections().add(shorthand);
+            InsertStatement statement = InsertStatement.builder().databaseType(databaseType)
+                    .table(new SimpleTableSegment(new TableNameSegment(12, 18, new IdentifierValue("t_order"))))
+                    .returning(new ReturningSegment(40, 50, projections)).build();
+            InsertStatement actual = new InsertStatementBinder().bind(statement, new SQLStatementBinderContext(createMetaData(),
+                    "foo_db", new HintValueContext(), statement, Collections.emptyList()));
+            ShorthandProjectionSegment actualProjection = (ShorthandProjectionSegment) actual.getReturning().get().getProjections().getProjections().iterator().next();
+            assertThat(actualProjection.getActualProjectionSegments().stream().map(ProjectionSegment::getColumnLabel).collect(Collectors.toList()), contains("order_id", "user_id", "status"));
+            assertThat(actualProjection.getStartIndex(), is(50));
+            assertThat(actualProjection.getStopIndex(), is(50));
+            assertTrue(shorthand.getActualProjectionSegments().isEmpty());
+        }
+    }
+    
 }

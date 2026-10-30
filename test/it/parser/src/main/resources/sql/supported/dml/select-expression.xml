@@ -244,4 +244,10 @@
     <sql-case id="select_postgresql_common_concat_frontier" value="SELECT ? || (? || ?) || foo_values(? || ?), B'10' || B'01'" db-types="PostgreSQL" case-types="placeholder" />
     <sql-case id="select_postgresql_custom_operator_comment_boundaries" value="SELECT ? #-/*block*/?, ? @+--line&#10;?" db-types="PostgreSQL" case-types="placeholder" />
     <sql-case id="select_postgresql_custom_operator_internal_dash_slash" value="SELECT ? #-/ ?" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_quantified_subquery_any" value="SELECT id FROM foo WHERE id &gt; ANY (SELECT id FROM bar WHERE id &gt; ?)" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_quantified_subquery_all" value="SELECT id FROM foo WHERE id &lt;= ALL (SELECT id FROM bar WHERE id &gt; ?)" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_quantified_subquery_some" value="SELECT id FROM foo WHERE id = SOME (SELECT id FROM bar WHERE id &gt; ?)" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_quantified_array_any" value="SELECT id FROM foo WHERE id = ANY(ARRAY[?,?])" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_quantified_array_all" value="SELECT id FROM foo WHERE id &lt;&gt; ALL(ARRAY[?,?])" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_quantified_array_some" value="SELECT id FROM foo WHERE id &gt;= SOME(ARRAY[?,?])" db-types="PostgreSQL" />
 </sql-cases>

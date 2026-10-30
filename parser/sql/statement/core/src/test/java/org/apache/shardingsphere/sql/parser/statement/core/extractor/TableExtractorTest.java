@@ -73,7 +73,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.fixture.database.MockedDatabaseType;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -751,4 +753,95 @@ class TableExtractorTest {
         assertThat(tableExtractor.getRewriteTables().size(), is(1));
         assertTableSegment(tableExtractor.getRewriteTables().iterator().next(), 30, 40, "t_order");
     }
+    
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    class AggregateFilters {
+        
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("getAggregateFilterProjections")
+        void assertExtractAggregateFilter(final String name, final ProjectionSegment projection, final Collection<String> expected) {
+            ProjectionsSegment projections = new ProjectionsSegment(0, 80);
+            projections.getProjections().add(projection);
+            SelectStatement statement = SelectStatement.builder().projections(projections)
+                    .from(new SimpleTableSegment(new TableNameSegment(85, 93, new IdentifierValue("foo_table")))).build();
+            TableExtractor extractor = new TableExtractor();
+            extractor.extractTablesFromSelect(statement);
+            Collection<String> actual = extractor.getRewriteTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
+            assertThat(actual, is(expected));
+        }
+        
+        private Stream<Arguments> getAggregateFilterProjections() {
+            SelectStatement subquery = SelectStatement.builder().projections(new ProjectionsSegment(30, 35))
+                    .from(new SimpleTableSegment(new TableNameSegment(40, 48, new IdentifierValue("bar_table")))).build();
+            SubqueryExpressionSegment filter = new SubqueryExpressionSegment(new SubquerySegment(25, 60, subquery, "SELECT 1 FROM bar_table"));
+            AggregationProjectionSegment filtered = new AggregationProjectionSegment(0, 70, AggregationType.COUNT, "COUNT(*) FILTER (WHERE (SELECT 1 FROM bar_table))");
+            filtered.setFilter(filter);
+            FunctionSegment wrapped = new FunctionSegment(0, 80, "ABS", "ABS(COUNT(*) FILTER (WHERE (SELECT 1 FROM bar_table)))");
+            wrapped.getParameters().add(filtered);
+            AggregationProjectionSegment unfiltered = new AggregationProjectionSegment(0, 8, AggregationType.COUNT, "COUNT(*)");
+            return Stream.of(Arguments.of("aggregate projection", filtered, Arrays.asList("foo_table", "bar_table")),
+                    Arguments.of("aggregate inside expression", new ExpressionProjectionSegment(0, 80, wrapped.getText(), wrapped), Arrays.asList("foo_table", "bar_table")),
+                    Arguments.of("aggregate without filter", unfiltered, Collections.singletonList("foo_table")));
+        }
+    }
+    
+    @Nested
+    class ValuesRows {
+        
+        @Test
+        void assertExtractTablesFromAllValuesRows() {
+            SimpleTableSegment first = new SimpleTableSegment(new TableNameSegment(20, 28, new IdentifierValue("foo_first")));
+            SimpleTableSegment second = new SimpleTableSegment(new TableNameSegment(60, 69, new IdentifierValue("foo_second")));
+            SelectStatement firstSelect = SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(new ProjectionsSegment(10, 12)).from(first).build();
+            SelectStatement secondSelect = SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(new ProjectionsSegment(50, 52)).from(second).build();
+            SubqueryExpressionSegment firstExpression = new SubqueryExpressionSegment(new SubquerySegment(8, 30, firstSelect, "SELECT 1 FROM foo_first"));
+            SubqueryExpressionSegment secondExpression = new SubqueryExpressionSegment(new SubquerySegment(48, 71, secondSelect, "SELECT 1 FROM foo_second"));
+            FunctionSegment function = new FunctionSegment(40, 72, "LOWER", "LOWER((SELECT 1 FROM foo_second))");
+            function.getParameters().add(secondExpression);
+            ProjectionsSegment projections = new ProjectionsSegment(0, 72);
+            projections.getProjections().add(new ExpressionProjectionSegment(8, 30, firstExpression.getText(), firstExpression));
+            SelectStatement statement = SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(projections)
+                    .values(Arrays.asList(new InsertValuesSegment(7, 31, Collections.singletonList(firstExpression)), new InsertValuesSegment(39, 73, Collections.singletonList(function)))).build();
+            TableExtractor extractor = new TableExtractor();
+            extractor.extractTablesFromSelect(statement);
+            assertThat(extractor.getRewriteTables(), contains(first, second));
+        }
+    }
+    
+    @Nested
+    class DataModificationCtes {
+        
+        @Test
+        void assertExtractTablesFromInsertWithDataModification() {
+            InsertStatement statement = InsertStatement.builder().table(createScopeTable("foo_target", 70)).with(createDataModificationWith()).build();
+            tableExtractor.extractTablesFromInsert(statement);
+            assertThat(tableExtractor.getRewriteTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
+                    is(Arrays.asList("foo_target", "bar_source")));
+        }
+        
+        private WithSegment createDataModificationWith() {
+            DeleteStatement child = DeleteStatement.builder().table(createScopeTable("bar_source", 20)).build();
+            CommonTableExpressionSegment segment = new CommonTableExpressionSegment(0, 60, new AliasSegment(5, 15, new IdentifierValue("foo_changed")), null, child);
+            return new WithSegment(0, 60, Collections.singletonList(segment));
+        }
+        
+        @Test
+        void assertExtractTablesFromUpdateWithDataModification() {
+            UpdateStatement statement = UpdateStatement.builder().table(createScopeTable("foo_target", 70))
+                    .setAssignment(new SetAssignmentSegment(85, 90, Collections.emptyList())).with(createDataModificationWith()).build();
+            tableExtractor.extractTablesFromUpdate(statement);
+            assertThat(tableExtractor.getRewriteTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
+                    is(Arrays.asList("foo_target", "bar_source")));
+        }
+        
+        @Test
+        void assertExtractTablesFromDeleteWithDataModification() {
+            DeleteStatement statement = DeleteStatement.builder().table(createScopeTable("foo_target", 70)).with(createDataModificationWith()).build();
+            tableExtractor.extractTablesFromDelete(statement);
+            assertThat(tableExtractor.getRewriteTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
+                    is(Arrays.asList("foo_target", "bar_source")));
+        }
+    }
+    
 }

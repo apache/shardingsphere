@@ -17,13 +17,21 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view;
 
+import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Drop materialized view statement.
  */
 public final class DropMaterializedViewStatement extends DDLStatement {
+    
+    @Getter
+    private final Collection<SimpleTableSegment> views = new LinkedList<>();
     
     public DropMaterializedViewStatement(final DatabaseType databaseType) {
         super(databaseType);

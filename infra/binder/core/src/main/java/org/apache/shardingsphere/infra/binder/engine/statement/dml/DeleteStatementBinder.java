@@ -24,13 +24,16 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.TableSegme
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.order.OrderBySegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.predicate.WhereSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.returning.ReturningSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.with.WithSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 
@@ -48,13 +51,22 @@ public final class DeleteStatementBinder implements SQLStatementBinder<DeleteSta
         WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         OrderBySegment boundOrderBy = sqlStatement.getOrderBy()
                 .map(optional -> OrderBySegmentBinder.bind(optional, binderContext, tableBinderContexts, tableBinderContexts, outerTableBinderContexts)).orElse(null);
-        return copy(sqlStatement, boundWith, boundTable, boundWhere, boundOrderBy);
+        ReturningSegment boundReturning = sqlStatement.getReturning()
+                .map(optional -> ReturningSegmentBinder.bind(optional, binderContext, getReturningTable(boundTable, sqlStatement), tableBinderContexts, outerTableBinderContexts)).orElse(null);
+        return copy(sqlStatement, boundWith, boundTable, boundWhere, boundOrderBy, boundReturning);
     }
     
-    private DeleteStatement copy(final DeleteStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final WhereSegment boundWhere, final OrderBySegment boundOrderBy) {
+    private TableSegment getReturningTable(final TableSegment boundTable, final DeleteStatement sqlStatement) {
+        return boundTable instanceof DeleteMultiTableSegment && "PostgreSQL".equals(sqlStatement.getDatabaseType().getType())
+                ? ((DeleteMultiTableSegment) boundTable).getActualDeleteTables().iterator().next()
+                : boundTable;
+    }
+    
+    private DeleteStatement copy(final DeleteStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final WhereSegment boundWhere,
+                                 final OrderBySegment boundOrderBy, final ReturningSegment boundReturning) {
         DeleteStatement result = DeleteStatement.builder().databaseType(sqlStatement.getDatabaseType()).with(boundWith).table(boundTable)
-                .where(boundWhere).orderBy(boundOrderBy).limit(sqlStatement.getLimit().orElse(null)).errorLogging(sqlStatement.getErrorLogging().orElse(null))
-                .output(sqlStatement.getOutput().orElse(null)).returning(sqlStatement.getReturning().orElse(null)).build();
+                .where(boundWhere).orderBy(boundOrderBy).limit(sqlStatement.getLimit().orElse(null)).returning(boundReturning).errorLogging(sqlStatement.getErrorLogging().orElse(null))
+                .output(sqlStatement.getOutput().orElse(null)).build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

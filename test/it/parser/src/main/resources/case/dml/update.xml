@@ -3172,4 +3172,120 @@
             </assignment>
         </set>
     </update>
+    <update sql-case-id="update_equal_with_geography_postgresql" parameters="'2017-06-07', 100, 200, '{&quot;rule2&quot;:&quot;null2&quot;}', 3, 5, 7, 200">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="168" literal-stop-index="201">
+            <assignment start-index="19" stop-index="32" literal-stop-index="43">
+                <column name="start_time" start-index="19" stop-index="28" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="32" stop-index="32" />
+                    <literal-expression value="2017-06-07" start-index="32" stop-index="43" />
+                </assignment-value>
+            </assignment>
+            <assignment start-index="35" stop-index="44" literal-start-index="46" literal-stop-index="55">
+                <column name="status" start-index="35" stop-index="40" literal-start-index="46" literal-stop-index="51" />
+                <assignment-value>
+                    <literal-expression value="0" start-index="44" stop-index="44" literal-start-index="55" literal-stop-index="55" />
+                </assignment-value>
+            </assignment>
+            <assignment start-index="47" stop-index="116" literal-start-index="58" literal-stop-index="131">
+                <column name="start_point" start-index="47" stop-index="57" literal-start-index="58" literal-stop-index="68" />
+                <assignment-value>
+                    <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="61" stop-index="116" literal-start-index="72" literal-stop-index="131">
+                        <parameter>
+                            <binary-operation-expression start-index="82" stop-index="115" literal-start-index="93" literal-stop-index="130">
+                                <left>
+                                    <binary-operation-expression start-index="82" stop-index="110" literal-start-index="93" literal-stop-index="125">
+                                        <left>
+                                            <binary-operation-expression start-index="82" stop-index="107" literal-start-index="93" literal-stop-index="120">
+                                                <left>
+                                                    <binary-operation-expression start-index="82" stop-index="102" literal-start-index="93" literal-stop-index="115">
+                                                        <left>
+                                                            <literal-expression value="SRID=4326;POINT(" start-index="82" stop-index="99" literal-start-index="93" literal-stop-index="110" />
+                                                        </left>
+                                                        <operator>||</operator>
+                                                        <right>
+                                                            <literal-expression value="100" start-index="113" stop-index="115" />
+                                                            <parameter-marker-expression parameter-index="1" start-index="102" stop-index="102" />
+                                                        </right>
+                                                    </binary-operation-expression>
+                                                </left>
+                                                <operator>||</operator>
+                                                <right>
+                                                    <literal-expression value=" " start-index="105" stop-index="107" literal-start-index="118" literal-stop-index="120" />
+                                                </right>
+                                            </binary-operation-expression>
+                                        </left>
+                                        <operator>||</operator>
+                                        <right>
+                                            <literal-expression value="200" start-index="123" stop-index="125" />
+                                            <parameter-marker-expression parameter-index="2" start-index="110" stop-index="110" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <operator>||</operator>
+                                <right>
+                                    <literal-expression value=")" start-index="113" stop-index="115" literal-start-index="128" literal-stop-index="130" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </assignment>
+            <assignment start-index="119" stop-index="133" literal-start-index="134" literal-stop-index="166">
+                <column name="rule" start-index="119" stop-index="122" literal-start-index="134" literal-stop-index="137" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="3" start-index="126" stop-index="133" />
+                    <common-expression text="'{&quot;rule2&quot;:&quot;null2&quot;}'::jsonb" start-index="141" stop-index="166" />
+                </assignment-value>
+            </assignment>
+            <assignment start-index="136" stop-index="152" literal-start-index="169" literal-stop-index="185">
+                <column name="discount_type" start-index="136" stop-index="148" literal-start-index="169" literal-stop-index="181" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="4" start-index="152" stop-index="152" />
+                    <literal-expression value="3" start-index="185" stop-index="185" />
+                </assignment-value>
+            </assignment>
+            <assignment start-index="155" stop-index="168" literal-start-index="188" literal-stop-index="201">
+                <column name="order_type" start-index="155" stop-index="164" literal-start-index="188" literal-stop-index="197" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="5" start-index="168" stop-index="168" />
+                    <literal-expression value="5" start-index="201" stop-index="201" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="170" stop-index="203" literal-start-index="203" literal-stop-index="238">
+            <expr>
+                <binary-operation-expression start-index="176" stop-index="203" literal-start-index="209" literal-stop-index="238">
+                    <left>
+                        <binary-operation-expression start-index="176" stop-index="186" literal-start-index="209" literal-stop-index="219">
+                            <left>
+                                <column name="user_id" start-index="176" stop-index="182" literal-start-index="209" literal-stop-index="215" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="7" start-index="219" stop-index="219" />
+                                <parameter-marker-expression parameter-index="6" start-index="186" stop-index="186" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="192" stop-index="203" literal-start-index="225" literal-stop-index="238">
+                            <left>
+                                <column name="order_id" start-index="192" stop-index="199" literal-start-index="225" literal-stop-index="232" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="200" start-index="236" stop-index="238" />
+                                <parameter-marker-expression parameter-index="7" start-index="203" stop-index="203" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
 </sql-parser-test-cases>

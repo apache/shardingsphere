@@ -45,6 +45,12 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     @Setter
     private AliasSegment alias;
     
+    /**
+     * Dialect-provided output label, or {@code null} when no native default label is available.
+     */
+    @Setter
+    private IdentifierValue defaultColumnLabel;
+    
     public ExpressionProjectionSegment(final int startIndex, final int stopIndex, final String text) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
@@ -61,7 +67,7 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     
     @Override
     public String getColumnLabel() {
-        return getAliasName().orElse(text);
+        return getAliasName().orElse(null == defaultColumnLabel ? text : defaultColumnLabel.getValue());
     }
     
     @Override

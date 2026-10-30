@@ -34,12 +34,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -214,29 +216,6 @@ class JoinTableSegmentBinderTest {
         assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("i")));
     }
     
-    @Test
-    void assertBindWithFunctionTable() {
-        SimpleTableSegment leftTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
-        leftTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
-        FunctionTableSegment rightTable = new FunctionTableSegment(67, 127, new FunctionSegment(80, 98, "explode", "explode(type_array)"));
-        rightTable.setAlias(new AliasSegment(100, 113, new IdentifierValue("exploded_array")));
-        rightTable.getColumns().add(new ColumnSegment(118, 127, new IdentifierValue("item_value")));
-        JoinTableSegment joinTableSegment = new JoinTableSegment();
-        joinTableSegment.setLeft(leftTable);
-        joinTableSegment.setRight(rightTable);
-        joinTableSegment.setJoinType(JoinType.COMMA.name());
-        ShardingSphereMetaData metaData = createMetaData();
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(
-                metaData, "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).build()), tableBinderContexts, LinkedHashMultimap.create());
-        List<ProjectionSegment> actualProjections = new ArrayList<>(actual.getDerivedJoinTableProjectionSegments());
-        assertThat(actualProjections.size(), is(4));
-        assertThat(actualProjections.get(3), isA(ColumnProjectionSegment.class));
-        assertThat(actualProjections.get(3).getColumnLabel(), is("item_value"));
-        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("o")));
-        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("exploded_array")));
-    }
-    
     private JoinTableSegment mockLeftJoinSegment() {
         JoinTableSegment result = mock(JoinTableSegment.class);
         SimpleTableSegment leftTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
@@ -274,4 +253,41 @@ class JoinTableSegmentBinderTest {
         when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tOrderItem)).thenReturn(true);
         return result;
     }
+    
+    @Nested
+    class FunctionTableArguments {
+        
+        @Test
+        void assertBindWithFunctionTable() {
+            SimpleTableSegment leftTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+            leftTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+            FunctionSegment function = new FunctionSegment(80, 98, "explode", "explode(o.order_id)");
+            ColumnSegment input = new ColumnSegment(90, 97, new IdentifierValue("order_id"));
+            input.setOwner(new OwnerSegment(88, 88, new IdentifierValue("o")));
+            function.getParameters().add(input);
+            FunctionTableSegment rightTable = new FunctionTableSegment(67, 127, function);
+            rightTable.setAlias(new AliasSegment(100, 113, new IdentifierValue("exploded_array")));
+            rightTable.getColumns().add(new ColumnSegment(118, 127, new IdentifierValue("item_value")));
+            JoinTableSegment joinTableSegment = mock(JoinTableSegment.class);
+            when(joinTableSegment.getLeft()).thenReturn(leftTable);
+            when(joinTableSegment.getRight()).thenReturn(rightTable);
+            when(joinTableSegment.getJoinType()).thenReturn(JoinType.COMMA.name());
+            ShardingSphereMetaData metaData = createMetaData();
+            Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+            JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(
+                    metaData, "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).build()), tableBinderContexts, LinkedHashMultimap.create());
+            List<ProjectionSegment> actualProjections = new ArrayList<>(actual.getDerivedJoinTableProjectionSegments());
+            assertThat(actualProjections.size(), is(4));
+            assertThat(actualProjections.get(3), isA(ColumnProjectionSegment.class));
+            assertThat(actualProjections.get(3).getColumnLabel(), is("item_value"));
+            FunctionSegment actualFunction = (FunctionSegment) ((FunctionTableSegment) actual.getRight()).getTableFunction();
+            ColumnSegment actualInput = (ColumnSegment) actualFunction.getParameters().iterator().next();
+            assertThat(actualInput.getOwner().get().getIdentifier().getValue(), is("o"));
+            assertThat(actualInput.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+            assertThat(actualInput.getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
+            assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("o")));
+            assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("exploded_array")));
+        }
+    }
+    
 }
