@@ -63,17 +63,18 @@ public final class YamlDatabaseConfigurationImportExecutor {
     /**
      * Import database configuration.
      *
-     * @param databaseConfig database configuration input
+     * @param databaseName database name
+     * @param dataSourceProps data source pool properties
+     * @param ruleConfigs rule configurations
      */
-    public void importDatabaseConfiguration(final DatabaseConfigurationImportInput databaseConfig) {
-        String databaseName = databaseConfig.getDatabaseName();
+    public void importDatabaseConfiguration(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceProps, final Collection<RuleConfiguration> ruleConfigs) {
         checkDatabase(databaseName);
         DatabaseNameValidator.validate(databaseName);
-        checkDataSources(databaseName, databaseConfig.getDataSourceProperties());
+        checkDataSources(databaseName, dataSourceProps);
         addDatabase(databaseName);
         try {
-            importDataSources(databaseName, databaseConfig.getDataSourceProperties());
-            importRules(databaseName, databaseConfig.getRuleConfigurations());
+            importDataSources(databaseName, dataSourceProps);
+            importRules(databaseName, ruleConfigs);
         } catch (final ShardingSphereSQLException ex) {
             dropDatabase(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
             throw ex;

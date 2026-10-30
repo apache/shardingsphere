@@ -21,13 +21,16 @@ import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.Yam
 import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.swapper.YamlDatabaseConfigurationSwapper;
 import org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Import database configuration executor.
@@ -36,14 +39,18 @@ public final class ImportDatabaseConfigurationExecutor implements DistSQLUpdateE
     
     @Override
     public void executeUpdate(final ImportDatabaseConfigurationStatement sqlStatement, final ContextManager contextManager) {
-        DatabaseConfigurationImportInput databaseConfig = getDatabaseConfiguration(sqlStatement);
-        new MetaDataImportExecutor(contextManager).importDatabaseConfigurations(Collections.singletonList(databaseConfig));
+        YamlDatabaseConfiguration yamlConfig = getYamlDatabaseConfiguration(sqlStatement);
+        YamlDatabaseConfigurationSwapper swapper = new YamlDatabaseConfigurationSwapper();
+        String databaseName = yamlConfig.getDatabaseName();
+        Map<String, DataSourcePoolProperties> dataSourceProps = swapper.swapDataSourceProperties(yamlConfig.getDataSources());
+        Collection<RuleConfiguration> ruleConfigs = swapper.swapRuleConfigurations(yamlConfig.getRules());
+        new YamlDatabaseConfigurationImportExecutor(contextManager).importDatabaseConfiguration(databaseName, dataSourceProps, ruleConfigs);
     }
     
-    private DatabaseConfigurationImportInput getDatabaseConfiguration(final ImportDatabaseConfigurationStatement sqlStatement) {
+    private YamlDatabaseConfiguration getYamlDatabaseConfiguration(final ImportDatabaseConfigurationStatement sqlStatement) {
         File file = new File(sqlStatement.getFilePath());
         try {
-            return new YamlDatabaseConfigurationSwapper().swap(YamlEngine.unmarshal(file, YamlDatabaseConfiguration.class));
+            return YamlEngine.unmarshal(file, YamlDatabaseConfiguration.class);
         } catch (final IOException ignore) {
             throw new FileIOException(file);
         }

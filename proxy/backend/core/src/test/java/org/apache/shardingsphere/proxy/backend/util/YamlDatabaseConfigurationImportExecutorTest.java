@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.util;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.distsql.handler.executor.configuration.imports.DatabaseConfigurationImportInput;
 import org.apache.shardingsphere.distsql.handler.executor.configuration.imports.YamlDatabaseConfigurationImportExecutor;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -117,7 +116,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
         when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
         try (MockedConstruction<StorageUnit> mockedConstruction = mockConstruction(StorageUnit.class)) {
-            executor.importDatabaseConfiguration(createConfiguration(Collections.emptyList()));
+            executor.importDatabaseConfiguration("foo_db", Collections.singletonMap("foo_ds", mock(DataSourcePoolProperties.class)), Collections.emptyList());
             assertThat(storageUnits.get("foo_ds"), is(mockedConstruction.constructed().get(0)));
         }
         verify(metaDataManagerService).createDatabase("foo_db");
@@ -142,10 +141,9 @@ class YamlDatabaseConfigurationImportExecutorTest {
         DatabaseRule expectedRule = mock(DatabaseRule.class);
         when(builder.build(eq(ruleConfig), anyString(), any(DatabaseType.class), any(ResourceMetaData.class), anyCollection(), any())).thenReturn(expectedRule);
         when(OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, builder));
-        DatabaseConfigurationImportInput databaseConfig = createConfiguration(Collections.singletonList(ruleConfig));
         try (MockedConstruction<StorageUnit> mockedConstruction = mockConstruction(StorageUnit.class, (mock, context) -> {
         })) {
-            executor.importDatabaseConfiguration(databaseConfig);
+            executor.importDatabaseConfiguration("foo_db", Collections.singletonMap("foo_ds", mock(DataSourcePoolProperties.class)), Collections.singletonList(ruleConfig));
             assertThat(storageUnits.get("foo_ds"), is(mockedConstruction.constructed().get(0)));
         }
         assertThat(rules, is(Collections.singletonList(expectedRule)));
@@ -175,9 +173,8 @@ class YamlDatabaseConfigurationImportExecutorTest {
         SingleRule importedRule = mock(SingleRule.class);
         when(builder.build(eq(ruleConfig), anyString(), any(DatabaseType.class), any(ResourceMetaData.class), anyCollection(), any())).thenReturn(importedRule);
         when(OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, builder));
-        DatabaseConfigurationImportInput databaseConfig = createConfiguration(Collections.singletonList(ruleConfig));
         try (MockedConstruction<StorageUnit> ignored = mockConstruction(StorageUnit.class)) {
-            executor.importDatabaseConfiguration(databaseConfig);
+            executor.importDatabaseConfiguration("foo_db", Collections.singletonMap("foo_ds", mock(DataSourcePoolProperties.class)), Collections.singletonList(ruleConfig));
         }
         assertThat(rules, contains(importedRule));
         ArgumentCaptor<Collection<RuleConfiguration>> ruleConfigsCaptor = ArgumentCaptor.forClass(Collection.class);
@@ -209,9 +206,8 @@ class YamlDatabaseConfigurationImportExecutorTest {
         SingleRule importedRule = mock(SingleRule.class);
         when(builder.build(eq(ruleConfig), anyString(), any(DatabaseType.class), any(ResourceMetaData.class), anyCollection(), any())).thenReturn(importedRule);
         when(OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, builder));
-        DatabaseConfigurationImportInput databaseConfig = createConfiguration(Collections.singletonList(ruleConfig));
         try (MockedConstruction<StorageUnit> ignored = mockConstruction(StorageUnit.class)) {
-            executor.importDatabaseConfiguration(databaseConfig);
+            executor.importDatabaseConfiguration("foo_db", Collections.singletonMap("foo_ds", mock(DataSourcePoolProperties.class)), Collections.singletonList(ruleConfig));
         }
         assertThat(rules, contains(importedRule));
         ArgumentCaptor<Collection<RuleConfiguration>> ruleConfigsCaptor = ArgumentCaptor.forClass(Collection.class);
@@ -228,7 +224,8 @@ class YamlDatabaseConfigurationImportExecutorTest {
         ShardingSphereSQLException sqlException = mock(ShardingSphereSQLException.class);
         doThrow(sqlException).when(validateHandler).validate(anyMap());
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
-        assertThrows(ShardingSphereSQLException.class, () -> executor.importDatabaseConfiguration(createConfiguration(Collections.emptyList())));
+        assertThrows(ShardingSphereSQLException.class,
+                () -> executor.importDatabaseConfiguration("foo_db", Collections.singletonMap("foo_ds", mock(DataSourcePoolProperties.class)), Collections.emptyList()));
         verify(metaDataManagerService).createDatabase("foo_db");
         verify(metaDataManagerService).dropDatabase(database);
     }
@@ -241,13 +238,10 @@ class YamlDatabaseConfigurationImportExecutorTest {
         when(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()).thenReturn(metaDataManagerService);
         doThrow(IllegalStateException.class).when(validateHandler).validate(anyMap());
         when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
-        assertThrows(IllegalStateException.class, () -> executor.importDatabaseConfiguration(createConfiguration(Collections.emptyList())));
+        assertThrows(IllegalStateException.class,
+                () -> executor.importDatabaseConfiguration("foo_db", Collections.singletonMap("foo_ds", mock(DataSourcePoolProperties.class)), Collections.emptyList()));
         verify(metaDataManagerService).createDatabase("foo_db");
         verify(metaDataManagerService, never()).dropDatabase(database);
-    }
-    
-    private DatabaseConfigurationImportInput createConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
-        return new DatabaseConfigurationImportInput("foo_db", Collections.singletonMap("foo_ds", mock(DataSourcePoolProperties.class)), ruleConfigs);
     }
     
     private ShardingSphereDatabase mockDatabase(final Map<String, StorageUnit> storageUnits, final Collection<ShardingSphereRule> rules) {

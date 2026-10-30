@@ -17,17 +17,21 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.configuration.imports;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.executor.configuration.export.model.ExportedMetaData;
 import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDatabaseConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlExportedServerConfiguration;
 import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.swapper.YamlDatabaseConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -54,19 +58,23 @@ public final class MetaDataImportExecutor {
      * @param exportedMetaData exported metadata
      */
     public void importClusterConfigurations(final ExportedMetaData exportedMetaData) {
-        Collection<DatabaseConfigurationImportInput> databaseConfigs = getDatabaseConfigurations(exportedMetaData);
+        Collection<DatabaseConfiguration> databaseConfigs = getDatabaseConfigurations(exportedMetaData);
         YamlExportedServerConfiguration yamlServerConfig = getYamlServerConfiguration(exportedMetaData);
         if (null != yamlServerConfig) {
             Collection<RuleConfiguration> globalRuleConfigs = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlServerConfig.getRules());
             importServerConfiguration(globalRuleConfigs, yamlServerConfig.getProps());
         }
-        importDatabaseConfigurations(databaseConfigs);
+        for (DatabaseConfiguration each : databaseConfigs) {
+            databaseConfigImportExecutor.importDatabaseConfiguration(each.databaseName, each.dataSourceProps, each.ruleConfigs);
+        }
     }
     
-    private Collection<DatabaseConfigurationImportInput> getDatabaseConfigurations(final ExportedMetaData exportedMetaData) {
-        Collection<DatabaseConfigurationImportInput> result = new ArrayList<>(exportedMetaData.getDatabases().size());
+    private Collection<DatabaseConfiguration> getDatabaseConfigurations(final ExportedMetaData exportedMetaData) {
+        Collection<DatabaseConfiguration> result = new ArrayList<>(exportedMetaData.getDatabases().size());
         for (String each : exportedMetaData.getDatabases().values()) {
-            result.add(databaseConfigSwapper.swap(YamlEngine.unmarshal(each, YamlDatabaseConfiguration.class)));
+            YamlDatabaseConfiguration yamlConfig = YamlEngine.unmarshal(each, YamlDatabaseConfiguration.class);
+            result.add(new DatabaseConfiguration(yamlConfig.getDatabaseName(), databaseConfigSwapper.swapDataSourceProperties(yamlConfig.getDataSources()),
+                    databaseConfigSwapper.swapRuleConfigurations(yamlConfig.getRules())));
         }
         return result;
     }
@@ -82,14 +90,13 @@ public final class MetaDataImportExecutor {
         contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().alterProperties(props);
     }
     
-    /**
-     * Import database configurations.
-     *
-     * @param databaseConfigs database configuration inputs
-     */
-    public void importDatabaseConfigurations(final Collection<DatabaseConfigurationImportInput> databaseConfigs) {
-        for (DatabaseConfigurationImportInput each : databaseConfigs) {
-            databaseConfigImportExecutor.importDatabaseConfiguration(each);
-        }
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    private static final class DatabaseConfiguration {
+        
+        private final String databaseName;
+        
+        private final Map<String, DataSourcePoolProperties> dataSourceProps;
+        
+        private final Collection<RuleConfiguration> ruleConfigs;
     }
 }

@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.swapper;
 
-import org.apache.shardingsphere.distsql.handler.executor.configuration.imports.DatabaseConfigurationImportInput;
 import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -43,16 +41,12 @@ public final class YamlDatabaseConfigurationSwapper {
     private final YamlDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
     
     /**
-     * Swap YAML database configuration to import input.
+     * Swap YAML data sources to data source pool properties.
      *
-     * @param yamlConfig YAML database configuration
-     * @return database configuration input
+     * @param yamlDataSources YAML data sources
+     * @return data source pool properties
      */
-    public DatabaseConfigurationImportInput swap(final YamlDatabaseConfiguration yamlConfig) {
-        return new DatabaseConfigurationImportInput(yamlConfig.getDatabaseName(), swapDataSourceProperties(yamlConfig.getDataSources()), swapRuleConfigurations(yamlConfig.getRules()));
-    }
-    
-    private Map<String, DataSourcePoolProperties> swapDataSourceProperties(final Map<String, YamlDataSourceConfiguration> yamlDataSources) {
+    public Map<String, DataSourcePoolProperties> swapDataSourceProperties(final Map<String, YamlDataSourceConfiguration> yamlDataSources) {
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(yamlDataSources.size(), 1F);
         for (Entry<String, YamlDataSourceConfiguration> entry : yamlDataSources.entrySet()) {
             result.put(entry.getKey(), DataSourcePoolPropertiesCreator.create(dataSourceConfigSwapper.swap(entry.getValue())));
@@ -60,8 +54,14 @@ public final class YamlDatabaseConfigurationSwapper {
         return result;
     }
     
+    /**
+     * Swap YAML rules to rule configurations in import order.
+     *
+     * @param yamlRuleConfigs YAML rule configurations, or {@code null} if absent
+     * @return rule configurations
+     */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private Collection<RuleConfiguration> swapRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
+    public Collection<RuleConfiguration> swapRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         if (null == yamlRuleConfigs || yamlRuleConfigs.isEmpty()) {
             return Collections.emptyList();
         }

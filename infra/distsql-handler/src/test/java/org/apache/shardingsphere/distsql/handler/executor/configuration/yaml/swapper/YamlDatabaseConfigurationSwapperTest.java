@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.swapper;
 
-import org.apache.shardingsphere.distsql.handler.executor.configuration.imports.DatabaseConfigurationImportInput;
 import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
@@ -35,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,40 +54,36 @@ class YamlDatabaseConfigurationSwapperTest {
     private final YamlDatabaseConfigurationSwapper swapper = new YamlDatabaseConfigurationSwapper();
     
     @Test
-    void assertSwapWithDataSourceProperties() {
-        YamlDatabaseConfiguration yamlConfig = new YamlDatabaseConfiguration();
-        yamlConfig.setDatabaseName("foo_db");
+    void assertSwapDataSourceProperties() {
         YamlDataSourceConfiguration yamlDataSource = new YamlDataSourceConfiguration();
         yamlDataSource.setDataSourceClassName("foo.pool.DataSource");
         yamlDataSource.setUrl("jdbc:mock://localhost/foo_db");
         yamlDataSource.setUsername("foo_user");
         yamlDataSource.setPassword("foo_password");
         yamlDataSource.setCustomPoolProps(PropertiesBuilder.build(new Property("foo_prop", "foo_value")));
-        yamlConfig.setDataSources(Collections.singletonMap("foo_ds", yamlDataSource));
-        DatabaseConfigurationImportInput actual = swapper.swap(yamlConfig);
-        assertThat(actual.getDatabaseName(), is("foo_db"));
-        assertThat(actual.getDataSourceProperties().keySet(), contains("foo_ds"));
-        DataSourcePoolProperties actualProps = actual.getDataSourceProperties().get("foo_ds");
+        Map<String, DataSourcePoolProperties> actual = swapper.swapDataSourceProperties(Collections.singletonMap("foo_ds", yamlDataSource));
+        assertThat(actual.keySet(), contains("foo_ds"));
+        DataSourcePoolProperties actualProps = actual.get("foo_ds");
         assertThat(actualProps.getPoolClassName(), is("foo.pool.DataSource"));
         assertThat(actualProps.getConnectionPropertySynonyms().getStandardProperties().get("url"), is("jdbc:mock://localhost/foo_db"));
         assertThat(actualProps.getConnectionPropertySynonyms().getStandardProperties().get("username"), is("foo_user"));
         assertThat(actualProps.getConnectionPropertySynonyms().getStandardProperties().get("password"), is("foo_password"));
         assertThat(actualProps.getCustomProperties().getProperties().get("fooProp"), is("foo_value"));
-        assertTrue(actual.getRuleConfigurations().isEmpty());
     }
     
     @Test
-    void assertSwapWithMissingRules() {
-        YamlDatabaseConfiguration yamlConfig = new YamlDatabaseConfiguration();
-        yamlConfig.setRules(null);
-        DatabaseConfigurationImportInput actual = swapper.swap(yamlConfig);
-        assertTrue(actual.getDataSourceProperties().isEmpty());
-        assertTrue(actual.getRuleConfigurations().isEmpty());
+    void assertSwapRuleConfigurationsWithMissingRules() {
+        assertTrue(swapper.swapRuleConfigurations(null).isEmpty());
+    }
+    
+    @Test
+    void assertSwapRuleConfigurationsWithEmptyRules() {
+        assertTrue(swapper.swapRuleConfigurations(Collections.emptyList()).isEmpty());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    void assertSwapWithOrderedRules() {
+    void assertSwapRuleConfigurationsWithOrderedRules() {
         YamlRuleConfiguration firstYamlRule = mock(YamlRuleConfiguration.class);
         YamlRuleConfiguration secondYamlRule = mock(YamlRuleConfiguration.class);
         when(firstYamlRule.getRuleConfigurationType()).thenReturn((Class) DatabaseRuleConfiguration.class);
@@ -105,15 +100,13 @@ class YamlDatabaseConfigurationSwapperTest {
         swappers.put(DatabaseRuleConfiguration.class, firstSwapper);
         swappers.put(GlobalRuleConfiguration.class, secondSwapper);
         when(OrderedSPILoader.getServicesByClass(eq(YamlRuleConfigurationSwapper.class), anyCollection())).thenReturn(swappers);
-        YamlDatabaseConfiguration yamlConfig = new YamlDatabaseConfiguration();
-        yamlConfig.setRules(Arrays.asList(firstYamlRule, secondYamlRule));
-        DatabaseConfigurationImportInput actual = swapper.swap(yamlConfig);
-        assertThat(actual.getRuleConfigurations(), contains(secondRule, firstRule));
+        Collection<RuleConfiguration> actual = swapper.swapRuleConfigurations(Arrays.asList(firstYamlRule, secondYamlRule));
+        assertThat(actual, contains(secondRule, firstRule));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    void assertSwapWithSameOrderRules() {
+    void assertSwapRuleConfigurationsWithSameOrderRules() {
         YamlRuleConfiguration firstYamlRule = mock(YamlRuleConfiguration.class);
         YamlRuleConfiguration secondYamlRule = mock(YamlRuleConfiguration.class);
         when(firstYamlRule.getRuleConfigurationType()).thenReturn((Class) DatabaseRuleConfiguration.class);
@@ -125,9 +118,7 @@ class YamlDatabaseConfigurationSwapperTest {
         when(ruleSwapper.swapToObject(firstYamlRule)).thenReturn(firstRule);
         when(ruleSwapper.swapToObject(secondYamlRule)).thenReturn(secondRule);
         when(OrderedSPILoader.getServicesByClass(eq(YamlRuleConfigurationSwapper.class), anyCollection())).thenReturn(Collections.singletonMap(DatabaseRuleConfiguration.class, ruleSwapper));
-        YamlDatabaseConfiguration yamlConfig = new YamlDatabaseConfiguration();
-        yamlConfig.setRules(Arrays.asList(firstYamlRule, secondYamlRule));
-        DatabaseConfigurationImportInput actual = swapper.swap(yamlConfig);
-        assertThat(actual.getRuleConfigurations(), contains(secondRule));
+        Collection<RuleConfiguration> actual = swapper.swapRuleConfigurations(Arrays.asList(firstYamlRule, secondYamlRule));
+        assertThat(actual, contains(secondRule));
     }
 }

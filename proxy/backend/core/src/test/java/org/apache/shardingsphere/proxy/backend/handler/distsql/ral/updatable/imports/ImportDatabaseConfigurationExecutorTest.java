@@ -55,7 +55,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -87,13 +87,13 @@ class ImportDatabaseConfigurationExecutorTest {
     }
     
     @Test
-    void assertImportWhenConversionFails() {
+    void assertImportWhenRuleConversionFails() {
         ContextManager contextManager = mock(ContextManager.class);
         URL url = ImportDatabaseConfigurationExecutorTest.class.getResource("/conf/import/database-sharding.yaml");
         assertNotNull(url);
         try (
                 MockedConstruction<YamlDatabaseConfigurationSwapper> ignored = mockConstruction(YamlDatabaseConfigurationSwapper.class,
-                        (mock, context) -> when(mock.swap(any())).thenThrow(IllegalStateException.class))) {
+                        (mock, context) -> when(mock.swapRuleConfigurations(anyCollection())).thenThrow(IllegalStateException.class))) {
             assertThrows(IllegalStateException.class, () -> executor.executeUpdate(new ImportDatabaseConfigurationStatement(url.getPath()), contextManager));
         }
         verifyNoInteractions(contextManager);
