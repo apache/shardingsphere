@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqlfederation.executor.enumerable.enumerator.j
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
@@ -27,8 +28,11 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 
 /**
@@ -68,9 +72,40 @@ public final class JDBCDataRowEnumerator implements Enumerator<Object> {
         currentRow = 1 == metaData.getColumnCount() ? rowValues[0] : rowValues;
     }
     
+    @HighFrequencyInvocation
     private Object getValue(final int index) throws SQLException {
-        Object result = queryResult.getValue(index + 1, Object.class);
-        return result instanceof LocalDateTime ? ResultSetUtils.convertValue(result, Timestamp.class) : result;
+        int columnIndex = index + 1;
+        int columnType = metaData.getColumnType(columnIndex);
+        Object result = readColumnValue(columnIndex, columnType);
+        return convertToCalciteValue(result, columnType);
+    }
+    
+    /**
+     * Read a column value, retaining {@code null} for SQL {@code NULL}.
+     *
+     * @param columnIndex column index
+     * @param columnType JDBC column type
+     * @return column value, or {@code null} for SQL {@code NULL}
+     * @throws SQLException SQL exception
+     */
+    private Object readColumnValue(final int columnIndex, final int columnType) throws SQLException {
+        Class<?> valueType = Types.TIME == columnType ? Time.class : Object.class;
+        return queryResult.getValue(columnIndex, valueType);
+    }
+    
+    /**
+     * Adapt a JDBC value to Calcite, retaining {@code null} for SQL {@code NULL}.
+     *
+     * @param value original value, or {@code null} for SQL {@code NULL}
+     * @param columnType JDBC column type
+     * @return Calcite value, or {@code null} for SQL {@code NULL}
+     * @throws SQLException SQL exception
+     */
+    private Object convertToCalciteValue(final Object value, final int columnType) throws SQLException {
+        if (Types.TIME == columnType && value instanceof LocalTime) {
+            return ResultSetUtils.convertTimeValue((LocalTime) value, Time.class);
+        }
+        return value instanceof LocalDateTime ? ResultSetUtils.convertValue(value, Timestamp.class) : value;
     }
     
     @Override

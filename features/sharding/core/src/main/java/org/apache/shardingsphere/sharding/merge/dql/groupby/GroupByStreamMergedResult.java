@@ -21,10 +21,8 @@ import com.google.common.collect.Maps;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
@@ -98,10 +96,10 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         for (Entry<AggregationProjection, AggregationUnit> entry : aggregationUnitMap.entrySet()) {
             List<Comparable<?>> values = new ArrayList<>(2);
             if (entry.getKey().getDerivedAggregationProjections().isEmpty()) {
-                values.add(getAggregationValue(entry.getKey()));
+                values.add(AggregationValueUtils.getValue(getCurrentQueryResult(), entry.getKey()));
             } else {
                 for (AggregationProjection each : entry.getKey().getDerivedAggregationProjections()) {
-                    values.add(getAggregationValue(each));
+                    values.add(AggregationValueUtils.getValue(getCurrentQueryResult(), each));
                 }
             }
             entry.getValue().merge(values);
@@ -112,12 +110,6 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         for (int i = 0; i < getCurrentQueryResult().getMetaData().getColumnCount(); i++) {
             currentRow.add(getCurrentQueryResult().getValue(i + 1, Object.class));
         }
-    }
-    
-    private Comparable<?> getAggregationValue(final AggregationProjection aggregationProjection) throws SQLException {
-        Object result = getCurrentQueryResult().getValue(aggregationProjection.getIndex(), Object.class);
-        ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Aggregation", result));
-        return (Comparable<?>) result;
     }
     
     private void setAggregationValueToCurrentRow(final Map<AggregationProjection, AggregationUnit> aggregationUnitMap) {

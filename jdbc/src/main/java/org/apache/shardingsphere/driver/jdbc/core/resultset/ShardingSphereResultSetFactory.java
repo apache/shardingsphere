@@ -59,7 +59,7 @@ public final class ShardingSphereResultSetFactory {
      * @param queryContext query context
      * @param queryResults query results
      * @param statement statement
-     * @param columnLabelAndIndexMap column label and index map
+     * @param columnLabelAndIndexMap column label and index map, or {@code null} to build it from result set metadata
      * @return created instance
      * @throws SQLException SQL exception
      */
@@ -67,10 +67,7 @@ public final class ShardingSphereResultSetFactory {
                                  final Statement statement, final Map<String, Integer> columnLabelAndIndexMap) throws SQLException {
         List<ResultSet> resultSets = getResultSets(queryResults);
         MergedResult mergedResult = new MergeEngine(metaData, database, props, connectionContext).merge(queryResults, queryContext);
-        return new ShardingSphereResultSet(resultSets, mergedResult, statement, queryContext.getSqlStatementContext(),
-                null == columnLabelAndIndexMap
-                        ? ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(queryContext.getSqlStatementContext(), resultSets.get(0).getMetaData())
-                        : columnLabelAndIndexMap);
+        return new ShardingSphereResultSet(resultSets, mergedResult, statement, queryContext.getSqlStatementContext(), columnLabelAndIndexMap);
     }
     
     private List<ResultSet> getResultSets(final Collection<QueryResult> queryResults) throws SQLException {
