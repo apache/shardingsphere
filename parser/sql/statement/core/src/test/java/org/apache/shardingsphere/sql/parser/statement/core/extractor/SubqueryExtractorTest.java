@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -50,17 +52,21 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -72,6 +78,36 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class SubqueryExtractorTest {
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getAggregateFilterProjections")
+    void assertExtractAggregateFilter(final String name, final ProjectionsSegment projections, final Collection<Integer> expected) {
+        SelectStatement statement = SelectStatement.builder().projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(85, 93, new IdentifierValue("foo_table")))).build();
+        Collection<Integer> actual = SubqueryExtractor.extractSubquerySegments(statement, false).stream().map(SubquerySegment::getStartIndex).collect(Collectors.toList());
+        assertThat(actual, is(expected));
+    }
+    
+    private static Stream<Arguments> getAggregateFilterProjections() {
+        SelectStatement subquery = SelectStatement.builder().projections(new ProjectionsSegment(30, 35))
+                .from(new SimpleTableSegment(new TableNameSegment(40, 48, new IdentifierValue("bar_table")))).build();
+        ExpressionSegment filter = new SubqueryExpressionSegment(new SubquerySegment(25, 60, subquery, "SELECT 1 FROM bar_table"));
+        AggregationProjectionSegment filtered = new AggregationProjectionSegment(0, 70, AggregationType.COUNT, "COUNT(*) FILTER (WHERE (SELECT 1 FROM bar_table))");
+        filtered.getParameters().add(new SubqueryExpressionSegment(new SubquerySegment(10, 20, SelectStatement.builder().projections(new ProjectionsSegment(12, 18)).build(), "SELECT 1")));
+        filtered.setFilter(filter);
+        FunctionSegment wrapped = new FunctionSegment(0, 80, "ABS", "ABS(COUNT(*) FILTER (WHERE (SELECT 1 FROM bar_table)))");
+        wrapped.getParameters().add(filtered);
+        AggregationProjectionSegment unfiltered = new AggregationProjectionSegment(0, 8, AggregationType.COUNT, "COUNT(*)");
+        ProjectionsSegment directProjections = new ProjectionsSegment(0, 80);
+        directProjections.getProjections().add(filtered);
+        ProjectionsSegment wrappedProjections = new ProjectionsSegment(0, 80);
+        wrappedProjections.getProjections().add(new ExpressionProjectionSegment(0, 80, wrapped.getText(), wrapped));
+        ProjectionsSegment unfilteredProjections = new ProjectionsSegment(0, 80);
+        unfilteredProjections.getProjections().add(unfiltered);
+        return Stream.of(Arguments.of("aggregate projection", directProjections, Arrays.asList(10, 25)),
+                Arguments.of("aggregate inside expression", wrappedProjections, Arrays.asList(10, 25)),
+                Arguments.of("aggregate without filter", unfilteredProjections, Collections.emptyList()));
+    }
     
     @Test
     void assertExtractSubquerySegmentsInWhere() {
@@ -350,4 +386,40 @@ class SubqueryExtractorTest {
         when(result.withSubqueryType(any())).thenReturn(result);
         return result;
     }
+    
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    class ValuesRows {
+        
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("getValuesSubqueryArguments")
+        void assertExtractSubqueriesFromAllValuesRows(final String name, final boolean nested, final boolean recursive, final Collection<Integer> expectedStarts) {
+            SelectStatement firstSelect = SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(new ProjectionsSegment(10, 15)).build();
+            SelectStatement secondSelect = SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(new ProjectionsSegment(50, 55)).build();
+            if (nested) {
+                SelectStatement inner = SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(new ProjectionsSegment(75, 80)).build();
+                secondSelect = SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(new ProjectionsSegment(50, 55))
+                        .from(new SubqueryTableSegment(70, 90, new SubquerySegment(70, 90, inner, "SELECT 1"))).build();
+            }
+            SubqueryExpressionSegment first = new SubqueryExpressionSegment(new SubquerySegment(10, 30, firstSelect, "SELECT 1"));
+            SubqueryExpressionSegment second = new SubqueryExpressionSegment(new SubquerySegment(50, 95, secondSelect, "SELECT 2"));
+            FunctionSegment function = new FunctionSegment(40, 96, "COALESCE", "COALESCE((SELECT 2), 0)");
+            function.getParameters().add(second);
+            ProjectionsSegment projections = new ProjectionsSegment(0, 98);
+            projections.getProjections().add(new ExpressionProjectionSegment(10, 30, first.getText(), first));
+            SelectStatement statement = SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(projections)
+                    .values(Arrays.asList(new InsertValuesSegment(9, 31, Collections.singletonList(first)), new InsertValuesSegment(39, 97, Collections.singletonList(function)))).build();
+            List<SubquerySegment> actual = new ArrayList<>(SubqueryExtractor.extractSubquerySegments(statement, recursive));
+            assertThat(actual.stream().map(SubquerySegment::getStartIndex).collect(Collectors.toList()), is(expectedStarts));
+            assertThat(actual.get(0).getSelect().getSubqueryType().orElse(null), is(SubqueryType.VALUES));
+            assertThat(actual.get(1).getSelect().getSubqueryType().orElse(null), is(SubqueryType.FUNCTION));
+        }
+        
+        private Stream<Arguments> getValuesSubqueryArguments() {
+            return Stream.of(Arguments.of("projection subqueries", false, false, Arrays.asList(10, 50)),
+                    Arguments.of("nested subquery excluded", true, false, Arrays.asList(10, 50)),
+                    Arguments.of("nested subquery included", true, true, Arrays.asList(10, 50, 70)));
+        }
+    }
+    
 }

@@ -30,9 +30,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
@@ -118,8 +121,16 @@ class OpenGaussProjectionIdentifierExtractorTest {
         assertThat(actual.get().getColumnLabel(), is("max"));
     }
     
-    @Test
-    void assertGetColumnNameFromSubquery() {
-        assertThat(extractor.getColumnNameFromSubquery(new SubqueryProjectionSegment(new SubquerySegment(0, 0, "text"), "text")), is("text"));
+    @Nested
+    class SubqueryOutputLabel {
+        
+        @Test
+        void assertGetColumnNameFromSubquery() {
+            ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+            projections.getProjections().add(new ExpressionProjectionSegment(0, 0, "1"));
+            SelectStatement select = SelectStatement.builder().databaseType(databaseType).projections(projections).build();
+            assertThat(extractor.getColumnNameFromSubquery(new SubqueryProjectionSegment(new SubquerySegment(0, 0, select, "SELECT 1"), "(SELECT 1)")), is("?column?"));
+        }
     }
+    
 }

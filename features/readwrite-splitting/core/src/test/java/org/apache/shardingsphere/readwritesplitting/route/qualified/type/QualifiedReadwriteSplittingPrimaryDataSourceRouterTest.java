@@ -22,15 +22,26 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -47,6 +58,28 @@ class QualifiedReadwriteSplittingPrimaryDataSourceRouterTest {
     private SQLStatementContext sqlStatementContext;
     
     private final HintValueContext hintValueContext = new HintValueContext();
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getDataModificationStatements")
+    void assertIsQualifiedWithDataModification(final String name, final DMLStatement dataModification) {
+        CommonTableExpressionSegment cte = new CommonTableExpressionSegment(0, 30, null, null, dataModification);
+        SelectStatement statement = SelectStatement.builder().with(new WithSegment(0, 30, Collections.singletonList(cte))).build();
+        when(sqlStatementContext.getSqlStatement()).thenReturn(statement);
+        assertTrue(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null, hintValueContext));
+    }
+    
+    private static Stream<Arguments> getDataModificationStatements() {
+        return Stream.of(Arguments.of("INSERT CTE", InsertStatement.builder().build()), Arguments.of("UPDATE CTE", UpdateStatement.builder().build()),
+                Arguments.of("DELETE CTE", DeleteStatement.builder().build()));
+    }
+    
+    @Test
+    void assertIsNotQualifiedWithReadOnlyCommonTableExpression() {
+        CommonTableExpressionSegment cte = new CommonTableExpressionSegment(0, 30, null, new SubquerySegment(10, 25, SelectStatement.builder().build(), "SELECT 1"), null);
+        SelectStatement statement = SelectStatement.builder().with(new WithSegment(0, 30, Collections.singletonList(cte))).build();
+        when(sqlStatementContext.getSqlStatement()).thenReturn(statement);
+        assertFalse(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null, hintValueContext));
+    }
     
     @Test
     void assertIsQualifiedWithSelect() {

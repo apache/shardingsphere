@@ -198,10 +198,17 @@ public final class ProjectionAssert {
     
     private static void assertAggregationProjection(final SQLCaseAssertContext assertContext, final AggregationProjectionSegment actual, final ExpectedAggregationProjection expected) {
         assertThat(assertContext.getText("Aggregation projection type assertion error: "), actual.getType().name(), is(expected.getType()));
-        assertThat(assertContext.getText("Aggregation projection inner expression assertion error: "), actual.getExpression(), is(expected.getExpression()));
+        String expectedExpression = SQLCaseType.LITERAL == assertContext.getCaseType() && null != expected.getLiteralExpression() ? expected.getLiteralExpression() : expected.getExpression();
+        assertThat(assertContext.getText("Aggregation projection inner expression assertion error: "), actual.getExpression(), is(expectedExpression));
         assertThat(assertContext.getText("Aggregation projection alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
         assertThat(assertContext.getText("Aggregation projection separator assertion error: "), actual.getSeparator().orElse(null), is(expected.getSeparator()));
         assertAggregationParameters(assertContext, actual, expected);
+        if (null == expected.getFilter()) {
+            assertFalse(actual.getFilter().isPresent(), assertContext.getText("Actual aggregation projection filter should not exist."));
+        } else {
+            assertTrue(actual.getFilter().isPresent(), assertContext.getText("Actual aggregation projection filter should exist."));
+            ExpressionAssert.assertExpression(assertContext, actual.getFilter().get(), expected.getFilter());
+        }
         if (null == expected.getWindowItem()) {
             assertFalse(actual.getWindow().isPresent(), assertContext.getText("Actual aggregation projection window item should not exist."));
         } else {

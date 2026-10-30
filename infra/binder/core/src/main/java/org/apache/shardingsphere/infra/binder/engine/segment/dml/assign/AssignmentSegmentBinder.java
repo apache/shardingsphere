@@ -53,8 +53,27 @@ public final class AssignmentSegmentBinder {
     public static SetAssignmentSegment bind(final SetAssignmentSegment segment, final SQLStatementBinderContext binderContext,
                                             final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                             final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        return bind(segment, binderContext, tableBinderContexts, tableBinderContexts, outerTableBinderContexts);
+    }
+    
+    /**
+     * Bind assignment columns against the target table and values against all visible tables.
+     *
+     * @param segment assignment segment
+     * @param binderContext SQL statement binder context
+     * @param assignmentColumnTableBinderContexts target table binder contexts
+     * @param assignmentValueTableBinderContexts visible table binder contexts
+     * @param outerTableBinderContexts outer table binder contexts
+     * @return bound assignment segment
+     */
+    public static SetAssignmentSegment bind(final SetAssignmentSegment segment, final SQLStatementBinderContext binderContext,
+                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> assignmentColumnTableBinderContexts,
+                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> assignmentValueTableBinderContexts,
+                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         return new SetAssignmentSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getAssignments().stream()
-                .map(each -> bindColumnAssignmentSegment(each, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
+                .map(each -> bindColumnAssignmentSegment(each, binderContext, assignmentColumnTableBinderContexts, assignmentValueTableBinderContexts,
+                        outerTableBinderContexts))
+                .collect(Collectors.toList()));
     }
     
     /**
@@ -69,16 +88,26 @@ public final class AssignmentSegmentBinder {
     public static OnDuplicateKeyColumnsSegment bind(final OnDuplicateKeyColumnsSegment segment, final SQLStatementBinderContext binderContext,
                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        return new OnDuplicateKeyColumnsSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getColumns().stream()
-                .map(each -> bindColumnAssignmentSegment(each, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
+        boolean excludedTableAvailable = binderContext.isExcludedTableAvailable();
+        binderContext.setExcludedTableAvailable(true);
+        try {
+            return new OnDuplicateKeyColumnsSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getColumns().stream()
+                    .map(each -> bindColumnAssignmentSegment(each, binderContext, tableBinderContexts, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()),
+                    segment.getConflictColumns(), segment.getConflictWhereColumns());
+        } finally {
+            binderContext.setExcludedTableAvailable(excludedTableAvailable);
+        }
     }
     
     private static ColumnAssignmentSegment bindColumnAssignmentSegment(final ColumnAssignmentSegment columnAssignmentSegment, final SQLStatementBinderContext binderContext,
-                                                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> assignmentColumnTableBinderContexts,
+                                                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> assignmentValueTableBinderContexts,
                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         List<ColumnSegment> boundColumns = columnAssignmentSegment.getColumns().stream()
-                .map(each -> ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT_COLUMNS, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList());
-        ExpressionSegment boundValue = ExpressionSegmentBinder.bind(columnAssignmentSegment.getValue(), SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts);
+                .map(each -> ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT_COLUMNS, binderContext, assignmentColumnTableBinderContexts, outerTableBinderContexts))
+                .collect(Collectors.toList());
+        ExpressionSegment boundValue = ExpressionSegmentBinder.bind(columnAssignmentSegment.getValue(), SegmentType.SET_ASSIGNMENT, binderContext,
+                assignmentValueTableBinderContexts, outerTableBinderContexts);
         return new ColumnAssignmentSegment(columnAssignmentSegment.getStartIndex(), columnAssignmentSegment.getStopIndex(), boundColumns, boundValue);
     }
 }

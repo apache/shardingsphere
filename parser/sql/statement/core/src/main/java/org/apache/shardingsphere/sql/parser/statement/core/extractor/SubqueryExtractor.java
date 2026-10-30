@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.datetime.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.comp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
@@ -79,7 +81,11 @@ public final class SubqueryExtractor {
     }
     
     private static void extractSubquerySegments(final List<SubquerySegment> result, final SelectStatement selectStatement, final boolean needRecursive, final SubqueryType parentSubqueryType) {
-        extractSubquerySegmentsFromProjections(result, selectStatement.getProjections(), needRecursive);
+        if (selectStatement.getValues().isEmpty()) {
+            extractSubquerySegmentsFromProjections(result, selectStatement.getProjections(), needRecursive);
+        } else {
+            extractSubquerySegmentsFromValuesSegment(result, selectStatement.getValues(), needRecursive);
+        }
         selectStatement.getFrom().ifPresent(optional -> extractSubquerySegmentsFromTableSegment(result, optional, needRecursive));
         if (selectStatement.getWhere().isPresent()) {
             extractSubquerySegmentsFromWhere(result, selectStatement.getWhere().get().getExpr(), needRecursive);
@@ -98,6 +104,18 @@ public final class SubqueryExtractor {
         }
         if (selectStatement.getHaving().isPresent()) {
             extractSubquerySegmentsFromWhere(result, selectStatement.getHaving().get().getExpr(), needRecursive);
+        }
+    }
+    
+    private static void extractSubquerySegmentsFromValuesSegment(final List<SubquerySegment> subquerySegments, final Collection<InsertValuesSegment> values, final boolean needRecursive) {
+        for (InsertValuesSegment each : values) {
+            extractSubquerySegmentsFromValueExpressions(subquerySegments, each.getValues(), needRecursive);
+        }
+    }
+    
+    private static void extractSubquerySegmentsFromValueExpressions(final List<SubquerySegment> subquerySegments, final Collection<ExpressionSegment> expressions, final boolean needRecursive) {
+        for (ExpressionSegment each : expressions) {
+            extractSubquerySegmentsFromExpression(subquerySegments, each, SubqueryType.VALUES, needRecursive);
         }
     }
     
@@ -155,6 +173,8 @@ public final class SubqueryExtractor {
                 extractRecursive(needRecursive, result, subquery, SubqueryType.TABLE);
             } else if (each instanceof ExpressionProjectionSegment) {
                 extractSubquerySegmentsFromExpression(result, ((ExpressionProjectionSegment) each).getExpr(), SubqueryType.PROJECTION, needRecursive);
+            } else if (each instanceof AggregationProjectionSegment) {
+                extractSubquerySegmentsFromExpression(result, (AggregationProjectionSegment) each, SubqueryType.PROJECTION, needRecursive);
             }
         }
     }
@@ -236,6 +256,11 @@ public final class SubqueryExtractor {
         }
         if (expressionSegment instanceof FunctionSegment) {
             ((FunctionSegment) expressionSegment).getParameters().forEach(each -> extractSubquerySegmentsFromExpression(result, each, SubqueryType.FUNCTION, needRecursive));
+        }
+        if (expressionSegment instanceof AggregationProjectionSegment) {
+            AggregationProjectionSegment aggregation = (AggregationProjectionSegment) expressionSegment;
+            aggregation.getParameters().forEach(each -> extractSubquerySegmentsFromExpression(result, each, SubqueryType.FUNCTION, needRecursive));
+            aggregation.getFilter().ifPresent(optional -> extractSubquerySegmentsFromExpression(result, optional, SubqueryType.PREDICATE, needRecursive));
         }
         if (expressionSegment instanceof MatchAgainstExpression) {
             extractSubquerySegmentsFromExpression(result, ((MatchAgainstExpression) expressionSegment).getExpr(), subqueryType, needRecursive);

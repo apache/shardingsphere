@@ -21,6 +21,8 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.FunctionTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.DeleteMultiTableSegmentBinder;
@@ -29,6 +31,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.Simpl
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SubqueryTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.CollectionTableSegment;
@@ -72,11 +75,16 @@ public final class TableSegmentBinder {
             return DeleteMultiTableSegmentBinder.bind((DeleteMultiTableSegment) segment, binderContext, tableBinderContexts);
         }
         if (segment instanceof FunctionTableSegment) {
-            String name = segment.getAliasName().orElseGet(() -> ((FunctionTableSegment) segment).getTableFunction().getText());
+            FunctionTableSegment functionTable = (FunctionTableSegment) segment;
+            ExpressionSegment function = ExpressionSegmentBinder.bind(functionTable.getTableFunction(), SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts);
+            FunctionTableSegment result = new FunctionTableSegment(segment.getStartIndex(), segment.getStopIndex(), function);
+            functionTable.getAliasSegment().ifPresent(result::setAlias);
+            result.getColumns().addAll(functionTable.getColumns());
+            String name = result.getAliasName().orElseGet(() -> result.getTableFunction().getText());
             if (null != name) {
-                tableBinderContexts.put(CaseInsensitiveString.of(name), new FunctionTableSegmentBinderContext(createProjectionSegments(((FunctionTableSegment) segment).getColumns())));
+                tableBinderContexts.put(CaseInsensitiveString.of(name), new FunctionTableSegmentBinderContext(createProjectionSegments(result.getColumns())));
             }
-            return segment;
+            return result;
         }
         if (segment instanceof CollectionTableSegment) {
             String name = segment.getAliasName().orElseGet(() -> ((CollectionTableSegment) segment).getExpressionSegment().getText());

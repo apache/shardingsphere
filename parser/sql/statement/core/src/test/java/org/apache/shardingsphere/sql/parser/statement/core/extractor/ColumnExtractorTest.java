@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Type
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -63,11 +65,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -412,4 +417,40 @@ class ColumnExtractorTest {
     private static List<String> toColumnNames(final Collection<ColumnSegment> columnSegments) {
         return columnSegments.stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
     }
+    
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    class ValuesRows {
+        
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("getValuesColumnArguments")
+        void assertExtractFromAllValuesRows(final String name, final boolean subquery, final boolean recursive, final Collection<String> expectedNames) {
+            ColumnSegment first = new ColumnSegment(8, 16, new IdentifierValue("foo_first"));
+            ColumnSegment second = new ColumnSegment(50, 59, new IdentifierValue("foo_second"));
+            ProjectionsSegment innerProjections = new ProjectionsSegment(25, 33);
+            innerProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(25, 33, new IdentifierValue("foo_inner"))));
+            ExpressionSegment inner = subquery ? new SubqueryExpressionSegment(new SubquerySegment(18, 40,
+                    SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(innerProjections).build(), "SELECT foo_inner"))
+                    : new LiteralExpressionSegment(18, 18, 1);
+            FunctionSegment function = new FunctionSegment(44, 60, "LOWER", "LOWER(foo_second)");
+            function.getParameters().add(second);
+            ProjectionsSegment projections = new ProjectionsSegment(7, 61);
+            projections.getProjections().add(new ExpressionProjectionSegment(8, 16, "foo_first", first));
+            projections.getProjections().add(new ExpressionProjectionSegment(18, 40, inner.getText(), inner));
+            SelectStatement statement = SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(projections)
+                    .values(Arrays.asList(new InsertValuesSegment(7, 41, Arrays.asList(first, inner)),
+                            new InsertValuesSegment(43, 63, Arrays.asList(function, new LiteralExpressionSegment(62, 62, 2)))))
+                    .build();
+            Collection<ColumnSegment> actual = new ArrayList<>(3);
+            ColumnExtractor.extractFromSelectStatement(actual, statement, recursive);
+            assertThat(actual.stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(expectedNames));
+        }
+        
+        private Stream<Arguments> getValuesColumnArguments() {
+            return Stream.of(Arguments.of("plain values columns", false, false, Arrays.asList("foo_first", "foo_second")),
+                    Arguments.of("scalar subquery excluded", true, false, Arrays.asList("foo_first", "foo_second")),
+                    Arguments.of("scalar subquery included", true, true, Arrays.asList("foo_first", "foo_inner", "foo_second")));
+        }
+    }
+    
 }

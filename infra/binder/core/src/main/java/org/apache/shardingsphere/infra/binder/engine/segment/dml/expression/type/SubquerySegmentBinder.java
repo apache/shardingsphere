@@ -45,6 +45,7 @@ public final class SubquerySegmentBinder {
                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         SQLStatementBinderContext selectBinderContext = new SQLStatementBinderContext(
                 binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), segment.getSelect());
+        selectBinderContext.setExcludedTableAvailable(binderContext.isExcludedTableAvailable());
         selectBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
         selectBinderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(binderContext.getCommonTableExpressionsSegmentsUniqueAliases());
         SelectStatement boundSelectStatement = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSelect(), selectBinderContext);

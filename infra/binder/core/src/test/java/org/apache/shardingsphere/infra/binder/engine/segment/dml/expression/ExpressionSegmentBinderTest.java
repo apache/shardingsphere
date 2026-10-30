@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -167,5 +169,28 @@ class ExpressionSegmentBinderTest {
         CommonExpressionSegment segment = new CommonExpressionSegment(0, 9, "foo_clause", Collections.emptyList());
         assertThat(ExpressionSegmentBinder.bind(segment, SegmentType.PROJECTION, mock(SQLStatementBinderContext.class), LinkedHashMultimap.create(), LinkedHashMultimap.create()),
                 sameInstance(segment));
+    }
+    
+    @Nested
+    @StaticMockSettings(ColumnSegmentBinder.class)
+    class TypeCasts {
+        
+        @Test
+        void assertBindTypeCast() {
+            ColumnSegment column = new ColumnSegment(5, 14, new IdentifierValue("foo_column"));
+            ColumnSegment boundColumn = mock(ColumnSegment.class);
+            TypeCastExpression expression = new TypeCastExpression(0, 25, "CAST(foo_column AS BIGINT)", column, "BIGINT");
+            SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
+            Multimap<CaseInsensitiveString, TableSegmentBinderContext> contexts = LinkedHashMultimap.create();
+            when(ColumnSegmentBinder.bind(column, SegmentType.PROJECTION, binderContext, contexts, contexts)).thenReturn(boundColumn);
+            TypeCastExpression actual = (TypeCastExpression) ExpressionSegmentBinder.bind(expression, SegmentType.PROJECTION, binderContext, contexts, contexts);
+            assertThat(actual, not(sameInstance(expression)));
+            assertThat(actual.getExpression(), sameInstance(boundColumn));
+            assertThat(actual.getDataType(), is("BIGINT"));
+            assertThat(actual.getText(), is("CAST(foo_column AS BIGINT)"));
+            assertThat(actual.getStartIndex(), is(0));
+            assertThat(actual.getStopIndex(), is(25));
+            assertThat(expression.getExpression(), sameInstance(column));
+        }
     }
 }

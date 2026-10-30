@@ -57,4 +57,14 @@
 
     <sql-case id="select_postgresql_group_by_all" value="SELECT foo_order_id FROM t_order GROUP BY ALL foo_order_id" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="select_postgresql_group_by_distinct" value="SELECT foo_order_id FROM t_order GROUP BY DISTINCT foo_order_id" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_count_filter" value="SELECT COUNT(*) FILTER (WHERE order_id &gt; ?) AS matched FROM t_order" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_sum_filter_window" value="SELECT SUM(order_id) FILTER (WHERE order_id &gt; ?) OVER (PARTITION BY user_id) AS matched FROM t_order" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_rollup_members" value="SELECT COUNT(*) FROM t_order GROUP BY ROLLUP(user_id)" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_cube_members" value="SELECT COUNT(*) FROM t_order GROUP BY CUBE(user_id, status)" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_grouping_set_members" value="SELECT COUNT(*) FROM t_order GROUP BY GROUPING SETS ((user_id, status), (user_id), ())" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_empty_grouping_members" value="SELECT COUNT(*) FROM t_order GROUP BY ()" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_grouping_function_members" value="SELECT GROUPING(user_id) FROM t_order GROUP BY ROLLUP(user_id)" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_ordered_set_arguments" value="SELECT PERCENTILE_CONT(?) WITHIN GROUP (ORDER BY order_id) FROM t_order" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_ordered_set_without_direct_arguments" value="SELECT MODE() WITHIN GROUP (ORDER BY user_id) FROM t_order" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_ordered_set_complex_arguments" value="SELECT pg_catalog.PERCENTILE_DISC(?) WITHIN GROUP (ORDER BY ABS(order_id - ?)) FROM t_order" db-types="PostgreSQL" />
 </sql-cases>

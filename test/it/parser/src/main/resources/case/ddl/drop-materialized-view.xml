@@ -22,4 +22,22 @@
     <drop-materialized-view sql-case-id="drop_materialized_view_if_exists" />
     <drop-materialized-view sql-case-id="drop_materialized_view_basic" />
     <drop-materialized-view sql-case-id="drop_materialized_view_with_db" />
+    <drop-materialized-view sql-case-id="drop_materialized_view_schema_targets">
+        <view name="foo_mview" start-index="33" stop-index="48">
+            <owner name="public" start-index="33" stop-index="38" />
+        </view>
+    </drop-materialized-view>
+    <drop-materialized-view sql-case-id="drop_materialized_view_multiple_targets">
+        <view name="foo_mview" start-index="23" stop-index="38">
+            <owner name="public" start-index="23" stop-index="28" />
+        </view>
+        <view name="bar_mview" start-index="41" stop-index="57">
+            <owner name="archive" start-index="41" stop-index="47" />
+        </view>
+    </drop-materialized-view>
+    <drop-materialized-view sql-case-id="drop_materialized_view_quoted_targets">
+        <view name="Bar.View" start-delimiter="&quot;" end-delimiter="&quot;" start-index="33" stop-index="55">
+            <owner name="Foo.Schema" start-delimiter="&quot;" end-delimiter="&quot;" start-index="33" stop-index="44" />
+        </view>
+    </drop-materialized-view>
 </sql-parser-test-cases>

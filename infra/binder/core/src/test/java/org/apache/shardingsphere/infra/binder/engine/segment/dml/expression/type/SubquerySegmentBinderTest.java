@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -43,7 +44,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.MockedConstruction;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -52,10 +56,16 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class SubquerySegmentBinderTest {
@@ -121,5 +131,44 @@ class SubquerySegmentBinderTest {
         when(result.getDatabase(fooDatabase).containsSchema(fooDatabase)).thenReturn(true);
         when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tOrder)).thenReturn(true);
         return result;
+    }
+    
+    @Nested
+    class ExcludedScope {
+        
+        @Test
+        void assertBindWithExcludedScope() {
+            SelectStatement statement = SelectStatement.builder().databaseType(databaseType).build();
+            SubquerySegment segment = new SubquerySegment(0, 10, statement, "SELECT 1");
+            SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), statement);
+            binderContext.setExcludedTableAvailable(true);
+            try (
+                    MockedConstruction<SelectStatementBinder> binders = mockConstruction(SelectStatementBinder.class,
+                            (binder, context) -> when(binder.bind(any(), any())).thenReturn(statement))) {
+                SubquerySegment actual = SubquerySegmentBinder.bind(segment, binderContext, LinkedHashMultimap.create());
+                ArgumentCaptor<SQLStatementBinderContext> actualContext = ArgumentCaptor.forClass(SQLStatementBinderContext.class);
+                verify(binders.constructed().get(0)).bind(eq(statement), actualContext.capture());
+                assertTrue(actualContext.getValue().isExcludedTableAvailable());
+                assertThat(actual.getSelect(), sameInstance(statement));
+                assertTrue(binderContext.isExcludedTableAvailable());
+            }
+        }
+        
+        @Test
+        void assertBindWithoutExcludedScope() {
+            SelectStatement statement = SelectStatement.builder().databaseType(databaseType).build();
+            SubquerySegment segment = new SubquerySegment(0, 10, statement, "SELECT 1");
+            SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), statement);
+            try (
+                    MockedConstruction<SelectStatementBinder> binders = mockConstruction(SelectStatementBinder.class,
+                            (binder, context) -> when(binder.bind(any(), any())).thenReturn(statement))) {
+                SubquerySegment actual = SubquerySegmentBinder.bind(segment, binderContext, LinkedHashMultimap.create());
+                ArgumentCaptor<SQLStatementBinderContext> actualContext = ArgumentCaptor.forClass(SQLStatementBinderContext.class);
+                verify(binders.constructed().get(0)).bind(eq(statement), actualContext.capture());
+                assertFalse(actualContext.getValue().isExcludedTableAvailable());
+                assertThat(actual.getSelect(), sameInstance(statement));
+                assertFalse(binderContext.isExcludedTableAvailable());
+            }
+        }
     }
 }

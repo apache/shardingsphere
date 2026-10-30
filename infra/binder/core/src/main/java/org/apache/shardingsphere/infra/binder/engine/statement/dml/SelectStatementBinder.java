@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.combine.CombineSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
@@ -42,9 +43,12 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
@@ -62,8 +66,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -102,9 +110,41 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         SelectStatement result = SelectStatement.builder().databaseType(sqlStatement.getDatabaseType()).with(boundWith).from(boundFrom.orElse(null)).projections(boundProjections)
                 .where(boundWhere).hierarchicalQuery(boundHierarchicalQuery).combine(boundCombine).lock(boundLock).groupBy(boundGroupBy).orderBy(boundOrderBy).having(boundHaving)
                 .limit(sqlStatement.getLimit().orElse(null)).window(boundWindow).model(boundModel)
+                .into(sqlStatement.getInto().orElse(null))
+                .values(bindValues(sqlStatement.getValues(), boundProjections, binderContext, tableBinderContexts))
                 .subqueryType(sqlStatement.getSubqueryType().orElse(null)).intoVariables(sqlStatement.isIntoVariables()).build();
         result.getTransformSegments().addAll(boundTransformSegments);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
+        return result;
+    }
+    
+    @HighFrequencyInvocation
+    private Collection<InsertValuesSegment> bindValues(final Collection<InsertValuesSegment> values, final ProjectionsSegment boundProjections, final SQLStatementBinderContext binderContext,
+                                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
+        if (values.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Collection<InsertValuesSegment> result = new ArrayList<>(values.size());
+        Iterator<InsertValuesSegment> iterator = values.iterator();
+        InsertValuesSegment first = iterator.next();
+        List<ExpressionSegment> firstRow = new ArrayList<>(boundProjections.getProjections().size());
+        for (ProjectionSegment each : boundProjections.getProjections()) {
+            firstRow.add(((ExpressionProjectionSegment) each).getExpr());
+        }
+        result.add(new InsertValuesSegment(first.getStartIndex(), first.getStopIndex(), firstRow));
+        while (iterator.hasNext()) {
+            InsertValuesSegment row = iterator.next();
+            result.add(new InsertValuesSegment(row.getStartIndex(), row.getStopIndex(), bindValueExpressions(row.getValues(), binderContext, tableBinderContexts)));
+        }
+        return result;
+    }
+    
+    private List<ExpressionSegment> bindValueExpressions(final Collection<ExpressionSegment> expressions, final SQLStatementBinderContext binderContext,
+                                                         final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
+        List<ExpressionSegment> result = new ArrayList<>(expressions.size());
+        for (ExpressionSegment each : expressions) {
+            result.add(ExpressionSegmentBinder.bind(each, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts));
+        }
         return result;
     }
     

@@ -56,6 +56,9 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     @Setter
     private WindowItemSegment window;
     
+    @Setter
+    private ExpressionSegment filter;
+    
     public AggregationProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String expression) {
         this(startIndex, stopIndex, type, expression, null);
     }
@@ -100,5 +103,14 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
      */
     public Optional<WindowItemSegment> getWindow() {
         return Optional.ofNullable(window);
+    }
+    
+    /**
+     * Get filter.
+     *
+     * @return filter
+     */
+    public Optional<ExpressionSegment> getFilter() {
+        return Optional.ofNullable(filter);
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
+import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
@@ -41,7 +43,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.De
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -355,5 +359,67 @@ class ExpressionExtractorTest {
         SelectStatement selectStatement = SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).build();
         SubqueryExpressionSegment right = new SubqueryExpressionSegment(new SubquerySegment(10, 20, selectStatement, ""));
         return new BinaryOperationExpression(0, 20, left, right, operator, "");
+    }
+    
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    class AggregateFilters {
+        
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("getAggregateMarkers")
+        void assertGetAggregateParameterMarkers(final String name, final AggregationProjectionSegment aggregation, final Collection<ParameterMarkerExpressionSegment> expected) {
+            Collection<ParameterMarkerExpressionSegment> actual = ExpressionExtractor.getParameterMarkerExpressions(Collections.singletonList(aggregation));
+            assertThat(actual.size(), is(expected.size()));
+            Iterator<ParameterMarkerExpressionSegment> actualMarkers = actual.iterator();
+            for (ParameterMarkerExpressionSegment each : expected) {
+                assertThat(actualMarkers.next(), sameInstance(each));
+            }
+        }
+        
+        private Stream<Arguments> getAggregateMarkers() {
+            ParameterMarkerExpressionSegment argument = new ParameterMarkerExpressionSegment(4, 4, 0);
+            ParameterMarkerExpressionSegment filter = new ParameterMarkerExpressionSegment(30, 30, 1);
+            AggregationProjectionSegment argumentOnly = new AggregationProjectionSegment(0, 5, AggregationType.SUM, "SUM(?)");
+            argumentOnly.getParameters().add(argument);
+            AggregationProjectionSegment filterOnly = new AggregationProjectionSegment(0, 31, AggregationType.COUNT, "COUNT(*) FILTER (WHERE ?)");
+            filterOnly.setFilter(filter);
+            AggregationProjectionSegment both = new AggregationProjectionSegment(0, 31, AggregationType.SUM, "SUM(?) FILTER (WHERE ?)");
+            both.getParameters().add(argument);
+            both.setFilter(filter);
+            return Stream.of(Arguments.of("argument without FILTER", argumentOnly, Collections.singletonList(argument)),
+                    Arguments.of("FILTER without argument", filterOnly, Collections.singletonList(filter)),
+                    Arguments.of("argument before FILTER", both, Arrays.asList(argument, filter)));
+        }
+        
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("getAggregateColumns")
+        void assertExtractAggregateColumns(final String name, final AggregationProjectionSegment aggregation, final boolean containsSubquery, final Collection<ColumnSegment> expected) {
+            Collection<ColumnSegment> actual = ExpressionExtractor.extractColumns(aggregation, containsSubquery);
+            assertThat(actual.size(), is(expected.size()));
+            Iterator<ColumnSegment> actualColumns = actual.iterator();
+            for (ColumnSegment each : expected) {
+                assertThat(actualColumns.next(), sameInstance(each));
+            }
+        }
+        
+        private Stream<Arguments> getAggregateColumns() {
+            ColumnSegment argument = new ColumnSegment(4, 15, new IdentifierValue("foo_argument"));
+            ColumnSegment filter = new ColumnSegment(30, 39, new IdentifierValue("foo_filter"));
+            AggregationProjectionSegment unfiltered = new AggregationProjectionSegment(0, 16, AggregationType.SUM, "SUM(foo_argument)");
+            unfiltered.getParameters().add(argument);
+            AggregationProjectionSegment filtered = new AggregationProjectionSegment(0, 40, AggregationType.SUM, "SUM(foo_argument) FILTER (WHERE foo_filter)");
+            filtered.getParameters().add(argument);
+            filtered.setFilter(filter);
+            ProjectionsSegment projections = new ProjectionsSegment(30, 39);
+            projections.getProjections().add(new ColumnProjectionSegment(filter));
+            SelectStatement select = SelectStatement.builder().projections(projections).build();
+            AggregationProjectionSegment subqueryFilter = new AggregationProjectionSegment(0, 55, AggregationType.SUM, "SUM(foo_argument) FILTER (WHERE (SELECT foo_filter))");
+            subqueryFilter.getParameters().add(argument);
+            subqueryFilter.setFilter(new SubqueryExpressionSegment(new SubquerySegment(22, 54, select, "SELECT foo_filter")));
+            return Stream.of(Arguments.of("without FILTER", unfiltered, false, Collections.singletonList(argument)),
+                    Arguments.of("FILTER column", filtered, false, Arrays.asList(argument, filter)),
+                    Arguments.of("FILTER subquery excluded", subqueryFilter, false, Collections.singletonList(argument)),
+                    Arguments.of("FILTER subquery included", subqueryFilter, true, Arrays.asList(argument, filter)));
+        }
     }
 }
