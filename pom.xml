@@ -106,8 +106,6 @@
         <bytebuddy.version>1.18.8</bytebuddy.version>
         
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
-        <jakarta.jms-api.version>2.0.3</jakarta.jms-api.version>
-        <jakarta.persistence-api.version>2.2.3</jakarta.persistence-api.version>
         <bval.version>2.0.6</bval.version>
         
         <netty.version>4.2.19.Final</netty.version>
@@ -186,11 +184,11 @@
         <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
         
         <!-- Check plugin versions -->
-        <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
+        <apache-rat-plugin.version>0.18</apache-rat-plugin.version>
         <spotless-maven-plugin.version>3.10.1</spotless-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <checkstyle.version>14.1.0</checkstyle.version>
-        <maven-pmd-plugin.version>3.20.0</maven-pmd-plugin.version>
+        <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version>
         <spotbugs-maven-plugin.version>4.7.3.6</spotbugs-maven-plugin.version>
         <fb-contrib.version>7.6.0</fb-contrib.version>
         <findsecbugs.version>1.14.0</findsecbugs.version>
@@ -201,8 +199,6 @@
         <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
-        <apache-rat-report-plugin.version>0.18</apache-rat-report-plugin.version>
-        <maven-pmd-report-plugin.version>3.28.0</maven-pmd-report-plugin.version>
         <jdepend-maven-plugin.version>2.2.1</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>3.2.3</taglist-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
@@ -318,16 +314,6 @@
                 <version>${jakarta.jakartaee-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.jms</groupId>
-                <artifactId>jakarta.jms-api</artifactId>
-                <version>${jakarta.jms-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.persistence</groupId>
-                <artifactId>jakarta.persistence-api</artifactId>
-                <version>${jakarta.persistence-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.bval</groupId>
@@ -963,6 +949,15 @@
                     <version>${maven-site-plugin.version}</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.rat</groupId>
+                    <artifactId>apache-rat-plugin</artifactId>
+                    <version>${apache-rat-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>${maven-pmd-plugin.version}</version>
+                </plugin>
+                <plugin>
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <version>${maven-checkstyle-plugin.version}</version>
                     <dependencies>
@@ -1099,7 +1094,7 @@
             <plugin>
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
-                <version>${apache-rat-report-plugin.version}</version>
+                <version>${apache-rat-plugin.version}</version>
             </plugin>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -1117,7 +1112,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>${maven-pmd-report-plugin.version}</version>
+                <version>${maven-pmd-plugin.version}</version>
                 <configuration>
                     <targetJdk>${build.jdk.version}</targetJdk>
                 </configuration>
@@ -1178,6 +1173,27 @@
     </distributionManagement>
     
     <profiles>
+        <profile>
+            <id>statistics-report</id>
+            <properties>
+                <jakarta.jms-api.version>2.0.3</jakarta.jms-api.version>
+                <jakarta.persistence-api.version>2.2.3</jakarta.persistence-api.version>
+            </properties>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>jakarta.jms</groupId>
+                        <artifactId>jakarta.jms-api</artifactId>
+                        <version>${jakarta.jms-api.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>jakarta.persistence</groupId>
+                        <artifactId>jakarta.persistence-api</artifactId>
+                        <version>${jakarta.persistence-api.version}</version>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+        </profile>
         <profile>
             <id>jdk11+</id>
             <activation>
@@ -1346,10 +1362,9 @@
                         <plugin>
                             <groupId>org.apache.rat</groupId>
                             <artifactId>apache-rat-plugin</artifactId>
-                            <version>${apache-rat-plugin.version}</version>
                             <configuration>
                                 <!--suppress MavenModelInspection -->
-                                <excludesFile>${maven.multiModuleProjectDirectory}/src/resources/rat.txt</excludesFile>
+                                <inputExcludeFile>${maven.multiModuleProjectDirectory}/src/resources/rat.txt</inputExcludeFile>
                             </configuration>
                             <executions>
                                 <execution>
@@ -1440,9 +1455,7 @@
                         </plugin>
                         <plugin>
                             <artifactId>maven-pmd-plugin</artifactId>
-                            <version>${maven-pmd-plugin.version}</version>
                             <configuration>
-                                <aggregate>true</aggregate>
                                 <targetJdk>${java.version}</targetJdk>
                                 <rulesets>
                                     <!--suppress MavenModelInspection -->

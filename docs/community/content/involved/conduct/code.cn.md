@@ -18,7 +18,7 @@ chapter = true
 
 ## 代码提交行为规范
 
- - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`./mvnw clean install -B -T1C -Pcheck`。
+ - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`./mvnw clean install -B -T1C -Pcheck -Drat.skip=true && ./mvnw apache-rat:check -B -Pcheck -T1`。
  - 通过 Spotless 统一代码风格，执行 `./mvnw spotless:apply -Pcheck` 格式化代码。
  - 确保覆盖率不低于 master 分支，除去简单的 `getter /setter` 方法，单元测试需全覆盖。
  - 每个提交应保持小型、完整且可独立验证。 一个改动包含多个独立目标时，应拆分为多个提交。
