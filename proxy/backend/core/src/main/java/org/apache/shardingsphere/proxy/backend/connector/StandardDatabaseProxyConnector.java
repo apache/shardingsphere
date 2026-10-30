@@ -357,8 +357,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof AlterTableStatement) {
             AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
-            return alterTableStatement.getRenameTable()
-                    .<Map<SimpleTableSegment, SimpleTableSegment>>map(optional -> Collections.singletonMap(optional, alterTableStatement.getTable()))
+            return alterTableStatement.getRenameTable().<Map<SimpleTableSegment, SimpleTableSegment>>map(optional -> Collections.singletonMap(optional, alterTableStatement.getTable()))
                     .orElseGet(Collections::emptyMap);
         }
         if (sqlStatement instanceof RenameTableStatement) {

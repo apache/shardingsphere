@@ -131,26 +131,21 @@ public final class ProxyBackendTransactionManager {
                 distributedTransactionManager.commit(transactionContext.isExceptionOccur());
             }
         } finally {
-            releaseConnectionsBeforeReconcile();
-            connection.getDeferredMetaDataRefreshContext().reconcile(ProxyContext.getInstance().getContextManager());
+            for (Connection each : connection.getCachedConnections().values()) {
+                ConnectionSavepointManager.getInstance().transactionFinished(each);
+            }
+            if (!connection.getDeferredMetaDataRefreshContext().isEmpty()) {
+                // Reconciliation loads each affected table's current metadata through a new connection. Releasing the transaction's own
+                // connections first, rather than only via the later post-execution cleanup, avoids contending with them for a connection-pool
+                // slot that may not have one to spare. This only runs when a transaction actually deferred table DDL, so a transaction with a
+                // pending result set still awaiting delivery over one of these connections (e.g. a broadcast INSERT ... RETURNING) is unaffected.
+                connection.closeConnections(false);
+                connection.getDeferredMetaDataRefreshContext().reconcile(ProxyContext.getInstance().getContextManager());
+            }
             connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
             connection.getConnectionSession().getConnectionContext().close();
             connection.getDeferredMetaDataRefreshContext().clear();
         }
-    }
-    
-    /**
-     * Release execution connections back to the pool before reconciling deferred metadata.
-     *
-     * <p>Reconciliation loads each affected table's current metadata through a new connection. Releasing the
-     * transaction's own connections first, rather than only via the later post-execution cleanup, avoids
-     * contending with them for a connection-pool slot that may not have one to spare.</p>
-     */
-    private void releaseConnectionsBeforeReconcile() {
-        for (Connection each : connection.getCachedConnections().values()) {
-            ConnectionSavepointManager.getInstance().transactionFinished(each);
-        }
-        connection.closeConnections(false);
     }
     
     private boolean isNeedLockWhenCommit() {

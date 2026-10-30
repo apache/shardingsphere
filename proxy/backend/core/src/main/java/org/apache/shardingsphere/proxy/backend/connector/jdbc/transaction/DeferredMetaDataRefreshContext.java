@@ -69,6 +69,15 @@ public final class DeferredMetaDataRefreshContext {
         deferredTables.clear();
     }
     
+    /**
+     * Judge whether there is no deferred table.
+     *
+     * @return whether there is no deferred table
+     */
+    public boolean isEmpty() {
+        return deferredTables.isEmpty();
+    }
+    
     @RequiredArgsConstructor
     @EqualsAndHashCode
     private static final class DeferredTable {

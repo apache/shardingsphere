@@ -12,9 +12,11 @@ The Apache ShardingSphere community chose instead to give the users the ability 
 ### Unsupported
 
 * Does not support the cross-database transactions caused by network or hardware crash. For example, when updating two databases in transaction, if one database crashes before commit, then only the data of the other database can commit.
-* When ShardingSphere-Proxy uses PostgreSQL, only `CREATE TABLE`, `ALTER TABLE`, `DROP TABLE` and `RENAME TABLE` are supported in transactions, and their metadata refresh is deferred until the transaction ends.
-  Every other metadata-changing DDL statement, including schema, view and index statements, is not supported. When ShardingSphere-Proxy uses openGauss, no metadata-changing DDL statement is supported in transactions.
+* When ShardingSphere-Proxy uses PostgreSQL, a table changed by `ALTER TABLE` inside a transaction has its metadata refreshed when the transaction ends, instead of failing to see the change because metadata refresh otherwise uses a separate connection that cannot see the still-open transaction.
+  `CREATE TABLE`, `DROP TABLE` and `RENAME TABLE` change metadata through that same deferred-refresh mechanism and are supported for the same reason, not as a separately extended set of statements.
+  Every other metadata-changing DDL statement, including schema, view and index statements, is still not supported. When ShardingSphere-Proxy uses openGauss, no metadata-changing DDL statement is supported in transactions.
   Unsupported statements are rejected before execution with SQLSTATE `0A000` to prevent inconsistencies between storage and ShardingSphere metadata after a transaction rollback.
+* `ALTER TABLE ... SET SCHEMA` is not supported in transactions, even though other `ALTER TABLE` forms are, because the destination schema cannot currently be resolved after commit.
 * A statement cannot reference a table created earlier in the same transaction, because the meta data of that table is only applied when the transaction ends.
   For example `BEGIN; CREATE TABLE t (...); ALTER TABLE t ...;` fails on the second statement.
 * The table DDL support above applies only when every storage unit the statement is routed to keeps DDL transactional.
