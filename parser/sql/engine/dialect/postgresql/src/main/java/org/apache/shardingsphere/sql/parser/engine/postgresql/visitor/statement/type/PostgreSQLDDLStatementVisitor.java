@@ -812,6 +812,9 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitFunctionExprWindowless(final FunctionExprWindowlessContext ctx) {
+        if (null != ctx.jsonAggregateFunction()) {
+            return visit(ctx.jsonAggregateFunction());
+        }
         if (null == ctx.funcApplication()) {
             return visit(ctx.functionExprCommonSubexpr());
         }

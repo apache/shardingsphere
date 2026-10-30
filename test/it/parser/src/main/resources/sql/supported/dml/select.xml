@@ -651,4 +651,14 @@
     <sql-case id="select_key_alias_without_as_firebird" value="SELECT order_id KEY FROM t_order" db-types="Firebird" />
     <sql-case id="select_text_alias_without_as_firebird" value="SELECT order_id TEXT FROM t_order" db-types="Firebird" />
     <sql-case id="select_comment_alias_without_as_firebird" value="SELECT order_id COMMENT FROM t_order" db-types="Firebird" />
+    <sql-case id="select_operator_prefix_aliases_pg" value="SELECT ~~a, !~~a, ~~*a, !~~*a, &amp;&amp;a, ~*a, !~a, !~*a FROM foo_table" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_fixed_generic_operator_symbols_pg" value="SELECT a == b, a &lt;=&gt; b FROM foo_table" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_operator_backtick_pg" value="SELECT a ` b, `a FROM foo_table" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_prefix_alias_parameter_precedence_pg" value="SELECT ~~$1 + $2" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_json_arrayagg_function_table_pg" value="SELECT * FROM JSON_ARRAYAGG(1 RETURNING json) AS agg" db-types="PostgreSQL" />
+    <sql-case id="select_prefix_alias_between_pg" value="SELECT 1 BETWEEN ~~$1 + $2 AND 3" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_fixed_operator_left_associative_pg" value="SELECT `1 ` 2, &lt;=&gt;1 &lt;=&gt; 2" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_fixed_operator_between_left_associative_pg" value="SELECT 0 BETWEEN `1 ` 2 AND 3, 0 BETWEEN &lt;=&gt;1 &lt;=&gt; 2 AND 3" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_mixed_symbolic_operator_precedence_pg" value="SELECT $1 &amp;&amp; $2 &lt;=&gt; $3, $4 &lt;=&gt; $5 &amp; $6, $7 ~~ $8 &lt;=&gt; $9, @ $10 @ $11" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_mixed_symbolic_operator_between_pg" value="SELECT 0 BETWEEN $1 &amp;&amp; $2 &lt;=&gt; $3 AND 4" db-types="PostgreSQL" case-types="Placeholder" />
 </sql-cases>

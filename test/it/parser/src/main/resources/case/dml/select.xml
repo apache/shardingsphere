@@ -16299,4 +16299,449 @@
             <column-projection name="order_id" alias="COMMENT" start-index="7" stop-index="22" />
         </projections>
     </select>
+    <select sql-case-id="select_operator_prefix_aliases_pg">
+        <from>
+            <simple-table name="foo_table" start-index="56" stop-index="64" />
+        </from>
+        <projections start-index="7" stop-index="49">
+            <expression-projection text="~~a" start-index="7" stop-index="9">
+                <expr>
+                    <unary-operation-expression start-index="7" stop-index="9">
+                        <operator>~~</operator>
+                        <expr>
+                            <column name="a" start-index="9" stop-index="9" />
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="!~~a" start-index="12" stop-index="15">
+                <expr>
+                    <unary-operation-expression start-index="12" stop-index="15">
+                        <operator>!~~</operator>
+                        <expr>
+                            <column name="a" start-index="15" stop-index="15" />
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="~~*a" start-index="18" stop-index="21">
+                <expr>
+                    <unary-operation-expression start-index="18" stop-index="21">
+                        <operator>~~*</operator>
+                        <expr>
+                            <column name="a" start-index="21" stop-index="21" />
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="!~~*a" start-index="24" stop-index="28">
+                <expr>
+                    <unary-operation-expression start-index="24" stop-index="28">
+                        <operator>!~~*</operator>
+                        <expr>
+                            <column name="a" start-index="28" stop-index="28" />
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="&amp;&amp;a" start-index="31" stop-index="33">
+                <expr>
+                    <unary-operation-expression start-index="31" stop-index="33">
+                        <operator>&amp;&amp;</operator>
+                        <expr>
+                            <column name="a" start-index="33" stop-index="33" />
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="~*a" start-index="36" stop-index="38">
+                <expr>
+                    <unary-operation-expression start-index="36" stop-index="38">
+                        <operator>~*</operator>
+                        <expr>
+                            <column name="a" start-index="38" stop-index="38" />
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="!~a" start-index="41" stop-index="43">
+                <expr>
+                    <unary-operation-expression start-index="41" stop-index="43">
+                        <operator>!~</operator>
+                        <expr>
+                            <column name="a" start-index="43" stop-index="43" />
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="!~*a" start-index="46" stop-index="49">
+                <expr>
+                    <unary-operation-expression start-index="46" stop-index="49">
+                        <operator>!~*</operator>
+                        <expr>
+                            <column name="a" start-index="49" stop-index="49" />
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_fixed_generic_operator_symbols_pg">
+        <from>
+            <simple-table name="foo_table" start-index="28" stop-index="36" />
+        </from>
+        <projections start-index="7" stop-index="21">
+            <expression-projection text="a == b" start-index="7" stop-index="12">
+                <expr>
+                    <common-expression text="a == b" start-index="7" stop-index="12">
+                        <children>
+                            <expression>
+                                <column name="a" start-index="7" stop-index="7" />
+                            </expression>
+                            <expression>
+                                <column name="b" start-index="12" stop-index="12" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="a &lt;=&gt; b" start-index="15" stop-index="21">
+                <expr>
+                    <binary-operation-expression start-index="15" stop-index="21">
+                        <left>
+                            <column name="a" start-index="15" stop-index="15" />
+                        </left>
+                        <operator>&lt;=&gt;</operator>
+                        <right>
+                            <column name="b" start-index="21" stop-index="21" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_operator_backtick_pg">
+        <from>
+            <simple-table name="foo_table" start-index="22" stop-index="30" />
+        </from>
+        <projections start-index="7" stop-index="15">
+            <expression-projection text="a ` b" start-index="7" stop-index="11">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="11">
+                        <left>
+                            <column name="a" start-index="7" stop-index="7" />
+                        </left>
+                        <operator>`</operator>
+                        <right>
+                            <column name="b" start-index="11" stop-index="11" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="`a" start-index="14" stop-index="15">
+                <expr>
+                    <unary-operation-expression start-index="14" stop-index="15">
+                        <operator>`</operator>
+                        <expr>
+                            <column name="a" start-index="15" stop-index="15" />
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_prefix_alias_parameter_precedence_pg" parameters="1, 2" parameter-marker-count="2">
+        <projections start-index="7" stop-index="15">
+            <expression-projection text="~~$1 + $2" start-index="7" stop-index="15">
+                <expr>
+                    <unary-operation-expression start-index="7" stop-index="15">
+                        <operator>~~</operator>
+                        <expr>
+                            <binary-operation-expression start-index="9" stop-index="15">
+                                <left>
+                                    <parameter-marker-expression parameter-index="0" start-index="9" stop-index="10" />
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <parameter-marker-expression parameter-index="1" start-index="14" stop-index="15" />
+                                </right>
+                            </binary-operation-expression>
+                        </expr>
+                    </unary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_json_arrayagg_function_table_pg">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <function-table table-alias="agg" start-index="14" stop-index="51">
+                <table-function function-name="JSON_ARRAYAGG" text="JSON_ARRAYAGG(1 RETURNING json)" start-index="14" stop-index="44">
+                    <function-parameter>
+                        <literal-expression value="1" start-index="28" stop-index="28" />
+                    </function-parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+    <select sql-case-id="select_prefix_alias_between_pg" parameters="1, 2" parameter-marker-count="2">
+        <projections start-index="7" stop-index="31">
+            <expression-projection text="1 BETWEEN ~~$1 + $2 AND 3" start-index="7" stop-index="31">
+                <expr>
+                    <between-expression start-index="7" stop-index="31">
+                        <left>
+                            <literal-expression value="1" start-index="7" stop-index="7" />
+                        </left>
+                        <between-expr>
+                            <unary-operation-expression start-index="17" stop-index="25">
+                                <operator>~~</operator>
+                                <expr>
+                                    <binary-operation-expression start-index="19" stop-index="25">
+                                        <left>
+                                            <parameter-marker-expression parameter-index="0" start-index="19" stop-index="20" />
+                                        </left>
+                                        <operator>+</operator>
+                                        <right>
+                                            <parameter-marker-expression parameter-index="1" start-index="24" stop-index="25" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </expr>
+                            </unary-operation-expression>
+                        </between-expr>
+                        <and-expr>
+                            <literal-expression value="3" start-index="31" stop-index="31" />
+                        </and-expr>
+                    </between-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_fixed_operator_left_associative_pg">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="`1 ` 2" start-index="7" stop-index="12">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="12">
+                        <left>
+                            <unary-operation-expression start-index="7" stop-index="8">
+                                <operator>`</operator>
+                                <expr>
+                                    <literal-expression value="1" start-index="8" stop-index="8" />
+                                </expr>
+                            </unary-operation-expression>
+                        </left>
+                        <operator>`</operator>
+                        <right>
+                            <literal-expression value="2" start-index="12" stop-index="12" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="&lt;=&gt;1 &lt;=&gt; 2" start-index="15" stop-index="24">
+                <expr>
+                    <binary-operation-expression start-index="15" stop-index="24">
+                        <left>
+                            <unary-operation-expression start-index="15" stop-index="18">
+                                <operator>&lt;=&gt;</operator>
+                                <expr>
+                                    <literal-expression value="1" start-index="18" stop-index="18" />
+                                </expr>
+                            </unary-operation-expression>
+                        </left>
+                        <operator>&lt;=&gt;</operator>
+                        <right>
+                            <literal-expression value="2" start-index="24" stop-index="24" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_fixed_operator_between_left_associative_pg">
+        <projections start-index="7" stop-index="56">
+            <expression-projection text="0 BETWEEN `1 ` 2 AND 3" start-index="7" stop-index="28">
+                <expr>
+                    <between-expression start-index="7" stop-index="28">
+                        <left>
+                            <literal-expression value="0" start-index="7" stop-index="7" />
+                        </left>
+                        <between-expr>
+                            <binary-operation-expression start-index="17" stop-index="22">
+                                <left>
+                                    <unary-operation-expression start-index="17" stop-index="18">
+                                        <operator>`</operator>
+                                        <expr>
+                                            <literal-expression value="1" start-index="18" stop-index="18" />
+                                        </expr>
+                                    </unary-operation-expression>
+                                </left>
+                                <operator>`</operator>
+                                <right>
+                                    <literal-expression value="2" start-index="22" stop-index="22" />
+                                </right>
+                            </binary-operation-expression>
+                        </between-expr>
+                        <and-expr>
+                            <literal-expression value="3" start-index="28" stop-index="28" />
+                        </and-expr>
+                    </between-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="0 BETWEEN &lt;=&gt;1 &lt;=&gt; 2 AND 3" start-index="31" stop-index="56">
+                <expr>
+                    <between-expression start-index="31" stop-index="56">
+                        <left>
+                            <literal-expression value="0" start-index="31" stop-index="31" />
+                        </left>
+                        <between-expr>
+                            <binary-operation-expression start-index="41" stop-index="50">
+                                <left>
+                                    <unary-operation-expression start-index="41" stop-index="44">
+                                        <operator>&lt;=&gt;</operator>
+                                        <expr>
+                                            <literal-expression value="1" start-index="44" stop-index="44" />
+                                        </expr>
+                                    </unary-operation-expression>
+                                </left>
+                                <operator>&lt;=&gt;</operator>
+                                <right>
+                                    <literal-expression value="2" start-index="50" stop-index="50" />
+                                </right>
+                            </binary-operation-expression>
+                        </between-expr>
+                        <and-expr>
+                            <literal-expression value="3" start-index="56" stop-index="56" />
+                        </and-expr>
+                    </between-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_mixed_symbolic_operator_precedence_pg" parameters="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11" parameter-marker-count="11">
+        <projections start-index="7" stop-index="67">
+            <expression-projection text="$1 &amp;&amp; $2 &lt;=&gt; $3" start-index="7" stop-index="21">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="21">
+                        <left>
+                            <binary-operation-expression start-index="7" stop-index="14">
+                                <left>
+                                    <parameter-marker-expression parameter-index="0" start-index="7" stop-index="8" />
+                                </left>
+                                <operator>&amp;&amp;</operator>
+                                <right>
+                                    <parameter-marker-expression parameter-index="1" start-index="13" stop-index="14" />
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>&lt;=&gt;</operator>
+                        <right>
+                            <parameter-marker-expression parameter-index="2" start-index="20" stop-index="21" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="$4 &lt;=&gt; $5 &amp; $6" start-index="24" stop-index="37">
+                <expr>
+                    <common-expression text="$4 &lt;=&gt; $5 &amp; $6" start-index="24" stop-index="37">
+                        <children>
+                            <expression>
+                                <binary-operation-expression start-index="24" stop-index="32">
+                                    <left>
+                                        <parameter-marker-expression parameter-index="3" start-index="24" stop-index="25" />
+                                    </left>
+                                    <operator>&lt;=&gt;</operator>
+                                    <right>
+                                        <parameter-marker-expression parameter-index="4" start-index="31" stop-index="32" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expression>
+                            <expression>
+                                <parameter-marker-expression parameter-index="5" start-index="36" stop-index="37" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="$7 ~~ $8 &lt;=&gt; $9" start-index="40" stop-index="54">
+                <expr>
+                    <binary-operation-expression start-index="40" stop-index="54">
+                        <left>
+                            <binary-operation-expression start-index="40" stop-index="47">
+                                <left>
+                                    <parameter-marker-expression parameter-index="6" start-index="40" stop-index="41" />
+                                </left>
+                                <operator>~~</operator>
+                                <right>
+                                    <list-expression start-index="46" stop-index="47">
+                                        <items>
+                                            <parameter-marker-expression parameter-index="7" start-index="46" stop-index="47" />
+                                        </items>
+                                    </list-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>&lt;=&gt;</operator>
+                        <right>
+                            <parameter-marker-expression parameter-index="8" start-index="53" stop-index="54" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="@ $10 @ $11" start-index="57" stop-index="67">
+                <expr>
+                    <common-expression text="@ $10 @ $11" start-index="57" stop-index="67">
+                        <children>
+                            <expression>
+                                <unary-operation-expression start-index="57" stop-index="61">
+                                    <operator>@</operator>
+                                    <expr>
+                                        <parameter-marker-expression parameter-index="9" start-index="59" stop-index="61" />
+                                    </expr>
+                                </unary-operation-expression>
+                            </expression>
+                            <expression>
+                                <parameter-marker-expression parameter-index="10" start-index="65" stop-index="67" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_mixed_symbolic_operator_between_pg" parameters="1, 2, 3" parameter-marker-count="3">
+        <projections start-index="7" stop-index="37">
+            <expression-projection text="0 BETWEEN $1 &amp;&amp; $2 &lt;=&gt; $3 AND 4" start-index="7" stop-index="37">
+                <expr>
+                    <between-expression start-index="7" stop-index="37">
+                        <left>
+                            <literal-expression value="0" start-index="7" stop-index="7" />
+                        </left>
+                        <between-expr>
+                            <binary-operation-expression start-index="17" stop-index="31">
+                                <left>
+                                    <binary-operation-expression start-index="17" stop-index="24">
+                                        <left>
+                                            <parameter-marker-expression parameter-index="0" start-index="17" stop-index="18" />
+                                        </left>
+                                        <operator>&amp;&amp;</operator>
+                                        <right>
+                                            <parameter-marker-expression parameter-index="1" start-index="23" stop-index="24" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <operator>&lt;=&gt;</operator>
+                                <right>
+                                    <parameter-marker-expression parameter-index="2" start-index="30" stop-index="31" />
+                                </right>
+                            </binary-operation-expression>
+                        </between-expr>
+                        <and-expr>
+                            <literal-expression value="4" start-index="37" stop-index="37" />
+                        </and-expr>
+                    </between-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
