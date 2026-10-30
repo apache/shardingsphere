@@ -20,11 +20,12 @@ package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoadResult;
-import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,8 +37,9 @@ class YamlProxyDataSourceConfigurationSwapperTest {
     
     @Test
     void assertSwap() throws IOException {
-        ProxyConfigurationLoadResult loadResult = ProxyConfigurationLoader.load("/conf/swap");
-        YamlProxyDataSourceConfiguration yamlProxyDataSourceConfig = loadResult.getDatabaseConfigurations().get("swapper_test").getDataSources().get("foo_db");
+        YamlProxyDatabaseConfiguration yamlConfig = YamlEngine.unmarshal(
+                new File(getClass().getResource("/conf/swap/database-readwrite-splitting.yaml").getFile()), YamlProxyDatabaseConfiguration.class);
+        YamlProxyDataSourceConfiguration yamlProxyDataSourceConfig = yamlConfig.getDataSources().get("foo_db");
         DataSourceConfiguration actualDataSourceConfig = new YamlProxyDataSourceConfigurationSwapper().swap(yamlProxyDataSourceConfig);
         assertConnectionConfig(actualDataSourceConfig);
         assertPoolConfig(actualDataSourceConfig);

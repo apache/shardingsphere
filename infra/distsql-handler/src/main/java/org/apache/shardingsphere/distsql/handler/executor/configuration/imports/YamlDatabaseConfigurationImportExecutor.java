@@ -20,17 +20,12 @@ package org.apache.shardingsphere.distsql.handler.executor.configuration.imports
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
-import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDatabaseConfiguration;
-import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationCheckEngine;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
@@ -45,20 +40,15 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 /**
  * Yaml database configuration import executor.
@@ -66,39 +56,38 @@ import java.util.TreeMap;
 @RequiredArgsConstructor
 public final class YamlDatabaseConfigurationImportExecutor {
     
-    private final YamlDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
-    
     private final DistSQLDataSourcePoolPropertiesValidator validateHandler = new DistSQLDataSourcePoolPropertiesValidator();
     
     private final ContextManager contextManager;
     
     /**
-     * Import database from YAML configuration.
+     * Import database configuration.
      *
-     * @param yamlConfig YAML database configuration
+     * @param databaseName database name
+     * @param dataSourceProps data source pool properties
+     * @param ruleConfigs rule configurations
      */
-    public void importDatabaseConfiguration(final YamlDatabaseConfiguration yamlConfig) {
-        String databaseName = yamlConfig.getDatabaseName();
+    public void importDatabaseConfiguration(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceProps, final Collection<RuleConfiguration> ruleConfigs) {
         checkDatabase(databaseName);
         DatabaseNameValidator.validate(databaseName);
-        checkDataSources(databaseName, yamlConfig.getDataSources());
+        checkDataSources(databaseName, dataSourceProps);
         addDatabase(databaseName);
         try {
-            importDataSources(databaseName, yamlConfig.getDataSources());
-            importRules(databaseName, yamlConfig.getRules());
+            importDataSources(databaseName, dataSourceProps);
+            importRules(databaseName, ruleConfigs);
         } catch (final ShardingSphereSQLException ex) {
             dropDatabase(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
             throw ex;
         }
     }
     
-    private void checkDataSources(final String databaseName, final Map<String, YamlDataSourceConfiguration> dataSources) {
-        ShardingSpherePreconditions.checkNotEmpty(dataSources, () -> new EmptyStorageUnitException(databaseName));
-    }
-    
     private void checkDatabase(final String databaseName) {
         ShardingSpherePreconditions.checkNotEmpty(databaseName, MissingRequiredDatabaseException::new);
         ShardingSpherePreconditions.checkState(!contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName), () -> new DatabaseCreateExistsException(databaseName));
+    }
+    
+    private void checkDataSources(final String databaseName, final Map<String, DataSourcePoolProperties> dataSources) {
+        ShardingSpherePreconditions.checkNotEmpty(dataSources, () -> new EmptyStorageUnitException(databaseName));
     }
     
     private void addDatabase(final String databaseName) {
@@ -107,12 +96,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         contextManager.getMetaDataContexts().getMetaData().addDatabase(databaseName, protocolType, contextManager.getMetaDataContexts().getMetaData().getProps());
     }
     
-    private void importDataSources(final String databaseName, final Map<String, YamlDataSourceConfiguration> yamlDataSourceMap) {
-        Map<String, DataSourcePoolProperties> propsMap = new LinkedHashMap<>(yamlDataSourceMap.size(), 1F);
-        for (Entry<String, YamlDataSourceConfiguration> entry : yamlDataSourceMap.entrySet()) {
-            DataSourceConfiguration dataSourceConfig = dataSourceConfigSwapper.swap(entry.getValue());
-            propsMap.put(entry.getKey(), DataSourcePoolPropertiesCreator.create(dataSourceConfig));
-        }
+    private void importDataSources(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         validateHandler.validate(propsMap);
         contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().registerStorageUnits(databaseName, propsMap);
         Map<String, StorageUnit> storageUnits = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
@@ -129,14 +113,14 @@ public final class YamlDatabaseConfigurationImportExecutor {
         }
     }
     
-    private void importRules(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
-        if (null == yamlRuleConfigs || yamlRuleConfigs.isEmpty()) {
+    private void importRules(final String databaseName, final Collection<RuleConfiguration> inputRuleConfigs) {
+        if (inputRuleConfigs.isEmpty()) {
             return;
         }
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-        swapToRuleConfigs(yamlRuleConfigs).values().forEach(each -> addRule(ruleConfigs, each, database));
+        inputRuleConfigs.forEach(each -> addRule(ruleConfigs, each, database));
         contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseRuleService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
     }
     
@@ -153,17 +137,6 @@ public final class YamlDatabaseConfigurationImportExecutor {
         DatabaseRuleBuilder ruleBuilder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         ComputeNodeInstanceContext computeNodeInstanceContext = contextManager.getComputeNodeInstanceContext();
         return ruleBuilder.build(ruleConfig, database.getName(), database.getProtocolType(), database.getResourceMetaData(), database.getRuleMetaData().getRules(), computeNodeInstanceContext);
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private Map<Integer, RuleConfiguration> swapToRuleConfigs(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
-        Map<Integer, RuleConfiguration> result = new TreeMap<>(Comparator.reverseOrder());
-        for (YamlRuleConfiguration each : yamlRuleConfigs) {
-            YamlRuleConfigurationSwapper swapper = OrderedSPILoader.getServicesByClass(YamlRuleConfigurationSwapper.class, Collections.singleton(each.getRuleConfigurationType()))
-                    .get(each.getRuleConfigurationType());
-            result.put(swapper.getOrder(), (RuleConfiguration) swapper.swapToObject(each));
-        }
-        return result;
     }
     
     private void dropDatabase(final ShardingSphereDatabase database) {

@@ -17,27 +17,32 @@
 
 package org.apache.shardingsphere.proxy.backend.config;
 
-import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.globalclock.yaml.config.YamlGlobalClockRuleConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.exception.metadata.InvalidShardingStrategyConfigCountException;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.test.infra.fixture.rule.MockedRuleConfiguration;
-import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 import java.io.IOException;
@@ -60,6 +65,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 
 class ProxyConfigurationLoaderTest {
@@ -67,18 +73,16 @@ class ProxyConfigurationLoaderTest {
     @Test
     void assertLoadEmptyConfiguration() throws IOException {
         ProxyConfigurationLoadResult actual = ProxyConfigurationLoader.load("/conf/empty/");
-        YamlProxyServerConfiguration serverConfig = actual.getServerConfiguration();
-        assertNull(serverConfig.getMode());
-        assertNull(serverConfig.getAuthority());
-        assertTrue(serverConfig.getProps().isEmpty());
-        assertTrue(serverConfig.getRules().isEmpty());
+        assertNull(actual.getModeConfiguration());
+        assertTrue(actual.getProperties().isEmpty());
+        assertTrue(actual.getRules().isEmpty());
         assertTrue(actual.getDatabaseConfigurations().isEmpty());
     }
     
     @Test
     void assertLoad() throws IOException {
         ProxyConfigurationLoadResult actual = ProxyConfigurationLoader.load("/conf/config_loader/");
-        Iterator<YamlRuleConfiguration> actualGlobalRules = actual.getServerConfiguration().getRules().iterator();
+        Iterator<RuleConfiguration> actualGlobalRules = actual.getRules().iterator();
         // TODO assert mode
         // TODO assert authority rule
         actualGlobalRules.next();
@@ -115,23 +119,23 @@ class ProxyConfigurationLoaderTest {
                 + "  ds_0:\n"
                 + "    url: jdbc:mock://127.0.0.1/compatible\n");
         ProxyConfigurationLoadResult actual = ProxyConfigurationLoader.load(tempDir.toString());
-        YamlProxyServerConfiguration serverConfig = actual.getServerConfiguration();
-        assertThat(serverConfig.getRules().size(), is(6));
-        Iterator<YamlRuleConfiguration> rules = serverConfig.getRules().iterator();
-        assertThat(rules.next(), isA(YamlAuthorityRuleConfiguration.class));
-        assertThat(rules.next(), isA(YamlTransactionRuleConfiguration.class));
-        YamlRuleConfiguration globalClockRule = rules.next();
-        assertThat(globalClockRule, isA(YamlGlobalClockRuleConfiguration.class));
-        assertThat(((YamlGlobalClockRuleConfiguration) globalClockRule).getProvider(), is("LOCAL"));
-        assertThat(rules.next(), isA(YamlSQLParserRuleConfiguration.class));
-        assertThat(rules.next(), isA(YamlSQLTranslatorRuleConfiguration.class));
-        assertThat(rules.next(), isA(YamlSQLFederationRuleConfiguration.class));
+        assertThat(actual.getRules().size(), is(6));
+        Iterator<RuleConfiguration> rules = actual.getRules().iterator();
+        assertThat(rules.next(), isA(AuthorityRuleConfiguration.class));
+        assertThat(rules.next(), isA(TransactionRuleConfiguration.class));
+        assertThat(rules.next(), isA(SQLParserRuleConfiguration.class));
+        assertThat(rules.next(), isA(SQLTranslatorRuleConfiguration.class));
+        assertThat(rules.next(), isA(SQLFederationRuleConfiguration.class));
+        RuleConfiguration actualGlobalClockRule = rules.next();
+        assertThat(actualGlobalClockRule, isA(GlobalClockRuleConfiguration.class));
+        assertThat(((GlobalClockRuleConfiguration) actualGlobalClockRule).getProvider(), is("LOCAL"));
         assertNotNull(actual.getDatabaseConfigurations().get("compatible_db").getDataSources());
     }
     
     @SuppressWarnings("rawtypes")
     @Test
     void assertLoadWithUnknownRuleTagName(@TempDir final Path tempDir) throws IOException {
+        new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.emptyList());
         Collection<YamlRuleConfigurationSwapper> originalSwappers = ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class);
         AtomicInteger yamlRuleConfigurationSwapperCallTimes = new AtomicInteger();
         try (MockedStatic<ShardingSphereServiceLoader> mockedStatic = mockStatic(ShardingSphereServiceLoader.class, CALLS_REAL_METHODS)) {
@@ -156,8 +160,8 @@ class ProxyConfigurationLoaderTest {
     void assertLoadWithFilesystemPath(@TempDir final Path tempDir) throws IOException {
         writeConfigurationFile(tempDir, "global.yaml", "");
         ProxyConfigurationLoadResult actual = ProxyConfigurationLoader.load(tempDir.toString());
-        assertNotNull(actual.getServerConfiguration());
-        assertTrue(actual.getServerConfiguration().getRules().isEmpty());
+        assertNotNull(actual.getProperties());
+        assertTrue(actual.getRules().isEmpty());
         assertTrue(actual.getDatabaseConfigurations().isEmpty());
     }
     
@@ -185,101 +189,110 @@ class ProxyConfigurationLoaderTest {
                 + "    - user: root\n"
                 + "      password: root\n");
         ProxyConfigurationLoadResult actual = ProxyConfigurationLoader.load(tempDir.toString());
-        assertNotNull(actual.getServerConfiguration());
-        assertFalse(actual.getServerConfiguration().getRules().isEmpty());
+        assertNotNull(actual.getProperties());
+        assertFalse(actual.getRules().isEmpty());
         assertTrue(actual.getDatabaseConfigurations().isEmpty());
     }
     
     @Test
     void assertLoadFromClasspathWhenPathDoesNotExistOnFilesystem() throws IOException {
         ProxyConfigurationLoadResult actual = ProxyConfigurationLoader.load("/conf/config_loader/");
-        assertNotNull(actual.getServerConfiguration());
+        assertNotNull(actual.getProperties());
         assertThat(actual.getDatabaseConfigurations().size(), is(3));
     }
     
     @Test
     void assertLoadFromClasspathWithCompatibleServerYaml() throws IOException {
         ProxyConfigurationLoadResult actual = ProxyConfigurationLoader.load("/conf/compatible_server_yaml/");
-        assertNotNull(actual.getServerConfiguration());
-        assertFalse(actual.getServerConfiguration().getRules().isEmpty());
+        assertNotNull(actual.getProperties());
+        assertFalse(actual.getRules().isEmpty());
         assertTrue(actual.getDatabaseConfigurations().isEmpty());
     }
     
-    private void assertShardingRuleConfiguration(final YamlProxyDatabaseConfiguration actual) {
+    @Test
+    void assertLoadWithRuleConversionFailure(@TempDir final Path tempDir) throws IOException {
+        writeConfigurationFile(tempDir, "global.yaml", "dataSources:\n  global_ds:\n    url: jdbc:mock://127.0.0.1/global\n");
+        writeConfigurationFile(tempDir, "database-invalid-rule.yaml", "databaseName: foo_db\ndataSources:\n  ds_0:\n    url: jdbc:mock://127.0.0.1/local\n"
+                + "rules:\n  - !SHARDING\n    defaultDatabaseStrategy:\n      standard:\n        shardingColumn: id\n        shardingAlgorithmName: fixture\n      none: {}\n");
+        try (
+                MockedStatic<DataSourcePoolCreator> mockedPoolCreator = mockStatic(DataSourcePoolCreator.class);
+                MockedConstruction<DataSourceGeneratedDatabaseConfiguration> mockedDatabaseConfigs = mockConstruction(DataSourceGeneratedDatabaseConfiguration.class)) {
+            assertThrows(InvalidShardingStrategyConfigCountException.class, () -> ProxyConfigurationLoader.load(tempDir.toString()));
+            mockedPoolCreator.verifyNoInteractions();
+            assertTrue(mockedDatabaseConfigs.constructed().isEmpty());
+        }
+    }
+    
+    private void assertShardingRuleConfiguration(final ProxyDatabaseConfiguration actual) {
         assertThat(actual.getDatabaseName(), is("sharding_db"));
         assertThat(actual.getDataSources().size(), is(2));
         assertDataSourceConfiguration(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/ds_0");
         assertDataSourceConfiguration(actual.getDataSources().get("ds_1"), "jdbc:mysql://127.0.0.1:3306/ds_1");
-        Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream()
-                .filter(YamlShardingRuleConfiguration.class::isInstance).findFirst().map(YamlShardingRuleConfiguration.class::cast);
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream().filter(ShardingRuleConfiguration.class::isInstance).findFirst().map(ShardingRuleConfiguration.class::cast);
         assertTrue(shardingRuleConfig.isPresent());
         assertShardingRuleConfiguration(shardingRuleConfig.get());
-        assertFalse(
-                actual.getRules().stream().filter(YamlEncryptRuleConfiguration.class::isInstance).findFirst().map(YamlEncryptRuleConfiguration.class::cast).isPresent());
+        assertFalse(actual.getRules().stream().filter(EncryptRuleConfiguration.class::isInstance).findFirst().map(EncryptRuleConfiguration.class::cast).isPresent());
     }
     
-    private void assertShardingRuleConfiguration(final YamlShardingRuleConfiguration actual) {
+    private void assertShardingRuleConfiguration(final ShardingRuleConfiguration actual) {
         assertThat(actual.getTables().size(), is(1));
-        assertThat(actual.getTables().get("t_order").getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
-        assertThat(actual.getTables().get("t_order").getDatabaseStrategy().getStandard().getShardingColumn(), is("user_id"));
-        assertThat(actual.getTables().get("t_order").getDatabaseStrategy().getStandard().getShardingAlgorithmName(), is("database_inline"));
-        assertThat(actual.getTables().get("t_order").getTableStrategy().getStandard().getShardingColumn(), is("order_id"));
-        assertThat(actual.getTables().get("t_order").getTableStrategy().getStandard().getShardingAlgorithmName(), is("table_inline"));
-        assertNotNull(actual.getDefaultDatabaseStrategy().getNone());
+        assertThat(actual.getTables().iterator().next().getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
+        assertThat(((StandardShardingStrategyConfiguration) actual.getTables().iterator().next().getDatabaseShardingStrategy()).getShardingColumn(), is("user_id"));
+        assertThat(((StandardShardingStrategyConfiguration) actual.getTables().iterator().next().getDatabaseShardingStrategy()).getShardingAlgorithmName(), is("database_inline"));
+        assertThat(((StandardShardingStrategyConfiguration) actual.getTables().iterator().next().getTableShardingStrategy()).getShardingColumn(), is("order_id"));
+        assertThat(((StandardShardingStrategyConfiguration) actual.getTables().iterator().next().getTableShardingStrategy()).getShardingAlgorithmName(), is("table_inline"));
+        assertThat(actual.getDefaultDatabaseShardingStrategy(), isA(NoneShardingStrategyConfiguration.class));
     }
     
-    private void assertReadwriteSplittingRuleConfiguration(final YamlProxyDatabaseConfiguration actual) {
+    private void assertReadwriteSplittingRuleConfiguration(final ProxyDatabaseConfiguration actual) {
         assertThat(actual.getDatabaseName(), is("readwrite_splitting_db"));
         assertThat(actual.getDataSources().size(), is(3));
         assertDataSourceConfiguration(actual.getDataSources().get("write_ds"), "jdbc:mysql://127.0.0.1:3306/write_ds");
         assertDataSourceConfiguration(actual.getDataSources().get("read_ds_0"), "jdbc:mysql://127.0.0.1:3306/read_ds_0");
         assertDataSourceConfiguration(actual.getDataSources().get("read_ds_1"), "jdbc:mysql://127.0.0.1:3306/read_ds_1");
-        assertFalse(actual.getRules().stream().filter(YamlShardingRuleConfiguration.class::isInstance).findFirst().map(YamlShardingRuleConfiguration.class::cast).isPresent());
-        assertFalse(
-                actual.getRules().stream().filter(YamlEncryptRuleConfiguration.class::isInstance).findFirst().map(YamlEncryptRuleConfiguration.class::cast).isPresent());
-        Optional<YamlReadwriteSplittingRuleConfiguration> ruleConfig = actual.getRules().stream()
-                .filter(YamlReadwriteSplittingRuleConfiguration.class::isInstance).findFirst().map(YamlReadwriteSplittingRuleConfiguration.class::cast);
+        assertFalse(actual.getRules().stream().filter(ShardingRuleConfiguration.class::isInstance).findFirst().map(ShardingRuleConfiguration.class::cast).isPresent());
+        assertFalse(actual.getRules().stream().filter(EncryptRuleConfiguration.class::isInstance).findFirst().map(EncryptRuleConfiguration.class::cast).isPresent());
+        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = actual.getRules().stream()
+                .filter(ReadwriteSplittingRuleConfiguration.class::isInstance).findFirst().map(ReadwriteSplittingRuleConfiguration.class::cast);
         assertTrue(ruleConfig.isPresent());
-        for (YamlReadwriteSplittingDataSourceGroupRuleConfiguration each : ruleConfig.get().getDataSourceGroups().values()) {
+        for (ReadwriteSplittingDataSourceGroupRuleConfiguration each : ruleConfig.get().getDataSourceGroups()) {
             assertReadwriteSplittingRuleConfiguration(each);
         }
     }
     
-    private void assertReadwriteSplittingRuleConfiguration(final YamlReadwriteSplittingDataSourceGroupRuleConfiguration actual) {
+    private void assertReadwriteSplittingRuleConfiguration(final ReadwriteSplittingDataSourceGroupRuleConfiguration actual) {
         assertThat(actual.getWriteDataSourceName(), is("write_ds"));
         assertThat(actual.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
     
-    private void assertEncryptRuleConfiguration(final YamlProxyDatabaseConfiguration actual) {
+    private void assertEncryptRuleConfiguration(final ProxyDatabaseConfiguration actual) {
         assertThat(actual.getDatabaseName(), is("encrypt_db"));
         assertThat(actual.getDataSources().size(), is(1));
         assertDataSourceConfiguration(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/encrypt_ds");
-        assertFalse(actual.getRules().stream()
-                .filter(YamlShardingRuleConfiguration.class::isInstance).findFirst().map(YamlShardingRuleConfiguration.class::cast).isPresent());
-        Optional<YamlEncryptRuleConfiguration> encryptRuleConfig = actual.getRules().stream()
-                .filter(YamlEncryptRuleConfiguration.class::isInstance).findFirst().map(YamlEncryptRuleConfiguration.class::cast);
+        assertFalse(actual.getRules().stream().filter(ShardingRuleConfiguration.class::isInstance).findFirst().map(ShardingRuleConfiguration.class::cast).isPresent());
+        Optional<EncryptRuleConfiguration> encryptRuleConfig = actual.getRules().stream().filter(EncryptRuleConfiguration.class::isInstance).findFirst().map(EncryptRuleConfiguration.class::cast);
         assertTrue(encryptRuleConfig.isPresent());
         assertEncryptRuleConfiguration(encryptRuleConfig.get());
     }
     
-    private void assertEncryptRuleConfiguration(final YamlEncryptRuleConfiguration actual) {
+    private void assertEncryptRuleConfiguration(final EncryptRuleConfiguration actual) {
         assertThat(actual.getEncryptors().size(), is(1));
         assertTrue(actual.getEncryptors().containsKey("aes_encryptor"));
-        YamlAlgorithmConfiguration aesEncryptAlgorithmConfig = actual.getEncryptors().get("aes_encryptor");
+        AlgorithmConfiguration aesEncryptAlgorithmConfig = actual.getEncryptors().get("aes_encryptor");
         assertThat(aesEncryptAlgorithmConfig.getType(), is("AES"));
         assertThat(aesEncryptAlgorithmConfig.getProps().getProperty("aes-key-value"), is("123456abc"));
         assertThat(aesEncryptAlgorithmConfig.getProps().getProperty("digest-algorithm-name"), is("SHA-1"));
     }
     
-    private void assertDataSourceConfiguration(final YamlProxyDataSourceConfiguration actual, final String expectedURL) {
-        assertThat(actual.getDriverClassName(), is("com.mysql.cj.jdbc.Driver"));
-        assertThat(actual.getUrl(), is(expectedURL));
-        assertThat(actual.getUsername(), is("root"));
-        assertNull(actual.getPassword());
-        assertThat(actual.getConnectionTimeoutMilliseconds(), is(30000L));
-        assertThat(actual.getIdleTimeoutMilliseconds(), is(60000L));
-        assertThat(actual.getMaxLifetimeMilliseconds(), is(1800000L));
-        assertThat(actual.getMaxPoolSize(), is(50));
+    private void assertDataSourceConfiguration(final DataSourceConfiguration actual, final String expectedURL) {
+        assertThat(actual.getConnection().getDriverClassName(), is("com.mysql.cj.jdbc.Driver"));
+        assertThat(actual.getConnection().getUrl(), is(expectedURL));
+        assertThat(actual.getConnection().getUsername(), is("root"));
+        assertNull(actual.getConnection().getPassword());
+        assertThat(actual.getPool().getConnectionTimeoutMilliseconds(), is(30000L));
+        assertThat(actual.getPool().getIdleTimeoutMilliseconds(), is(60000L));
+        assertThat(actual.getPool().getMaxLifetimeMilliseconds(), is(1800000L));
+        assertThat(actual.getPool().getMaxPoolSize(), is(50));
     }
     
     private void writeConfigurationFile(final Path directory, final String fileName, final String content) throws IOException {

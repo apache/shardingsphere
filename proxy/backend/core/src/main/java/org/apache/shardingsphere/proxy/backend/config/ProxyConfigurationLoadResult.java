@@ -19,11 +19,14 @@ package org.apache.shardingsphere.proxy.backend.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.validator.constraint.NoConflictingDataSourceNames;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Proxy configuration load result.
@@ -33,7 +36,16 @@ import java.util.Map;
 @NoConflictingDataSourceNames
 public final class ProxyConfigurationLoadResult {
     
-    private final YamlProxyServerConfiguration serverConfiguration;
+    /**
+     * Mode configuration, or {@code null} to use the default mode.
+     */
+    private final ModeConfiguration modeConfiguration;
     
-    private final Map<String, YamlProxyDatabaseConfiguration> databaseConfigurations;
+    private final Map<String, DataSourceConfiguration> dataSources;
+    
+    private final Collection<RuleConfiguration> rules;
+    
+    private final Properties properties;
+    
+    private final Map<String, ProxyDatabaseConfiguration> databaseConfigurations;
 }

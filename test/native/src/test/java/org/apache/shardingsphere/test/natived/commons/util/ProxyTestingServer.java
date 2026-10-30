@@ -65,7 +65,7 @@ public final class ProxyTestingServer {
             List<String> addresses = bootstrapArgs.getAddresses();
             checkPort(addresses, port);
             new BootstrapInitializer().init(loadResult, port);
-            Optional.ofNullable((Integer) loadResult.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey()))
+            Optional.ofNullable((Integer) loadResult.getProperties().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey()))
                     .ifPresent(optional -> new Thread(new CDCServer(addresses, optional)).start());
             ProxySSLContext.init();
             proxy = new ShardingSphereProxy();
