@@ -76,7 +76,7 @@
         <sonar.exclusions>**/autogen/**/*</sonar.exclusions>
         
         <!-- 3rd party library versions -->
-        <guava.version>33.4.8-jre</guava.version>
+        <guava.version>33.7.2-jre</guava.version>
         <checker-qual.version>3.39.0</checker-qual.version>
         <error_prone_annotations.version>2.22.0</error_prone_annotations.version>
         <java-util.version>4.103.0</java-util.version>

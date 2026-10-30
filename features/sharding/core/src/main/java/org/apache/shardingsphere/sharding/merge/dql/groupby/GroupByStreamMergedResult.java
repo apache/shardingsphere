@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import com.google.common.collect.Maps;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedR
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -73,14 +75,14 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         return true;
     }
     
+    @HighFrequencyInvocation
     private boolean aggregateCurrentGroupByRowAndNext() throws SQLException {
         boolean result = false;
         boolean cachedRow = false;
-        Map<AggregationProjection, AggregationUnit> aggregationUnitMap = Maps.toMap(
-                selectStatementContext.getProjectionsContext().getAggregationProjections(),
-                input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection, input.getSeparator().orElse(null)));
+        Collection<Entry<AggregationProjection, AggregationUnit>> aggregationEntries = Maps.toMap(selectStatementContext.getProjectionsContext().getAggregationProjections(),
+                input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection, input.getSeparator().orElse(null))).entrySet();
         while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), selectStatementContext.getGroupByContext().getItems()).getGroupValues())) {
-            aggregate(aggregationUnitMap);
+            aggregate(aggregationEntries);
             if (!cachedRow) {
                 cacheCurrentRow();
                 cachedRow = true;
@@ -90,12 +92,12 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
                 break;
             }
         }
-        setAggregationValueToCurrentRow(aggregationUnitMap);
+        setAggregationValueToCurrentRow(aggregationEntries);
         return result;
     }
     
-    private void aggregate(final Map<AggregationProjection, AggregationUnit> aggregationUnitMap) throws SQLException {
-        for (Entry<AggregationProjection, AggregationUnit> entry : aggregationUnitMap.entrySet()) {
+    private void aggregate(final Collection<Entry<AggregationProjection, AggregationUnit>> aggregationEntries) throws SQLException {
+        for (Entry<AggregationProjection, AggregationUnit> entry : aggregationEntries) {
             List<Comparable<?>> values = new ArrayList<>(2);
             if (entry.getKey().getDerivedAggregationProjections().isEmpty()) {
                 values.add(getAggregationValue(entry.getKey()));
@@ -120,8 +122,8 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         return (Comparable<?>) result;
     }
     
-    private void setAggregationValueToCurrentRow(final Map<AggregationProjection, AggregationUnit> aggregationUnitMap) {
-        for (Entry<AggregationProjection, AggregationUnit> entry : aggregationUnitMap.entrySet()) {
+    private void setAggregationValueToCurrentRow(final Collection<Entry<AggregationProjection, AggregationUnit>> aggregationEntries) {
+        for (Entry<AggregationProjection, AggregationUnit> entry : aggregationEntries) {
             currentRow.set(entry.getKey().getIndex() - 1, entry.getValue().getResult());
         }
     }
