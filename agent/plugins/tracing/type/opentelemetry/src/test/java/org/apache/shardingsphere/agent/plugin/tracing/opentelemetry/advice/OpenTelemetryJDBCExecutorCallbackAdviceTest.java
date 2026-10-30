@@ -137,9 +137,9 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
         advice.afterMethod(targetObject, null, new Object[]{executionUnit, false}, null, "OpenTelemetry");
-        Collection<SpanData> spanItems = testExporter.getFinishedSpanItems();
-        assertCommonData(spanItems, parentSpan.getSpanContext().getSpanId());
-        assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.OK));
+        Collection<SpanData> actualSpanItems = testExporter.getFinishedSpanItems();
+        assertCommonData(actualSpanItems, parentSpan.getSpanContext().getSpanId());
+        assertThat(actualSpanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.OK));
     }
     
     @Test
@@ -148,8 +148,8 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
         advice.afterMethod(targetObject, null, new Object[]{executionUnit, false}, null, "OpenTelemetry");
-        Collection<SpanData> spanItems = testExporter.getFinishedSpanItems();
-        assertCommonData(spanItems, SpanId.getInvalid());
+        Collection<SpanData> actualSpanItems = testExporter.getFinishedSpanItems();
+        assertCommonData(actualSpanItems, SpanId.getInvalid());
     }
     
     @Test
@@ -158,9 +158,9 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
         advice.onThrowing(targetObject, null, new Object[]{executionUnit, false}, new IOException(""), "OpenTelemetry");
         advice.afterMethod(targetObject, null, new Object[]{executionUnit, false}, null, "OpenTelemetry");
-        Collection<SpanData> spanItems = testExporter.getFinishedSpanItems();
-        assertCommonData(spanItems, parentSpan.getSpanContext().getSpanId());
-        assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.ERROR));
+        Collection<SpanData> actualSpanItems = testExporter.getFinishedSpanItems();
+        assertCommonData(actualSpanItems, parentSpan.getSpanContext().getSpanId());
+        assertThat(actualSpanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.ERROR));
     }
     
     @Test
@@ -224,7 +224,7 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         advice.beforeMethod(targetObject, null, new Object[]{slowExecutionUnit, false}, "OpenTelemetry");
         OpenTelemetryJDBCExecutorCallbackAdvice.endAbandonedSpans();
         assertThat(getPendingSpans().size(), is(1));
-        assertThat(testExporter.getFinishedSpanItems().size(), is(0));
+        assertTrue(testExporter.getFinishedSpanItems().isEmpty());
         advice.afterMethod(targetObject, null, new Object[]{slowExecutionUnit, false}, null, "OpenTelemetry");
         Collection<SpanData> actualSpanItems = testExporter.getFinishedSpanItems();
         assertThat(actualSpanItems.size(), is(1));

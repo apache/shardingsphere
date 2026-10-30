@@ -78,8 +78,8 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     });
     
     static {
-        ABANDONED_SPAN_RELEASER.scheduleWithFixedDelay(OpenTelemetryJDBCExecutorCallbackAdvice::endAbandonedSpans,
-                ABANDONED_SPAN_CHECK_INTERVAL_MILLIS, ABANDONED_SPAN_CHECK_INTERVAL_MILLIS, TimeUnit.MILLISECONDS);
+        ABANDONED_SPAN_RELEASER.scheduleWithFixedDelay(OpenTelemetryJDBCExecutorCallbackAdvice::endAbandonedSpans, ABANDONED_SPAN_CHECK_INTERVAL_MILLIS, ABANDONED_SPAN_CHECK_INTERVAL_MILLIS,
+                TimeUnit.MILLISECONDS);
     }
     
     @Override
@@ -132,7 +132,7 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
      * is disabled. An invocation that is still running keeps its span however long it takes, because the generation it registered under stays
      * current until the plugin is observed to be disabled.
      */
-    public static void endAbandonedSpans() {
+    static void endAbandonedSpans() {
         if (PluginContext.getInstance().isPluginEnabled()) {
             DISABLED_OBSERVED.set(false);
             return;
