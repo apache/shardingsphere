@@ -25,16 +25,19 @@ import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.yaml.swapper.YamlShadowRuleConfigurationSwapper;
 
 /**
  * Shadow data source changed processor.
  */
 public final class ShadowDataSourceChangedProcessor implements RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, ShadowDataSourceConfiguration> {
     
+    private final YamlShadowRuleConfigurationSwapper swapper = new YamlShadowRuleConfigurationSwapper();
+    
     @Override
     public ShadowDataSourceConfiguration swapRuleItemConfiguration(final String itemName, final String yamlContent) {
         YamlShadowDataSourceConfiguration yamlConfig = YamlEngine.unmarshal(yamlContent, YamlShadowDataSourceConfiguration.class);
-        return new ShadowDataSourceConfiguration(itemName, yamlConfig.getProductionDataSourceName(), yamlConfig.getShadowDataSourceName());
+        return swapper.swapToDataSource(itemName, yamlConfig);
     }
     
     @Override
