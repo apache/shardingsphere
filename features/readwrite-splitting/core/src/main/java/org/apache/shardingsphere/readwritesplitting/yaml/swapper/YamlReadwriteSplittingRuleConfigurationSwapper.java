@@ -74,7 +74,14 @@ public final class YamlReadwriteSplittingRuleConfigurationSwapper implements Yam
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancerMap);
     }
     
-    private ReadwriteSplittingDataSourceGroupRuleConfiguration swapToObject(final String name, final YamlReadwriteSplittingDataSourceGroupRuleConfiguration yamlDataSourceGroupRuleConfig) {
+    /**
+     * Swap a named YAML data source group to object.
+     *
+     * @param name data source group name
+     * @param yamlDataSourceGroupRuleConfig YAML data source group configuration
+     * @return data source group rule configuration
+     */
+    public ReadwriteSplittingDataSourceGroupRuleConfiguration swapToObject(final String name, final YamlReadwriteSplittingDataSourceGroupRuleConfiguration yamlDataSourceGroupRuleConfig) {
         return new ReadwriteSplittingDataSourceGroupRuleConfiguration(name, yamlDataSourceGroupRuleConfig.getWriteDataSourceName(), yamlDataSourceGroupRuleConfig.getReadDataSourceNames(),
                 getTransactionalReadQueryStrategy(yamlDataSourceGroupRuleConfig), yamlDataSourceGroupRuleConfig.getLoadBalancerName());
     }
