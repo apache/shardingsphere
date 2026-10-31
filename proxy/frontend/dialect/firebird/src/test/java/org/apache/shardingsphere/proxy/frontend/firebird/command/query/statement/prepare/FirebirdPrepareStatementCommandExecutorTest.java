@@ -476,6 +476,145 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeInsertSelectParameters() throws Exception {
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) SELECT id + ? FROM foo_tbl WHERE id BETWEEN ? AND ?");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(3));
+        FirebirdPacketPayload projectionPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(0).write(projectionPayload);
+        verify(projectionPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        verify(projectionPayload).writeInt4LE(32765);
+        FirebirdPacketPayload lowerBoundPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(1).write(lowerBoundPayload);
+        verify(lowerBoundPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload upperBoundPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(2).write(upperBoundPayload);
+        verify(upperBoundPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeInsertSelectCastParameters() throws Exception {
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id, content) SELECT CAST(? AS INTEGER), CAST(? AS VARCHAR(20)) FROM foo_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(2));
+        FirebirdPacketPayload integerPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(0).write(integerPayload);
+        verify(integerPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload varcharPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(1).write(varcharPayload);
+        verify(varcharPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        verify(varcharPayload).writeInt4LE(80);
+    }
+    
+    @Test
+    void assertDescribeCharacterCastParametersWithMultibyteLength() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT CAST(? AS VARCHAR(5) CHARACTER SET UTF8), CAST(? AS CHAR), CAST(? AS VARCHAR(10000)) FROM foo_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(3));
+        FirebirdPacketPayload varcharPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(0).write(varcharPayload);
+        verify(varcharPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        verify(varcharPayload).writeInt4LE(20);
+        FirebirdPacketPayload charPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(1).write(charPayload);
+        verify(charPayload).writeInt4LE(4);
+        FirebirdPacketPayload maxVarcharPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(2).write(maxVarcharPayload);
+        verify(maxVarcharPayload).writeInt4LE(32765);
+    }
+    
+    @Test
+    void assertDescribeExactNumericAndTimeWithTimeZoneColumnParametersAsVarchar() throws Exception {
+        ShardingSphereColumn amountColumn = new ShardingSphereColumn("amount", Types.DECIMAL, false, false, true, true, false, true);
+        ShardingSphereColumn startTimeColumn = new ShardingSphereColumn("start_time", Types.TIME_WITH_TIMEZONE, false, false, true, true, false, true);
+        ProxyContext.getInstance().getContextManager().getDatabase("foo_db").getSchema("foo_db")
+                .putTable(new ShardingSphereTable("bar_tbl", Arrays.asList(amountColumn, startTimeColumn), Collections.emptyList(), Collections.emptyList()));
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) SELECT 1 FROM bar_tbl WHERE amount BETWEEN ? AND ? AND start_time = ?");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(3));
+        for (FirebirdReturnColumnPacket each : actualReturnPacket.getDescribeBind()) {
+            FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+            each.write(payload);
+            verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+            verify(payload).writeInt4LE(32765);
+        }
+    }
+    
+    @Test
+    void assertDescribeExactNumericAndTimeWithTimeZoneCastParametersAsVarchar() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT CAST(? AS DECIMAL(10,2)), CAST(? AS NUMERIC(38,4)), CAST(? AS TIME WITH TIME ZONE) FROM foo_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(3));
+        for (FirebirdReturnColumnPacket each : actualReturnPacket.getDescribeBind()) {
+            FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+            each.write(payload);
+            verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+            verify(payload).writeInt4LE(32765);
+        }
+    }
+    
+    @Test
+    void assertDescribeFloatCastParametersByPrecision() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT CAST(? AS FLOAT(24)), CAST(? AS FLOAT(53)) FROM foo_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(2));
+        FirebirdPacketPayload floatPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(0).write(floatPayload);
+        verify(floatPayload).writeInt4LE(FirebirdBinaryColumnType.FLOAT.getValue() + 1);
+        verify(floatPayload).writeInt4LE(FirebirdBinaryColumnType.FLOAT.getLength());
+        FirebirdPacketPayload doublePayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(1).write(doublePayload);
+        verify(doublePayload).writeInt4LE(FirebirdBinaryColumnType.DOUBLE.getValue() + 1);
+        verify(doublePayload).writeInt4LE(FirebirdBinaryColumnType.DOUBLE.getLength());
+    }
+    
+    @Test
+    void assertDescribeInsertSelectParametersOfUnionWithThreeBranches() throws Exception {
+        String sql = "INSERT INTO foo_tbl (id) SELECT id FROM foo_tbl WHERE id = ? UNION ALL SELECT id FROM foo_tbl WHERE content = ? UNION ALL SELECT id FROM foo_tbl WHERE id = ?";
+        FirebirdPrepareStatementReturnPacket actual = describeBind(sql);
+        assertThat(actual.getDescribeBind().size(), is(3));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.BLOB);
+        assertParameterType(actual.getDescribeBind().get(2), FirebirdBinaryColumnType.LONG);
+    }
+    
+    @Test
+    void assertDescribeInsertSelectReturningShorthand() throws Exception {
+        ShardingSphereColumn column = new ShardingSphereColumn("bar_id", Types.INTEGER, false, false, true, true, false, true);
+        ProxyContext.getInstance().getContextManager().getDatabase("foo_db").getSchema("foo_db")
+                .putTable(new ShardingSphereTable("bar_tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList()));
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) SELECT bar_id FROM bar_tbl RETURNING *");
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getType(), is(FirebirdSQLInfoReturnValue.SELECT));
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(idPayload);
+        verify(idPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload contentPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(1).write(contentPayload);
+        verify(contentPayload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
+    }
+    
+    @Test
     void assertDescribeHintedOrdinaryTableWildcard() throws Exception {
         when(packet.getSQL()).thenReturn("SELECT * FROM foo_tbl");
         when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
