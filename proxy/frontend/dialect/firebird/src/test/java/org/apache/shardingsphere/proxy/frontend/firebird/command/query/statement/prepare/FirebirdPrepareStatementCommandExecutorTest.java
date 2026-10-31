@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
+import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -60,6 +61,7 @@ import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -77,7 +79,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -136,6 +140,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobInfoRegistry.refreshTable("foo_db", "foo_tbl", Collections.emptyMap());
         FirebirdBlobInfoRegistry.refreshTable("foo_db", "foo_tbl_0", Collections.emptyMap());
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("foo_db", "octets_tbl", Collections.emptyMap());
     }
     
     private MetaDataContexts createMetaDataContexts() {
@@ -459,6 +464,37 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         actualReturnPacket.getDescribeBind().get(0).write(payload);
         verify(payload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeOctetsColumns() throws Exception {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
+        ShardingSphereColumn varyingColumn = new ShardingSphereColumn("vo", Types.VARBINARY, false, false, true, true, false, true);
+        ShardingSphereColumn textColumn = new ShardingSphereColumn("co", Types.BINARY, false, false, true, true, false, true);
+        ShardingSphereTable table = new ShardingSphereTable("octets_tbl", Arrays.asList(varyingColumn, textColumn), Collections.emptyList(), Collections.emptyList());
+        database.addSchema(new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList()));
+        when(database.findDefaultSchema()).thenCallRealMethod();
+        Map<String, Integer> columnSizes = new HashMap<>(2, 1F);
+        columnSizes.put("vo", 10);
+        columnSizes.put("co", 4);
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("foo_db", "octets_tbl", columnSizes);
+        when(packet.getSQL()).thenReturn("SELECT vo, co FROM octets_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.SELECT, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.SUB_TYPE, FirebirdSQLInfoPacketType.SUB_TYPE, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPacketPayload varyingPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(varyingPayload);
+        verify(varyingPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        verify(varyingPayload).writeInt4LE(ISCConstants.CS_BINARY);
+        verify(varyingPayload).writeInt4LE(10);
+        FirebirdPacketPayload textPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(1).write(textPayload);
+        verify(textPayload).writeInt4LE(FirebirdBinaryColumnType.TEXT.getValue() + 1);
+        verify(textPayload).writeInt4LE(ISCConstants.CS_BINARY);
+        verify(textPayload).writeInt4LE(4);
     }
     
     @Test

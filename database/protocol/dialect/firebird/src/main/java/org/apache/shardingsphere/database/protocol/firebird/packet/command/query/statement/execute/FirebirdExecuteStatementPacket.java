@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
@@ -25,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdBlrRowMetadata;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.firebirdsql.gds.ISCConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +64,8 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         type = FirebirdCommandPacketType.valueOf(payload.readInt4());
         statementId = payload.readInt4();
         transactionId = payload.readInt4();
-        parameterTypes = FirebirdBlrRowMetadata.parseBLR(payload.readBuffer()).getColumnTypes();
+        FirebirdBlrRowMetadata parameterMetadata = FirebirdBlrRowMetadata.parseBLR(payload.readBuffer());
+        parameterTypes = parameterMetadata.getColumnTypes();
         message = payload.readInt4();
         int msgCount = payload.readInt4();
         List<Integer> nullBits = new ArrayList<>();
@@ -74,7 +78,7 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         }
         for (int i = 0; i < parameterTypes.size(); i++) {
             if (0 == ((nullBits.get(i / 8) >> i % 8) & 1)) {
-                parameterValues.add(FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(parameterTypes.get(i)).read(payload));
+                parameterValues.add(readParameterValue(payload, parameterMetadata, i));
             } else {
                 parameterValues.add(null);
             }
@@ -92,6 +96,22 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION19.getCode()) {
             maxBlobSize = payload.readInt4Unsigned();
         }
+    }
+    
+    private Object readParameterValue(final FirebirdPacketPayload payload, final FirebirdBlrRowMetadata parameterMetadata, final int index) {
+        FirebirdBinaryColumnType type = parameterMetadata.getColumnTypes().get(index);
+        boolean octets = ISCConstants.CS_BINARY == parameterMetadata.getColumnCharsets().get(index);
+        if (FirebirdBinaryColumnType.TEXT == type) {
+            // a text value is sent with the length from BLR and without a length prefix
+            int length = parameterMetadata.getColumnLengths().get(index);
+            ByteBuf value = payload.readBytes(length);
+            payload.skipPadding(length);
+            return octets ? ByteBufUtil.getBytes(value) : value.toString(payload.getCharset());
+        }
+        if (FirebirdBinaryColumnType.VARYING == type && octets) {
+            return ByteBufUtil.getBytes(payload.readBuffer());
+        }
+        return FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(type).read(payload);
     }
     
     /**

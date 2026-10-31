@@ -585,6 +585,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             case Types.NVARCHAR:
             case Types.LONGVARCHAR:
             case Types.LONGNVARCHAR:
+            case Types.BINARY:
+            case Types.VARBINARY:
                 return true;
             default:
                 return false;
