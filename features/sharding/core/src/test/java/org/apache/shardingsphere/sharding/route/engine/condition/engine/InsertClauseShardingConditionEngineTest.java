@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.data.InsertColumnsAndValuesMismatchedException;
-import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
@@ -29,8 +28,10 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -38,26 +39,30 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.timeservice.config.TimestampServiceRuleConfiguration;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -85,7 +90,7 @@ class InsertClauseShardingConditionEngineTest {
     void setUp() {
         ShardingSphereDatabase database = mockDatabase();
         InsertStatement insertStatement = createInsertStatement();
-        shardingConditionEngine = new InsertClauseShardingConditionEngine(database, rule, new TimestampServiceRule(new TimestampServiceRuleConfiguration("System", new Properties())));
+        shardingConditionEngine = new InsertClauseShardingConditionEngine(database, rule, mock(TimestampServiceRule.class));
         when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
         when(insertStatementContext.getColumnNames()).thenReturn(Arrays.asList("foo_col_1", "foo_col_3"));
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(createInsertValueContext()));
@@ -165,8 +170,7 @@ class InsertClauseShardingConditionEngineTest {
     void assertCreateShardingConditionsWithoutDefaultSchema() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
-        InsertClauseShardingConditionEngine engine = new InsertClauseShardingConditionEngine(
-                database, rule, new TimestampServiceRule(new TimestampServiceRuleConfiguration("System", new Properties())));
+        InsertClauseShardingConditionEngine engine = new InsertClauseShardingConditionEngine(database, rule, mock(TimestampServiceRule.class));
         assertThrows(SchemaNotFoundException.class, () -> engine.createShardingConditions(insertStatementContext, Collections.emptyList()));
     }
     
@@ -189,7 +193,7 @@ class InsertClauseShardingConditionEngineTest {
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
         assertThat(shardingConditions.get(0).getStartIndex(), is(0));
         assertFalse(shardingConditions.get(0).getValues().isEmpty());
-        verify(rule).generateKeys(argThat((AlgorithmSQLContext each) -> "foo_default_schema".equals(each.getSchemaName())), anyInt());
+        verify(rule).generateKeys(argThat(each -> "foo_default_schema".equals(each.getSchemaName())), anyInt());
     }
     
     @Test
@@ -201,6 +205,90 @@ class InsertClauseShardingConditionEngineTest {
         assertThat(shardingConditions.size(), is(1));
         assertThat(shardingConditions.get(0).getValues().size(), is(1));
         assertThat(shardingConditions.get(0).getValues().get(0).getParameterMarkerIndexes(), is(Collections.singletonList(0)));
+    }
+    
+    @ParameterizedTest(name = "{0}: {1}, parameter={2}")
+    @MethodSource("getIntegerCasts")
+    void assertCreateShardingConditionsWithIntegerCast(final String dataType, final Integer value, final boolean parameterized) {
+        TypeCastExpression expression = new TypeCastExpression(0, 8, (parameterized ? "?" : value.toString()) + "::" + dataType,
+                parameterized ? new ParameterMarkerExpressionSegment(0, 0, 0) : new LiteralExpressionSegment(0, 0, value), dataType);
+        List<Object> params = parameterized ? Collections.singletonList(value) : Collections.emptyList();
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(expression), params, 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(insertStatementContext, params);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getValues().size(), is(1));
+        ListShardingConditionValue<?> actualValue = (ListShardingConditionValue<?>) actual.get(0).getValues().get(0);
+        assertThat(actualValue.getColumnName(), is("foo_col_1"));
+        assertThat(actualValue.getTableName(), is("foo_tbl"));
+        assertThat(actualValue.getValues(), is(Collections.singletonList(value)));
+        assertThat(actualValue.getValues().iterator().next(), isA(Integer.class));
+        assertThat(actualValue.getParameterMarkerIndexes(), is(parameterized ? Collections.singletonList(0) : Collections.emptyList()));
+        assertThat(insertValueContext.getValueExpressions().get(0), sameInstance(expression));
+    }
+    
+    private static Object[][] getIntegerCasts() {
+        return new Object[][]{
+                {"int4", 1, true},
+                {"int4", Integer.MIN_VALUE, true},
+                {"int4", Integer.MAX_VALUE, true},
+                {"int", -1, true},
+                {"INTEGER", 0, true},
+                {"int4", 1, false},
+                {"int4", Integer.MIN_VALUE, false},
+                {"int4", Integer.MAX_VALUE, false},
+                {"int", -1, false},
+                {"INTEGER", 0, false}};
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getUnsupportedIntegerCasts")
+    void assertCreateShardingConditionsWithUnsupportedIntegerCast(final TypeCastExpression expression, final List<Object> params) {
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(expression), params, 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(insertStatementContext, params);
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.get(0).getValues().isEmpty());
+        assertThat(insertValueContext.getValueExpressions().get(0), sameInstance(expression));
+    }
+    
+    private static Object[][] getUnsupportedIntegerCasts() {
+        ParameterMarkerExpressionSegment parameterMarker = new ParameterMarkerExpressionSegment(0, 0, 0);
+        TypeCastExpression integerCast = new TypeCastExpression(0, 8, "?::int4", parameterMarker, "int4");
+        return new Object[][]{
+                {Named.of("string parameter", integerCast), Collections.singletonList("01")},
+                {Named.of("decimal parameter", integerCast), Collections.singletonList(BigDecimal.valueOf(15, 1))},
+                {Named.of("long parameter", integerCast), Collections.singletonList(1L)},
+                {Named.of("null parameter", integerCast), Collections.singletonList(null)},
+                {Named.of("text target", new TypeCastExpression(0, 8, "?::text", parameterMarker, "text")), Collections.singletonList(1)},
+                {Named.of("numeric modifier", new TypeCastExpression(0, 8, "?::numeric(4,1)", parameterMarker, "numeric(4,1)")), Collections.singletonList(1)},
+                {Named.of("user type", new TypeCastExpression(0, 8, "?::foo_type", parameterMarker, "foo_type")), Collections.singletonList(1)},
+                {Named.of("nested cast", new TypeCastExpression(0, 14, "?::int4::int4", integerCast, "int4")), Collections.singletonList(1)},
+                {Named.of("string literal", new TypeCastExpression(0, 8, "'01'::int4", new LiteralExpressionSegment(0, 3, "01"), "int4")), Collections.emptyList()},
+                {Named.of("decimal literal", new TypeCastExpression(0, 8, "1.5::int4", new LiteralExpressionSegment(0, 2, BigDecimal.valueOf(15, 1)), "int4")), Collections.emptyList()},
+                {Named.of("long literal", new TypeCastExpression(0, 8, "2147483648::int4", new LiteralExpressionSegment(0, 9, 2147483648L), "int4")), Collections.emptyList()},
+                {Named.of("null literal", new TypeCastExpression(0, 8, "null::int4", new LiteralExpressionSegment(0, 3, null), "int4")), Collections.emptyList()}};
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithIntegerParameterCastsInMultipleRows() {
+        List<Object> params = Arrays.asList("foo_first", 1, "foo_second", 2);
+        InsertValueContext firstRow = new InsertValueContext(Arrays.asList(
+                new TypeCastExpression(0, 8, "?::text", new ParameterMarkerExpressionSegment(0, 0, 0), "text"),
+                new TypeCastExpression(10, 18, "?::int4", new ParameterMarkerExpressionSegment(10, 10, 1), "int4")), params, 0);
+        InsertValueContext secondRow = new InsertValueContext(Arrays.asList(
+                new TypeCastExpression(20, 28, "?::text", new ParameterMarkerExpressionSegment(20, 20, 2), "text"),
+                new TypeCastExpression(30, 38, "?::int4", new ParameterMarkerExpressionSegment(30, 30, 3), "int4")), params, 2);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Arrays.asList(firstRow, secondRow));
+        when(rule.findShardingColumn("foo_col_3", "foo_tbl")).thenReturn(Optional.of("foo_col_3"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(insertStatementContext, params);
+        assertThat(actual.size(), is(2));
+        assertThat(((ListShardingConditionValue<?>) actual.get(0).getValues().get(0)).getValues(), is(Collections.singletonList(1)));
+        assertThat(actual.get(0).getValues().get(0).getParameterMarkerIndexes(), is(Collections.singletonList(1)));
+        assertThat(((ListShardingConditionValue<?>) actual.get(1).getValues().get(0)).getValues(), is(Collections.singletonList(2)));
+        assertThat(actual.get(1).getValues().get(0).getParameterMarkerIndexes(), is(Collections.singletonList(3)));
     }
     
     @Test
