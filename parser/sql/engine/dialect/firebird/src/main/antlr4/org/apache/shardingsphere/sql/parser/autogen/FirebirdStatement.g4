@@ -43,6 +43,7 @@ execute
     | createDomain
     | alterDomain
     | createRole
+    | dropRole
     | savepoint
     | createTrigger
     | alterTrigger
