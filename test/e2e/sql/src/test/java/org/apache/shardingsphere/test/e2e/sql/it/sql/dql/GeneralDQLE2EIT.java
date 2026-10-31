@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.e2e.sql.framework.param.model.AssertionTes
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.sql.it.SQLE2EITContext;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -40,6 +41,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -190,6 +192,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(each);
             }
+            Awaitility.await().pollDelay(1500L, TimeUnit.MILLISECONDS).until(() -> true);
         }
     }
     
