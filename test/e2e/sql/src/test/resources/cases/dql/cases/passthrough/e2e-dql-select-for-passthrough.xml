@@ -31,17 +31,11 @@
     </test-case>
 
     <test-case sql="SELECT * FROM pg_foo_zero_columns" db-types="PostgreSQL" scenario-types="passthrough" adapters="proxy">
-        <assertion expected-data-source-name="expected_dataset">
-            <initial-sql sql="CREATE TABLE pg_foo_zero_columns ()" />
-            <destroy-sql sql="DROP TABLE IF EXISTS pg_foo_zero_columns" />
-        </assertion>
+        <assertion expected-data-source-name="expected_dataset" />
     </test-case>
 
     <test-case sql="SELECT * FROM foo_zero_columns" db-types="PostgreSQL" scenario-types="passthrough" adapters="proxy">
-        <assertion expected-data-source-name="expected_dataset">
-            <initial-sql sql="CREATE TABLE foo_zero_columns (); INSERT INTO foo_zero_columns DEFAULT VALUES; INSERT INTO foo_zero_columns DEFAULT VALUES" />
-            <destroy-sql sql="DROP TABLE IF EXISTS foo_zero_columns" />
-        </assertion>
+        <assertion expected-data-source-name="expected_dataset" />
     </test-case>
 
     <test-case sql="SELECT * FROM t_data_type_integer_unsigned" db-types="MySQL" scenario-types="passthrough" scenario-comments="Test ShardingSphere-Proxy MySQL compatibility for unsigned integer data types">
