@@ -21,7 +21,7 @@
         <assertion parameters="100001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order_item WHERE item_id != ? ORDER BY item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order_item WHERE item_id != ? ORDER BY item_id" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="100001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -52,7 +52,7 @@
         <assertion parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order o ORDER BY o.order_id, 2 DESC" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order o ORDER BY o.order_id, 2 DESC" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -64,15 +64,15 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.* FROM t_order o ORDER BY o.order_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT o.* FROM t_order o ORDER BY o.order_id" db-types="MySQL,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o ORDER BY order_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order o ORDER BY order_id" db-types="MySQL,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT t_order.* FROM t_order ORDER BY t_order.order_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT t_order.* FROM t_order ORDER BY t_order.order_id" db-types="MySQL,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -81,7 +81,7 @@
     <!--<assertion parameters="order_id:String" expected-data-source-name="read_dataset" />-->
     <!--</test-case>-->
 
-    <test-case sql="SELECT * FROM t_order ORDER BY order_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order ORDER BY order_id" db-types="MySQL,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -101,11 +101,11 @@
     
     <test-case sql="SELECT o.item_id, o.order_id, o.creation_date, s.id FROM t_order_item o INNER JOIN t_single_table s ON o.order_id = s.id ORDER BY o.item_id " db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl" />
 
-    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -117,19 +117,19 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC NULLS FIRST" db-types="PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC NULLS FIRST" db-types="PostgreSQL,openGauss,Firebird" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC NULLS LAST" db-types="PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC NULLS LAST" db-types="PostgreSQL,openGauss,Firebird" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC NULLS FIRST" db-types="PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC NULLS FIRST" db-types="PostgreSQL,openGauss,Firebird" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC NULLS LAST" db-types="PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC NULLS LAST" db-types="PostgreSQL,openGauss,Firebird" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -167,5 +167,51 @@
     
     <test-case sql="SELECT * FROM t_user ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss,Hive" scenario-types="mask,mask_encrypt,mask_sharding,mask_encrypt_sharding">
         <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC NULLS FIRST, order_id ASC" db-types="Firebird" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC NULLS LAST, order_id ASC" db-types="Firebird" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC NULLS FIRST, order_id DESC" db-types="Firebird" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC NULLS LAST, order_id DESC" db-types="Firebird" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT merchant_id, COUNT(1) AS ORDERS_COUNT FROM t_order GROUP BY merchant_id ORDER BY merchant_id ASC" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test explicit Firebird projection identifiers.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT merchant_id, COUNT(1) AS ORDERS_COUNT FROM t_order GROUP BY merchant_id ORDER BY merchant_id DESC" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test explicit Firebird projection identifiers.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT merchant_id, COUNT(1) AS ORDERS_COUNT FROM t_order GROUP BY merchant_id ORDER BY merchant_id ASC NULLS FIRST" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test explicit Firebird projection identifiers.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT merchant_id, COUNT(1) AS ORDERS_COUNT FROM t_order GROUP BY merchant_id ORDER BY merchant_id ASC NULLS LAST" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test explicit Firebird projection identifiers.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT merchant_id, COUNT(1) AS ORDERS_COUNT FROM t_order GROUP BY merchant_id ORDER BY merchant_id DESC NULLS FIRST" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test explicit Firebird projection identifiers.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT merchant_id, COUNT(1) AS ORDERS_COUNT FROM t_order GROUP BY merchant_id ORDER BY merchant_id DESC NULLS LAST" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test explicit Firebird projection identifiers.">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
 </e2e-test-cases>

@@ -31,7 +31,7 @@ FAIL_COUNT=0
 # ---------- helpers ----------
 
 build_filters() {
-  local json='{"adapter_proxy":"false","adapter_jdbc":"false","mode_standalone":"false","mode_cluster":"false","mode_core":"false","database_mysql":"false","database_postgresql":"false","feature_sharding":"false","feature_encrypt":"false","feature_readwrite_splitting":"false","feature_shadow":"false","feature_mask":"false","feature_broadcast":"false","feature_distsql":"false","feature_sql_federation":"false","core_infra":"false","test_framework":"false","pom_changes":"false"}'
+  local json='{"adapter_proxy":"false","adapter_jdbc":"false","mode_standalone":"false","mode_cluster":"false","mode_core":"false","database_mysql":"false","database_postgresql":"false","database_firebird":"false","feature_sharding":"false","feature_encrypt":"false","feature_readwrite_splitting":"false","feature_shadow":"false","feature_mask":"false","feature_broadcast":"false","feature_distsql":"false","feature_sql_federation":"false","core_infra":"false","test_framework":"false","pom_changes":"false"}'
   for kv in "$@"; do
     local key="${kv%%=*}"
     local val="${kv#*=}"
@@ -118,7 +118,8 @@ assert_adapter_parity() {
   local desc="$1" matrix_json="$2"
   local count
   count=$(echo "$matrix_json" | jq '[
-    .include[] | select(.database != "H2" and .["additional-options"] == "")
+    # TODO Remove the Firebird exclusion when JDBC E2E is configured for Firebird.
+    .include[] | select(.database != "H2" and .database != "Firebird" and .["additional-options"] == "")
   ] | group_by([.mode, .database, .scenario]) |
     map(select([.[].adapter] | sort != ["jdbc", "proxy"])) | length')
   assert_eq "$desc" "0" "$count"
@@ -161,6 +162,16 @@ assert_all_field_eq() {
   violations=$(echo "$matrix_json" | jq --arg f "$field" --arg v "$expected_val" \
     '[.include[] | select(.[$f] != $v)] | length')
   assert_eq "$desc" "0" "$violations"
+}
+
+assert_non_firebird_jobs_preserved() {
+  local desc="$1" expected_outputs="$2" actual_outputs="$3"
+  local key
+  for key in smoke-matrix target-matrix; do
+    assert_eq "$desc: $key preserves non-Firebird jobs with Firebird changes" \
+      "$(get_output "$expected_outputs" "$key" | jq -c '[.include[] | select(.database != "Firebird")]')" \
+      "$(get_output "$actual_outputs" "$key" | jq -c '[.include[] | select(.database != "Firebird")]')"
+  done
 }
 
 # Verify all three dimensions cover the expected range
@@ -249,19 +260,19 @@ echo ""
 echo "--- #2: core_infra=true ---"
 outputs=$(run_script "$(build_filters core_infra=true)")
 assert_full_trigger "#2" "$outputs" "pairwise"
-assert_less_than "#2: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "172"
+assert_less_than "#2: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "173"
 
 echo ""
 echo "--- #3: test_framework=true ---"
 outputs=$(run_script "$(build_filters test_framework=true)")
 assert_full_trigger "#3" "$outputs" "pairwise"
-assert_less_than "#3: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "172"
+assert_less_than "#3: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "173"
 
 echo ""
 echo "--- #4: pom_changes=true ---"
 outputs=$(run_script "$(build_filters pom_changes=true)")
 assert_full_trigger "#4" "$outputs" "pairwise"
-assert_less_than "#4: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "172"
+assert_less_than "#4: pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "173"
 
 # ============================================================
 # B. workflow_dispatch
@@ -277,9 +288,9 @@ manual_full=$(get_output "$outputs" "target-matrix")
 manual_smoke=$(get_output "$outputs" "smoke-matrix")
 expected_cluster_encrypt='[["proxy","MySQL"],["proxy","PostgreSQL"],["proxy","openGauss"],["jdbc","MySQL"],["jdbc","PostgreSQL"],["jdbc","openGauss"]]'
 assert_cluster_encrypt_jobs "#5: all six Cluster encrypt jobs occur once" "$manual_full" "$expected_cluster_encrypt"
-assert_eq "#5: complete candidate count" "172" "$(echo "$manual_full" | jq '.include | length')"
+assert_eq "#5: complete candidate count" "173" "$(echo "$manual_full" | jq '.include | length')"
 assert_eq "#5: no duplicate candidates" "0" "$(echo "$manual_full" | jq '.include | length - (unique | length)')"
-assert_eq "#5: Smoke covers both adapters in both modes" "16" "$(echo "$manual_smoke" | jq '.include | length')"
+assert_eq "#5: Smoke covers both adapters in both modes" "17" "$(echo "$manual_smoke" | jq '.include | length')"
 assert_adapter_parity "#5: full candidates have matching adapter coverage" "$manual_full"
 assert_adapter_parity "#5: Smoke has matching adapter coverage" "$manual_smoke"
 
@@ -287,7 +298,7 @@ echo ""
 echo "--- #6: workflow_dispatch with pairwise ---"
 outputs=$(run_script "$(build_filters)" "workflow_dispatch" "pairwise")
 assert_full_trigger "#6" "$outputs" "pairwise"
-assert_less_than "#6: workflow_dispatch pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "172"
+assert_less_than "#6: workflow_dispatch pairwise target-matrix is reduced" "$(echo "$(get_output "$outputs" "target-matrix")" | jq '.include | length')" "173"
 
 echo ""
 echo "--- #7: workflow_dispatch with invalid algorithm falls back to auto(cartesian) ---"
@@ -312,6 +323,7 @@ echo "--- #9: adapter_jdbc only ---"
 outputs=$(run_script "$(build_filters adapter_jdbc=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_all_field_eq "#9: smoke all adapter=jdbc" "$smoke" "adapter" "jdbc"
+assert_non_firebird_jobs_preserved "#9: JDBC" "$outputs" "$(run_script "$(build_filters adapter_jdbc=true database_firebird=true)")"
 
 echo ""
 echo "--- #10: database_mysql only ---"
@@ -320,16 +332,25 @@ smoke=$(get_output "$outputs" "smoke-matrix")
 assert_all_field_eq "#10: smoke all database=MySQL" "$smoke" "database" "MySQL"
 
 echo ""
-echo "--- #11: database_postgresql only ---"
-outputs=$(run_script "$(build_filters database_postgresql=true)")
-smoke=$(get_output "$outputs" "smoke-matrix")
-assert_all_field_eq "#11: smoke all database=PostgreSQL" "$smoke" "database" "PostgreSQL"
+echo "--- #11: single database filter ---"
+for entry in database_postgresql=PostgreSQL database_firebird=Firebird; do
+  filter="${entry%%=*}"
+  database="${entry#*=}"
+  outputs=$(run_script "$(build_filters "$filter=true")")
+  assert_eq "#11: selected database has jobs" "true" "$(get_output "$outputs" "has-jobs")"
+  for key in smoke-matrix target-matrix; do
+    assert_all_field_eq "#11: $key uses the selected database" "$(get_output "$outputs" "$key")" "database" "$database"
+  done
+done
 
 echo ""
 echo "--- #12: mode_standalone only ---"
-outputs=$(run_script "$(build_filters mode_standalone=true)")
-smoke=$(get_output "$outputs" "smoke-matrix")
-assert_all_field_eq "#12: smoke all mode=Standalone" "$smoke" "mode" "Standalone"
+for proxy in false true; do
+  outputs=$(run_script "$(build_filters mode_standalone=true "adapter_proxy=$proxy")")
+  smoke=$(get_output "$outputs" "smoke-matrix")
+  assert_all_field_eq "#12: smoke all mode=Standalone" "$smoke" "mode" "Standalone"
+  assert_non_firebird_jobs_preserved "#12: Standalone" "$outputs" "$(run_script "$(build_filters mode_standalone=true "adapter_proxy=$proxy" database_firebird=true)")"
+done
 
 echo ""
 echo "--- #13: mode_cluster only ---"
@@ -337,12 +358,17 @@ outputs=$(run_script "$(build_filters mode_cluster=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_all_field_eq "#13: smoke all mode=Cluster" "$smoke" "mode" "Cluster"
 assert_distsql_bootstrap_job "#13: Cluster-only target-matrix" "$(get_output "$outputs" "target-matrix")" "0"
+outputs=$(run_script "$(build_filters mode_cluster=true database_mysql=true)")
+for key in smoke-matrix target-matrix; do
+  assert_all_field_eq "#13: $key uses the selected database" "$(get_output "$outputs" "$key")" "database" "MySQL"
+done
 
 echo ""
 echo "--- #14: mode_core only ---"
 outputs=$(run_script "$(build_filters mode_core=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_eq "#14: smoke has both modes" "2" "$(echo "$smoke" | jq '[.include[].mode] | unique | length')"
+assert_non_firebird_jobs_preserved "#14: mode core" "$outputs" "$(run_script "$(build_filters mode_core=true database_firebird=true)")"
 
 # ============================================================
 # D. Feature scenario mapping
@@ -358,7 +384,7 @@ assert_scenarios "#15: sharding smoke scenarios" "$smoke" '["db","tbl"]'
 target=$(get_output "$outputs" "target-matrix")
 expected_sharding='["db","tbl","dbtbl_with_readwrite_splitting","dbtbl_with_readwrite_splitting_and_encrypt","sharding_and_encrypt","sharding_and_shadow","sharding_encrypt_shadow","mask_sharding","mask_encrypt_sharding","db_tbl_sql_federation"]'
 assert_scenarios "#15: sharding scenarios" "$target" "$expected_sharding"
-assert_all_dimensions "#15" "$target"
+assert_all_dimensions "#15" "$target" "3"
 assert_eq "#15: target-matrix-algorithm" "pairwise" "$(get_output "$outputs" "target-matrix-algorithm")"
 
 echo ""
@@ -440,7 +466,7 @@ echo "=== E. Mixed dimensions ==="
 
 echo ""
 echo "--- #23: base change overrides dimension filters ---"
-outputs_mixed=$(run_script "$(build_filters adapter_proxy=true mode_standalone=true database_mysql=true core_infra=true)")
+outputs_mixed=$(run_script "$(build_filters adapter_proxy=true mode_standalone=true database_mysql=true database_firebird=true core_infra=true)")
 outputs_base=$(run_script "$(build_filters core_infra=true)")
 assert_eq "#23: same target-matrix as core_infra only" \
   "$(get_output "$outputs_base" "target-matrix")" \
@@ -451,14 +477,20 @@ assert_eq "#23: same smoke-matrix as core_infra only" \
 
 echo ""
 echo "--- #24: feature trigger overrides dimension filters ---"
-outputs_mixed=$(run_script "$(build_filters adapter_jdbc=true feature_sharding=true)")
-outputs_feature=$(run_script "$(build_filters feature_sharding=true)")
-assert_eq "#24: same target-matrix as feature_sharding only" \
-  "$(get_output "$outputs_feature" "target-matrix")" \
-  "$(get_output "$outputs_mixed" "target-matrix")"
-assert_eq "#24: same smoke-matrix as feature_sharding only" \
-  "$(get_output "$outputs_feature" "smoke-matrix")" \
-  "$(get_output "$outputs_mixed" "smoke-matrix")"
+for entry in \
+  'adapter_jdbc|feature_sharding' \
+  'database_firebird|feature_sharding' \
+  'database_firebird|feature_encrypt'; do
+  IFS='|' read -r dimension feature <<< "$entry"
+  outputs_mixed=$(run_script "$(build_filters "$dimension=true" "$feature=true")")
+  outputs_feature=$(run_script "$(build_filters "$feature=true")")
+  assert_eq "#24: same target-matrix as $feature only" \
+    "$(get_output "$outputs_feature" "target-matrix")" \
+    "$(get_output "$outputs_mixed" "target-matrix")"
+  assert_eq "#24: same smoke-matrix as $feature only" \
+    "$(get_output "$outputs_feature" "smoke-matrix")" \
+    "$(get_output "$outputs_mixed" "smoke-matrix")"
+done
 
 echo ""
 echo "--- #25: mixed features merge smoke scenarios ---"
@@ -498,6 +530,20 @@ matrix=$(build_matrix '["jdbc"]' '["Cluster"]' '["PostgreSQL"]' '["encrypt"]')
 assert_cluster_encrypt_jobs "#28: JDBC respects PostgreSQL selection and adds openGauss" "$matrix" '[["jdbc","PostgreSQL"],["jdbc","openGauss"]]'
 matrix=$(build_matrix '["proxy","jdbc"]' '["Standalone"]' '["MySQL","PostgreSQL"]' '["encrypt"]')
 assert_eq "#28: Standalone encrypt has only four original jobs" "4" "$(echo "$matrix" | jq '.include | length')"
+
+echo ""
+echo "--- #29: combined database filters ---"
+for entry in \
+  'database_mysql|database_postgresql|["MySQL","PostgreSQL"]' \
+  'database_mysql|database_firebird|["Firebird","MySQL"]' \
+  'database_postgresql|database_firebird|["Firebird","PostgreSQL"]'; do
+  IFS='|' read -r first second expected <<< "$entry"
+  outputs=$(run_script "$(build_filters "$first=true" "$second=true")")
+  for key in smoke-matrix target-matrix; do
+    actual=$(get_output "$outputs" "$key" | jq -c '[.include[].database] | unique | sort')
+    assert_eq "#29: $key combines selected databases" "$expected" "$actual"
+  done
+done
 
 # ============================================================
 # Summary

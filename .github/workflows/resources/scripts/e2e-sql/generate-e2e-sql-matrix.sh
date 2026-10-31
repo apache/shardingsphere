@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-# Usage: generate-e2e-sql-matrix.sh '<json-with-all-18-filter-labels>'
+# Usage: generate-e2e-sql-matrix.sh '<json-with-all-19-filter-labels>'
 # Environment:
 #   TARGET_MATRIX_ALGORITHM_INPUT: auto|cartesian|pairwise (optional, default auto)
 # Output: writes smoke-matrix=<JSON>, target-matrix=<JSON>, matrix=<JSON>(alias for target), has-jobs=<true|false>,
@@ -27,15 +27,15 @@ set -euo pipefail
 
 FILTERS_JSON="$1"
 
-# Read all 18 filter labels
+# Read all 19 filter labels
 IFS=$'\t' read -r \
   adapter_proxy adapter_jdbc mode_standalone mode_cluster mode_core \
-  database_mysql database_postgresql \
+  database_mysql database_postgresql database_firebird \
   feature_sharding feature_encrypt feature_readwrite_splitting feature_shadow feature_mask \
   feature_broadcast feature_distsql feature_sql_federation \
   core_infra test_framework pom_changes <<< "$(echo "$FILTERS_JSON" | jq -r '[
     .adapter_proxy, .adapter_jdbc, .mode_standalone, .mode_cluster, .mode_core,
-    .database_mysql, .database_postgresql,
+    .database_mysql, .database_postgresql, .database_firebird,
     .feature_sharding, .feature_encrypt, .feature_readwrite_splitting, .feature_shadow, .feature_mask,
     .feature_broadcast, .feature_distsql, .feature_sql_federation,
     .core_infra, .test_framework, .pom_changes
@@ -56,7 +56,7 @@ ALL_SCENARIOS=$(jq -cn '[
 
 ALL_ADAPTERS='["proxy","jdbc"]'
 ALL_MODES='["Standalone","Cluster"]'
-ALL_DATABASES='["MySQL","PostgreSQL"]'
+ALL_DATABASES='["MySQL","PostgreSQL","Firebird"]'
 SMOKE_SCENARIOS='["db","tbl"]'
 
 # Build matrix JSON from dimension arrays and scenarios, applying include rules
@@ -79,6 +79,8 @@ build_matrix() {
       $modes[] as $mode |
       $databases[] as $database |
       $scenarios[] as $scenario |
+      # TODO Remove the proxy restriction when JDBC E2E is configured for Firebird.
+      select($database != "Firebird" or ($adapter == "proxy" and $mode == "Cluster" and $scenario == "db")) |
       {adapter: $adapter, mode: $mode, database: $database, scenario: $scenario, "additional-options": ""}
     ] as $base_jobs |
 
@@ -292,7 +294,7 @@ if [[ "$feature_sharding" = "true" ]] || [[ "$feature_encrypt" = "true" ]] || \
    [[ "$feature_mask" = "true" ]] || [[ "$feature_broadcast" = "true" ]] || \
    [[ "$feature_distsql" = "true" ]] || [[ "$feature_sql_federation" = "true" ]] || \
    [[ "$mode_standalone" = "true" ]] || [[ "$mode_cluster" = "true" ]] || [[ "$mode_core" = "true" ]] || \
-   [[ "$database_mysql" = "true" ]] || [[ "$database_postgresql" = "true" ]] || \
+   [[ "$database_mysql" = "true" ]] || [[ "$database_postgresql" = "true" ]] || [[ "$database_firebird" = "true" ]] || \
    [[ "$adapter_proxy" = "true" ]] || [[ "$adapter_jdbc" = "true" ]] || \
    [[ "$any_base_change" = "true" ]]; then
   any_relevant_change=true
@@ -342,10 +344,20 @@ fi
 if [[ "$any_base_change" = "true" ]]; then
   databases="$ALL_DATABASES"
   echo "::notice::Base change detected, including all databases"
-elif [[ "$database_mysql" = "true" ]] && [[ "$database_postgresql" = "false" ]]; then
+elif [[ "$database_mysql" = "true" ]] && [[ "$database_postgresql" = "false" ]] && [[ "$database_firebird" = "false" ]]; then
   databases='["MySQL"]'
-elif [[ "$database_postgresql" = "true" ]] && [[ "$database_mysql" = "false" ]]; then
+elif [[ "$database_postgresql" = "true" ]] && [[ "$database_mysql" = "false" ]] && [[ "$database_firebird" = "false" ]]; then
   databases='["PostgreSQL"]'
+elif [[ "$database_firebird" = "true" ]] && [[ "$database_mysql" = "false" ]] && [[ "$database_postgresql" = "false" ]] && \
+     [[ "$adapter_proxy" = "false" ]] && [[ "$adapter_jdbc" = "false" ]] && \
+     [[ "$mode_standalone" = "false" ]] && [[ "$mode_cluster" = "false" ]] && [[ "$mode_core" = "false" ]]; then
+  databases='["Firebird"]'
+elif [[ "$database_mysql" = "true" ]] && [[ "$database_postgresql" = "true" ]] && [[ "$database_firebird" = "false" ]]; then
+  databases='["MySQL","PostgreSQL"]'
+elif [[ "$database_mysql" = "true" ]] && [[ "$database_firebird" = "true" ]] && [[ "$database_postgresql" = "false" ]]; then
+  databases='["MySQL","Firebird"]'
+elif [[ "$database_postgresql" = "true" ]] && [[ "$database_firebird" = "true" ]] && [[ "$database_mysql" = "false" ]]; then
+  databases='["PostgreSQL","Firebird"]'
 else
   databases="$ALL_DATABASES"
 fi
