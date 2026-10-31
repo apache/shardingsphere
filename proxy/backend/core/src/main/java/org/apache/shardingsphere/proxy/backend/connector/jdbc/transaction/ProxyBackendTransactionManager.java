@@ -120,6 +120,7 @@ public final class ProxyBackendTransactionManager {
     }
     
     private void commit(final DatabaseType databaseType) throws SQLException {
+        SQLException commitException = null;
         try {
             // FIXME if timeout when lock required, TSO not assigned, but commit will continue, solution is use redis lock in impl to instead of reg center's lock. #35041
             for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
@@ -130,22 +131,48 @@ public final class ProxyBackendTransactionManager {
             } else {
                 distributedTransactionManager.commit(transactionContext.isExceptionOccur());
             }
+        } catch (final SQLException ex) {
+            commitException = ex;
         } finally {
             for (Connection each : connection.getCachedConnections().values()) {
                 ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
-            if (!connection.getDeferredMetaDataRefreshContext().isEmpty()) {
-                // Reconciliation loads each affected table's current metadata through a new connection. Releasing the transaction's own
-                // connections first, rather than only via the later post-execution cleanup, avoids contending with them for a connection-pool
-                // slot that may not have one to spare. This only runs when a transaction actually deferred table DDL, so a transaction with a
-                // pending result set still awaiting delivery over one of these connections (e.g. a broadcast INSERT ... RETURNING) is unaffected.
-                connection.closeConnections(false);
-                connection.getDeferredMetaDataRefreshContext().reconcile(ProxyContext.getInstance().getContextManager());
+            try {
+                reconcileDeferredMetaDataIfAny();
+            } catch (final SQLException ex) {
+                if (null == commitException) {
+                    commitException = ex;
+                } else {
+                    commitException.addSuppressed(ex);
+                }
             }
             connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
             connection.getConnectionSession().getConnectionContext().close();
             connection.getDeferredMetaDataRefreshContext().clear();
         }
+        if (null != commitException) {
+            throw commitException;
+        }
+    }
+    
+    /**
+     * Reconcile deferred meta data against the committed state, if this transaction deferred any.
+     *
+     * <p>Reconciliation loads each affected table's current metadata through a new connection. Releasing the transaction's own
+     * connections first, rather than only via the later post-execution cleanup, avoids contending with them for a connection-pool
+     * slot that may not have one to spare. This only runs when a transaction actually deferred table DDL, so a transaction with a
+     * pending result set still awaiting delivery over one of these connections, such as a broadcast {@code INSERT ... RETURNING},
+     * is unaffected.</p>
+     *
+     * @throws SQLException SQL exception thrown while releasing execution connections
+     */
+    private void reconcileDeferredMetaDataIfAny() throws SQLException {
+        if (connection.getDeferredMetaDataRefreshContext().isEmpty()) {
+            return;
+        }
+        Collection<SQLException> closeExceptions = connection.closeConnections(false);
+        connection.getDeferredMetaDataRefreshContext().reconcile(ProxyContext.getInstance().getContextManager());
+        throwSQLExceptionIfNecessary(closeExceptions);
     }
     
     private boolean isNeedLockWhenCommit() {

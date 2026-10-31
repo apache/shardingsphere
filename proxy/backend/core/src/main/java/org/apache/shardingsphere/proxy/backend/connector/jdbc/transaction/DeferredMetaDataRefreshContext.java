@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -58,7 +59,11 @@ public final class DeferredMetaDataRefreshContext {
      */
     public void reconcile(final ContextManager contextManager) {
         for (DeferredTable each : deferredTables) {
-            contextManager.reconcileTable(contextManager.getMetaDataContexts().getMetaData().getDatabase(each.databaseName), each.schemaName, each.logicDataSourceName, each.tableName);
+            ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(each.databaseName);
+            if (null == database) {
+                continue;
+            }
+            contextManager.reconcileTable(database, each.schemaName, each.logicDataSourceName, each.tableName);
         }
     }
     

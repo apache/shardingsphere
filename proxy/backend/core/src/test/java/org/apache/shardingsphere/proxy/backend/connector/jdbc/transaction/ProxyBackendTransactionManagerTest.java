@@ -345,6 +345,38 @@ class ProxyBackendTransactionManagerTest {
     }
     
     @Test
+    void assertCommitPropagatesConnectionReleaseFailureAfterReconciling() throws SQLException {
+        when(transactionStatus.isInTransaction()).thenReturn(true);
+        when(ConnectionSavepointManager.getInstance()).thenReturn(mock(ConnectionSavepointManager.class));
+        when(deferredMetaDataRefreshContext.isEmpty()).thenReturn(false);
+        SQLException closeException = new SQLException("failed to reset session variable");
+        when(databaseConnectionManager.closeConnections(false)).thenReturn(Collections.singletonList(closeException));
+        mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
+        SQLException actual = assertThrows(SQLException.class, transactionManager::commit);
+        assertThat(actual, is(closeException));
+        verify(deferredMetaDataRefreshContext).reconcile(ProxyContext.getInstance().getContextManager());
+        verify(deferredMetaDataRefreshContext).clear();
+    }
+    
+    @Test
+    void assertCommitKeepsOriginalFailureWhenConnectionReleaseAlsoFails() throws SQLException {
+        when(transactionStatus.isInTransaction()).thenReturn(true);
+        when(ConnectionSavepointManager.getInstance()).thenReturn(mock(ConnectionSavepointManager.class));
+        when(deferredMetaDataRefreshContext.isEmpty()).thenReturn(false);
+        when(databaseConnectionManager.closeConnections(false)).thenReturn(Collections.singletonList(new SQLException("failed to reset session variable")));
+        mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
+        SQLException commitFailure = new SQLException("commit failed on one of several connections");
+        doThrow(commitFailure).when(localTransactionManager).commit();
+        SQLException actual = assertThrows(SQLException.class, transactionManager::commit);
+        assertThat(actual, is(commitFailure));
+        verify(deferredMetaDataRefreshContext).clear();
+    }
+    
+    @Test
     void assertCommitStillReconciliesDeferredMetaDataWhenUnderlyingCommitPartiallyFailed() throws SQLException {
         when(transactionStatus.isInTransaction()).thenReturn(true);
         when(ConnectionSavepointManager.getInstance()).thenReturn(mock(ConnectionSavepointManager.class));

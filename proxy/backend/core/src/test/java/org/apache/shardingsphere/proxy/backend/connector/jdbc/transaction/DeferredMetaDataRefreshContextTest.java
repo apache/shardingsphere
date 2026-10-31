@@ -70,6 +70,15 @@ class DeferredMetaDataRefreshContextTest {
     }
     
     @Test
+    void assertReconcileSkipsTableWhoseDatabaseNoLongerExists() {
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(null);
+        DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();
+        deferredContext.add("foo_db", "foo_schema", "ds_0", new IdentifierValue("t_order"));
+        deferredContext.reconcile(contextManager);
+        verify(contextManager, never()).reconcileTable(any(), anyString(), anyString(), any());
+    }
+    
+    @Test
     void assertReconcileAfterClear() {
         DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();
         deferredContext.add("foo_db", "foo_schema", "ds_0", new IdentifierValue("t_order"));
