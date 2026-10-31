@@ -158,6 +158,90 @@ class ShardingSQLRouterIT {
         }
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getExplainWithHintArguments")
+    void assertRouteForExplainWithHint(final String name, final String logicTableName, final String hintTableName, final Collection<Integer> databaseHintValues,
+                                       final Collection<Integer> tableHintValues, final Set<String> expectedRouteUnits) {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            for (int each : databaseHintValues) {
+                hintManager.addDatabaseShardingValue(hintTableName, each);
+            }
+            for (int each : tableHintValues) {
+                hintManager.addTableShardingValue(hintTableName, each);
+            }
+            RouteContext actual = route("EXPLAIN SELECT user_id FROM " + logicTableName + " WHERE user_id = ?", Collections.singletonList(1));
+            assertThat(getRouteUnitSignatures(actual), is(expectedRouteUnits));
+        }
+    }
+    
+    private static Stream<Arguments> getExplainWithHintArguments() {
+        return Stream.of(
+                Arguments.of("nonFirstNode", "t_hint_test", "t_hint_test", Collections.singleton(1), Collections.singleton(1), createRouteUnits("ds_1:t_hint_test=t_hint_test_1")),
+                Arguments.of("multipleDatabases", "t_hint_test", "t_hint_test", Arrays.asList(0, 1), Collections.singleton(1),
+                        createRouteUnits("ds_0:t_hint_test=t_hint_test_1", "ds_1:t_hint_test=t_hint_test_1")),
+                Arguments.of("multipleTables", "t_hint_test", "t_hint_test", Collections.singleton(1), Arrays.asList(0, 1),
+                        createRouteUnits("ds_1:t_hint_test=t_hint_test_0", "ds_1:t_hint_test=t_hint_test_1")),
+                Arguments.of("databaseHintOnly", "t_hint_test", "t_hint_test", Collections.singleton(1), Collections.emptyList(),
+                        createRouteUnits("ds_1:t_hint_test=t_hint_test_0", "ds_1:t_hint_test=t_hint_test_1")),
+                Arguments.of("tableHintOnly", "t_hint_test", "t_hint_test", Collections.emptyList(), Collections.singleton(1),
+                        createRouteUnits("ds_0:t_hint_test=t_hint_test_1", "ds_1:t_hint_test=t_hint_test_1")),
+                Arguments.of("withoutHintValues", "t_hint_test", "t_hint_test", Collections.emptyList(), Collections.emptyList(), createRouteUnits("ds_0:t_hint_test=t_hint_test_0")),
+                Arguments.of("uppercaseTable", "T_HINT_TEST", "T_HINT_TEST", Collections.singleton(1), Collections.singleton(1), createRouteUnits("ds_1:T_HINT_TEST=t_hint_test_1")),
+                Arguments.of("uppercaseTableHintOnly", "T_HINT_TEST", "T_HINT_TEST", Collections.emptyList(), Collections.singleton(1),
+                        createRouteUnits("ds_0:T_HINT_TEST=t_hint_test_1", "ds_1:T_HINT_TEST=t_hint_test_1")),
+                Arguments.of("mismatchedHintKey", "T_HINT_TEST", "t_hint_test", Collections.singleton(1), Collections.singleton(1), createRouteUnits("ds_0:T_HINT_TEST=t_hint_test_0")));
+    }
+    
+    @Test
+    void assertRouteForExplainWithDatabaseHint() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.setDatabaseShardingValue(1);
+            RouteContext actual = route("EXPLAIN SELECT user_id FROM t_hint_test", Collections.emptyList());
+            assertThat(getRouteUnitSignatures(actual), is(createRouteUnits("ds_1:t_hint_test=t_hint_test_0", "ds_1:t_hint_test=t_hint_test_1")));
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getExplainWithMixedHintArguments")
+    void assertRouteForExplainWithMixedHint(final String name, final String logicTableName, final String hintTableName, final Set<String> expectedRouteUnits) {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.addDatabaseShardingValue(hintTableName, 1);
+            ShardingTableRuleConfiguration tableConfig = createHintTableRule();
+            tableConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_hint_test_inline"));
+            ConfigurationProperties props = new ConfigurationProperties(new Properties());
+            ShardingSphereDatabase database = createDatabase(TypedSPILoader.getService(DatabaseType.class, "MySQL"), createShardingRule(tableConfig), props);
+            RouteContext actual = route("EXPLAIN SELECT user_id FROM " + logicTableName + " WHERE user_id = ?", Collections.singletonList(0), database, props);
+            assertThat(getRouteUnitSignatures(actual), is(expectedRouteUnits));
+        }
+    }
+    
+    private static Stream<Arguments> getExplainWithMixedHintArguments() {
+        return Stream.of(
+                Arguments.of("lowercaseTable", "t_hint_test", "t_hint_test", createRouteUnits("ds_1:t_hint_test=t_hint_test_0")),
+                Arguments.of("uppercaseTable", "T_HINT_TEST", "T_HINT_TEST", createRouteUnits("ds_1:T_HINT_TEST=t_hint_test_0")),
+                Arguments.of("mismatchedHintKey", "T_HINT_TEST", "t_hint_test", createRouteUnits("ds_0:T_HINT_TEST=t_hint_test_0")));
+    }
+    
+    @Test
+    void assertRouteForExplainUpdateWithHint() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.addDatabaseShardingValue("t_hint_test", 1);
+            hintManager.addTableShardingValue("t_hint_test", 1);
+            RouteContext actual = route("EXPLAIN UPDATE t_hint_test SET user_id = 1 WHERE user_id = ?", Collections.singletonList(0));
+            assertThat(getRouteUnitSignatures(actual), is(createRouteUnits("ds_0:t_hint_test=t_hint_test_0")));
+        }
+    }
+    
+    @Test
+    void assertRouteForExplainJoinWithHint() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.addDatabaseShardingValue("t_hint_test", 1);
+            hintManager.addTableShardingValue("t_hint_test", 1);
+            RouteContext actual = route("EXPLAIN SELECT a.user_id FROM t_hint_test a JOIN t_hint_test b ON a.user_id = b.user_id WHERE a.user_id = ?", Collections.singletonList(1));
+            assertThat(getRouteUnitSignatures(actual), is(createRouteUnits("ds_0:t_hint_test=t_hint_test_0")));
+        }
+    }
+    
     @Test
     void assertRouteDatabaseOnlyJoin() {
         RouteContext actual = routeDatabaseOnlyJoin("SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.user_id = i.user_id", Collections.emptyList());
@@ -200,7 +284,7 @@ class ShardingSQLRouterIT {
     
     private static RouteContext route(final String sql, final List<Object> params) {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        ShardingRule shardingRule = createShardingRule();
+        ShardingRule shardingRule = createShardingRule(createHintTableRule());
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         ShardingSphereDatabase database = createDatabase(databaseType, shardingRule, props);
         return route(sql, params, database, props);
@@ -237,17 +321,18 @@ class ShardingSQLRouterIT {
         return Collections.singleton(new ShardingSphereSchema(DATABASE_NAME, databaseType, tables, Collections.emptyList()));
     }
     
-    private static ShardingRule createShardingRule() {
+    private static ShardingRule createShardingRule(final ShardingTableRuleConfiguration hintTableConfig) {
         ShardingRuleConfiguration config = new ShardingRuleConfiguration();
         config.getTables().add(createInlineTableRule("t_order"));
         config.getTables().add(createInlineTableRule("t_order_item"));
-        config.getTables().add(createHintTableRule());
+        config.getTables().add(hintTableConfig);
         config.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
         config.getShardingAlgorithms().put("ds_inline", createAlgorithm("INLINE", "ds_${user_id % 2}"));
         config.getShardingAlgorithms().put("t_order_inline", createAlgorithm("INLINE", "t_order_${user_id % 2}"));
         config.getShardingAlgorithms().put("t_order_item_inline", createAlgorithm("INLINE", "t_order_item_${user_id % 2}"));
         config.getShardingAlgorithms().put("ds_hint_inline", createAlgorithm("HINT_INLINE", "ds_${value % 2}"));
         config.getShardingAlgorithms().put("t_hint_test_hint_inline", createAlgorithm("HINT_INLINE", "t_hint_test_${value % 2}"));
+        config.getShardingAlgorithms().put("t_hint_test_inline", createAlgorithm("INLINE", "t_hint_test_${user_id % 2}"));
         Map<String, DataSource> dataSources = new LinkedHashMap<>();
         dataSources.put("ds_0", new MockedDataSource());
         dataSources.put("ds_1", new MockedDataSource());
