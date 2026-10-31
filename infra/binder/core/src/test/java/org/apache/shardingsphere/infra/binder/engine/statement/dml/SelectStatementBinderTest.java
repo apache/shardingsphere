@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.AmbiguousColumnException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -360,8 +361,28 @@ class SelectStatementBinderTest {
     }
     
     @Test
-    void assertBindWithExistsSubqueryReferencingSameNameTableInOuterScope() {
-        ColumnSegment existsColumn = createOwnerColumnSegment("t_order", "status");
+    void assertBindWithQuantifySubqueryReferencingColumnMissingFromShadowingOuterAlias() {
+        ProjectionsSegment quantifyProjections = new ProjectionsSegment(0, 0);
+        quantifyProjections.getProjections().add(new ColumnProjectionSegment(createOwnerColumnSegment("x", "status")));
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(quantifyProjections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).build();
+        BinaryOperationExpression existsWhereExpression = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("user_id")),
+                new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, quantifySelect, ""), "ALL"), "=", "user_id = ALL (SELECT x.status FROM t_user)");
+        ProjectionsSegment existsProjections = new ProjectionsSegment(0, 0);
+        existsProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        SelectStatement existsSelect = SelectStatement.builder().databaseType(databaseType).projections(existsProjections).from(createAliasedSimpleTableSegment("t_user", "x"))
+                .where(new WhereSegment(0, 0, existsWhereExpression)).build();
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections).from(createAliasedSimpleTableSegment("t_order", "x"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, existsSelect, "")))).build();
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement);
+        assertThrows(ColumnNotFoundException.class, () -> new SelectStatementBinder().bind(selectStatement, binderContext));
+    }
+    
+    @Test
+    void assertBindWithExistsSubqueryReferencingSharedColumnOfSameNameTablesInOuterScope() {
+        ColumnSegment existsColumn = createOwnerColumnSegment("t_order", "order_id");
         existsColumn.getOwner().get().setOwner(new OwnerSegment(0, 0, new IdentifierValue("foo_db")));
         ProjectionsSegment existsProjections = new ProjectionsSegment(0, 0);
         existsProjections.getProjections().add(new ColumnProjectionSegment(existsColumn));
@@ -375,31 +396,22 @@ class SelectStatementBinderTest {
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))));
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections).from(joinTableSegment)
                 .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, existsSelect, "")))).build();
-        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaDataWithSameNameTable(), "foo_db", new HintValueContext(), selectStatement));
-        SelectStatement actualExistsSelect = ((ExistsSubqueryExpression) actual.getWhere().get().getExpr()).getSubquery().getSelect();
-        ColumnSegment actualExistsColumn = ((ColumnProjectionSegment) actualExistsSelect.getProjections().getProjections().iterator().next()).getColumn();
-        assertThat(actualExistsColumn.getColumnBoundInfo().getOriginalDatabase().getValue(), is("foo_db"));
-        assertThat(actualExistsColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        ShardingSphereMetaData metaData = mockMetaData();
+        ShardingSphereSchema barSchema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        IdentifierValue barDatabase = new IdentifierValue("bar_db");
+        IdentifierValue tOrder = new IdentifierValue("t_order");
+        when(barSchema.getTable(tOrder).getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false)));
+        when(barSchema.containsTable(tOrder)).thenReturn(true);
+        when(metaData.containsDatabase(barDatabase)).thenReturn(true);
+        when(metaData.getDatabase(barDatabase).getSchema(barDatabase)).thenReturn(barSchema);
+        when(metaData.getDatabase(barDatabase).containsSchema(barDatabase)).thenReturn(true);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), selectStatement);
+        assertThrows(AmbiguousColumnException.class, () -> new SelectStatementBinder().bind(selectStatement, binderContext));
     }
     
     private SimpleTableSegment createOwnerSimpleTableSegment(final String owner, final String tableName) {
         SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
         result.setOwner(new OwnerSegment(0, 0, new IdentifierValue(owner)));
-        return result;
-    }
-    
-    private ShardingSphereMetaData mockMetaDataWithSameNameTable() {
-        ShardingSphereMetaData result = mockMetaData();
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        IdentifierValue barDatabase = new IdentifierValue("bar_db");
-        IdentifierValue tOrder = new IdentifierValue("t_order");
-        when(schema.getTable(tOrder).getAllColumns()).thenReturn(Arrays.asList(
-                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("remark", Types.VARCHAR, false, false, false, true, false, false)));
-        when(result.containsDatabase(barDatabase)).thenReturn(true);
-        when(result.getDatabase(barDatabase).getSchema(barDatabase)).thenReturn(schema);
-        when(result.getDatabase(barDatabase).containsSchema(barDatabase)).thenReturn(true);
-        when(schema.containsTable(tOrder)).thenReturn(true);
         return result;
     }
     
