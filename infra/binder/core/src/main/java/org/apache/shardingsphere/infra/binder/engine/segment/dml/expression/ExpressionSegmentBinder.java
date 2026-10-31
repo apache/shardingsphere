@@ -40,6 +40,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.SubquerySegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.UnaryOperationExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.XmlFunctionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ScopedTableSegmentBinderContexts;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -138,7 +139,7 @@ public final class ExpressionSegmentBinder {
             return OuterJoinExpressionBinder.bind((OuterJoinExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof QuantifySubqueryExpression) {
-            return QuantifySubqueryExpressionBinder.bind((QuantifySubqueryExpression) segment, binderContext, tableBinderContexts);
+            return QuantifySubqueryExpressionBinder.bind((QuantifySubqueryExpression) segment, binderContext, new ScopedTableSegmentBinderContexts(outerTableBinderContexts, tableBinderContexts));
         }
         if (segment instanceof RowExpression) {
             return RowExpressionBinder.bind((RowExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);

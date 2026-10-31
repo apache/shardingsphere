@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -110,6 +111,30 @@ class ExpressionSegmentBinderTest {
         assertThat(actual.getSubquery(), is(boundSubquerySegment));
         assertThat(mergedContexts.get().get(CaseInsensitiveString.of("t")), hasItem(currentTableBinderContext));
         assertThat(mergedContexts.get().get(CaseInsensitiveString.of("u")), contains(retainedOuterTableBinderContext));
+    }
+    
+    @Test
+    void assertBindQuantifySubqueryWithOuterTableContext() {
+        SubquerySegment boundSubquerySegment = new SubquerySegment(0, 5, mock(SelectStatement.class), "SELECT 1");
+        TableSegmentBinderContext outerTableBinderContext = mock(TableSegmentBinderContext.class);
+        TableSegmentBinderContext currentTableBinderContext = mock(TableSegmentBinderContext.class);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
+        outerTableBinderContexts.put(CaseInsensitiveString.of("o"), outerTableBinderContext);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        tableBinderContexts.put(CaseInsensitiveString.of("i"), currentTableBinderContext);
+        AtomicReference<Multimap<CaseInsensitiveString, TableSegmentBinderContext>> mergedContexts = new AtomicReference<>();
+        when(SubquerySegmentBinder.bind(any(), any(), any())).thenAnswer(invocation -> {
+            mergedContexts.set(invocation.getArgument(2));
+            return boundSubquerySegment;
+        });
+        SubquerySegment subquerySegment = new SubquerySegment(0, 5, mock(SelectStatement.class), "SELECT 1");
+        QuantifySubqueryExpression segment = new QuantifySubqueryExpression(0, 10, subquerySegment, "ALL");
+        SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
+        QuantifySubqueryExpression actual = (QuantifySubqueryExpression) ExpressionSegmentBinder.bind(segment, SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts);
+        assertThat(actual.getSubquery(), sameInstance(boundSubquerySegment));
+        assertThat(actual.getQuantifyOperator(), is("ALL"));
+        assertThat(mergedContexts.get().get(CaseInsensitiveString.of("o")), contains(outerTableBinderContext));
+        assertThat(mergedContexts.get().get(CaseInsensitiveString.of("i")), contains(currentTableBinderContext));
     }
     
     @Test

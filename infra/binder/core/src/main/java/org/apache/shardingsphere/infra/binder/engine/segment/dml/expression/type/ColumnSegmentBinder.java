@@ -29,6 +29,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ScopedTableSegmentBinderContexts;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.FunctionTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
@@ -211,7 +212,9 @@ public final class ColumnSegmentBinder {
             return binderContext.getOrderByFromTableBinderContexts().get(caseInsensitiveOwner);
         }
         if (outerTableBinderContexts.containsKey(caseInsensitiveOwner)) {
-            return outerTableBinderContexts.get(caseInsensitiveOwner);
+            return outerTableBinderContexts instanceof ScopedTableSegmentBinderContexts
+                    ? ((ScopedTableSegmentBinderContexts) outerTableBinderContexts).getNearestScopeTableBinderContexts(caseInsensitiveOwner)
+                    : outerTableBinderContexts.get(caseInsensitiveOwner);
         }
         if (binderContext.getExternalTableBinderContexts().containsKey(caseInsensitiveOwner)) {
             return binderContext.getExternalTableBinderContexts().get(caseInsensitiveOwner);
