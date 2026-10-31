@@ -94,7 +94,7 @@
     <rule ref="category/java/design.xml/UseUtilityClass">
         <properties>
             <property name="violationSuppressXPath"
-                      value=".[pmd-java:hasAnnotation('lombok.NoArgsConstructor') or pmd-java:hasAnnotation('org.springframework.boot.autoconfigure.SpringBootApplication')]" />
+                      value=".[pmd-java:hasAnnotation('org.springframework.boot.autoconfigure.SpringBootApplication')]" />
         </properties>
     </rule>
     
