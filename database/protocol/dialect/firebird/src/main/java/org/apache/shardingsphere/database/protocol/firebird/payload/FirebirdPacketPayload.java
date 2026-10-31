@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 /**
  * Payload operation for Firebird packet data types.
@@ -240,6 +241,54 @@ public final class FirebirdPacketPayload implements PacketPayload {
      */
     public void writeString(final String value) {
         writeBuffer(value.getBytes(charset));
+    }
+    
+    /**
+     * Write fixed length opaque bytes to byte buffers.
+     *
+     * <p>Unlike {@link #writeBuffer(byte[])} no leading length is written. The value occupies exactly {@code length} bytes,
+     * a shorter value is zero filled, and the result is padded to a 4-byte boundary. This is how Firebird encodes a text
+     * or a binary array element, whose storage length is known from the array descriptor rather than from the value itself.</p>
+     *
+     * @param value value to write
+     * @param length logical length of one array element
+     */
+    public void writeOpaque(final byte[] value, final int length) {
+        writeOpaque(value, length, (byte) 0);
+    }
+    
+    /**
+     * Write fixed length opaque bytes to byte buffers with a chosen storage pad.
+     *
+     * <p>Firebird fills the storage length of an {@code OCTETS} value with zero bytes and the storage length of an
+     * ordinary {@code CHAR} with spaces, while the bytes that align the datum to a 4 byte boundary are zero in both
+     * cases. Only the storage pad is selectable here, the alignment pad always stays zero.</p>
+     *
+     * @param value value to write
+     * @param length logical length of one array element
+     * @param pad byte used to fill the storage length when the value is shorter
+     */
+    private void writeOpaque(final byte[] value, final int length, final byte pad) {
+        int written = Math.min(value.length, length);
+        byteBuf.writeBytes(value, 0, written);
+        byte[] storage = new byte[length - written];
+        Arrays.fill(storage, pad);
+        byteBuf.writeBytes(storage);
+        byteBuf.writeBytes(new byte[getPadding(length)]);
+    }
+    
+    /**
+     * Write fixed length character data to byte buffers.
+     *
+     * <p>The characters are encoded with the connection charset and the storage length is padded with spaces, which is
+     * what Firebird does for an ordinary {@code CHAR}. The bytes that align the datum to a 4 byte boundary stay zero, so
+     * the length handling is otherwise the one described by {@link #writeOpaque(byte[], int)}.</p>
+     *
+     * @param value value to write
+     * @param length logical length of one array element
+     */
+    public void writeOpaque(final String value, final int length) {
+        writeOpaque(value.getBytes(charset), length, (byte) ' ');
     }
     
     /**
