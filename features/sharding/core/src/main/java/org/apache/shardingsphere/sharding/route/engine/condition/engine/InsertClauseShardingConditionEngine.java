@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.data.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -134,20 +136,38 @@ public final class InsertClauseShardingConditionEngine {
             if (!shardingColumn.isPresent()) {
                 continue;
             }
-            if (each instanceof SimpleExpressionSegment) {
-                List<Integer> parameterMarkerIndexes = each instanceof ParameterMarkerExpressionSegment
-                        ? Collections.singletonList(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex())
+            ExpressionSegment expression = unwrapIntegerCast(each, params);
+            if (expression instanceof SimpleExpressionSegment) {
+                List<Integer> parameterMarkerIndexes = expression instanceof ParameterMarkerExpressionSegment
+                        ? Collections.singletonList(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex())
                         : Collections.emptyList();
-                Object shardingValue = getShardingValue((SimpleExpressionSegment) each, params);
+                Object shardingValue = getShardingValue((SimpleExpressionSegment) expression, params);
                 result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(shardingValue),
                         parameterMarkerIndexes));
-            } else if (each instanceof CommonExpressionSegment) {
-                generateShardingCondition((CommonExpressionSegment) each, result, shardingColumn.get(), tableName);
-            } else if (ExpressionConditionUtils.isNowExpression(each)) {
+            } else if (expression instanceof CommonExpressionSegment) {
+                generateShardingCondition((CommonExpressionSegment) expression, result, shardingColumn.get(), tableName);
+            } else if (ExpressionConditionUtils.isNowExpression(expression)) {
                 result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(timestampServiceRule.getTimestamp())));
             }
         }
         return result;
+    }
+    
+    @HighFrequencyInvocation
+    private ExpressionSegment unwrapIntegerCast(final ExpressionSegment expressionSegment, final List<Object> params) {
+        if (!(expressionSegment instanceof TypeCastExpression)) {
+            return expressionSegment;
+        }
+        TypeCastExpression typeCastExpression = (TypeCastExpression) expressionSegment;
+        String dataType = typeCastExpression.getDataType();
+        if (!"int4".equalsIgnoreCase(dataType) && !"int".equalsIgnoreCase(dataType) && !"integer".equalsIgnoreCase(dataType)) {
+            return expressionSegment;
+        }
+        ExpressionSegment result = typeCastExpression.getExpression();
+        if (result instanceof LiteralExpressionSegment) {
+            return ((LiteralExpressionSegment) result).getLiterals() instanceof Integer ? result : expressionSegment;
+        }
+        return result instanceof ParameterMarkerExpressionSegment && params.get(((ParameterMarkerExpressionSegment) result).getParameterMarkerIndex()) instanceof Integer ? result : expressionSegment;
     }
     
     private void generateShardingCondition(final CommonExpressionSegment expressionSegment, final ShardingCondition condition, final String shardingColumn, final String tableName) {
