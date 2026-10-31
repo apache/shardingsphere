@@ -38,4 +38,11 @@ class GroovyUtilsTest {
         assertThat(GroovyUtils.split("t_${[\"new${1+2}\",'old']}_order_${1..2}"), is(Collections.singletonList("t_${[\"new${1+2}\",'old']}_order_${1..2}")));
         assertThat(GroovyUtils.split("t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}"), is(Collections.singletonList("t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}")));
     }
+    
+    @Test
+    void assertSplitWithTrailingEscapedDollarSign() {
+        assertThat(GroovyUtils.split("ds_${0..1}.t_order_\\$"), is(Collections.singletonList("ds_${0..1}.t_order_\\$")));
+        assertThat(GroovyUtils.split("ds_${0..1}.t\\$1"), is(Collections.singletonList("ds_${0..1}.t\\$1")));
+        assertThat(GroovyUtils.split("ds_${0..1}.t\\$ab"), is(Collections.singletonList("ds_${0..1}.t\\$ab")));
+    }
 }
