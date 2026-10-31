@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.connector;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.EmptyRuleException;
@@ -52,8 +54,11 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.stream.IteratorStreamMergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -61,6 +66,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefreshEngine;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.refresher.util.SchemaRefreshUtils;
+import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
@@ -76,12 +83,20 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;
@@ -94,8 +109,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -236,7 +253,8 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
         }
         new PushDownSQLExecutionCheckEngine().check(database, executionContext);
-        proxySQLExecutor.checkExecutePrerequisites(executionContext.getSqlStatementContext());
+        boolean isDeferrableTableDDL = isDeferrableTableDDL(executionContext);
+        proxySQLExecutor.checkExecutePrerequisites(executionContext.getSqlStatementContext(), isDeferrableTableDDL);
         Collection<AdvancedProxySQLExecutor> advancedExecutors = ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class);
         List<ExecuteResult> executeResults = advancedExecutors.isEmpty()
                 ? proxySQLExecutor.execute(executionContext)
@@ -245,21 +263,132 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
             transactionManager.commit();
         }
-        PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(queryContext.getSqlStatementContext());
-        if (pushDownMetaDataRefreshEngine.isNeedRefresh()) {
-            pushDownMetaDataRefreshEngine.refresh(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(),
-                    database, contextManager.getMetaDataContexts().getMetaData().getProps(), executionContext.getRouteContext().getRouteUnits());
-        }
+        refreshMetaData(executionContext, isDeferrableTableDDL);
         Object executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(queryContext.getSqlStatementContext(), executeResults.stream().map(QueryResult.class::cast).collect(Collectors.toList()), (QueryResult) executeResultSample)
                 : processExecuteUpdate(executeResults.stream().map(UpdateResult.class::cast).collect(Collectors.toList()));
     }
     
+    private boolean isDeferrableTableDDL(final ExecutionContext executionContext) {
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+        if (!isDeferrableTableDDLStatement(sqlStatement)) {
+            return false;
+        }
+        Collection<RouteUnit> routeUnits = executionContext.getRouteContext().getRouteUnits();
+        if (routeUnits.isEmpty()) {
+            return false;
+        }
+        Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
+        for (RouteUnit each : routeUnits) {
+            StorageUnit storageUnit = storageUnits.get(each.getDataSourceMapper().getActualName());
+            if (null == storageUnit || !new DatabaseTypeRegistry(storageUnit.getStorageType()).getDialectDatabaseMetaData().getTransactionOption().isSupportTransactionalDDL()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Check whether the statement is a table DDL whose metadata refresh can be deferred to the end of the transaction.
+     *
+     * <p>{@code ALTER TABLE ... SET SCHEMA} is excluded: the parser captures its destination schema, but the proxy has
+     * no reconciliation path that moves a table's metadata to a different schema, so deferring it would silently lose
+     * the table's metadata at commit rather than fail fast as the pre-existing restriction does.</p>
+     *
+     * @param sqlStatement SQL statement
+     * @return whether the statement is a deferrable table DDL
+     */
+    private boolean isDeferrableTableDDLStatement(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof AlterTableStatement) {
+            return !((AlterTableStatement) sqlStatement).getSetSchemaDefinition().isPresent();
+        }
+        return sqlStatement instanceof CreateTableStatement || sqlStatement instanceof DropTableStatement || sqlStatement instanceof RenameTableStatement;
+    }
+    
     private boolean isCurrentTransactionCommitRequired(final SQLStatement sqlStatement) {
         DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
         return !databaseConnectionManager.getConnectionSession().isAutoCommit() && sqlStatement instanceof DDLStatement
                 && DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION == transactionOption.getDDLCommitPolicy();
+    }
+    
+    private void refreshMetaData(final ExecutionContext executionContext, final boolean isDeferrableTableDDL) throws SQLException {
+        PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(queryContext.getSqlStatementContext());
+        if (!pushDownMetaDataRefreshEngine.isNeedRefresh()) {
+            return;
+        }
+        if (isDeferrableTableDDL && isInDeferrableTransaction()) {
+            deferMetaDataRefresh(executionContext.getRouteContext().getRouteUnits());
+            return;
+        }
+        pushDownMetaDataRefreshEngine.refresh(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(),
+                database, contextManager.getMetaDataContexts().getMetaData().getProps(), executionContext.getRouteContext().getRouteUnits());
+    }
+    
+    private boolean isInDeferrableTransaction() {
+        if (!databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()) {
+            return false;
+        }
+        TransactionType transactionType = TransactionUtils.getTransactionType(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext());
+        return TransactionType.BASE != transactionType;
+    }
+    
+    private void deferMetaDataRefresh(final Collection<RouteUnit> routeUnits) {
+        String defaultSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(database.getDefaultSchemaName()));
+        Map<SimpleTableSegment, SimpleTableSegment> renameSchemaSources = getRenameSchemaSources();
+        for (SimpleTableSegment each : queryContext.getSqlStatementContext().getTablesContext().getSimpleTables()) {
+            IdentifierValue tableName = each.getTableName().getIdentifier();
+            SimpleTableSegment schemaSource = renameSchemaSources.getOrDefault(each, each);
+            String schemaName = getBoundSchemaName(schemaSource).map(optional -> SchemaRefreshUtils.getActualSchemaName(database, optional)).orElse(defaultSchemaName);
+            databaseConnectionManager.getDeferredMetaDataRefreshContext().add(database.getName(), schemaName, findLogicDataSourceName(routeUnits, schemaName, tableName), tableName);
+        }
+    }
+    
+    /**
+     * Get the rename-destination segments mapped to the table whose schema they inherit.
+     *
+     * <p>Renaming a table never changes its schema, but the parsed destination identifier is bound like any other
+     * unqualified table reference, which resolves it to the database's default schema instead of the source table's
+     * actual schema. The destination must therefore be reconciled under the source table's schema, not its own.</p>
+     *
+     * @return rename-destination segments mapped to their schema-defining source segment
+     */
+    private Map<SimpleTableSegment, SimpleTableSegment> getRenameSchemaSources() {
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+        if (sqlStatement instanceof AlterTableStatement) {
+            AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
+            return alterTableStatement.getRenameTable().<Map<SimpleTableSegment, SimpleTableSegment>>map(optional -> Collections.singletonMap(optional, alterTableStatement.getTable()))
+                    .orElseGet(Collections::emptyMap);
+        }
+        if (sqlStatement instanceof RenameTableStatement) {
+            Collection<RenameTableDefinitionSegment> renameTables = ((RenameTableStatement) sqlStatement).getRenameTables();
+            Map<SimpleTableSegment, SimpleTableSegment> result = new HashMap<>(renameTables.size());
+            for (RenameTableDefinitionSegment each : renameTables) {
+                result.put(each.getRenameTable(), each.getTable());
+            }
+            return result;
+        }
+        return Collections.emptyMap();
+    }
+    
+    private Optional<IdentifierValue> getBoundSchemaName(final SimpleTableSegment tableSegment) {
+        return tableSegment.getTableName().getTableBoundInfo().map(TableSegmentBoundInfo::getOriginalSchema).filter(originalSchema -> !Strings.isNullOrEmpty(originalSchema.getValue()));
+    }
+    
+    private String findLogicDataSourceName(final Collection<RouteUnit> routeUnits, final String schemaName, final IdentifierValue tableName) {
+        String candidateTableName = TableRefreshUtils.getTableLoadCandidateName(database, tableName);
+        for (MutableDataNodeRuleAttribute each : database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class)) {
+            Optional<DataNode> dataNode = each.findTableDataNode(schemaName, candidateTableName);
+            if (dataNode.isPresent()) {
+                return dataNode.get().getDataSourceName();
+            }
+        }
+        for (RouteUnit each : routeUnits) {
+            if (each.getLogicTableNames().stream().anyMatch(tableName.getValue()::equalsIgnoreCase)) {
+                return each.getDataSourceMapper().getLogicName();
+            }
+        }
+        return routeUnits.iterator().next().getDataSourceMapper().getLogicName();
     }
     
     private ResponseHeader doExecuteFederation() throws SQLException {

@@ -50,7 +50,7 @@ public final class H2DatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, false, true, false, false, Collections.singleton("org.h2.jdbcx.JdbcDataSource"));
+        return new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, false, true, false, false, false, Collections.singleton("org.h2.jdbcx.JdbcDataSource"));
     }
     
     @Override

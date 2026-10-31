@@ -6,7 +6,8 @@ weight = 3
 不支持的 SQL：
 
 - 事务中使用 DistSQL 里的 RAL、RDL 操作；
-- XA 事务中的 DDL 支持取决于数据库方言；PostgreSQL 和 openGauss 仅支持不改变元数据的 DDL 语句。
+- XA 事务中的 DDL 支持取决于数据库方言；openGauss 仅支持不改变元数据的 DDL 语句。
+  PostgreSQL 还支持 `CREATE TABLE`、`ALTER TABLE`、`DROP TABLE` 和 `RENAME TABLE`，其元数据刷新延迟到事务结束后执行（详见使用限制）。
 
 XA 事务所需的权限：
 

@@ -35,7 +35,7 @@ public final class MariaDBDatabaseMetaData extends AbstractDelegatingDialectData
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, true, false, true, false, false,
+        return new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, true, false, true, false, false, false,
                 Collections.singleton("org.mariadb.jdbc.MariaDbDataSource"));
     }
     
