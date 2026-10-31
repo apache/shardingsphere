@@ -75,10 +75,10 @@ public final class GroovyUtils {
     
     private static int handleDollarSign(final String inlineExpression, final int i, final int bracketsDepth, final StringBuilder segment, final char each) {
         int bracketsDepthResult = bracketsDepth;
-        if ('{' == inlineExpression.charAt(i + 1)) {
+        if (inlineExpression.startsWith("{", i + 1)) {
             bracketsDepthResult = bracketsDepthResult + 1;
         }
-        if ("->{".equals(inlineExpression.substring(i + 1, i + 4))) {
+        if (inlineExpression.startsWith("->{", i + 1)) {
             bracketsDepthResult = bracketsDepthResult + 1;
         }
         segment.append(each);
