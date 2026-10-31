@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,6 +30,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.Reader;
+import java.io.StringReader;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
@@ -102,9 +105,23 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
     }
     
     @Override
-    public Reader getCharacterStream(final int columnIndex) {
+    public Reader getCharacterStream(final int columnIndex) throws SQLException {
+        Object value = currentRow.getValue().get(columnIndex - 1);
+        wasNull = null == value;
+        if (null == value) {
+            return null;
+        }
+        if (value instanceof Clob) {
+            return ((Clob) value).getCharacterStream();
+        }
         // TODO Support connection property character encoding
-        return new BufferedReader(new InputStreamReader(getInputStream(columnIndex)));
+        if (value instanceof byte[]) {
+            return new InputStreamReader(new ByteArrayInputStream((byte[]) value));
+        }
+        if (value instanceof Blob) {
+            return new InputStreamReader(((Blob) value).getBinaryStream());
+        }
+        return new StringReader(value.toString());
     }
     
     @Override
