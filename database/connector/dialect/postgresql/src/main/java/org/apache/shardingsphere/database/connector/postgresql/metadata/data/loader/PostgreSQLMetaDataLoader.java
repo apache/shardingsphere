@@ -82,7 +82,7 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
     private static final String LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL = LOAD_ALL_ROLE_TABLE_GRANTS_SQL + " WHERE table_name IN (%s)";
     
     private static final String ZERO_COLUMN_TABLE_META_DATA_SQL = "SELECT n.nspname AS table_schema, c.relname AS table_name FROM pg_catalog.pg_class c"
-            + " JOIN pg_catalog.pg_namespace n ON c.relnamespace = n.oid WHERE (n.nspname, c.relname) IN (%s)"
+            + " JOIN pg_catalog.pg_namespace n ON c.relnamespace = n.oid WHERE (n.nspname, c.relname) IN (SELECT * FROM unnest(?::text[], ?::text[]))"
             + " AND NOT EXISTS (SELECT 1 FROM pg_catalog.pg_attribute a WHERE a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped)";
     
     private static final String VIEW_META_DATA_SQL = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN (%s) and table_name IN (%s)";
@@ -244,12 +244,9 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
         if (unavailableTables.isEmpty()) {
             return;
         }
-        String placeholders = unavailableTables.values().stream().flatMap(Collection::stream).map(each -> "(?, ?)").collect(Collectors.joining(", "));
-        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format(ZERO_COLUMN_TABLE_META_DATA_SQL, placeholders))) {
-            int index = 1;
-            for (Entry<String, Collection<String>> entry : unavailableTables.entrySet()) {
-                index = bindTableParameters(preparedStatement, index, entry.getKey(), entry.getValue());
-            }
+        try (PreparedStatement preparedStatement = connection.prepareStatement(ZERO_COLUMN_TABLE_META_DATA_SQL)) {
+            preparedStatement.setObject(1, unavailableTables.entrySet().stream().flatMap(entry -> entry.getValue().stream().map(each -> entry.getKey())).toArray(String[]::new));
+            preparedStatement.setObject(2, unavailableTables.values().stream().flatMap(Collection::stream).toArray(String[]::new));
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     unavailableTables.get(resultSet.getString("table_schema")).remove(resultSet.getString("table_name"));
@@ -259,15 +256,6 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
         for (Entry<String, Collection<String>> entry : unavailableTables.entrySet()) {
             schemaColumnMetaDataMap.get(entry.getKey()).keySet().removeAll(entry.getValue());
         }
-    }
-    
-    private int bindTableParameters(final PreparedStatement preparedStatement, final int startIndex, final String schemaName, final Collection<String> tableNames) throws SQLException {
-        int result = startIndex;
-        for (String each : tableNames) {
-            preparedStatement.setString(result++, schemaName);
-            preparedStatement.setString(result++, each);
-        }
-        return result;
     }
     
     private Map<String, Multimap<String, ConstraintMetaData>> loadConstraintMetaDataMap(final Connection connection, final Collection<String> schemaNames) throws SQLException {
