@@ -26,6 +26,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ScopedTableSegmentBinderContexts;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
@@ -263,20 +264,22 @@ class ColumnSegmentBinderTest {
     
     @Test
     void assertBindWithOwnerFromShadowedOuterTable() {
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> fartherTableBinderContexts = LinkedHashMultimap.create();
         ColumnSegment boundOrderUserIdColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
         boundOrderUserIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
                 new IdentifierValue("t_order"), new IdentifierValue("user_id"), TableSourceType.PHYSICAL_TABLE));
-        outerTableBinderContexts.put(CaseInsensitiveString.of("x"),
+        fartherTableBinderContexts.put(CaseInsensitiveString.of("x"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderUserIdColumn)), TableSourceType.PHYSICAL_TABLE));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> nearerTableBinderContexts = LinkedHashMultimap.create();
         ColumnSegment boundUserUserIdColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
         boundUserUserIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
                 new IdentifierValue("t_user"), new IdentifierValue("user_id"), TableSourceType.PHYSICAL_TABLE));
-        outerTableBinderContexts.put(CaseInsensitiveString.of("x"),
+        nearerTableBinderContexts.put(CaseInsensitiveString.of("x"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundUserUserIdColumn)), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("x")));
-        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, createBinderContext(), LinkedHashMultimap.create(), outerTableBinderContexts);
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, createBinderContext(), LinkedHashMultimap.create(),
+                new ScopedTableSegmentBinderContexts(fartherTableBinderContexts, nearerTableBinderContexts));
         assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
     }
     

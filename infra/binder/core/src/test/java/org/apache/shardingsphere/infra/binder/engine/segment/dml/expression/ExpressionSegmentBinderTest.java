@@ -131,7 +131,7 @@ class ExpressionSegmentBinderTest {
         QuantifySubqueryExpression segment = new QuantifySubqueryExpression(0, 10, subquerySegment, "ALL");
         SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
         QuantifySubqueryExpression actual = (QuantifySubqueryExpression) ExpressionSegmentBinder.bind(segment, SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts);
-        assertThat(actual.getSubquery(), is(boundSubquerySegment));
+        assertThat(actual.getSubquery(), sameInstance(boundSubquerySegment));
         assertThat(actual.getQuantifyOperator(), is("ALL"));
         assertThat(mergedContexts.get().get(CaseInsensitiveString.of("o")), contains(outerTableBinderContext));
         assertThat(mergedContexts.get().get(CaseInsensitiveString.of("i")), contains(currentTableBinderContext));
