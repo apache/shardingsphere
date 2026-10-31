@@ -188,19 +188,19 @@
         <spotless-maven-plugin.version>3.10.1</spotless-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <checkstyle.version>14.1.0</checkstyle.version>
-        <maven-pmd-plugin.version>3.20.0</maven-pmd-plugin.version>
+        <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version>
         <spotbugs-maven-plugin.version>4.7.3.6</spotbugs-maven-plugin.version>
         <fb-contrib.version>7.6.0</fb-contrib.version>
         <findsecbugs.version>1.14.0</findsecbugs.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
         
         <!-- Report plugin versions -->
-        <maven-site-plugin.version>4.0.0-M13</maven-site-plugin.version>
-        <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
-        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+        <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
+        <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
+        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
-        <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
-        <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
+        <jdepend-maven-plugin.version>2.2.1</jdepend-maven-plugin.version>
+        <taglist-maven-plugin.version>3.2.3</taglist-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
         <dependency-check-maven.version>13.0.0</dependency-check-maven.version>
     </properties>
@@ -945,6 +945,10 @@
                 
                 <!-- Report plugins -->
                 <plugin>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>${maven-site-plugin.version}</version>
+                </plugin>
+                <plugin>
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <version>${maven-checkstyle-plugin.version}</version>
                     <dependencies>
@@ -1051,10 +1055,6 @@
     <reporting>
         <plugins>
             <plugin>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>${maven-site-plugin.version}</version>
-            </plugin>
-            <plugin>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>${maven-project-info-reports-plugin.version}</version>
             </plugin>
@@ -1105,7 +1105,7 @@
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>${maven-pmd-plugin.version}</version>
                 <configuration>
-                    <targetJdk>${java.version}</targetJdk>
+                    <targetJdk>${build.jdk.version}</targetJdk>
                 </configuration>
             </plugin>
             <plugin>
@@ -1113,6 +1113,7 @@
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>${spotbugs-maven-plugin.version}</version>
                 <configuration>
+                    <maxHeap>1024</maxHeap>
                     <xmlOutput>true</xmlOutput>
                     <xmlOutputDirectory>target/site</xmlOutputDirectory>
                 </configuration>
