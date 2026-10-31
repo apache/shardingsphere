@@ -31,6 +31,8 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -55,33 +57,34 @@ public final class DatabaseExportMetaDataGenerator {
     }
     
     private void appendDatabaseName(final String databaseName, final StringBuilder stringBuilder) {
-        stringBuilder.append("databaseName: ").append(databaseName).append(System.lineSeparator());
+        stringBuilder.append(YamlEngine.marshal(Collections.singletonMap("databaseName", databaseName)));
     }
     
     private void appendDataSourceConfigurations(final ShardingSphereDatabase database, final StringBuilder stringBuilder) {
         if (database.getResourceMetaData().getStorageUnits().isEmpty()) {
             return;
         }
-        stringBuilder.append("dataSources:").append(System.lineSeparator());
+        Map<String, Map<String, Object>> dataSources = new LinkedHashMap<>(database.getResourceMetaData().getStorageUnits().size(), 1F);
         for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnits().entrySet()) {
-            appendDataSourceConfiguration(entry.getKey(), entry.getValue().getDataSourcePoolProperties(), stringBuilder);
+            Map<String, Object> props = createDataSourceConfiguration(entry.getValue().getDataSourcePoolProperties());
+            dataSources.put(entry.getKey(), props.isEmpty() ? null : props);
         }
+        stringBuilder.append(YamlEngine.marshal(Collections.singletonMap("dataSources", dataSources)));
     }
     
-    private void appendDataSourceConfiguration(final String dataSourceName, final DataSourcePoolProperties props, final StringBuilder stringBuilder) {
-        stringBuilder.append(createIndentation(2)).append(dataSourceName).append(':').append(System.lineSeparator());
+    private Map<String, Object> createDataSourceConfiguration(final DataSourcePoolProperties props) {
+        Map<String, Object> result = new LinkedHashMap<>(props.getConnectionPropertySynonyms().getStandardProperties().size() + props.getPoolPropertySynonyms().getStandardProperties().size(), 1F);
         for (Entry<String, Object> entry : props.getConnectionPropertySynonyms().getStandardProperties().entrySet()) {
             if (null != entry.getValue()) {
-                String value = entry.getValue().toString();
-                stringBuilder.append(createIndentation(4)).append(entry.getKey()).append(": ").append(value).append(System.lineSeparator());
+                result.put(entry.getKey(), entry.getValue());
             }
         }
         for (Entry<String, Object> entry : props.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
             if (null != entry.getValue()) {
-                String value = entry.getValue().toString();
-                stringBuilder.append(createIndentation(4)).append(entry.getKey()).append(": ").append(value).append(System.lineSeparator());
+                result.put(entry.getKey(), entry.getValue());
             }
         }
+        return result;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -100,13 +103,5 @@ public final class DatabaseExportMetaDataGenerator {
             }
             stringBuilder.append(YamlEngine.marshal(Collections.singletonList(entry.getValue().swapToYamlConfiguration(entry.getKey()))));
         }
-    }
-    
-    private String createIndentation(final int count) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < count; i++) {
-            result.append(" ");
-        }
-        return result.toString();
     }
 }

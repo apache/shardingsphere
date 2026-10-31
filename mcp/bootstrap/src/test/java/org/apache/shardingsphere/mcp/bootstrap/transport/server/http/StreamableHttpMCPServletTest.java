@@ -27,11 +27,14 @@ import io.modelcontextprotocol.spec.ProtocolVersions;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.MCPTransportSecurityException;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.ShardingSphereServerTransportSecurityValidator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
@@ -49,10 +52,12 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -69,6 +74,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -265,11 +271,27 @@ class StreamableHttpMCPServletTest {
         when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("Origin")));
         when(request.getHeaders("Origin")).thenReturn(Collections.enumeration(List.of("https://example.com")));
         HttpServletResponse response = mock(HttpServletResponse.class);
-        when(response.getWriter()).thenReturn(mock(PrintWriter.class));
+        StringWriter actualResponseBody = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(actualResponseBody));
         createServlet(mock(MCPSessionManager.class)).service(request, response);
         verify(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
+        verify(response).setContentType("application/json");
+        assertTransportSecurityError(actualResponseBody, "Origin is not allowed by MCP HTTP transport policy.");
         verify(response, never()).sendError(HttpServletResponse.SC_BAD_REQUEST, "Accept must include text/event-stream.");
         verify(getDelegate(), never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+    }
+    
+    private void assertTransportSecurityError(final StringWriter responseBody, final String expectedMessage) {
+        Map<?, ?> actual = JsonEngine.unmarshal(responseBody.toString(), Map.class);
+        assertThat(actual.keySet(), is(Set.of("jsonrpc", "error")));
+        assertThat(actual.get("jsonrpc"), is(McpSchema.JSONRPC_VERSION));
+        Map<?, ?> actualError = (Map<?, ?>) actual.get("error");
+        assertThat(actualError.keySet(), is(Set.of("code", "message", "data")));
+        assertThat(actualError.get("code"), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+        assertThat(actualError.get("message"), is(expectedMessage));
+        Map<?, ?> actualData = (Map<?, ?>) actualError.get("data");
+        assertThat(actualData.get("summary"), is(expectedMessage));
+        assertThat(actualData.get("response_mode"), is("recovery"));
     }
     
     @Test
@@ -415,11 +437,34 @@ class StreamableHttpMCPServletTest {
         when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("Origin")));
         when(request.getHeaders("Origin")).thenReturn(Collections.enumeration(List.of("https://example.com")));
         HttpServletResponse response = mock(HttpServletResponse.class);
-        when(response.getWriter()).thenReturn(mock(PrintWriter.class));
+        StringWriter actualResponseBody = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(actualResponseBody));
         createServlet(mock(MCPSessionManager.class)).service(request, response);
         verify(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
+        verify(response).setContentType("application/json");
+        assertTransportSecurityError(actualResponseBody, "Origin is not allowed by MCP HTTP transport policy.");
         verify(request, never()).getContentType();
         verify(response, never()).sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, "Content-Type must be application/json.");
+        verify(getDelegate(), never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+    }
+    
+    @Test
+    void assertServiceTransportSecurityErrorEscaping() throws ServletException, IOException {
+        String expectedMessage = "foo_\"quoted\"\\path\nmessage";
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("POST");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        StringWriter actualResponseBody = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(actualResponseBody));
+        try (
+                MockedConstruction<ShardingSphereServerTransportSecurityValidator> ignored = mockConstruction(ShardingSphereServerTransportSecurityValidator.class,
+                        (mock, context) -> doThrow(new MCPTransportSecurityException(403, expectedMessage, MCPTransportSecurityException.CATEGORY_ORIGIN_NOT_ALLOWED)).when(mock)
+                                .validateHeaders(anyMap()))) {
+            createServlet(mock(MCPSessionManager.class)).service(request, response);
+        }
+        verify(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
+        verify(response).setContentType("application/json");
+        assertTransportSecurityError(actualResponseBody, expectedMessage);
         verify(getDelegate(), never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
     

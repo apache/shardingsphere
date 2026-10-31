@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.type;
 
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.summary.FileSummary;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,6 +31,9 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,9 +54,12 @@ class GitHubTestParameterLoadStrategyTest {
         URI sourceURI = URI.create("https://github.com/owner/repo/" + sourceType + "/" + ref + "/" + casePath);
         String apiURL = "https://api.github.com/repos/owner/repo/contents/" + casePath + "?ref=" + ref;
         String downloadURL = "https://raw.githubusercontent.com/owner/repo/" + ref + "/cases/sample.sql";
-        String fileContent = "{\"name\":\"sample.sql\",\"type\":\"file\",\"download_url\":\"" + downloadURL + "\"}";
+        Map<String, String> fileResponse = new LinkedHashMap<>(3, 1F);
+        fileResponse.put("name", "sample.sql");
+        fileResponse.put("type", "file");
+        fileResponse.put("download_url", downloadURL);
         try (MockedStatic<URI> uriMock = mockStatic(URI.class)) {
-            mockContent(uriMock, apiURL, "blob".equals(sourceType) ? fileContent : "[" + fileContent + "]");
+            mockContent(uriMock, apiURL, JsonEngine.marshal("blob".equals(sourceType) ? fileResponse : Collections.singletonList(fileResponse)));
             Collection<FileSummary> actual = new GitHubTestParameterLoadStrategy().loadSQLCaseFileSummaries(sourceURI);
             assertThat(actual.size(), is(1));
             FileSummary actualFileSummary = actual.iterator().next();
@@ -78,18 +85,28 @@ class GitHubTestParameterLoadStrategyTest {
     @Test
     void assertLoadSQLCaseFileSummariesRecursively() throws IOException {
         String ref = "f58ab18a90460cd297249bc80b13d84b2671bf0c";
-        URI sourceURI = URI.create("https://github.com/owner/repo/tree/" + ref + "/cases");
+        String downloadURL = "https://raw.githubusercontent.com/owner/repo/" + ref + "/cases/sample.sql";
+        Map<String, String> fileResponse = new LinkedHashMap<>(3, 1F);
+        fileResponse.put("name", "sample.sql");
+        fileResponse.put("type", "file");
+        fileResponse.put("download_url", downloadURL);
         String childURL = "https://github.com/owner/repo/tree/" + ref + "/cases/nested";
-        URI childURI = URI.create(childURL);
+        Map<String, String> directoryResponse = new LinkedHashMap<>(3, 1F);
+        directoryResponse.put("name", "nested");
+        directoryResponse.put("type", "dir");
+        directoryResponse.put("html_url", childURL);
+        String childDownloadURL = "https://raw.githubusercontent.com/owner/repo/" + ref + "/cases/nested/child.sql";
+        Map<String, String> childResponse = new LinkedHashMap<>(3, 1F);
+        childResponse.put("name", "child.sql");
+        childResponse.put("type", "file");
+        childResponse.put("download_url", childDownloadURL);
         String apiURL = "https://api.github.com/repos/owner/repo/contents/cases?ref=" + ref;
         String childApiURL = "https://api.github.com/repos/owner/repo/contents/cases/nested?ref=" + ref;
-        String downloadURL = "https://raw.githubusercontent.com/owner/repo/" + ref + "/cases/sample.sql";
-        String childDownloadURL = "https://raw.githubusercontent.com/owner/repo/" + ref + "/cases/nested/child.sql";
-        String content = "[{\"name\":\"sample.sql\",\"type\":\"file\",\"download_url\":\"" + downloadURL + "\"},{\"name\":\"nested\",\"type\":\"dir\",\"html_url\":\"" + childURL + "\"}]";
-        String childContent = "[{\"name\":\"child.sql\",\"type\":\"file\",\"download_url\":\"" + childDownloadURL + "\"}]";
+        URI sourceURI = URI.create("https://github.com/owner/repo/tree/" + ref + "/cases");
+        URI childURI = URI.create(childURL);
         try (MockedStatic<URI> uriMock = mockStatic(URI.class)) {
-            mockContent(uriMock, apiURL, content);
-            mockContent(uriMock, childApiURL, childContent);
+            mockContent(uriMock, apiURL, JsonEngine.marshal(Arrays.asList(fileResponse, directoryResponse)));
+            mockContent(uriMock, childApiURL, JsonEngine.marshal(Collections.singletonList(childResponse)));
             uriMock.when(() -> URI.create(childURL)).thenReturn(childURI);
             Collection<FileSummary> actual = new GitHubTestParameterLoadStrategy().loadSQLCaseFileSummaries(sourceURI);
             assertThat(actual.stream().map(FileSummary::getFileName).collect(Collectors.toList()), is(Arrays.asList("sample.sql", "child.sql")));
