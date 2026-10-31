@@ -17,20 +17,21 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory;
 
+import com.google.common.io.CharStreams;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -45,6 +46,7 @@ import java.util.Calendar;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -361,11 +363,53 @@ class JDBCMemoryQueryResultTest {
     }
     
     @Test
-    void assertGetCharacterStream() throws SQLException, IOException {
-        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(mockResultSet(), databaseType);
+    void assertGetCharacterStreamWithVarchar() throws SQLException, IOException {
+        ResultSet resultSet = getMockedResultSet(Types.VARCHAR);
+        when(resultSet.getString(1)).thenReturn("foo_value");
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
         queryResult.next();
-        Reader reader = queryResult.getCharacterStream(1);
-        assertThat(reader.read(), is(new BufferedReader(new InputStreamReader(getInputStream(1))).read()));
+        assertThat(CharStreams.toString(queryResult.getCharacterStream(1)), is("foo_value"));
+        assertFalse(queryResult.wasNull());
+    }
+    
+    @Test
+    void assertGetCharacterStreamWithClob() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.CLOB);
+        Clob clob = mock(Clob.class);
+        Reader expectedReader = new StringReader("foo_value");
+        when(clob.getCharacterStream()).thenReturn(expectedReader);
+        when(resultSet.getClob(1)).thenReturn(clob);
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
+        queryResult.next();
+        assertThat(queryResult.getCharacterStream(1), sameInstance(expectedReader));
+    }
+    
+    @Test
+    void assertGetCharacterStreamWithVarBinary() throws SQLException, IOException {
+        ResultSet resultSet = getMockedResultSet(Types.VARBINARY);
+        when(resultSet.getBytes(1)).thenReturn("foo_value".getBytes(StandardCharsets.US_ASCII));
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
+        queryResult.next();
+        assertThat(CharStreams.toString(queryResult.getCharacterStream(1)), is("foo_value"));
+    }
+    
+    @Test
+    void assertGetCharacterStreamWithBlob() throws SQLException, IOException {
+        ResultSet resultSet = getMockedResultSet(Types.BLOB);
+        Blob blob = mock(Blob.class);
+        when(blob.getBinaryStream()).thenReturn(new ByteArrayInputStream("foo_value".getBytes(StandardCharsets.US_ASCII)));
+        when(resultSet.getBlob(1)).thenReturn(blob);
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
+        queryResult.next();
+        assertThat(CharStreams.toString(queryResult.getCharacterStream(1)), is("foo_value"));
+    }
+    
+    @Test
+    void assertGetCharacterStreamWithNull() throws SQLException {
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(mockResultSetForWasNull(true), databaseType);
+        queryResult.next();
+        assertNull(queryResult.getCharacterStream(1));
+        assertTrue(queryResult.wasNull());
     }
     
     @Test
