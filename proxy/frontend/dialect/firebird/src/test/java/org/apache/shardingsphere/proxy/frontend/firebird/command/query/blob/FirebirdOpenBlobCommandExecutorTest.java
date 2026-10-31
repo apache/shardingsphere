@@ -29,6 +29,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdLastObjectRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache.BlobSegment;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
@@ -81,6 +82,7 @@ class FirebirdOpenBlobCommandExecutorTest {
         FirebirdBlobWriteCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobBinaryProtocolValue.unregisterConnection(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @Test
@@ -112,6 +114,14 @@ class FirebirdOpenBlobCommandExecutorTest {
         assertThat(response, isA(FirebirdGenericResponsePacket.class));
         assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(1));
         assertThat(((FirebirdGenericResponsePacket) response).getId(), is(0L));
+    }
+    
+    @Test
+    void assertExecuteAfterAllocatedStatement() {
+        FirebirdLastObjectRegistry.getInstance().registerLazySendConnection(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().setLastStatement(CONNECTION_ID, 1);
+        new FirebirdOpenBlobCommandExecutor(packet, connectionSession).execute();
+        assertThat(FirebirdLastObjectRegistry.getInstance().resolveStatementHandle(CONNECTION_ID, 0xFFFF), is(0xFFFF));
     }
     
     @Test

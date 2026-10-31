@@ -19,12 +19,16 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidRequestHandleException;
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdLastObjectRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchStatementManager;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 
 import java.sql.SQLException;
@@ -43,20 +47,32 @@ public final class FirebirdFreeStatementCommandExecutor implements CommandExecut
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
+        int statementId = FirebirdLastObjectRegistry.getInstance().resolveStatementHandle(connectionSession.getConnectionId(), packet.getStatementId());
+        // TODO throw InvalidRequestHandleException when FirebirdFrontendEngine stops marking the transaction as failed for it
+        if (!FirebirdStatementIdGenerator.getInstance().isStatementAllocated(connectionSession.getConnectionId(), statementId)) {
+            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidRequestHandleException(statementId)));
+        }
         switch (packet.getOption()) {
             case FirebirdFreeStatementPacket.DROP:
+                unprepareStatement(statementId);
+                FirebirdStatementIdGenerator.getInstance().releaseStatementId(connectionSession.getConnectionId(), statementId);
+                break;
             case FirebirdFreeStatementPacket.UNPREPARE:
-                connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
-                FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementId());
-                FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), true);
+                unprepareStatement(statementId);
                 break;
             case FirebirdFreeStatementPacket.CLOSE:
-                FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementId());
-                FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), false);
+                FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), statementId);
+                FirebirdStatementResourceCleaner.clean(connectionSession, statementId, false);
                 break;
             default:
                 throw new DatabaseProtocolException("Unknown DSQL option type %d", packet.getOption());
         }
         return Collections.singleton(new FirebirdGenericResponsePacket());
+    }
+    
+    private void unprepareStatement(final int statementId) throws SQLException {
+        connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(statementId);
+        FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), statementId);
+        FirebirdStatementResourceCleaner.clean(connectionSession, statementId, true);
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdLastObjectRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,12 +48,14 @@ class FirebirdAllocateStatementCommandExecutorTest {
     @BeforeEach
     void setup() {
         FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().registerLazySendConnection(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
     }
     
     @AfterEach
     void tearDown() {
         FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @Test
@@ -62,5 +65,6 @@ class FirebirdAllocateStatementCommandExecutorTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle(), is(1));
+        assertThat(FirebirdLastObjectRegistry.getInstance().resolveStatementHandle(CONNECTION_ID, 0xFFFF), is(1));
     }
 }
