@@ -324,8 +324,99 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPacketPayload arithmeticPayload = mock(FirebirdPacketPayload.class);
         when(arithmeticPayload.getCharset()).thenReturn(StandardCharsets.UTF_8);
         actualReturnPacket.getDescribeSelect().get(1).write(arithmeticPayload);
-        verify(arithmeticPayload).writeBytes("+".getBytes(StandardCharsets.UTF_8));
-        verify(arithmeticPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        verify(arithmeticPayload).writeBytes("ADD".getBytes(StandardCharsets.UTF_8));
+        verify(arithmeticPayload).writeInt4LE(FirebirdBinaryColumnType.INT64.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeArithmeticExpressions() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT id - 1, id * 2, id / 2, id + 1 - 2 AS shifted FROM foo_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.SELECT,
+                FirebirdSQLInfoPacketType.FIELD,
+                FirebirdSQLInfoPacketType.FIELD,
+                FirebirdSQLInfoPacketType.ALIAS,
+                FirebirdSQLInfoPacketType.ALIAS,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(4));
+        verify(writeArithmeticColumn(actualReturnPacket.getDescribeSelect().get(0)), times(2)).writeBytes("SUBTRACT".getBytes(StandardCharsets.UTF_8));
+        verify(writeArithmeticColumn(actualReturnPacket.getDescribeSelect().get(1)), times(2)).writeBytes("MULTIPLY".getBytes(StandardCharsets.UTF_8));
+        verify(writeArithmeticColumn(actualReturnPacket.getDescribeSelect().get(2)), times(2)).writeBytes("DIVIDE".getBytes(StandardCharsets.UTF_8));
+        FirebirdPacketPayload aliasPayload = writeArithmeticColumn(actualReturnPacket.getDescribeSelect().get(3));
+        verify(aliasPayload).writeBytes("SUBTRACT".getBytes(StandardCharsets.UTF_8));
+        verify(aliasPayload).writeBytes("shifted".getBytes(StandardCharsets.UTF_8));
+    }
+    
+    private FirebirdPacketPayload writeArithmeticColumn(final FirebirdReturnColumnPacket columnPacket) {
+        FirebirdPacketPayload result = mock(FirebirdPacketPayload.class);
+        when(result.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        columnPacket.write(result);
+        verify(result).writeInt4LE(FirebirdBinaryColumnType.INT64.getValue() + 1);
+        return result;
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("describeArithmeticExpressionTypeArguments")
+    void assertDescribeArithmeticExpressionType(final String name, final String sql, final FirebirdBinaryColumnType columnType) throws Exception {
+        ShardingSphereColumn startDateColumn = new ShardingSphereColumn("start_date", Types.DATE, false, false, false, true, false, true);
+        ShardingSphereColumn endDateColumn = new ShardingSphereColumn("end_date", Types.DATE, false, false, false, true, false, true);
+        ShardingSphereColumn startTimeColumn = new ShardingSphereColumn("start_time", Types.TIME, false, false, false, true, false, true);
+        ShardingSphereColumn createdAtColumn = new ShardingSphereColumn("created_at", Types.TIMESTAMP, false, false, false, true, false, true);
+        ShardingSphereColumn priceColumn = new ShardingSphereColumn("price", Types.DOUBLE, false, false, false, true, false, true);
+        ProxyContext.getInstance().getContextManager().getDatabase("foo_db").getSchema("foo_db").putTable(new ShardingSphereTable("bar_tbl",
+                Arrays.asList(startDateColumn, endDateColumn, startTimeColumn, createdAtColumn, priceColumn), Collections.emptyList(), Collections.emptyList()));
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.SELECT,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(payload);
+        verify(payload).writeInt4LE(columnType.getValue() + 1);
+        verify(payload).writeInt4LE(columnType.getLength());
+    }
+    
+    private static Stream<Arguments> describeArithmeticExpressionTypeArguments() {
+        return Stream.of(
+                Arguments.of("Integer arithmetic", "SELECT id * 2 FROM foo_tbl", FirebirdBinaryColumnType.INT64),
+                Arguments.of("Date subtraction", "SELECT end_date - start_date FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Nested date subtraction", "SELECT start_date + 1 - end_date FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Date plus integer", "SELECT start_date + 1 FROM bar_tbl", FirebirdBinaryColumnType.DATE),
+                Arguments.of("Time plus integer", "SELECT start_time + 60 FROM bar_tbl", FirebirdBinaryColumnType.TIME),
+                Arguments.of("Timestamp subtraction", "SELECT created_at - start_date FROM bar_tbl", FirebirdBinaryColumnType.NUMERIC),
+                Arguments.of("Current date subtraction", "SELECT CURRENT_DATE - CURRENT_DATE FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Date minus current date", "SELECT end_date - CURRENT_DATE FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Date minus local timestamp", "SELECT end_date - LOCALTIMESTAMP FROM bar_tbl", FirebirdBinaryColumnType.NUMERIC),
+                Arguments.of("Cast date subtraction", "SELECT CAST('2026-10-28' AS DATE) - CAST(start_date AS DATE) FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Cast timestamp minus date", "SELECT CAST(created_at AS TIMESTAMP) - end_date FROM bar_tbl", FirebirdBinaryColumnType.NUMERIC),
+                Arguments.of("Cast double arithmetic", "SELECT CAST(2 AS DOUBLE PRECISION) * 2 FROM bar_tbl", FirebirdBinaryColumnType.DOUBLE),
+                Arguments.of("Null arithmetic", "SELECT NULL + NULL FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Date minus null", "SELECT end_date - NULL FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Null minus current date", "SELECT NULL - CURRENT_DATE FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Coalesce date subtraction", "SELECT COALESCE(end_date, start_date) - COALESCE(NULL, start_date) FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Nullif date subtraction", "SELECT NULLIF(end_date, start_date) - NULLIF(start_date, end_date) FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Case date subtraction", "SELECT CASE WHEN price > 0 THEN end_date ELSE start_date END - start_date FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Subquery date subtraction", "SELECT (SELECT start_date FROM bar_tbl) - end_date FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Aggregation subquery date subtraction", "SELECT (SELECT MAX(end_date) FROM bar_tbl) - start_date FROM bar_tbl", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Insert returning date subtraction", "INSERT INTO bar_tbl (price) VALUES (1) RETURNING end_date - CURRENT_DATE", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Update returning date subtraction", "UPDATE bar_tbl SET price = 2 RETURNING end_date - CURRENT_DATE", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Delete returning date subtraction", "DELETE FROM bar_tbl RETURNING end_date - CURRENT_DATE", FirebirdBinaryColumnType.LONG),
+                Arguments.of("Returning date plus integer", "UPDATE bar_tbl SET price = 2 RETURNING end_date + 1", FirebirdBinaryColumnType.DATE),
+                Arguments.of("Approximate numeric arithmetic", "SELECT price * 2 FROM bar_tbl", FirebirdBinaryColumnType.DOUBLE));
     }
     
     @Test

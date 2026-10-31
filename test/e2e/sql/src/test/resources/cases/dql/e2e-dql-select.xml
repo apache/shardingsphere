@@ -40,6 +40,22 @@
         <assertion parameters="12:int, 1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
+    <test-case sql="SELECT order_id, order_id + 1, order_id - 1, user_id * 2, user_id / 2, merchant_id + 1 FROM t_order WHERE user_id = ? ORDER BY order_id" db-types="Firebird" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT order_id, order_id + 1 - 2 AS shifted_id, (user_id + 1) * 2 AS doubled_user_id FROM t_order WHERE user_id = ? ORDER BY order_id" db-types="Firebird" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT order_id, creation_date - creation_date, creation_date + 1, COALESCE(creation_date, creation_date) - creation_date, creation_date - NULL FROM t_order WHERE user_id = ? ORDER BY order_id" db-types="Firebird" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT RDB$RELATION_ID + 1 AS next_relation_id, RDB$RELATION_ID * 2 FROM RDB$DATABASE" db-types="Firebird" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
     <test-case sql="SELECT * FROM t_order WHERE order_id = ? AND order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, 1001:int" expected-data-source-name="read_dataset" />
     </test-case>

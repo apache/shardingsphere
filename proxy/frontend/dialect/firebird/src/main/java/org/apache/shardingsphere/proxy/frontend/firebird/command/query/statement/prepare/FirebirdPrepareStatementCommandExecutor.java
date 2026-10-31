@@ -64,6 +64,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -71,10 +72,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -248,7 +255,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) each).getOriginalColumn().getValue());
                 processColumn(describeColumns, requestedItems, table, column, ((ColumnProjection) each).getOwner().orElse(null), each.getAlias().orElse(null), ++columnCount);
             } else if (each instanceof ExpressionProjection) {
-                processExpressionProjection((ExpressionProjection) each, describeColumns, requestedItems, ++columnCount);
+                processExpressionProjection((ExpressionProjection) each, sqlStatementContext, database, schema, describeColumns, requestedItems, ++columnCount);
             } else if (each instanceof AggregationProjection) {
                 String functionName = ((AggregationProjection) each).getType().name();
                 processCustomColumn(null, functionName, each.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, ++columnCount);
@@ -457,29 +464,20 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return false;
     }
     
-    private void processExpressionProjection(final ExpressionProjection expr, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,
-                                             final int columnCount) {
+    private void processExpressionProjection(final ExpressionProjection expr, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                             final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
+                                             final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
         ExpressionSegment exprSegment = expr.getExpressionSegment().getExpr();
         if (exprSegment instanceof FunctionSegment) {
             String functionName = ((FunctionSegment) exprSegment).getFunctionName();
             processCustomColumn(null, functionName, expr.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, columnCount);
         } else if (exprSegment instanceof BinaryOperationExpression) {
             String operationName = getOperationName(((BinaryOperationExpression) exprSegment).getOperator());
-            int operationType = getOperationType(((BinaryOperationExpression) exprSegment).getOperator());
+            int operationType = getOperationType((BinaryOperationExpression) exprSegment, sqlStatementContext, database, schema);
             processCustomColumn(null, operationName, expr.getAlias().orElse(null), operationType, describeColumns, requestedItems, columnCount);
         } else if (exprSegment instanceof LiteralExpressionSegment) {
             Object value = ((LiteralExpressionSegment) exprSegment).getLiterals();
-            int type = Types.NULL;
-            if (value instanceof String) {
-                type = Types.VARCHAR;
-            } else if (value instanceof Integer) {
-                type = Types.INTEGER;
-            } else if (value instanceof Long) {
-                type = Types.BIGINT;
-            } else if (value instanceof Number) {
-                type = Types.NUMERIC;
-            }
-            processLiteralColumn(value, expr.getAlias().orElse(null), type, describeColumns, requestedItems, columnCount);
+            processLiteralColumn(value, expr.getAlias().orElse(null), getLiteralType(value), describeColumns, requestedItems, columnCount);
         }
     }
     
@@ -494,7 +492,12 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             case "gen_id":
             case "count":
                 return Types.BIGINT;
+            case "current_date":
+                return Types.DATE;
+            case "localtime":
+                return Types.TIME;
             case "current_timestamp":
+            case "localtimestamp":
                 return Types.TIMESTAMP;
             default:
                 return Types.INTEGER;
@@ -502,11 +505,207 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private String getOperationName(final String operationType) {
-        return "||".equals(operationType) ? "CONCATENATION" : operationType;
+        switch (operationType) {
+            case "||":
+                return "CONCATENATION";
+            case "+":
+                return "ADD";
+            case "-":
+                return "SUBTRACT";
+            case "*":
+                return "MULTIPLY";
+            case "/":
+                return "DIVIDE";
+            default:
+                return operationType;
+        }
     }
     
-    private int getOperationType(final String operationType) {
-        return "||".equals(operationType) ? Types.VARCHAR : Types.INTEGER;
+    private int getOperationType(final BinaryOperationExpression expr, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                 final Supplier<Optional<ShardingSphereSchema>> schema) {
+        switch (expr.getOperator()) {
+            case "||":
+                return Types.VARCHAR;
+            case "+":
+            case "-":
+            case "*":
+            case "/":
+                return getArithmeticOperationType(expr, sqlStatementContext, database, schema);
+            default:
+                return Types.INTEGER;
+        }
+    }
+    
+    private int getArithmeticOperationType(final BinaryOperationExpression expr, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                           final Supplier<Optional<ShardingSphereSchema>> schema) {
+        if (expr.getLeft() instanceof CommonExpressionSegment || expr.getRight() instanceof CommonExpressionSegment || isNullLiteral(expr.getLeft()) && isNullLiteral(expr.getRight())) {
+            return Types.INTEGER;
+        }
+        int leftType = getOperandType(expr.getLeft(), sqlStatementContext, database, schema);
+        int rightType = getOperandType(expr.getRight(), sqlStatementContext, database, schema);
+        return getArithmeticType(expr.getOperator(), isNullLiteral(expr.getLeft()) ? rightType : leftType, isNullLiteral(expr.getRight()) ? leftType : rightType);
+    }
+    
+    private int getOperandType(final ExpressionSegment operand, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                               final Supplier<Optional<ShardingSphereSchema>> schema) {
+        if (operand instanceof ColumnSegment) {
+            return getColumnType(((ColumnSegment) operand).getColumnBoundInfo(), sqlStatementContext, database, schema);
+        }
+        if (operand instanceof LiteralExpressionSegment) {
+            return getLiteralType(((LiteralExpressionSegment) operand).getLiterals());
+        }
+        if (operand instanceof FunctionSegment) {
+            return getFunctionOperandType((FunctionSegment) operand, sqlStatementContext, database, schema);
+        }
+        if (operand instanceof BinaryOperationExpression) {
+            return getOperationType((BinaryOperationExpression) operand, sqlStatementContext, database, schema);
+        }
+        if (operand instanceof AggregationProjectionSegment) {
+            return getAggregationType((AggregationProjectionSegment) operand, sqlStatementContext, database, schema);
+        }
+        if (operand instanceof SubqueryExpressionSegment) {
+            return getSubqueryType(((SubqueryExpressionSegment) operand).getSubquery().getSelect(), sqlStatementContext, database, schema);
+        }
+        return Types.NULL;
+    }
+    
+    private int getColumnType(final ColumnSegmentBoundInfo boundInfo, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                              final Supplier<Optional<ShardingSphereSchema>> schema) {
+        String tableName = boundInfo.getOriginalTable().getValue();
+        if (tableName.isEmpty() && null != returningSegment) {
+            tableName = getTableNames(sqlStatementContext).stream().findFirst().orElse("");
+        }
+        if (tableName.isEmpty()) {
+            return Types.NULL;
+        }
+        ShardingSphereColumn column = getTable(tableName, database, schema).getColumn(boundInfo.getOriginalColumn().getValue());
+        return null == column ? Types.NULL : column.getDataType();
+    }
+    
+    private int getFunctionOperandType(final FunctionSegment function, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                       final Supplier<Optional<ShardingSphereSchema>> schema) {
+        switch (function.getFunctionName().toLowerCase(Locale.ENGLISH)) {
+            case "cast":
+                return getCastType(function);
+            case "coalesce":
+            case "nullif":
+                return getFirstTypedParameterType(function.getParameters(), sqlStatementContext, database, schema);
+            default:
+                return getFunctionType(function.getFunctionName());
+        }
+    }
+    
+    private int getCastType(final FunctionSegment castFunction) {
+        for (ExpressionSegment each : castFunction.getParameters()) {
+            if (each instanceof DataTypeSegment) {
+                return getDataTypeNameType(((DataTypeSegment) each).getDataTypeName());
+            }
+        }
+        return Types.NULL;
+    }
+    
+    private int getDataTypeNameType(final String dataTypeName) {
+        switch (dataTypeName.toUpperCase(Locale.ENGLISH)) {
+            case "DATE":
+                return Types.DATE;
+            case "TIME":
+                return Types.TIME;
+            case "TIMESTAMP":
+                return Types.TIMESTAMP;
+            case "TIME WITH TIME ZONE":
+                return Types.TIME_WITH_TIMEZONE;
+            case "TIMESTAMP WITH TIME ZONE":
+                return Types.TIMESTAMP_WITH_TIMEZONE;
+            case "FLOAT":
+            case "REAL":
+            case "DOUBLE PRECISION":
+                return Types.DOUBLE;
+            default:
+                return Types.NULL;
+        }
+    }
+    
+    private int getFirstTypedParameterType(final Collection<ExpressionSegment> parameters, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                           final Supplier<Optional<ShardingSphereSchema>> schema) {
+        for (ExpressionSegment each : parameters) {
+            int result = getOperandType(each, sqlStatementContext, database, schema);
+            if (Types.NULL != result) {
+                return result;
+            }
+        }
+        return Types.NULL;
+    }
+    
+    private int getAggregationType(final AggregationProjectionSegment aggregation, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                   final Supplier<Optional<ShardingSphereSchema>> schema) {
+        AggregationType type = aggregation.getType();
+        return AggregationType.MAX == type || AggregationType.MIN == type ? getFirstTypedParameterType(aggregation.getParameters(), sqlStatementContext, database, schema) : Types.NULL;
+    }
+    
+    private int getSubqueryType(final SelectStatement subquery, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                final Supplier<Optional<ShardingSphereSchema>> schema) {
+        List<ProjectionSegment> projections = subquery.getProjections().getProjections();
+        if (1 != projections.size()) {
+            return Types.NULL;
+        }
+        ProjectionSegment projection = projections.get(0);
+        if (projection instanceof ColumnProjectionSegment) {
+            return getOperandType(((ColumnProjectionSegment) projection).getColumn(), sqlStatementContext, database, schema);
+        }
+        if (projection instanceof ExpressionProjectionSegment) {
+            return getOperandType(((ExpressionProjectionSegment) projection).getExpr(), sqlStatementContext, database, schema);
+        }
+        return projection instanceof AggregationProjectionSegment ? getOperandType((AggregationProjectionSegment) projection, sqlStatementContext, database, schema) : Types.NULL;
+    }
+    
+    private boolean isNullLiteral(final ExpressionSegment operand) {
+        return operand instanceof LiteralExpressionSegment && null == ((LiteralExpressionSegment) operand).getLiterals();
+    }
+    
+    private int getArithmeticType(final String operator, final int leftType, final int rightType) {
+        if (isDateTimeType(leftType) && isDateTimeType(rightType)) {
+            if (!"-".equals(operator)) {
+                return Types.TIMESTAMP;
+            }
+            return Types.DATE == leftType && Types.DATE == rightType ? Types.INTEGER : Types.NUMERIC;
+        }
+        if (isDateTimeType(leftType)) {
+            return leftType;
+        }
+        if (isDateTimeType(rightType)) {
+            return rightType;
+        }
+        return isApproximateNumericType(leftType) || isApproximateNumericType(rightType) ? Types.DOUBLE : Types.BIGINT;
+    }
+    
+    private boolean isDateTimeType(final int dataType) {
+        switch (dataType) {
+            case Types.DATE:
+            case Types.TIME:
+            case Types.TIMESTAMP:
+            case Types.TIME_WITH_TIMEZONE:
+            case Types.TIMESTAMP_WITH_TIMEZONE:
+                return true;
+            default:
+                return false;
+        }
+    }
+    
+    private boolean isApproximateNumericType(final int dataType) {
+        return Types.FLOAT == dataType || Types.REAL == dataType || Types.DOUBLE == dataType;
+    }
+    
+    private int getLiteralType(@Nullable final Object value) {
+        if (value instanceof String) {
+            return Types.VARCHAR;
+        }
+        if (value instanceof Integer) {
+            return Types.INTEGER;
+        }
+        if (value instanceof Long) {
+            return Types.BIGINT;
+        }
+        return value instanceof Number ? Types.NUMERIC : Types.NULL;
     }
     
     @HighFrequencyInvocation
