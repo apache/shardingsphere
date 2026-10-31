@@ -54,6 +54,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
@@ -229,13 +230,18 @@ class MigrationJobExecutorCallbackTest {
     }
     
     private String createSourceDataSourceYaml(final int maxPoolSize, final int maximumPoolSize) {
-        return SOURCE_DATA_SOURCE_NAME + ":\n"
-                + "  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
-                + "  url: " + SOURCE_JDBC_URL + "\n"
-                + "  username: root\n"
-                + "  password: root\n"
-                + "  maxPoolSize: " + maxPoolSize + "\n"
-                + "  maximumPoolSize: " + maximumPoolSize + "\n";
+        return YamlEngine.marshal(Collections.singletonMap(SOURCE_DATA_SOURCE_NAME, createDataSourceProperties(SOURCE_JDBC_URL, maxPoolSize, maximumPoolSize)));
+    }
+    
+    private Map<String, Object> createDataSourceProperties(final String jdbcUrl, final int maxPoolSize, final int maximumPoolSize) {
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        result.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
+        result.put("url", jdbcUrl);
+        result.put("username", "root");
+        result.put("password", "root");
+        result.put("maxPoolSize", maxPoolSize);
+        result.put("maximumPoolSize", maximumPoolSize);
+        return result;
     }
     
     private void mockProxyContext(final MockedStatic<PipelineContextManager> pipelineContextManager) {
@@ -300,17 +306,6 @@ class MigrationJobExecutorCallbackTest {
         result.setDatabaseName(DATABASE_NAME);
         result.setDataSources(Collections.singletonMap(TARGET_DATA_SOURCE_NAME, createDataSourceProperties(TARGET_JDBC_URL, maxPoolSize, maximumPoolSize)));
         result.setRules(Collections.emptyList());
-        return result;
-    }
-    
-    private Map<String, Object> createDataSourceProperties(final String jdbcUrl, final int maxPoolSize, final int maximumPoolSize) {
-        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
-        result.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
-        result.put("url", jdbcUrl);
-        result.put("username", "root");
-        result.put("password", "root");
-        result.put("maxPoolSize", maxPoolSize);
-        result.put("maximumPoolSize", maximumPoolSize);
         return result;
     }
     

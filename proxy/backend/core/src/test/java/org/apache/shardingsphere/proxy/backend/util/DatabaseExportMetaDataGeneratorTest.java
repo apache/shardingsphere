@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.util;
 
 import org.apache.shardingsphere.distsql.handler.executor.configuration.export.DatabaseExportMetaDataGenerator;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.synonym.ConnectionPropertySynonyms;
@@ -26,8 +27,11 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,9 +41,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -73,6 +80,7 @@ class DatabaseExportMetaDataGeneratorTest {
         assertThat(actual, not(containsString("idleTimeout")));
         assertThat(actual, containsString("rules:"));
         assertThat(actual, containsString("defaultDataSource: write_ds"));
+        assertThat(YamlEngine.unmarshal(actual, YamlDatabaseConfiguration.class).getRules().size(), is(1));
     }
     
     private ShardingSphereDatabase mockDatabase() {
@@ -121,5 +129,72 @@ class DatabaseExportMetaDataGeneratorTest {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
         result.setDefaultDataSource("write_ds");
         return result;
+    }
+    
+    @ParameterizedTest(name = "{index}: {0}")
+    @ValueSource(strings = {"foo: bar # baz\n'quoted' \"value\" \\中", "null", "true", "00123"})
+    void assertGenerateYAMLFormatWithSpecialCharacters(final String value) {
+        ShardingSphereDatabase database = mockEmptyDatabase();
+        when(database.getName()).thenReturn(value);
+        Map<String, Object> expectedProps = new LinkedHashMap<>(5, 1F);
+        expectedProps.put("url", value);
+        expectedProps.put("username", value);
+        expectedProps.put("password", value);
+        expectedProps.put("maxPoolSize", 30);
+        expectedProps.put("readOnly", true);
+        Map<String, Object> props = new LinkedHashMap<>(expectedProps);
+        props.put("minPoolSize", null);
+        props.put("connectionInitSql", "SELECT 1");
+        Map<String, StorageUnit> storageUnits = mockStorageUnits(Collections.singletonMap(value, new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", props)));
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
+        Map<?, ?> actual = YamlEngine.unmarshal(new DatabaseExportMetaDataGenerator(database).generateYAMLFormat(), Map.class);
+        assertThat(actual.get("databaseName"), is(value));
+        Map<?, ?> actualDataSources = (Map<?, ?>) actual.get("dataSources");
+        assertThat(actualDataSources.keySet(), contains(value));
+        assertThat(actualDataSources.get(value), is(expectedProps));
+    }
+    
+    @Test
+    void assertGenerateYAMLFormatWithDataSourceOrderAndPoolTypes() {
+        ShardingSphereDatabase database = mockEmptyDatabase();
+        Map<String, Object> props = new LinkedHashMap<>(4, 1F);
+        props.put("password", "");
+        props.put("maxPoolSize", 30);
+        props.put("connectionTimeoutMilliseconds", 30000L);
+        props.put("readOnly", false);
+        Map<String, DataSourcePoolProperties> dataSources = new LinkedHashMap<>(2, 1F);
+        dataSources.put("foo_ds", new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", props));
+        dataSources.put("bar_ds", createDataSourcePoolProperties());
+        Map<String, StorageUnit> storageUnits = mockStorageUnits(dataSources);
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
+        String actualYaml = new DatabaseExportMetaDataGenerator(database).generateYAMLFormat();
+        Map<?, ?> actual = YamlEngine.unmarshal(actualYaml, Map.class);
+        assertThat(((Map<?, ?>) actual.get("dataSources")).keySet(), contains("foo_ds", "bar_ds"));
+        YamlDatabaseConfiguration actualConfig = YamlEngine.unmarshal(actualYaml, YamlDatabaseConfiguration.class);
+        assertThat(actualConfig.getDataSources().get("foo_ds").getPassword(), is(""));
+        assertThat(actualConfig.getDataSources().get("foo_ds").getMaxPoolSize(), is(30));
+        assertThat(actualConfig.getDataSources().get("foo_ds").getConnectionTimeoutMilliseconds(), is(30000L));
+        assertFalse(actualConfig.getDataSources().get("foo_ds").getReadOnly());
+    }
+    
+    @Test
+    void assertGenerateYAMLFormatWithEmptyDataSource() {
+        ShardingSphereDatabase database = mockEmptyDatabase();
+        Map<String, Object> props = new LinkedHashMap<>(1, 1F);
+        props.put("url", null);
+        Map<String, StorageUnit> storageUnits = mockStorageUnits(Collections.singletonMap("foo_ds", new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", props)));
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
+        Map<?, ?> actual = YamlEngine.unmarshal(new DatabaseExportMetaDataGenerator(database).generateYAMLFormat(), Map.class);
+        Map<?, ?> actualDataSources = (Map<?, ?>) actual.get("dataSources");
+        assertThat(actualDataSources.keySet(), contains("foo_ds"));
+        assertNull(actualDataSources.get("foo_ds"));
+    }
+    
+    @Test
+    void assertGenerateYAMLFormatWithOnlyEmptyRules() {
+        ShardingSphereDatabase database = mockEmptyDatabase();
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(new SingleRuleConfiguration()));
+        Map<?, ?> actual = YamlEngine.unmarshal(new DatabaseExportMetaDataGenerator(database).generateYAMLFormat(), Map.class);
+        assertThat(actual.keySet(), contains("databaseName"));
     }
 }
