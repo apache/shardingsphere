@@ -28,11 +28,13 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.datat
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -44,8 +46,13 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class PostgreSQLMetaDataLoaderTest {
@@ -75,13 +82,17 @@ class PostgreSQLMetaDataLoaderTest {
                     + " FROM pg_constraint pgc JOIN pg_class tbl ON tbl.oid = pgc.conrelid JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace"
                     + " JOIN pg_class ref ON ref.oid = pgc.confrelid WHERE pgc.contype = 'f' AND tnsp.nspname IN ('public')";
     
-    private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_name FROM information_schema.role_table_grants";
+    private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_schema, table_name FROM information_schema.role_table_grants";
     
     private static final String LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL = LOAD_ALL_ROLE_TABLE_GRANTS_SQL + " WHERE table_name IN ('tbl')";
     
     private static final String VIEW_META_DATA_SQL_WITHOUT_TABLES = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN ('public') and table_name IN ()";
     
     private static final String VIEW_META_DATA_SQL_WITH_TABLES = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN ('public') and table_name IN ('tbl')";
+    
+    private static final String ZERO_COLUMN_TABLE_META_DATA_SQL = "SELECT n.nspname AS table_schema, c.relname AS table_name FROM pg_catalog.pg_class c"
+            + " JOIN pg_catalog.pg_namespace n ON c.relnamespace = n.oid WHERE (n.nspname, c.relname) IN (%s)"
+            + " AND NOT EXISTS (SELECT 1 FROM pg_catalog.pg_attribute a WHERE a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped)";
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
@@ -90,9 +101,8 @@ class PostgreSQLMetaDataLoaderTest {
     @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadArguments")
-    void assertLoad(final String name, final Collection<String> actualTableNames, final String tableMetaDataSQL, final String roleTableGrantsSQL,
-                    final String viewMetaDataSQL, final boolean hasView, final String idColumnDefault, final String idColumnIdentity,
-                    final String secondColumnDefault) throws SQLException {
+    void assertLoad(final String name, final Collection<String> actualTableNames, final String tableMetaDataSQL, final String roleTableGrantsSQL, final String grantSchemaName,
+                    final String viewMetaDataSQL, final boolean hasView, final String idColumnDefault, final String idColumnIdentity, final String secondColumnDefault) throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
         when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
@@ -106,12 +116,14 @@ class PostgreSQLMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ADVANCE_INDEX_META_DATA_SQL).executeQuery()).thenReturn(advanceIndexResultSet);
         ResultSet constraintResultSet = mockConstraintMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(BASIC_CONSTRAINT_META_DATA_SQL).executeQuery()).thenReturn(constraintResultSet);
-        ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
+        ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet(grantSchemaName);
         when(dataSource.getConnection().prepareStatement(roleTableGrantsSQL).executeQuery()).thenReturn(roleTableGrantsResultSet);
         ResultSet viewResultSet = mockViewMetaDataResultSet(hasView);
         when(dataSource.getConnection().prepareStatement(viewMetaDataSQL).executeQuery()).thenReturn(viewResultSet);
         DataTypeRegistry.load(dataSource, "PostgreSQL");
+        clearInvocations(dataSource.getConnection());
         assertTableMetaDataMap(metaDataLoader.load(new MetaDataLoaderMaterial(actualTableNames, "foo_ds", dataSource, databaseType, "sharding_db")));
+        verify(dataSource.getConnection(), times(7)).prepareStatement(anyString());
     }
     
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
@@ -191,9 +203,10 @@ class PostgreSQLMetaDataLoaderTest {
         return result;
     }
     
-    private ResultSet mockRoleTableGrantsResultSet() throws SQLException {
+    private ResultSet mockRoleTableGrantsResultSet(final String schemaName) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
+        when(result.getString("table_schema")).thenReturn(schemaName);
         when(result.getString("table_name")).thenReturn("tbl");
         return result;
     }
@@ -247,11 +260,127 @@ class PostgreSQLMetaDataLoaderTest {
     
     private static Stream<Arguments> loadArguments() {
         return Stream.of(
-                Arguments.of("without tables", Collections.emptyList(), TABLE_META_DATA_SQL_WITHOUT_TABLES, LOAD_ALL_ROLE_TABLE_GRANTS_SQL, VIEW_META_DATA_SQL_WITHOUT_TABLES,
+                Arguments.of("without tables", Collections.emptyList(), TABLE_META_DATA_SQL_WITHOUT_TABLES, LOAD_ALL_ROLE_TABLE_GRANTS_SQL, "public", VIEW_META_DATA_SQL_WITHOUT_TABLES,
                         false, "nextval('id_seq'::regclass)", "NO", null),
                 Arguments.of("with identity and view table", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES, LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL,
-                        VIEW_META_DATA_SQL_WITH_TABLES, true, null, "YES", null),
+                        "public", VIEW_META_DATA_SQL_WITH_TABLES, true, null, "YES", null),
                 Arguments.of("with non generated default", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES, LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL,
-                        VIEW_META_DATA_SQL_WITH_TABLES, false, "nextval('id_seq'::regclass)", "NO", "'anonymous'"));
+                        "public", VIEW_META_DATA_SQL_WITH_TABLES, false, "nextval('id_seq'::regclass)", "NO", "'anonymous'"),
+                Arguments.of("readable columns with grant in another schema", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES, LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL,
+                        "ignored_schema", VIEW_META_DATA_SQL_WITH_TABLES, false, "nextval('id_seq'::regclass)", "NO", null));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("zeroColumnTableArguments")
+    void assertLoadZeroColumnTable(final String name, final String tableName, final Collection<String> actualTableNames, final String roleTableGrantsSQL) throws SQLException {
+        DataSource dataSource = mockGrantedTableDataSource("public", tableName, roleTableGrantsSQL);
+        PreparedStatement statement = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
+        when(dataSource.getConnection().prepareStatement(String.format(ZERO_COLUMN_TABLE_META_DATA_SQL, "(?, ?)"))).thenReturn(statement);
+        when(statement.executeQuery().next()).thenReturn(true, false);
+        when(statement.executeQuery().getString("table_schema")).thenReturn("public");
+        when(statement.executeQuery().getString("table_name")).thenReturn(tableName);
+        clearInvocations(dataSource.getConnection(), statement);
+        Collection<SchemaMetaData> actual = metaDataLoader.load(new MetaDataLoaderMaterial(actualTableNames, "foo_ds", dataSource, databaseType, "public"));
+        assertThat(actual.size(), is(1));
+        SchemaMetaData actualSchema = actual.iterator().next();
+        assertThat(actualSchema.getName(), is("public"));
+        assertThat(actualSchema.getTables().size(), is(1));
+        TableMetaData actualTable = actualSchema.getTables().iterator().next();
+        assertThat(actualTable.getName(), is(tableName));
+        assertTrue(actualTable.getColumns().isEmpty());
+        assertTrue(actualTable.getIndexes().isEmpty());
+        assertTrue(actualTable.getConstraints().isEmpty());
+        verify(statement).setString(1, "public");
+        verify(statement).setString(2, tableName);
+        verify(statement).executeQuery();
+        verify(dataSource.getConnection(), times(8)).prepareStatement(anyString());
+    }
+    
+    private DataSource mockGrantedTableDataSource(final String schemaName, final String tableName, final String roleTableGrantsSQL) throws SQLException {
+        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
+        when(result.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
+        ResultSet roleTableGrants = mock(ResultSet.class);
+        when(roleTableGrants.next()).thenReturn(true, false);
+        when(roleTableGrants.getString("table_schema")).thenReturn(schemaName);
+        when(roleTableGrants.getString("table_name")).thenReturn(tableName);
+        when(result.getConnection().prepareStatement(roleTableGrantsSQL).executeQuery()).thenReturn(roleTableGrants);
+        return result;
+    }
+    
+    private static Stream<Arguments> zeroColumnTableArguments() {
+        return Stream.of(
+                Arguments.of("pg prefix", "pg_mytable", Collections.emptyList(), LOAD_ALL_ROLE_TABLE_GRANTS_SQL),
+                Arguments.of("ordinary name", "foo_zero", Collections.emptyList(), LOAD_ALL_ROLE_TABLE_GRANTS_SQL),
+                Arguments.of("requested table", "tbl", Collections.singletonList("tbl"), LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL));
+    }
+    
+    @Test
+    void assertLoadUnverifiedZeroColumnCandidate() throws SQLException {
+        DataSource dataSource = mockGrantedTableDataSource("public", "tbl", LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL);
+        PreparedStatement statement = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
+        when(dataSource.getConnection().prepareStatement(String.format(ZERO_COLUMN_TABLE_META_DATA_SQL, "(?, ?)"))).thenReturn(statement);
+        clearInvocations(dataSource.getConnection(), statement);
+        Collection<SchemaMetaData> actual = metaDataLoader.load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, "public"));
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.iterator().next().getTables().isEmpty());
+        verify(statement).executeQuery();
+        verify(dataSource.getConnection(), times(8)).prepareStatement(anyString());
+    }
+    
+    @Test
+    void assertLoadGrantOutsideSchemaScope() throws SQLException {
+        DataSource dataSource = mockGrantedTableDataSource("ignored_schema", "tbl", LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL);
+        clearInvocations(dataSource.getConnection());
+        Collection<SchemaMetaData> actual = metaDataLoader.load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, "public"));
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.iterator().next().getTables().isEmpty());
+        verify(dataSource.getConnection(), times(7)).prepareStatement(anyString());
+    }
+    
+    @Test
+    void assertLoadWithoutGrantedTables() throws SQLException {
+        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
+        when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
+        clearInvocations(dataSource.getConnection());
+        Collection<SchemaMetaData> actual = metaDataLoader.load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, "public"));
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.iterator().next().getTables().isEmpty());
+        verify(dataSource.getConnection(), times(7)).prepareStatement(anyString());
+    }
+    
+    @Test
+    void assertLoadZeroColumnCandidatesInOneBatch() throws SQLException {
+        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
+        when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
+        ResultSet roleTableGrants = mock(ResultSet.class);
+        when(roleTableGrants.next()).thenReturn(true, true, true, false);
+        when(roleTableGrants.getString("table_schema")).thenReturn("public");
+        when(roleTableGrants.getString("table_name")).thenReturn("pg_mytable", "pg_mytable", "foo_zero");
+        when(dataSource.getConnection().prepareStatement(LOAD_ALL_ROLE_TABLE_GRANTS_SQL).executeQuery()).thenReturn(roleTableGrants);
+        PreparedStatement statement = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
+        when(dataSource.getConnection().prepareStatement(String.format(ZERO_COLUMN_TABLE_META_DATA_SQL, "(?, ?), (?, ?)"))).thenReturn(statement);
+        when(statement.executeQuery().next()).thenReturn(true, true, false);
+        when(statement.executeQuery().getString("table_schema")).thenReturn("public");
+        when(statement.executeQuery().getString("table_name")).thenReturn("foo_zero", "pg_mytable");
+        clearInvocations(dataSource.getConnection(), statement);
+        Collection<SchemaMetaData> actual = metaDataLoader.load(new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, databaseType, "public"));
+        assertThat(actual.size(), is(1));
+        Collection<TableMetaData> actualTables = actual.iterator().next().getTables();
+        assertThat(actualTables.size(), is(2));
+        Iterator<TableMetaData> actualTablesIterator = actualTables.iterator();
+        assertThat(actualTablesIterator.next().getName(), is("pg_mytable"));
+        assertThat(actualTablesIterator.next().getName(), is("foo_zero"));
+        for (TableMetaData each : actualTables) {
+            assertTrue(each.getColumns().isEmpty());
+        }
+        verify(statement).setString(1, "public");
+        verify(statement).setString(2, "pg_mytable");
+        verify(statement).setString(3, "public");
+        verify(statement).setString(4, "foo_zero");
+        verify(statement).executeQuery();
+        verify(dataSource.getConnection(), times(8)).prepareStatement(anyString());
     }
 }
