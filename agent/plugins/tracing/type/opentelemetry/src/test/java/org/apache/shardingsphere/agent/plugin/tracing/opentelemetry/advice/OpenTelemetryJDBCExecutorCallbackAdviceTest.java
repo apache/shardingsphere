@@ -212,27 +212,6 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     }
     
     /**
-     * The span of a running invocation must survive the check that releases abandoned spans, however long the invocation takes. The advice
-     * executor skips the completion hooks of an invocation only while the plugin is disabled, so an enabled plugin leaves every registered
-     * span untouched and the invocation still ends its own span with its own outcome.
-     */
-    @Test
-    @SneakyThrows(ReflectiveOperationException.class)
-    void assertRunningInvocationKeepsItsSpan() {
-        OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
-        JDBCExecutionUnit slowExecutionUnit = new JDBCExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit("SELECT 3", Collections.emptyList())), null, executionUnit.getStorageResource());
-        advice.beforeMethod(targetObject, null, new Object[]{slowExecutionUnit, false}, "OpenTelemetry");
-        OpenTelemetryJDBCExecutorCallbackAdvice.endAbandonedSpans();
-        assertThat(getPendingSpans().size(), is(1));
-        assertTrue(testExporter.getFinishedSpanItems().isEmpty());
-        advice.afterMethod(targetObject, null, new Object[]{slowExecutionUnit, false}, null, "OpenTelemetry");
-        Collection<SpanData> actualSpanItems = testExporter.getFinishedSpanItems();
-        assertThat(actualSpanItems.size(), is(1));
-        assertThat(actualSpanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.OK));
-        assertTrue(getPendingSpans().isEmpty());
-    }
-    
-    /**
      * A span whose completion hooks never ran is released when the plugin stops, so that it does not outlive the tracing it was started for.
      */
     @Test

@@ -28,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.core.context.PluginContext;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingJDBCExecutorCallbackAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
@@ -39,11 +38,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * OpenTelemetry JDBC executor callback advice executor.
@@ -51,36 +45,12 @@ import java.util.concurrent.atomic.AtomicLong;
 public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCExecutorCallbackAdvice<Span> {
     
     /**
-     * Interval of the plugin state check that releases the spans of invocations whose completion hooks were skipped.
-     */
-    private static final long ABANDONED_SPAN_CHECK_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(30L);
-    
-    /**
      * Spans started for an invocation whose completion hooks have not run yet, keyed by the execution unit of that invocation.
      * The per-invocation key keeps concurrent and nested callbacks isolated and leaves nothing to consume for a completion hook
-     * whose {@code beforeMethod} failed before registering a span.
+     * whose {@code beforeMethod} failed before registering a span. An entry is released by the completion hooks of its own invocation,
+     * or by {@link #endAllPendingSpans()} when the plugin stops.
      */
     private static final Map<JDBCExecutionUnit, PendingSpan> PENDING_SPANS = new ConcurrentHashMap<>();
-    
-    /**
-     * Generation of the plugin enablement that a span is registered under. The executor skips the completion hooks of an invocation only
-     * while the plugin is disabled, so advancing the generation marks every span registered so far as abandoned, while a span registered
-     * afterwards belongs to an invocation whose hooks still run.
-     */
-    private static final AtomicLong ENABLE_GENERATION = new AtomicLong();
-    
-    private static final AtomicBoolean DISABLED_OBSERVED = new AtomicBoolean();
-    
-    private static final ScheduledExecutorService ABANDONED_SPAN_RELEASER = Executors.newSingleThreadScheduledExecutor(runnable -> {
-        Thread result = new Thread(runnable, "shardingsphere-opentelemetry-abandoned-span-releaser");
-        result.setDaemon(true);
-        return result;
-    });
-    
-    static {
-        ABANDONED_SPAN_RELEASER.scheduleWithFixedDelay(OpenTelemetryJDBCExecutorCallbackAdvice::endAbandonedSpans, ABANDONED_SPAN_CHECK_INTERVAL_MILLIS, ABANDONED_SPAN_CHECK_INTERVAL_MILLIS,
-                TimeUnit.MILLISECONDS);
-    }
     
     @Override
     protected void recordExecuteInfo(final Span parentSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread,
@@ -98,7 +68,7 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
                 .setAttribute(AttributeConstants.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql())
                 .setAttribute(AttributeConstants.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString())
                 .setAttribute(AttributeConstants.SPAN_KIND, AttributeConstants.SPAN_KIND_CLIENT);
-        PENDING_SPANS.put(executionUnit, new PendingSpan(spanBuilder.startSpan(), ENABLE_GENERATION.get()));
+        PENDING_SPANS.put(executionUnit, new PendingSpan(spanBuilder.startSpan()));
     }
     
     @Override
@@ -128,28 +98,6 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     }
     
     /**
-     * End and release the spans of invocations whose completion hooks will not run, which the advice executor does exactly while the plugin
-     * is disabled. An invocation that is still running keeps its span however long it takes, because the generation it registered under stays
-     * current until the plugin is observed to be disabled.
-     */
-    static void endAbandonedSpans() {
-        if (PluginContext.getInstance().isPluginEnabled()) {
-            DISABLED_OBSERVED.set(false);
-            return;
-        }
-        if (DISABLED_OBSERVED.compareAndSet(false, true)) {
-            ENABLE_GENERATION.incrementAndGet();
-        }
-        long currentGeneration = ENABLE_GENERATION.get();
-        for (Entry<JDBCExecutionUnit, PendingSpan> entry : PENDING_SPANS.entrySet()) {
-            PendingSpan pending = entry.getValue();
-            if (pending.getGeneration() < currentGeneration && PENDING_SPANS.remove(entry.getKey(), pending)) {
-                endSpan(pending);
-            }
-        }
-    }
-    
-    /**
      * End and release every span that is still pending when the plugin stops, so that no span outlives the tracing it was started for.
      */
     public static void endAllPendingSpans() {
@@ -162,17 +110,15 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     }
     
     /**
-     * A span started for one invocation, together with the generation it was registered under and the throwable recorded by a preceding
-     * {@code onThrowing} call. The advice executor invokes {@code onThrowing} before the {@code finally} block invokes {@code afterMethod},
-     * so {@code afterMethod} is the single exit that ends the span and applies its final status.
+     * A span started for one invocation, together with the throwable recorded by a preceding {@code onThrowing} call. The advice executor
+     * invokes {@code onThrowing} before the {@code finally} block invokes {@code afterMethod}, so {@code afterMethod} is the single exit that
+     * ends the span and applies its final status.
      */
     @RequiredArgsConstructor
     @Getter
     private static final class PendingSpan {
         
         private final Span span;
-        
-        private final long generation;
         
         @Setter
         private Throwable throwable;
