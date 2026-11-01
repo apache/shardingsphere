@@ -941,6 +941,9 @@
                 <plugin>
                     <artifactId>maven-site-plugin</artifactId>
                     <version>${maven-site-plugin.version}</version>
+                    <configuration>
+                        <outputTimestamp>${maven.build.timestamp}</outputTimestamp>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-checkstyle-plugin</artifactId>
