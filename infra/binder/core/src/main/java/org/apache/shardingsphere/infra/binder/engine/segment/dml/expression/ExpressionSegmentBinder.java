@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
-import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -92,16 +91,11 @@ public final class ExpressionSegmentBinder {
             return BinaryOperationExpressionBinder.bind((BinaryOperationExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof ExistsSubqueryExpression) {
-            Multimap<CaseInsensitiveString, TableSegmentBinderContext> newOuterTableBinderContexts = LinkedHashMultimap.create();
-            newOuterTableBinderContexts.putAll(outerTableBinderContexts);
-            newOuterTableBinderContexts.putAll(tableBinderContexts);
-            return ExistsSubqueryExpressionBinder.bind((ExistsSubqueryExpression) segment, binderContext, newOuterTableBinderContexts);
+            return ExistsSubqueryExpressionBinder.bind((ExistsSubqueryExpression) segment, binderContext, new ScopedTableSegmentBinderContexts(outerTableBinderContexts, tableBinderContexts));
         }
         if (segment instanceof SubqueryExpressionSegment) {
-            Multimap<CaseInsensitiveString, TableSegmentBinderContext> newOuterTableBinderContexts = LinkedHashMultimap.create();
-            newOuterTableBinderContexts.putAll(outerTableBinderContexts);
-            newOuterTableBinderContexts.putAll(tableBinderContexts);
-            return new SubqueryExpressionSegment(SubquerySegmentBinder.bind(((SubqueryExpressionSegment) segment).getSubquery(), binderContext, newOuterTableBinderContexts));
+            return new SubqueryExpressionSegment(SubquerySegmentBinder.bind(((SubqueryExpressionSegment) segment).getSubquery(), binderContext,
+                    new ScopedTableSegmentBinderContexts(outerTableBinderContexts, tableBinderContexts)));
         }
         if (segment instanceof InExpression) {
             return InExpressionBinder.bind((InExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
