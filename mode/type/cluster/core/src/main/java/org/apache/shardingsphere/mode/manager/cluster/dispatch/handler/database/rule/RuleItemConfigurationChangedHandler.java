@@ -42,18 +42,16 @@ public abstract class RuleItemConfigurationChangedHandler implements DatabaseLea
         if (!databaseRuleNodePath.isPresent()) {
             return;
         }
-        synchronized (contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()) {
-            switch (event.getType()) {
-                case ADDED:
-                case UPDATED:
-                    contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(databaseRuleNodePath.get());
-                    break;
-                case DELETED:
-                    contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());
-                    break;
-                default:
-                    break;
-            }
+        switch (event.getType()) {
+            case ADDED:
+            case UPDATED:
+                contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(databaseRuleNodePath.get());
+                break;
+            case DELETED:
+                contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());
+                break;
+            default:
+                break;
         }
     }
 }

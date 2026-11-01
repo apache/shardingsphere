@@ -62,13 +62,10 @@ import java.util.concurrent.TimeoutException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -111,9 +108,6 @@ class EtcdRepositoryTest {
     @Mock
     private CompletableFuture putFuture;
     
-    @Mock
-    private CompletableFuture<?> deleteFuture;
-    
     @BeforeEach
     void setUp() {
         setClient();
@@ -139,7 +133,6 @@ class EtcdRepositoryTest {
         when(kv.get(any(ByteSequence.class), any(GetOption.class))).thenReturn(getFuture);
         when(kv.put(any(ByteSequence.class), any(ByteSequence.class))).thenReturn(putFuture);
         when(kv.put(any(ByteSequence.class), any(ByteSequence.class), any(PutOption.class))).thenReturn(putFuture);
-        doReturn(deleteFuture).when(kv).delete(any(ByteSequence.class), any(DeleteOption.class));
         when(getFuture.get()).thenReturn(getResponse);
         when(client.getLeaseClient()).thenReturn(lease);
         when(lease.grant(anyLong())).thenReturn(leaseFuture);
@@ -214,24 +207,9 @@ class EtcdRepositoryTest {
     }
     
     @Test
-    void assertDelete() throws ExecutionException, InterruptedException {
+    void assertDelete() {
         repository.delete("key");
         verify(kv).delete(any(ByteSequence.class), any(DeleteOption.class));
-        verify(deleteFuture).get();
-    }
-    
-    @Test
-    void assertDeleteWithInterruptedException() throws ExecutionException, InterruptedException {
-        InterruptedException expected = new InterruptedException();
-        when(deleteFuture.get()).thenThrow(expected);
-        assertThat(assertThrows(InterruptedException.class, () -> repository.delete("foo_key")), sameInstance(expected));
-    }
-    
-    @Test
-    void assertDeleteWithExecutionException() throws ExecutionException, InterruptedException {
-        ExecutionException expected = new ExecutionException(new Exception());
-        when(deleteFuture.get()).thenThrow(expected);
-        assertThat(assertThrows(ExecutionException.class, () -> repository.delete("foo_key")), sameInstance(expected));
     }
     
     @Test
