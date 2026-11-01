@@ -225,6 +225,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.SetSchemaDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -467,6 +468,8 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
                     result.renameTable(((RenameTableDefinitionSegment) each).getRenameTable());
                 } else if (each instanceof RenameColumnSegment) {
                     result.renameColumnDefinition((RenameColumnSegment) each);
+                } else if (each instanceof SetSchemaDefinitionSegment) {
+                    result.setSchemaDefinition((SetSchemaDefinitionSegment) each);
                 }
             }
         }
@@ -504,6 +507,11 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         }
         if (null != ctx.renameTableSpecification()) {
             result.getValue().add((RenameTableDefinitionSegment) visit(ctx.renameTableSpecification()));
+        }
+        if (null != ctx.SCHEMA()) {
+            SetSchemaDefinitionSegment setSchemaDefinition = new SetSchemaDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+            setSchemaDefinition.setSchemaName((IdentifierValue) visit(ctx.name()));
+            result.getValue().add(setSchemaDefinition);
         }
         return result;
     }
@@ -804,6 +812,9 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitFunctionExprWindowless(final FunctionExprWindowlessContext ctx) {
+        if (null != ctx.jsonAggregateFunction()) {
+            return visit(ctx.jsonAggregateFunction());
+        }
         if (null == ctx.funcApplication()) {
             return visit(ctx.functionExprCommonSubexpr());
         }

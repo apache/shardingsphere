@@ -24,10 +24,11 @@ import org.apache.shardingsphere.data.pipeline.cdc.CDCJob;
 import org.apache.shardingsphere.data.pipeline.cdc.CDCJobId;
 import org.apache.shardingsphere.data.pipeline.cdc.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.config.YamlCDCJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.config.YamlCDCJobConfiguration.YamlSinkConfiguration;
-import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.swapper.YamlCDCJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration.SinkConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
+import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckId;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporterManager;
 import org.apache.shardingsphere.data.pipeline.cdc.core.pojo.CDCJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
@@ -35,7 +36,6 @@ import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLineConvertUtils;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.swapper.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
@@ -63,6 +63,7 @@ import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTas
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -110,15 +111,12 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     
     private final YamlRuleConfigurationSwapperEngine ruleConfigSwapperEngine;
     
-    private final YamlPipelineDataSourceConfigurationSwapper pipelineDataSourceConfigSwapper;
-    
     public CDCJobAPI() {
         jobType = new CDCJobType();
         jobManager = new PipelineJobManager(jobType);
         jobConfigManager = new PipelineJobConfigurationManager(jobType.getOption());
         dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
         ruleConfigSwapperEngine = new YamlRuleConfigurationSwapperEngine();
-        pipelineDataSourceConfigSwapper = new YamlPipelineDataSourceConfigurationSwapper();
     }
     
     /**
@@ -131,8 +129,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
      */
     public String create(final StreamDataParameter param, final CDCSinkType sinkType, final Properties sinkProps) {
         PipelineContextKey contextKey = new PipelineContextKey(param.getDatabaseName(), InstanceType.PROXY);
-        YamlCDCJobConfiguration yamlJobConfig = getYamlCDCJobConfiguration(param, sinkType, sinkProps, contextKey);
-        CDCJobConfiguration jobConfig = new YamlCDCJobConfigurationSwapper().swapToObject(yamlJobConfig);
+        CDCJobConfiguration jobConfig = buildJobConfiguration(param, sinkType, sinkProps, contextKey);
         ShardingSpherePreconditions.checkState(0 != jobConfig.getJobShardingCount(), () -> new PipelineJobCreationWithInvalidShardingCountException(jobConfig.getJobId()));
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()));
         if (governanceFacade.getJobFacade().getConfiguration().isExisted(jobConfig.getJobId())) {
@@ -148,6 +145,31 @@ public final class CDCJobAPI implements TransmissionJobAPI {
             }
         }
         return jobConfig.getJobId();
+    }
+    
+    private CDCJobConfiguration buildJobConfiguration(final StreamDataParameter param, final CDCSinkType sinkType, final Properties sinkProps, final PipelineContextKey contextKey) {
+        List<String> schemaTableNames = param.getSchemaTableNames();
+        Collections.sort(schemaTableNames);
+        String jobId = PipelineJobIdUtils.marshal(new CDCJobId(contextKey, schemaTableNames, param.isFull(), sinkType));
+        ShardingSphereDatabase database = PipelineContextManager.getContext(contextKey).getMetaDataContexts().getMetaData().getDatabase(param.getDatabaseName());
+        ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = getDataSourceConfiguration(database);
+        List<JobDataNodeLine> jobDataNodeLines = JobDataNodeLineConvertUtils.convertDataNodesToLines(param.getTableAndDataNodesMap());
+        JobDataNodeLine tableFirstDataNodes = new JobDataNodeLine(param.getTableAndDataNodesMap().entrySet().stream()
+                .map(entry -> new JobDataNodeEntry(entry.getKey(), entry.getValue().subList(0, 1))).collect(Collectors.toList()));
+        return new CDCJobConfiguration(jobId, param.getDatabaseName(), schemaTableNames, param.isFull(), dataSourceConfig.getDatabaseType(), dataSourceConfig,
+                tableFirstDataNodes, jobDataNodeLines, param.isDecodeWithTransaction(), new SinkConfiguration(sinkType, sinkProps), 1, 0);
+    }
+    
+    private ShardingSpherePipelineDataSourceConfiguration getDataSourceConfiguration(final ShardingSphereDatabase database) {
+        Map<String, Map<String, Object>> dataSourcePoolProps = new HashMap<>(database.getResourceMetaData().getStorageUnits().size(), 1F);
+        for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnits().entrySet()) {
+            dataSourcePoolProps.put(entry.getKey(), dataSourceConfigSwapper.swapToMap(entry.getValue().getDataSourcePoolProperties()));
+        }
+        YamlRootConfiguration targetRootConfig = new YamlRootConfiguration();
+        targetRootConfig.setDatabaseName(database.getName());
+        targetRootConfig.setDataSources(dataSourcePoolProps);
+        targetRootConfig.setRules(ruleConfigSwapperEngine.swapToYamlRuleConfigurations(database.getRuleMetaData().getConfigurations()));
+        return new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
     }
     
     private void checkJobConfiguration(final CDCJobConfiguration jobConfig) {
@@ -174,43 +196,6 @@ public final class CDCJobAPI implements TransmissionJobAPI {
             ShardingSpherePreconditions.checkState(tableNames.add(new ShardingSphereIdentifier(tableName)),
                     () -> new PipelineInvalidParameterException(String.format("More than one schema table has the same table name `%s`.", tableName)));
         }
-    }
-    
-    private YamlCDCJobConfiguration getYamlCDCJobConfiguration(final StreamDataParameter param, final CDCSinkType sinkType, final Properties sinkProps, final PipelineContextKey contextKey) {
-        YamlCDCJobConfiguration result = new YamlCDCJobConfiguration();
-        List<String> schemaTableNames = param.getSchemaTableNames();
-        Collections.sort(schemaTableNames);
-        result.setJobId(PipelineJobIdUtils.marshal(new CDCJobId(contextKey, schemaTableNames, param.isFull(), sinkType)));
-        result.setDatabaseName(param.getDatabaseName());
-        result.setSchemaTableNames(schemaTableNames);
-        result.setFull(param.isFull());
-        result.setDecodeWithTX(param.isDecodeWithTransaction());
-        YamlSinkConfiguration sinkConfig = new YamlSinkConfiguration();
-        sinkConfig.setSinkType(sinkType.name());
-        sinkConfig.setProps(sinkProps);
-        result.setSinkConfig(sinkConfig);
-        ShardingSphereDatabase database = PipelineContextManager.getContext(contextKey).getMetaDataContexts().getMetaData().getDatabase(param.getDatabaseName());
-        ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = getDataSourceConfiguration(database);
-        result.setDataSourceConfiguration(pipelineDataSourceConfigSwapper.swapToYamlConfiguration(dataSourceConfig));
-        List<JobDataNodeLine> jobDataNodeLines = JobDataNodeLineConvertUtils.convertDataNodesToLines(param.getTableAndDataNodesMap());
-        result.setJobShardingDataNodes(jobDataNodeLines.stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
-        JobDataNodeLine tableFirstDataNodes = new JobDataNodeLine(param.getTableAndDataNodesMap().entrySet().stream()
-                .map(entry -> new JobDataNodeEntry(entry.getKey(), entry.getValue().subList(0, 1))).collect(Collectors.toList()));
-        result.setTablesFirstDataNodes(tableFirstDataNodes.marshal());
-        result.setSourceDatabaseType(dataSourceConfig.getDatabaseType().getType());
-        return result;
-    }
-    
-    private ShardingSpherePipelineDataSourceConfiguration getDataSourceConfiguration(final ShardingSphereDatabase database) {
-        Map<String, Map<String, Object>> dataSourcePoolProps = new HashMap<>(database.getResourceMetaData().getStorageUnits().size(), 1F);
-        for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnits().entrySet()) {
-            dataSourcePoolProps.put(entry.getKey(), dataSourceConfigSwapper.swapToMap(entry.getValue().getDataSourcePoolProperties()));
-        }
-        YamlRootConfiguration targetRootConfig = new YamlRootConfiguration();
-        targetRootConfig.setDatabaseName(database.getName());
-        targetRootConfig.setDataSources(dataSourcePoolProps);
-        targetRootConfig.setRules(ruleConfigSwapperEngine.swapToYamlRuleConfigurations(database.getRuleMetaData().getConfigurations()));
-        return new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -297,6 +282,22 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         jobConfigPOJO.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
         jobConfigPOJO.getProps().remove("stop_time");
         PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobConfigPOJO.getJobName())).updateJobConfiguration(jobConfigPOJO);
+    }
+    
+    /**
+     * Acknowledge streamed records and update progress through their importer.
+     *
+     * @param ackId acknowledgement ID containing the importer ID
+     */
+    @HighFrequencyInvocation
+    public void ack(final String ackId) {
+        CDCAckId parsedAckId = CDCAckId.unmarshal(ackId);
+        CDCImporter importer = CDCImporterManager.getImporter(parsedAckId.getImporterId());
+        if (null == importer) {
+            log.warn("Could not find importer, ack id: {}", parsedAckId.marshal());
+            return;
+        }
+        importer.ack(parsedAckId.marshal());
     }
     
     /**

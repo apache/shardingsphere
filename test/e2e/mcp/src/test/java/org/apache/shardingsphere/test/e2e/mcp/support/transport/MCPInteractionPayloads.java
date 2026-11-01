@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport;
 
-import io.modelcontextprotocol.json.McpJsonMapper;
-import io.modelcontextprotocol.json.TypeRef;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.json.JsonException;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +33,6 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPInteractionPayloads {
     
-    private static final McpJsonMapper JSON_MAPPER = MCPTransportJsonMapperFactory.create();
-    
     /**
      * Parse one MCP HTTP or STDIO JSON payload.
      *
@@ -45,9 +42,9 @@ public final class MCPInteractionPayloads {
      */
     public static Map<String, Object> parseJsonPayload(final String responseBody) {
         try {
-            return JSON_MAPPER.readValue(normalizeJsonBody(responseBody), new TypeRef<Map<String, Object>>() {
+            return JsonEngine.unmarshal(normalizeJsonBody(responseBody), new JsonTypeReference<Map<String, Object>>() {
             });
-        } catch (final IOException ex) {
+        } catch (final JsonException ex) {
             throw new IllegalStateException("Failed to parse MCP response body.", ex);
         }
     }
@@ -202,9 +199,9 @@ public final class MCPInteractionPayloads {
     
     private static Map<String, Object> parseJsonText(final String value) {
         try {
-            return JSON_MAPPER.readValue(value, new TypeRef<Map<String, Object>>() {
+            return JsonEngine.unmarshal(value, new JsonTypeReference<Map<String, Object>>() {
             });
-        } catch (final IOException ex) {
+        } catch (final JsonException ex) {
             throw new IllegalStateException("Failed to parse MCP JSON text payload.", ex);
         }
     }

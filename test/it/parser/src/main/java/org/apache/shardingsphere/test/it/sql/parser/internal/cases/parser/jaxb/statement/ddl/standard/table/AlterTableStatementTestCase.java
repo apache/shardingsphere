@@ -44,6 +44,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenamePartitionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedReplaceTableDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedSetSchemaDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedTableRollbackDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperties;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.partition.ExpectedAddPartitions;
@@ -70,6 +71,9 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "replace-table")
     private ExpectedReplaceTableDefinition replaceTable;
     
+    @XmlElement(name = "set-schema")
+    private ExpectedSetSchemaDefinition setSchemaDefinition;
+    
     @XmlElement(name = "convert-table")
     private ExpectedConvertTableDefinition convertTable;
     
@@ -84,6 +88,9 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "modify-constraint")
     private final List<ExpectedConstraintDefinition> modifyConstraints = new LinkedList<>();
+    
+    @XmlAttribute(name = "drop-constraint-count")
+    private Integer dropConstraintCount;
     
     @XmlElement(name = "modify-column")
     private final List<ExpectedModifyColumnDefinition> modifyColumns = new LinkedList<>();

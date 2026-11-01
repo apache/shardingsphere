@@ -77,8 +77,7 @@ public final class ProjectionsSegmentBinder {
         ProjectionsSegment result = new ProjectionsSegment(segment.getStartIndex(), segment.getStopIndex());
         result.setDistinctRow(segment.isDistinctRow());
         for (ProjectionSegment each : segment.getProjections()) {
-            Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts = createCurrentTableBinderContexts(binderContext, result.getProjections());
-            result.getProjections().add(bind(binderContext, boundTableSegment, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts, each));
+            result.getProjections().add(bind(binderContext, boundTableSegment, result.getProjections(), tableBinderContexts, outerTableBinderContexts, each));
         }
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts = createCurrentTableBinderContexts(binderContext, result.getProjections());
         for (ExpressionSegment each : segment.getDistinctOnItems()) {
@@ -87,18 +86,16 @@ public final class ProjectionsSegmentBinder {
         return result;
     }
     
-    private static ProjectionSegment bind(final SQLStatementBinderContext binderContext, final TableSegment boundTableSegment,
-                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,
+    private static ProjectionSegment bind(final SQLStatementBinderContext binderContext, final TableSegment boundTableSegment, final Collection<ProjectionSegment> boundProjections,
                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
-                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
-                                          final ProjectionSegment projectionSegment) {
+                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts, final ProjectionSegment projectionSegment) {
         try {
             return bind(projectionSegment, binderContext, boundTableSegment, tableBinderContexts, outerTableBinderContexts);
         } catch (final ColumnNotFoundException ignored) {
             if (isWholeRowProjection(projectionSegment, binderContext, boundTableSegment, tableBinderContexts)) {
                 return createWholeRowProjection((ColumnProjectionSegment) projectionSegment);
             }
-            return bind(projectionSegment, binderContext, boundTableSegment, currentTableBinderContexts, outerTableBinderContexts);
+            return bind(projectionSegment, binderContext, boundTableSegment, createCurrentTableBinderContexts(binderContext, boundProjections), outerTableBinderContexts);
         }
     }
     

@@ -111,4 +111,6 @@
     <sql-case id="create_index_array_subscript_function_pg" value="CREATE INDEX foo_idx ON foo_table (abs(a[1]))" db-types="PostgreSQL" case-types="Literal" />
     <sql-case id="create_index_nulls_distinct_pg" value="CREATE UNIQUE INDEX idx ON foo_table (a) INCLUDE (b) NULLS DISTINCT" db-types="PostgreSQL" />
     <sql-case id="create_index_nulls_not_distinct_pg" value="CREATE UNIQUE INDEX idx ON foo_table (a) NULLS NOT DISTINCT" db-types="PostgreSQL" />
+    <sql-case id="create_index_json_objectagg_pg" value="CREATE INDEX ix ON t (JSON_OBJECTAGG(a: b ABSENT ON NULL WITH UNIQUE KEYS RETURNING jsonb))" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="create_index_json_arrayagg_pg" value="CREATE INDEX ix ON t (JSON_ARRAYAGG(a RETURNING json))" db-types="PostgreSQL" case-types="Literal" />
 </sql-cases>

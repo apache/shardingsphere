@@ -462,7 +462,10 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             return Optional.of(createInSegment(ctx));
         }
         if (null != ctx.patternMatchingOperator()) {
-            return Optional.of(createPatternMatchingOperationSegment(ctx));
+            return Optional.of(createPatternMatchingOperationSegment(ctx, ctx.patternMatchingOperator()));
+        }
+        if (null != ctx.qualOp() && null != ctx.qualOp().patternMatchingSymbol() && null != ctx.aExpr(1)) {
+            return Optional.of(createPatternMatchingOperationSegment(ctx, ctx.qualOp()));
         }
         if (null != ctx.subqueryOp() && (null != ctx.subqueryOp().LIKE() || null != ctx.subqueryOp().ILIKE())) {
             return Optional.of(createQuantifiedPatternMatchingOperationSegment(ctx));
@@ -539,14 +542,15 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.SLASH_()) {
             return Optional.of(ctx.SLASH_().getText());
         }
-        if (null != ctx.qualOp() && (null != ctx.qualOp().CUSTOM_OPERATOR_() || null != ctx.qualOp().OPERATOR())) {
+        if (null != ctx.qualOp() && (null != ctx.qualOp().CUSTOM_OPERATOR_() || null != ctx.qualOp().OPERATOR() || null != ctx.qualOp().SAFE_EQ_() || null != ctx.qualOp().BQ_()
+                || null != ctx.qualOp().AND_())) {
             return Optional.of(ctx.qualOp().getText());
         }
         return Optional.empty();
     }
     
-    private BinaryOperationExpression createPatternMatchingOperationSegment(final AExprContext ctx) {
-        String operator = getOriginalText(ctx.patternMatchingOperator()).toUpperCase();
+    private BinaryOperationExpression createPatternMatchingOperationSegment(final AExprContext ctx, final ParserRuleContext operatorContext) {
+        String operator = getOriginalText(operatorContext).toUpperCase();
         ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
         ListExpression right = new ListExpression(ctx.aExpr(1).start.getStartIndex(), ctx.aExpr().get(ctx.aExpr().size() - 1).stop.getStopIndex());
         for (int i = 1; i < ctx.aExpr().size(); i++) {
@@ -2206,7 +2210,8 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.selectLimitValue()) {
             return (LimitValueSegment) visit(ctx.selectLimitValue());
         }
-        return null;
+        int startIndex = ctx.rowOrRows().start.getStartIndex();
+        return new NumberLiteralLimitValueSegment(startIndex, startIndex - 1, 1L);
     }
     
     private LimitSegment createLimitSegmentWhenRowCountOrOffsetAbsent(final SelectLimitContext ctx) {
