@@ -18,13 +18,13 @@
 databaseName: normal_db
 dataSources:
   ds_0:
-    password: 
+    password: ''
     url: jdbc:mock://127.0.0.1/demo_ds_0
     username: root
     minPoolSize: 1
     maxPoolSize: 50
   ds_1:
-    password: 
+    password: ''
     url: jdbc:mock://127.0.0.1/demo_ds_1
     username: root
     minPoolSize: 1
