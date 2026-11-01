@@ -171,7 +171,7 @@ class DatabaseExportMetaDataGeneratorTest {
         Map<?, ?> actual = YamlEngine.unmarshal(actualYaml, Map.class);
         assertThat(((Map<?, ?>) actual.get("dataSources")).keySet(), contains("foo_ds", "bar_ds"));
         YamlDatabaseConfiguration actualConfig = YamlEngine.unmarshal(actualYaml, YamlDatabaseConfiguration.class);
-        assertThat(actualConfig.getDataSources().get("foo_ds").getPassword(), is(""));
+        assertNull(actualConfig.getDataSources().get("foo_ds").getPassword());
         assertThat(actualConfig.getDataSources().get("foo_ds").getMaxPoolSize(), is(30));
         assertThat(actualConfig.getDataSources().get("foo_ds").getConnectionTimeoutMilliseconds(), is(30000L));
         assertFalse(actualConfig.getDataSources().get("foo_ds").getReadOnly());
