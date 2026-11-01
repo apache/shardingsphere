@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -164,11 +165,10 @@ class ClusterMetaDataManagerPersistServiceTest {
         SingleRule singleRule = mock(SingleRule.class);
         SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration();
         when(singleRule.getConfiguration()).thenReturn(singleRuleConfig);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("foo_db");
-        when(database.getRuleMetaData().<ShardingSphereRule>getSingleRule(any())).thenReturn(singleRule);
         when(metaDataPersistFacade.getDatabaseRuleService().persist("foo_db", Collections.singleton(singleRuleConfig))).thenReturn(Collections.emptyList());
-        metaDataManagerPersistService.alterSingleRuleConfiguration(database, database.getRuleMetaData());
+        metaDataManagerPersistService.alterSingleRuleConfiguration(
+                new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties())),
+                new RuleMetaData(Collections.singleton(singleRule)));
         verify(metaDataPersistFacade.getDatabaseRuleService()).persist("foo_db", Collections.singleton(singleRuleConfig));
     }
     

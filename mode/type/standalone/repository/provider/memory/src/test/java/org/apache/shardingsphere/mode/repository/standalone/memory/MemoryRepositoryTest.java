@@ -23,15 +23,28 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.spy;
 
 class MemoryRepositoryTest {
     
@@ -91,6 +104,65 @@ class MemoryRepositoryTest {
         assertFalse(memoryRepository.isExisted("/metadata/zzzz_missing"));
         assertThat(memoryRepository.getChildrenKeys("/metadata"), is(Arrays.asList("encrypt_db", "sharding_db")));
         assertThat(memoryRepository.query("/metadata/sharding_db/schemas/sharding_db/tables/t_order/versions/0"), is("t_order"));
+    }
+    
+    @Test
+    void assertConcurrentAccessDuringDelete() throws ReflectiveOperationException, InterruptedException, ExecutionException {
+        SortedMap<String, String> metaDataSortedMap = spy(new TreeMap<>());
+        metaDataSortedMap.put("/foo/child", "foo_child");
+        metaDataSortedMap.put("/bar/updated", "foo_old");
+        metaDataSortedMap.put("/bar/deleted", "foo_deleted");
+        Plugins.getMemberAccessor().set(MemoryRepository.class.getDeclaredField("metaDataSortedMap"), memoryRepository, metaDataSortedMap);
+        CountDownLatch deleteStarted = new CountDownLatch(1);
+        CountDownLatch continueDelete = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            deleteStarted.countDown();
+            assertTrue(continueDelete.await(5, TimeUnit.SECONDS));
+            return invocation.callRealMethod();
+        }).when(metaDataSortedMap).tailMap("/foo/");
+        FutureTask<Void> deleteTask = new FutureTask<>(() -> memoryRepository.delete("/foo"), null);
+        Thread deleteThread = new Thread(deleteTask);
+        Collection<Runnable> accesses = Arrays.asList(
+                () -> assertNull(memoryRepository.query("/foo/child")),
+                () -> assertTrue(memoryRepository.getChildrenKeys("/foo").isEmpty()),
+                () -> assertFalse(memoryRepository.isExisted("/foo/child")),
+                () -> memoryRepository.persist("/bar/persisted", "foo_persisted"),
+                () -> memoryRepository.update("/bar/updated", "foo_updated"),
+                () -> memoryRepository.delete("/bar/deleted"));
+        Collection<FutureTask<Void>> accessTasks = new ArrayList<>(accesses.size());
+        Collection<Thread> accessThreads = new ArrayList<>(accesses.size());
+        try {
+            deleteThread.start();
+            assertTrue(deleteStarted.await(5, TimeUnit.SECONDS));
+            for (Runnable each : accesses) {
+                FutureTask<Void> accessTask = new FutureTask<>(each, null);
+                Thread accessThread = new Thread(accessTask);
+                accessTasks.add(accessTask);
+                accessThreads.add(accessThread);
+                accessThread.start();
+            }
+            assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+                while (accessThreads.stream().anyMatch(each -> each.isAlive() && Thread.State.BLOCKED != each.getState())) {
+                    Thread.yield();
+                }
+            });
+            accessThreads.forEach(each -> assertThat(each.getState(), is(Thread.State.BLOCKED)));
+        } finally {
+            continueDelete.countDown();
+            deleteThread.join(5000L);
+            for (Thread each : accessThreads) {
+                each.join(5000L);
+            }
+        }
+        assertFalse(deleteThread.isAlive());
+        accessThreads.forEach(each -> assertFalse(each.isAlive()));
+        deleteTask.get();
+        for (FutureTask<Void> each : accessTasks) {
+            each.get();
+        }
+        assertThat(memoryRepository.query("/bar/persisted"), is("foo_persisted"));
+        assertThat(memoryRepository.query("/bar/updated"), is("foo_updated"));
+        assertNull(memoryRepository.query("/bar/deleted"));
     }
     
     @Test

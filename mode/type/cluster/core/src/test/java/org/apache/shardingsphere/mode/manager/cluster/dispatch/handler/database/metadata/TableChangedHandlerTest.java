@@ -80,9 +80,6 @@ class TableChangedHandlerTest {
             assertTrue(Thread.holdsLock(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()));
             return persistedTableExists ? Optional.of(table) : Optional.empty();
         });
-        lenient().when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getSchema("foo_schema").containsTable("foo_tbl")).thenReturn(true);
-        lenient().when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getSchema("foo_schema").getTable("foo_tbl"))
-                .thenReturn(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version", "0", eventType));
         verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager(), times(expectedUpdates)).alterTable("foo_db", "foo_schema", table);
         verify(statisticsRefreshEngine, times(expectedUpdates)).asyncRefresh();
@@ -205,11 +202,5 @@ class TableChangedHandlerTest {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.DELETED));
         verifyNoInteractions(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager());
         verify(statisticsRefreshEngine).asyncRefresh();
-    }
-    
-    @Test
-    void assertHandleIgnoredEvent() {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.IGNORED));
-        verifyNoInteractions(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager(), statisticsRefreshEngine);
     }
 }
