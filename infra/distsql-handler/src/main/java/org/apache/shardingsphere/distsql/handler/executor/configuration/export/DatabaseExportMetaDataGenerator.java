@@ -77,7 +77,7 @@ public final class DatabaseExportMetaDataGenerator {
         Map<String, Map<String, Object>> dataSources = new LinkedHashMap<>(database.getResourceMetaData().getStorageUnits().size(), 1F);
         for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnits().entrySet()) {
             Map<String, Object> props = createDataSourceConfiguration(entry.getValue().getDataSourcePoolProperties());
-            dataSources.put(entry.getKey(), props.isEmpty() ? null : props);
+            dataSources.put("null".equals(entry.getKey()) ? new String("null") : entry.getKey(), props.isEmpty() ? null : props);
         }
         stringBuilder.append(marshalDataSources(dataSources));
     }
@@ -86,12 +86,12 @@ public final class DatabaseExportMetaDataGenerator {
         Map<String, Object> result = new LinkedHashMap<>(props.getConnectionPropertySynonyms().getStandardProperties().size() + props.getPoolPropertySynonyms().getStandardProperties().size(), 1F);
         for (Entry<String, Object> entry : props.getConnectionPropertySynonyms().getStandardProperties().entrySet()) {
             if (null != entry.getValue()) {
-                result.put(entry.getKey(), entry.getValue());
+                result.put(entry.getKey(), "null".equals(entry.getValue()) ? new String("null") : entry.getValue());
             }
         }
         for (Entry<String, Object> entry : props.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
             if (null != entry.getValue()) {
-                result.put(entry.getKey(), entry.getValue());
+                result.put(entry.getKey(), "null".equals(entry.getValue()) ? new String("null") : entry.getValue());
             }
         }
         return result;
@@ -109,7 +109,7 @@ public final class DatabaseExportMetaDataGenerator {
             
             @Override
             public void write(final String value, final int offset, final int length) {
-                if (!emptyScalarToken.equals(value)) {
+                if (emptyScalarToken != value) {
                     super.write(value, offset, length);
                 }
             }
