@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.statistics.StatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.manager.database.DatabaseMetaDataManager;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
@@ -67,15 +70,36 @@ public final class TableChangedHandler implements DatabaseLeafValueChangedHandle
     }
     
     private void handleCreatedOrAltered(final String databaseName, final String schemaName, final String tableName) {
-        Optional<ShardingSphereTable> table = contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);
-        if (table.isPresent()) {
-            contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterTable(databaseName, schemaName, table.get());
-            statisticsRefreshEngine.asyncRefresh();
+        synchronized (contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()) {
+            DatabaseMetaDataManager databaseMetaDataManager = contextManager.getMetaDataContextManager().getDatabaseMetaDataManager();
+            synchronized (databaseMetaDataManager) {
+                Optional<ShardingSphereTable> table = contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);
+                if (!table.isPresent()) {
+                    return;
+                }
+                databaseMetaDataManager.alterTable(databaseName, schemaName, table.get());
+            }
         }
+        statisticsRefreshEngine.asyncRefresh();
     }
     
     private void handleDropped(final String databaseName, final String schemaName, final String tableName) {
-        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropTable(databaseName, schemaName, tableName);
+        synchronized (contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()) {
+            DatabaseMetaDataManager databaseMetaDataManager = contextManager.getMetaDataContextManager().getDatabaseMetaDataManager();
+            synchronized (databaseMetaDataManager) {
+                boolean persistedTableExists =
+                        contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName).isPresent();
+                ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
+                if (!persistedTableExists && null != database && database.containsSchema(schemaName) && hasLocalTable(database, schemaName, tableName)) {
+                    databaseMetaDataManager.dropTable(databaseName, schemaName, tableName);
+                }
+            }
+        }
         statisticsRefreshEngine.asyncRefresh();
+    }
+    
+    private boolean hasLocalTable(final ShardingSphereDatabase database, final String schemaName, final String tableName) {
+        return database.getSchema(schemaName).containsTable(tableName)
+                || database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).stream().anyMatch(each -> each.findTableDataNode(schemaName, tableName).isPresent());
     }
 }

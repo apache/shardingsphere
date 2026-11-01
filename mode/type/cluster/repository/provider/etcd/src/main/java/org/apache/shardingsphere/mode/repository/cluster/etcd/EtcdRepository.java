@@ -149,9 +149,10 @@ public final class EtcdRepository implements ClusterPersistRepository {
         }
     }
     
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public void delete(final String key) {
-        client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8), DeleteOption.newBuilder().isPrefix(true).build());
+        client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8), DeleteOption.newBuilder().isPrefix(true).build()).get();
     }
     
     @Override

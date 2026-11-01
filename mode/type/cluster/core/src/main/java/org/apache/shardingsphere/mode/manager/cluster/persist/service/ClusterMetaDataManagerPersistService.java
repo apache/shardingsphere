@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.databa
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
+import org.apache.shardingsphere.mode.metadata.manager.database.DatabaseMetaDataManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
@@ -113,19 +115,35 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void createTable(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable table) {
-        metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, Collections.singleton(table));
-        if (TableRefreshUtils.isSingleTable(table.getName(), database) && TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, table.getName())) {
-            alterSingleRuleConfiguration(database, database.getRuleMetaData());
+    public synchronized void createTable(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable table) {
+        DatabaseMetaDataManager databaseMetaDataManager = metaDataContextManager.getDatabaseMetaDataManager();
+        synchronized (databaseMetaDataManager) {
+            ShardingSphereDatabase currentDatabase = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(database.getName());
+            metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, Collections.singleton(table));
+            if (database != currentDatabase) {
+                database.getRuleMetaData().findSingleRule(SingleRule.class).ifPresent(rule -> rule.findTableDataNode(database, new QualifiedTable(schemaName, table.getName()))
+                        .ifPresent(dataNode -> currentDatabase.putDataNode(dataNode.getDataSourceName(), schemaName, table.getName())));
+            }
+            databaseMetaDataManager.alterTable(database.getName(), schemaName, table);
+            if (TableRefreshUtils.isSingleTable(table.getName(), currentDatabase) && TableRefreshUtils.isNeedRefresh(currentDatabase.getRuleMetaData(), schemaName, table.getName())) {
+                alterSingleRuleConfiguration(currentDatabase, currentDatabase.getRuleMetaData());
+            }
         }
     }
     
     @Override
-    public void dropTables(final ShardingSphereDatabase database, final String schemaName, final Collection<String> tableNames) {
-        boolean isNeedRefresh = TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, tableNames);
-        tableNames.forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().drop(database.getName(), schemaName, each));
-        if (isNeedRefresh && tableNames.stream().anyMatch(each -> TableRefreshUtils.isSingleTable(each, database))) {
-            alterSingleRuleConfiguration(database, database.getRuleMetaData());
+    public synchronized void dropTables(final ShardingSphereDatabase database, final String schemaName, final Collection<String> tableNames) {
+        DatabaseMetaDataManager databaseMetaDataManager = metaDataContextManager.getDatabaseMetaDataManager();
+        synchronized (databaseMetaDataManager) {
+            ShardingSphereDatabase currentDatabase = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(database.getName());
+            boolean isNeedRefresh = TableRefreshUtils.isNeedRefresh(currentDatabase.getRuleMetaData(), schemaName, tableNames);
+            tableNames.forEach(each -> {
+                metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().drop(database.getName(), schemaName, each);
+                databaseMetaDataManager.dropTable(database.getName(), schemaName, each);
+            });
+            if (isNeedRefresh && tableNames.stream().anyMatch(each -> TableRefreshUtils.isSingleTable(each, currentDatabase))) {
+                alterSingleRuleConfiguration(currentDatabase, currentDatabase.getRuleMetaData());
+            }
         }
     }
     

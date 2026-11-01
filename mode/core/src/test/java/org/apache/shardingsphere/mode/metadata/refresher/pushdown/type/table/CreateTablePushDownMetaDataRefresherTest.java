@@ -65,11 +65,16 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class CreateTablePushDownMetaDataRefresherTest {
@@ -84,8 +89,16 @@ class CreateTablePushDownMetaDataRefresherTest {
     void assertRefreshCreatesLoadedActualTable() throws SQLException {
         JdbcDataSource dataSource = createDataSource("create_table");
         executeUpdate(dataSource, "CREATE TABLE \"Foo_Tbl\" (id INT)");
-        PushDownMetaDataManagerPersistServiceFixture persistService = new PushDownMetaDataManagerPersistServiceFixture();
-        ShardingSphereDatabase database = createDatabase(dataSource);
+        PushDownMetaDataManagerPersistServiceFixture persistService = spy(new PushDownMetaDataManagerPersistServiceFixture());
+        ShardingSphereDatabase database = spy(createDatabase(dataSource));
+        doAnswer(invocation -> {
+            assertTrue(Thread.holdsLock(persistService));
+            return invocation.callRealMethod();
+        }).when(database).getAllSchemas();
+        doAnswer(invocation -> {
+            assertTrue(Thread.holdsLock(persistService));
+            return invocation.callRealMethod();
+        }).when(persistService).createTable(eq(database), eq(SCHEMA_NAME), any());
         CreateTableStatement sqlStatement = CreateTableStatement.builder()
                 .databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("\"Foo_Tbl\""))))
@@ -94,6 +107,7 @@ class CreateTablePushDownMetaDataRefresherTest {
                 databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         assertThat(persistService.getCreatedTableSchemaName(), is(SCHEMA_NAME));
         assertThat(persistService.getCreatedTable().getName(), is("Foo_Tbl"));
+        verify(database).getAllSchemas();
     }
     
     @Test
