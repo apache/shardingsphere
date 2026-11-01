@@ -54,9 +54,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HierarchicalQuerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
@@ -378,6 +380,100 @@ class SelectStatementBinderTest {
                 .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, existsSelect, "")))).build();
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement);
         assertThrows(ColumnNotFoundException.class, () -> new SelectStatementBinder().bind(selectStatement, binderContext));
+    }
+    
+    @Test
+    void assertBindWithExistsSubqueryInsideQuantifySubqueryReferencingShadowedOuterAlias() {
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(createUserIdProjections()).from(createAliasedSimpleTableSegment("t_user", "q"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, createOuterAliasColumnSelectStatement("user_id"), "")))).build();
+        SelectStatement selectStatement = createShadowingOuterAliasSelectStatement(quantifySelect);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        SelectStatement actualInnerSelect = ((ExistsSubqueryExpression) getBoundQuantifySelectStatement(actual).getWhere().get().getExpr()).getSubquery().getSelect();
+        assertThat(getFirstProjectionColumn(actualInnerSelect).getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
+    private ProjectionsSegment createUserIdProjections() {
+        ProjectionsSegment result = new ProjectionsSegment(0, 0);
+        result.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        return result;
+    }
+    
+    private SelectStatement createOuterAliasColumnSelectStatement(final String columnName) {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(createOwnerColumnSegment("x", columnName)));
+        return SelectStatement.builder().databaseType(databaseType).projections(projections).from(createAliasedSimpleTableSegment("t_user", "i")).build();
+    }
+    
+    private SelectStatement createShadowingOuterAliasSelectStatement(final SelectStatement quantifySelect) {
+        BinaryOperationExpression existsWhereExpression = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("user_id")),
+                new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, quantifySelect, ""), "ALL"), "=", "user_id = ALL (SELECT ...)");
+        SelectStatement existsSelect = SelectStatement.builder().databaseType(databaseType).projections(createUserIdProjections()).from(createAliasedSimpleTableSegment("t_user", "x"))
+                .where(new WhereSegment(0, 0, existsWhereExpression)).build();
+        return SelectStatement.builder().databaseType(databaseType).projections(createUserIdProjections()).from(createAliasedSimpleTableSegment("t_order", "x"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, existsSelect, "")))).build();
+    }
+    
+    private SelectStatement getBoundQuantifySelectStatement(final SelectStatement boundSelectStatement) {
+        SelectStatement boundExistsSelect = ((ExistsSubqueryExpression) boundSelectStatement.getWhere().get().getExpr()).getSubquery().getSelect();
+        return ((QuantifySubqueryExpression) ((BinaryOperationExpression) boundExistsSelect.getWhere().get().getExpr()).getRight()).getSubquery().getSelect();
+    }
+    
+    private ColumnSegment getFirstProjectionColumn(final SelectStatement boundSelectStatement) {
+        return ((ColumnProjectionSegment) boundSelectStatement.getProjections().getProjections().iterator().next()).getColumn();
+    }
+    
+    @Test
+    void assertBindWithExistsSubqueryInsideQuantifySubqueryReferencingColumnMissingFromShadowingOuterAlias() {
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(createUserIdProjections()).from(createAliasedSimpleTableSegment("t_user", "q"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, createOuterAliasColumnSelectStatement("status"), "")))).build();
+        SelectStatement selectStatement = createShadowingOuterAliasSelectStatement(quantifySelect);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement);
+        assertThrows(ColumnNotFoundException.class, () -> new SelectStatementBinder().bind(selectStatement, binderContext));
+    }
+    
+    @Test
+    void assertBindWithScalarSubqueryInsideQuantifySubqueryReferencingShadowedOuterAlias() {
+        BinaryOperationExpression whereExpression = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("user_id")),
+                new SubqueryExpressionSegment(new SubquerySegment(0, 0, createOuterAliasColumnSelectStatement("user_id"), "")), "=", "user_id = (SELECT x.user_id FROM t_user i)");
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(createUserIdProjections()).from(createAliasedSimpleTableSegment("t_user", "q"))
+                .where(new WhereSegment(0, 0, whereExpression)).build();
+        SelectStatement selectStatement = createShadowingOuterAliasSelectStatement(quantifySelect);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        BinaryOperationExpression actualWhereExpression = (BinaryOperationExpression) getBoundQuantifySelectStatement(actual).getWhere().get().getExpr();
+        SelectStatement actualInnerSelect = ((SubqueryExpressionSegment) actualWhereExpression.getRight()).getSubquery().getSelect();
+        assertThat(getFirstProjectionColumn(actualInnerSelect).getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
+    @Test
+    void assertBindWithSubqueryProjectionInsideQuantifySubqueryReferencingShadowedOuterAlias() {
+        ProjectionsSegment quantifyProjections = new ProjectionsSegment(0, 0);
+        quantifyProjections.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, createOuterAliasColumnSelectStatement("user_id"), ""), "(SELECT x.user_id FROM t_user i)"));
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(quantifyProjections).from(createAliasedSimpleTableSegment("t_user", "q")).build();
+        SelectStatement selectStatement = createShadowingOuterAliasSelectStatement(quantifySelect);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        SubqueryProjectionSegment actualProjection = (SubqueryProjectionSegment) getBoundQuantifySelectStatement(actual).getProjections().getProjections().iterator().next();
+        assertThat(getFirstProjectionColumn(actualProjection.getSubquery().getSelect()).getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
+    @Test
+    void assertBindWithHavingExistsSubqueryInsideQuantifySubqueryReferencingShadowedOuterAlias() {
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(createUserIdProjections()).from(createAliasedSimpleTableSegment("t_user", "q"))
+                .having(new HavingSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, createOuterAliasColumnSelectStatement("user_id"), "")))).build();
+        SelectStatement selectStatement = createShadowingOuterAliasSelectStatement(quantifySelect);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        SelectStatement actualInnerSelect = ((ExistsSubqueryExpression) getBoundQuantifySelectStatement(actual).getHaving().get().getExpr()).getSubquery().getSelect();
+        assertThat(getFirstProjectionColumn(actualInnerSelect).getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
+    @Test
+    void assertBindWithDerivedTableInsideQuantifySubqueryReferencingShadowedOuterAlias() {
+        SubqueryTableSegment derivedTable = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, createOuterAliasColumnSelectStatement("user_id"), ""));
+        derivedTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("q")));
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(createUserIdProjections()).from(derivedTable).build();
+        SelectStatement selectStatement = createShadowingOuterAliasSelectStatement(quantifySelect);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        SelectStatement actualInnerSelect = ((SubqueryTableSegment) getBoundQuantifySelectStatement(actual).getFrom().get()).getSubquery().getSelect();
+        assertThat(getFirstProjectionColumn(actualInnerSelect).getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
     }
     
     @Test

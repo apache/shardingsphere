@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ExistsSubqueryExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.SubquerySegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ScopedTableSegmentBinderContexts;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -53,7 +54,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
@@ -112,7 +112,7 @@ class ExpressionSegmentBinderTest {
         ExistsSubqueryExpression segment = new ExistsSubqueryExpression(0, 10, subquerySegment);
         SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
         assertThat(ExpressionSegmentBinder.bind(segment, SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts), is(boundSegment));
-        assertThat(mergedContexts.get().get(CaseInsensitiveString.of("t")), hasItem(currentTableBinderContext));
+        assertThat(((ScopedTableSegmentBinderContexts) mergedContexts.get()).getNearestScopeTableBinderContexts(CaseInsensitiveString.of("t")), contains(currentTableBinderContext));
         assertThat(mergedContexts.get().get(CaseInsensitiveString.of("u")), contains(retainedOuterTableBinderContext));
     }
     
@@ -138,7 +138,7 @@ class ExpressionSegmentBinderTest {
         SubqueryExpressionSegment actual = (SubqueryExpressionSegment) ExpressionSegmentBinder.bind(
                 segment, SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts);
         assertThat(actual.getSubquery(), is(boundSubquerySegment));
-        assertThat(mergedContexts.get().get(CaseInsensitiveString.of("t")), hasItem(currentTableBinderContext));
+        assertThat(((ScopedTableSegmentBinderContexts) mergedContexts.get()).getNearestScopeTableBinderContexts(CaseInsensitiveString.of("t")), contains(currentTableBinderContext));
         assertThat(mergedContexts.get().get(CaseInsensitiveString.of("u")), contains(retainedOuterTableBinderContext));
     }
     
