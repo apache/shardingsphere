@@ -26,6 +26,7 @@
 1. Infra: Fix stale weights in WEIGHT load balancer after same-size read data source changes - [#39995](https://github.com/apache/shardingsphere/pull/39995)
 1. Infra: Fix false table existence check failures for quoted schema names in `SupportedSQLCheckEngine` - [#40069](https://github.com/apache/shardingsphere/pull/40069)
 1. Infra: Fix error handling for invalid data source pool properties - [#40199](https://github.com/apache/shardingsphere/pull/40199)
+1. Infra: Fix inline expression split failure for trailing escaped dollar sign - [#40430](https://github.com/apache/shardingsphere/pull/40430)
 1. SQL Parser: Preserve unary NOT for scalar-subquery table extraction in PostgreSQL - [#38187](https://github.com/apache/shardingsphere/pull/38187)
 1. SQL Parser: Fix wrong parameter index parse in MySQL, Doris - [#38624](https://github.com/apache/shardingsphere/pull/38624)
 1. SQL Parser: Fix reversed parameter marker order for openGauss `LIMIT offset, row-count` - [#39242](https://github.com/apache/shardingsphere/pull/39242)
