@@ -93,8 +93,8 @@ class ExportMetaDataExecutorTest {
             + "- !GLOBAL_CLOCK\\n  enabled: false\\n  provider: local\\n  type: TSO\\n\"}}";
     
     private static final String EXPECTED_NOT_EMPTY_METADATA_VALUE = "{\"meta_data\":{\"databases\":{\"normal_db\":\"databaseName: normal_db\\ndataSources:\\n"
-            + "  ds_0:\\n    password: ''\\n    url: jdbc:h2:mem:demo_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\\n    username: root\\n    minPoolSize: 1\\n    maxPoolSize: 50\\n"
-            + "  ds_1:\\n    password: ''\\n    url: jdbc:h2:mem:demo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\\n    username: root\\n    minPoolSize: 1\\n    maxPoolSize: 50\\n\"},"
+            + "  ds_0:\\n    password: \\n    url: jdbc:h2:mem:demo_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\\n    username: root\\n    minPoolSize: 1\\n    maxPoolSize: 50\\n"
+            + "  ds_1:\\n    password: \\n    url: jdbc:h2:mem:demo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\\n    username: root\\n    minPoolSize: 1\\n    maxPoolSize: 50\\n\"},"
             + "\"props\":\"props:\\n  sql-show: true\\n\",\"rules\":\"rules:\\n"
             + "- !AUTHORITY\\n  privilege:\\n    type: ALL_PERMITTED\\n  users:\\n  - admin: true\\n    authenticationMethodName: ''\\n    password: root\\n    user: root@%\\n"
             + "- !GLOBAL_CLOCK\\n  enabled: false\\n  provider: local\\n  type: TSO\\n\"}}";
