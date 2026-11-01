@@ -95,7 +95,7 @@ class ShardingSphereDatabaseFactoryTest {
                     .thenReturn(Collections.singleton(mock(ShardingSphereRule.class)));
             mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.buildWithInventoryCheck(eq(protocolType), any(GenericSchemaBuilderMaterial.class)))
                     .thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", protocolType)));
-            mockedSystemSchemaBuilder.when(() -> SystemSchemaBuilder.build("foo_db", protocolType, props, Collections.singletonList("foo_schema"))).thenReturn(systemSchemas);
+            mockedSystemSchemaBuilder.when(() -> SystemSchemaBuilder.build("foo_db", protocolType, props)).thenReturn(systemSchemas);
             ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create("foo_db", protocolType, databaseConfig, props, computeNodeInstanceContext);
             mockedDefaultSchemaNameResolver.verify(() -> DefaultSchemaNameResolver.resolveProtocol(protocolType, "foo_db"));
             assertThat(actual.getName(), is("foo_db"));
@@ -140,6 +140,7 @@ class ShardingSphereDatabaseFactoryTest {
             ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create("sys", oracleDatabaseType, databaseConfig, props, mock(ComputeNodeInstanceContext.class));
             assertThat(actual.getAllSchemas().size(), is(2));
             assertTrue(actual.getSchema("SYS").containsTable("T_USER"));
+            assertTrue(actual.getSchema("SYS").getTable("ALL_SEQUENCES").containsColumn("SEQUENCE_NAME"));
             assertTrue(actual.containsSchema("SYSTEM_LOBS"));
         }
     }
@@ -169,10 +170,21 @@ class ShardingSphereDatabaseFactoryTest {
     @Test
     void assertCreateWithSchemasContainingPersistedSystemSchema() {
         DatabaseType oracleDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
-        ShardingSphereSchema expectedSystemSchema = new ShardingSphereSchema("SYS", oracleDatabaseType);
+        ShardingSphereTable expectedTable = new ShardingSphereTable("T_PERSISTED", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema persistedSystemSchema = new ShardingSphereSchema("SYS", oracleDatabaseType, Collections.singleton(expectedTable), Collections.emptyList());
+        ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create(
+                "foo_db", oracleDatabaseType, databaseConfig, mock(), Arrays.asList(new ShardingSphereSchema("FOO_DB", oracleDatabaseType), persistedSystemSchema));
+        assertThat(actual.getAllSchemas().size(), is(3));
+        assertThat(actual.getSchema("SYS").getTable("T_PERSISTED"), sameInstance(expectedTable));
+        assertTrue(actual.getSchema("SYS").containsTable("ALL_SEQUENCES"));
+    }
+    
+    @Test
+    void assertCreateWithSchemasContainingCompleteSystemSchema() {
+        DatabaseType oracleDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        ShardingSphereSchema expectedSystemSchema = SystemSchemaBuilder.build("foo_db", oracleDatabaseType, props).get("sys");
         ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create(
                 "foo_db", oracleDatabaseType, databaseConfig, mock(), Arrays.asList(new ShardingSphereSchema("FOO_DB", oracleDatabaseType), expectedSystemSchema));
-        assertThat(actual.getAllSchemas().size(), is(3));
         assertThat(actual.getSchema("SYS"), sameInstance(expectedSystemSchema));
     }
     

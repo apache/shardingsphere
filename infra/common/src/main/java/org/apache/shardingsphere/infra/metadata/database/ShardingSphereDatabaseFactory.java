@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -120,13 +121,30 @@ public final class ShardingSphereDatabaseFactory {
     
     private static Collection<ShardingSphereSchema> mergeSystemSchemas(final String name, final DatabaseType protocolType, final ConfigurationProperties props,
                                                                        final Collection<ShardingSphereSchema> schemas) {
-        Collection<String> schemaNames = new LinkedList<>();
+        Collection<ShardingSphereSchema> systemSchemas = SystemSchemaBuilder.build(name, protocolType, props).values();
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemas.size() + systemSchemas.size(), 1F);
         for (ShardingSphereSchema each : schemas) {
-            schemaNames.add(each.getName());
+            result.put(each.getName(), each);
         }
-        Collection<ShardingSphereSchema> result = new LinkedList<>(schemas);
-        result.addAll(SystemSchemaBuilder.build(name, protocolType, props, schemaNames).values());
-        return result;
+        for (ShardingSphereSchema each : systemSchemas) {
+            result.merge(each.getName(), each, ShardingSphereDatabaseFactory::addMissingTables);
+        }
+        return result.values();
+    }
+    
+    private static ShardingSphereSchema addMissingTables(final ShardingSphereSchema loadedSchema, final ShardingSphereSchema systemSchema) {
+        Collection<ShardingSphereTable> missingTables = new LinkedList<>();
+        for (ShardingSphereTable each : systemSchema.getAllTables()) {
+            if (!loadedSchema.containsTable(each.getName())) {
+                missingTables.add(each);
+            }
+        }
+        if (missingTables.isEmpty()) {
+            return loadedSchema;
+        }
+        Collection<ShardingSphereTable> tables = new LinkedList<>(loadedSchema.getAllTables());
+        tables.addAll(missingTables);
+        return new ShardingSphereSchema(loadedSchema.getName(), loadedSchema.getProtocolType(), tables, loadedSchema.getAllViews());
     }
     
     /**
