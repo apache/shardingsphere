@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.repository.standalone.memory;
 
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -81,6 +82,14 @@ public final class MemoryRepository implements StandalonePersistRepository {
     @Override
     public void delete(final String key) {
         metaDataSortedMap.remove(key);
+        String prefix = key.endsWith(PATH_SEPARATOR) ? key : key + PATH_SEPARATOR;
+        Iterator<String> iterator = metaDataSortedMap.tailMap(prefix).keySet().iterator();
+        while (iterator.hasNext()) {
+            if (!iterator.next().startsWith(prefix)) {
+                break;
+            }
+            iterator.remove();
+        }
     }
     
     @Override
