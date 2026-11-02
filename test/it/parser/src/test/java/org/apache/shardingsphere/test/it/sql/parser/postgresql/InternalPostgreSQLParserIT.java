@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtra
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PrivilegeObjectSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -54,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.Fe
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema.CreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
@@ -727,5 +729,26 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     
     private static Stream<Arguments> getCursorCountCases() {
         return Stream.of(Arguments.of("Decimal count", "10", 10L), Arguments.of("Grouped count", "1_0", 10L), Arguments.of("Negative grouped count", "-1_0", -10L));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getIdentitySequenceOptions")
+    void assertIdentitySequenceOptions(final String name, final String sequenceOptions) {
+        String columnDefinition = "foo_id BIGINT GENERATED ALWAYS AS IDENTITY (" + sequenceOptions + ")";
+        String sql = "CREATE TABLE foo_identity (" + columnDefinition + ")";
+        CreateTableStatement actual = (CreateTableStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        assertThat(actual.getColumnDefinitions().size(), is(1));
+        ColumnDefinitionSegment actualColumn = actual.getColumnDefinitions().iterator().next();
+        assertThat(actualColumn.getColumnName().getIdentifier().getValue(), is("foo_id"));
+        assertThat(actualColumn.getText(), is(columnDefinition));
+        assertThat(sql.substring(actualColumn.getStartIndex(), actualColumn.getStopIndex() + 1), is(columnDefinition));
+    }
+    
+    private static Stream<Arguments> getIdentitySequenceOptions() {
+        return Stream.of(
+                Arguments.of("Ascending negative range", "INCREMENT BY 1 START WITH -5 MINVALUE -100 MAXVALUE -1"),
+                Arguments.of("Descending bigint range", "INCREMENT BY -1 START WITH -1 MINVALUE -9223372036854775808 MAXVALUE -1"),
+                Arguments.of("Explicit positive signs", "INCREMENT BY +2 START WITH +5 MINVALUE +1 MAXVALUE +100"),
+                Arguments.of("Zero start and minimum", "INCREMENT 1 START 0 MINVALUE 0 MAXVALUE 100"));
     }
 }
