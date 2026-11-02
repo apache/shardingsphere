@@ -341,8 +341,8 @@ class FirebirdPacketCodecEngineTest {
         EmbeddedChannel channel = new EmbeddedChannel(new PacketCodec(new FirebirdPacketCodecEngine()));
         channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
         channel.attr(FirebirdConstant.CURRENT_CONNECTION).set(BATCH_CONNECTION_ID);
-        ByteBuf packet = Unpooled.buffer().writeInt(FirebirdCommandPacketType.CONNECT.getValue()).writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(3)
-                .writeInt(1).writeInt(4000).writeZero(4000).writeInt(1).writeInt(3).writeBytes(new byte[]{9, 1, 'x'}).writeZero(1)
+        ByteBuf packet = Unpooled.buffer().writeInt(FirebirdCommandPacketType.CONNECT.getValue()).writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(3).writeInt(1)
+                .writeInt(4000).writeZero(4000).writeInt(1).writeInt(3).writeBytes(new byte[]{9, 1, 'x'}).writeZero(1)
                 .writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION13.getCode()).writeInt(1).writeInt(0).writeInt(5).writeInt(2);
         for (int i = 0; i < packet.readableBytes(); i++) {
             channel.writeInbound(Unpooled.buffer(1).writeByte(packet.getByte(i)));
@@ -630,8 +630,8 @@ class FirebirdPacketCodecEngineTest {
                 .writeInt(FirebirdArchType.ARCH_GENERIC.getCode()).writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2).writeInt(1)
                 .writeInt(3).writeBytes(new byte[]{9, 1, 'x'}).writeZero(1)
                 .writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION13.getCode()).writeInt(FirebirdArchType.ARCH_GENERIC.getCode()).writeInt(0).writeInt(5).writeInt(2);
-        ByteBuf attachPacket = Unpooled.buffer(28).writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(0)
-                .writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2).writeInt(1).writeByte(1).writeZero(3);
+        ByteBuf attachPacket = Unpooled.buffer(28).writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(0).writeInt(6)
+                .writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2).writeInt(1).writeByte(1).writeZero(3);
         return Stream.of(
                 Arguments.of("connect completed by one byte", connectPacket, 1),
                 Arguments.of("connect completed by two bytes", connectPacket, 2),
