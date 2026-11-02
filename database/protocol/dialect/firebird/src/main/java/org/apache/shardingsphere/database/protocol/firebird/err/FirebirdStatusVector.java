@@ -54,6 +54,12 @@ public final class FirebirdStatusVector extends FirebirdPacket {
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
+        if (ISCConstants.isc_batch_type == gdsCode) {
+            payload.writeInt4(ISCConstants.isc_arg_gds);
+            payload.writeInt4(ISCConstants.isc_sqlerr);
+            payload.writeInt4(ISCConstants.isc_arg_number);
+            payload.writeInt4(-901);
+        }
         for (Segment each : segments) {
             payload.writeInt4(ISCConstants.isc_arg_gds);
             payload.writeInt4(each.gdsCode);

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
@@ -378,6 +379,54 @@ class FirebirdPacketCodecEngineTest {
     }
     
     @Test
+    void assertDecodeSeparateBatchCreateAndMessageWithoutRegisteredBatch() {
+        List<Object> actual = new LinkedList<>();
+        ByteBuf create = buildBatchCreate();
+        codecEngine.decode(context, create, actual);
+        registerRejectedBatchFormat(create);
+        ((ByteBuf) actual.remove(0)).release();
+        ByteBuf message = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100);
+        codecEngine.decode(context, message, actual);
+        assertThat(actual.size(), is(1));
+        assertThat(createBatchSendMessagePacket((ByteBuf) actual.get(0)).getMessageCount(), is(1L));
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE));
+        verify(context.channel(), never()).writeAndFlush(any());
+        ((ByteBuf) actual.get(0)).release();
+        create.release();
+        message.release();
+    }
+    
+    private void registerRejectedBatchFormat(final ByteBuf create) {
+        FirebirdBatchRegistry.getInstance().registerConnection(BATCH_CONNECTION_ID);
+        FirebirdBatchCreateCommandPacket packet = new FirebirdBatchCreateCommandPacket(new FirebirdPacketPayload(create.duplicate().readerIndex(0), StandardCharsets.UTF_8));
+        FirebirdBatchRegistry.getInstance().registerRejectedBatchFormat(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE, packet.getBatchBlr());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("batchMessageSplitArguments")
+    void assertDecodeSeparateBatchCreateAndSplitMessage(final String name, final int splitPosition) {
+        List<Object> actual = new LinkedList<>();
+        ByteBuf create = buildBatchCreate();
+        codecEngine.decode(context, create, actual);
+        registerRejectedBatchFormat(create);
+        ((ByteBuf) actual.remove(0)).release();
+        ByteBuf message = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100);
+        ByteBuf firstFrame = message.readRetainedSlice(splitPosition);
+        codecEngine.decode(context, firstFrame, actual);
+        assertTrue(actual.isEmpty());
+        ByteBuf secondFrame = message.readRetainedSlice(message.readableBytes());
+        codecEngine.decode(context, secondFrame, actual);
+        assertThat(actual.size(), is(1));
+        assertThat(createBatchSendMessagePacket((ByteBuf) actual.get(0)).getMessageCount(), is(1L));
+        verify(context.channel(), never()).writeAndFlush(any());
+        ((ByteBuf) actual.get(0)).release();
+        create.release();
+        firstFrame.release();
+        secondFrame.release();
+        message.release();
+    }
+    
+    @Test
     void assertDecodeCoalescedBatchCreateAndMixedMessage() {
         ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildMixedBatchCreate(), buildMixedBatchMessage());
         List<Object> out = new LinkedList<>();
@@ -569,6 +618,10 @@ class FirebirdPacketCodecEngineTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private FirebirdCommandPacketType getPendingPacketType() {
         return (FirebirdCommandPacketType) Plugins.getMemberAccessor().get(FirebirdPacketCodecEngine.class.getDeclaredField("pendingPacketType"), codecEngine);
+    }
+    
+    private static Stream<Arguments> batchMessageSplitArguments() {
+        return Stream.of(Arguments.of("message_header", 4), Arguments.of("message_count", 10), Arguments.of("message_value", 18));
     }
     
     private static Stream<Arguments> validHeaderCases() {

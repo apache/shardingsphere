@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchStatementTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -34,6 +35,11 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.firebirdsql.gds.BlrConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -57,6 +63,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -90,7 +97,7 @@ class FirebirdBatchCreateCommandExecutorTest {
     @Mock
     private FirebirdBatchCreateCommandPacket packet;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private FirebirdServerPreparedStatement preparedStatement;
     
     @AfterEach
@@ -98,9 +105,11 @@ class FirebirdBatchCreateCommandExecutorTest {
         FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
-    @Test
-    void assertExecute() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("batchStatementArguments")
+    void assertExecute(final String name, final SQLStatement sqlStatement) {
         mockPreparedStatement();
+        when(preparedStatement.getSqlStatementContext().getSqlStatement()).thenReturn(sqlStatement);
         when(packet.getBatchBlr()).thenReturn(createBatchBlr());
         when(packet.getBatchMessageLength()).thenReturn(6L);
         when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.EMPTY_BUFFER);
@@ -164,6 +173,16 @@ class FirebirdBatchCreateCommandExecutorTest {
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(null);
         assertThrows(InvalidStatementHandleException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
         verify(packet, never()).getBatchBlr();
+    }
+    
+    @Test
+    void assertExecuteWithSelect() {
+        mockPreparedStatement();
+        when(preparedStatement.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(packet.getBatchBlr()).thenReturn(createBatchBlr());
+        assertThrows(InvalidBatchStatementTypeException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
+        assertThat(FirebirdBatchRegistry.getInstance().getMessageFormat(CONNECTION_ID, STATEMENT_ID).size(), is(1));
     }
     
     @Test
@@ -279,6 +298,10 @@ class FirebirdBatchCreateCommandExecutorTest {
     
     private ByteBuf createBatchParametersBuffer(final int tag, final int value) {
         return Unpooled.buffer().writeByte(BATCH_VERSION_1).writeByte(tag).writeIntLE(4).writeIntLE(value);
+    }
+    
+    private static Stream<Arguments> batchStatementArguments() {
+        return Stream.of(Arguments.of("insert", mock(InsertStatement.class)), Arguments.of("update", mock(UpdateStatement.class)), Arguments.of("delete", mock(DeleteStatement.class)));
     }
     
     private static Stream<Arguments> bufferSizeArguments() {

@@ -25,14 +25,18 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchStatementTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -68,9 +72,14 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
     @Override
     public Collection<DatabasePacket> execute() {
         int statementId = packet.getStatementHandle();
-        ShardingSpherePreconditions.checkNotNull(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId), () -> new InvalidStatementHandleException(statementId));
+        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
+        ShardingSpherePreconditions.checkNotNull(preparedStatement, () -> new InvalidStatementHandleException(statementId));
         int connectionId = connectionSession.getConnectionId();
         ShardingSpherePreconditions.checkState(null == FirebirdBatchStatementManager.getInstance().getBatchStatement(connectionId, statementId), () -> new BatchAlreadyOpenedException(statementId));
+        if (preparedStatement.getSqlStatementContext().getSqlStatement() instanceof SelectStatement) {
+            FirebirdBatchRegistry.getInstance().registerRejectedBatchFormat(connectionId, statementId, packet.getBatchBlr());
+            throw new InvalidBatchStatementTypeException();
+        }
         ByteBuf batchBlr = packet.getBatchBlr();
         FirebirdParseBatchBlr messageFormat = FirebirdParseBatchBlr.parse(batchBlr, batchBlr.readableBytes());
         ShardingSpherePreconditions.checkNotEmpty(messageFormat.getFields(), () -> new BatchParametersRequiredException(statementId));
