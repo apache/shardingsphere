@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import com.google.common.collect.Maps;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -32,10 +33,10 @@ import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedR
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Stream merged result for group by.
@@ -73,14 +74,15 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         return true;
     }
     
+    @HighFrequencyInvocation
     private boolean aggregateCurrentGroupByRowAndNext() throws SQLException {
         boolean result = false;
         boolean cachedRow = false;
-        Map<AggregationProjection, AggregationUnit> aggregationUnitMap = Maps.toMap(
-                selectStatementContext.getProjectionsContext().getAggregationProjections(),
+        Map<AggregationProjection, AggregationUnit> aggregationUnitMap = Maps.toMap(selectStatementContext.getProjectionsContext().getAggregationProjections(),
                 input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection, input.getSeparator().orElse(null)));
+        Collection<AggregationProjection> aggregationProjections = aggregationUnitMap.keySet();
         while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), selectStatementContext.getGroupByContext().getItems()).getGroupValues())) {
-            aggregate(aggregationUnitMap);
+            aggregate(aggregationUnitMap, aggregationProjections);
             if (!cachedRow) {
                 cacheCurrentRow();
                 cachedRow = true;
@@ -90,28 +92,27 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
                 break;
             }
         }
-        setAggregationValueToCurrentRow(aggregationUnitMap);
+        setAggregationValueToCurrentRow(aggregationUnitMap, aggregationProjections);
         return result;
     }
     
-    private void aggregate(final Map<AggregationProjection, AggregationUnit> aggregationUnitMap) throws SQLException {
-        for (Entry<AggregationProjection, AggregationUnit> entry : aggregationUnitMap.entrySet()) {
-            List<Comparable<?>> values = new ArrayList<>(2);
-            if (entry.getKey().getDerivedAggregationProjections().isEmpty()) {
-                values.add(getAggregationValue(entry.getKey()));
-            } else {
-                for (AggregationProjection each : entry.getKey().getDerivedAggregationProjections()) {
-                    values.add(getAggregationValue(each));
-                }
-            }
-            entry.getValue().merge(values);
+    private void aggregate(final Map<AggregationProjection, AggregationUnit> aggregationUnitMap, final Collection<AggregationProjection> aggregationProjections) throws SQLException {
+        for (AggregationProjection each : aggregationProjections) {
+            List<Comparable<?>> values = getAggregationValues(each);
+            aggregationUnitMap.get(each).merge(values);
         }
     }
     
-    private void cacheCurrentRow() throws SQLException {
-        for (int i = 0; i < getCurrentQueryResult().getMetaData().getColumnCount(); i++) {
-            currentRow.add(getCurrentQueryResult().getValue(i + 1, Object.class));
+    private List<Comparable<?>> getAggregationValues(final AggregationProjection aggregationProjection) throws SQLException {
+        List<Comparable<?>> result = new ArrayList<>(2);
+        if (aggregationProjection.getDerivedAggregationProjections().isEmpty()) {
+            result.add(getAggregationValue(aggregationProjection));
+        } else {
+            for (AggregationProjection each : aggregationProjection.getDerivedAggregationProjections()) {
+                result.add(getAggregationValue(each));
+            }
         }
+        return result;
     }
     
     private Comparable<?> getAggregationValue(final AggregationProjection aggregationProjection) throws SQLException {
@@ -120,9 +121,15 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         return (Comparable<?>) result;
     }
     
-    private void setAggregationValueToCurrentRow(final Map<AggregationProjection, AggregationUnit> aggregationUnitMap) {
-        for (Entry<AggregationProjection, AggregationUnit> entry : aggregationUnitMap.entrySet()) {
-            currentRow.set(entry.getKey().getIndex() - 1, entry.getValue().getResult());
+    private void cacheCurrentRow() throws SQLException {
+        for (int i = 0; i < getCurrentQueryResult().getMetaData().getColumnCount(); i++) {
+            currentRow.add(getCurrentQueryResult().getValue(i + 1, Object.class));
+        }
+    }
+    
+    private void setAggregationValueToCurrentRow(final Map<AggregationProjection, AggregationUnit> aggregationUnitMap, final Collection<AggregationProjection> aggregationProjections) {
+        for (AggregationProjection each : aggregationProjections) {
+            currentRow.set(each.getIndex() - 1, aggregationUnitMap.get(each).getResult());
         }
     }
     

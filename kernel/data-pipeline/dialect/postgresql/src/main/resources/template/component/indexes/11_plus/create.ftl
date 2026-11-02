@@ -15,16 +15,18 @@
   ~ limitations under the License.
   -->
 
-CREATE <#if indisunique!false >UNIQUE </#if>INDEX IF NOT EXISTS <#if isconcurrent!false >CONCURRENTLY </#if>${name}
-ON ${schema}.${table} <#if amname?? >USING ${amname}</#if>
+<#import "../../../macro/constraints.ftl" as CONSTRAINTS>
+
+CREATE <#if indisunique!false >UNIQUE </#if>INDEX IF NOT EXISTS <#if isconcurrent!false >CONCURRENTLY </#if>${CONSTRAINTS.quoteIdentifier(name)}
+ON ${CONSTRAINTS.quoteIdentifier(schema)}.${CONSTRAINTS.quoteIdentifier(table)} <#if amname?? >USING ${amname}</#if>
 (<#list columns as c><#if c?counter != 1 >, </#if>${c.colname}<#if c.collspcname?? && c.collspcname?length gt 0 > COLLATE ${c.collspcname}</#if><#if c.op_class?? >
 ${c.op_class}</#if><#if c.sort_order?? ><#if c.sort_order > DESC<#else> ASC</#if></#if><#if c.nulls?? > NULLS <#if c.nulls >
 FIRST<#else>LAST</#if></#if></#list>)
 <#if include?size gt 0 >
-INCLUDE(<#list include as col ><#if col?counter != 1 >, </#if>${col}</#list>)
+INCLUDE(<#list include as col ><#if col?counter != 1 >, </#if>${CONSTRAINTS.quoteIdentifier(col)}</#list>)
 </#if>
 <#if fillfactor?? >
 WITH (FILLFACTOR=${fillfactor})
 </#if><#if spcname?? >
-TABLESPACE ${spcname}</#if><#if indconstraint?? >
+TABLESPACE ${CONSTRAINTS.quoteIdentifier(spcname)}</#if><#if indconstraint?? >
 WHERE ${indconstraint}</#if>;

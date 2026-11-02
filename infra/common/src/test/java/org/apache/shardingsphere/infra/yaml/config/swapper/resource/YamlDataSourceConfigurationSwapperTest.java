@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,17 +36,25 @@ class YamlDataSourceConfigurationSwapperTest {
     private final YamlDataSourceConfigurationSwapper swapper = new YamlDataSourceConfigurationSwapper();
     
     @Test
-    void assertSwapToDataSources() {
+    void assertGetDataSourcePoolPropertiesMapWithMap() {
         Map<String, Map<String, Object>> yamlConfig = createYamlConfig();
-        Map<String, DataSource> dataSources = swapper.swapToDataSources(yamlConfig);
-        MockedDataSource actual0 = (MockedDataSource) dataSources.get("ds_0");
-        assertThat(actual0.getUrl(), is("jdbc:mock://127.0.0.1/ds_0"));
-        assertThat(actual0.getUsername(), is("root"));
-        assertThat(actual0.getPassword(), is("root"));
-        MockedDataSource actual1 = (MockedDataSource) dataSources.get("ds_1");
-        assertThat(actual1.getUrl(), is("jdbc:mock://127.0.0.1/ds_1"));
-        assertThat(actual1.getUsername(), is("root"));
-        assertThat(actual1.getPassword(), is("root"));
+        Map<String, DataSourcePoolProperties> actual = swapper.getDataSourcePoolPropertiesMap(yamlConfig);
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get("ds_0").getPoolClassName(), is(MockedDataSource.class.getName()));
+        assertThat(actual.get("ds_0").getAllLocalProperties().get("url"), is("jdbc:mock://127.0.0.1/ds_0"));
+        assertThat(actual.get("ds_0").getAllLocalProperties().get("username"), is("root"));
+        assertThat(actual.get("ds_0").getAllLocalProperties().get("password"), is("root"));
+        assertThat(actual.get("ds_1").getPoolClassName(), is(MockedDataSource.class.getName()));
+        assertThat(actual.get("ds_1").getAllLocalProperties().get("url"), is("jdbc:mock://127.0.0.1/ds_1"));
+        assertThat(actual.get("ds_1").getAllLocalProperties().get("username"), is("root"));
+        assertThat(actual.get("ds_1").getAllLocalProperties().get("password"), is("root"));
+    }
+    
+    @Test
+    void assertGetDataSourcePoolPropertiesMapWithUnloadedPoolClass() {
+        Map<String, Map<String, Object>> yamlConfig = Collections.singletonMap("ds_0", Collections.singletonMap("dataSourceClassName", "foo.UnloadedDataSource"));
+        Map<String, DataSourcePoolProperties> actual = swapper.getDataSourcePoolPropertiesMap(yamlConfig);
+        assertThat(actual.get("ds_0").getPoolClassName(), is("foo.UnloadedDataSource"));
     }
     
     @Test
@@ -94,7 +102,7 @@ class YamlDataSourceConfigurationSwapperTest {
     }
     
     @Test
-    void assertGetDataSourcePoolPropertiesMap() {
+    void assertGetDataSourcePoolPropertiesMapWithRootConfiguration() {
         Map<String, Map<String, Object>> dataSources = new LinkedHashMap<>(2, 1F);
         dataSources.put("ds_1", createPropertyMap("ds_1"));
         dataSources.put("ds_2", createPropertyMap("ds_2"));

@@ -19,11 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineReadConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineWriteConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 
@@ -33,8 +29,6 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineProcessConfigurationUtils {
     
-    private static final YamlPipelineProcessConfigurationSwapper SWAPPER = new YamlPipelineProcessConfigurationSwapper();
-    
     /**
      * Fill default value for pipeline process configuration.
      *
@@ -42,23 +36,11 @@ public final class PipelineProcessConfigurationUtils {
      * @return process configuration
      */
     public static PipelineProcessConfiguration fillInDefaultValue(final PipelineProcessConfiguration originalConfig) {
-        YamlPipelineProcessConfiguration yamlConfig = null == originalConfig ? new YamlPipelineProcessConfiguration() : SWAPPER.swapToYamlConfiguration(originalConfig);
-        fillInDefaultValue(yamlConfig);
-        return SWAPPER.swapToObject(yamlConfig);
-    }
-    
-    private static void fillInDefaultValue(final YamlPipelineProcessConfiguration yamlConfig) {
-        if (null == yamlConfig.getRead()) {
-            yamlConfig.setRead(new YamlPipelineReadConfiguration());
-        }
-        if (null == yamlConfig.getWrite()) {
-            yamlConfig.setWrite(new YamlPipelineWriteConfiguration());
-        }
-        if (null == yamlConfig.getStreamChannel()) {
-            YamlAlgorithmConfiguration yamlAlgorithmConfig = new YamlAlgorithmConfiguration();
-            yamlAlgorithmConfig.setType("MEMORY");
-            yamlAlgorithmConfig.setProps(PropertiesBuilder.build(new Property("block-queue-size", "2000")));
-            yamlConfig.setStreamChannel(yamlAlgorithmConfig);
-        }
+        PipelineReadConfiguration readConfig = null == originalConfig ? null : originalConfig.getRead();
+        PipelineWriteConfiguration writeConfig = null == originalConfig ? null : originalConfig.getWrite();
+        AlgorithmConfiguration streamChannel = null == originalConfig ? null : originalConfig.getStreamChannel();
+        return new PipelineProcessConfiguration(null == readConfig ? new PipelineReadConfiguration(20, 1000, 10000000, null) : readConfig,
+                null == writeConfig ? new PipelineWriteConfiguration(20, 1000, null) : writeConfig,
+                null == streamChannel ? new AlgorithmConfiguration("MEMORY", PropertiesBuilder.build(new Property("block-queue-size", "2000"))) : streamChannel);
     }
 }

@@ -589,7 +589,7 @@ primaryKey
     ;
 
 andOperator
-    : AND | AND_
+    : AND
     ;
 
 orOperator
@@ -602,16 +602,20 @@ comparisonOperator
 
 patternMatchingOperator
     : LIKE
-    | TILDE_TILDE_
     | NOT LIKE
-    | NOT_TILDE_TILDE_
     | ILIKE
-    | ILIKE_
     | NOT ILIKE
-    | NOT_ILIKE_
     | SIMILAR TO
     | NOT SIMILAR TO
-    | TILDE_
+    | patternMatchingSymbol
+    ;
+
+patternMatchingSymbol
+    : TILDE_
+    | TILDE_TILDE_
+    | NOT_TILDE_TILDE_
+    | ILIKE_
+    | NOT_ILIKE_
     | REGEX_NOT_MATCH_
     | REGEX_MATCH_CASE_INSENSITIVE_
     | REGEX_NOT_MATCH_CASE_INSENSITIVE_
@@ -636,10 +640,8 @@ aExpr
     | aExpr MOD_ aExpr
     | aExpr CARET_ aExpr
     | TILDE_ aExpr
-    | aExpr AMPERSAND_ aExpr
-    | aExpr VERTICAL_BAR_ aExpr
-    | aExpr qualOp aExpr
     | {QUESTION_ != _input.LA(1)}? qualOp aExpr
+    | aExpr qualOp aExpr
     | aExpr qualOp
     | aExpr comparisonOperator aExpr
     | NOT aExpr
@@ -690,8 +692,8 @@ bExpr
     | bExpr (ASTERISK_ | SLASH_ | MOD_) bExpr
     | bExpr (PLUS_ | MINUS_) bExpr
     | TILDE_ bExpr
-    | bExpr qualOp bExpr
     | {QUESTION_ != _input.LA(1)}? qualOp bExpr
+    | bExpr qualOp bExpr
     | bExpr qualOp
     | bExpr IS DISTINCT FROM bExpr
     | bExpr IS NOT DISTINCT FROM bExpr
@@ -772,10 +774,16 @@ columnref
 qualOp
     : jsonOperator
     | geometricOperator
+    | patternMatchingSymbol
+    | AND_
+    | AMPERSAND_
+    | VERTICAL_BAR_
     | CUSTOM_OPERATOR_
     | NOT_
     | AT_
     | DEQ_
+    | SAFE_EQ_
+    | BQ_
     | OPERATOR LP_ anyOperator RP_
     ;
 
@@ -1127,7 +1135,7 @@ filterClause
     ;
 
 functionExprWindowless
-    : funcApplication | functionExprCommonSubexpr
+    : funcApplication | functionExprCommonSubexpr | jsonAggregateFunction
     ;
 
 ordinality

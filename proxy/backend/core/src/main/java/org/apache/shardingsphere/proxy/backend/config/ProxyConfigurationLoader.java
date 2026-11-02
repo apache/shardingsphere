@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.proxy.backend.config;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.DatabaseNameValidator;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.config.validator.ProxyConfigurationLoadResultValidator;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyConfigurationSwapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,9 +84,9 @@ public final class ProxyConfigurationLoader {
     public static ProxyConfigurationLoadResult load(final String path) throws IOException {
         YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getGlobalConfigFile(path));
         File configPath = getResourceFile(path);
-        Collection<YamlProxyDatabaseConfiguration> databaseConfigs = loadDatabaseConfigurations(configPath);
-        ProxyConfigurationLoadResult result = new ProxyConfigurationLoadResult(serverConfig, databaseConfigs.stream().collect(Collectors.toMap(
-                YamlProxyDatabaseConfiguration::getDatabaseName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+        Collection<ProxyDatabaseConfiguration> databaseConfigs = loadDatabaseConfigurations(configPath);
+        ProxyConfigurationLoadResult result = new YamlProxyConfigurationSwapper().swap(serverConfig, databaseConfigs.stream()
+                .collect(Collectors.toMap(ProxyDatabaseConfiguration::getDatabaseName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         ProxyConfigurationLoadResultValidator.validate(result);
         return result;
     }
@@ -145,40 +145,40 @@ public final class ProxyConfigurationLoader {
         return serverConfig;
     }
     
-    private static Collection<YamlProxyDatabaseConfiguration> loadDatabaseConfigurations(final File configPath) throws IOException {
+    private static Collection<ProxyDatabaseConfiguration> loadDatabaseConfigurations(final File configPath) throws IOException {
         File[] ruleConfigFiles = findRuleConfigurationFiles(configPath);
         Collection<String> loadedDatabaseNames = new HashSet<>(ruleConfigFiles.length);
-        Collection<YamlProxyDatabaseConfiguration> result = new LinkedList<>();
+        Collection<ProxyDatabaseConfiguration> result = new LinkedList<>();
         for (File each : ruleConfigFiles) {
-            loadDatabaseConfiguration(each).ifPresent(optional -> {
-                Preconditions.checkState(loadedDatabaseNames.add(optional.getDatabaseName()), "Database name `%s` must unique at all database configurations.", optional.getDatabaseName());
-                result.add(optional);
+            loadDatabaseConfiguration(each).ifPresent(databaseConfig -> {
+                ShardingSpherePreconditions.checkState(loadedDatabaseNames.add(databaseConfig.getDatabaseName()),
+                        () -> new IllegalStateException(String.format("Database name `%s` must unique at all database configurations.", databaseConfig.getDatabaseName())));
+                result.add(databaseConfig);
             });
         }
         return result;
     }
     
-    private static Optional<YamlProxyDatabaseConfiguration> loadDatabaseConfiguration(final File yamlFile) throws IOException {
-        YamlProxyDatabaseConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyDatabaseConfiguration.class);
-        if (result.isEmpty()) {
+    private static Optional<ProxyDatabaseConfiguration> loadDatabaseConfiguration(final File yamlFile) throws IOException {
+        YamlProxyDatabaseConfiguration yamlConfig = YamlEngine.unmarshal(yamlFile, YamlProxyDatabaseConfiguration.class);
+        if (yamlConfig.isEmpty()) {
             return Optional.empty();
         }
-        Preconditions.checkNotNull(result.getDatabaseName(), "Property `databaseName` in file `%s` is required.", yamlFile.getName());
+        ProxyDatabaseConfiguration result = new YamlProxyConfigurationSwapper().swap(yamlConfig);
+        ShardingSpherePreconditions.checkNotNull(result.getDatabaseName(), () -> new NullPointerException(String.format("Property `databaseName` in file `%s` is required.", yamlFile.getName())));
         DatabaseNameValidator.validate(result.getDatabaseName());
         checkDuplicateRule(result.getRules(), yamlFile);
         return Optional.of(result);
     }
     
-    private static void checkDuplicateRule(final Collection<YamlRuleConfiguration> ruleConfigs, final File yamlFile) {
+    private static void checkDuplicateRule(final Collection<RuleConfiguration> ruleConfigs, final File yamlFile) {
         if (ruleConfigs.isEmpty()) {
             return;
         }
-        Map<Class<? extends RuleConfiguration>, Long> ruleConfigTypeCountMap = ruleConfigs.stream()
-                .collect(Collectors.groupingBy(YamlRuleConfiguration::getRuleConfigurationType, Collectors.counting()));
+        Map<Class<? extends RuleConfiguration>, Long> ruleConfigTypeCountMap = ruleConfigs.stream().collect(Collectors.groupingBy(RuleConfiguration::getClass, Collectors.counting()));
         Optional<Entry<Class<? extends RuleConfiguration>, Long>> duplicateRuleConfig = ruleConfigTypeCountMap.entrySet().stream().filter(each -> each.getValue() > 1L).findFirst();
-        if (duplicateRuleConfig.isPresent()) {
-            throw new IllegalStateException(String.format("Duplicate rule tag `!%s` in file `%s`", getDuplicateRuleTagName(duplicateRuleConfig.get().getKey()), yamlFile.getName()));
-        }
+        ShardingSpherePreconditions.checkState(!duplicateRuleConfig.isPresent(),
+                () -> new IllegalStateException(String.format("Duplicate rule tag `!%s` in file `%s`", getDuplicateRuleTagName(duplicateRuleConfig.get().getKey()), yamlFile.getName())));
     }
     
     @SuppressWarnings("rawtypes")
