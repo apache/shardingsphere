@@ -75,7 +75,7 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
                 case LENGTH:
                     if (FirebirdBinaryColumnType.VARYING == columnType || FirebirdBinaryColumnType.LEGACY_VARYING == columnType || FirebirdBinaryColumnType.TEXT == columnType
                             || FirebirdBinaryColumnType.LEGACY_TEXT == columnType) {
-                        FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.LENGTH, columnLength, payload);
+                        FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.LENGTH, null == columnLength ? columnType.getLength() : columnLength, payload);
                     } else {
                         FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.LENGTH, columnType.getLength(), payload);
                     }
