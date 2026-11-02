@@ -657,4 +657,126 @@ class FirebirdPrepareStatementCommandExecutorTest {
         TableNotFoundException actual = assertThrows(TableNotFoundException.class, executor::execute);
         assertThat(actual.getMessage(), is("Table or view 'foo_tbl' does not exist."));
     }
+    
+    @Test
+    void assertDescribeUpdateWithParametersInExpressions() throws Exception {
+        FirebirdPrepareStatementReturnPacket actual = describeBind("UPDATE foo_tbl SET id = id + ? WHERE id = ? - 1");
+        assertThat(actual.getDescribeBind().size(), is(2));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.LONG);
+    }
+    
+    @Test
+    void assertDescribeSelectWithParametersInExpressions() throws Exception {
+        FirebirdPrepareStatementReturnPacket actual = describeBind("SELECT id FROM foo_tbl WHERE id = ? - 1");
+        assertThat(actual.getDescribeBind().size(), is(1));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+    }
+    
+    @Test
+    void assertDescribeDeleteWithParametersInExpressions() throws Exception {
+        FirebirdPrepareStatementReturnPacket actual = describeBind("DELETE FROM foo_tbl WHERE id = ? - 1");
+        assertThat(actual.getDescribeBind().size(), is(1));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+    }
+    
+    @Test
+    void assertDescribeParameterWithLengthRequest() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT ?");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.BIND,
+                FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(1));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(0).write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getLength());
+    }
+    
+    @Test
+    void assertDescribeUpdateWithFunctionArgumentPreservesFunctionType() throws Exception {
+        FirebirdPrepareStatementReturnPacket actual = describeBind("UPDATE foo_tbl SET id = ASCII_VAL(?) WHERE id = ? - 1");
+        assertThat(actual.getDescribeBind().size(), is(2));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.VARYING);
+        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.LONG);
+    }
+    
+    @Test
+    void assertDescribeUpdateWithIntegerFunctionArgument() throws Exception {
+        FirebirdPrepareStatementReturnPacket actual = describeBind("UPDATE foo_tbl SET content = ASCII_CHAR(?)");
+        assertThat(actual.getDescribeBind().size(), is(1));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+    }
+    
+    @Test
+    void assertDescribeUpdateWithGenIdArgument() throws Exception {
+        FirebirdPrepareStatementReturnPacket actual = describeBind("UPDATE foo_tbl SET id = GEN_ID(foo_seq, ?)");
+        assertThat(actual.getDescribeBind().size(), is(1));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.INT64);
+    }
+    
+    @Test
+    void assertDescribeUpdateWithCoalescePreservesColumnType() throws Exception {
+        FirebirdPrepareStatementReturnPacket actual = describeBind("UPDATE foo_tbl SET id = COALESCE(?, 0)");
+        assertThat(actual.getDescribeBind().size(), is(1));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+    }
+    
+    @Test
+    void assertDescribeSelectWithLeftSideInParametersPreservesOrder() throws Exception {
+        FirebirdPrepareStatementReturnPacket actual = describeBind("SELECT id FROM foo_tbl WHERE id + ? IN (?, ?)");
+        assertThat(actual.getDescribeBind().size(), is(3));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.LONG);
+        assertParameterType(actual.getDescribeBind().get(2), FirebirdBinaryColumnType.LONG);
+    }
+    
+    @Test
+    void assertDescribeSelectWithParameterOnLeftOfIn() throws Exception {
+        FirebirdPrepareStatementReturnPacket actual = describeBind("SELECT id FROM foo_tbl WHERE ? IN (id, ?)");
+        assertThat(actual.getDescribeBind().size(), is(2));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.LONG);
+    }
+    
+    @Test
+    void assertDescribeSelectWithLeftSideBetweenParametersPreservesOrder() throws Exception {
+        FirebirdPrepareStatementReturnPacket actual = describeBind("SELECT id FROM foo_tbl WHERE id + ? BETWEEN ? AND ?");
+        assertThat(actual.getDescribeBind().size(), is(3));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.LONG);
+        assertParameterType(actual.getDescribeBind().get(2), FirebirdBinaryColumnType.LONG);
+    }
+    
+    @Test
+    void assertDescribeSelectWithParameterOnLeftOfBetween() throws Exception {
+        FirebirdPrepareStatementReturnPacket actual = describeBind("SELECT id FROM foo_tbl WHERE ? BETWEEN id AND ?");
+        assertThat(actual.getDescribeBind().size(), is(2));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.LONG);
+    }
+    
+    @Test
+    void assertDescribeSelectWithUnassociatedLeadingParameterPreservesOrder() throws Exception {
+        FirebirdPrepareStatementReturnPacket actual = describeBind("SELECT id FROM foo_tbl WHERE ? = 1 AND id = ?");
+        assertThat(actual.getDescribeBind().size(), is(2));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.VARYING);
+        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.LONG);
+    }
+    
+    @Test
+    void assertDescribeSelectWithFunctionComparison() throws Exception {
+        FirebirdPrepareStatementReturnPacket actualLeftFunction = describeBind("SELECT id FROM foo_tbl WHERE ASCII_VAL(?) = id");
+        assertThat(actualLeftFunction.getDescribeBind().size(), is(1));
+        assertParameterType(actualLeftFunction.getDescribeBind().get(0), FirebirdBinaryColumnType.VARYING);
+        FirebirdPrepareStatementReturnPacket actualRightParam = describeBind("SELECT id FROM foo_tbl WHERE CHAR_LENGTH(content) = ?");
+        assertThat(actualRightParam.getDescribeBind().size(), is(1));
+        assertParameterType(actualRightParam.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+    }
 }
