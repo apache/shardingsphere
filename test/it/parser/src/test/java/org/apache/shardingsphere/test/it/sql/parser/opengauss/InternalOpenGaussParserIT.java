@@ -17,9 +17,32 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.opengauss;
 
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @InternalSQLParserITSettings("openGauss")
 class InternalOpenGaussParserIT extends InternalSQLParserIT {
+    
+    @Test
+    void assertSelectWithLargeInList() {
+        List<String> expectedValues = IntStream.rangeClosed(1, 100000).mapToObj(String::valueOf).collect(Collectors.toList());
+        String sql = "SELECT * FROM foo_table WHERE foo_id IN (" + String.join(", ", expectedValues) + ")";
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("openGauss").visit(new SQLParserEngine("openGauss", new CacheOption(128, 1024L)).parse(sql, false));
+        ListExpression actualValues = (ListExpression) ((InExpression) actual.getWhere().get().getExpr()).getRight();
+        assertThat(actualValues.getItems().stream().map(each -> sql.substring(each.getStartIndex(), each.getStopIndex() + 1)).collect(Collectors.toList()), is(expectedValues));
+    }
 }

@@ -817,8 +817,7 @@ constTypeName
     ;
 
 exprList
-    : aExpr
-    | exprList COMMA_ aExpr
+    : aExpr (COMMA_ aExpr)*
     ;
 
 extractList
