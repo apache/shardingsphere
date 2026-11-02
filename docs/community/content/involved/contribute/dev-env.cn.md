@@ -33,7 +33,7 @@ git config --global core.longpaths true
 
 可选。Maven 安装并配置好的情况下可以使用 `mvn` 命令，否则可以使用 `mvnw` 命令（自动下载并安装需要的 Maven，使用在 `.mvn/wrapper/maven-wrapper.properties` 配置的版本）。
 
-使用 Maven 3.6 或以上版本。
+使用 Maven 3.9.0 或以上版本。
 
 可以从 [Maven 下载页面]( https://maven.apache.org/download.html ) 下载。
 
