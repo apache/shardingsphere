@@ -211,6 +211,41 @@ class PostgreSQLPipelineFreemarkerManagerTest {
         assertThat(PATTERN.matcher(actual).replaceAll(""), is(expected));
     }
     
+    @ParameterizedTest(name = "PostgreSQL {0}: increment {1}, start {2}, min {3}, max {4}")
+    @MethodSource("getSignedIdentitySequenceCases")
+    void assertSignedIdentitySequence(final int majorVersion, final long increment, final long start, final long minimum, final long maximum) {
+        Map<String, Object> dataModel = new HashMap<>(16, 1F);
+        dataModel.put("schema", "foo_schema");
+        dataModel.put("name", "foo_identity");
+        Map<String, Object> column = getColumn();
+        column.put("cltype", "int8");
+        column.put("displaytypname", "bigint");
+        column.put("seqincrement", increment);
+        column.put("seqstart", start);
+        column.put("seqmin", minimum);
+        column.put("seqmax", maximum);
+        dataModel.put("columns", Collections.singletonList(column));
+        dataModel.put("primary_key", Collections.emptyList());
+        dataModel.put("unique_constraint", Collections.emptyList());
+        dataModel.put("foreign_key", Collections.emptyList());
+        dataModel.put("check_constraint", Collections.emptyList());
+        dataModel.put("exclude_constraint", Collections.emptyList());
+        dataModel.put("coll_inherits", Collections.emptyList());
+        dataModel.put("autovacuum_enabled", "x");
+        dataModel.put("toast_autovacuum_enabled", "x");
+        String actual = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(dataModel, "component/table/%s/create.ftl", majorVersion, 0);
+        String expected = String.format("CREATETABLEIFNOTEXISTS\"foo_schema\".\"foo_identity\"(\"id\"bigintNOTNULLGENERATEDALWAYSASIDENTITY(INCREMENT%sSTART%sMINVALUE%sMAXVALUE%sCACHE1))",
+                increment, start, minimum, maximum) + (majorVersion < 12 ? "WITH(OIDS=FALSE);" : "");
+        assertThat(PATTERN.matcher(actual).replaceAll(""), is(expected));
+    }
+    
+    private static Stream<Arguments> getSignedIdentitySequenceCases() {
+        return Stream.of(10, 11, 12, 17).flatMap(majorVersion -> Stream.of(
+                Arguments.of(majorVersion, 1L, -5L, -100L, -1L),
+                Arguments.of(majorVersion, -1L, -1L, Long.MIN_VALUE, -1L),
+                Arguments.of(majorVersion, 1L, 0L, 0L, 100L)));
+    }
+    
     private static Map<String, Object> getColumn() {
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         result.put("name", "id");
