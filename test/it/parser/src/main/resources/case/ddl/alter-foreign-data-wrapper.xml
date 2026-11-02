@@ -31,4 +31,7 @@
     <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_options_option_nonexistent" />
     <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_owner" />
     <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_with_validator" />
+    <alter-foreign-data-wrapper sql-case-id="alter_fdw_connection_pg" />
+
+    <alter-foreign-data-wrapper sql-case-id="alter_fdw_no_connection_pg" />
 </sql-parser-test-cases>
