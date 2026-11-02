@@ -65,6 +65,7 @@ class FirebirdBinaryColumnTypeTest {
         assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_sql_time), is(FirebirdBinaryColumnType.TIME));
         assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_timestamp), is(FirebirdBinaryColumnType.TIMESTAMP));
         assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_quad), is(FirebirdBinaryColumnType.BLOB));
+        assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_blob2), is(FirebirdBinaryColumnType.BLOB));
         assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_long), is(FirebirdBinaryColumnType.LONG));
         assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_short), is(FirebirdBinaryColumnType.SHORT));
         assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_int64), is(FirebirdBinaryColumnType.INT64));

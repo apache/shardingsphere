@@ -47,6 +47,19 @@ class FirebirdBlrRowMetadataTest {
     }
     
     @Test
+    void assertParseBLRWithBlobTypes() {
+        ByteBuf blr = Unpooled.buffer()
+                .writeZero(4)
+                .writeByte(6)
+                .writeByte(0)
+                .writeByte(BlrConstants.blr_blob2).writeBytes(new byte[]{1, 0, 4, 0}).writeByte(BlrConstants.blr_short).writeByte(0)
+                .writeByte(BlrConstants.blr_quad).writeByte(0).writeByte(BlrConstants.blr_short).writeByte(0)
+                .writeByte(BlrConstants.blr_long).writeByte(0).writeByte(BlrConstants.blr_short).writeByte(0)
+                .writeByte(BlrConstants.blr_end);
+        assertThat(FirebirdBlrRowMetadata.parseBLR(blr).getColumnTypes(), is(Arrays.asList(FirebirdBinaryColumnType.BLOB, FirebirdBinaryColumnType.BLOB, FirebirdBinaryColumnType.LONG)));
+    }
+    
+    @Test
     void assertParseBLRKeepsReaderIndex() {
         ByteBuf blr = Unpooled.buffer().writeByte(99);
         blr.writeBytes(createBlr());
