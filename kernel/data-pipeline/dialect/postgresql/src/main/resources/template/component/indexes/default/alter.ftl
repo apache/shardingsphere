@@ -15,10 +15,12 @@
   ~ limitations under the License.
   -->
 
+<#import "../../../macro/constraints.ftl" as CONSTRAINTS>
+
 <#if indisclustered!false >
-ALTER TABLE IF EXISTS ${schema}.${table}
-CLUSTER ON ${name};
+ALTER TABLE IF EXISTS ${CONSTRAINTS.quoteIdentifier(schema)}.${CONSTRAINTS.quoteIdentifier(table)}
+CLUSTER ON ${CONSTRAINTS.quoteIdentifier(name)};
 </#if>
 <#if description?? && description?length gt 0>
-COMMENT ON INDEX ${schema}.${name}
-IS '${description}';</#if>
+COMMENT ON INDEX ${CONSTRAINTS.quoteIdentifier(schema)}.${CONSTRAINTS.quoteIdentifier(name)}
+IS ${CONSTRAINTS.quoteLiteral(description)};</#if>
