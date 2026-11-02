@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.databa
 import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
+import org.apache.shardingsphere.database.exception.firebird.exception.connection.LoginErrorException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -69,6 +71,14 @@ class FirebirdDialectExceptionMapperTest {
         assertThat(actual.getSQLState(), is(vendorError.getSqlState().getValue()));
         assertThat(actual.getErrorCode(), is(vendorError.getVendorCode()));
         assertThat(actual.getMessage(), is(String.format(vendorError.getReason(), messageArgs)));
+    }
+    
+    @Test
+    void assertConvertWithLoginError() {
+        SQLException actual = mapper.convert(new LoginErrorException());
+        assertThat(actual.getSQLState(), is("28000"));
+        assertThat(actual.getErrorCode(), is(ISCConstants.isc_login_error));
+        assertThat(actual.getMessage(), is(""));
     }
     
     @Test

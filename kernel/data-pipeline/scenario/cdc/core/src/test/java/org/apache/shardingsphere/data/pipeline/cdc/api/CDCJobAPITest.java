@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.cdc.api;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.CDCJobId;
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.config.YamlCDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.swapper.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
@@ -50,7 +50,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobM
 import org.apache.shardingsphere.data.pipeline.core.pojo.TransmissionJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.preparer.incremental.IncrementalTaskPositionManager;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
-import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.item.PipelineJobItemFacade;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.item.PipelineJobItemProcessGovernanceRepository;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
@@ -63,6 +62,9 @@ import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
@@ -75,6 +77,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -92,7 +95,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -116,6 +118,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
@@ -185,136 +188,143 @@ class CDCJobAPITest {
     @Test
     void assertCreateThrowsWhenJobShardingCountIsZero() {
         putContext(Collections.singletonMap("foo_ds", mock(StorageUnit.class)));
-        CDCJobConfiguration jobConfig = new CDCJobConfiguration("foo_job", "foo_db", Collections.emptyList(), false, mock(DatabaseType.class),
-                mock(ShardingSpherePipelineDataSourceConfiguration.class), new JobDataNodeLine(Collections.emptyList()), Collections.emptyList(),
-                false, new CDCJobConfiguration.SinkConfiguration(CDCSinkType.SOCKET, new Properties()), 1, 0);
-        try (
-                MockedConstruction<YamlCDCJobConfigurationSwapper> jobConfigSwapper = mockConstruction(YamlCDCJobConfigurationSwapper.class,
-                        (mock, context) -> when(mock.swapToObject(any(YamlCDCJobConfiguration.class))).thenReturn(jobConfig))) {
-            StreamDataParameter param = new StreamDataParameter("foo_db", new LinkedList<>(), false, Collections.emptyMap(), false);
-            assertThrows(PipelineJobCreationWithInvalidShardingCountException.class, () -> jobAPI.create(param, CDCSinkType.SOCKET, new Properties()));
-            assertThat(jobConfigSwapper.constructed().size(), is(1));
-        }
+        PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS);
+        when(PipelineAPIFactory.getPipelineGovernanceFacade(any())).thenReturn(governanceFacade);
+        StreamDataParameter param = new StreamDataParameter("foo_db", Collections.emptyList(), false, Collections.emptyMap(), false);
+        assertThrows(PipelineJobCreationWithInvalidShardingCountException.class, () -> jobAPI.create(param, CDCSinkType.SOCKET, new Properties()));
+        verify(governanceFacade, never()).getJobFacade();
     }
     
     @Test
     void assertCreateSkipsExistingJob() {
         putContext(Collections.singletonMap("foo_ds", mock(StorageUnit.class)));
         List<String> schemaTableNames = Arrays.asList("foo_schema.foo_tbl", "bar_schema.FOO_TBL");
-        CDCJobConfiguration jobConfig = createJobConfiguration(Collections.singletonList("foo_readwrite_ds"), true, schemaTableNames);
         PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS);
         when(governanceFacade.getJobFacade().getConfiguration().isExisted("foo_job")).thenReturn(true);
         when(PipelineAPIFactory.getPipelineGovernanceFacade(any())).thenReturn(governanceFacade);
-        try (
-                MockedConstruction<YamlCDCJobConfigurationSwapper> ignored = mockConstruction(YamlCDCJobConfigurationSwapper.class,
-                        (mock, context) -> when(mock.swapToObject(any(YamlCDCJobConfiguration.class))).thenReturn(jobConfig))) {
-            StreamDataParameter param = new StreamDataParameter("foo_db", new LinkedList<>(schemaTableNames), true,
-                    Collections.singletonMap("foo_schema.foo_tbl", Collections.singletonList(new DataNode("foo_readwrite_ds.foo_tbl"))), false);
-            assertThat(jobAPI.create(param, CDCSinkType.SOCKET, new Properties()), is("foo_job"));
-            verify(governanceFacade.getJobFacade().getJob(), never()).create(anyString(), any());
-            verify(governanceFacade.getJobFacade().getConfiguration(), never()).persist(anyString(), any());
-        }
+        StreamDataParameter param = new StreamDataParameter("foo_db", schemaTableNames, true,
+                Collections.singletonMap("foo_schema.foo_tbl", Collections.singletonList(new DataNode("foo_readwrite_ds.foo_tbl"))), false);
+        assertThat(jobAPI.create(param, CDCSinkType.SOCKET, new Properties()), is("foo_job"));
+        verify(governanceFacade.getJobFacade().getJob(), never()).create(anyString(), any());
+        verify(governanceFacade.getJobFacade().getConfiguration(), never()).persist(anyString(), any());
     }
     
     @Test
-    void assertCreateThrowsWhenDataSourceDoesNotExist() throws ReflectiveOperationException {
+    void assertCreateThrowsWhenDataSourceDoesNotExist() {
         putContext(Collections.singletonMap("foo_ds", mock(StorageUnit.class)));
         List<String> schemaTableNames = Arrays.asList("foo_schema.foo_tbl", "bar_schema.FOO_TBL");
-        CDCJobConfiguration jobConfig = createJobConfiguration(Arrays.asList("bar_ds", "foo_readwrite_ds"), true, schemaTableNames);
         PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS);
         when(PipelineAPIFactory.getPipelineGovernanceFacade(any())).thenReturn(governanceFacade);
-        PipelineJobConfigurationManager jobConfigManager = mock(PipelineJobConfigurationManager.class);
-        when(jobConfigManager.convertToJobConfigurationPOJO(jobConfig)).thenReturn(createJobConfigurationPOJO());
-        Plugins.getMemberAccessor().set(CDCJobAPI.class.getDeclaredField("jobConfigManager"), jobAPI, jobConfigManager);
-        try (
-                MockedConstruction<YamlCDCJobConfigurationSwapper> ignored = mockConstruction(YamlCDCJobConfigurationSwapper.class,
-                        (mock, context) -> when(mock.swapToObject(any(YamlCDCJobConfiguration.class))).thenReturn(jobConfig))) {
-            StreamDataParameter param = new StreamDataParameter("foo_db", new LinkedList<>(schemaTableNames), true,
-                    Collections.singletonMap("foo_schema.foo_tbl", Arrays.asList(new DataNode("bar_ds.foo_tbl"), new DataNode("foo_readwrite_ds.foo_tbl"))), false);
-            PipelineInvalidParameterException actual = assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.create(param, CDCSinkType.SOCKET, new Properties()));
-            assertThat(actual.getMessage(), containsString("foo_readwrite_ds"));
-            verify(governanceFacade.getJobFacade().getJob(), never()).create(anyString(), any());
-            verify(governanceFacade.getJobFacade().getConfiguration(), never()).persist(anyString(), any());
-        }
+        StreamDataParameter param = new StreamDataParameter("foo_db", schemaTableNames, true,
+                Collections.singletonMap("foo_schema.foo_tbl", Arrays.asList(new DataNode("foo_ds.foo_tbl"), new DataNode("foo_readwrite_ds.foo_tbl"))), false);
+        PipelineInvalidParameterException actual = assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.create(param, CDCSinkType.SOCKET, new Properties()));
+        assertThat(actual.getMessage(), is("There is invalid parameter value. Data source `foo_readwrite_ds` does not exist in job data source configuration."));
+        verify(governanceFacade.getJobFacade().getJob(), never()).create(anyString(), any());
+        verify(governanceFacade.getJobFacade().getConfiguration(), never()).persist(anyString(), any());
     }
     
     @Test
     void assertCreateThrowsWhenSchemaTableNamesHaveDuplicateBareTable() {
         putContext(Collections.singletonMap("foo_ds", mock(StorageUnit.class)));
         List<String> schemaTableNames = Arrays.asList("schema_a.t", "schema_b.T");
-        CDCJobConfiguration jobConfig = createJobConfiguration(Collections.singletonList("foo_ds"), true, schemaTableNames);
         PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS);
         when(PipelineAPIFactory.getPipelineGovernanceFacade(any())).thenReturn(governanceFacade);
-        try (
-                MockedConstruction<YamlCDCJobConfigurationSwapper> ignored = mockConstruction(YamlCDCJobConfigurationSwapper.class,
-                        (mock, context) -> when(mock.swapToObject(any(YamlCDCJobConfiguration.class))).thenReturn(jobConfig))) {
-            StreamDataParameter param = new StreamDataParameter("foo_db", new LinkedList<>(schemaTableNames), true,
-                    Collections.singletonMap("t", Collections.singletonList(new DataNode("foo_ds.t"))), false);
-            PipelineInvalidParameterException actual = assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.create(param, CDCSinkType.SOCKET, new Properties()));
-            assertThat(actual.getMessage(), is("There is invalid parameter value. More than one schema table has the same table name `T`."));
-            verify(governanceFacade.getJobFacade().getJob(), never()).create(anyString(), any());
-            verify(governanceFacade.getJobFacade().getConfiguration(), never()).persist(anyString(), any());
-        }
+        StreamDataParameter param = new StreamDataParameter("foo_db", schemaTableNames, true, Collections.singletonMap("t", Collections.singletonList(new DataNode("foo_ds.t"))), false);
+        PipelineInvalidParameterException actual = assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.create(param, CDCSinkType.SOCKET, new Properties()));
+        assertThat(actual.getMessage(), is("There is invalid parameter value. More than one schema table has the same table name `T`."));
+        verify(governanceFacade.getJobFacade().getJob(), never()).create(anyString(), any());
+        verify(governanceFacade.getJobFacade().getConfiguration(), never()).persist(anyString(), any());
     }
     
     @Test
-    void assertCreateFullJobSkipsInitIncrementalPosition() throws ReflectiveOperationException {
-        putContext(Collections.singletonMap("foo_ds", mock(StorageUnit.class)));
-        CDCJobConfiguration jobConfig = new CDCJobConfiguration("foo_job", "foo_db", Collections.singletonList("foo_schema.foo_tbl"), true,
-                mock(DatabaseType.class), createJobConfiguration(1).getDataSourceConfig(), new JobDataNodeLine(Collections.singletonList(
-                        new JobDataNodeEntry("foo_tbl", Collections.singletonList(new DataNode("foo_ds" + ".foo_tbl"))))),
-                Collections.singletonList(new JobDataNodeLine(Collections.singletonList(new JobDataNodeEntry("foo_tbl",
-                        Collections.singletonList(new DataNode("foo_ds" + ".foo_tbl")))))),
-                false, new CDCJobConfiguration.SinkConfiguration(CDCSinkType.SOCKET, new Properties()), 1, 0);
-        when(PipelineAPIFactory.getPipelineGovernanceFacade(any())).thenReturn(mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS));
-        PipelineJobConfigurationManager jobConfigManager = mock(PipelineJobConfigurationManager.class);
-        when(jobConfigManager.convertToJobConfigurationPOJO(jobConfig)).thenReturn(createJobConfigurationPOJO());
-        Plugins.getMemberAccessor().set(CDCJobAPI.class.getDeclaredField("jobConfigManager"), jobAPI, jobConfigManager);
-        try (
-                MockedConstruction<YamlCDCJobConfigurationSwapper> ignored = mockConstruction(YamlCDCJobConfigurationSwapper.class,
-                        (mock, context) -> when(mock.swapToObject(any(YamlCDCJobConfiguration.class))).thenReturn(jobConfig));
-                MockedConstruction<IncrementalTaskPositionManager> positionManagerConstruction = mockConstruction(IncrementalTaskPositionManager.class)) {
-            StreamDataParameter param = new StreamDataParameter("foo_db", new LinkedList<>(Collections.singletonList("foo_schema.foo_tbl")), true,
-                    Collections.singletonMap("foo_schema.foo_tbl", Collections.singletonList(new DataNode("foo_ds" + ".foo_tbl"))), false);
-            assertThat(jobAPI.create(param, CDCSinkType.SOCKET, new Properties()), is("foo_job"));
-            ArgumentCaptor<YamlCDCJobConfiguration> yamlJobConfig = ArgumentCaptor.forClass(YamlCDCJobConfiguration.class);
-            verify(ignored.constructed().get(0)).swapToObject(yamlJobConfig.capture());
-            assertThat(yamlJobConfig.getValue().getSourceDatabaseType(), is("H2"));
-            assertTrue(positionManagerConstruction.constructed().isEmpty());
-        }
-    }
-    
-    @SuppressWarnings("rawtypes")
-    @Test
-    void assertCreatePersistAndInitIncrementalPosition() throws ReflectiveOperationException {
+    void assertCreateFullJobSkipsInitIncrementalPosition() {
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
         storageUnits.put("foo_ds", mock(StorageUnit.class));
         storageUnits.put("bar_ds", mock(StorageUnit.class));
         putContext(storageUnits);
-        CDCJobConfiguration jobConfig = createJobConfiguration(2);
-        PipelineJobItemProcessGovernanceRepository processGovernanceRepository = mock(PipelineJobItemProcessGovernanceRepository.class);
-        PipelineJobItemFacade jobItemFacade = mock(PipelineJobItemFacade.class);
-        when(jobItemFacade.getProcess()).thenReturn(processGovernanceRepository);
         PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS);
-        when(governanceFacade.getJobItemFacade()).thenReturn(jobItemFacade);
+        when(PipelineAPIFactory.getPipelineGovernanceFacade(any())).thenReturn(governanceFacade);
+        ArgumentCaptor<CDCJobId> actualJobId = ArgumentCaptor.forClass(CDCJobId.class);
+        when(PipelineJobIdUtils.marshal(actualJobId.capture())).thenReturn("foo_job");
+        List<String> schemaTableNames = Arrays.asList("foo_schema.foo_tbl", "bar_schema.bar_tbl");
+        Map<String, List<DataNode>> tableAndNodes = new LinkedHashMap<>(2, 1F);
+        tableAndNodes.put("foo_tbl", Arrays.asList(new DataNode("foo_ds", "foo_schema", "foo_tbl_0"), new DataNode("bar_ds", "bar_schema", "foo_tbl_1")));
+        tableAndNodes.put("bar_tbl", Collections.singletonList(new DataNode("bar_ds", "bar_schema", "bar_tbl")));
+        Properties sinkProps = PropertiesBuilder.build(new Property("foo_key", "foo_value"));
+        StreamDataParameter param = new StreamDataParameter("foo_db", schemaTableNames, true, tableAndNodes, true);
+        try (MockedConstruction<IncrementalTaskPositionManager> positionManagerConstruction = mockConstruction(IncrementalTaskPositionManager.class)) {
+            assertThat(jobAPI.create(param, CDCSinkType.SOCKET, sinkProps), is("foo_job"));
+            assertTrue(positionManagerConstruction.constructed().isEmpty());
+        }
+        assertThat(actualJobId.getValue().getContextKey(), is(new PipelineContextKey("foo_db", InstanceType.PROXY)));
+        assertThat(actualJobId.getValue().getSchemaTableNames(), is(Arrays.asList("bar_schema.bar_tbl", "foo_schema.foo_tbl")));
+        assertTrue(actualJobId.getValue().isFull());
+        assertThat(actualJobId.getValue().getSinkType(), is(CDCSinkType.SOCKET));
+        assertThat(schemaTableNames, is(Arrays.asList("bar_schema.bar_tbl", "foo_schema.foo_tbl")));
+        ArgumentCaptor<JobConfigurationPOJO> actualPersistedConfig = ArgumentCaptor.forClass(JobConfigurationPOJO.class);
+        verify(governanceFacade.getJobFacade().getConfiguration()).persist(eq("foo_job"), actualPersistedConfig.capture());
+        assertTrue(actualPersistedConfig.getValue().isDisabled());
+        assertThat(actualPersistedConfig.getValue().getShardingTotalCount(), is(1));
+        CDCJobConfiguration actual = new YamlCDCJobConfigurationSwapper().swapToObject(actualPersistedConfig.getValue().getJobParameter());
+        assertThat(actual.getJobId(), is("foo_job"));
+        assertThat(actual.getDatabaseName(), is("foo_db"));
+        assertThat(actual.getSchemaTableNames(), is(Arrays.asList("bar_schema.bar_tbl", "foo_schema.foo_tbl")));
+        assertTrue(actual.isFull());
+        assertTrue(actual.isDecodeWithTX());
+        assertThat(actual.getSourceDatabaseType().getType(), is("H2"));
+        assertThat(actual.getSinkConfig().getSinkType(), is(CDCSinkType.SOCKET));
+        assertThat(actual.getSinkConfig().getProps(), is(sinkProps));
+        assertThat(actual.getConcurrency(), is(1));
+        assertThat(actual.getRetryTimes(), is(0));
+        assertThat(actual.getJobShardingCount(), is(2));
+        assertThat(actual.getTablesFirstDataNodes().marshal(), is("foo_tbl:foo_ds.foo_schema.foo_tbl_0|bar_tbl:bar_ds.bar_schema.bar_tbl"));
+        assertThat(actual.getJobShardingDataNodes().stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()),
+                is(Arrays.asList("foo_tbl:bar_ds.bar_schema.foo_tbl_1|bar_tbl:bar_ds.bar_schema.bar_tbl", "foo_tbl:foo_ds.foo_schema.foo_tbl_0")));
+        YamlRootConfiguration actualDataSourceConfig = YamlEngine.unmarshal(actual.getDataSourceConfig().getParameter(), YamlRootConfiguration.class, true);
+        assertThat(actualDataSourceConfig.getDatabaseName(), is("foo_db"));
+        assertThat(actualDataSourceConfig.getDataSources().get("foo_ds"), is(createStandardDataSourceProperties()));
+        assertThat(actualDataSourceConfig.getDataSources().get("bar_ds"), is(createStandardDataSourceProperties()));
+    }
+    
+    @SuppressWarnings("rawtypes")
+    @Test
+    void assertCreatePersistAndInitIncrementalPosition() throws ReflectiveOperationException, SQLException {
+        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
+        storageUnits.put("foo_ds", mock(StorageUnit.class));
+        storageUnits.put("bar_ds", mock(StorageUnit.class));
+        putContext(storageUnits);
+        PipelineJobItemProcessGovernanceRepository processGovernanceRepository = mock(PipelineJobItemProcessGovernanceRepository.class);
+        PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS);
+        when(governanceFacade.getJobItemFacade().getProcess()).thenReturn(processGovernanceRepository);
         when(PipelineAPIFactory.getPipelineGovernanceFacade(any())).thenReturn(governanceFacade);
         PipelineJobConfigurationManager jobConfigManager = mock(PipelineJobConfigurationManager.class);
-        when(jobConfigManager.convertToJobConfigurationPOJO(jobConfig)).thenReturn(createJobConfigurationPOJO());
+        when(jobConfigManager.convertToJobConfigurationPOJO(any(CDCJobConfiguration.class))).thenReturn(createJobConfigurationPOJO());
         Plugins.getMemberAccessor().set(CDCJobAPI.class.getDeclaredField("jobConfigManager"), jobAPI, jobConfigManager);
         try (
-                MockedConstruction<YamlCDCJobConfigurationSwapper> ignoredJobConfigSwapper = mockConstruction(YamlCDCJobConfigurationSwapper.class,
-                        (mock, context) -> when(mock.swapToObject(any(YamlCDCJobConfiguration.class))).thenReturn(jobConfig));
                 MockedConstruction<PipelineJobItemManager> ignoredJobItemManager = mockConstruction(PipelineJobItemManager.class,
                         (mock, context) -> {
                             when(mock.getProgress(anyString(), anyInt())).thenReturn(Optional.empty());
                             when(mock.getProgress("foo_job", 0)).thenReturn(Optional.of(mock(TransmissionJobItemProgress.class)));
                         });
-                MockedConstruction<IncrementalTaskPositionManager> ignoredPositionManagerConstruction = mockConstruction(IncrementalTaskPositionManager.class,
+                MockedConstruction<IncrementalTaskPositionManager> positionManagerConstruction = mockConstruction(IncrementalTaskPositionManager.class,
                         (mock, context) -> when(mock.getPosition(any(), any(), any())).thenReturn(new SimpleIngestPosition("binlog_position")))) {
             StreamDataParameter param = buildStreamDataParameter(storageUnits.keySet());
             assertThat(jobAPI.create(param, CDCSinkType.SOCKET, new Properties()), is("foo_job"));
-            verify(jobConfigManager).convertToJobConfigurationPOJO(jobConfig);
-            verify(processGovernanceRepository).persist(anyString(), anyInt(), anyString());
+            ArgumentCaptor<CDCJobConfiguration> actualJobConfig = ArgumentCaptor.forClass(CDCJobConfiguration.class);
+            verify(jobConfigManager).convertToJobConfigurationPOJO(actualJobConfig.capture());
+            assertThat(actualJobConfig.getValue().getJobShardingDataNodes().stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()),
+                    is(Arrays.asList("foo_tbl:bar_ds.foo_tbl", "foo_tbl:foo_ds.foo_tbl")));
+            assertFalse(actualJobConfig.getValue().isFull());
+            assertThat(positionManagerConstruction.constructed().size(), is(1));
+            ArgumentCaptor<JobConfigurationPOJO> actualPersistedConfig = ArgumentCaptor.forClass(JobConfigurationPOJO.class);
+            InOrder inOrder = inOrder(governanceFacade.getJobFacade().getJob(), governanceFacade.getJobFacade().getConfiguration(),
+                    positionManagerConstruction.constructed().get(0), processGovernanceRepository);
+            inOrder.verify(governanceFacade.getJobFacade().getJob()).create(eq("foo_job"), any());
+            inOrder.verify(governanceFacade.getJobFacade().getConfiguration()).persist(eq("foo_job"), actualPersistedConfig.capture());
+            assertTrue(actualPersistedConfig.getValue().isDisabled());
+            inOrder.verify(positionManagerConstruction.constructed().get(0)).getPosition(any(), any(), any());
+            inOrder.verify(processGovernanceRepository).persist(eq("foo_job"), eq(1), anyString());
+            verify(processGovernanceRepository, never()).persist(eq("foo_job"), eq(0), anyString());
         }
     }
     
@@ -322,13 +332,10 @@ class CDCJobAPITest {
     @Test
     void assertInitIncrementalPositionThrowsPrepareException() throws ReflectiveOperationException {
         putContext(Collections.singletonMap("foo_ds", mock(StorageUnit.class)));
-        CDCJobConfiguration jobConfig = createJobConfiguration(1);
         PipelineJobConfigurationManager jobConfigManager = mock(PipelineJobConfigurationManager.class);
-        when(jobConfigManager.convertToJobConfigurationPOJO(jobConfig)).thenReturn(new JobConfigurationPOJO());
+        when(jobConfigManager.convertToJobConfigurationPOJO(any(CDCJobConfiguration.class))).thenReturn(new JobConfigurationPOJO());
         Plugins.getMemberAccessor().set(CDCJobAPI.class.getDeclaredField("jobConfigManager"), jobAPI, jobConfigManager);
         try (
-                MockedConstruction<YamlCDCJobConfigurationSwapper> ignoredJobConfigSwapper = mockConstruction(YamlCDCJobConfigurationSwapper.class,
-                        (mock, context) -> when(mock.swapToObject(any(YamlCDCJobConfiguration.class))).thenReturn(jobConfig));
                 MockedConstruction<PipelineJobItemManager> ignoredJobItemManager = mockConstruction(PipelineJobItemManager.class,
                         (mock, context) -> when(mock.getProgress("foo_job", 0)).thenReturn(Optional.empty()));
                 MockedConstruction<IncrementalTaskPositionManager> positionManagerConstruction = mockConstruction(
@@ -549,6 +556,7 @@ class CDCJobAPITest {
     
     private void putContext(final Map<String, StorageUnit> storageUnits) {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getName()).thenReturn("foo_db");
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         ContextManager contextManager = mock(ContextManager.class);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
@@ -592,9 +600,8 @@ class CDCJobAPITest {
     }
     
     private StreamDataParameter buildStreamDataParameter(final Collection<String> dataSourceNames) {
-        Map<String, List<DataNode>> tableAndNodes = dataSourceNames.stream()
-                .collect(Collectors.toMap(each -> "foo_schema.foo_tbl", each -> Collections.singletonList(new DataNode(each + ".foo_tbl")), (a, b) -> b, LinkedHashMap::new));
-        return new StreamDataParameter("foo_db", new LinkedList<>(Collections.singletonList("foo_schema.foo_tbl")), false, tableAndNodes, false);
+        Map<String, List<DataNode>> tableAndNodes = Collections.singletonMap("foo_tbl", dataSourceNames.stream().map(each -> new DataNode(each + ".foo_tbl")).collect(Collectors.toList()));
+        return new StreamDataParameter("foo_db", Collections.singletonList("foo_schema.foo_tbl"), false, tableAndNodes, false);
     }
     
     private TransmissionJobItemInfo buildJobItemInfo(final String dataSourceName, final String incrementalPosition) {
