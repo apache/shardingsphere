@@ -60,7 +60,7 @@
         <maven.compiler.source>${build.jdk.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
-        <maven.version.range>[3.0.4,)</maven.version.range>
+        <maven.version.range>[3.9.0,)</maven.version.range>
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <maven.enforcer.fail>true</maven.enforcer.fail>
@@ -196,6 +196,7 @@
         <!-- Report plugin versions -->
         <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
         <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
+        <license-maven-plugin.version>2.7.1</license-maven-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
         <jdepend-maven-plugin.version>2.2.1</jdepend-maven-plugin.version>
@@ -1038,6 +1039,21 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license-maven-plugin.version}</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>aggregate-dependency-licenses</id>
+                        <goals>
+                            <goal>aggregate-third-party-report</goal>
+                        </goals>
+                        <phase>pre-site</phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         
         <extensions>
@@ -1054,6 +1070,19 @@
             <plugin>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>${maven-project-info-reports-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license-maven-plugin.version}</version>
+                <inherited>false</inherited>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>aggregate-third-party-report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -1161,6 +1190,43 @@
     </distributionManagement>
     
     <profiles>
+        <profile>
+            <id>pom-project-info-reports</id>
+            <activation>
+                <property>
+                    <name>packaging</name>
+                    <value>pom</value>
+                </property>
+            </activation>
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-project-info-reports-plugin</artifactId>
+                        <reportSets>
+                            <reportSet>
+                                <reports>
+                                    <report>ci-management</report>
+                                    <report>dependency-convergence</report>
+                                    <report>dependency-info</report>
+                                    <report>dependency-management</report>
+                                    <report>distribution-management</report>
+                                    <report>index</report>
+                                    <report>issue-management</report>
+                                    <report>licenses</report>
+                                    <report>mailing-lists</report>
+                                    <report>modules</report>
+                                    <report>plugin-management</report>
+                                    <report>plugins</report>
+                                    <report>scm</report>
+                                    <report>summary</report>
+                                    <report>team</report>
+                                </reports>
+                            </reportSet>
+                        </reportSets>
+                    </plugin>
+                </plugins>
+            </reporting>
+        </profile>
         <profile>
             <id>jdk11+</id>
             <activation>
