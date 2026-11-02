@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.index;
 
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.PostgreSQLDDLTemplateExecutor;
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template.PostgreSQLPipelineFreemarkerManager;
-import org.postgresql.jdbc.PgArray;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -119,7 +119,7 @@ public final class PostgreSQLIndexSQLGenerator {
         if (null == columnDetail.get("options")) {
             return false;
         }
-        String[] options = (String[]) ((PgArray) columnDetail.get("options")).getArray();
+        String[] options = (String[]) ((Array) columnDetail.get("options")).getArray();
         return options.length > 0 && "DESC".equals(options[0]);
     }
     
@@ -127,7 +127,7 @@ public final class PostgreSQLIndexSQLGenerator {
         if (null == columnDetail.get("options")) {
             return false;
         }
-        String[] options = (String[]) ((PgArray) columnDetail.get("options")).getArray();
+        String[] options = (String[]) ((Array) columnDetail.get("options")).getArray();
         return options.length > 1 && options[1].split(" ").length > 1 && "FIRST".equals(options[1].split(" ")[1]);
     }
     
@@ -140,7 +140,7 @@ public final class PostgreSQLIndexSQLGenerator {
             result += " " + columnDetail.get("opcname");
         }
         if ("btree".equals(indexData.get("amname"))) {
-            String[] options = (String[]) ((PgArray) columnDetail.get("options")).getArray();
+            String[] options = (String[]) ((Array) columnDetail.get("options")).getArray();
             if (options.length > 0) {
                 result += " " + options[0];
             }
