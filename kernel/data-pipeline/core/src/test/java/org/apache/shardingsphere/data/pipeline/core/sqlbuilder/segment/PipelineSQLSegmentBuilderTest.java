@@ -17,14 +17,23 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -59,6 +68,10 @@ class PipelineSQLSegmentBuilderTest {
     @Test
     void assertGetEscapedActualIdentifier() {
         assertThat(postgresqlBuilder.getEscapedActualIdentifier("T_Order"), is("\"T_Order\""));
+    }
+    
+    @Test
+    void assertGetEscapedActualWildcard() {
         assertThat(postgresqlBuilder.getEscapedActualIdentifier("*"), is("*"));
     }
     
@@ -118,4 +131,52 @@ class PipelineSQLSegmentBuilderTest {
         assertThat(postgresqlBuilder.getQualifiedTableName("", "Orders"), is("\"orders\""));
     }
     
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @ExtendWith(AutoMockExtension.class)
+    @StaticMockSettings(DatabaseTypedSPILoader.class)
+    class ActualIdentifiers {
+        
+        @ParameterizedTest(name = "{0}: {1}")
+        @MethodSource("getActualIdentifiers")
+        void assertGetEscapedActualIdentifierWithDelimiters(final QuoteCharacter quoteCharacter, final String identifier, final String expected) {
+            DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+            DialectDatabaseMetaData dialectMetaData = mock(DialectDatabaseMetaData.class);
+            when((Object) DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectMetaData);
+            when(dialectMetaData.getQuoteCharacter()).thenReturn(quoteCharacter);
+            PipelineSQLSegmentBuilder builder = new PipelineSQLSegmentBuilder(databaseType);
+            assertThat(builder.getEscapedActualIdentifier(identifier), is(expected));
+        }
+        
+        private Stream<Arguments> getActualIdentifiers() {
+            return Stream.of(Arguments.of(QuoteCharacter.QUOTE, "foo\"bar", "\"foo\"\"bar\""), Arguments.of(QuoteCharacter.BACK_QUOTE, "foo`bar", "`foo``bar`"),
+                    Arguments.of(QuoteCharacter.BRACKETS, "foo]bar", "[foo]]bar]"));
+        }
+        
+        @ParameterizedTest(name = "{0}: {1}")
+        @MethodSource("getActualIdentifiers")
+        void assertGetEscapedIdentifierWithDelimiters(final QuoteCharacter quoteCharacter, final String name, final String expected) {
+            DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+            DialectDatabaseMetaData dialectMetaData = mock(DialectDatabaseMetaData.class);
+            when((Object) DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectMetaData);
+            when(dialectMetaData.getQuoteCharacter()).thenReturn(quoteCharacter);
+            PipelineSQLSegmentBuilder builder = new PipelineSQLSegmentBuilder(databaseType, new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
+            assertThat(builder.getEscapedIdentifier(IdentifierScope.COLUMN, expected), is(expected));
+        }
+        
+        @ParameterizedTest(name = "{0}: {1}")
+        @MethodSource("getParsedIdentifiers")
+        void assertGetEscapedParsedIdentifier(final QuoteCharacter quoteCharacter, final String identifier, final String expected) {
+            DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+            DialectDatabaseMetaData dialectMetaData = mock(DialectDatabaseMetaData.class);
+            when((Object) DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectMetaData);
+            when(dialectMetaData.getQuoteCharacter()).thenReturn(quoteCharacter);
+            PipelineSQLSegmentBuilder builder = new PipelineSQLSegmentBuilder(databaseType, new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
+            assertThat(builder.getEscapedIdentifier(IdentifierScope.COLUMN, new IdentifierValue(identifier, QuoteCharacter.NONE)), is(expected));
+        }
+        
+        private Stream<Arguments> getParsedIdentifiers() {
+            return Stream.concat(getActualIdentifiers(), Stream.of(Arguments.of(QuoteCharacter.QUOTE, "*", "\"*\"")));
+        }
+    }
 }
