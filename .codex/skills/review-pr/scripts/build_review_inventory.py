@@ -26,7 +26,7 @@ import sys
 from collections import defaultdict
 from typing import Iterable
 
-from review_common import (
+from resolve_review_scope import (
     ChangedFile, categorize, compare_github_files, final_paths, get_repo_root, parse_name_status, resolve_candidate_changes, run_git,
 )
 

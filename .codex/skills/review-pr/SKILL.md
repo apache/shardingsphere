@@ -94,10 +94,13 @@ Before judging reviewed code or Maven POM changes, read [coding standards](../co
 Complete this gate before implementation-detail discovery; it establishes the review basis but does not waive the Finding Proof, Mandatory Style Verification, Completion, or convergence gates.
 
 1. Reconstruct the problem and expected behavior from the PR, linked issue when present, official documentation, maintained contracts, current code, and tests.
-2. Classify the requested outcome as preserving an accepted contract or adding a project commitment such as new semantics, configuration, API or SPI, compatibility, topology, database, dialect, or cross-module support.
-3. For Apache ShardingSphere, establish that ShardingSphere owns the behavior and that official project positioning, maintained contracts, or an explicit public maintainer decision accepts every new commitment; for an authorized downstream repository, apply equivalent target-project evidence available within the user-authorized repository boundary.
-4. Identify the narrowest accepted user-visible behavior and compare it with the patch's public contract, shared abstractions, compatibility surface, documentation, and tests.
-5. Check whether the change creates precedent or consistency pressure beyond the accepted behavior; an exact existing behavior or special case does not authorize broader generalization.
+2. For a defect, trace the failing path to the violated contract and its maintained owner; for another PR type, establish the goal and responsibilities it must preserve.
+3. Trace the patch's actual mechanism and compare it with a repair or reuse path in that owner; record why the chosen boundary addresses the cause or accepted goal and what remains outside scope.
+4. Verify outcome-sensitive assumptions about external calls, dependency versions, configuration and lifecycle, including side effects and resource cost on already-correct supported paths, before accepting the direction.
+5. Classify the requested outcome as preserving an accepted contract or adding a project commitment such as new semantics, configuration, API or SPI, compatibility, topology, database, dialect, or cross-module support.
+6. For Apache ShardingSphere, establish that ShardingSphere owns the behavior and that official project positioning, maintained contracts, or an explicit public maintainer decision accepts every new commitment; for an authorized downstream repository, apply equivalent target-project evidence available within the user-authorized repository boundary.
+7. Identify the narrowest accepted user-visible behavior and compare it with the patch's public contract, shared abstractions, compatibility surface, documentation, and tests.
+8. Check whether the change creates precedent or consistency pressure beyond the accepted behavior; an exact existing behavior or special case does not authorize broader generalization.
 
 An open or labeled issue, popularity, contributor effort, available code, passing tests, or a small diff do not establish project acceptance.
 When evidence disproves the problem, expected behavior, applicable project ownership, or an asserted accepted commitment, or when a new commitment still requires a maintainer decision, record a `Needs Discussion` condition.
@@ -164,7 +167,7 @@ publish non-blocking observations unless they materially help the user.
 
 `Review Incomplete` is a terminal evidence classification, not a fallback for unfinished analysis.
 Classify a gap as incomplete only when a specific outcome-sensitive decisive fact remains unavailable after every admissible evidence route has been attempted; if relevant local or public evidence exists or another allowed route remains, continue the review and classify the candidate.
-After authoritative scope is established, record each incomplete gap in the ledger with the missing fact, unavailable-evidence proof, affected full path, strongest alternatives checked, outcome impact, scope proof, and affected files, then run `scripts/review_ledger.py validate-incomplete --ledger <ledger>` before selecting the result.
+After authoritative scope is established, record each incomplete gap in the ledger with the missing fact, unavailable-evidence proof, affected full path, strongest alternatives checked, outcome impact, scope proof, and affected files, then run `scripts/manage_review_ledger.py validate-incomplete --ledger <ledger>` before selecting the result.
 If authoritative scope cannot be established, state the exact unavailable scope fact and attempted routes in `### Required Evidence`; do not fabricate ledger scope.
 
 ## Behavior Clusters and Risk Triage
@@ -213,7 +216,7 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 - Complete the Mandatory Style Verification Gate against the latest effective candidate for every public PR or PR-backed local candidate.
 - Leave no unresolved gap that could change the blocker set and require a latest-candidate convergence pass with zero new independent candidates.
 - Use `scripts/build_review_inventory.py --format json` when local refs are available; its Markdown is only a bounded summary.
-- Use `scripts/review_ledger.py` for each independent assessment; it accounts for review state but does not judge correctness.
+- Use `scripts/manage_review_ledger.py` for each independent assessment; it accounts for review state but does not judge correctness.
 - Initialize a new ledger for each round that requires one, from the full current inventory with pending file statuses and no inherited review passes.
 - Use the existing private system temporary directory and record the exact ledger path returned by initialization for this review.
 - Initialize with `--review-basis <JSON>` containing the selected focus and readable sources identified by role and origin, so the ledger binds their actual content versions to the effective candidate, original baseline and authoritative files.
@@ -226,9 +229,17 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 - Validate the current basis and coverage before selecting a result; a passing ledger proves mechanical coverage and evidence freshness, while the reviewer must still establish semantic proof under the existing gates.
 - For a standalone local candidate with index or working-tree changes, provide the same exact task-path file to both scripts with `--candidate-files <path>`. The scripts resolve those paths from the computed merge-base through the working tree, include matching untracked files, and fail when a listed path is unchanged.
 - Mutate one ledger sequentially; do not run ledger commands concurrently.
+- Batch related updates to one reviewer ledger with `scripts/manage_review_ledger.py batch --ledger <ledger> --operations <JSON>`, where the JSON is a nonempty ordered array of argument arrays for `mark-file`, `add-finding` and `add-pass`, using their existing flags and input files without `--ledger`.
+- Each batch applies the existing operations in order and writes once only after all per-operation checks and both freshness checks pass.
+- Batch freshness checks verify the current basis and captured source anchors before applying operations and again before writing; any failed operation or freshness check leaves the original ledger unchanged.
+- Batching does not replace final ledger or session validation.
 
 Use these JSON shapes in local files passed to the arguments, replacing the example values with current evidence and block IDs from the initialized ledger:
 Sources use `rule`, `requirement` or `evidence` roles; `--anchors` takes an anchor-array file shaped like `anchors` below.
+For actual-value naming findings, pass `--rule java-testing.actual-value-naming --applicability <JSON>` with one list entry per affected variable containing `variable`, `operation`, `role`, `declaration`, `operation_call`, and `use`.
+The last three fields are zero-based indices into the finding's existing `anchors`, locating the declaration, tested call, and use or assertion in current candidate code lines; retain the complete test-method context needed to determine their roles.
+Use `actual-value`, `setup`, `expected`, or `unknown` for `role`; confirmation requires complete evidence with `actual-value`, while candidate and withdrawn findings may retain missing or contrary evidence.
+These checks validate the recorded premises and their consistency, not Java semantics; derive applicability from the governing test rule and the complete method.
 
 ```json
 {"focus": "Code Correctness Review", "sources": [{"role": "rule", "origin": "CODE_OF_CONDUCT.md", "path": "CODE_OF_CONDUCT.md"}]}
@@ -308,12 +319,24 @@ logs, or emojis.
 
 Use this format for both public-PR and local-candidate reviews.
 
+Begin the Formal Review with `### Summary` before `### Result`, explaining the concrete problem or goal motivating the PR, the affected scenario or impact, the actual change mechanism, the direction assessment and material limits in two to four concise sentences.
+Explain how the mechanism addresses that purpose, and distinguish verified effects from intended benefits that the evidence does not establish.
+Keep a required `### Correction` first, then give the current summary and result using only verified facts.
+
 - `Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`.
 - `Not Mergeable`: `### Result` with exactly one `Review Result: Not Mergeable` line, one `Feedback Mode`, a `Blocking Issues: N` line, and a concise reason; `### Blocking Issues`; `### Coverage`.
 - `Review Incomplete`: `### Result` with exactly one `Review Result: Review Incomplete` line and a concise reason; `### Confirmed Issues` when any are already proven; `### Verified Facts`; `### Required Evidence`; `### Coverage`.
 
 For a qualified negative result, use the `Not Mergeable` structure with `Review Status: Not Converged` and `Confirmed Blocking Issues: N` in place of `Blocking Issues: N`.
 State that the findings are a confirmed subset, and report the actual completed and unreviewed coverage, unresolved differences, failed or unavailable checks, and the reason confirmation could not finish.
+
+For each reported issue, prefix its title with `[P0]`, `[P1]`, or `[P2]` according to the proven impact and urgency.
+
+- P0 (urgent): Critical failures requiring immediate action, such as severe data loss, critical security exposure, or widespread core-service outage.
+- P1 (high): Serious failures on supported paths that require prompt correction and do not meet P0.
+- P2 (normal): All other warranted issues, including ordinary or minor defects and violations of applicable coding standards.
+
+Priority expresses impact and urgency; determine proof, blocking status, feedback mode and overall result using the existing review gates.
 
 For each blocking issue include:
 
@@ -324,9 +347,9 @@ For each blocking issue include:
 
 Do not add patch-level changes after selecting Needs Discussion.
 Do not include placeholder headings.
-In `### Coverage`, report the candidate type, reviewed baseline or head, authoritative requirements and files accounted for, accepted behavior and project-commitment basis, behavior clusters, completed discovery lenses, unresolved gaps, and CI scope.
-Also report the completed independent assessments and stages, overall adjudication and resolution of any differences without exposing private reviewer materials.
-For every public PR or PR-backed local candidate, also report the effective candidate SHA, each style-verification scope and command, each exit code, every covered applicable PR-impact file, and every `Not Applicable` check with its basis.
+In `### Coverage`, give a short verification summary, normally one to three lines, with the candidate type and baseline or head, reviewed scope, relevant check status, CI scope, and material gaps or failures.
+Keep the complete requirements and project-commitment basis, behavior clusters, discovery lenses, independent assessments and stages, adjudication and resolution of differences, file inventory, verification commands and exit codes, and `Not Applicable` checks with their bases in private review material.
+Report the failed-check evidence required by the Mandatory Style Verification Gate and every limitation needed to interpret the result; brevity never waives internal review or verification.
 For a standalone local candidate, identify the task baseline and attributed local delta; for a PR-backed candidate, identify authorized local commits, index changes, or working-tree changes separately from the public PR state.
 In Code Correctness Review, state that the result is code-scope only and CI was not reviewed while distinguishing the completed local style verification from CI.
 

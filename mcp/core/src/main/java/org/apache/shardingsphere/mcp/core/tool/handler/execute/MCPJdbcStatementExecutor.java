@@ -236,8 +236,7 @@ public final class MCPJdbcStatementExecutor {
                                                 final ClassificationResult classificationResult) throws SQLException {
         boolean hasResultSet = statement.execute(classificationResult.getNormalizedSql());
         switch (classificationResult.getStatementClass()) {
-            case QUERY:
-            case EXPLAIN:
+            case QUERY, EXPLAIN:
                 if (!hasResultSet) {
                     throw new QueryDidNotReturnResultSetException();
                 }
@@ -247,8 +246,7 @@ public final class MCPJdbcStatementExecutor {
                         ? createResultSetResult(statement.getResultSet(), executionRequest, classificationResult)
                         : SQLExecutionResult.updateCount(classificationResult.getStatementClass(), classificationResult.getStatementType(), statement.getUpdateCount(),
                                 executionRequest.getMaxRows(), executionRequest.getTimeoutMs(), classificationResult.getNormalizedSql());
-            case DDL:
-            case DCL:
+            case DDL, DCL:
                 return SQLExecutionResult.statementAck(classificationResult.getStatementClass(), classificationResult.getStatementType(),
                         executionRequest.getMaxRows(), executionRequest.getTimeoutMs(), classificationResult.getNormalizedSql());
             default:

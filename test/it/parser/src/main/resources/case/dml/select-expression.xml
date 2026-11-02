@@ -1097,6 +1097,68 @@
             </expr>
         </where>
     </select>
+    <select sql-case-id="select_where_with_expr_with_xor_or" parameters="1,2,3">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="96">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="96">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="72">
+                            <left>
+                                <binary-operation-expression start-index="28" stop-index="47">
+                                    <left>
+                                        <column name="order_id" start-index="28" stop-index="43">
+                                            <owner name="t_order" start-index="28" stop-index="34" />
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1" start-index="47" stop-index="47" />
+                                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>XOR</operator>
+                            <right>
+                                <binary-operation-expression start-index="53" stop-index="72">
+                                    <left>
+                                        <literal-expression value="2" start-index="53" stop-index="53" />
+                                        <parameter-marker-expression parameter-index="1" start-index="53" stop-index="53" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <column name="order_id" start-index="57" stop-index="72">
+                                            <owner name="t_order" start-index="57" stop-index="63" />
+                                        </column>
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>OR</operator>
+                    <right>
+                        <binary-operation-expression start-index="77" stop-index="96">
+                            <left>
+                                <literal-expression value="3" start-index="77" stop-index="77" />
+                                <parameter-marker-expression parameter-index="2" start-index="77" stop-index="77" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <column name="order_id" start-index="81" stop-index="96">
+                                    <owner name="t_order" start-index="81" stop-index="87" />
+                                </column>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 
     <select sql-case-id="select_where_with_expr_with_and" parameters="1,2">
         <from start-index="14" stop-index="20">
@@ -1292,6 +1354,54 @@
                         </binary-operation-expression>
                     </expr>
                 </not-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_with_expr_with_not_or_firebird" parameters="1,2">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="75">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="75">
+                    <left>
+                        <not-expression start-index="28" stop-index="51">
+                            <expr>
+                                <binary-operation-expression start-index="32" stop-index="51">
+                                    <left>
+                                        <column name="order_id" start-index="32" stop-index="47">
+                                            <owner name="t_order" start-index="32" stop-index="38" />
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1" start-index="51" stop-index="51" />
+                                        <parameter-marker-expression parameter-index="0" start-index="51" stop-index="51" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </not-expression>
+                    </left>
+                    <operator>OR</operator>
+                    <right>
+                        <binary-operation-expression start-index="56" stop-index="75">
+                            <left>
+                                <literal-expression value="2" start-index="56" stop-index="56" />
+                                <parameter-marker-expression parameter-index="1" start-index="56" stop-index="56" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <column name="order_id" start-index="60" stop-index="75">
+                                    <owner name="t_order" start-index="60" stop-index="66" />
+                                </column>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
             </expr>
         </where>
     </select>
@@ -2165,6 +2275,135 @@
                             </value>
                             <interval-unit>SECOND</interval-unit>
                         </interval-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_with_bit_expr_with_plus_asterisk" parameters="1,2,3">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="55">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="55">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="51">
+                            <left>
+                                <column name="order_id" start-index="28" stop-index="43">
+                                    <owner name="t_order" start-index="28" stop-index="34" />
+                                </column>
+                            </left>
+                            <operator>+</operator>
+                            <right>
+                                <binary-operation-expression start-index="47" stop-index="51">
+                                    <left>
+                                        <literal-expression value="1" start-index="47" stop-index="47" />
+                                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47" />
+                                    </left>
+                                    <operator>*</operator>
+                                    <right>
+                                        <literal-expression value="2" start-index="51" stop-index="51" />
+                                        <parameter-marker-expression parameter-index="1" start-index="51" stop-index="51" />
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="3" start-index="55" stop-index="55" />
+                        <parameter-marker-expression parameter-index="2" start-index="55" stop-index="55" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_with_bit_expr_with_minus_plus" parameters="1,2,3">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="55">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="55">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="51">
+                            <left>
+                                <binary-operation-expression start-index="28" stop-index="47">
+                                    <left>
+                                        <column name="order_id" start-index="28" stop-index="43">
+                                            <owner name="t_order" start-index="28" stop-index="34" />
+                                        </column>
+                                    </left>
+                                    <operator>-</operator>
+                                    <right>
+                                        <literal-expression value="1" start-index="47" stop-index="47" />
+                                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>+</operator>
+                            <right>
+                                <literal-expression value="2" start-index="51" stop-index="51" />
+                                <parameter-marker-expression parameter-index="1" start-index="51" stop-index="51" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="3" start-index="55" stop-index="55" />
+                        <parameter-marker-expression parameter-index="2" start-index="55" stop-index="55" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_with_bit_expr_with_vertical_bar_ampersand" parameters="1,2,3">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="55">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="55">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="51">
+                            <left>
+                                <column name="order_id" start-index="28" stop-index="43">
+                                    <owner name="t_order" start-index="28" stop-index="34" />
+                                </column>
+                            </left>
+                            <operator>|</operator>
+                            <right>
+                                <binary-operation-expression start-index="47" stop-index="51">
+                                    <left>
+                                        <literal-expression value="1" start-index="47" stop-index="47" />
+                                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47" />
+                                    </left>
+                                    <operator>&amp;</operator>
+                                    <right>
+                                        <literal-expression value="2" start-index="51" stop-index="51" />
+                                        <parameter-marker-expression parameter-index="1" start-index="51" stop-index="51" />
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="3" start-index="55" stop-index="55" />
+                        <parameter-marker-expression parameter-index="2" start-index="55" stop-index="55" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -5202,7 +5441,9 @@
                                         <order-by start-index="17" stop-index="26">
                                             <index-item start-index="26" stop-index="26" index="1" order-direction="ASC" />
                                         </order-by>
-                                        <limit start-index="28" stop-index="52" with-ties="true" row-count-implicit="true" />
+                                        <limit start-index="28" stop-index="52" with-ties="true" row-count-implicit="true">
+                                            <row-count value="1" start-index="40" stop-index="39" />
+                                        </limit>
                                     </select>
                                 </subquery>
                             </expression>
@@ -5313,7 +5554,9 @@
                                             <order-by start-index="49" stop-index="58">
                                                 <index-item start-index="58" stop-index="58" index="1" order-direction="ASC" />
                                             </order-by>
-                                            <limit start-index="60" stop-index="84" with-ties="true" row-count-implicit="true" />
+                                            <limit start-index="60" stop-index="84" with-ties="true" row-count-implicit="true">
+                                                <row-count value="1" start-index="72" stop-index="71" />
+                                            </limit>
                                         </select>
                                     </subquery>
                                 </expression>

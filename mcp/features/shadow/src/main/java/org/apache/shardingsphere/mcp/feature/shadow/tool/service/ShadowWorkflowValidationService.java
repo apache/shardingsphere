@@ -73,12 +73,10 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
         if (!isCreateOrAlterShadowDistSQL(sql)) {
             return;
         }
-        if (snapshot.getRequest() instanceof ShadowRuleWorkflowRequest) {
-            ShadowRuleWorkflowRequest request = (ShadowRuleWorkflowRequest) snapshot.getRequest();
+        if (snapshot.getRequest() instanceof ShadowRuleWorkflowRequest request) {
             addShadowAlgorithmIssue(issues, request.getAlgorithmType(), request.getAlgorithmProperties(), displaySql);
         }
-        if (snapshot.getRequest() instanceof ShadowDefaultAlgorithmWorkflowRequest) {
-            ShadowDefaultAlgorithmWorkflowRequest request = (ShadowDefaultAlgorithmWorkflowRequest) snapshot.getRequest();
+        if (snapshot.getRequest() instanceof ShadowDefaultAlgorithmWorkflowRequest request) {
             addShadowAlgorithmIssue(issues, request.getAlgorithmType(), request.getAlgorithmProperties(), displaySql);
         }
     }

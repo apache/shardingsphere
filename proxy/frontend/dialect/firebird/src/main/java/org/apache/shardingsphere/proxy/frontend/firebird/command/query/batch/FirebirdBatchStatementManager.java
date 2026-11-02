@@ -87,8 +87,7 @@ public final class FirebirdBatchStatementManager {
      */
     public void registerBatchStatement(final int connectionId, final int statementId, final List<FirebirdBatchColumnDescriptor> columnDescriptors,
                                        final long bufferSize, final boolean recordCounts, final boolean multiError) {
-        FirebirdBatchRegistry.getInstance().registerBatchStatement(connectionId, statementId,
-                new FirebirdBatchStatement(statementId, columnDescriptors, bufferSize, recordCounts, multiError));
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(connectionId, statementId, new FirebirdBatchStatement(statementId, columnDescriptors, bufferSize, recordCounts, multiError));
     }
     
     /**

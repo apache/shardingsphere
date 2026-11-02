@@ -27,8 +27,8 @@ import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMet
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -60,10 +60,10 @@ public final class SearchMetadataToolService {
      */
     public MetadataSearchResult execute(final MetadataSearchRequest request) {
         ShardingSpherePreconditions.checkState(request.getSchema().isEmpty() || !request.getDatabase().isEmpty(), () -> new MCPInvalidRequestException("Schema cannot be provided without database."));
-        Set<SupportedMCPMetadataObjectType> searchObjectTypes = getSearchObjectTypes(request.getObjectTypes());
         if (isBlankAllDatabaseSearch(request)) {
             return executeBlankAllDatabaseSearch(request);
         }
+        Set<SupportedMCPMetadataObjectType> searchObjectTypes = getSearchObjectTypes(request.getObjectTypes());
         return createSearchResult(collector.collect(request, searchObjectTypes), request, searchObjectTypes, false);
     }
     
@@ -148,14 +148,7 @@ public final class SearchMetadataToolService {
         if (!objectTypes.isEmpty()) {
             return objectTypes;
         }
-        Set<SupportedMCPMetadataObjectType> result = new LinkedHashSet<>();
-        result.add(SupportedMCPMetadataObjectType.DATABASE);
-        result.add(SupportedMCPMetadataObjectType.SCHEMA);
-        result.add(SupportedMCPMetadataObjectType.TABLE);
-        result.add(SupportedMCPMetadataObjectType.VIEW);
-        result.add(SupportedMCPMetadataObjectType.COLUMN);
-        result.add(SupportedMCPMetadataObjectType.INDEX);
-        result.add(SupportedMCPMetadataObjectType.SEQUENCE);
-        return result;
+        return EnumSet.of(SupportedMCPMetadataObjectType.DATABASE, SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW,
+                SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX, SupportedMCPMetadataObjectType.SEQUENCE);
     }
 }

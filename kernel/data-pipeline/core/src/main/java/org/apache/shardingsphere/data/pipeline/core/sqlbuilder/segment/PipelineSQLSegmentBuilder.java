@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierCon
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.jspecify.annotations.Nullable;
 
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * Pipeline SQL segment builder.
@@ -131,7 +131,7 @@ public final class PipelineSQLSegmentBuilder {
         return buildQualifiedTableName(schemaName, tableName, this::getEscapedActualIdentifier);
     }
     
-    private String buildQualifiedTableName(final String schemaName, final String tableName, final Function<String, String> identifierEscaper) {
+    private String buildQualifiedTableName(final String schemaName, final String tableName, final UnaryOperator<String> identifierEscaper) {
         StringBuilder result = new StringBuilder();
         if (dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
             result.append(identifierEscaper.apply(schemaName)).append('.');

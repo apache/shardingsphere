@@ -24,11 +24,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.util.RandomStrings;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.mockito.Mockito.mock;
@@ -72,7 +74,7 @@ public final class PipelineCaseHelper {
         } else {
             value = generateString(length);
         }
-        return String.format("{\"test\":\"%s\"}", value);
+        return JsonEngine.marshal(Collections.singletonMap("test", value));
     }
     
     /**

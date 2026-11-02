@@ -110,36 +110,36 @@ final class SQLStatementTreeWalker {
             return;
         }
         statementConsumer.accept(sqlStatement);
-        if (sqlStatement instanceof SelectStatement) {
-            walkSelect((SelectStatement) sqlStatement);
-        } else if (sqlStatement instanceof InsertStatement) {
-            walkInsert((InsertStatement) sqlStatement);
-        } else if (sqlStatement instanceof UpdateStatement) {
-            walkUpdate((UpdateStatement) sqlStatement);
-        } else if (sqlStatement instanceof DeleteStatement) {
-            walkDelete((DeleteStatement) sqlStatement);
-        } else if (sqlStatement instanceof MergeStatement) {
-            walkMerge((MergeStatement) sqlStatement);
+        if (sqlStatement instanceof SelectStatement select) {
+            walkSelect(select);
+        } else if (sqlStatement instanceof InsertStatement insert) {
+            walkInsert(insert);
+        } else if (sqlStatement instanceof UpdateStatement update) {
+            walkUpdate(update);
+        } else if (sqlStatement instanceof DeleteStatement delete) {
+            walkDelete(delete);
+        } else if (sqlStatement instanceof MergeStatement merge) {
+            walkMerge(merge);
         } else {
             walkDDL(sqlStatement);
         }
     }
     
     private void walkDDL(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof CreateTableStatement) {
-            ((CreateTableStatement) sqlStatement).getSelectStatement().ifPresent(this::walk);
-        } else if (sqlStatement instanceof CreateViewStatement) {
-            walk(((CreateViewStatement) sqlStatement).getSelect());
-        } else if (sqlStatement instanceof AlterViewStatement) {
-            ((AlterViewStatement) sqlStatement).getSelect().ifPresent(this::walk);
-        } else if (sqlStatement instanceof CreateMaterializedViewStatement) {
-            walk(((CreateMaterializedViewStatement) sqlStatement).getSelect());
-        } else if (sqlStatement instanceof CreateFunctionStatement) {
-            walkRoutine(((CreateFunctionStatement) sqlStatement).getSqlStatements(), ((CreateFunctionStatement) sqlStatement).getDynamicSqlStatementExpressions());
-        } else if (sqlStatement instanceof CreateProcedureStatement) {
-            walkRoutine(((CreateProcedureStatement) sqlStatement).getSqlStatements(), ((CreateProcedureStatement) sqlStatement).getDynamicSqlStatementExpressions());
-        } else if (sqlStatement instanceof CreateTriggerStatement) {
-            walkRoutine(((CreateTriggerStatement) sqlStatement).getSqlStatements(), ((CreateTriggerStatement) sqlStatement).getDynamicSqlStatementExpressions());
+        if (sqlStatement instanceof CreateTableStatement createTableStatement) {
+            createTableStatement.getSelectStatement().ifPresent(this::walk);
+        } else if (sqlStatement instanceof CreateViewStatement createViewStatement) {
+            walk(createViewStatement.getSelect());
+        } else if (sqlStatement instanceof AlterViewStatement alterViewStatement) {
+            alterViewStatement.getSelect().ifPresent(this::walk);
+        } else if (sqlStatement instanceof CreateMaterializedViewStatement createMaterializedViewStatement) {
+            walk(createMaterializedViewStatement.getSelect());
+        } else if (sqlStatement instanceof CreateFunctionStatement createFunctionStatement) {
+            walkRoutine(createFunctionStatement.getSqlStatements(), createFunctionStatement.getDynamicSqlStatementExpressions());
+        } else if (sqlStatement instanceof CreateProcedureStatement createProcedureStatement) {
+            walkRoutine(createProcedureStatement.getSqlStatements(), createProcedureStatement.getDynamicSqlStatementExpressions());
+        } else if (sqlStatement instanceof CreateTriggerStatement createTriggerStatement) {
+            walkRoutine(createTriggerStatement.getSqlStatements(), createTriggerStatement.getDynamicSqlStatementExpressions());
         }
     }
     
@@ -251,25 +251,25 @@ final class SQLStatementTreeWalker {
             return;
         }
         for (ProjectionSegment each : projections.getProjections()) {
-            if (each instanceof ExpressionProjectionSegment) {
-                walkExpression(((ExpressionProjectionSegment) each).getExpr());
-            } else if (each instanceof ExpressionSegment) {
-                walkExpression((ExpressionSegment) each);
-            } else if (each instanceof ColumnProjectionSegment) {
-                walkExpression(((ColumnProjectionSegment) each).getColumn());
-            } else if (each instanceof SubqueryProjectionSegment) {
-                walk(((SubqueryProjectionSegment) each).getSubquery().getSelect());
-            } else if (each instanceof DatetimeProjectionSegment) {
-                walkExpression(((DatetimeProjectionSegment) each).getLeft());
-                walkExpression(((DatetimeProjectionSegment) each).getRight());
+            if (each instanceof ExpressionProjectionSegment expressionProjection) {
+                walkExpression(expressionProjection.getExpr());
+            } else if (each instanceof ExpressionSegment expression) {
+                walkExpression(expression);
+            } else if (each instanceof ColumnProjectionSegment columnProjection) {
+                walkExpression(columnProjection.getColumn());
+            } else if (each instanceof SubqueryProjectionSegment subqueryProjection) {
+                walk(subqueryProjection.getSubquery().getSelect());
+            } else if (each instanceof DatetimeProjectionSegment datetimeProjection) {
+                walkExpression(datetimeProjection.getLeft());
+                walkExpression(datetimeProjection.getRight());
             }
         }
     }
     
     private void walkOrderByItems(final Iterable<OrderByItemSegment> items) {
         for (OrderByItemSegment each : items) {
-            if (each instanceof ExpressionOrderByItemSegment) {
-                walkExpression(((ExpressionOrderByItemSegment) each).getExpr());
+            if (each instanceof ExpressionOrderByItemSegment expressionOrderByItem) {
+                walkExpression(expressionOrderByItem.getExpr());
             }
         }
     }
@@ -280,8 +280,8 @@ final class SQLStatementTreeWalker {
     }
     
     private void walkPaginationValue(final PaginationValueSegment value) {
-        if (value instanceof ExpressionPaginationValueSegment) {
-            walkExpression(((ExpressionPaginationValueSegment) value).getExpression());
+        if (value instanceof ExpressionPaginationValueSegment expressionPaginationValue) {
+            walkExpression(expressionPaginationValue.getExpression());
         }
     }
     
@@ -314,23 +314,22 @@ final class SQLStatementTreeWalker {
     }
     
     private void walkTable(final TableSegment table) {
-        if (table instanceof SimpleTableSegment) {
-            ((SimpleTableSegment) table).getTableSampleExpression().ifPresent(this::walkExpression);
-        } else if (table instanceof FunctionTableSegment) {
-            walkExpression(((FunctionTableSegment) table).getTableFunction());
-        } else if (table instanceof JoinTableSegment) {
-            JoinTableSegment join = (JoinTableSegment) table;
+        if (table instanceof SimpleTableSegment simpleTable) {
+            simpleTable.getTableSampleExpression().ifPresent(this::walkExpression);
+        } else if (table instanceof FunctionTableSegment functionTable) {
+            walkExpression(functionTable.getTableFunction());
+        } else if (table instanceof JoinTableSegment join) {
             walkTable(join.getLeft());
             walkTable(join.getRight());
             walkExpression(join.getCondition());
             join.getLeftQueryPartitionListSegments().forEach(this::walkExpression);
             join.getRightQueryPartitionListSegments().forEach(this::walkExpression);
-        } else if (table instanceof SubqueryTableSegment) {
-            walk(((SubqueryTableSegment) table).getSubquery().getSelect());
-        } else if (table instanceof CollectionTableSegment) {
-            walkExpression(((CollectionTableSegment) table).getExpressionSegment());
-        } else if (table instanceof DeleteMultiTableSegment) {
-            walkTable(((DeleteMultiTableSegment) table).getRelationTable());
+        } else if (table instanceof SubqueryTableSegment subqueryTable) {
+            walk(subqueryTable.getSubquery().getSelect());
+        } else if (table instanceof CollectionTableSegment collectionTable) {
+            walkExpression(collectionTable.getExpressionSegment());
+        } else if (table instanceof DeleteMultiTableSegment deleteMultiTable) {
+            walkTable(deleteMultiTable.getRelationTable());
         }
     }
     
@@ -339,70 +338,56 @@ final class SQLStatementTreeWalker {
             return;
         }
         expressionConsumer.accept(expression);
-        if (expression instanceof FunctionSegment) {
-            walkFunction((FunctionSegment) expression);
-        } else if (expression instanceof CommonExpressionSegment) {
-            ((CommonExpressionSegment) expression).getChildren().forEach(this::walkExpression);
-        } else if (expression instanceof AggregationProjectionSegment) {
-            AggregationProjectionSegment aggregation = (AggregationProjectionSegment) expression;
-            aggregation.getParameters().forEach(this::walkExpression);
-            aggregation.getWindow().ifPresent(this::walkWindow);
-        } else if (expression instanceof BinaryOperationExpression) {
-            walkExpression(((BinaryOperationExpression) expression).getLeft());
-            walkExpression(((BinaryOperationExpression) expression).getRight());
-        } else if (expression instanceof ColumnAssignmentSegment) {
-            walkExpression(((ColumnAssignmentSegment) expression).getValue());
-        } else if (expression instanceof ListExpression) {
-            ((ListExpression) expression).getItems().forEach(this::walkExpression);
-        } else if (expression instanceof BetweenExpression) {
-            BetweenExpression between = (BetweenExpression) expression;
-            walkExpression(between.getLeft());
-            walkExpression(between.getBetweenExpr());
-            walkExpression(between.getAndExpr());
-        } else if (expression instanceof InExpression) {
-            walkExpression(((InExpression) expression).getLeft());
-            walkExpression(((InExpression) expression).getRight());
-        } else if (expression instanceof CaseWhenExpression) {
-            walkCaseWhen((CaseWhenExpression) expression);
-        } else if (expression instanceof NotExpression) {
-            walkExpression(((NotExpression) expression).getExpression());
-        } else if (expression instanceof TypeCastExpression) {
-            walkExpression(((TypeCastExpression) expression).getExpression());
-        } else if (expression instanceof CollateExpression) {
-            ((CollateExpression) expression).getExpr().ifPresent(this::walkExpression);
-        } else if (expression instanceof DatetimeExpression) {
-            walkExpression(((DatetimeExpression) expression).getLeft());
-            walkExpression(((DatetimeExpression) expression).getRight());
-        } else if (expression instanceof IntervalExpression) {
-            walkExpression(((IntervalExpression) expression).getValue());
-        } else if (expression instanceof IntervalExpressionProjection) {
-            walkIntervalProjection((IntervalExpressionProjection) expression);
-        } else if (expression instanceof KeyValueSegment) {
-            walkExpression(((KeyValueSegment) expression).getKey());
-            walkExpression(((KeyValueSegment) expression).getValue());
-        } else if (expression instanceof RowExpression) {
-            ((RowExpression) expression).getItems().forEach(this::walkExpression);
-        } else if (expression instanceof UnaryOperationExpression) {
-            walkExpression(((UnaryOperationExpression) expression).getExpression());
-        } else if (expression instanceof ValuesExpression) {
-            ((ValuesExpression) expression).getRowConstructorList().forEach(each -> each.getValues().forEach(this::walkExpression));
-        } else if (expression instanceof MatchAgainstExpression) {
-            walkMatchAgainst((MatchAgainstExpression) expression);
-        } else if (expression instanceof MultisetExpression) {
-            walkExpression(((MultisetExpression) expression).getLeft());
-            walkExpression(((MultisetExpression) expression).getRight());
-        } else if (expression instanceof OuterJoinExpression) {
-            walkExpression(((OuterJoinExpression) expression).getColumnName());
-        } else if (expression instanceof SubquerySegment) {
-            walk(((SubquerySegment) expression).getSelect());
-        } else if (expression instanceof SubqueryExpressionSegment) {
-            walk(((SubqueryExpressionSegment) expression).getSubquery().getSelect());
-        } else if (expression instanceof ExistsSubqueryExpression) {
-            walk(((ExistsSubqueryExpression) expression).getSubquery().getSelect());
-        } else if (expression instanceof QuantifySubqueryExpression) {
-            walk(((QuantifySubqueryExpression) expression).getSubquery().getSelect());
-        } else {
-            walkXMLExpression(expression);
+        switch (expression) {
+            case FunctionSegment function -> walkFunction(function);
+            case CommonExpressionSegment common -> common.getChildren().forEach(this::walkExpression);
+            case AggregationProjectionSegment aggregation -> {
+                aggregation.getParameters().forEach(this::walkExpression);
+                aggregation.getWindow().ifPresent(this::walkWindow);
+            }
+            case BinaryOperationExpression binary -> {
+                walkExpression(binary.getLeft());
+                walkExpression(binary.getRight());
+            }
+            case ColumnAssignmentSegment assignment -> walkExpression(assignment.getValue());
+            case ListExpression list -> list.getItems().forEach(this::walkExpression);
+            case BetweenExpression between -> {
+                walkExpression(between.getLeft());
+                walkExpression(between.getBetweenExpr());
+                walkExpression(between.getAndExpr());
+            }
+            case InExpression in -> {
+                walkExpression(in.getLeft());
+                walkExpression(in.getRight());
+            }
+            case CaseWhenExpression caseWhen -> walkCaseWhen(caseWhen);
+            case NotExpression not -> walkExpression(not.getExpression());
+            case TypeCastExpression typeCast -> walkExpression(typeCast.getExpression());
+            case CollateExpression collate -> collate.getExpr().ifPresent(this::walkExpression);
+            case DatetimeExpression datetime -> {
+                walkExpression(datetime.getLeft());
+                walkExpression(datetime.getRight());
+            }
+            case IntervalExpression interval -> walkExpression(interval.getValue());
+            case IntervalExpressionProjection intervalProjection -> walkIntervalProjection(intervalProjection);
+            case KeyValueSegment keyValue -> {
+                walkExpression(keyValue.getKey());
+                walkExpression(keyValue.getValue());
+            }
+            case RowExpression row -> row.getItems().forEach(this::walkExpression);
+            case UnaryOperationExpression unary -> walkExpression(unary.getExpression());
+            case ValuesExpression values -> values.getRowConstructorList().forEach(each -> each.getValues().forEach(this::walkExpression));
+            case MatchAgainstExpression match -> walkMatchAgainst(match);
+            case MultisetExpression multiset -> {
+                walkExpression(multiset.getLeft());
+                walkExpression(multiset.getRight());
+            }
+            case OuterJoinExpression outerJoin -> walkExpression(outerJoin.getColumnName());
+            case SubquerySegment subquery -> walk(subquery.getSelect());
+            case SubqueryExpressionSegment subqueryExpression -> walk(subqueryExpression.getSubquery().getSelect());
+            case ExistsSubqueryExpression exists -> walk(exists.getSubquery().getSelect());
+            case QuantifySubqueryExpression quantify -> walk(quantify.getSubquery().getSelect());
+            default -> walkXMLExpression(expression);
         }
     }
     
@@ -430,23 +415,22 @@ final class SQLStatementTreeWalker {
     }
     
     private void walkXMLExpression(final ExpressionSegment expression) {
-        if (expression instanceof XmlElementFunctionSegment) {
-            XmlElementFunctionSegment xmlElement = (XmlElementFunctionSegment) expression;
+        if (expression instanceof XmlElementFunctionSegment xmlElement) {
             xmlElement.getXmlAttributes().forEach(this::walkExpression);
             xmlElement.getParameters().forEach(this::walkExpression);
-        } else if (expression instanceof XmlPiFunctionSegment) {
-            walkExpression(((XmlPiFunctionSegment) expression).getEvalNameValueExpr());
-            walkExpression(((XmlPiFunctionSegment) expression).getValueExpr());
-        } else if (expression instanceof XmlQueryAndExistsFunctionSegment) {
-            ((XmlQueryAndExistsFunctionSegment) expression).getParameters().forEach(this::walkExpression);
-        } else if (expression instanceof XmlSerializeFunctionSegment) {
-            walkExpression(((XmlSerializeFunctionSegment) expression).getParameter());
-        } else if (expression instanceof XmlTableFunctionSegment) {
-            walkXmlTableOptions(((XmlTableFunctionSegment) expression).getXmlTableOption());
-        } else if (expression instanceof XmlTableOptionsSegment) {
-            walkXmlTableOptions((XmlTableOptionsSegment) expression);
-        } else if (expression instanceof XmlTableColumnSegment) {
-            walkExpression(((XmlTableColumnSegment) expression).getDefaultExpr());
+        } else if (expression instanceof XmlPiFunctionSegment xmlPi) {
+            walkExpression(xmlPi.getEvalNameValueExpr());
+            walkExpression(xmlPi.getValueExpr());
+        } else if (expression instanceof XmlQueryAndExistsFunctionSegment xmlQueryAndExists) {
+            xmlQueryAndExists.getParameters().forEach(this::walkExpression);
+        } else if (expression instanceof XmlSerializeFunctionSegment xmlSerialize) {
+            walkExpression(xmlSerialize.getParameter());
+        } else if (expression instanceof XmlTableFunctionSegment xmlTable) {
+            walkXmlTableOptions(xmlTable.getXmlTableOption());
+        } else if (expression instanceof XmlTableOptionsSegment xmlTableOptions) {
+            walkXmlTableOptions(xmlTableOptions);
+        } else if (expression instanceof XmlTableColumnSegment xmlTableColumn) {
+            walkExpression(xmlTableColumn.getDefaultExpr());
         }
     }
     

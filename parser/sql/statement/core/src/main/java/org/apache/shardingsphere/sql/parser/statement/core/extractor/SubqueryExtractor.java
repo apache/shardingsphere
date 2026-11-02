@@ -251,9 +251,6 @@ public final class SubqueryExtractor {
             extractSubquerySegmentsFromExpression(result, ((DatetimeExpression) expressionSegment).getLeft(), subqueryType, needRecursive);
             extractSubquerySegmentsFromExpression(result, ((DatetimeExpression) expressionSegment).getRight(), subqueryType, needRecursive);
         }
-        if (expressionSegment instanceof NotExpression) {
-            extractSubquerySegmentsFromExpression(result, ((NotExpression) expressionSegment).getExpression(), subqueryType, needRecursive);
-        }
         if (expressionSegment instanceof TypeCastExpression) {
             extractSubquerySegmentsFromExpression(result, ((TypeCastExpression) expressionSegment).getExpression(), subqueryType, needRecursive);
         }

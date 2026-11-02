@@ -79,7 +79,7 @@ public final class ShardingWorkflowRequest extends WorkflowRequest {
     }
     
     private static ShardingWorkflowRequest copyPreviousRequest(final WorkflowRequest previous) {
-        return previous instanceof ShardingWorkflowRequest ? ((ShardingWorkflowRequest) previous).copy() : copyFieldsTo(previous, new ShardingWorkflowRequest());
+        return previous instanceof ShardingWorkflowRequest request ? request.copy() : copyFieldsTo(previous, new ShardingWorkflowRequest());
     }
     
     @Override

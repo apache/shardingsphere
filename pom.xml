@@ -54,18 +54,20 @@
     <properties>
         <!-- Environments -->
         <java.version>8</java.version>
-        <compile.java.version>21</compile.java.version>
-        <maven.compiler.source>${compile.java.version}</maven.compiler.source>
+        <build.jdk.version>21</build.jdk.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        
+        <maven.compiler.source>${build.jdk.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.version.range>[3.0.4,)</maven.version.range>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <remoteresources.skip>true</remoteresources.skip>
-        <jacoco.skip>true</jacoco.skip>
-        <argLine />
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <maven.enforcer.fail>true</maven.enforcer.fail>
+        
+        <remoteresources.skip>true</remoteresources.skip>
+        <jacoco.skip>true</jacoco.skip>
+        <argLine />
         <shade.package>org.apache.shardingsphere.shade</shade.package>
         <antlr.output.directory>${basedir}/target/generated-sources/antlr4</antlr.output.directory>
         
@@ -74,7 +76,7 @@
         <sonar.exclusions>**/autogen/**/*</sonar.exclusions>
         
         <!-- 3rd party library versions -->
-        <guava.version>33.4.8-jre</guava.version>
+        <guava.version>33.7.2-jre</guava.version>
         <checker-qual.version>3.39.0</checker-qual.version>
         <error_prone_annotations.version>2.22.0</error_prone_annotations.version>
         <java-util.version>4.103.0</java-util.version>
@@ -107,7 +109,7 @@
         <bval.version>2.0.6</bval.version>
         
         <netty.version>4.2.19.Final</netty.version>
-        <bouncycastle.version>1.84</bouncycastle.version>
+        <bouncycastle-bom.version>1.86.2</bouncycastle-bom.version>
         
         <curator.version>5.7.0</curator.version>
         <zookeeper.version>3.9.6</zookeeper.version>
@@ -159,17 +161,16 @@
         <transformer-maven-plugin.version>1.0.0</transformer-maven-plugin.version>
         
         <!-- Compile plugin versions -->
-        <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
+        <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
         <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
-        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-        <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
-        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-        <jandex-maven-plugin.version>3.1.3</jandex-maven-plugin.version>
+        <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
+        <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
+        <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.5.6</maven-failsafe-plugin.version>
+        <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
         <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
-        <maven-dependency-plugin.version>3.6.0</maven-dependency-plugin.version>
+        <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
         
         <!-- Release plugin versions -->
@@ -186,19 +187,19 @@
         <spotless-maven-plugin.version>3.10.1</spotless-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <checkstyle.version>14.1.0</checkstyle.version>
-        <maven-pmd-plugin.version>3.20.0</maven-pmd-plugin.version>
+        <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version>
         <spotbugs-maven-plugin.version>4.7.3.6</spotbugs-maven-plugin.version>
         <fb-contrib.version>7.6.0</fb-contrib.version>
         <findsecbugs.version>1.14.0</findsecbugs.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
         
         <!-- Report plugin versions -->
-        <maven-site-plugin.version>4.0.0-M13</maven-site-plugin.version>
-        <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
-        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+        <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
+        <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
+        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
-        <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
-        <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
+        <jdepend-maven-plugin.version>2.2.1</jdepend-maven-plugin.version>
+        <taglist-maven-plugin.version>3.2.3</taglist-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
         <dependency-check-maven.version>13.0.0</dependency-check-maven.version>
     </properties>
@@ -436,13 +437,10 @@
             
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpkix-jdk18on</artifactId>
-                <version>${bouncycastle.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bctls-jdk18on</artifactId>
-                <version>${bouncycastle.version}</version>
+                <artifactId>bc-jdk18on-bom</artifactId>
+                <version>${bouncycastle-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             
             <dependency>
@@ -802,7 +800,7 @@
                                         <version>${maven.version.range}</version>
                                     </requireMavenVersion>
                                     <requireJavaVersion>
-                                        <version>[${compile.java.version},)</version>
+                                        <version>[${build.jdk.version},)</version>
                                     </requireJavaVersion>
                                 </rules>
                                 <fail>${maven.enforcer.fail}</fail>
@@ -861,11 +859,6 @@
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${maven-jar-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>io.smallrye</groupId>
-                    <artifactId>jandex-maven-plugin</artifactId>
-                    <version>${jandex-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -945,6 +938,13 @@
                 </plugin>
                 
                 <!-- Report plugins -->
+                <plugin>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>${maven-site-plugin.version}</version>
+                    <configuration>
+                        <outputTimestamp>${maven.build.timestamp}</outputTimestamp>
+                    </configuration>
+                </plugin>
                 <plugin>
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <version>${maven-checkstyle-plugin.version}</version>
@@ -1052,10 +1052,6 @@
     <reporting>
         <plugins>
             <plugin>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>${maven-site-plugin.version}</version>
-            </plugin>
-            <plugin>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>${maven-project-info-reports-plugin.version}</version>
             </plugin>
@@ -1106,7 +1102,7 @@
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>${maven-pmd-plugin.version}</version>
                 <configuration>
-                    <targetJdk>${java.version}</targetJdk>
+                    <targetJdk>${build.jdk.version}</targetJdk>
                 </configuration>
             </plugin>
             <plugin>
@@ -1114,6 +1110,7 @@
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>${spotbugs-maven-plugin.version}</version>
                 <configuration>
+                    <maxHeap>1024</maxHeap>
                     <xmlOutput>true</xmlOutput>
                     <xmlOutputDirectory>target/site</xmlOutputDirectory>
                 </configuration>

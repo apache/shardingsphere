@@ -37,8 +37,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 final class SQLStatementSafetyValidator {
+    
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
     
     private static final List<String> SIDE_EFFECTING_FUNCTION_NAMES = List.of("NEXTVAL", "NEXT VALUE FOR", "SETVAL", "GET_LOCK", "RELEASE_LOCK", "RELEASE_ALL_LOCKS",
             "PG_ADVISORY_LOCK", "PG_ADVISORY_XACT_LOCK", "PG_TRY_ADVISORY_LOCK", "PG_TRY_ADVISORY_XACT_LOCK", "PG_ADVISORY_UNLOCK", "PG_ADVISORY_UNLOCK_ALL",
@@ -63,9 +66,17 @@ final class SQLStatementSafetyValidator {
     }
     
     private boolean isBannedStatementType(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SetStatement || sqlStatement instanceof CallStatement
-                || sqlStatement instanceof CreateUserStatement || sqlStatement instanceof AlterUserStatement || sqlStatement instanceof DropUserStatement
-                || sqlStatement instanceof CreateRoleStatement || sqlStatement instanceof AlterRoleStatement || sqlStatement instanceof DropRoleStatement;
+        return switch (sqlStatement) {
+            case SetStatement ignored -> true;
+            case CallStatement ignored -> true;
+            case CreateUserStatement ignored -> true;
+            case AlterUserStatement ignored -> true;
+            case DropUserStatement ignored -> true;
+            case CreateRoleStatement ignored -> true;
+            case AlterRoleStatement ignored -> true;
+            case DropRoleStatement ignored -> true;
+            case null, default -> false;
+        };
     }
     
     private boolean containsExecutableComment(final SQLStatement sqlStatement) {
@@ -82,8 +93,7 @@ final class SQLStatementSafetyValidator {
         if (isBannedStatementType(sqlStatement) || containsExecutableComment(sqlStatement)) {
             throw new MCPBannedSQLStatementException();
         }
-        if (sqlStatement instanceof SelectStatement) {
-            SelectStatement select = (SelectStatement) sqlStatement;
+        if (sqlStatement instanceof SelectStatement select) {
             if (select.getInto().isPresent() || select.getOutfile().isPresent()) {
                 throw new MCPBannedSQLStatementException();
             }
@@ -94,12 +104,11 @@ final class SQLStatementSafetyValidator {
     }
     
     private void checkExpression(final ExpressionSegment expression) {
-        if (expression instanceof FunctionSegment) {
-            checkFunction((FunctionSegment) expression);
-        } else if (expression instanceof BinaryOperationExpression && ":=".equals(((BinaryOperationExpression) expression).getOperator())) {
+        if (expression instanceof FunctionSegment function) {
+            checkFunction(function);
+        } else if (expression instanceof BinaryOperationExpression binary && ":=".equals(binary.getOperator())) {
             throw new MCPBannedSQLStatementException();
-        } else if (expression instanceof ColumnSegment) {
-            ColumnSegment column = (ColumnSegment) expression;
+        } else if (expression instanceof ColumnSegment column) {
             if (column.getOwner().isPresent() && "NEXTVAL".equalsIgnoreCase(column.getIdentifier().getValue())) {
                 throw new MCPBannedSQLStatementException();
             }
@@ -120,7 +129,7 @@ final class SQLStatementSafetyValidator {
     }
     
     private boolean isAlterSystemStatement(final String upperSql) {
-        String[] words = upperSql.split("\\s+", 3);
+        String[] words = WHITESPACE_PATTERN.split(upperSql, 3);
         return 2 <= words.length && "ALTER".equals(words[0]) && "SYSTEM".equals(words[1]);
     }
     
@@ -140,6 +149,6 @@ final class SQLStatementSafetyValidator {
         if (upperSql.startsWith("SHOW SINGLE TABLE")) {
             return "SHOW SINGLE TABLE";
         }
-        return upperSql.split("\\s+")[0];
+        return WHITESPACE_PATTERN.split(upperSql)[0];
     }
 }

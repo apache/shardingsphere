@@ -94,6 +94,7 @@ class MySQLProjectionMetadataResolverTest {
     }
     
     private void mockResultSetMetaData(final ResultSetMetaData resultSetMetaData) throws SQLException {
+        when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSetMetaData.getColumnName(1)).thenReturn("content");
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("content");
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.CLOB);

@@ -40,7 +40,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -60,7 +59,6 @@ class FirebirdSQLInfoExecutorTest {
     
     @Test
     void assertExecute() {
-        when(packet.getInfoItems()).thenReturn(Collections.emptyList());
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         FirebirdSQLInfoExecutor executor = new FirebirdSQLInfoExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
@@ -72,7 +70,6 @@ class FirebirdSQLInfoExecutorTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("sqlStatementProvider")
     void assertExecuteWithRecordsInfo(final String name, final SQLStatement sqlStatement, final long expectedInsertCount, final long expectedUpdateCount, final long expectedDeleteCount) {
-        when(packet.getInfoItems()).thenReturn(Collections.emptyList());
         when(packet.getHandle()).thenReturn(1);
         ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);

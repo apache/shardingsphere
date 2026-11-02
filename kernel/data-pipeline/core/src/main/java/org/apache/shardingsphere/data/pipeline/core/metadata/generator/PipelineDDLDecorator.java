@@ -185,8 +185,7 @@ public final class PipelineDDLDecorator {
                 || sqlStatement instanceof AlterTableStatement || sqlStatement instanceof CommentStatement) {
             TableExtractor tableExtractor = new TableExtractor();
             tableExtractor.extractTablesFromSQLStatement(sqlStatement);
-            Optional<SimpleTableSegment> simpleTableSegment = tableExtractor.getTableContext().stream()
-                    .filter(each -> each instanceof SimpleTableSegment).map(each -> (SimpleTableSegment) each).findFirst();
+            Optional<SimpleTableSegment> simpleTableSegment = tableExtractor.getTableContext().stream().filter(SimpleTableSegment.class::isInstance).map(SimpleTableSegment.class::cast).findFirst();
             if (!simpleTableSegment.isPresent()) {
                 return sql;
             }

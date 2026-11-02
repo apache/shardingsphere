@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.allocate;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -33,8 +32,6 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 public final class FirebirdAllocateStatementCommandExecutor implements CommandExecutor {
-    
-    private final FirebirdAllocateStatementPacket packet;
     
     private final ConnectionSession connectionSession;
     

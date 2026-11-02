@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
@@ -27,11 +30,12 @@ import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.index.P
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.table.PostgreSQLTablePropertiesLoader;
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template.PostgreSQLPipelineFreemarkerManager;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.sql.parser.engine.postgresql.parser.PostgreSQLLexer;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -96,8 +100,7 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
             Map<String, Object> materials = loadMaterials(tableName, schemaName, connection, majorVersion, minorVersion);
             String tableSQL = generateCreateTableSQL(majorVersion, minorVersion, materials);
             String indexSQL = generateCreateIndexSQL(connection, majorVersion, minorVersion, materials);
-            // TODO use ";" to split is not always correct if return value's comments contains ";"
-            return Arrays.asList((tableSQL + System.lineSeparator() + indexSQL).trim().split(";"));
+            return splitStatements(tableSQL + System.lineSeparator() + indexSQL);
         }
     }
     
@@ -115,6 +118,24 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     
     private String generateCreateIndexSQL(final Connection connection, final int majorVersion, final int minorVersion, final Map<String, Object> materials) throws SQLException {
         return new PostgreSQLIndexSQLGenerator(connection, majorVersion, minorVersion).generate(materials);
+    }
+    
+    private Collection<String> splitStatements(final String sql) {
+        Collection<String> result = new ArrayList<>();
+        PostgreSQLLexer lexer = new PostgreSQLLexer(CharStreams.fromString(sql));
+        int start = 0;
+        Token token;
+        do {
+            token = lexer.nextToken();
+            if (PostgreSQLLexer.SEMI_ == token.getType() || Token.EOF == token.getType()) {
+                String statement = lexer.getInputStream().getText(Interval.of(start, token.getStartIndex() - 1)).trim();
+                if (!statement.isEmpty()) {
+                    result.add(statement);
+                }
+                start = token.getStopIndex() + 1;
+            }
+        } while (Token.EOF != token.getType());
+        return result;
     }
     
     @SuppressWarnings("unchecked")

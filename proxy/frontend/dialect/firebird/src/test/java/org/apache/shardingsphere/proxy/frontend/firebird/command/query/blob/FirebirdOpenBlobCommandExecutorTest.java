@@ -34,7 +34,6 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cach
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,7 +67,6 @@ class FirebirdOpenBlobCommandExecutorTest {
     
     @BeforeEach
     void setup() {
-        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobHandleGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobReadCache.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobWriteCache.getInstance().registerConnection(CONNECTION_ID);
@@ -78,7 +76,6 @@ class FirebirdOpenBlobCommandExecutorTest {
     
     @AfterEach
     void tearDown() {
-        FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobHandleGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobReadCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobWriteCache.getInstance().unregisterConnection(CONNECTION_ID);
@@ -108,7 +105,6 @@ class FirebirdOpenBlobCommandExecutorTest {
     
     @Test
     void assertExecuteWithZeroBlobId() {
-        when(packet.getBlobId()).thenReturn(0L);
         FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));

@@ -50,9 +50,8 @@ public final class MCPTransportErrorFactory {
      * @return MCP transport error
      */
     public static McpError createError(final Throwable cause) {
-        if (cause instanceof MCPTransportSecurityException) {
-            return createProtocolError(
-                    new MCPErrorPayload(cause.getMessage(), createTransportSecurityRecovery((MCPTransportSecurityException) cause)), getProtocolErrorCode(cause));
+        if (cause instanceof MCPTransportSecurityException ex) {
+            return createProtocolError(new MCPErrorPayload(cause.getMessage(), createTransportSecurityRecovery(ex)), getProtocolErrorCode(cause));
         }
         if (!isApplicationError(cause)) {
             return createInternalError(cause);

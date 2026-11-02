@@ -120,8 +120,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void processEventWithTX(final MySQLBaseBinlogEvent binlogEvent, final List<Object> out) {
-        if (binlogEvent instanceof MySQLQueryBinlogEvent) {
-            MySQLQueryBinlogEvent queryEvent = (MySQLQueryBinlogEvent) binlogEvent;
+        if (binlogEvent instanceof MySQLQueryBinlogEvent queryEvent) {
             if (TX_BEGIN_SQL.equals(queryEvent.getSql())) {
                 records = new LinkedList<>();
             } else {
@@ -136,8 +135,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void processEventIgnoreTX(final MySQLBaseBinlogEvent binlogEvent, final List<Object> out) {
-        if (binlogEvent instanceof MySQLQueryBinlogEvent) {
-            MySQLQueryBinlogEvent queryEvent = (MySQLQueryBinlogEvent) binlogEvent;
+        if (binlogEvent instanceof MySQLQueryBinlogEvent queryEvent) {
             if (TX_BEGIN_SQL.equals(queryEvent.getSql())) {
                 return;
             }
@@ -156,14 +154,11 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             case TABLE_MAP_EVENT:
                 decodeTableMapEvent(binlogEventHeader, payload);
                 return Optional.empty();
-            case WRITE_ROWS_EVENT_V1:
-            case WRITE_ROWS_EVENT_V2:
+            case WRITE_ROWS_EVENT_V1, WRITE_ROWS_EVENT_V2:
                 return Optional.of(decodeWriteRowsEventV2(binlogEventHeader, payload));
-            case UPDATE_ROWS_EVENT_V1:
-            case UPDATE_ROWS_EVENT_V2:
+            case UPDATE_ROWS_EVENT_V1, UPDATE_ROWS_EVENT_V2:
                 return Optional.of(decodeUpdateRowsEventV2(binlogEventHeader, payload));
-            case DELETE_ROWS_EVENT_V1:
-            case DELETE_ROWS_EVENT_V2:
+            case DELETE_ROWS_EVENT_V1, DELETE_ROWS_EVENT_V2:
                 return Optional.of(decodeDeleteRowsEventV2(binlogEventHeader, payload));
             case QUERY_EVENT:
                 return Optional.of(decodeQueryEvent(binlogEventHeader, payload));

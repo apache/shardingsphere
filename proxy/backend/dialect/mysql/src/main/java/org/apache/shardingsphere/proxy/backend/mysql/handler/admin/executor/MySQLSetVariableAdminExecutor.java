@@ -125,11 +125,13 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
             return false;
         }
         VariableAssignSegment first = variableAssigns.get(0);
-        return CHARACTER_SET_CLIENT.equalsIgnoreCase(first.getVariable().getVariable())
-                && CHARACTER_SET_RESULTS.equalsIgnoreCase(variableAssigns.get(1).getVariable().getVariable())
-                && CHARACTER_SET_CONNECTION.equalsIgnoreCase(variableAssigns.get(2).getVariable().getVariable())
-                && COLLATION_CONNECTION.equalsIgnoreCase(variableAssigns.get(3).getVariable().getVariable())
-                && variableAssigns.subList(1, 4).stream().allMatch(each -> first.getStartIndex() == each.getStartIndex() && first.getStopIndex() == each.getStopIndex());
+        if (!CHARACTER_SET_CLIENT.equalsIgnoreCase(first.getVariable().getVariable())
+                || !CHARACTER_SET_RESULTS.equalsIgnoreCase(variableAssigns.get(1).getVariable().getVariable())
+                || !CHARACTER_SET_CONNECTION.equalsIgnoreCase(variableAssigns.get(2).getVariable().getVariable())
+                || !COLLATION_CONNECTION.equalsIgnoreCase(variableAssigns.get(3).getVariable().getVariable())) {
+            return false;
+        }
+        return variableAssigns.subList(1, 4).stream().allMatch(each -> first.getStartIndex() == each.getStartIndex() && first.getStopIndex() == each.getStopIndex());
     }
     
     private MySQLSessionCharsetContext updateCharsetContext(final MySQLSessionCharsetContext context, final VariableAssignSegment variableAssign,
@@ -171,10 +173,10 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
     }
     
     private MySQLSessionCharsetContext updateResultCharacterSet(final MySQLSessionCharsetContext context, final String value) {
-        String normalizedValue = formatVariableValue(value).toLowerCase(Locale.ROOT);
         if (isKeyword(value, "null")) {
             return context.withoutResultConversion();
         }
+        String normalizedValue = formatVariableValue(value).toLowerCase(Locale.ROOT);
         return "binary".equals(normalizedValue) ? context.withBinaryResult() : context.withResultCharacterSet(parseCharacterSet(value));
     }
     
@@ -194,10 +196,10 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
     }
     
     private MySQLCharacterSets parseCollation(final String value) {
-        String normalizedValue = formatVariableValue(value);
         if (isKeyword(value, "@@collation_database")) {
             return MySQLCharacterSets.findByCollationName(MySQLSystemVariable.COLLATION_DATABASE.getDefaultValue());
         }
+        String normalizedValue = formatVariableValue(value);
         return isKeyword(value, "default")
                 ? MySQLCharacterSets.findByCollationName(MySQLSystemVariable.COLLATION_CONNECTION.getDefaultValue())
                 : MySQLCharacterSets.findByCollationName(normalizedValue);
