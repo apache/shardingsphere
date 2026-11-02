@@ -134,7 +134,7 @@ public final class SimpleTableSegmentBinder {
         Optional<OwnerSegment> owner = dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? segment.getOwner().flatMap(OwnerSegment::getOwner) : segment.getOwner();
         IdentifierValue result = ownerDatabaseName.orElseGet(() -> new IdentifierValue(owner.map(optional -> optional.getIdentifier().getValue()).orElse(binderContext.getCurrentDatabaseName())));
         ShardingSpherePreconditions.checkNotNull(result.getValue(), NoDatabaseSelectedException::new);
-        if (binderContext.getHintValueContext().isSkipMetadataValidate() && !binderContext.getMetaData().containsDatabase(result)) {
+        if (binderContext.getHintValueContext().isSkipMetadataValidate() && null != binderContext.getCurrentDatabaseName() && !binderContext.getMetaData().containsDatabase(result)) {
             return new IdentifierValue(binderContext.getCurrentDatabaseName());
         }
         ShardingSpherePreconditions.checkState(binderContext.getMetaData().containsDatabase(result), () -> new UnknownDatabaseException(result.getValue()));

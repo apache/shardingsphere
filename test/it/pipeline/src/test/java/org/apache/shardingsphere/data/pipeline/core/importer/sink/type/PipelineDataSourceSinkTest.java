@@ -32,6 +32,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.algorithm.FixtureTransmissionJobItemContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,6 +99,7 @@ class PipelineDataSourceSinkTest {
     private PipelineDataSourceManager mockPipelineDataSourceManager() throws SQLException {
         PipelineDataSourceManager result = mock(PipelineDataSourceManager.class, RETURNS_DEEP_STUBS);
         when(result.getDataSource(dataSourceConfig).getConnection()).thenReturn(connection);
+        when(result.getDataSource(dataSourceConfig).getIdentifierContext()).thenReturn(new DatabaseIdentifierContext(IdentifierCasePolicyResolver.resolveProtocol(dataSourceConfig.getDatabaseType())));
         return result;
     }
     
