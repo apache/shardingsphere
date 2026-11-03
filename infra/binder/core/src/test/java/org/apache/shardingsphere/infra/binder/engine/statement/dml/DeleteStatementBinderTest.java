@@ -68,7 +68,9 @@ class DeleteStatementBinderTest {
     void assertBind() {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         ErrorLoggingSegment errorLogging = new ErrorLoggingSegment(0, 0, null, null, "UNLIMITED");
-        ReturningSegment returning = new ReturningSegment(0, 0, new ProjectionsSegment(0, 0));
+        ProjectionsSegment projections = new ProjectionsSegment(10, 15);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(10, 15, new IdentifierValue("status"))));
+        ReturningSegment returning = new ReturningSegment(0, 15, projections);
         DeleteStatement deleteStatement = DeleteStatement.builder()
                 .databaseType(databaseType)
                 .table(simpleTableSegment)
@@ -80,7 +82,11 @@ class DeleteStatementBinderTest {
         DeleteStatement actual = new DeleteStatementBinder().bind(deleteStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), deleteStatement));
         assertThat(actual, not(deleteStatement));
         assertThat(actual.getErrorLogging().get(), is(errorLogging));
-        assertThat(actual.getReturning().get(), is(returning));
+        assertThat(actual.getReturning().get().getStartIndex(), is(returning.getStartIndex()));
+        assertThat(actual.getReturning().get().getStopIndex(), is(returning.getStopIndex()));
+        ColumnProjectionSegment returningProjection = (ColumnProjectionSegment) actual.getReturning().get().getProjections().getProjections().iterator().next();
+        assertThat(returningProjection.getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(returningProjection.getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
         assertThat(actual.getTable(), not(deleteStatement.getTable()));
         assertThat(actual.getTable(), isA(SimpleTableSegment.class));
         assertTrue(actual.getWhere().isPresent());
