@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import com.google.common.base.Suppliers;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
@@ -79,9 +80,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -263,7 +266,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         for (Projection each : getProjections(sqlStatementContext, database, schema)) {
             Optional<Projection> originProjection = findOriginProjection(sqlStatementContext, each);
             Projection projection = originProjection.orElse(each);
-            IdentifierValue columnAlias = isTemporaryTableColumn(each) ? each.getAlias().orElseGet(((ColumnProjection) each)::getName) : each.getAlias().orElse(null);
+            IdentifierValue columnAlias = originProjection.isPresent() || isTemporaryTableColumn(each) ? each.getAlias().orElseGet(((ColumnProjection) each)::getName) : each.getAlias().orElse(null);
             if (projection instanceof ColumnProjection) {
                 ShardingSphereTable table = getTable(getTableName(sqlStatementContext, (ColumnProjection) projection), database, schema);
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) projection).getOriginalColumn().getValue());
@@ -363,35 +366,40 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private Collection<Projection> getShorthandColumns(final SelectStatement select, final ShorthandProjection projection) {
-        Optional<SubqueryTableSegment> subqueryTable = findShorthandSubqueryTable(select, projection.getOwner().orElse(null));
-        if (!subqueryTable.isPresent() || !subqueryTable.get().getColumns().isEmpty()) {
+        Collection<TableSegment> tableSources = findShorthandTableSources(select, projection.getOwner().orElse(null));
+        if (!containsDerivedTableSource(select, tableSources)) {
             return projection.getActualColumns();
         }
-        IdentifierValue subqueryTableName = subqueryTable.get().getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
-        Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(subqueryTable.get().getSubquery().getSelect().getProjections().getProjections(),
-                subqueryTableName, select.getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
-        ProjectionEngine projectionEngine = new ProjectionEngine(select.getDatabaseType());
         Collection<Projection> result = new LinkedList<>();
-        for (ProjectionSegment each : subqueryProjections) {
-            if (each.isVisible()) {
-                projectionEngine.createProjection(each).ifPresent(result::add);
-            }
+        for (TableSegment each : tableSources) {
+            result.addAll(getTableSourceColumns(select, each, projection.getActualColumns()));
         }
         return result;
     }
     
-    private Optional<SubqueryTableSegment> findShorthandSubqueryTable(final SelectStatement select, @Nullable final IdentifierValue owner) {
-        if (null == owner) {
-            return select.getFrom().filter(SubqueryTableSegment.class::isInstance).map(SubqueryTableSegment.class::cast);
+    private Collection<TableSegment> findShorthandTableSources(final SelectStatement select, @Nullable final IdentifierValue owner) {
+        Collection<TableSegment> result = new LinkedList<>();
+        if (!select.getFrom().isPresent() || null == owner && !isExpandableBySource(select.getFrom().get())) {
+            return result;
         }
-        Collection<TableSegment> tableSources = new LinkedList<>();
-        select.getFrom().ifPresent(from -> addTableSources(from, tableSources));
-        for (TableSegment each : tableSources) {
-            if (each instanceof SubqueryTableSegment && owner.getValue().equalsIgnoreCase(each.getAliasName().orElse(""))) {
-                return Optional.of((SubqueryTableSegment) each);
+        addTableSources(select.getFrom().get(), result);
+        if (null == owner) {
+            return result;
+        }
+        for (TableSegment each : result) {
+            if (owner.getValue().equalsIgnoreCase(getTableAliasOrName(each))) {
+                return Collections.singleton(each);
             }
         }
-        return Optional.empty();
+        return Collections.emptyList();
+    }
+    
+    private boolean isExpandableBySource(final TableSegment tableSegment) {
+        if (tableSegment instanceof JoinTableSegment) {
+            JoinTableSegment joinTable = (JoinTableSegment) tableSegment;
+            return joinTable.getUsing().isEmpty() && !joinTable.isNatural() && isExpandableBySource(joinTable.getLeft()) && isExpandableBySource(joinTable.getRight());
+        }
+        return tableSegment instanceof SimpleTableSegment || tableSegment instanceof SubqueryTableSegment;
     }
     
     private void addTableSources(final TableSegment tableSegment, final Collection<TableSegment> tableSources) {
@@ -403,6 +411,89 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
+    private String getTableAliasOrName(final TableSegment tableSegment) {
+        return tableSegment.getAliasName().orElseGet(() -> getSourceTableName(tableSegment));
+    }
+    
+    private String getSourceTableName(final TableSegment tableSegment) {
+        return tableSegment instanceof SimpleTableSegment ? ((SimpleTableSegment) tableSegment).getTableName().getIdentifier().getValue() : "";
+    }
+    
+    private boolean containsDerivedTableSource(final SelectStatement select, final Collection<TableSegment> tableSources) {
+        for (TableSegment each : tableSources) {
+            if (each instanceof SubqueryTableSegment || findCommonTableExpression(select, each).isPresent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private Optional<CommonTableExpressionSegment> findCommonTableExpression(final SelectStatement select, final TableSegment tableSource) {
+        if (!(tableSource instanceof SimpleTableSegment) || ((SimpleTableSegment) tableSource).getOwner().isPresent() || !select.getWith().isPresent()) {
+            return Optional.empty();
+        }
+        String tableName = getSourceTableName(tableSource);
+        for (CommonTableExpressionSegment each : select.getWith().get().getCommonTableExpressions()) {
+            if (tableName.equalsIgnoreCase(each.getAliasName().orElse(""))) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private Collection<Projection> getTableSourceColumns(final SelectStatement select, final TableSegment tableSource, final Collection<Projection> actualColumns) {
+        if (tableSource instanceof SubqueryTableSegment) {
+            SubqueryTableSegment subqueryTable = (SubqueryTableSegment) tableSource;
+            IdentifierValue subqueryTableName = subqueryTable.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
+            return createDerivedTableColumns(select.getDatabaseType(), subqueryTable.getSubquery().getSelect().getProjections().getProjections(), subqueryTable.getColumns(), subqueryTableName);
+        }
+        Optional<CommonTableExpressionSegment> commonTableExpression = findCommonTableExpression(select, tableSource);
+        if (commonTableExpression.isPresent()) {
+            SelectStatement commonTableExpressionSelect = commonTableExpression.get().getSubquery().getSelect();
+            SelectStatement anchorSelect = commonTableExpressionSelect.getCombine().map(optional -> optional.getLeft().getSelect()).orElse(commonTableExpressionSelect);
+            SimpleTableSegment table = (SimpleTableSegment) tableSource;
+            return createDerivedTableColumns(select.getDatabaseType(), anchorSelect.getProjections().getProjections(), commonTableExpression.get().getColumns(),
+                    table.getAlias().orElseGet(() -> table.getTableName().getIdentifier()));
+        }
+        String tableAliasOrName = getTableAliasOrName(tableSource);
+        Collection<Projection> result = new LinkedList<>();
+        for (Projection each : actualColumns) {
+            if (each instanceof ColumnProjection && isPhysicalTableColumnOf((ColumnProjection) each, tableAliasOrName)) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private Collection<Projection> createDerivedTableColumns(final DatabaseType databaseType, final Collection<ProjectionSegment> projections, final Collection<ColumnSegment> declaredColumns,
+                                                             final IdentifierValue tableName) {
+        Collection<ProjectionSegment> derivedProjections = SubqueryTableBindUtils.createSubqueryProjections(projections, tableName, databaseType, TableSourceType.TEMPORARY_TABLE);
+        ProjectionEngine projectionEngine = new ProjectionEngine(databaseType);
+        Iterator<ColumnSegment> columns = declaredColumns.iterator();
+        Collection<Projection> result = new LinkedList<>();
+        for (ProjectionSegment each : derivedProjections) {
+            if (each.isVisible() && columns.hasNext()) {
+                result.add(createDeclaredColumn(databaseType, tableName, columns.next().getIdentifier(), each));
+            } else if (each.isVisible()) {
+                projectionEngine.createProjection(each).ifPresent(result::add);
+            }
+        }
+        return result;
+    }
+    
+    private ColumnProjection createDeclaredColumn(final DatabaseType databaseType, final IdentifierValue tableName, final IdentifierValue columnName, final ProjectionSegment projection) {
+        ColumnSegmentBoundInfo columnBoundInfo = projection instanceof ColumnProjectionSegment
+                ? ((ColumnProjectionSegment) projection).getColumn().getColumnBoundInfo()
+                : new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(null, null), new IdentifierValue(""), columnName, TableSourceType.TEMPORARY_TABLE);
+        return new ColumnProjection(tableName, columnName, null, databaseType, null, null, columnBoundInfo);
+    }
+    
+    private boolean isPhysicalTableColumnOf(final ColumnProjection projection, final String tableAliasOrName) {
+        ColumnSegmentBoundInfo columnBoundInfo = projection.getColumnBoundInfo();
+        return null != columnBoundInfo && TableSourceType.PHYSICAL_TABLE == columnBoundInfo.getTableSourceType()
+                && projection.getOwner().map(IdentifierValue::getValue).filter(tableAliasOrName::equalsIgnoreCase).isPresent();
+    }
+    
     private Collection<Projection> processShorthandProjection(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                                               final Supplier<Optional<ShardingSphereSchema>> schema, final ShorthandProjection projection) {
         return resolveShorthandColumns(sqlStatementContext, database, schema, projection);
@@ -410,7 +501,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     @HighFrequencyInvocation
     private Optional<Projection> findOriginProjection(final SQLStatementContext sqlStatementContext, final Projection projection) {
-        if (!(projection instanceof ColumnProjection) || !isTemporaryColumnWithoutTable(((ColumnProjection) projection).getColumnBoundInfo())
+        if (!(projection instanceof ColumnProjection) || !isColumnWithoutOriginalTable(((ColumnProjection) projection).getColumnBoundInfo())
                 || !(sqlStatementContext.getSqlStatement() instanceof SelectStatement)) {
             return Optional.empty();
         }
@@ -422,8 +513,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return result.flatMap(projectionSegment -> new ProjectionEngine(selectStatement.getDatabaseType()).createProjection(projectionSegment));
     }
     
-    private boolean isTemporaryColumnWithoutTable(@Nullable final ColumnSegmentBoundInfo columnBoundInfo) {
-        return null != columnBoundInfo && TableSourceType.TEMPORARY_TABLE == columnBoundInfo.getTableSourceType() && columnBoundInfo.getOriginalTable().getValue().isEmpty();
+    private boolean isColumnWithoutOriginalTable(@Nullable final ColumnSegmentBoundInfo columnBoundInfo) {
+        return null != columnBoundInfo && columnBoundInfo.getOriginalTable().getValue().isEmpty();
     }
     
     private Optional<ProjectionSegment> findOriginProjectionSegment(final List<CommonTableExpressionSegment> commonTableExpressions, final SelectStatement select,
@@ -465,11 +556,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private String getColumnOwnerName(final TableSegment tableSource, final boolean shorthandExpanded) {
-        return shorthandExpanded && tableSource instanceof SimpleTableSegment ? getSourceTableName(tableSource) : tableSource.getAliasName().orElseGet(() -> getSourceTableName(tableSource));
-    }
-    
-    private String getSourceTableName(final TableSegment tableSegment) {
-        return tableSegment instanceof SimpleTableSegment ? ((SimpleTableSegment) tableSegment).getTableName().getIdentifier().getValue() : "";
+        return shorthandExpanded && tableSource instanceof SimpleTableSegment ? getSourceTableName(tableSource) : getTableAliasOrName(tableSource);
     }
     
     private Optional<ProjectionSegment> findSourceProjectionSegment(final List<CommonTableExpressionSegment> commonTableExpressions, final TableSegment tableSource, final IdentifierValue columnName) {
@@ -495,16 +582,18 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                                                                 final Collection<ColumnSegment> declaredColumns, final IdentifierValue columnName) {
         SelectStatement select = derivedSelect.getCombine().map(optional -> optional.getLeft().getSelect()).orElse(derivedSelect);
         Optional<ProjectionSegment> result = findProjectionSegment(select, declaredColumns, columnName);
-        if (!result.isPresent() || !(result.get() instanceof ColumnProjectionSegment) || !isTemporaryColumnWithoutTable(((ColumnProjectionSegment) result.get()).getColumn().getColumnBoundInfo())) {
+        if (!result.isPresent() || !(result.get() instanceof ColumnProjectionSegment) || !isColumnWithoutOriginalTable(((ColumnProjectionSegment) result.get()).getColumn().getColumnBoundInfo())) {
             return result;
         }
         ColumnSegment column = ((ColumnProjectionSegment) result.get()).getColumn();
-        return findOriginProjectionSegment(commonTableExpressions, select, column.getOwner().map(OwnerSegment::getIdentifier).orElse(null), column.getIdentifier(), column.getColumnBoundInfo());
+        Optional<ProjectionSegment> originProjectionSegment = findOriginProjectionSegment(commonTableExpressions, select, column.getOwner().map(OwnerSegment::getIdentifier).orElse(null),
+                column.getIdentifier(), column.getColumnBoundInfo());
+        return originProjectionSegment.isPresent() ? originProjectionSegment : result;
     }
     
     private Optional<ProjectionSegment> findProjectionSegment(final SelectStatement select, final Collection<ColumnSegment> declaredColumns, final IdentifierValue columnName) {
         Map<String, ProjectionSegment> labeledSegments = labeledProjectionSegments.computeIfAbsent(select, key -> getLabeledProjectionSegments(key, declaredColumns));
-        ProjectionSegment result = labeledSegments.get(columnName.getValue());
+        ProjectionSegment result = labeledSegments.get(getIdentifierKey(columnName));
         return null == result ? findCaseInsensitiveProjectionSegment(select, labeledSegments, columnName) : Optional.of(result);
     }
     
@@ -512,7 +601,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         Map<String, ProjectionSegment> result = new LinkedHashMap<>();
         Iterator<ColumnSegment> columns = declaredColumns.iterator();
         for (ProjectionSegment each : getExpandedProjectionSegments(select)) {
-            result.putIfAbsent(columns.hasNext() ? columns.next().getIdentifier().getValue() : each.getColumnLabel(), each);
+            result.putIfAbsent(columns.hasNext() ? getIdentifierKey(columns.next().getIdentifier()) : getColumnLabelKey(each), each);
         }
         return result;
     }
@@ -529,14 +618,25 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return result;
     }
     
+    private String getIdentifierKey(final IdentifierValue identifier) {
+        return QuoteCharacter.NONE == identifier.getQuoteCharacter() ? identifier.getValue().toUpperCase(Locale.ENGLISH) : identifier.getValue();
+    }
+    
+    private String getColumnLabelKey(final ProjectionSegment projection) {
+        if (projection instanceof AliasAvailable && ((AliasAvailable) projection).getAlias().isPresent()) {
+            return getIdentifierKey(((AliasAvailable) projection).getAlias().get());
+        }
+        return projection instanceof ColumnProjectionSegment ? getIdentifierKey(((ColumnProjectionSegment) projection).getColumn().getIdentifier()) : projection.getColumnLabel();
+    }
+    
     private Optional<ProjectionSegment> findCaseInsensitiveProjectionSegment(final SelectStatement select, final Map<String, ProjectionSegment> labeledSegments, final IdentifierValue columnName) {
         return Optional.ofNullable(caseInsensitiveLabeledProjectionSegments.computeIfAbsent(select, key -> getCaseInsensitiveLabeledProjectionSegments(labeledSegments)).get(columnName.getValue()));
     }
     
     private Map<String, ProjectionSegment> getCaseInsensitiveLabeledProjectionSegments(final Map<String, ProjectionSegment> labeledSegments) {
         Map<String, ProjectionSegment> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (Entry<String, ProjectionSegment> each : labeledSegments.entrySet()) {
-            result.putIfAbsent(each.getKey(), each.getValue());
+        for (Entry<String, ProjectionSegment> entry : labeledSegments.entrySet()) {
+            result.putIfAbsent(entry.getKey(), entry.getValue());
         }
         return result;
     }

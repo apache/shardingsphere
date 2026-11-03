@@ -521,6 +521,78 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeDerivedTableColumnWithDataSourceHintSelect() throws Exception {
+        HintValueContext hintValueContext = new HintValueContext();
+        hintValueContext.setDataSourceName("foo_ds");
+        when(packet.getHintValueContext()).thenReturn(hintValueContext);
+        FirebirdReturnColumnPacket actualColumnPacket = describeSingleColumn("SELECT derived_tbl.id FROM (SELECT id FROM foo_tbl) derived_tbl");
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actualColumnPacket.write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeUnquotedCaseVariantDerivedTableColumnSelect() throws Exception {
+        FirebirdReturnColumnPacket actualColumnPacket = describeSingleColumn("SELECT derived_tbl.a FROM (SELECT 1 AS \"a\", 'foo' AS \"A\" FROM foo_tbl) derived_tbl");
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actualColumnPacket.write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeUnquotedCaseVariantCommonTableExpressionColumnsSelect() throws Exception {
+        when(packet.getSQL()).thenReturn("WITH foo_cte (\"a\", \"A\") AS (SELECT 1, 'foo' FROM foo_tbl) SELECT a, A FROM foo_cte");
+        mockDescribeTypeAndAliasRequest();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(0), FirebirdBinaryColumnType.VARYING, "a");
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(1), FirebirdBinaryColumnType.VARYING, "A");
+    }
+    
+    private void mockDescribeTypeAndAliasRequest() {
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.SELECT,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.ALIAS,
+                FirebirdSQLInfoPacketType.ALIAS,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+    }
+    
+    private void assertColumnTypeAndAlias(final FirebirdReturnColumnPacket actual, final FirebirdBinaryColumnType expectedType, final String expectedAlias) {
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        when(payload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        actual.write(payload);
+        verify(payload).writeInt4LE(expectedType.getValue() + 1);
+        verify(payload).writeBytes(expectedAlias.getBytes(StandardCharsets.UTF_8));
+    }
+    
+    @Test
+    void assertDescribeCaseOnlyDifferentCommonTableExpressionColumnsShorthandSelect() throws Exception {
+        when(packet.getSQL()).thenReturn("WITH foo_cte (\"a\", \"A\") AS (SELECT 1, 'foo' FROM foo_tbl) SELECT foo_cte.* FROM foo_cte");
+        mockDescribeTypeAndAliasRequest();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(0), FirebirdBinaryColumnType.LONG, "a");
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(1), FirebirdBinaryColumnType.VARYING, "A");
+    }
+    
+    @Test
+    void assertDescribeCaseOnlyDifferentCommonTableExpressionColumnsJoinShorthandSelect() throws Exception {
+        when(packet.getSQL()).thenReturn("WITH foo_cte (\"a\", \"A\") AS (SELECT 1, 'foo' FROM foo_tbl) SELECT * FROM foo_cte JOIN foo_tbl ON 1 = 1");
+        mockDescribeTypeAndAliasRequest();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(4));
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(0), FirebirdBinaryColumnType.LONG, "a");
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(1), FirebirdBinaryColumnType.VARYING, "A");
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(2), FirebirdBinaryColumnType.LONG, "id");
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(3), FirebirdBinaryColumnType.BLOB, "content");
+    }
+    
+    @Test
     void assertDescribeCommonTableExpressionWithShorthandSelect() throws Exception {
         FirebirdReturnColumnPacket actualColumnPacket = describeSingleColumn("WITH foo_cte (a, b, n) AS (SELECT foo_tbl.*, 'foo' FROM foo_tbl) SELECT n FROM foo_cte");
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
