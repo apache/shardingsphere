@@ -22,7 +22,6 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ColumnSegmentBinder;
@@ -71,7 +70,6 @@ public final class AssignmentSegmentBinder {
      * @param outerTableBinderContexts outer table binder contexts
      * @return bound on duplicate key columns segment
      */
-    
     public static OnDuplicateKeyColumnsSegment bind(final OnDuplicateKeyColumnsSegment segment, final SQLStatementBinderContext binderContext,
                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
@@ -94,7 +92,6 @@ public final class AssignmentSegmentBinder {
         return new ColumnAssignmentSegment(columnAssignmentSegment.getStartIndex(), columnAssignmentSegment.getStopIndex(), boundColumns, boundValue);
     }
     
-    @HighFrequencyInvocation
     private static Multimap<CaseInsensitiveString, TableSegmentBinderContext> getAssignmentTableContexts(final SQLStatementBinderContext binderContext,
                                                                                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         if (!(binderContext.getSqlStatement() instanceof UpdateStatement)) {

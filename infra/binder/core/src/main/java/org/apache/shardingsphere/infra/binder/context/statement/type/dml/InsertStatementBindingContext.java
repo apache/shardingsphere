@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.engine.GeneratedKeyContextEngine;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
@@ -73,7 +72,6 @@ public final class InsertStatementBindingContext implements SQLStatementContext 
                 .createGenerateKeyContext(baseContext.getInsertColumnNamesAndIndexes(), insertValueContexts, params).orElse(null);
     }
     
-    @HighFrequencyInvocation
     private int getInsertValuesParametersOffset(final List<Object> params) {
         if (params.size() < baseContext.getSqlStatement().getParameterCount()) {
             return 0;

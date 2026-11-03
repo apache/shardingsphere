@@ -21,7 +21,6 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -89,7 +88,6 @@ public final class InsertStatementBaseContext implements SQLStatementContext {
         insertColumnNamesAndIndexes = createInsertColumnNamesAndIndexes(insertColumnNames);
     }
     
-    @HighFrequencyInvocation
     private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetaData metaData, final String currentDatabaseName, final Collection<TableSegment> tableSegments) {
         Collection<SubquerySegment> subquerySegments = SubqueryExtractor.extractSubquerySegments(sqlStatement, false);
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1F);

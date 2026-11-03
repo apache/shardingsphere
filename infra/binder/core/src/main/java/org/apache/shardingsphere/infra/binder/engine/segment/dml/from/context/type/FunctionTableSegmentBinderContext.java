@@ -18,14 +18,11 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
-import lombok.Getter;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -38,16 +35,11 @@ public final class FunctionTableSegmentBinderContext implements TableSegmentBind
     
     private final Map<String, ProjectionSegment> columnLabelProjectionSegments;
     
-    @Getter(onMethod_ = @Override)
-    private final Optional<OwnerSegment> originalOwner;
+    private final OwnerSegment originalOwner;
     
     public FunctionTableSegmentBinderContext() {
         columnLabelProjectionSegments = Collections.emptyMap();
-        originalOwner = Optional.empty();
-    }
-    
-    public FunctionTableSegmentBinderContext(final Collection<ProjectionSegment> projectionSegments) {
-        this(projectionSegments, null);
+        originalOwner = null;
     }
     
     /**
@@ -56,11 +48,10 @@ public final class FunctionTableSegmentBinderContext implements TableSegmentBind
      * @param projectionSegments declared function output columns
      * @param owner declared source alias, or null when absent
      */
-    @HighFrequencyInvocation
-    public FunctionTableSegmentBinderContext(final Collection<ProjectionSegment> projectionSegments, @Nullable final OwnerSegment owner) {
+    public FunctionTableSegmentBinderContext(final Collection<ProjectionSegment> projectionSegments, final OwnerSegment owner) {
         columnLabelProjectionSegments = new CaseInsensitiveMap<>(projectionSegments.size(), 1F);
         projectionSegments.forEach(each -> columnLabelProjectionSegments.put(each.getColumnLabel(), each));
-        originalOwner = Optional.ofNullable(owner);
+        originalOwner = owner;
     }
     
     @Override
@@ -76,5 +67,10 @@ public final class FunctionTableSegmentBinderContext implements TableSegmentBind
     @Override
     public TableSourceType getTableSourceType() {
         return TableSourceType.TEMPORARY_TABLE;
+    }
+    
+    @Override
+    public Optional<OwnerSegment> getOriginalOwner() {
+        return Optional.ofNullable(originalOwner);
     }
 }

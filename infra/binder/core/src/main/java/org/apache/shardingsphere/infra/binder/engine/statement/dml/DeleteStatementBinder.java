@@ -36,8 +36,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 
-import javax.annotation.Nullable;
-
 /**
  * Delete statement binder.
  */
@@ -58,7 +56,7 @@ public final class DeleteStatementBinder implements SQLStatementBinder<DeleteSta
     }
     
     private DeleteStatement copy(final DeleteStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final WhereSegment boundWhere,
-                                 final OrderBySegment boundOrderBy, @Nullable final ReturningSegment boundReturning) {
+                                 final OrderBySegment boundOrderBy, final ReturningSegment boundReturning) {
         DeleteStatement result = DeleteStatement.builder().databaseType(sqlStatement.getDatabaseType()).with(boundWith).table(boundTable)
                 .where(boundWhere).orderBy(boundOrderBy).limit(sqlStatement.getLimit().orElse(null)).errorLogging(sqlStatement.getErrorLogging().orElse(null))
                 .output(sqlStatement.getOutput().orElse(null)).returning(boundReturning).build();

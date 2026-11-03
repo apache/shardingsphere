@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
@@ -112,7 +111,6 @@ public final class SubqueryExtractor {
      * @param needRecursive whether to include nested subqueries
      * @return subquery segments
      */
-    @HighFrequencyInvocation
     public static Collection<SubquerySegment> extractSubquerySegments(final InsertStatement insertStatement, final boolean needRecursive) {
         List<SubquerySegment> result = new LinkedList<>();
         insertStatement.getWith().ifPresent(with -> extractSubquerySegmentsFromCTEs(result, with.getCommonTableExpressions(), needRecursive));

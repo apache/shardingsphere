@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.ReturningSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.assign.AssignmentSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.TableSegmentBinder;
@@ -42,8 +41,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
-
-import javax.annotation.Nullable;
 
 /**
  * Update statement binder.
@@ -76,8 +73,7 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
         return copy(sqlStatement, boundWith, boundTable, boundFrom, boundSetAssignment, boundWhere, boundOrderBy, boundReturning);
     }
     
-    @HighFrequencyInvocation
-    private TableSegment getReturningTableScope(final ReturningSegment returning, final TableSegment table, @Nullable final TableSegment from,
+    private TableSegment getReturningTableScope(final ReturningSegment returning, final TableSegment table, final TableSegment from,
                                                 final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableContexts) {
         if (null != from) {
             for (ProjectionSegment each : returning.getProjections().getProjections()) {
@@ -104,7 +100,7 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
     
     private UpdateStatement copy(final UpdateStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final TableSegment boundFrom,
                                  final SetAssignmentSegment boundSetAssignment, final WhereSegment boundWhere, final OrderBySegment boundOrderBy,
-                                 @Nullable final ReturningSegment boundReturning) {
+                                 final ReturningSegment boundReturning) {
         UpdateStatement result = UpdateStatement.builder().databaseType(sqlStatement.getDatabaseType()).with(boundWith).table(boundTable)
                 .from(boundFrom).setAssignment(boundSetAssignment).where(boundWhere).orderBy(boundOrderBy).limit(sqlStatement.getLimit().orElse(null))
                 .returning(boundReturning).errorLogging(sqlStatement.getErrorLogging().orElse(null))
