@@ -119,8 +119,6 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
             if (packet.isStoredProcedure() && proxyBackendHandler.next()) {
                 result.add(getSQLResponse());
             }
-            // [fbclient] Нулевой handle после обычного оператора освобождает транзакцию на стороне клиента.
-            // isql больше не отправит COMMIT для транзакции, созданной через op_exec_immediate.
             result.add(new FirebirdGenericResponsePacket().setHandle(getTransactionHandleAfterExecution(preparedStatement.getSqlStatementContext().getSqlStatement())));
             return result;
         } catch (final SQLException ex) {

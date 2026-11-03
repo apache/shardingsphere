@@ -329,6 +329,8 @@ public final class FirebirdCancelInboundHandler extends ChannelInboundHandlerAda
     }
     
     private enum FragmentKind {
-        NONE, HEADER, CANCEL_BODY, COMPLETE_CANCEL, OTHER
+        // CHECKSTYLE:OFF
+        NONE, HEADER, CANCEL_BODY, COMPLETE_CANCEL, OTHER;
+        // CHECKSTYLE:ON
     }
 }

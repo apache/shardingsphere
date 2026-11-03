@@ -81,7 +81,9 @@ public final class FirebirdTransactionOptions implements SQLStatementAttribute {
     public enum Option {
         READ_ONLY, READ_WRITE, WAIT, NO_WAIT, SNAPSHOT, SNAPSHOT_TABLE_STABILITY, READ_COMMITTED, READ_COMMITTED_VERSION,
         READ_COMMITTED_NO_VERSION, READ_COMMITTED_CONSISTENCY, REPEATABLE_READ, SERIALIZABLE, NO_AUTO_UNDO, IGNORE_LIMBO,
-        RESTART_REQUESTS, AUTO_COMMIT, AUTO_RELEASE_TEMP_BLOBID, RESERVING
+        // CHECKSTYLE:OFF
+        RESTART_REQUESTS, AUTO_COMMIT, AUTO_RELEASE_TEMP_BLOBID, RESERVING;
+        // CHECKSTYLE:ON
     }
     
     /**
@@ -101,6 +103,8 @@ public final class FirebirdTransactionOptions implements SQLStatementAttribute {
      * Explicit lock mode for a table reservation.
      */
     public enum LockMode {
-        DEFAULT, READ, WRITE, SHARED_READ, SHARED_WRITE, PROTECTED_READ, PROTECTED_WRITE
+        // CHECKSTYLE:OFF
+        DEFAULT, READ, WRITE, SHARED_READ, SHARED_WRITE, PROTECTED_READ, PROTECTED_WRITE;
+        // CHECKSTYLE:ON
     }
 }
