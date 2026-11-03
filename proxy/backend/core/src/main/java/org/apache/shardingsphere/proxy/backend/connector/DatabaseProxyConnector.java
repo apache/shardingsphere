@@ -17,15 +17,31 @@
 
 package org.apache.shardingsphere.proxy.backend.connector;
 
+import org.apache.shardingsphere.proxy.backend.connector.records.ExecutionRecordCounts;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackendHandler;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Optional;
 
 /**
  * Database proxy connector.
  */
 public interface DatabaseProxyConnector extends DatabaseProxyBackendHandler {
+    
+    /**
+     * Add record counts of a physical execution.
+     *
+     * @param counts record counts
+     */
+    void addExecutionRecordCounts(ExecutionRecordCounts counts);
+    
+    /**
+     * Get combined record counts of physical executions.
+     *
+     * @return combined record counts
+     */
+    Optional<ExecutionRecordCounts> getExecutionRecordCounts();
     
     /**
      * Add statement.

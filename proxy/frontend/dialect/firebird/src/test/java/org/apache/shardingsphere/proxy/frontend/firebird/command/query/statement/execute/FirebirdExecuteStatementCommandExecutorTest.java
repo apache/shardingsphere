@@ -41,6 +41,8 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
+import org.apache.shardingsphere.proxy.backend.connector.records.ExecutionRecordCounts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
@@ -79,6 +81,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -89,6 +92,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -207,6 +211,20 @@ class FirebirdExecuteStatementCommandExecutorTest {
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
         verify(connectionSession).beginPreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(2));
         verify(connectionSession).finishPreparedStatementCache();
+    }
+    
+    @Test
+    void assertCopyExecutionRecordCounts() throws SQLException {
+        when(packet.getStatementId()).thenReturn(2);
+        DatabaseProxyConnector connector = mock(DatabaseProxyConnector.class);
+        ExecutionRecordCounts counts = new ExecutionRecordCounts(1L, 2L, 3L);
+        when(connector.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build(), Collections.singleton(new UpdateResult(1, 0L))));
+        when(connector.getExecutionRecordCounts()).thenReturn(Optional.of(counts));
+        when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), any(QueryContext.class), eq(connectionSession), eq(true))).thenReturn(connector);
+        executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
+        executor.execute();
+        FirebirdServerPreparedStatement actual = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(2);
+        assertThat(actual.getExecutionRecordCounts(), is(counts));
     }
     
     @Test

@@ -30,9 +30,12 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.update.Update
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
+import org.apache.shardingsphere.proxy.backend.connector.records.DialectExecutionRecordCounts;
+import org.apache.shardingsphere.proxy.backend.connector.records.ExecutionRecordCountsResultSet;
 import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -48,6 +51,8 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     private final DatabaseProxyConnector databaseProxyConnector;
     
+    private final SQLStatement sqlStatement;
+    
     private final boolean isReturnGeneratedKeys;
     
     private final boolean fetchMetaData;
@@ -59,6 +64,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
                                         final boolean isReturnGeneratedKeys, final boolean isExceptionThrown, final boolean fetchMetaData) {
         super(protocolType, resourceMetaData, sqlStatement, isExceptionThrown);
         this.databaseProxyConnector = databaseProxyConnector;
+        this.sqlStatement = sqlStatement;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         this.fetchMetaData = fetchMetaData;
     }
@@ -68,11 +74,30 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
         hasMetaData = fetchMetaData && !hasMetaData;
         databaseProxyConnector.add(statement);
         if (execute(sql, statement, isReturnGeneratedKeys)) {
-            ResultSet resultSet = statement.getResultSet();
+            ResultSet resultSet = getResultSet(statement, storageType);
             databaseProxyConnector.add(resultSet);
             return createQueryResult(resultSet, connectionMode, storageType);
         }
+        if (isUpdateOrInsert()) {
+            captureExecutionRecordCounts(statement, storageType);
+        }
         return new UpdateResult(Math.max(statement.getUpdateCount(), 0), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
+    }
+    
+    private ResultSet getResultSet(final Statement statement, final DatabaseType storageType) throws SQLException {
+        ResultSet resultSet = statement.getResultSet();
+        return isUpdateOrInsert() ? ExecutionRecordCountsResultSet.wrap(resultSet, () -> captureExecutionRecordCounts(statement, storageType)) : resultSet;
+    }
+    
+    private boolean isUpdateOrInsert() {
+        return sqlStatement instanceof InsertStatement && ((InsertStatement) sqlStatement).isUpdateOrInsert();
+    }
+    
+    private void captureExecutionRecordCounts(final Statement statement, final DatabaseType storageType) throws SQLException {
+        Optional<DialectExecutionRecordCounts> dialect = DatabaseTypedSPILoader.findService(DialectExecutionRecordCounts.class, storageType);
+        if (dialect.isPresent()) {
+            databaseProxyConnector.addExecutionRecordCounts(dialect.get().capture(statement));
+        }
     }
     
     protected abstract boolean execute(String sql, Statement statement, boolean isReturnGeneratedKeys) throws SQLException;

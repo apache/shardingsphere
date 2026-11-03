@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.proxy.backend.connector.records.ExecutionRecordCounts;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatement;
 
 /**
@@ -39,4 +40,7 @@ public final class FirebirdServerPreparedStatement implements ServerPreparedStat
     
     @Setter
     private long affectedRows;
+    
+    @Setter
+    private ExecutionRecordCounts executionRecordCounts;
 }

@@ -20,12 +20,18 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdFetchResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
+import org.apache.shardingsphere.proxy.backend.connector.records.ExecutionRecordCounts;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,13 +45,16 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -81,6 +90,24 @@ class FirebirdFetchStatementCommandExecutorTest {
     @AfterEach
     void tearDown() {
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
+    }
+    
+    @Test
+    void assertCopyExecutionRecordCountsWhenNoMoreRows() throws SQLException {
+        ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
+        FirebirdServerPreparedStatement preparedStatement = new FirebirdServerPreparedStatement("UPDATE OR INSERT INTO t_order (id) VALUES (?)",
+                mock(SQLStatementContext.class), new HintValueContext());
+        registry.addPreparedStatement(STATEMENT_ID, preparedStatement);
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
+        DatabaseProxyConnector connector = mock(DatabaseProxyConnector.class);
+        ExecutionRecordCounts counts = new ExecutionRecordCounts(1L, 2L, 3L);
+        when(connector.getExecutionRecordCounts()).thenReturn(Optional.of(counts));
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, connector);
+        when(packet.getFetchSize()).thenReturn(1);
+        executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actualPackets = executor.execute();
+        assertThat(actualPackets.iterator().next(), isA(FirebirdFetchResponsePacket.class));
+        assertThat(preparedStatement.getExecutionRecordCounts(), is(counts));
     }
     
     @Test

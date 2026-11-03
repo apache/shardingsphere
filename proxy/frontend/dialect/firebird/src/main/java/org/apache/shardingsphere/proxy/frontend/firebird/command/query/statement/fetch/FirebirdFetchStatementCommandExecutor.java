@@ -20,10 +20,14 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdFetchResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdBinaryRowBuilder;
 
 import java.sql.SQLException;
@@ -39,11 +43,14 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
     
     private final ProxyBackendHandler proxyBackendHandler;
     
+    private final int statementId;
+    
     private int fetchCount;
     
     public FirebirdFetchStatementCommandExecutor(final FirebirdFetchStatementPacket packet, final ConnectionSession connectionSession) {
         this.connectionSession = connectionSession;
         proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), packet.getStatementId());
+        statementId = packet.getStatementId();
         fetchCount = packet.getFetchSize();
     }
     
@@ -76,7 +83,16 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
             return FirebirdFetchResponsePacket.getFetchRowPacket(FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData()));
         }
         connectionSession.getDatabaseConnectionManager().unmarkResourceInUse(proxyBackendHandler);
+        copyExecutionRecordCounts();
         fetchCount = -1;
         return FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket();
+    }
+    
+    @HighFrequencyInvocation
+    private void copyExecutionRecordCounts() {
+        ServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
+        if (preparedStatement instanceof FirebirdServerPreparedStatement && proxyBackendHandler instanceof DatabaseProxyConnector) {
+            ((DatabaseProxyConnector) proxyBackendHandler).getExecutionRecordCounts().ifPresent(((FirebirdServerPreparedStatement) preparedStatement)::setExecutionRecordCounts);
+        }
     }
 }

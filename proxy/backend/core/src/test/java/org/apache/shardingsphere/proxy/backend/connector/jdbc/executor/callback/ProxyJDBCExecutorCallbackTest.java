@@ -34,14 +34,18 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
+import org.apache.shardingsphere.proxy.backend.connector.records.DialectExecutionRecordCounts;
+import org.apache.shardingsphere.proxy.backend.connector.records.ExecutionRecordCounts;
 import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -71,14 +75,14 @@ import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, AutoMockExtension.class})
+@StaticMockSettings(DatabaseTypedSPILoader.class)
 class ProxyJDBCExecutorCallbackTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
@@ -171,6 +175,52 @@ class ProxyJDBCExecutorCallbackTest {
     }
     
     @Test
+    void assertCaptureExecutionRecordCountsWithoutResultSet() throws ReflectiveOperationException, SQLException {
+        setContextManager(mock(ContextManager.class));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).updateOrInsert(true).build();
+        Statement statement = mock(Statement.class);
+        when(statement.getUpdateCount()).thenReturn(1);
+        ExecutionRecordCounts counts = new ExecutionRecordCounts(1L, 2L, 3L);
+        ProxyJDBCExecutorCallback callback = mockCallback(insertStatement, false, false, false);
+        DialectExecutionRecordCounts dialect = mock(DialectExecutionRecordCounts.class);
+        when(DatabaseTypedSPILoader.findService(DialectExecutionRecordCounts.class, databaseType)).thenReturn(Optional.of(dialect));
+        when(dialect.capture(statement)).thenReturn(counts);
+        callback.executeSQL("insert_sql", statement, ConnectionMode.MEMORY_STRICTLY, databaseType);
+        verify(databaseProxyConnector).addExecutionRecordCounts(counts);
+    }
+    
+    @Test
+    void assertCaptureExecutionRecordCountsAfterResultSetExhausted() throws ReflectiveOperationException, SQLException {
+        setContextManager(mock(ContextManager.class));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).updateOrInsert(true).build();
+        Statement statement = mock(Statement.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(statement.getResultSet()).thenReturn(resultSet);
+        when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
+        ExecutionRecordCounts counts = new ExecutionRecordCounts(1L, 2L, 3L);
+        ProxyJDBCExecutorCallback callback = mockCallback(insertStatement, false, false, true);
+        DialectExecutionRecordCounts dialect = mock(DialectExecutionRecordCounts.class);
+        when(DatabaseTypedSPILoader.findService(DialectExecutionRecordCounts.class, databaseType)).thenReturn(Optional.of(dialect));
+        when(dialect.capture(statement)).thenReturn(counts);
+        JDBCStreamQueryResult actual = (JDBCStreamQueryResult) callback.executeSQL("insert_sql", statement, ConnectionMode.MEMORY_STRICTLY, databaseType);
+        verify(databaseProxyConnector, never()).addExecutionRecordCounts(any(ExecutionRecordCounts.class));
+        when(resultSet.next()).thenReturn(false);
+        assertFalse(actual.next());
+        verify(databaseProxyConnector).addExecutionRecordCounts(counts);
+    }
+    
+    @Test
+    void assertSkipExecutionRecordCountsForOrdinaryInsert() throws ReflectiveOperationException, SQLException {
+        setContextManager(mock(ContextManager.class));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
+        Statement statement = mock(Statement.class);
+        when(statement.getUpdateCount()).thenReturn(1);
+        ProxyJDBCExecutorCallback callback = mockCallback(insertStatement, false, false, false);
+        callback.executeSQL("insert_sql", statement, ConnectionMode.MEMORY_STRICTLY, databaseType);
+        verify(databaseProxyConnector, never()).addExecutionRecordCounts(any(ExecutionRecordCounts.class));
+    }
+    
+    @Test
     void assertExecuteSQLUpdateWithoutGeneratedKeys() throws ReflectiveOperationException, SQLException {
         setContextManager(mock(ContextManager.class));
         Statement statement = mock(Statement.class);
@@ -191,15 +241,13 @@ class ProxyJDBCExecutorCallbackTest {
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         setContextManager(contextManager);
         ProxyJDBCExecutorCallback callback = mockCallback(false, false);
-        try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            DialectSaneQueryResultEngine saneQueryResultEngine = mock(DialectSaneQueryResultEngine.class);
-            ExecuteResult executeResult = mock(ExecuteResult.class);
-            spiLoader.when(() -> DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, databaseType)).thenReturn(Optional.of(saneQueryResultEngine));
-            when(saneQueryResultEngine.getSaneQueryResult(sqlStatement, sqlException)).thenReturn(Optional.of(executeResult));
-            Optional<ExecuteResult> actual = callback.getSaneResult(sqlStatement, sqlException);
-            assertTrue(actual.isPresent());
-            assertThat(actual.get(), is(executeResult));
-        }
+        DialectSaneQueryResultEngine saneQueryResultEngine = mock(DialectSaneQueryResultEngine.class);
+        ExecuteResult executeResult = mock(ExecuteResult.class);
+        when(DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, databaseType)).thenReturn(Optional.of(saneQueryResultEngine));
+        when(saneQueryResultEngine.getSaneQueryResult(sqlStatement, sqlException)).thenReturn(Optional.of(executeResult));
+        Optional<ExecuteResult> actual = callback.getSaneResult(sqlStatement, sqlException);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is(executeResult));
     }
     
     @Test
@@ -210,10 +258,8 @@ class ProxyJDBCExecutorCallbackTest {
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         setContextManager(contextManager);
         ProxyJDBCExecutorCallback callback = mockCallback(false, false);
-        try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, databaseType)).thenReturn(Optional.empty());
-            assertFalse(callback.getSaneResult(sqlStatement, sqlException).isPresent());
-        }
+        when(DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, databaseType)).thenReturn(Optional.empty());
+        assertFalse(callback.getSaneResult(sqlStatement, sqlException).isPresent());
     }
     
     @Test
@@ -226,11 +272,9 @@ class ProxyJDBCExecutorCallbackTest {
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         setContextManager(contextManager);
         ProxyJDBCExecutorCallback callback = mockCallback(false, false);
-        try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            spiLoader.when(() -> DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, databaseType)).thenReturn(Optional.empty());
-            Optional<ExecuteResult> actual = callback.getSaneResult(sqlStatement, sqlException);
-            assertFalse(actual.isPresent());
-        }
+        when(DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, databaseType)).thenReturn(Optional.empty());
+        Optional<ExecuteResult> actual = callback.getSaneResult(sqlStatement, sqlException);
+        assertFalse(actual.isPresent());
     }
     
     @Test
@@ -271,6 +315,11 @@ class ProxyJDBCExecutorCallbackTest {
     }
     
     private ProxyJDBCExecutorCallback mockCallback(final boolean isReturnGeneratedKeys, final boolean fetchMetaData, final Boolean... executeResults) throws SQLException {
+        return mockCallback(sqlStatement, isReturnGeneratedKeys, fetchMetaData, executeResults);
+    }
+    
+    private ProxyJDBCExecutorCallback mockCallback(final SQLStatement sqlStatement, final boolean isReturnGeneratedKeys, final boolean fetchMetaData,
+                                                   final Boolean... executeResults) throws SQLException {
         ProxyJDBCExecutorCallback result = mock(ProxyJDBCExecutorCallback.class, withSettings().useConstructor(
                 databaseType, resourceMetaData, sqlStatement, databaseProxyConnector, isReturnGeneratedKeys, false, fetchMetaData).defaultAnswer(CALLS_REAL_METHODS));
         Queue<Boolean> executeResultQueue = new ArrayDeque<>(Arrays.asList(executeResults));

@@ -75,7 +75,7 @@ public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
     private void processRecords(final FirebirdPacketPayload payload) {
         payload.writeInt1(FirebirdSQLInfoPacketType.RECORDS.getCode());
         payload.writeInt2LE(RECORDS_CLUSTER_LENGTH);
-        writeCount(payload, REQ_SELECT_COUNT, 0L);
+        writeCount(payload, REQ_SELECT_COUNT, recordsInfo.getSelectCount());
         writeCount(payload, REQ_INSERT_COUNT, recordsInfo.getInsertCount());
         writeCount(payload, REQ_UPDATE_COUNT, recordsInfo.getUpdateCount());
         writeCount(payload, REQ_DELETE_COUNT, recordsInfo.getDeleteCount());

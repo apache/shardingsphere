@@ -32,4 +32,6 @@ public final class FirebirdSQLRecordsInfo {
     private final long updateCount;
     
     private final long deleteCount;
+    
+    private final long selectCount;
 }

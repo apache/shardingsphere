@@ -48,7 +48,7 @@ class FirebirdSQLInfoReturnPacketTest {
     
     @Test
     void assertWriteRecords() {
-        FirebirdSQLRecordsInfo recordsInfo = new FirebirdSQLRecordsInfo(5L, 7L, 9L);
+        FirebirdSQLRecordsInfo recordsInfo = new FirebirdSQLRecordsInfo(5L, 7L, 9L, 11L);
         FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Arrays.asList(FirebirdSQLInfoPacketType.RECORDS, FirebirdCommonInfoPacketType.END), recordsInfo);
         packet.write(payload);
         InOrder inOrder = inOrder(payload);
@@ -56,7 +56,7 @@ class FirebirdSQLInfoReturnPacketTest {
         inOrder.verify(payload).writeInt2LE(28);
         inOrder.verify(payload).writeInt1(REQ_SELECT_COUNT);
         inOrder.verify(payload).writeInt2LE(4);
-        inOrder.verify(payload).writeInt4LE(0);
+        inOrder.verify(payload).writeInt4LE(11);
         inOrder.verify(payload).writeInt1(REQ_INSERT_COUNT);
         inOrder.verify(payload).writeInt2LE(4);
         inOrder.verify(payload).writeInt4LE(5);
@@ -71,7 +71,7 @@ class FirebirdSQLInfoReturnPacketTest {
     
     @Test
     void assertParseSQLInfoWithUnknownType() {
-        FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Collections.singletonList(FirebirdSQLInfoPacketType.STMT_TYPE), new FirebirdSQLRecordsInfo(0L, 0L, 0L));
+        FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Collections.singletonList(FirebirdSQLInfoPacketType.STMT_TYPE), new FirebirdSQLRecordsInfo(0L, 0L, 0L, 0L));
         assertThrows(DatabaseProtocolException.class, () -> packet.write(payload));
     }
 }

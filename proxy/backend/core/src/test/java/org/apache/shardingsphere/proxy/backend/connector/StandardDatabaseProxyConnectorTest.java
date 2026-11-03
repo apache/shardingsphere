@@ -72,6 +72,7 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.fixture.QueryHeaderBuilderFixture;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.connector.records.ExecutionRecordCounts;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -722,6 +723,19 @@ class StandardDatabaseProxyConnectorTest {
             assertThat(mockedDatabaseTypeRegistry.constructed().size(), is(1));
             assertTrue(mockedTransactionManager.constructed().isEmpty());
         }
+    }
+    
+    @Test
+    void assertGetExecutionRecordCounts() {
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(new SQLStatement(databaseType));
+        DatabaseProxyConnector connector = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
+        assertFalse(connector.getExecutionRecordCounts().isPresent());
+        connector.addExecutionRecordCounts(new ExecutionRecordCounts(1L, 2L, 3L));
+        connector.addExecutionRecordCounts(new ExecutionRecordCounts(4L, 5L, 6L));
+        ExecutionRecordCounts actual = connector.getExecutionRecordCounts().get();
+        assertThat(actual.getInserted(), is(5L));
+        assertThat(actual.getUpdated(), is(7L));
+        assertThat(actual.getSelected(), is(9L));
     }
     
     private DatabaseProxyConnector createDatabaseProxyConnector(final JDBCDriverType driverType, final QueryContext queryContext) {

@@ -65,6 +65,7 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.connector.records.ExecutionRecordCounts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
@@ -98,6 +99,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 /**
@@ -122,6 +124,8 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     private final Collection<Statement> cachedStatements = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
     private final Collection<ResultSet> cachedResultSets = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    
+    private final Collection<ExecutionRecordCounts> executionRecordCounts = new ConcurrentLinkedQueue<>();
     
     private List<QueryHeader> queryHeaders;
     
@@ -179,6 +183,27 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     @Override
     public void add(final ResultSet resultSet) {
         cachedResultSets.add(resultSet);
+    }
+    
+    @Override
+    public void addExecutionRecordCounts(final ExecutionRecordCounts counts) {
+        executionRecordCounts.add(counts);
+    }
+    
+    @Override
+    public Optional<ExecutionRecordCounts> getExecutionRecordCounts() {
+        if (executionRecordCounts.isEmpty()) {
+            return Optional.empty();
+        }
+        long inserted = 0L;
+        long updated = 0L;
+        long selected = 0L;
+        for (ExecutionRecordCounts each : executionRecordCounts) {
+            inserted += each.getInserted();
+            updated += each.getUpdated();
+            selected += each.getSelected();
+        }
+        return Optional.of(new ExecutionRecordCounts(inserted, updated, selected));
     }
     
     @Override

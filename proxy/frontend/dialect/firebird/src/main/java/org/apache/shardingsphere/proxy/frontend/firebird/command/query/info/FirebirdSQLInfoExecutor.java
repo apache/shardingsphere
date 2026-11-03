@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLRecordsInfo;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.backend.connector.records.ExecutionRecordCounts;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
@@ -52,13 +53,17 @@ public final class FirebirdSQLInfoExecutor implements CommandExecutor {
     private FirebirdSQLRecordsInfo getRecordsInfo() {
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getHandle());
         if (null == preparedStatement) {
-            return new FirebirdSQLRecordsInfo(0L, 0L, 0L);
+            return new FirebirdSQLRecordsInfo(0L, 0L, 0L, 0L);
+        }
+        ExecutionRecordCounts executionRecordCounts = preparedStatement.getExecutionRecordCounts();
+        if (null != executionRecordCounts) {
+            return new FirebirdSQLRecordsInfo(executionRecordCounts.getInserted(), executionRecordCounts.getUpdated(), 0L, executionRecordCounts.getSelected());
         }
         long affectedRows = preparedStatement.getAffectedRows();
         SQLStatement sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
         long insertCount = sqlStatement instanceof InsertStatement ? affectedRows : 0L;
         long updateCount = sqlStatement instanceof UpdateStatement ? affectedRows : 0L;
         long deleteCount = sqlStatement instanceof DeleteStatement ? affectedRows : 0L;
-        return new FirebirdSQLRecordsInfo(insertCount, updateCount, deleteCount);
+        return new FirebirdSQLRecordsInfo(insertCount, updateCount, deleteCount, 0L);
     }
 }
