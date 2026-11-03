@@ -21,24 +21,28 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.SubqueryExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,6 +71,8 @@ public final class InsertStatementBaseContext implements SQLStatementContext {
     
     private final List<String> columnNames;
     
+    private final Map<Integer, SelectStatementContext> subqueryContexts;
+    
     public InsertStatementBaseContext(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         this.metaData = metaData;
         this.sqlStatement = sqlStatement;
@@ -74,12 +80,25 @@ public final class InsertStatementBaseContext implements SQLStatementContext {
         valueExpressions = getAllValueExpressions(sqlStatement);
         Collection<TableSegment> tableSegments = getAllSimpleTableSegments();
         tablesContext = new TablesContext(tableSegments);
+        subqueryContexts = createSubqueryContexts(metaData, currentDatabaseName, tableSegments);
         List<String> insertColumnNames = getInsertColumnNames();
         schema = getSchema(metaData, currentDatabaseName);
         columnNames = containsInsertColumns()
                 ? insertColumnNames
                 : sqlStatement.getTable().map(optional -> schema.getVisibleColumnNames(optional.getTableName().getIdentifier())).orElseGet(Collections::emptyList);
         insertColumnNamesAndIndexes = createInsertColumnNamesAndIndexes(insertColumnNames);
+    }
+    
+    @HighFrequencyInvocation
+    private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetaData metaData, final String currentDatabaseName, final Collection<TableSegment> tableSegments) {
+        Collection<SubquerySegment> subquerySegments = SubqueryExtractor.extractSubquerySegments(sqlStatement, false);
+        Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1F);
+        for (SubquerySegment each : subquerySegments) {
+            SelectStatementContext subqueryContext = new SelectStatementContext(each.getSelect(), metaData, currentDatabaseName, tableSegments);
+            each.getSelect().getSubqueryType().ifPresent(subqueryContext::setSubqueryType);
+            result.put(each.getStartIndex(), subqueryContext);
+        }
+        return result;
     }
     
     private Map<String, Integer> createInsertColumnNamesAndIndexes(final List<String> insertColumnNames) {

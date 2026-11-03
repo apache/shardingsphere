@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.engine.GeneratedKeyContextEngine;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.On
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
 import java.util.ArrayList;
@@ -63,12 +65,36 @@ public final class InsertStatementBindingContext implements SQLStatementContext 
     
     public InsertStatementBindingContext(final InsertStatementBaseContext baseContext, final List<Object> params, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         this.baseContext = baseContext;
-        AtomicInteger parametersOffset = new AtomicInteger(0);
+        AtomicInteger parametersOffset = new AtomicInteger(getInsertValuesParametersOffset(params));
         insertValueContexts = getInsertValueContexts(params, parametersOffset, baseContext.getValueExpressions());
         insertSelectContext = getInsertSelectContext(params, parametersOffset, metaData, currentDatabaseName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
         generatedKeyContext = new GeneratedKeyContextEngine(baseContext.getSqlStatement(), baseContext.getSchema())
                 .createGenerateKeyContext(baseContext.getInsertColumnNamesAndIndexes(), insertValueContexts, params).orElse(null);
+    }
+    
+    @HighFrequencyInvocation
+    private int getInsertValuesParametersOffset(final List<Object> params) {
+        if (params.size() < baseContext.getSqlStatement().getParameterCount()) {
+            return 0;
+        }
+        ExpressionSegment firstValue = null;
+        for (List<ExpressionSegment> each : baseContext.getValueExpressions()) {
+            if (!each.isEmpty()) {
+                firstValue = each.get(0);
+                break;
+            }
+        }
+        if (null == firstValue) {
+            return 0;
+        }
+        int result = 0;
+        for (ParameterMarkerSegment each : baseContext.getSqlStatement().getParameterMarkers()) {
+            if (each.getStopIndex() < firstValue.getStartIndex()) {
+                result++;
+            }
+        }
+        return result;
     }
     
     private List<InsertValueContext> getInsertValueContexts(final List<Object> params, final AtomicInteger paramsOffset, final List<List<ExpressionSegment>> valueExpressions) {

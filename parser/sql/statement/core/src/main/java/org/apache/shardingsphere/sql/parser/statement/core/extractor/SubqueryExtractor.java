@@ -19,7 +19,10 @@ package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.datetime.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
@@ -52,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
@@ -98,6 +102,36 @@ public final class SubqueryExtractor {
         }
         if (selectStatement.getHaving().isPresent()) {
             extractSubquerySegmentsFromWhere(result, selectStatement.getHaving().get().getExpr(), needRecursive);
+        }
+    }
+    
+    /**
+     * Extract subquery segments from an insert statement, excluding its INSERT SELECT source.
+     *
+     * @param insertStatement insert statement
+     * @param needRecursive whether to include nested subqueries
+     * @return subquery segments
+     */
+    @HighFrequencyInvocation
+    public static Collection<SubquerySegment> extractSubquerySegments(final InsertStatement insertStatement, final boolean needRecursive) {
+        List<SubquerySegment> result = new LinkedList<>();
+        insertStatement.getWith().ifPresent(with -> extractSubquerySegmentsFromCTEs(result, with.getCommonTableExpressions(), needRecursive));
+        extractSubquerySegmentsFromValuesSegment(result, insertStatement.getValues(), needRecursive);
+        insertStatement.getSetAssignment().ifPresent(optional -> extractSubquerySegmentsFromSetAssignment(result, optional.getAssignments(), needRecursive));
+        insertStatement.getOnDuplicateKeyColumns().ifPresent(optional -> extractSubquerySegmentsFromSetAssignment(result, optional.getColumns(), needRecursive));
+        insertStatement.getReturning().ifPresent(returning -> extractSubquerySegmentsFromProjections(result, returning.getProjections(), needRecursive));
+        return result;
+    }
+    
+    private static void extractSubquerySegmentsFromValuesSegment(final List<SubquerySegment> result, final Collection<InsertValuesSegment> values, final boolean needRecursive) {
+        for (InsertValuesSegment each : values) {
+            each.getValues().forEach(expression -> extractSubquerySegmentsFromExpression(result, expression, SubqueryType.INSERT_VALUES, needRecursive));
+        }
+    }
+    
+    private static void extractSubquerySegmentsFromSetAssignment(final List<SubquerySegment> result, final Collection<ColumnAssignmentSegment> assignments, final boolean needRecursive) {
+        for (ColumnAssignmentSegment each : assignments) {
+            extractSubquerySegmentsFromExpression(result, each.getValue(), null, needRecursive);
         }
     }
     
