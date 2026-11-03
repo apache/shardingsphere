@@ -733,7 +733,7 @@
     </delete>
 
     <delete sql-case-id="delete_with_remote_database_table">
-        <table name="locations" start-index="12" stop-index="30">
+        <table name="locations" start-index="12" stop-index="23" db-link="remote" at="@" table-name-start-index="15" table-name-stop-index="23">
             <owner name="hr" start-index="12" stop-index="13" />
         </table>
         <where start-index="32" stop-index="55">
@@ -1028,6 +1028,112 @@
                         <literal-expression value="1" start-index="37" stop-index="37" />
                     </right>
                 </binary-operation-expression>
+            </expr>
+        </where>
+    </delete>
+
+    <delete sql-case-id="delete_current_of_postgresql_regression">
+        <table name="foo" start-index="12" stop-index="14" />
+        <where start-index="16" stop-index="42">
+            <expr>
+                <common-expression text="CURRENT OF foo_cursor" start-index="22" stop-index="42" />
+            </expr>
+        </where>
+    </delete>
+    <delete sql-case-id="delete_with_returning_postgresql_regression" parameters="1, 2, 3">
+        <table name="foo" start-index="40" stop-index="42" />
+        <where start-index="44" stop-index="55">
+            <expr>
+                <binary-operation-expression start-index="50" stop-index="55">
+                    <left>
+                        <column name="id" start-index="50" stop-index="51" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="1" start-index="55" stop-index="55" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <with start-index="0" stop-index="26">
+            <common-table-expression name="seed" start-index="5" stop-index="26">
+                <column name="id" start-index="10" stop-index="11" />
+                <subquery-expression start-index="5" stop-index="26">
+                    <select parameters="1">
+                        <projections start-index="25" stop-index="25">
+                            <expression-projection text="?" start-index="25" stop-index="25">
+                                <expr>
+                                    <parameter-marker-expression parameter-index="0" start-index="25" stop-index="25" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <returning>
+            <projections start-index="67" stop-index="71">
+                <column-projection name="id" start-index="67" stop-index="68" />
+                <expression-projection text="?" start-index="71" stop-index="71">
+                    <expr>
+                        <parameter-marker-expression parameter-index="2" start-index="71" stop-index="71" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </returning>
+    </delete>
+    <delete sql-case-id="delete_with_returning_aliases_postgresql_regression" parameters="1, 2, 3">
+        <table name="foo" start-index="40" stop-index="42" />
+        <where start-index="44" stop-index="55">
+            <expr>
+                <binary-operation-expression start-index="50" stop-index="55">
+                    <left>
+                        <column name="id" start-index="50" stop-index="51" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="1" start-index="55" stop-index="55" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <with start-index="0" stop-index="26">
+            <common-table-expression name="seed" start-index="5" stop-index="26">
+                <column name="id" start-index="10" stop-index="11" />
+                <subquery-expression start-index="5" stop-index="26">
+                    <select parameters="1">
+                        <projections start-index="25" stop-index="25">
+                            <expression-projection text="?" start-index="25" stop-index="25">
+                                <expr>
+                                    <parameter-marker-expression parameter-index="0" start-index="25" stop-index="25" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <returning old-alias="old_row" old-alias-start-index="80" old-alias-stop-index="86" new-alias="new_row" new-alias-start-index="96" new-alias-stop-index="102">
+            <projections start-index="105" stop-index="129">
+                <column-projection name="id" start-index="105" stop-index="114">
+                    <owner name="old_row" start-index="105" stop-index="111" />
+                </column-projection>
+                <column-projection name="id" start-index="117" stop-index="126">
+                    <owner name="new_row" start-index="117" stop-index="123" />
+                </column-projection>
+                <expression-projection text="?" start-index="129" stop-index="129">
+                    <expr>
+                        <parameter-marker-expression parameter-index="2" start-index="129" stop-index="129" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </returning>
+    </delete>
+    <delete sql-case-id="delete_current_of_quoted_pg">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <where start-index="20" stop-index="41">
+            <expr>
+                <common-expression text="current of &quot;Foo&quot;" start-index="26" stop-index="41" />
             </expr>
         </where>
     </delete>

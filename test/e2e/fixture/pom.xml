@@ -29,6 +29,7 @@
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
         <dockerfile.skip.build>true</dockerfile.skip.build>
+        <docker.image.name>apache/shardingsphere-proxy-test:latest</docker.image.name>
     </properties>
     
     <dependencies>
@@ -122,6 +123,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-proxy-dialect-firebird</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
@@ -175,6 +182,11 @@
         <dependency>
             <groupId>org.opengauss</groupId>
             <artifactId>opengauss-jdbc</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.firebirdsql.jdbc</groupId>
+            <artifactId>jaybird</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -264,6 +276,12 @@
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-proxy-dialect-firebird</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
@@ -321,9 +339,7 @@
                                         <argument>APP_NAME=${project.build.finalName}</argument>
                                         <argument>.</argument>
                                         <argument>-t</argument>
-                                        <argument>apache/shardingsphere-proxy-test:${project.version}</argument>
-                                        <argument>-t</argument>
-                                        <argument>apache/shardingsphere-proxy-test:latest</argument>
+                                        <argument>${docker.image.name}</argument>
                                     </arguments>
                                 </configuration>
                             </execution>

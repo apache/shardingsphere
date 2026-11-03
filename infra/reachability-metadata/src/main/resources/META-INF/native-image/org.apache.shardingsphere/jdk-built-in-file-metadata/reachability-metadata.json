@@ -2,6 +2,18 @@
   "reflection": [
     {
       "condition": {
+        "typeReached": "javax.sql.rowset.spi.SyncFactory"
+      },
+      "type": "com.sun.rowset.providers.RIOptimisticProvider",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
         "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
       },
       "type": "com.oracle.svm.core.jdk.management.SubstrateRuntimeMXBean"
@@ -233,6 +245,21 @@
           "java.lang.reflect.TypeVariable"
         ]
       }
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "com.sun.rowset.JdbcRowSetResourceBundle"
+      },
+      "bundle": "com.sun.rowset.RowSetResourceBundle"
+    },
+    {
+      "condition": {
+        "typeReached": "javax.sql.rowset.spi.SyncFactory"
+      },
+      "module": "java.sql.rowset",
+      "glob": "javax/sql/rowset/rowset.properties"
     }
   ]
 }

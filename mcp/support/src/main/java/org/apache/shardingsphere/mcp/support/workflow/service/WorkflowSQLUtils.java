@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +40,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowSQLUtils {
     
-    private static final String UNQUOTED_IDENTIFIER_PATTERN = "[A-Za-z_][A-Za-z0-9_$]*";
+    private static final Pattern UNQUOTED_IDENTIFIER_PATTERN = Pattern.compile("[A-Za-z_][A-Za-z0-9_$]*");
     
     private static final Set<String> DIST_SQL_RESERVED_IDENTIFIERS = Set.of(
             "address_random_replace", "aes", "algorithm", "alter", "and", "assisted_query", "assisted_query_algorithm", "assisted_query_column", "by", "cipher", "column", "columns", "count",
@@ -205,11 +206,11 @@ public final class WorkflowSQLUtils {
     }
     
     private static boolean isSpecialDistSQLIdentifier(final String identifier) {
-        return !identifier.matches(UNQUOTED_IDENTIFIER_PATTERN) || DIST_SQL_RESERVED_IDENTIFIERS.contains(identifier.toLowerCase(Locale.ENGLISH));
+        return !UNQUOTED_IDENTIFIER_PATTERN.matcher(identifier).matches() || DIST_SQL_RESERVED_IDENTIFIERS.contains(identifier.toLowerCase(Locale.ENGLISH));
     }
     
     private static boolean isSpecialSQLIdentifier(final String identifier) {
-        return !identifier.matches(UNQUOTED_IDENTIFIER_PATTERN);
+        return !UNQUOTED_IDENTIFIER_PATTERN.matcher(identifier).matches();
     }
     
     private static QuoteCharacter getQuoteCharacter(final String identifier) {

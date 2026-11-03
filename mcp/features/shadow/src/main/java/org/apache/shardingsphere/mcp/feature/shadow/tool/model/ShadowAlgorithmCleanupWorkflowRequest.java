@@ -63,8 +63,8 @@ public final class ShadowAlgorithmCleanupWorkflowRequest extends WorkflowRequest
     }
     
     private static ShadowAlgorithmCleanupWorkflowRequest copyPreviousRequest(final WorkflowRequest previousRequest) {
-        if (previousRequest instanceof ShadowAlgorithmCleanupWorkflowRequest) {
-            return ((ShadowAlgorithmCleanupWorkflowRequest) previousRequest).copy();
+        if (previousRequest instanceof ShadowAlgorithmCleanupWorkflowRequest request) {
+            return request.copy();
         }
         ShadowAlgorithmCleanupWorkflowRequest result = new ShadowAlgorithmCleanupWorkflowRequest();
         if (null != previousRequest) {

@@ -15,16 +15,14 @@
   ~ limitations under the License.
   -->
 
-<#list keys as keypair >
-<#if keypair?counter != 1 >
-    UNION  
-</#if>
 SELECT a1.attname as conattname,
 a2.attname as confattname
-FROM pg_catalog.pg_attribute a1,
-pg_catalog.pg_attribute a2
-WHERE a1.attrelid=${tid}::oid
-AND a1.attnum=${keypair.conkey}
-AND a2.attrelid=${confrelid}::oid
-AND a2.attnum=${keypair.confkey}
-</#list>
+FROM (
+    SELECT conrelid, confrelid, conkey, confkey,
+           generate_subscripts(conkey, 1) AS ordinal
+    FROM pg_catalog.pg_constraint
+    WHERE oid = ${cid?c}::oid
+) mapping
+JOIN pg_catalog.pg_attribute a1 ON a1.attrelid = mapping.conrelid AND a1.attnum = mapping.conkey[mapping.ordinal]
+JOIN pg_catalog.pg_attribute a2 ON a2.attrelid = mapping.confrelid AND a2.attnum = mapping.confkey[mapping.ordinal]
+ORDER BY mapping.ordinal

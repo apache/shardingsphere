@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -70,12 +71,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -190,6 +195,78 @@ class SelectStatementContextTest {
                         new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.DESC, NullsOrderType.LAST))))
                 .build();
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        assertTrue(selectStatementContext.isSameGroupByAndOrderByItems());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getDifferentColumnBoundInfos")
+    void assertIsNotSameGroupByAndOrderByItemsWithDifferentColumnBoundInfo(final String scenario, final ColumnSegmentBoundInfo groupByBoundInfo, final ColumnSegmentBoundInfo orderByBoundInfo) {
+        ColumnSegment groupByColumn = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        groupByColumn.setColumnBoundInfo(groupByBoundInfo);
+        ColumnSegment orderByColumn = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        orderByColumn.setColumnBoundInfo(orderByBoundInfo);
+        SelectStatementContext selectStatementContext = createColumnOrderByContext(groupByColumn, orderByColumn);
+        assertFalse(selectStatementContext.isSameGroupByAndOrderByItems(), scenario);
+    }
+    
+    private SelectStatementContext createColumnOrderByContext(final ColumnSegment groupByColumn, final ColumnSegment orderByColumn) {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
+                .groupBy(new GroupBySegment(0, 0, Collections.singletonList(new ColumnOrderByItemSegment(groupByColumn, OrderDirection.ASC, NullsOrderType.LAST))))
+                .orderBy(new OrderBySegment(0, 0, Collections.singletonList(new ColumnOrderByItemSegment(orderByColumn, OrderDirection.DESC, NullsOrderType.LAST)))).build();
+        return createSelectStatementContext(selectStatement);
+    }
+    
+    private static Stream<Arguments> getDifferentColumnBoundInfos() {
+        ColumnSegmentBoundInfo boundInfo = createColumnBoundInfo(TableSourceType.PHYSICAL_TABLE, "foo_db", "foo_schema", "foo_table", "foo_column");
+        return Stream.of(
+                Arguments.of("source", boundInfo, createColumnBoundInfo(TableSourceType.TEMPORARY_TABLE, "foo_db", "foo_schema", "foo_table", "foo_column")),
+                Arguments.of("database", boundInfo, createColumnBoundInfo(TableSourceType.PHYSICAL_TABLE, "bar_db", "foo_schema", "foo_table", "foo_column")),
+                Arguments.of("schema", boundInfo, createColumnBoundInfo(TableSourceType.PHYSICAL_TABLE, "foo_db", "bar_schema", "foo_table", "foo_column")),
+                Arguments.of("table", boundInfo, createColumnBoundInfo(TableSourceType.PHYSICAL_TABLE, "foo_db", "foo_schema", "bar_table", "foo_column")),
+                Arguments.of("column", boundInfo, createColumnBoundInfo(TableSourceType.PHYSICAL_TABLE, "foo_db", "foo_schema", "foo_table", "bar_column")),
+                Arguments.of("quoted database", boundInfo, createColumnBoundInfo(TableSourceType.PHYSICAL_TABLE, "\"foo_db\"", "foo_schema", "foo_table", "foo_column")),
+                Arguments.of("quoted schema", boundInfo, createColumnBoundInfo(TableSourceType.PHYSICAL_TABLE, "foo_db", "\"foo_schema\"", "foo_table", "foo_column")),
+                Arguments.of("quoted table", boundInfo, createColumnBoundInfo(TableSourceType.PHYSICAL_TABLE, "foo_db", "foo_schema", "\"foo_table\"", "foo_column")),
+                Arguments.of("quoted column", boundInfo, createColumnBoundInfo(TableSourceType.PHYSICAL_TABLE, "foo_db", "foo_schema", "foo_table", "\"foo_column\"")),
+                Arguments.of("missing group by binding", null, boundInfo),
+                Arguments.of("missing order by binding", boundInfo, null),
+                Arguments.of("missing both bindings", null, null));
+    }
+    
+    private static ColumnSegmentBoundInfo createColumnBoundInfo(final TableSourceType sourceType, final String databaseName, final String schemaName, final String tableName, final String columnName) {
+        return new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(databaseName), new IdentifierValue(schemaName)),
+                new IdentifierValue(tableName), new IdentifierValue(columnName), sourceType);
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getDifferentOtherUsingColumnBoundInfos")
+    void assertIsNotSameGroupByAndOrderByItemsWithDifferentOtherUsingColumnBoundInfo(final String scenario,
+                                                                                     final ColumnSegmentBoundInfo groupByBoundInfo, final ColumnSegmentBoundInfo orderByBoundInfo) {
+        ColumnSegment groupByColumn = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        groupByColumn.setOtherUsingColumnBoundInfo(groupByBoundInfo);
+        ColumnSegment orderByColumn = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        orderByColumn.setOtherUsingColumnBoundInfo(orderByBoundInfo);
+        SelectStatementContext selectStatementContext = createColumnOrderByContext(groupByColumn, orderByColumn);
+        assertFalse(selectStatementContext.isSameGroupByAndOrderByItems(), scenario);
+    }
+    
+    private static Stream<Arguments> getDifferentOtherUsingColumnBoundInfos() {
+        ColumnSegmentBoundInfo boundInfo = new ColumnSegmentBoundInfo(new IdentifierValue("foo_column"));
+        return Stream.of(
+                Arguments.of("only group by has other using binding", boundInfo, null),
+                Arguments.of("only order by has other using binding", null, boundInfo),
+                Arguments.of("different other using column", boundInfo, new ColumnSegmentBoundInfo(new IdentifierValue("bar_column"))));
+    }
+    
+    @Test
+    void assertIsSameGroupByAndOrderByItemsWithSameOtherUsingColumnBoundInfo() {
+        ColumnSegment groupByColumn = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        groupByColumn.setColumnBoundInfo(createColumnBoundInfo(TableSourceType.PHYSICAL_TABLE, "\"foo_db\"", "\"foo_schema\"", "\"foo_table\"", "\"foo_column\""));
+        groupByColumn.setOtherUsingColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_column")));
+        ColumnSegment orderByColumn = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        orderByColumn.setColumnBoundInfo(createColumnBoundInfo(TableSourceType.PHYSICAL_TABLE, "\"foo_db\"", "\"foo_schema\"", "\"foo_table\"", "\"foo_column\""));
+        orderByColumn.setOtherUsingColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_column")));
+        SelectStatementContext selectStatementContext = createColumnOrderByContext(groupByColumn, orderByColumn);
         assertTrue(selectStatementContext.isSameGroupByAndOrderByItems());
     }
     

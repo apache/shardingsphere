@@ -63,6 +63,16 @@ class MCPResourceControllerTest {
     }
     
     @Test
+    void assertHandleWithEmptyResourceURI() {
+        try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq(""))).thenReturn(Optional.empty());
+            UnsupportedResourceUriException actual = assertThrows(UnsupportedResourceUriException.class, () -> createController().handle("session-1", ""));
+            assertThat(actual.getResourceUri(), is(""));
+            assertThat(actual.getMessage(), is("Unsupported resource URI."));
+        }
+    }
+    
+    @Test
     void assertHandleWithHandlerException() {
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
             mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("shardingsphere://indexes")))

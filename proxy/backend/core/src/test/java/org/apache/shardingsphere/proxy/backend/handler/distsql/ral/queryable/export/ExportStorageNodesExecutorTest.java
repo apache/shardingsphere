@@ -108,7 +108,8 @@ class ExportStorageNodesExecutorTest {
     
     @Test
     void assertExecuteWithWrongDatabaseName() {
-        assertThrows(IllegalArgumentException.class, () -> executor.getRows(new ExportStorageNodesStatement("foo", null), mockEmptyContextManager()));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> executor.getRows(new ExportStorageNodesStatement("foo", null), mockEmptyContextManager()));
+        assertThat(actual.getMessage(), is("database foo is not existed"));
     }
     
     @Test
@@ -144,6 +145,16 @@ class ExportStorageNodesExecutorTest {
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(3), is(loadExpectedRow()));
+    }
+    
+    @Test
+    void assertExecuteWhenDatabaseDropped() {
+        prepareNormalDatabase();
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("normal_db")).thenReturn(database, null);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportStorageNodesStatement("normal_db", null), contextManager);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getCell(3), is(loadExpectedRow()));
     }
     
     @Test

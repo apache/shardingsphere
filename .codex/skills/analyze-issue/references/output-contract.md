@@ -22,6 +22,8 @@ two-part response, a reusable reply template, or multi-line code whose Markdown
 fences require special handling. Complete the main Skill's evidence workflow
 before applying these output shapes.
 
+Labels, severity, topology, commands, class names, method names, SQL, YAML, and Java snippets retain their original English or code form.
+
 ## Maintainer Reply Templates
 
 Use these as compact shape guides, not rigid text.
@@ -90,6 +92,8 @@ Please provide these details within <7-14 days>. If there is no update, we may c
 
 ## Reference Analysis Requirements
 
+Apply these requirements only to the Reference Analysis portion of the selected output mode.
+
 - In two-part mode, put the maintainer reply first, then add this bridge sentence:
   `The reply above is based on the analysis below; the detailed reasoning is kept here for reference and follow-up contributors.`
 - Use the same natural language as the user request unless the user asks for
@@ -104,6 +108,9 @@ Please provide these details within <7-14 days>. If there is no update, we may c
 - Prefer bullets over tables and concise evidence over raw JSON, full logs, or
   terminal transcripts. Keep command evidence in inline code or short fenced
   blocks.
+- Every conclusion cites at least one `OBS-*` or `INF-*` evidence ID, and every `INF-*` derives from one or more observations.
+- `Problem Conclusion` includes all fields required by the selected shape.
+- Enhancement and Out of Scope / Won't Fix conclusions include their conditional project-responsibility and commitment fields.
 
 Use this four-section shape for Question, Misunderstanding / Invalid Usage, Duplicate, and Out of Scope / Won't Fix:
 
@@ -196,23 +203,4 @@ Use this five-section shape for Bug and Enhancement:
   body begins and ends inside the outer fence.
 - If fence safety is uncertain, replace the inner fence with inline code or a
   plain bullet.
-
-## Output Self-Check
-
-- The opening reply addresses the author when known and states the decision in
-  its first paragraph.
-- A two-part response contains the exact bridge sentence and the required four-
-  or five-section Reference Analysis.
-- Every conclusion cites at least one `OBS-*` or `INF-*` evidence ID, and every
-  `INF-*` derives from one or more observations.
-- `Problem Conclusion` includes all fields required by the selected shape.
-- Enhancement and Out of Scope / Won't Fix conclusions include their conditional project-responsibility and commitment fields.
-- Documentation evidence has concrete URLs; code evidence has repository paths
-  or class names.
-- Labels, severity, topology, commands, class names, method names, SQL, YAML,
-  and Java snippets retain their original English or code form.
-- The inner GitHub-facing body is not itself wrapped in a blockquote, HTML/XML
-  container, or transcript.
-- A local checker or CI step may enforce the required sections, conclusion
-  fields, evidence references, and type-label consistency. Treat a failed check
-  as incomplete output.
+- The inner GitHub-facing body is not itself wrapped in a blockquote, HTML/XML container, or transcript.

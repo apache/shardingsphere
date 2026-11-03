@@ -26,8 +26,6 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,8 +55,6 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
     
     @BeforeEach
     void setup() {
-        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdBlobIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobHandleGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobWriteCache.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobReadCache.getInstance().registerConnection(CONNECTION_ID);
@@ -67,8 +63,6 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
     
     @AfterEach
     void tearDown() {
-        FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
-        FirebirdBlobIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobHandleGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobWriteCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobReadCache.getInstance().unregisterConnection(CONNECTION_ID);
@@ -79,7 +73,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         int blobHandle = 4;
         long blobId = 12L;
         byte[] segment = new byte[]{1, 2};
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
         when(packet.getSegment()).thenReturn(segment);
         FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
@@ -97,7 +91,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
         long blobId = 21L;
         byte[] segment = new byte[]{1, 2, 3};
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
         when(packet.getBlobHandle()).thenReturn(0xFFFF);
         when(packet.getSegment()).thenReturn(segment);
         FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
@@ -118,7 +112,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
     void assertExecuteAfterClose() {
         int blobHandle = 4;
         long blobId = 12L;
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
         FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, blobHandle);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
         FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
@@ -128,7 +122,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
     @Test
     void assertExecuteWithReadHandle() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
-        FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, new byte[]{1, 2});
+        FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, new byte[]{1, 2}, false);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
         FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
         assertThrows(CannotUpdateOldBlobException.class, executor::execute);
@@ -137,7 +131,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
     @Test
     void assertExecuteWithFullyReadHandle() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
-        FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, new byte[]{1, 2});
+        FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, new byte[]{1, 2}, false);
         FirebirdBlobReadCache.getInstance().readSegment(CONNECTION_ID, blobHandle, 2);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
         FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);

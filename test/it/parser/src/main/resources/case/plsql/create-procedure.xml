@@ -91,4 +91,22 @@
         </sql-statements>
     </create-procedure>
 
+    <create-procedure sql-case-id="pl_sql_create_procedure_with_remote_procedure_call">
+        <procedure-name name="foo_proc" />
+        <procedure-calls>
+            <procedure-call name="foo_remote_proc" />
+        </procedure-calls>
+    </create-procedure>
+    <create-procedure sql-case-id="pl_sql_create_procedure_with_remote_function_call">
+        <procedure-name name="foo_proc" />
+        <sql-statements>
+            <sql-statement start-index="64" stop-index="131" statement-class-simple-name="SelectStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="pl_sql_create_procedure_with_remote_sequence_nextval">
+        <procedure-name name="foo_proc" />
+        <sql-statements>
+            <sql-statement start-index="64" stop-index="120" statement-class-simple-name="SelectStatement" />
+        </sql-statements>
+    </create-procedure>
 </sql-parser-test-cases>

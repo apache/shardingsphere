@@ -52,7 +52,6 @@ public final class ExportStorageNodesExecutor implements DistSQLQueryExecutor<Ex
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ExportStorageNodesStatement sqlStatement, final ContextManager contextManager) {
-        checkSQLStatement(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
         String exportedData = generateExportData(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
         if (sqlStatement.getFilePath().isPresent()) {
             String filePath = sqlStatement.getFilePath().get();
@@ -64,16 +63,15 @@ public final class ExportStorageNodesExecutor implements DistSQLQueryExecutor<Ex
                 new LocalDataQueryResultRow(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), LocalDateTime.now(), exportedData));
     }
     
-    private void checkSQLStatement(final ShardingSphereMetaData metaData, final ExportStorageNodesStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(null == sqlStatement.getDatabaseName() || null != metaData.getDatabase(sqlStatement.getDatabaseName()),
-                () -> new IllegalArgumentException(String.format("database %s is not existed", sqlStatement.getDatabaseName())));
-    }
-    
     private String generateExportData(final ShardingSphereMetaData metaData, final ExportStorageNodesStatement sqlStatement) {
         ExportedStorageNodes storageNodes = new ExportedStorageNodes();
-        storageNodes.setStorageNodes(null == sqlStatement.getDatabaseName()
-                ? getAllStorageNodes(metaData)
-                : generateDatabaseExportStorageNodesData(metaData.getDatabase(sqlStatement.getDatabaseName())));
+        if (null == sqlStatement.getDatabaseName()) {
+            storageNodes.setStorageNodes(getAllStorageNodes(metaData));
+        } else {
+            ShardingSphereDatabase database = metaData.getDatabase(sqlStatement.getDatabaseName());
+            ShardingSpherePreconditions.checkNotNull(database, () -> new IllegalArgumentException(String.format("database %s is not existed", sqlStatement.getDatabaseName())));
+            storageNodes.setStorageNodes(generateDatabaseExportStorageNodesData(database));
+        }
         return JsonEngine.marshal(storageNodes);
     }
     

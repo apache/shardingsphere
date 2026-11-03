@@ -203,6 +203,39 @@ class EncryptWorkflowValidationServiceTest {
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("actual"), is("logic_column=email"));
     }
     
+    @Test
+    void assertValidateDropWithRemainingRule() {
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop");
+        EncryptRuleInspectionService inspectionService = mock(EncryptRuleInspectionService.class);
+        when(inspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(createRuleRow()));
+        Map<String, Object> actual = createService(inspectionService).validate(snapshot, createQueryFacade()).toMap();
+        assertThat(actual.get("overall_status"), is("failed"));
+        assertThat(getValidationSection(actual, "rule").get("details"), is("Encrypt rule still exists."));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("code"), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
+    }
+    
+    @Test
+    void assertValidateQueryAlgorithmMismatch() {
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
+        EncryptWorkflowRequest request = (EncryptWorkflowRequest) snapshot.getRequest();
+        request.getOptions().setRequiresEqualityFilter(true);
+        request.getOptions().setAssistedQueryColumnName("phone_assisted");
+        request.getOptions().setAssistedQueryAlgorithmType("MD5");
+        request.getOptions().setRequiresLikeQuery(true);
+        request.getOptions().setLikeQueryColumnName("phone_like");
+        request.getOptions().setLikeQueryAlgorithmType("CHAR_DIGEST_LIKE");
+        EncryptRuleInspectionService inspectionService = mock(EncryptRuleInspectionService.class);
+        when(inspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
+                "logic_column", "phone", "cipher_column", "phone_cipher", "encryptor_type", "AES", "assisted_query_column", "phone_assisted",
+                "assisted_query_type", "SM3", "like_query_column", "phone_like", "like_query_type", "CHAR_DIGEST_LIKE")));
+        MCPFeatureQueryFacade queryFacade = createQueryFacade();
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "phone_assisted", "phone_assisted")).thenReturn(true);
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "phone_like", "phone_like")).thenReturn(true);
+        Map<String, Object> actual = createService(inspectionService).validate(snapshot, queryFacade).toMap();
+        assertThat(actual.get("overall_status"), is("failed"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("assisted_query_type=MD5"));
+    }
+    
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "phone", "phone")).thenReturn(true);

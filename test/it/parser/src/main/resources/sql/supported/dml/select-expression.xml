@@ -58,11 +58,13 @@
     <sql-case id="select_where_with_expr_with_or_sign" value="SELECT * FROM t_order WHERE t_order.order_id = ? || ? = t_order.order_id" db-types="MySQL" />
     <sql-case id="select_concat_pipe_with_table" value="SELECT 'a' || 'b' FROM t_order" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_xor" value="SELECT * FROM t_order WHERE t_order.order_id = ? XOR ? = t_order.order_id" db-types="MySQL,Presto,Doris" />
+    <sql-case id="select_where_with_expr_with_xor_or" value="SELECT * FROM t_order WHERE t_order.order_id = ? XOR ? = t_order.order_id OR ? = t_order.order_id" db-types="MySQL,Doris" />
     <sql-case id="select_where_with_expr_with_and" value="SELECT * FROM t_order WHERE t_order.order_id = ? AND ? = t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_and_or" value="SELECT * FROM t_order WHERE t_order.order_id = ? AND ? = t_order.order_id OR t_order.status = 'failed' AND ? = t_order.order_id" />
     <sql-case id="select_where_with_expr_with_and_sign" value="SELECT * FROM t_order WHERE t_order.order_id = ? &amp;&amp; ? = t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_not" value="SELECT * FROM t_order WHERE NOT (? = t_order.order_id)" db-types="MySQL,Hive" />
     <sql-case id="select_where_with_expr_with_not_sign" value="SELECT * FROM t_order WHERE ! ( ? = t_order.order_id)" db-types="MySQL,Hive" />
+    <sql-case id="select_where_with_expr_with_not_or_firebird" value="SELECT * FROM t_order WHERE NOT t_order.order_id = ? OR ? = t_order.order_id" db-types="Firebird" />
     <sql-case id="select_where_with_expr_with_is" value="SELECT * FROM t_order WHERE ? = t_order.order_id IS FALSE" db-types="MySQL,Presto" />
     <sql-case id="select_where_with_expr_with_is_not" value="SELECT * FROM t_order WHERE ? = t_order.order_id IS NOT FALSE" db-types="MySQL" />
     <sql-case id="select_where_with_boolean_primary_with_is" value="SELECT * FROM t_order WHERE t_order.status IS NULL" db-types="MySQL,Presto,Hive" />
@@ -93,6 +95,9 @@
     <sql-case id="select_where_with_bit_expr_with_caret" value="SELECT * FROM t_order WHERE t_order.order_id ^ ?" db-types="MySQL" />
     <sql-case id="select_where_with_bit_expr_with_plus_interval" value="SELECT * FROM t_order WHERE t_order.order_id + INTERVAL 1 SECOND" db-types="MySQL" />
     <sql-case id="select_where_with_bit_expr_with_minus_interval" value="SELECT * FROM t_order WHERE t_order.order_id - INTERVAL 1 SECOND" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_plus_asterisk" value="SELECT * FROM t_order WHERE t_order.order_id + ? * ? = ?" db-types="MySQL,SQLServer,Doris" />
+    <sql-case id="select_where_with_bit_expr_with_minus_plus" value="SELECT * FROM t_order WHERE t_order.order_id - ? + ? = ?" db-types="MySQL,SQLServer,Doris" />
+    <sql-case id="select_where_with_bit_expr_with_vertical_bar_ampersand" value="SELECT * FROM t_order WHERE t_order.order_id | ? &amp; ? = ?" db-types="MySQL,Doris" />
     <sql-case id="select_where_with_simple_expr_with_literals" value="SELECT * FROM t_order WHERE ? &lt; order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_column" value="SELECT * FROM t_order WHERE t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_function_call" value="SELECT * FROM t_order WHERE now() &lt; order_id" db-types="MySQL" />
@@ -184,4 +189,59 @@
     <sql-case id="select_interval_day_to_second_precision_oracle" value="SELECT (SYSTIMESTAMP - order_date) DAY(2) TO SECOND(3) FROM orders" db-types="Oracle" />
     <sql-case id="select_interval_year_to_month_precision_oracle" value="SELECT (hire_date - start_date) YEAR(3) TO MONTH FROM employees" db-types="Oracle" />
     <sql-case id="select_window_funnel_doris" value="SELECT k, WINDOW_FUNNEL(300, 'default', v, k = 'login') AS level FROM t_order GROUP BY k" db-types="Doris" />
+
+    <sql-case id="select_postgresql_numeric_literals" value="SELECT 1_000, .5, 4., 4664.E+5, 0x2a, 0X_FF, 0o_77, 0O17, 0b_1010, 0B11, -0x2A, +0o10, 0xffffffffffffffffffff" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_bit_literals" value="SELECT B'1010', b'', X'2a', x'', B'10'&#10;'01', X'2'&#10;'a'" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_string_continuation" value="SELECT 'foo'&#10;'bar', E'foo'&#10;'bar', 'a\b', 'a''b'" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_escaped_identifiers" value="SELECT &quot;foo&quot;&quot;bar&quot;, &quot;foo&quot;&quot;&quot;&quot;bar&quot;, U&amp;&quot;d\0061t\+000061&quot;, U&amp;&quot;d!0061t!0061&quot; UESCAPE '!'" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_unicode_identifier_controls" value="SELECT U&amp;&quot;d!0061t!0061&quot; UESCAPE E'!', U&amp;&quot;d!0061t!0061&quot; UESCAPE E'\041', U&amp;&quot;d!0061t!0061&quot; UESCAPE E'\x21', U&amp;&quot;d!0061t!0061&quot; UESCAPE E'\u0021', U&amp;&quot;d!0061t!0061&quot; UESCAPE E'\U00000021', U&amp;&quot;d\0061t\0061&quot; UESCAPE E'\\'" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_unicode_strings" value="SELECT U&amp;'d\0061t\+000061', U&amp;'d!0061t!0061' UESCAPE '!', U&amp;'foo\\bar'" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_custom_binary_operators" value="SELECT 1 *= 2, 1 *&lt;= 2, 1 ^@ 2, 1 ~&lt;~ 2, 1 &lt;&lt;&lt; 2, 1 === 2, 1 @- 2, 1 OPERATOR(pg_catalog.+) 2" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_custom_prefix_operators" value="SELECT @ ?, |/ ?, !! ?, ~ ?" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_block_operator_comment" value="SELECT 1+/*foo*/2" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_line_operator_comment" value="SELECT 1+--foo&#10;2" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_adjacent_unary_operator" value="SELECT 1+-2" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_record_rows" value="SELECT ROW(1, ?), (2, ?), ROW()" db-types="PostgreSQL" case-types="placeholder" />
+
+    <sql-case id="select_postgresql_at_local" value="SELECT ? AT LOCAL" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_record_indirection" value="SELECT (ROW(1, ?)).*" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_record_column_wildcard" value="SELECT ROW(foo.*) FROM t_order AS foo" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_record_function_wildcard" value="SELECT (foo_record(?)).*" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_is_json_value" value="SELECT ? IS JSON VALUE WITH UNIQUE KEYS" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_is_json_scalar" value="SELECT ? IS JSON SCALAR WITH UNIQUE KEYS" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_is_json_array" value="SELECT ? IS JSON ARRAY WITH UNIQUE KEYS" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_is_json_object" value="SELECT ? IS JSON OBJECT WITH UNIQUE KEYS" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_is_json_any" value="SELECT ? IS JSON WITH UNIQUE KEYS" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_is_not_json" value="SELECT ? IS NOT JSON ARRAY WITHOUT UNIQUE" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_ilike_any" value="SELECT ? ILIKE ANY(ARRAY['foo', 'bar'])" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_not_ilike_all" value="SELECT ? NOT ILIKE ALL(ARRAY['foo', 'bar'])" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_keyword_identifiers" value="SELECT foo.out, cidr FROM t_order AS foo" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_regex_operator_tokens" value="SELECT 'foo' ~ '^f', 'foo' !~ '^b', 'foo' ~* '^F', 'foo' !~* '^B'" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_unicode_escape_controls" value="SELECT U&amp;'d!0061t!0061' UESCAPE E'!', U&amp;'d!0061t!0061' UESCAPE E'\041', U&amp;'d!0061t!0061' UESCAPE E'\x21', U&amp;'d!0061t!0061' UESCAPE E'\u0021', U&amp;'d!0061t!0061' UESCAPE E'\U00000021', U&amp;'d\0061t\0061' UESCAPE E'\\'" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_collate_subquery_with_ties" value="SELECT (SELECT ? ORDER BY 1 FETCH FIRST ROW WITH TIES) COLLATE &quot;C&quot;" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_common_array_children" value="SELECT ARRAY[JSON_ARRAYAGG(? RETURNING jsonb), ?] FROM foo" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_common_subscript_children" value="SELECT (JSON_ARRAYAGG(? RETURNING jsonb))[?] FROM foo" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_common_operator_children" value="SELECT (JSON_ARRAYAGG(? RETURNING jsonb) -&gt; ?)::int FROM foo" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_common_qualified_slice_children" value="SELECT foo.a[? : ?][?] FROM foo" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_common_scalar_subscript_children" value="SELECT (SELECT ARRAY[?])[?]" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_common_subquery_operator_children" value="SELECT (SELECT ? ORDER BY 1 FETCH FIRST ROW WITH TIES) || ?" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_common_between_children" value="SELECT 1 FROM foo HAVING 1 BETWEEN -(JSON_ARRAYAGG(? RETURNING jsonb) -&gt;&gt; 0)::int AND 1" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_is_distinct_expression_children" value="SELECT ? IS NOT DISTINCT FROM JSON_ARRAYAGG(? RETURNING jsonb) FROM foo" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_common_window_frame_children" value="SELECT COUNT(*) OVER (ORDER BY id ROWS (SELECT ? ORDER BY 1 FETCH FIRST ROW WITH TIES) PRECEDING) FROM foo" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_between_signed_literal_compatibility" value="SELECT 1 BETWEEN -(2) AND +(3)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_between_signed_plus_literal_compatibility" value="SELECT 1 BETWEEN +(3) AND 4" db-types="PostgreSQL" case-types="literal" />
+
+    <sql-case id="select_postgresql_between_arithmetic_precedence" value="SELECT id FROM t_order WHERE id BETWEEN 1 + 2 * 3 ^ 4 AND 100" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_between_arithmetic_associativity" value="SELECT id FROM t_order WHERE id BETWEEN 12 / 3 * 2 % 5 - 1 + 2 AND 100" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_between_power_associativity" value="SELECT id FROM t_order WHERE id BETWEEN -2 ^ 3 ^ 2 AND 100" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_between_prefix_arithmetic" value="SELECT id FROM t_order WHERE id BETWEEN ~? + ? AND 100" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_usage_identifier" value="SELECT usage, foo.usage FROM t_order AS foo" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_privilege_keyword_identifiers" value="SELECT maintain, objects, skip FROM foo" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_prefix_arithmetic_precedence" value="SELECT ~1 + 2" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_prefix_arithmetic_parameters" value="SELECT ~? + ?" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_serial_alias_identifiers" value="SELECT smallserial, serial, bigserial FROM foo" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_json_keyword_identifiers" value="SELECT json_array, json_arrayagg, json_exists, json_object, json_objectagg, json_query, json_scalar, json_serialize, json_table, json_value FROM json_table AS json_scalar" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_common_concat_frontier" value="SELECT ? || (? || ?) || foo_values(? || ?), B'10' || B'01'" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_custom_operator_comment_boundaries" value="SELECT ? #-/*block*/?, ? @+--line&#10;?" db-types="PostgreSQL" case-types="placeholder" />
+    <sql-case id="select_postgresql_custom_operator_internal_dash_slash" value="SELECT ? #-/ ?" db-types="PostgreSQL" case-types="placeholder" />
 </sql-cases>

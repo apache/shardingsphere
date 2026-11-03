@@ -39,8 +39,7 @@ class FirebirdBatchCompletionStateResponseTest {
         new FirebirdBatchCompletionStateResponse().setHandle(11).setRecordsCount(5L).setUpdateCounts(new int[]{2, -3}).write(payload);
         ArgumentCaptor<Integer> argumentCaptor = ArgumentCaptor.forClass(Integer.class);
         verify(payload, atLeastOnce()).writeInt4(argumentCaptor.capture());
-        assertThat(argumentCaptor.getAllValues(),
-                is(Arrays.asList(FirebirdCommandPacketType.BATCH_CS.getValue(), 11, 5, 2, 0, 0, 2, -3)));
+        assertThat(argumentCaptor.getAllValues(), is(Arrays.asList(FirebirdCommandPacketType.BATCH_CS.getValue(), 11, 5, 2, 0, 0, 2, -3)));
     }
     
     @Test
@@ -49,8 +48,7 @@ class FirebirdBatchCompletionStateResponseTest {
         new FirebirdBatchCompletionStateResponse().setUpdateCounts(null).write(payload);
         ArgumentCaptor<Integer> argumentCaptor = ArgumentCaptor.forClass(Integer.class);
         verify(payload, atLeastOnce()).writeInt4(argumentCaptor.capture());
-        assertThat(argumentCaptor.getAllValues(),
-                is(Arrays.asList(FirebirdCommandPacketType.BATCH_CS.getValue(), 0, 0, 0, 0, 0)));
+        assertThat(argumentCaptor.getAllValues(), is(Arrays.asList(FirebirdCommandPacketType.BATCH_CS.getValue(), 0, 0, 0, 0, 0)));
     }
     
     @Test
@@ -60,8 +58,7 @@ class FirebirdBatchCompletionStateResponseTest {
         new FirebirdBatchCompletionStateResponse().setHandle(7).setRecordsCount(3L).setUpdateCounts(new int[]{1}).addDetailedError(0, statusVector).write(payload);
         ArgumentCaptor<Integer> argumentCaptor = ArgumentCaptor.forClass(Integer.class);
         verify(payload, atLeastOnce()).writeInt4(argumentCaptor.capture());
-        assertThat(argumentCaptor.getAllValues(),
-                is(Arrays.asList(FirebirdCommandPacketType.BATCH_CS.getValue(), 7, 3, 1, 1, 0, 1, 0)));
+        assertThat(argumentCaptor.getAllValues(), is(Arrays.asList(FirebirdCommandPacketType.BATCH_CS.getValue(), 7, 3, 1, 1, 0, 1, 0)));
         verify(statusVector).write(payload);
     }
 }

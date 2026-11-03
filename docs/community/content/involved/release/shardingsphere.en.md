@@ -623,7 +623,7 @@ Edit release version and release notes, select `Set as the latest release`, clic
 After the GitHub release is published:
 
 - wait for the `Release - MCP` workflow to finish successfully
-- confirm [GitHub Packages](https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-mcp) contains `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}`
+- confirm [GitHub Packages](https://github.com/orgs/apache/packages?repo_name=shardingsphere) contains `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}`
 - confirm the official MCP Registry returns the published metadata:
 
 ```shell

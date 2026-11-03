@@ -890,7 +890,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     @Override
     public ASTNode visitCteClause(final CteClauseContext ctx) {
         CommonTableExpressionSegment result = new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (AliasSegment) visit(ctx.alias()),
-                new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())));
+                new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())), null);
         if (null != ctx.columnNames()) {
             CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(ctx.columnNames());
             result.getColumns().addAll(columns.getValue());
@@ -1123,7 +1123,8 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             result.setOrderBySegment((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.frameClause()) {
-            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), getOriginalText(ctx.frameClause())));
+            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), getOriginalText(ctx.frameClause()),
+                    Collections.emptyList()));
         }
         return result;
     }
@@ -1443,7 +1444,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             visit(each);
         }
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text, Collections.emptyList());
     }
     
     @Override
@@ -1782,12 +1783,12 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != expr) {
             ASTNode result = visit(expr);
             if (result instanceof ColumnSegment) {
-                return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+                return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList());
             } else {
                 return result;
             }
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList());
     }
     
     @Override

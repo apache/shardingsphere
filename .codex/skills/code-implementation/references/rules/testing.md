@@ -17,13 +17,14 @@
 
 # Testing Rules
 
+- Apply the test-value guidance in `CODE_OF_CONDUCT.md` before planning coverage.
 - For Maven source trees, only code under `src/main/**` may be the subject of a new or updated test.
 - Never create or update a test to cover code under `src/test/**`.
 - A change confined to `src/test/**` still requires applicable compilation and test execution, but it does not require additional test coverage.
 - Test behavior owned by the production class: computation, decisions, validation, transformation, state transitions, error handling, or external contracts.
 - Each test must fail for a realistic regression that matters.
 - Do not add tests that only prove behavior owned by Java, Lombok, Mockito, a third-party parser, a collection library, a framework, or another collaborator, or that lock in private implementation shape.
-- Test a pass-through, constant, accessor, delegation, wiring path, or contract literal only when it expresses documented behavior owned by the production type or a public or externally visible contract that no broader behavior test protects.
+- Test a wiring path or contract literal only when it expresses documented behavior owned by the production type or a public or externally visible contract that no broader behavior test protects.
 - Never add a test solely to increase a coverage number or duplicate an existing scenario unless it covers a new branch, input class, edge case, contract, calculation path, or failure mode.
 - Never add tests whose subject is another test case, a test class or method, test fixture, mock helper, test utility, or other test-only code. Test only the production behavior that the test-only code supports.
 - Do not test a collaborator-owned rule through the current class. Isolate the collaborator result at the nearest stable boundary and test the rule in its owner. Mock external or heavy dependencies and collaborator-owned decisions; use real simple values when they are stable and do not introduce cross-layer behavior. Cross-layer behavior belongs in an explicitly scoped integration, contract, or E2E test.

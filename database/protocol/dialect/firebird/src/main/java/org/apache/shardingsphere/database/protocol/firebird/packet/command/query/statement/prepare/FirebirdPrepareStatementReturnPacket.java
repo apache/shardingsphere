@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
@@ -33,7 +32,6 @@ import java.util.List;
 /**
  * Firebird prepare statement return data packet.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 public final class FirebirdPrepareStatementReturnPacket extends FirebirdPacket {

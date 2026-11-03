@@ -82,10 +82,10 @@ class ShardingTableRuleConfigurationValidatorTest {
         try (MockedStatic<InlineExpressionParserFactory> mockedFactory = mockStatic(InlineExpressionParserFactory.class)) {
             mockedFactory.when(() -> InlineExpressionParserFactory.newInstance("data_nodes")).thenReturn(parser);
             when(parser.splitAndEvaluate()).thenReturn(Arrays.asList("ds_0.foo_schema.foo_tbl_0", "ds_0.bar_schema.foo_tbl_1"));
+            when(context.getDefaultConstraintMessageTemplate()).thenReturn("contains multiple schemas for a storage unit");
             assertFalse(validator.isValid(new ShardingTableRuleConfiguration("foo_tbl", "data_nodes"), context));
             verify(context).disableDefaultConstraintViolation();
-            verify(context.buildConstraintViolationWithTemplate("contains multiple schemas for storage unit `ds_0` in sharding table `foo_tbl`")
-                    .addPropertyNode("actualDataNodes")).addConstraintViolation();
+            verify(context.buildConstraintViolationWithTemplate("contains multiple schemas for a storage unit").addPropertyNode("actualDataNodes")).addConstraintViolation();
         }
     }
 }

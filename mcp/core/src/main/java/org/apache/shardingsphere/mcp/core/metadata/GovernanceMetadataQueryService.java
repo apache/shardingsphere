@@ -152,8 +152,8 @@ public final class GovernanceMetadataQueryService {
         if (value instanceof Collection) {
             return redactCollection((Collection<?>) value);
         }
-        if (value instanceof String) {
-            return redactJsonString((String) value);
+        if (value instanceof String text) {
+            return redactJsonString(text);
         }
         return new RedactedValue(value, false);
     }

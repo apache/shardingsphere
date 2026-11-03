@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
-import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
@@ -37,13 +37,7 @@ public final class FirebirdOpenBlobCommandPacket extends FirebirdCommandPacket {
     
     public FirebirdOpenBlobCommandPacket(final FirebirdCommandPacketType commandType, final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        if (FirebirdCommandPacketType.OPEN_BLOB2 == commandType) {
-            ByteBuf buffer = payload.readBuffer();
-            blobParameterBuffer = new byte[buffer.readableBytes()];
-            buffer.readBytes(blobParameterBuffer);
-        } else {
-            blobParameterBuffer = new byte[0];
-        }
+        blobParameterBuffer = FirebirdCommandPacketType.OPEN_BLOB2 == commandType ? ByteBufUtil.getBytes(payload.readBuffer()) : new byte[0];
         transactionId = payload.readInt4();
         blobId = payload.readInt8();
     }

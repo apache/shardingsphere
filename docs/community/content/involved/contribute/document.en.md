@@ -10,7 +10,7 @@ In the contributor guide, we have mentioned how to submit Issues and pull reques
 ## Precondition
 
 - Familiar with [Official website](https://shardingsphere.apache.org).
-- Familiar with [Collaborating with issues and pull requests](https://help.github.com/categories/collaborating-with-issues-and-pull-requests/).
+- Familiar with [Collaborating with issues and pull requests](https://docs.github.com/en/pull-requests).
 - Familiar with [Markdown](https://www.markdownguide.org/getting-started).
 - Familiar with [Hugo](https://gohugo.io/).
 

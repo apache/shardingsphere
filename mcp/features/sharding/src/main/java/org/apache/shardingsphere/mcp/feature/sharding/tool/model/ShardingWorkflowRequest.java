@@ -79,7 +79,7 @@ public final class ShardingWorkflowRequest extends WorkflowRequest {
     }
     
     private static ShardingWorkflowRequest copyPreviousRequest(final WorkflowRequest previous) {
-        return previous instanceof ShardingWorkflowRequest ? ((ShardingWorkflowRequest) previous).copy() : copyFieldsTo(previous, new ShardingWorkflowRequest());
+        return previous instanceof ShardingWorkflowRequest request ? request.copy() : copyFieldsTo(previous, new ShardingWorkflowRequest());
     }
     
     @Override
@@ -106,59 +106,59 @@ public final class ShardingWorkflowRequest extends WorkflowRequest {
     }
     
     public void setRuleName(final String ruleName) {
-        this.ruleName = normalize(ruleName);
+        this.ruleName = normalizeShardingValue(ruleName);
     }
     
     public void setDataNodes(final String dataNodes) {
-        this.dataNodes = normalize(dataNodes);
+        this.dataNodes = normalizeShardingValue(dataNodes);
     }
     
     public void setStorageUnits(final String storageUnits) {
-        this.storageUnits = normalize(storageUnits);
+        this.storageUnits = normalizeShardingValue(storageUnits);
     }
     
     public void setStrategyType(final String strategyType) {
-        this.strategyType = normalize(strategyType);
+        this.strategyType = normalizeShardingValue(strategyType);
     }
     
     public void setShardingColumns(final String shardingColumns) {
-        this.shardingColumns = normalize(shardingColumns);
+        this.shardingColumns = normalizeShardingValue(shardingColumns);
     }
     
     public void setDefaultStrategyType(final String defaultStrategyType) {
-        this.defaultStrategyType = normalize(defaultStrategyType);
+        this.defaultStrategyType = normalizeShardingValue(defaultStrategyType);
     }
     
     public void setKeyGenerateColumn(final String keyGenerateColumn) {
-        this.keyGenerateColumn = normalize(keyGenerateColumn);
+        this.keyGenerateColumn = normalizeShardingValue(keyGenerateColumn);
     }
     
     public void setKeyGeneratorName(final String keyGeneratorName) {
-        this.keyGeneratorName = normalize(keyGeneratorName);
+        this.keyGeneratorName = normalizeShardingValue(keyGeneratorName);
     }
     
     public void setKeyGeneratorType(final String keyGeneratorType) {
-        this.keyGeneratorType = normalize(keyGeneratorType);
+        this.keyGeneratorType = normalizeShardingValue(keyGeneratorType);
     }
     
     public void setSequenceName(final String sequenceName) {
-        this.sequenceName = normalize(sequenceName);
+        this.sequenceName = normalizeShardingValue(sequenceName);
     }
     
     public void setKeyGenerateStrategyName(final String keyGenerateStrategyName) {
-        this.keyGenerateStrategyName = normalize(keyGenerateStrategyName);
+        this.keyGenerateStrategyName = normalizeShardingValue(keyGenerateStrategyName);
     }
     
     public void setComponentType(final String componentType) {
-        this.componentType = normalize(componentType);
+        this.componentType = normalizeShardingValue(componentType);
     }
     
     public void setComponentName(final String componentName) {
-        this.componentName = normalize(componentName);
+        this.componentName = normalizeShardingValue(componentName);
     }
     
     public void setAllowHintDisable(final String allowHintDisable) {
-        this.allowHintDisable = normalize(allowHintDisable);
+        this.allowHintDisable = normalizeShardingValue(allowHintDisable);
     }
     
     /**
@@ -186,20 +186,20 @@ public final class ShardingWorkflowRequest extends WorkflowRequest {
     
     private void overlayTo(final ShardingWorkflowRequest target) {
         super.overlayTo(target);
-        target.setRuleName(resolveValue(target.getRuleName(), ruleName));
-        target.setDataNodes(resolveValue(target.getDataNodes(), dataNodes));
-        target.setStorageUnits(resolveValue(target.getStorageUnits(), storageUnits));
-        target.setStrategyType(resolveValue(target.getStrategyType(), strategyType));
-        target.setShardingColumns(resolveValue(target.getShardingColumns(), shardingColumns));
-        target.setDefaultStrategyType(resolveValue(target.getDefaultStrategyType(), defaultStrategyType));
-        target.setKeyGenerateColumn(resolveValue(target.getKeyGenerateColumn(), keyGenerateColumn));
-        target.setKeyGeneratorName(resolveValue(target.getKeyGeneratorName(), keyGeneratorName));
-        target.setKeyGeneratorType(resolveValue(target.getKeyGeneratorType(), keyGeneratorType));
-        target.setSequenceName(resolveValue(target.getSequenceName(), sequenceName));
-        target.setKeyGenerateStrategyName(resolveValue(target.getKeyGenerateStrategyName(), keyGenerateStrategyName));
-        target.setComponentType(resolveValue(target.getComponentType(), componentType));
-        target.setComponentName(resolveValue(target.getComponentName(), componentName));
-        target.setAllowHintDisable(resolveValue(target.getAllowHintDisable(), allowHintDisable));
+        target.setRuleName(resolveShardingValue(target.getRuleName(), ruleName));
+        target.setDataNodes(resolveShardingValue(target.getDataNodes(), dataNodes));
+        target.setStorageUnits(resolveShardingValue(target.getStorageUnits(), storageUnits));
+        target.setStrategyType(resolveShardingValue(target.getStrategyType(), strategyType));
+        target.setShardingColumns(resolveShardingValue(target.getShardingColumns(), shardingColumns));
+        target.setDefaultStrategyType(resolveShardingValue(target.getDefaultStrategyType(), defaultStrategyType));
+        target.setKeyGenerateColumn(resolveShardingValue(target.getKeyGenerateColumn(), keyGenerateColumn));
+        target.setKeyGeneratorName(resolveShardingValue(target.getKeyGeneratorName(), keyGeneratorName));
+        target.setKeyGeneratorType(resolveShardingValue(target.getKeyGeneratorType(), keyGeneratorType));
+        target.setSequenceName(resolveShardingValue(target.getSequenceName(), sequenceName));
+        target.setKeyGenerateStrategyName(resolveShardingValue(target.getKeyGenerateStrategyName(), keyGenerateStrategyName));
+        target.setComponentType(resolveShardingValue(target.getComponentType(), componentType));
+        target.setComponentName(resolveShardingValue(target.getComponentName(), componentName));
+        target.setAllowHintDisable(resolveShardingValue(target.getAllowHintDisable(), allowHintDisable));
         if (!referenceTables.isEmpty()) {
             target.getReferenceTables().clear();
             target.getReferenceTables().addAll(referenceTables);
@@ -211,11 +211,11 @@ public final class ShardingWorkflowRequest extends WorkflowRequest {
         target.getKeyGeneratorProperties().putAll(keyGeneratorProperties);
     }
     
-    private String resolveValue(final String previousValue, final String currentValue) {
+    private String resolveShardingValue(final String previousValue, final String currentValue) {
         return currentValue.isEmpty() ? previousValue : currentValue;
     }
     
-    private String normalize(final String value) {
+    private String normalizeShardingValue(final String value) {
         return null == value ? "" : value.trim();
     }
 }

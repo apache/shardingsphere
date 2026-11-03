@@ -126,14 +126,14 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
             return Collections.singletonList(createPlaceholderRecord(event));
         }
         PipelineTableMetaData tableMetaData = getPipelineTableMetaData(rowsEvent.getTableName());
-        if (event instanceof MySQLWriteRowsBinlogEvent) {
-            return handleWriteRowsEvent((MySQLWriteRowsBinlogEvent) event, tableMetaData);
+        if (event instanceof MySQLWriteRowsBinlogEvent writeRowsEvent) {
+            return handleWriteRowsEvent(writeRowsEvent, tableMetaData);
         }
-        if (event instanceof MySQLUpdateRowsBinlogEvent) {
-            return handleUpdateRowsEvent((MySQLUpdateRowsBinlogEvent) event, tableMetaData);
+        if (event instanceof MySQLUpdateRowsBinlogEvent updateRowsEvent) {
+            return handleUpdateRowsEvent(updateRowsEvent, tableMetaData);
         }
-        if (event instanceof MySQLDeleteRowsBinlogEvent) {
-            return handleDeleteRowsEvent((MySQLDeleteRowsBinlogEvent) event, tableMetaData);
+        if (event instanceof MySQLDeleteRowsBinlogEvent deleteRowsEvent) {
+            return handleDeleteRowsEvent(deleteRowsEvent, tableMetaData);
         }
         return Collections.emptyList();
     }

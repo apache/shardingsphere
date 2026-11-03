@@ -6,7 +6,7 @@ chapter = true
 +++
 
 This chapter is for developers who want to extend ShardingSphere-MCP.
-For installation and usage, see the [User Manual](../../user-manual/shardingsphere-mcp/). For the protocol surface, see the [Reference](../../reference/mcp/).
+For installation and usage, see the [User Manual](/en/user-manual/shardingsphere-mcp/). For the protocol surface, see the [Reference](/en/reference/mcp/).
 
 ## Module structure
 

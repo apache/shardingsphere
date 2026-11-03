@@ -25,4 +25,8 @@
     <create-operator sql-case-id="create_operator_with_binding_custom_datatype" />
     <create-operator sql-case-id="create_operator_with_compute_ancillary_data" />
     <create-operator sql-case-id="create_operator_with_single_binding" />
+    <create-operator-class sql-case-id="create_operator_class_basic_pg" />
+    <create-operator-class sql-case-id="create_operator_class_default_pg" />
+    <create-operator-family sql-case-id="create_operator_family_basic_pg" />
+    <create-operator-family sql-case-id="create_operator_family_schema_pg" />
 </sql-parser-test-cases>

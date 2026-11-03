@@ -18,9 +18,9 @@
 
 # Usage: generate-e2e-sql-matrix.sh '<json-with-all-18-filter-labels>'
 # Environment:
-#   FULL_MATRIX_ALGORITHM_INPUT: auto|cartesian|pairwise (optional, default auto)
-# Output: writes smoke-matrix=<JSON>, full-matrix=<JSON>, matrix=<JSON>(alias for full), has-jobs=<true|false>,
-#         full-matrix-algorithm=<cartesian|pairwise|auto>, full-smoke-overlap-count=<N>, estimated-stage2-jobs=<N>,
+#   TARGET_MATRIX_ALGORITHM_INPUT: auto|cartesian|pairwise (optional, default auto)
+# Output: writes smoke-matrix=<JSON>, target-matrix=<JSON>, matrix=<JSON>(alias for target), has-jobs=<true|false>,
+#         target-matrix-algorithm=<cartesian|pairwise|auto>, target-smoke-overlap-count=<N>, estimated-remaining-tests-jobs=<N>,
 #         total-two-stage-jobs=<N>, and effective-reduction-ratio=<0..1> to $GITHUB_OUTPUT
 
 set -euo pipefail
@@ -59,7 +59,7 @@ ALL_MODES='["Standalone","Cluster"]'
 ALL_DATABASES='["MySQL","PostgreSQL"]'
 SMOKE_SCENARIOS='["db","tbl"]'
 
-# Build matrix JSON from dimension arrays and scenarios, applying exclude/include rules
+# Build matrix JSON from dimension arrays and scenarios, applying include rules
 build_matrix() {
   local adapters="$1"
   local modes="$2"
@@ -74,18 +74,11 @@ build_matrix() {
     --argjson scenarios "$scenarios" \
     --argjson include_extra_job "$include_extra_job" \
     '
-    def should_exclude(adapter; mode; scenario):
-      (adapter == "jdbc" and scenario == "passthrough") or
-      (adapter == "jdbc" and mode == "Cluster") or
-      (adapter == "proxy" and mode == "Standalone" and
-        (scenario == "empty_rules" or scenario == "distsql_rdl" or scenario == "passthrough"));
-
     [
       $adapters[] as $adapter |
       $modes[] as $mode |
       $databases[] as $database |
       $scenarios[] as $scenario |
-      select(should_exclude($adapter; $mode; $scenario) | not) |
       {adapter: $adapter, mode: $mode, database: $database, scenario: $scenario, "additional-options": ""}
     ] as $base_jobs |
 
@@ -97,7 +90,18 @@ build_matrix() {
      else []
      end) as $extra_job |
 
-    {include: ($base_jobs + $extra_job)}
+    (if $include_extra_job and ($adapters | index("jdbc")) != null and
+       ($modes | index("Standalone")) != null and ($scenarios | index("distsql_rdl")) != null
+     then [{adapter:"jdbc", mode:"Standalone", database:"H2", scenario:"distsql_rdl_empty", "additional-options":""}]
+     else []
+     end) as $distsql_bootstrap_job |
+
+    (if $include_extra_job and ($modes | index("Cluster")) != null and ($scenarios | index("encrypt")) != null
+     then [$adapters[] | {adapter: ., mode: "Cluster", database: "openGauss", scenario: "encrypt", "additional-options": ""}]
+     else []
+     end) as $opengauss_encrypt_jobs |
+
+    {include: ($base_jobs + $extra_job + $distsql_bootstrap_job + $opengauss_encrypt_jobs)}
     '
 }
 
@@ -177,7 +181,7 @@ build_pairwise_matrix() {
     job_pair_5[$idx]="$pair5"
     job_pair_6[$idx]="$pair6"
   done < "$job_file"
-  if [ "${#jobs[@]}" -eq 0 ]; then
+  if [[ "${#jobs[@]}" -eq 0 ]]; then
     rm -f "$job_file" "$selected_file"
     echo '{"include":[]}'
     return
@@ -185,7 +189,7 @@ build_pairwise_matrix() {
   add_selected_index() {
     local idx="$1"
     local _pair
-    [ "${selected_flags[$idx]}" -eq 1 ] && return
+    [[ "${selected_flags[$idx]}" -eq 1 ]] && return
     selected_flags[$idx]=1
     selected_indexes+=("$idx")
     for _pair in "${job_pair_1[$idx]}" "${job_pair_2[$idx]}" "${job_pair_3[$idx]}" "${job_pair_4[$idx]}" "${job_pair_5[$idx]}" "${job_pair_6[$idx]}"; do
@@ -207,7 +211,7 @@ build_pairwise_matrix() {
     done
   }
   for idx in "${!jobs[@]}"; do
-    if [ "${job_has_additional[$idx]}" = "true" ]; then
+    if [[ "${job_has_additional[$idx]}" = "true" ]]; then
       add_selected_index "$idx"
     fi
   done
@@ -215,32 +219,32 @@ build_pairwise_matrix() {
     best_idx=-1
     best_score=-1
     for idx in "${!jobs[@]}"; do
-      [ "${job_scenarios[$idx]}" = "$required_scenario" ] || continue
+      [[ "${job_scenarios[$idx]}" = "$required_scenario" ]] || continue
       candidate_score="${job_scores[$idx]}"
-      if [ "$best_idx" -lt 0 ] || [ "$candidate_score" -gt "$best_score" ] || { [ "$candidate_score" -eq "$best_score" ] && [ "$idx" -lt "$best_idx" ]; }; then
+      if [[ "$best_idx" -lt 0 ]] || [[ "$candidate_score" -gt "$best_score" ]] || { [[ "$candidate_score" -eq "$best_score" ]] && [[ "$idx" -lt "$best_idx" ]]; }; then
         best_idx="$idx"
         best_score="$candidate_score"
       fi
     done
-    [ "$best_idx" -lt 0 ] || add_selected_index "$best_idx"
+    [[ "$best_idx" -lt 0 ]] || add_selected_index "$best_idx"
   done < <(echo "$scenario_list_json" | jq -r '.[]')
   while true; do
     pick_idx=-1
     pick_new=0
     pick_score=-1
     for idx in "${!jobs[@]}"; do
-      [ "${selected_flags[$idx]}" -eq 1 ] && continue
+      [[ "${selected_flags[$idx]}" -eq 1 ]] && continue
       count_new_pairs "$idx"
       candidate_new="$new_pairs"
-      [ "$candidate_new" -gt 0 ] || continue
+      [[ "$candidate_new" -gt 0 ]] || continue
       candidate_score="${job_scores[$idx]}"
-      if [ "$pick_idx" -lt 0 ] || [ "$candidate_new" -gt "$pick_new" ] || { [ "$candidate_new" -eq "$pick_new" ] && [ "$candidate_score" -gt "$pick_score" ]; } || { [ "$candidate_new" -eq "$pick_new" ] && [ "$candidate_score" -eq "$pick_score" ] && [ "$idx" -lt "$pick_idx" ]; }; then
+      if [[ "$pick_idx" -lt 0 ]] || [[ "$candidate_new" -gt "$pick_new" ]] || { [[ "$candidate_new" -eq "$pick_new" ]] && [[ "$candidate_score" -gt "$pick_score" ]]; } || { [[ "$candidate_new" -eq "$pick_new" ]] && [[ "$candidate_score" -eq "$pick_score" ]] && [[ "$idx" -lt "$pick_idx" ]]; }; then
         pick_idx="$idx"
         pick_new="$candidate_new"
         pick_score="$candidate_score"
       fi
     done
-    [ "$pick_idx" -lt 0 ] && break
+    [[ "$pick_idx" -lt 0 ]] && break
     add_selected_index "$pick_idx"
   done
   for idx in "${selected_indexes[@]}"; do
@@ -260,87 +264,87 @@ log_counts() {
 }
 
 any_base_change=false
-if [ "$core_infra" = "true" ] || [ "$test_framework" = "true" ] || [ "$pom_changes" = "true" ]; then
+if [[ "$core_infra" = "true" ]] || [[ "$test_framework" = "true" ]] || [[ "$pom_changes" = "true" ]]; then
   any_base_change=true
   echo "::notice::Base filters triggered (core_infra=$core_infra, test_framework=$test_framework, pom_changes=$pom_changes)"
 fi
 
 manual_dispatch=false
-if [ "${GITHUB_EVENT_NAME:-}" = "workflow_dispatch" ]; then
+if [[ "${GITHUB_EVENT_NAME:-}" = "workflow_dispatch" ]]; then
   manual_dispatch=true
   echo "::notice::workflow_dispatch detected"
 fi
 
-requested_full_matrix_algorithm="${FULL_MATRIX_ALGORITHM_INPUT:-auto}"
-case "$requested_full_matrix_algorithm" in
+requested_target_matrix_algorithm="${TARGET_MATRIX_ALGORITHM_INPUT:-auto}"
+case "$requested_target_matrix_algorithm" in
   auto|cartesian|pairwise)
     ;;
   *)
-    echo "::warning::Invalid FULL_MATRIX_ALGORITHM_INPUT=$requested_full_matrix_algorithm, fallback to auto"
-    requested_full_matrix_algorithm="auto"
+    echo "::warning::Invalid TARGET_MATRIX_ALGORITHM_INPUT=$requested_target_matrix_algorithm, fallback to auto"
+    requested_target_matrix_algorithm="auto"
     ;;
 esac
 
 # Check whether any relevant dimension changed at all
 any_relevant_change=false
-if [ "$feature_sharding" = "true" ] || [ "$feature_encrypt" = "true" ] || \
-   [ "$feature_readwrite_splitting" = "true" ] || [ "$feature_shadow" = "true" ] || \
-   [ "$feature_mask" = "true" ] || [ "$feature_broadcast" = "true" ] || \
-   [ "$feature_distsql" = "true" ] || [ "$feature_sql_federation" = "true" ] || \
-   [ "$mode_standalone" = "true" ] || [ "$mode_cluster" = "true" ] || [ "$mode_core" = "true" ] || \
-   [ "$database_mysql" = "true" ] || [ "$database_postgresql" = "true" ] || \
-   [ "$adapter_proxy" = "true" ] || [ "$adapter_jdbc" = "true" ] || \
-   [ "$any_base_change" = "true" ]; then
+if [[ "$feature_sharding" = "true" ]] || [[ "$feature_encrypt" = "true" ]] || \
+   [[ "$feature_readwrite_splitting" = "true" ]] || [[ "$feature_shadow" = "true" ]] || \
+   [[ "$feature_mask" = "true" ]] || [[ "$feature_broadcast" = "true" ]] || \
+   [[ "$feature_distsql" = "true" ]] || [[ "$feature_sql_federation" = "true" ]] || \
+   [[ "$mode_standalone" = "true" ]] || [[ "$mode_cluster" = "true" ]] || [[ "$mode_core" = "true" ]] || \
+   [[ "$database_mysql" = "true" ]] || [[ "$database_postgresql" = "true" ]] || \
+   [[ "$adapter_proxy" = "true" ]] || [[ "$adapter_jdbc" = "true" ]] || \
+   [[ "$any_base_change" = "true" ]]; then
   any_relevant_change=true
   echo "::notice::At least one relevant filter is true, will generate jobs based on dimensions and scenarios"
 fi
 
-if [ "$manual_dispatch" = "true" ]; then
+if [[ "$manual_dispatch" = "true" ]]; then
   any_relevant_change=true
   echo "::notice::workflow_dispatch enforces relevant-change path"
 fi
 
-if [ "$any_relevant_change" = "false" ]; then
+if [[ "$any_relevant_change" = "false" ]]; then
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-jobs=false" >> "$GITHUB_OUTPUT"
   echo "smoke-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
-  echo "full-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
-  echo "full-matrix-algorithm=auto" >> "$GITHUB_OUTPUT"
+  echo "target-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
+  echo "target-matrix-algorithm=auto" >> "$GITHUB_OUTPUT"
   echo "::notice::No relevant filters triggered, skipping job generation"
   exit 0
 fi
 
 # Determine adapters
-if [ "$any_base_change" = "true" ]; then
+if [[ "$any_base_change" = "true" ]]; then
   adapters="$ALL_ADAPTERS"
   echo "::notice::Base change detected, including all adapters"
-elif [ "$adapter_proxy" = "true" ] && [ "$adapter_jdbc" = "false" ]; then
+elif [[ "$adapter_proxy" = "true" ]] && [[ "$adapter_jdbc" = "false" ]]; then
   adapters='["proxy"]'
-elif [ "$adapter_jdbc" = "true" ] && [ "$adapter_proxy" = "false" ]; then
+elif [[ "$adapter_jdbc" = "true" ]] && [[ "$adapter_proxy" = "false" ]]; then
   adapters='["jdbc"]'
 else
   adapters="$ALL_ADAPTERS"
 fi
 
 # Determine modes
-if [ "$any_base_change" = "true" ]; then
+if [[ "$any_base_change" = "true" ]]; then
   modes="$ALL_MODES"
   echo "::notice::Base change detected, including all modes"
-elif [ "$mode_standalone" = "true" ] && [ "$mode_cluster" = "false" ] && [ "$mode_core" = "false" ]; then
+elif [[ "$mode_standalone" = "true" ]] && [[ "$mode_cluster" = "false" ]] && [[ "$mode_core" = "false" ]]; then
   modes='["Standalone"]'
-elif [ "$mode_cluster" = "true" ] && [ "$mode_standalone" = "false" ] && [ "$mode_core" = "false" ]; then
+elif [[ "$mode_cluster" = "true" ]] && [[ "$mode_standalone" = "false" ]] && [[ "$mode_core" = "false" ]]; then
   modes='["Cluster"]'
 else
   modes="$ALL_MODES"
 fi
 
 # Determine databases
-if [ "$any_base_change" = "true" ]; then
+if [[ "$any_base_change" = "true" ]]; then
   databases="$ALL_DATABASES"
   echo "::notice::Base change detected, including all databases"
-elif [ "$database_mysql" = "true" ] && [ "$database_postgresql" = "false" ]; then
+elif [[ "$database_mysql" = "true" ]] && [[ "$database_postgresql" = "false" ]]; then
   databases='["MySQL"]'
-elif [ "$database_postgresql" = "true" ] && [ "$database_mysql" = "false" ]; then
+elif [[ "$database_postgresql" = "true" ]] && [[ "$database_mysql" = "false" ]]; then
   databases='["PostgreSQL"]'
 else
   databases="$ALL_DATABASES"
@@ -354,7 +358,7 @@ smoke_scenarios_set=()
 add_scenario() {
   local s="$1"
   for existing in "${scenarios_set[@]+"${scenarios_set[@]}"}"; do
-    [ "$existing" = "$s" ] && return
+    [[ "$existing" = "$s" ]] && return
   done
   scenarios_set+=("$s")
 }
@@ -362,12 +366,12 @@ add_scenario() {
 add_smoke_scenario() {
   local s="$1"
   for existing in "${smoke_scenarios_set[@]+"${smoke_scenarios_set[@]}"}"; do
-    [ "$existing" = "$s" ] && return
+    [[ "$existing" = "$s" ]] && return
   done
   smoke_scenarios_set+=("$s")
 }
 
-if [ "$feature_sharding" = "true" ]; then
+if [[ "$feature_sharding" = "true" ]]; then
   any_feature_triggered=true
   add_smoke_scenario "db"
   add_smoke_scenario "tbl"
@@ -378,7 +382,7 @@ if [ "$feature_sharding" = "true" ]; then
   done
 fi
 
-if [ "$feature_encrypt" = "true" ]; then
+if [[ "$feature_encrypt" = "true" ]]; then
   any_feature_triggered=true
   add_smoke_scenario "encrypt"
   for s in encrypt dbtbl_with_readwrite_splitting_and_encrypt sharding_and_encrypt \
@@ -388,7 +392,7 @@ if [ "$feature_encrypt" = "true" ]; then
   done
 fi
 
-if [ "$feature_readwrite_splitting" = "true" ]; then
+if [[ "$feature_readwrite_splitting" = "true" ]]; then
   any_feature_triggered=true
   add_smoke_scenario "readwrite_splitting"
   for s in readwrite_splitting dbtbl_with_readwrite_splitting \
@@ -398,7 +402,7 @@ if [ "$feature_readwrite_splitting" = "true" ]; then
   done
 fi
 
-if [ "$feature_shadow" = "true" ]; then
+if [[ "$feature_shadow" = "true" ]]; then
   any_feature_triggered=true
   add_smoke_scenario "shadow"
   for s in shadow encrypt_shadow readwrite_splitting_and_shadow sharding_and_shadow \
@@ -407,7 +411,7 @@ if [ "$feature_shadow" = "true" ]; then
   done
 fi
 
-if [ "$feature_mask" = "true" ]; then
+if [[ "$feature_mask" = "true" ]]; then
   any_feature_triggered=true
   add_smoke_scenario "mask"
   for s in mask mask_encrypt mask_sharding mask_encrypt_sharding; do
@@ -415,54 +419,54 @@ if [ "$feature_mask" = "true" ]; then
   done
 fi
 
-if [ "$feature_distsql" = "true" ]; then
+if [[ "$feature_distsql" = "true" ]]; then
   any_feature_triggered=true
   add_smoke_scenario "distsql_rdl"
   add_scenario "distsql_rdl"
 fi
 
-if [ "$feature_sql_federation" = "true" ]; then
+if [[ "$feature_sql_federation" = "true" ]]; then
   any_feature_triggered=true
   add_smoke_scenario "db_tbl_sql_federation"
   add_scenario "db_tbl_sql_federation"
 fi
 
-if [ "$feature_broadcast" = "true" ]; then
+if [[ "$feature_broadcast" = "true" ]]; then
   any_feature_triggered=true
   add_smoke_scenario "empty_rules"
   add_scenario "empty_rules"
 fi
 
-if [ "$any_feature_triggered" = "true" ]; then
+if [[ "$any_feature_triggered" = "true" ]]; then
   adapters=$ALL_ADAPTERS
   modes=$ALL_MODES
   databases=$ALL_DATABASES
   echo "::notice::Feature filters triggered, including all adapters, modes, and databases"
 fi
 
-if [ "$manual_dispatch" = "true" ]; then
+if [[ "$manual_dispatch" = "true" ]]; then
   adapters=$ALL_ADAPTERS
   modes=$ALL_MODES
   databases=$ALL_DATABASES
   echo "::notice::workflow_dispatch uses all adapters, modes, and databases"
 fi
 
-effective_full_matrix_algorithm="$requested_full_matrix_algorithm"
-if [ "$effective_full_matrix_algorithm" = "auto" ]; then
-  if [ "$manual_dispatch" = "true" ]; then
-    effective_full_matrix_algorithm="cartesian"
-  elif [ "$any_base_change" = "true" ] || [ "$any_feature_triggered" = "true" ]; then
-    effective_full_matrix_algorithm="pairwise"
+effective_target_matrix_algorithm="$requested_target_matrix_algorithm"
+if [[ "$effective_target_matrix_algorithm" = "auto" ]]; then
+  if [[ "$manual_dispatch" = "true" ]]; then
+    effective_target_matrix_algorithm="cartesian"
+  elif [[ "$any_base_change" = "true" ]] || [[ "$any_feature_triggered" = "true" ]]; then
+    effective_target_matrix_algorithm="pairwise"
   else
-    effective_full_matrix_algorithm="cartesian"
+    effective_target_matrix_algorithm="cartesian"
   fi
 fi
 
-echo "::notice::any_base_change=$any_base_change, any_feature_triggered=$any_feature_triggered, dimensions adapters=$adapters modes=$modes databases=$databases, full-matrix-algorithm(requested=$requested_full_matrix_algorithm,effective=$effective_full_matrix_algorithm)"
+echo "::notice::any_base_change=$any_base_change, any_feature_triggered=$any_feature_triggered, dimensions adapters=$adapters modes=$modes databases=$databases, target-matrix-algorithm(requested=$requested_target_matrix_algorithm,effective=$effective_target_matrix_algorithm)"
 
 # Generate smoke-matrix from default or feature-mapped smoke scenarios, and DO NOT add the extra passthrough job
-if [ "$any_feature_triggered" = "true" ]; then
-  if [ "${#smoke_scenarios_set[@]}" -eq 0 ]; then
+if [[ "$any_feature_triggered" = "true" ]]; then
+  if [[ "${#smoke_scenarios_set[@]}" -eq 0 ]]; then
     smoke_scenarios_json="$SMOKE_SCENARIOS"
     echo "::notice::smoke-matrix reason=feature-triggered-without-smoke-mapping, fallback scenarios: $smoke_scenarios_json"
   else
@@ -476,45 +480,45 @@ fi
 SMOKE_MATRIX=$(build_matrix "$adapters" "$modes" "$databases" "$smoke_scenarios_json" false)
 log_counts "smoke-matrix" "$SMOKE_MATRIX"
 
-# Build full-matrix scenarios
-if [ "$manual_dispatch" = "true" ]; then
-  full_scenarios_json="$ALL_SCENARIOS"
-  echo "::notice::full-matrix reason=workflow-dispatch, use all scenarios: $full_scenarios_json"
-elif [ "$any_base_change" = "true" ]; then
-  full_scenarios_json="$ALL_SCENARIOS"
-  echo "::notice::full-matrix reason=base-change, use all scenarios: $full_scenarios_json"
+# Build target-matrix scenarios
+if [[ "$manual_dispatch" = "true" ]]; then
+  target_scenarios_json="$ALL_SCENARIOS"
+  echo "::notice::target-matrix reason=workflow-dispatch, use all scenarios: $target_scenarios_json"
+elif [[ "$any_base_change" = "true" ]]; then
+  target_scenarios_json="$ALL_SCENARIOS"
+  echo "::notice::target-matrix reason=base-change, use all scenarios: $target_scenarios_json"
 else
-  if [ "$any_feature_triggered" = "false" ]; then
-    # When no feature triggered, full-matrix is limited to smoke scenario set
-    full_scenarios_json="$SMOKE_SCENARIOS"
-    echo "::notice::full-matrix reason=no-feature-triggered, use smoke scenarios: $full_scenarios_json"
+  if [[ "$any_feature_triggered" = "false" ]]; then
+    # When no feature triggered, target-matrix is limited to smoke scenario set
+    target_scenarios_json="$SMOKE_SCENARIOS"
+    echo "::notice::target-matrix reason=no-feature-triggered, use smoke scenarios: $target_scenarios_json"
   else
-    full_scenarios_json=$(printf '%s\n' "${scenarios_set[@]}" | jq -R . | jq -sc .)
-    echo "::notice::full-matrix reason=feature-triggered, scenarios: $full_scenarios_json"
+    target_scenarios_json=$(printf '%s\n' "${scenarios_set[@]}" | jq -R . | jq -sc .)
+    echo "::notice::target-matrix reason=feature-triggered, scenarios: $target_scenarios_json"
   fi
 fi
 
-FULL_MATRIX_CANDIDATE=$(build_matrix "$adapters" "$modes" "$databases" "$full_scenarios_json" true)
-FULL_MATRIX_CANDIDATE_COUNT=$(echo "$FULL_MATRIX_CANDIDATE" | jq '.include | length')
-if [ "$effective_full_matrix_algorithm" = "pairwise" ]; then
-  if [ "$FULL_MATRIX_CANDIDATE_COUNT" -le 20 ]; then
-    FULL_MATRIX="$FULL_MATRIX_CANDIDATE"
-    echo "::notice::full-matrix pairwise skipped due to small candidate set: candidate=$FULL_MATRIX_CANDIDATE_COUNT"
+TARGET_MATRIX_CANDIDATE=$(build_matrix "$adapters" "$modes" "$databases" "$target_scenarios_json" true)
+TARGET_MATRIX_CANDIDATE_COUNT=$(echo "$TARGET_MATRIX_CANDIDATE" | jq '.include | length')
+if [[ "$effective_target_matrix_algorithm" = "pairwise" ]]; then
+  if [[ "$TARGET_MATRIX_CANDIDATE_COUNT" -le 20 ]]; then
+    TARGET_MATRIX="$TARGET_MATRIX_CANDIDATE"
+    echo "::notice::target-matrix pairwise skipped due to small candidate set: candidate=$TARGET_MATRIX_CANDIDATE_COUNT"
   else
-    FULL_MATRIX=$(build_pairwise_matrix "$FULL_MATRIX_CANDIDATE" "$full_scenarios_json")
-    echo "::notice::full-matrix reduction applied: candidate=$FULL_MATRIX_CANDIDATE_COUNT, reduced=$(echo "$FULL_MATRIX" | jq '.include | length')"
+    TARGET_MATRIX=$(build_pairwise_matrix "$TARGET_MATRIX_CANDIDATE" "$target_scenarios_json")
+    echo "::notice::target-matrix reduction applied: candidate=$TARGET_MATRIX_CANDIDATE_COUNT, reduced=$(echo "$TARGET_MATRIX" | jq '.include | length')"
   fi
 else
-  FULL_MATRIX="$FULL_MATRIX_CANDIDATE"
+  TARGET_MATRIX="$TARGET_MATRIX_CANDIDATE"
 fi
-log_counts "full-matrix" "$FULL_MATRIX"
+log_counts "target-matrix" "$TARGET_MATRIX"
 
-# Determine whether there are any jobs at all (based on full-matrix)
-FULL_JOB_COUNT=$(echo "$FULL_MATRIX" | jq '.include | length')
+# Determine whether there are any jobs at all (based on target-matrix)
+TARGET_JOB_COUNT=$(echo "$TARGET_MATRIX" | jq '.include | length')
 SMOKE_JOB_COUNT=$(echo "$SMOKE_MATRIX" | jq '.include | length')
-FULL_SMOKE_OVERLAP_COUNT=$(jq -n --argjson full "$FULL_MATRIX" --argjson smoke "$SMOKE_MATRIX" '
+TARGET_SMOKE_OVERLAP_COUNT=$(jq -n --argjson target "$TARGET_MATRIX" --argjson smoke "$SMOKE_MATRIX" '
   [
-    $full.include[] as $job |
+    $target.include[] as $job |
     select(
       [$smoke.include[] | select(
         .adapter == $job.adapter and
@@ -526,22 +530,22 @@ FULL_SMOKE_OVERLAP_COUNT=$(jq -n --argjson full "$FULL_MATRIX" --argjson smoke "
     )
   ] | length
 ')
-ESTIMATED_STAGE2_JOBS=$((FULL_JOB_COUNT - FULL_SMOKE_OVERLAP_COUNT))
-TOTAL_TWO_STAGE_JOBS=$((SMOKE_JOB_COUNT + ESTIMATED_STAGE2_JOBS))
-if [ "$FULL_MATRIX_CANDIDATE_COUNT" -eq 0 ]; then
+ESTIMATED_REMAINING_TESTS_JOBS=$((TARGET_JOB_COUNT - TARGET_SMOKE_OVERLAP_COUNT))
+TOTAL_TWO_STAGE_JOBS=$((SMOKE_JOB_COUNT + ESTIMATED_REMAINING_TESTS_JOBS))
+if [[ "$TARGET_MATRIX_CANDIDATE_COUNT" -eq 0 ]]; then
   EFFECTIVE_REDUCTION_RATIO="0"
 else
-  EFFECTIVE_REDUCTION_RATIO=$(jq -cn --argjson candidate "$FULL_MATRIX_CANDIDATE_COUNT" --argjson total "$TOTAL_TWO_STAGE_JOBS" '1 - ($total / $candidate)')
+  EFFECTIVE_REDUCTION_RATIO=$(jq -cn --argjson candidate "$TARGET_MATRIX_CANDIDATE_COUNT" --argjson total "$TOTAL_TWO_STAGE_JOBS" '1 - ($total / $candidate)')
 fi
-echo "::notice::matrix-breakdown full=$FULL_JOB_COUNT smoke=$SMOKE_JOB_COUNT overlap=$FULL_SMOKE_OVERLAP_COUNT estimated-stage2=$ESTIMATED_STAGE2_JOBS total-two-stage=$TOTAL_TWO_STAGE_JOBS effective-reduction-ratio=$EFFECTIVE_REDUCTION_RATIO"
-if [ "$FULL_JOB_COUNT" -eq 0 ]; then
+echo "::notice::matrix-breakdown target=$TARGET_JOB_COUNT smoke=$SMOKE_JOB_COUNT overlap=$TARGET_SMOKE_OVERLAP_COUNT estimated-remaining-tests=$ESTIMATED_REMAINING_TESTS_JOBS total-two-stage=$TOTAL_TWO_STAGE_JOBS effective-reduction-ratio=$EFFECTIVE_REDUCTION_RATIO"
+if [[ "$TARGET_JOB_COUNT" -eq 0 ]]; then
   echo "smoke-matrix=$(echo "$SMOKE_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
-  echo "full-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
+  echo "target-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-jobs=false" >> "$GITHUB_OUTPUT"
-  echo "full-matrix-algorithm=$effective_full_matrix_algorithm" >> "$GITHUB_OUTPUT"
-  echo "full-smoke-overlap-count=0" >> "$GITHUB_OUTPUT"
-  echo "estimated-stage2-jobs=0" >> "$GITHUB_OUTPUT"
+  echo "target-matrix-algorithm=$effective_target_matrix_algorithm" >> "$GITHUB_OUTPUT"
+  echo "target-smoke-overlap-count=0" >> "$GITHUB_OUTPUT"
+  echo "estimated-remaining-tests-jobs=0" >> "$GITHUB_OUTPUT"
   echo "total-two-stage-jobs=0" >> "$GITHUB_OUTPUT"
   echo "effective-reduction-ratio=0" >> "$GITHUB_OUTPUT"
   echo "::notice::No jobs generated after applying all filters and rules, skipping job execution"
@@ -549,14 +553,14 @@ if [ "$FULL_JOB_COUNT" -eq 0 ]; then
 fi
 
 echo "smoke-matrix=$(echo "$SMOKE_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
-echo "full-matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
-echo "matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
+echo "target-matrix=$(echo "$TARGET_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
+echo "matrix=$(echo "$TARGET_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
 echo "has-jobs=true" >> "$GITHUB_OUTPUT"
-echo "full-matrix-algorithm=$effective_full_matrix_algorithm" >> "$GITHUB_OUTPUT"
-echo "full-smoke-overlap-count=$FULL_SMOKE_OVERLAP_COUNT" >> "$GITHUB_OUTPUT"
-echo "estimated-stage2-jobs=$ESTIMATED_STAGE2_JOBS" >> "$GITHUB_OUTPUT"
+echo "target-matrix-algorithm=$effective_target_matrix_algorithm" >> "$GITHUB_OUTPUT"
+echo "target-smoke-overlap-count=$TARGET_SMOKE_OVERLAP_COUNT" >> "$GITHUB_OUTPUT"
+echo "estimated-remaining-tests-jobs=$ESTIMATED_REMAINING_TESTS_JOBS" >> "$GITHUB_OUTPUT"
 echo "total-two-stage-jobs=$TOTAL_TWO_STAGE_JOBS" >> "$GITHUB_OUTPUT"
 echo "effective-reduction-ratio=$EFFECTIVE_REDUCTION_RATIO" >> "$GITHUB_OUTPUT"
-echo "::notice::Generated $SMOKE_JOB_COUNT smoke jobs, $FULL_JOB_COUNT full jobs, overlap=$FULL_SMOKE_OVERLAP_COUNT, estimated stage2 jobs=$ESTIMATED_STAGE2_JOBS, total two-stage jobs=$TOTAL_TWO_STAGE_JOBS, effective reduction ratio=$EFFECTIVE_REDUCTION_RATIO"
+echo "::notice::Generated $SMOKE_JOB_COUNT smoke jobs, $TARGET_JOB_COUNT target jobs, overlap=$TARGET_SMOKE_OVERLAP_COUNT, estimated remaining-tests jobs=$ESTIMATED_REMAINING_TESTS_JOBS, total two-stage jobs=$TOTAL_TWO_STAGE_JOBS, effective reduction ratio=$EFFECTIVE_REDUCTION_RATIO"
 
 exit 0

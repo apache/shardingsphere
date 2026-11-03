@@ -31,6 +31,7 @@ import org.apache.calcite.util.TimestampString;
 import org.apache.calcite.util.TimestampWithTimeZoneString;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -89,11 +90,7 @@ public final class LiteralExpressionConverter {
             return Optional.of(convertLocalTime(segment, literalValue, dataType));
         }
         if (segment.getLiterals() instanceof LocalDateTime) {
-            LocalDateTime dateTime = (LocalDateTime) segment.getLiterals();
-            String fraction = literalValue.contains(".") ? literalValue.substring(literalValue.lastIndexOf('.') + 1) : "";
-            TimestampString timestampString = TimestampString.fromCalendarFields(toCalendar(dateTime.getYear(), dateTime.getMonthValue(),
-                    dateTime.getDayOfMonth(), dateTime.getHour(), dateTime.getMinute(), dateTime.getSecond())).withFraction(fraction);
-            return Optional.of(SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, timestampString, getTimeScale(literalValue, dataType), SqlParserPos.ZERO));
+            return Optional.of(convertLocalDateTime(segment, literalValue, dataType));
         }
         if (segment.getLiterals() instanceof ZonedDateTime) {
             return Optional.of(SqlLiteral.createTimestamp(new TimestampWithTimeZoneString(literalValue), getTimeScale(literalValue, dataType), SqlParserPos.ZERO));
@@ -146,6 +143,14 @@ public final class LiteralExpressionConverter {
         int nanos = localTime.getNano();
         String formattedValue = 0 == nanos ? DateTimeFormatterFactory.getTimeFormatter().format(localTime) : DateTimeFormatterFactory.getFullTimeFormatter().format(localTime);
         return SqlLiteral.createTime(new TimeString(formattedValue), getTimeScale(literalValue, dataType), SqlParserPos.ZERO);
+    }
+    
+    private static SqlNode convertLocalDateTime(final LiteralExpressionSegment segment, final String literalValue, @Nullable final RelDataType dataType) {
+        LocalDateTime dateTime = (LocalDateTime) segment.getLiterals();
+        String fraction = literalValue.contains(".") ? literalValue.substring(literalValue.lastIndexOf('.') + 1) : "";
+        TimestampString timestampString = TimestampString.fromCalendarFields(toCalendar(dateTime.getYear(), dateTime.getMonthValue(), dateTime.getDayOfMonth(), dateTime.getHour(),
+                dateTime.getMinute(), dateTime.getSecond())).withFraction(fraction);
+        return SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, timestampString, getTimeScale(literalValue, dataType), SqlParserPos.ZERO);
     }
     
     private static int getTimeScale(final String literalValue, final RelDataType dataType) {

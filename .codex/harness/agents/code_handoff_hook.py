@@ -31,14 +31,13 @@ from typing import Any
 
 PROSE_SUFFIXES = frozenset({".adoc", ".md", ".rst"})
 PATCH_FILE_PATTERN = re.compile(r"^\*\*\* (?:Add|Delete|Update) File: (.+)$", re.MULTILINE)
-FIELD_PATTERN = r"^[ \t]*(?:[-*][ \t]+)?(?:#{{1,6}}[ \t]+)?(?:\*\*)?{label}:[ \t]*(.*?)(?:\*\*)?[ \t]*$"
-BOLD_FIELD_PATTERN = r"^[ \t]*(?:[-*][ \t]+)?\*\*{label}:[ \t]*(.*?)\*\*[ \t]*$"
-FORMAL_REVIEW_PATTERN = re.compile(r"^```markdown\s*$\n(.*?)^```\s*$", re.IGNORECASE | re.MULTILINE | re.DOTALL)
-TEXT_BLOCK_PATTERN = re.compile(r"^```text\s*$\n(.*?)^```\s*$", re.IGNORECASE | re.MULTILINE | re.DOTALL)
+FIELD_PATTERN = r"(?P<emphasis>\*\*)?{label}:(?(emphasis)(?:\*\*)?)[ \t]*(?P<value>.*?)"
+FIELD_PREFIX_PATTERN = re.compile(r"^[ \t]*(?:[-*][ \t]+)?(?:#{1,6}[ \t]+)?")
+FENCE_PATTERN = re.compile(r"(?:`{3,}[^`]*|~{3,}.*)")
+FENCE_OPEN_PATTERN = re.compile(r"^ {0,3}(?P<fence>`{3,}|~{3,})(?P<info>.*)$")
 SHELL_TOOL_NAMES = frozenset({"Bash", "exec_command", "write_stdin"})
 PASSING_RESULT = "Mergeable"
 PAUSED_RESULTS = frozenset({"Not Mergeable", "Review Incomplete"})
-REQUIRED_COMMIT_COMMANDS = ("git commit --dry-run --only", "git commit --only")
 
 
 def process_event(event: dict[str, Any], state_directory: Path) -> dict[str, str]:
@@ -150,15 +149,20 @@ def _snapshot_path(event: dict[str, Any], state_directory: Path) -> Path:
 
 def _repository_snapshot(event: dict[str, Any]) -> dict[str, Any] | None:
     cwd = event.get("cwd")
+    base_directory = Path(cwd) if isinstance(cwd, str) and cwd else None
     tool_input = event.get("tool_input")
-    if not isinstance(cwd, str) or not cwd:
-        cwd = tool_input.get("workdir") if isinstance(tool_input, dict) else None
-    if not isinstance(cwd, str) or not cwd:
-        cwd = os.getcwd()
-    root_result = _run_git(Path(cwd), "rev-parse", "--show-toplevel")
+    workdir = tool_input.get("workdir") if isinstance(tool_input, dict) else None
+    if isinstance(workdir, str) and workdir:
+        directory = Path(workdir)
+        if not directory.is_absolute():
+            directory = (base_directory or Path(os.getcwd())) / directory
+    else:
+        directory = base_directory or Path(os.getcwd())
+    root_result = _run_git(directory, "rev-parse", "--show-toplevel")
     if root_result is None:
         return None
-    root = Path(root_result.decode("utf-8", errors="surrogateescape").strip())
+    line_ending = b"\r\n" if os.name == "nt" and root_result.endswith(b"\r\n") else b"\n"
+    root = Path(root_result.removesuffix(line_ending).decode("utf-8", errors="surrogateescape"))
     status = _run_git(root, "status", "--porcelain=v1", "-z", "--untracked-files=all")
     if status is None:
         return None
@@ -217,77 +221,91 @@ def _path_digest(path: Path) -> str:
 
 def validate_handoff(message: Any) -> list[str]:
     """Return every missing or invalid successful code handoff element."""
-    failures = _validate_formal_review(message, frozenset({PASSING_RESULT}))
-    text_blocks = TEXT_BLOCK_PATTERN.findall(message) if isinstance(message, str) else []
-    if not any(_field_value(each, "Commit Message") for each in text_blocks):
-        failures.append("Commit Message")
-    non_review_content = FORMAL_REVIEW_PATTERN.sub("", message) if isinstance(message, str) else ""
-    failures.extend(each for each in REQUIRED_COMMIT_COMMANDS if not re.search(
-        rf"^[ \t]*{re.escape(each)}(?:[ \t]|$)", non_review_content, re.MULTILINE,
-    ))
+    failures = _validate_handoff_evidence(message, frozenset({PASSING_RESULT}), require_review=True)
+    if not isinstance(message, str):
+        return failures
+    statuses = _field_values(message, "Task Status")
+    results = _field_values(message, "Review Result")
+    legacy_passing_review = not statuses and results == [PASSING_RESULT]
+    if ["Completed"] != statuses and not legacy_passing_review:
+        failures.append("exactly one Task Status: Completed or legacy Review Result: Mergeable")
+    if not _field_value(message, "Commit Message"):
+        failures.append("nonempty Commit Message")
     return failures
 
 
 def validate_paused_handoff(message: Any) -> list[str]:
     """Return every missing or invalid user-blocked handoff element."""
-    failures = _validate_formal_review(message, PAUSED_RESULTS)
+    failures = _validate_handoff_evidence(message, PAUSED_RESULTS | {PASSING_RESULT})
     if not isinstance(message, str):
         return failures
-    text_blocks = TEXT_BLOCK_PATTERN.findall(message)
-    handoff = next((each for each in text_blocks if _field_value(each, "Task Status")), "")
-    if "Awaiting User" != _field_value(handoff, "Task Status"):
-        failures.append("Task Status: Awaiting User")
-    if not _field_value(handoff, "Required User Action"):
+    statuses = _field_values(message, "Task Status")
+    if ["Awaiting User"] != statuses:
+        failures.append("exactly one Task Status: Awaiting User")
+    if not _field_value(message, "Required User Action"):
         failures.append("Required User Action")
-    if _field_value(message, "Commit Message"):
+    if _field_values(message, "Commit Message"):
         failures.append("Commit Message must be omitted while awaiting the user")
     return failures
 
 
-def _validate_formal_review(message: Any, allowed_results: frozenset[str]) -> list[str]:
+def _validate_handoff_evidence(message: Any, allowed_results: frozenset[str], require_review: bool = False) -> list[str]:
     if not isinstance(message, str) or not message.strip():
-        return ["fenced markdown Formal Review"]
-    blocks = FORMAL_REVIEW_PATTERN.findall(message)
-    formal_blocks = [each for each in blocks if "### Result" in each]
-    if 1 != len(formal_blocks):
-        return ["exactly one fenced markdown Formal Review"]
-    review = formal_blocks[0]
+        return ["nonempty handoff"]
     failures = []
-    results = _review_results(review)
-    if 1 != len(results) or results[0][0] not in allowed_results or not results[0][1]:
-        failures.append("exactly one bold allowed Review Result")
-        return failures
-    result = results[0][0]
-    required_sections = ["### Result", "### Coverage"]
-    if PASSING_RESULT == result:
-        required_sections.append("### Evidence")
-    elif "Not Mergeable" == result:
-        required_sections.append("### Blocking Issues")
-        feedback_mode = _field_value(review, "Feedback Mode")
-        if feedback_mode not in {"Change Request", "Needs Discussion"}:
-            failures.append("Feedback Mode")
-        blocking_issues = _bold_field_value(review, "Blocking Issues")
-        if not blocking_issues.isdigit() or 0 == int(blocking_issues):
-            failures.append("positive bold Blocking Issues count")
-    else:
-        required_sections.extend(("### Verified Facts", "### Required Evidence"))
-    failures.extend(each for each in required_sections if not _section_content(review, each))
-    result_content = _section_content(review, "### Result")
-    if not any("review result:" not in each.casefold() for each in result_content.splitlines()):
-        failures.append("concise Result reason")
+    results = _field_values(message, "Review Result")
+    if results and (len(results) != 1 or results[0] not in allowed_results):
+        failures.append("exactly one allowed Review Result when declared")
+    if require_review and not results:
+        failures.append("exactly one Review Result: Mergeable")
+    reports = _markdown_review_reports(message)
+    if results and len(reports) != 1:
+        failures.append("one complete review report in a markdown-labelled fenced block")
+    if require_review and len(reports) == 1:
+        for section in ("Result", "Evidence", "Coverage"):
+            if not _section_content(reports[0], f"### {section}"):
+                failures.append(f"review {section}")
+        if _field_values(reports[0], "Commit Message"):
+            failures.append("Commit Message must be separate from the review report")
+    if not require_review and not _field_value(message, "Evidence") and not _section_content(message, "### Evidence"):
+        failures.append("Evidence")
     return failures
 
 
-def _review_results(review: str) -> list[tuple[str, bool]]:
-    result: list[tuple[str, bool]] = []
-    for line in review.splitlines():
-        stripped = line.strip()
-        if stripped.startswith(("- ", "* ")):
-            stripped = stripped[2:].strip()
-        is_bold = stripped.startswith("**") and stripped.endswith("**")
-        normalized = stripped.strip("*").strip()
-        if normalized.lower().startswith("review result:"):
-            result.append((normalized.split(":", 1)[1].strip(), is_bold))
+def _markdown_review_reports(message: str) -> list[str]:
+    result = []
+    fence = ""
+    language = ""
+    content = []
+    for line in message.splitlines():
+        if fence:
+            if re.fullmatch(rf" {{0,3}}{re.escape(fence[0])}{{{len(fence)},}}[ \t]*", line):
+                report = "\n".join(content)
+                if language == "markdown" and _field_values(report, "Review Result"):
+                    result.append(report)
+                fence = ""
+            else:
+                content.append(line)
+            continue
+        opening = FENCE_OPEN_PATTERN.fullmatch(line)
+        if opening and not (opening.group("fence").startswith("`") and "`" in opening.group("info")):
+            fence = opening.group("fence")
+            language = opening.group("info").strip()
+            content = []
+    return result
+
+
+def _field_values(message: str, label: str) -> list[str]:
+    result: list[str] = []
+    pattern = re.compile(FIELD_PATTERN.format(label=re.escape(label)), re.IGNORECASE)
+    for line in message.splitlines():
+        normalized = FIELD_PREFIX_PATTERN.sub("", line, count=1).strip()
+        emphasis_size = len(normalized) - len(normalized.lstrip("*"))
+        if emphasis_size and normalized.endswith("*" * emphasis_size):
+            normalized = normalized[emphasis_size:-emphasis_size].strip()
+        match = pattern.fullmatch(normalized)
+        if match:
+            result.append(match.group("value").strip())
     return result
 
 
@@ -301,32 +319,26 @@ def _section_content(review: str, heading: str) -> str:
     for line in lines[start:]:
         if line.strip().startswith("### "):
             break
-        if line.strip():
+        if line.strip() and not FENCE_PATTERN.fullmatch(line.strip()):
             content.append(line.strip())
     return "\n".join(content)
 
 
 def _field_value(message: str, label: str) -> str:
-    pattern = re.compile(FIELD_PATTERN.format(label=re.escape(label)), re.IGNORECASE | re.MULTILINE)
-    match = pattern.search(message)
-    return match.group(1).strip() if match else ""
-
-
-def _bold_field_value(message: str, label: str) -> str:
-    pattern = re.compile(BOLD_FIELD_PATTERN.format(label=re.escape(label)), re.IGNORECASE | re.MULTILINE)
-    match = pattern.search(message)
-    return match.group(1).strip() if match else ""
+    values = _field_values(message, label)
+    value = values[0] if values else ""
+    return "" if FENCE_PATTERN.fullmatch(value) else value
 
 
 def _continuation_reason(passing_failures: list[str], paused_failures: list[str]) -> str:
     passing = ", ".join(passing_failures)
     paused = ", ".join(paused_failures)
     return (
-        "The code-writing task cannot stop successfully without the latest passing $review-pr Formal Review. "
+        "The code-writing task has an unresolved handoff. Report Task Status: Completed with a nonempty Commit Message after required checks and full review. "
         f"Passing handoff failures: {passing}. "
-        "Fix safe in-scope findings, rerun invalidated checks, and repeat Formal Review until Mergeable. "
-        "If an exact user decision, authority, or unavailable evidence blocks continuation, return the complete non-passing "
-        f"Formal Review with Task Status: Awaiting User and Required User Action; pause failures: {paused}."
+        "Completion requires one actual Review Result: Mergeable report in a markdown-labelled fenced block with Result, Evidence and Coverage. "
+        "If an exact user decision, authority, or unavailable evidence blocks continuation, report "
+        f"Task Status: Awaiting User with Evidence and Required User Action; pause failures: {paused}."
     )
 
 

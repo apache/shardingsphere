@@ -46,4 +46,6 @@
     <sql-case id="alter_system_set_parameter_recyclebin_scope" value="ALTER SYSTEM SET recyclebin = ON SCOPE = SPFILE" db-types="Oracle" />
     <sql-case id="alter_system_set_events1" value="ALTER SYSTEM SET EVENTS 'CLIENTID_OVERWRITE'" db-types="Oracle" />
     <sql-case id="alter_system_set_events2" value="ALTER SYSTEM SET EVENTS 'CLIENTID_OVERWRITE OFF'" db-types="Oracle" />
+    <sql-case id="alter_system_set_pg" value="ALTER SYSTEM SET custom.foo TO 'bar'" db-types="PostgreSQL" />
+    <sql-case id="alter_system_reset_pg" value="ALTER SYSTEM RESET ALL" db-types="PostgreSQL" />
 </sql-cases>

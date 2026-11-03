@@ -81,4 +81,96 @@
         <package-routine-name name="INSERT_ROW" start-index="64" stop-index="73" />
         <package-routine-name name="READ_PASSWORD" start-index="301" stop-index="313" />
     </create-package>
+    <create-package sql-case-id="create_package_local_record_field_type_attribute_oracle">
+        <package name="foo_pkg" start-index="15" stop-index="21" />
+        <table name="foo_table" start-index="136" stop-index="155" table-name-start-index="147" table-name-stop-index="155">
+            <owner name="foo_schema" start-index="136" stop-index="145" />
+        </table>
+        <column name="foo_id" start-index="157" stop-index="162">
+            <owner name="foo_table" start-index="147" stop-index="155" />
+        </column>
+    </create-package>
+    <create-package sql-case-id="create_package_body_local_record_field_type_attribute_oracle" body="true">
+        <package name="foo_pkg" start-index="20" stop-index="26" />
+        <table name="foo_table" start-index="233" stop-index="252" table-name-start-index="244" table-name-stop-index="252">
+            <owner name="foo_schema" start-index="233" stop-index="242" />
+        </table>
+        <column name="foo_id" start-index="254" stop-index="259">
+            <owner name="foo_table" start-index="244" stop-index="252" />
+        </column>
+        <package-routine-name name="foo_proc" start-index="101" stop-index="108" />
+    </create-package>
+    <create-package sql-case-id="create_package_quoted_local_record_field_type_attribute_oracle">
+        <package name="foo_pkg" start-delimiter="&quot;" end-delimiter="&quot;" start-index="15" stop-index="23" />
+        <table name="foo_table" start-index="144" stop-index="163" table-name-start-index="155" table-name-stop-index="163">
+            <owner name="foo_schema" start-index="144" stop-index="153" />
+        </table>
+        <column name="foo_id" start-index="165" stop-index="170">
+            <owner name="foo_table" start-index="155" stop-index="163" />
+        </column>
+    </create-package>
+    <create-package sql-case-id="create_package_schema_local_cursor_rowtype_oracle">
+        <package name="foo_pkg" start-index="26" stop-index="32">
+            <owner name="foo_schema" start-index="15" stop-index="24" />
+        </package>
+        <table name="foo_table" start-index="193" stop-index="212" table-name-start-index="204" table-name-stop-index="212">
+            <owner name="foo_schema" start-index="193" stop-index="202" />
+        </table>
+        <column name="foo_id" start-index="214" stop-index="219">
+            <owner name="foo_table" start-index="204" stop-index="212" />
+        </column>
+    </create-package>
+    <create-package sql-case-id="create_package_body_schema_local_cursor_rowtype_oracle" body="true">
+        <package name="foo_pkg" start-index="31" stop-index="37">
+            <owner name="foo_schema" start-index="20" stop-index="29" />
+        </package>
+        <table name="foo_table" start-index="172" stop-index="191" table-name-start-index="183" table-name-stop-index="191">
+            <owner name="foo_schema" start-index="172" stop-index="181" />
+        </table>
+        <column name="foo_id" start-index="193" stop-index="198">
+            <owner name="foo_table" start-index="183" stop-index="191" />
+        </column>
+    </create-package>
+    <create-package sql-case-id="create_package_quoted_schema_local_cursor_rowtype_oracle">
+        <package name="foo.pkg" start-delimiter="&quot;" end-delimiter="&quot;" start-index="28" stop-index="36">
+            <owner name="foo.schema" start-delimiter="&quot;" end-delimiter="&quot;" start-index="15" stop-index="26" />
+        </package>
+        <table name="foo_table" start-index="205" stop-index="224" table-name-start-index="216" table-name-stop-index="224">
+            <owner name="foo_schema" start-index="205" stop-index="214" />
+        </table>
+        <column name="foo_id" start-index="226" stop-index="231">
+            <owner name="foo_table" start-index="216" stop-index="224" />
+        </column>
+    </create-package>
+    <create-package sql-case-id="create_package_body_nested_local_cursor_rowtype_oracle" body="true">
+        <package name="foo_pkg" start-index="20" stop-index="26" />
+        <table name="foo_table" start-index="198" stop-index="217" table-name-start-index="209" table-name-stop-index="217">
+            <owner name="foo_schema" start-index="198" stop-index="207" />
+        </table>
+        <column name="foo_id" start-index="219" stop-index="224">
+            <owner name="foo_table" start-index="209" stop-index="217" />
+        </column>
+        <package-routine-name name="foo_proc" start-index="41" stop-index="48" />
+    </create-package>
+    <create-package sql-case-id="create_package_schema_local_scalar_type_oracle">
+        <package name="foo_pkg" start-index="26" stop-index="32">
+            <owner name="foo_schema" start-index="15" stop-index="24" />
+        </package>
+        <table name="foo_table" start-index="104" stop-index="123" table-name-start-index="115" table-name-stop-index="123">
+            <owner name="foo_schema" start-index="104" stop-index="113" />
+        </table>
+        <column name="foo_id" start-index="125" stop-index="130">
+            <owner name="foo_table" start-index="115" stop-index="123" />
+        </column>
+    </create-package>
+    <create-package sql-case-id="create_package_body_nested_scalar_type_oracle" body="true">
+        <package name="foo_pkg" start-index="20" stop-index="26" />
+        <table name="foo_table" start-index="135" stop-index="154" table-name-start-index="146" table-name-stop-index="154">
+            <owner name="foo_schema" start-index="135" stop-index="144" />
+        </table>
+        <column name="foo_id" start-index="156" stop-index="161">
+            <owner name="foo_table" start-index="146" stop-index="154" />
+        </column>
+        <package-routine-name name="foo_proc" start-index="41" stop-index="48" />
+    </create-package>
 </sql-parser-test-cases>

@@ -310,9 +310,54 @@
     <grant sql-case-id="grant_create_tablespace_doris" />
     <grant sql-case-id="grant_create_role_privilege_doris" />
     <grant sql-case-id="grant_drop_role_privilege_doris" />
-    
     <grant sql-case-id="grant_select_sql92">
         <table name="t_order" start-index="27" stop-index="33" />
         <column name="order_id" start-index="14" stop-index="21" />
     </grant>
+    <grant sql-case-id="grant_maintain_on_table_postgresql">
+        <table name="foo" start-index="18" stop-index="31">
+            <owner name="foo_schema" start-index="18" stop-index="27" />
+        </table>
+    </grant>
+    <grant sql-case-id="grant_privilege_granted_by_current_user_postgresql">
+        <table name="foo" start-index="16" stop-index="18" />
+    </grant>
+    <grant sql-case-id="grant_privilege_granted_by_current_role_postgresql">
+        <table name="foo" start-index="18" stop-index="20" />
+    </grant>
+    <grant sql-case-id="grant_privileges_granted_by_role_postgresql">
+        <table name="foo" start-index="24" stop-index="26" />
+    </grant>
+    <grant sql-case-id="grant_role_options_postgresql" />
+    <grant sql-case-id="grant_role_option_keyword_postgresql" />
+    <grant sql-case-id="grant_global_spaced_wildcard" />
+    <grant sql-case-id="grant_database_spaced_wildcard" />
+
+    <grant sql-case-id="grant_maintain_pg">
+        <table name="t" start-index="18" stop-index="18" />
+    </grant>
+
+    <grant sql-case-id="grant_maintain_multiple_pg">
+        <table name="t" start-index="32" stop-index="34">
+            <owner name="s" start-index="32" stop-index="32" />
+        </table>
+    </grant>
+
+    <grant sql-case-id="grant_named_privilege_pg">
+        <table name="t" start-index="26" stop-index="26" />
+    </grant>
+
+    <grant sql-case-id="grant_granted_by_pg">
+        <table name="t" start-index="16" stop-index="16" />
+    </grant>
+
+    <grant sql-case-id="grant_select_privilege_control_pg">
+        <table name="t" start-index="16" stop-index="16" />
+    </grant>
+    <grant sql-case-id="grant_role_privilege_control_pg" />
+    <grant sql-case-id="grant_role_admin_true_pg" />
+    <grant sql-case-id="grant_role_admin_false_pg" />
+    <grant sql-case-id="grant_role_inherit_set_pg" />
+    <grant sql-case-id="grant_role_options_grantor_pg" />
+    <grant sql-case-id="grant_role_admin_option_control_pg" />
 </sql-parser-test-cases>

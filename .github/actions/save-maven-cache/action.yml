@@ -29,6 +29,10 @@ inputs:
     description: 'Whether to enable cache save'
     required: false
     default: 'true'
+  maven-repository-dir:
+    description: 'Maven repository directory used by the restore step; empty keeps the default repository'
+    required: false
+    default: ''
 
 runs:
   using: composite
@@ -38,7 +42,7 @@ runs:
       uses: actions/cache/save@v5.0.1
       with:
         path: |
-          ~/.m2/repository
-          !~/.m2/repository/org/apache/shardingsphere
-          ~/.m2/repository/org/apache/shardingsphere/elasticjob
+          ${{ inputs.maven-repository-dir || '~/.m2/repository' }}
+          !${{ inputs.maven-repository-dir || '~/.m2/repository' }}/org/apache/shardingsphere
+          ${{ inputs.maven-repository-dir || '~/.m2/repository' }}/org/apache/shardingsphere/elasticjob
         key: ${{ inputs.cache-primary-key }}

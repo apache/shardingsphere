@@ -181,8 +181,6 @@ public final class WorkflowSecretReferenceUtils {
     
     private static SecretReferenceValue createSecretReferenceValue(final Map<?, ?> value) {
         Object secretRef = value.get(SECRET_REF);
-        return secretRef instanceof String && !((String) secretRef).trim().isEmpty()
-                ? SecretReferenceValue.create()
-                : SecretReferenceValue.malformed();
+        return secretRef instanceof String stringValue && !stringValue.trim().isEmpty() ? SecretReferenceValue.create() : SecretReferenceValue.malformed();
     }
 }

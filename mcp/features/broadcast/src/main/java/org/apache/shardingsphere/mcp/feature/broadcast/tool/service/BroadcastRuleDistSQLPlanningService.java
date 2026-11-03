@@ -50,7 +50,9 @@ public final class BroadcastRuleDistSQLPlanningService {
     }
     
     private String formatTableNames(final List<String> tableNames) {
-        return tableNames.stream().peek(each -> WorkflowSQLUtils.checkSupportedIdentifier("table", each))
-                .map(WorkflowSQLUtils::formatGeneratedRuleDistSQLIdentifier).collect(Collectors.joining(", "));
+        return tableNames.stream().map(each -> {
+            WorkflowSQLUtils.checkSupportedIdentifier("table", each);
+            return WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(each);
+        }).collect(Collectors.joining(", "));
     }
 }

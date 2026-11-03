@@ -1498,29 +1498,29 @@
                 <assignment-value>
                     <binary-operation-expression start-index="94" stop-index="126" literal-start-index="98" literal-stop-index="130">
                         <left>
-                            <binary-operation-expression start-index="94" stop-index="122" literal-start-index="98" literal-stop-index="126">
+                            <function function-name="VALUES" text="VALUES(salary)" start-index="94" stop-index="107" literal-start-index="98" literal-stop-index="111">
+                                <parameter>
+                                    <column name="salary" start-index="101" stop-index="106" literal-start-index="105" literal-stop-index="110" />
+                                </parameter>
+                                <literalText>VALUES(salary)</literalText>
+                            </function>
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <binary-operation-expression start-index="109" stop-index="126" literal-start-index="113" literal-stop-index="130">
                                 <left>
-                                    <function function-name="VALUES" text="VALUES(salary)" start-index="94" stop-index="107" literal-start-index="98" literal-stop-index="111">
-                                        <parameter>
-                                            <column name="salary" start-index="101" stop-index="106" literal-start-index="105" literal-stop-index="110" />
-                                        </parameter>
-                                        <literalText>VALUES(salary)</literalText>
-                                    </function>
-                                </left>
-                                <operator>+</operator>
-                                <right>
                                     <function function-name="VALUES" text="VALUES(salary)" start-index="109" stop-index="122" literal-start-index="113" literal-stop-index="126">
                                         <parameter>
                                             <column name="salary" start-index="116" stop-index="121" literal-start-index="120" literal-stop-index="125" />
                                         </parameter>
                                         <literalText>VALUES(salary)</literalText>
                                     </function>
+                                </left>
+                                <operator>*</operator>
+                                <right>
+                                    <literal-expression value="0.2" start-index="124" stop-index="126" literal-start-index="128" literal-stop-index="130" />
                                 </right>
                             </binary-operation-expression>
-                        </left>
-                        <operator>*</operator>
-                        <right>
-                            <literal-expression value="0.2" start-index="124" stop-index="126" literal-start-index="128" literal-stop-index="130" />
                         </right>
                     </binary-operation-expression>
                 </assignment-value>
@@ -2344,7 +2344,7 @@
     </insert>
 
     <insert sql-case-id="insert_into_table_with_dblink">
-        <table name="remote_table" start-index="12" stop-index="28" />
+        <table name="remote_table" start-index="12" stop-index="23" db-link="link" at="@" table-name-start-index="12" table-name-stop-index="23" />
         <columns start-index="29" stop-index="29" />
         <select>
             <from>
@@ -5944,5 +5944,444 @@
                 </assignment-value>
             </assignment>
         </on-duplicate-key-columns>
+    </insert>
+
+    <insert sql-case-id="insert_default_values_postgresql_regression">
+        <table name="foo" start-index="12" stop-index="14" />
+        <columns start-index="15" stop-index="15" />
+    </insert>
+    <insert sql-case-id="insert_parenthesized_select_postgresql_regression" parameters="1">
+        <table name="foo" start-index="12" stop-index="14" />
+        <columns start-index="16" stop-index="19">
+            <column name="id" start-index="17" stop-index="18" />
+        </columns>
+        <select parameters="1">
+            <projections start-index="29" stop-index="29">
+                <expression-projection text="?" start-index="29" stop-index="29">
+                    <expr>
+                        <parameter-marker-expression parameter-index="0" start-index="29" stop-index="29" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </insert>
+    <insert sql-case-id="insert_set_select_postgresql_regression" parameters="1, 2">
+        <table name="foo" start-index="12" stop-index="14" />
+        <columns start-index="16" stop-index="19">
+            <column name="id" start-index="17" stop-index="18" />
+        </columns>
+        <select parameters="1, 2">
+            <projections start-index="28" stop-index="28">
+                <expression-projection text="?" start-index="28" stop-index="28">
+                    <expr>
+                        <parameter-marker-expression parameter-index="0" start-index="28" stop-index="28" />
+                    </expr>
+                </expression-projection>
+            </projections>
+            <combine combine-type="UNION_ALL" start-index="21" stop-index="47">
+                <left>
+                    <projections start-index="28" stop-index="28">
+                        <expression-projection text="?" start-index="28" stop-index="28">
+                            <expr>
+                                <parameter-marker-expression parameter-index="0" start-index="28" stop-index="28" />
+                            </expr>
+                        </expression-projection>
+                    </projections>
+                </left>
+                <right>
+                    <projections start-index="47" stop-index="47">
+                        <expression-projection text="?" start-index="47" stop-index="47">
+                            <expr>
+                                <parameter-marker-expression parameter-index="1" start-index="47" stop-index="47" />
+                            </expr>
+                        </expression-projection>
+                    </projections>
+                </right>
+            </combine>
+        </select>
+    </insert>
+    <insert sql-case-id="insert_indirection_parameters_postgresql_regression" parameters="1, 2, 3, 4, 5">
+        <table name="foo" start-index="12" stop-index="14" />
+        <columns start-index="16" stop-index="36">
+            <column name="items" start-index="17" stop-index="24" />
+            <column name="span" start-index="27" stop-index="35" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="3" start-index="46" stop-index="46" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="4" start-index="49" stop-index="49" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    <insert sql-case-id="insert_with_returning_postgresql_regression" parameters="1, 2, 3">
+        <table name="foo" start-index="40" stop-index="42" />
+        <columns start-index="44" stop-index="47">
+            <column name="id" start-index="45" stop-index="46" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="57" stop-index="57" />
+                </assignment-value>
+            </value>
+        </values>
+        <with start-index="0" stop-index="26">
+            <common-table-expression name="seed" start-index="5" stop-index="26">
+                <column name="id" start-index="10" stop-index="11" />
+                <subquery-expression start-index="5" stop-index="26">
+                    <select parameters="1">
+                        <projections start-index="25" stop-index="25">
+                            <expression-projection text="?" start-index="25" stop-index="25">
+                                <expr>
+                                    <parameter-marker-expression parameter-index="0" start-index="25" stop-index="25" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <returning>
+            <projections start-index="70" stop-index="74">
+                <column-projection name="id" start-index="70" stop-index="71" />
+                <expression-projection text="?" start-index="74" stop-index="74">
+                    <expr>
+                        <parameter-marker-expression parameter-index="2" start-index="74" stop-index="74" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </returning>
+    </insert>
+    <insert sql-case-id="insert_returning_aliases_postgresql_regression" parameters="1, 2">
+        <table name="foo" start-index="12" stop-index="14" />
+        <columns start-index="16" stop-index="19">
+            <column name="id" start-index="17" stop-index="18" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="29" stop-index="29" />
+                </assignment-value>
+            </value>
+        </values>
+        <returning old-alias="old_row" old-alias-start-index="55" old-alias-stop-index="61" new-alias="new_row" new-alias-start-index="71" new-alias-stop-index="77">
+            <projections start-index="80" stop-index="104">
+                <column-projection name="id" start-index="80" stop-index="89">
+                    <owner name="old_row" start-index="80" stop-index="86" />
+                </column-projection>
+                <column-projection name="id" start-index="92" stop-index="101">
+                    <owner name="new_row" start-index="92" stop-index="98" />
+                </column-projection>
+                <expression-projection text="?" start-index="104" stop-index="104">
+                    <expr>
+                        <parameter-marker-expression parameter-index="1" start-index="104" stop-index="104" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </returning>
+    </insert>
+    <insert sql-case-id="insert_with_schema_database_link_oracle" parameters="1">
+        <table name="USER_CONSIS_LIST" db-link="pjzw" at="@" start-index="12" stop-index="36" table-name-start-index="21" table-name-stop-index="36">
+            <owner name="userinfo" start-index="12" stop-index="19" />
+        </table>
+        <columns start-index="43" stop-index="50">
+            <column name="telnum" start-index="44" stop-index="49" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="60" stop-index="60" />
+                    <literal-expression value="1" start-index="60" stop-index="60" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_default_values_returning_pg">
+        <table name="t_order" start-index="12" stop-index="29" alias="bar">
+            <owner name="foo" start-index="12" stop-index="14" />
+        </table>
+        <columns start-index="30" stop-index="30" />
+        <returning>
+            <projections start-index="56" stop-index="60">
+                <shorthand-projection start-index="56" stop-index="60">
+                    <owner name="bar" start-index="56" stop-index="58" />
+                </shorthand-projection>
+            </projections>
+        </returning>
+    </insert>
+
+    <insert sql-case-id="insert_parenthesized_query_pg">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="19" />
+        <select>
+            <projections start-index="28" stop-index="28">
+                <expression-projection text="1" start-index="28" stop-index="28">
+                    <expr>
+                        <literal-expression value="1" start-index="28" stop-index="28" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_nested_parenthesized_query_pg">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="19" />
+        <select>
+            <projections start-index="29" stop-index="29">
+                <expression-projection text="1" start-index="29" stop-index="29">
+                    <expr>
+                        <literal-expression value="1" start-index="29" stop-index="29" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_union_query_pg">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="19" />
+        <select>
+            <projections start-index="27" stop-index="27">
+                <expression-projection text="1" start-index="27" stop-index="27">
+                    <expr>
+                        <literal-expression value="1" start-index="27" stop-index="27" />
+                    </expr>
+                </expression-projection>
+            </projections>
+            <combine combine-type="UNION_ALL" start-index="20" stop-index="46">
+                <left>
+                    <projections start-index="27" stop-index="27">
+                        <expression-projection text="1" start-index="27" stop-index="27">
+                            <expr>
+                                <literal-expression value="1" start-index="27" stop-index="27" />
+                            </expr>
+                        </expression-projection>
+                    </projections>
+                </left>
+                <right>
+                    <projections start-index="46" stop-index="46">
+                        <expression-projection text="2" start-index="46" stop-index="46">
+                            <expr>
+                                <literal-expression value="2" start-index="46" stop-index="46" />
+                            </expr>
+                        </expression-projection>
+                    </projections>
+                </right>
+            </combine>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_array_element_pg">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="30">
+            <column name="status" start-index="21" stop-index="29" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="foo" start-index="40" stop-index="44" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_array_slice_pg">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="35">
+            <column name="status" start-index="21" stop-index="34" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="foo" start-index="45" stop-index="49" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_member_target_pg">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="33">
+            <column name="value" start-index="21" stop-index="32">
+            <owner name="status" start-index="21" stop-index="26" />
+            </column>
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="foo" start-index="43" stop-index="47" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_conflict_select_returning_pg">
+        <table name="foo_table" start-index="12" stop-index="20" />
+        <columns start-index="22" stop-index="24">
+            <column name="a" start-index="23" stop-index="23" />
+        </columns>
+        <values>
+            <value start-index="33" stop-index="35">
+                <assignment-value>
+                    <literal-expression value="1" start-index="34" stop-index="34" />
+                </assignment-value>
+            </value>
+        </values>
+        <on-duplicate-key-columns start-index="37" stop-index="61" />
+        <returning start-index="63" stop-index="73">
+            <projections start-index="73" stop-index="73">
+                <column-projection name="a" start-index="73" stop-index="73" />
+            </projections>
+        </returning>
+    </insert>
+
+    <insert sql-case-id="insert_conflict_select_key_share_pg">
+        <table name="foo_table" start-index="12" stop-index="20" />
+        <columns start-index="22" stop-index="24">
+            <column name="a" start-index="23" stop-index="23" />
+        </columns>
+        <values>
+            <value start-index="33" stop-index="35">
+                <assignment-value>
+                    <literal-expression value="1" start-index="34" stop-index="34" />
+                </assignment-value>
+            </value>
+        </values>
+        <on-duplicate-key-columns start-index="37" stop-index="75" />
+    </insert>
+
+    <insert sql-case-id="insert_conflict_select_share_where_pg">
+        <table name="foo_table" start-index="12" stop-index="20" />
+        <columns start-index="22" stop-index="24">
+            <column name="a" start-index="23" stop-index="23" />
+        </columns>
+        <values>
+            <value start-index="33" stop-index="35">
+                <assignment-value>
+                    <literal-expression value="1" start-index="34" stop-index="34" />
+                </assignment-value>
+            </value>
+        </values>
+        <on-duplicate-key-columns start-index="37" stop-index="83" />
+    </insert>
+
+    <insert sql-case-id="insert_conflict_select_no_key_update_pg">
+        <table name="foo_table" start-index="12" stop-index="20" />
+        <columns start-index="22" stop-index="24">
+            <column name="a" start-index="23" stop-index="23" />
+        </columns>
+        <values>
+            <value start-index="33" stop-index="35">
+                <assignment-value>
+                    <literal-expression value="1" start-index="34" stop-index="34" />
+                </assignment-value>
+            </value>
+        </values>
+        <on-duplicate-key-columns start-index="37" stop-index="79" />
+    </insert>
+
+    <insert sql-case-id="insert_conflict_select_parameters_pg" parameters="1, 1" parameter-marker-count="2">
+        <table name="foo_table" start-index="12" stop-index="20" />
+        <columns start-index="22" stop-index="24">
+            <column name="a" start-index="23" stop-index="23" />
+        </columns>
+        <values>
+            <value start-index="33" stop-index="36">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="34" stop-index="35" />
+                </assignment-value>
+            </value>
+        </values>
+        <on-duplicate-key-columns start-index="38" stop-index="86" />
+        <returning start-index="88" stop-index="98">
+            <projections start-index="98" stop-index="98">
+                <column-projection name="a" start-index="98" stop-index="98" />
+            </projections>
+        </returning>
+    </insert>
+
+    <insert sql-case-id="insert_conflict_select_constraint_pg">
+        <table name="foo_table" start-index="12" stop-index="20" />
+        <columns start-index="22" stop-index="24">
+            <column name="a" start-index="23" stop-index="23" />
+        </columns>
+        <values>
+            <value start-index="33" stop-index="35">
+                <assignment-value>
+                    <literal-expression value="1" start-index="34" stop-index="34" />
+                </assignment-value>
+            </value>
+        </values>
+        <on-duplicate-key-columns start-index="37" stop-index="78" />
+    </insert>
+
+    <insert sql-case-id="insert_array_parameters_pg" parameters="1, 2, 3" parameter-marker-count="4">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="44">
+            <column name="status" start-index="21" stop-index="34" />
+            <column name="user_id" start-index="37" stop-index="43" />
+        </columns>
+        <values>
+            <value start-index="53" stop-index="60">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="2" start-index="54" stop-index="55" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="58" stop-index="59" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_array_jdbc_parameters_pg" parameters="1, 2, 3, 4" parameter-marker-count="4">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="42">
+            <column name="status" start-index="21" stop-index="32" />
+            <column name="user_id" start-index="35" stop-index="41" />
+        </columns>
+        <values>
+            <value start-index="51" stop-index="56">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="2" start-index="52" stop-index="52" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="3" start-index="55" stop-index="55" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_array_slice_parameters_pg" parameters="1, 2, 3, 4" parameter-marker-count="4">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="38">
+            <column name="status" start-index="21" stop-index="37" />
+        </columns>
+        <values>
+            <value start-index="47" stop-index="50">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="3" start-index="48" stop-index="49" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_array_slice_jdbc_parameters_pg" parameters="1, 2, 3, 4" parameter-marker-count="4">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="35">
+            <column name="status" start-index="21" stop-index="34" />
+        </columns>
+        <values>
+            <value start-index="44" stop-index="46">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="3" start-index="45" stop-index="45" />
+                </assignment-value>
+            </value>
+        </values>
     </insert>
 </sql-parser-test-cases>

@@ -23,7 +23,10 @@ import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.core.completion.MCPCompletionResult;
+import org.apache.shardingsphere.mcp.core.completion.MCPCompletionService;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionStore;
@@ -36,6 +39,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 
 import java.time.Instant;
 import java.util.List;
@@ -46,7 +50,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 class MCPCompletionSpecificationFactoryTest {
@@ -191,6 +198,22 @@ class MCPCompletionSpecificationFactoryTest {
         McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("recover_workflow"), new McpSchema.CompleteRequest.CompleteArgument("plan_id", "plan-")));
         assertThat(actual.completion().values(), is(List.of("plan-new", "plan-old")));
+    }
+    
+    @Test
+    void assertCompleteWithContextArguments() {
+        McpSchema.ResourceReference reference = new McpSchema.ResourceReference("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}");
+        Map<String, String> contextArgs = Map.of("database", "foo_db", "schema", "foo_schema");
+        try (
+                MockedConstruction<MCPCompletionService> mocked = mockConstruction(MCPCompletionService.class,
+                        (mock, context) -> when(mock.complete(eq("session-1"), any(MCPCompletionTargetDescriptor.class), eq("table"), eq("foo"), eq(contextArgs)))
+                                .thenReturn(new MCPCompletionResult(List.of("foo_table"), 1, false, Map.of())))) {
+            SyncCompletionSpecification actualSpecification = findCompletion(new MCPCompletionSpecificationFactory(mock(MCPRuntimeContext.class)).createCompletionSpecifications(), reference);
+            McpSchema.CompleteResult actual = actualSpecification.completionHandler().apply(createExchange("session-1"),
+                    new McpSchema.CompleteRequest(reference, new McpSchema.CompleteRequest.CompleteArgument("table", "foo"), new McpSchema.CompleteRequest.CompleteContext(contextArgs)));
+            assertThat(actual.completion().values(), is(List.of("foo_table")));
+            assertThat(actual.completion().total(), is(1));
+        }
     }
     
     private MCPCompletionSpecificationFactory createFactory(final MCPRuntimeContext runtimeContext) {

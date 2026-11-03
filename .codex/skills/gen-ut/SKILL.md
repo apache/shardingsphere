@@ -44,10 +44,7 @@ Reading either Skill does not expand the user-authorized scope, file types, Git 
 
 ### R2: Test form and naming
 
-- Use JUnit 5 `@Test` for standalone scenarios.
-- Use `@ParameterizedTest(name = "{0}")`, `@MethodSource`, and `Arguments` for data-driven scenarios. Declare `final String name` first and provide at least three rows.
-- Do not use `@RepeatedTest`, `Consumer` as scenario transport, `switch` dispatch inside parameterized tests, or new nested transport types.
-- Follow repository test naming. A single test uniquely covering one public method is `assert<MethodName>`.
+Apply the Unit Testing Standards in [CODE_OF_CONDUCT.md](../../../CODE_OF_CONDUCT.md#unit-testing-standards) to test forms, naming, parameter sources, scenario dispatch, and nested types.
 
 ### R3: Change boundary
 
@@ -74,7 +71,6 @@ Reading either Skill does not expand the user-authorized scope, file types, Git 
 
 - Exercise interface default methods with Mockito `CALLS_REAL_METHODS`.
 - Obtain SPI targets through the applicable project loader and keep the resolved instance as a test-class field by default. Record a concrete reason before bypassing the loader.
-- Do not add tests for `getType`, `getOrder`, or `getTypeClass` unless explicitly requested.
 - Mock heavy dependencies and collaborator-owned decisions. Allow real simple values and explicitly scoped integration, contract, or E2E behavior.
 
 ### R7: Related tests
@@ -86,11 +82,10 @@ Create a new exact-name test class only when none exists.
 
 For each target public method, record `R8-CANDIDATES` with the method, candidate count, decision, and evidence. A candidate is high-fit only when all are true:
 
-1. target method and branch skeleton are consistent;
+1. target method is the same;
 2. differences are mainly input data;
-3. assertion skeleton is consistent or differences are explicitly declared;
-4. at least three scenarios exist;
-5. no `switch` dispatch is required.
+3. the same form of assertion is used;
+4. the group meets the minimum scenario count in `CODE_OF_CONDUCT.md`.
 
 Collaborator-owned differences are not high-fit. Refactor high-fit candidates; otherwise record the concrete reason.
 Use `KEEP` only when a genuinely high-fit refactor would materially reduce readability or diagnosis.
@@ -106,18 +101,21 @@ When unreachable production code blocks coverage, report the class, path, exact 
 Use exactly one state:
 
 - `R10-INPUT_BLOCKED`: target classes or test modules cannot be resolved.
-- `R10-A`: scope is clean; focused tests execute at least one test; declared target coverage is met for every target and inner class;
-  repository formatting/checkstyle gates pass; both final rule scans pass; semantic reviews and `R8` decisions are complete.
+- `R10-A`: scope is clean; focused tests execute at least one test for the effective candidate; declared target coverage is met for every target and inner class; repository formatting/checkstyle gates pass; the full mechanical scan has no blocking violations under `R11`; semantic reviews and `R8` decisions are complete.
 - `R10-B`: production dead code blocks the target and `R9` evidence is complete.
-- `R10-C`: an out-of-scope failure is evidenced under `R11`.
+- `R10-C`: a blocking out-of-scope failure is evidenced under `R11`.
 - `R10-D`: work remains; continue instead of claiming completion.
 
 Priority is `INPUT_BLOCKED > B > C > A > D`. By default, cover the requested behavior and every affected SUT-owned branch. Apply a numeric CLASS, LINE, or BRANCH target only when the user states it; an explicit 100% target remains mandatory.
 
 ### R11: Failures
 
-Fix in-scope failures and rerun the focused test plus mechanical rule scan. For out-of-scope failures, record command, exit code,
-decisive lines, and blocking file/line, then request direction. Retry transient dependency or network failures at most twice.
+Fix task-introduced or currently relevant in-scope failures and rerun the checks they invalidate.
+Treat a mechanical diagnostic as nonblocking only when the pre-edit baseline proves that it already existed, remains unchanged, and is unrelated to the requested behavior, contracts, coverage target, and verification validity.
+Retain its command, nonzero exit code, diagnostic, and baseline evidence; do not describe the full scan as passing.
+Missing baseline evidence, new or strengthened violations, and relevant historical diagnostics remain blocking.
+For an out-of-scope failure that blocks a required check, record command, exit code, decisive lines, and blocking file/line, then request direction.
+Retry transient dependency or network failures at most twice.
 Minimal repair checks never replace final gates.
 
 ### R12: Existing full coverage
@@ -135,22 +133,22 @@ Mark `R4=N/A (triggered by R12)` and retain the coverage command and report path
 
 ### R14: Boolean assertions
 
-Use `assertTrue`/`assertFalse` for literal or constant expectations and `assertThat(actual, is(expected))` for variable expectations.
-Do not use boolean `assertEquals`, boolean literals inside Hamcrest `is`, or control flow whose only purpose is selecting
-`assertTrue` versus `assertFalse`. Run the mechanical scan after implementation stabilizes and again immediately before delivery.
+Apply the Boolean assertion standard in `CODE_OF_CONDUCT.md` to literal, constant, and variable expectations.
 
 ### R15: Delivery gates
 
 - `R15-A`: complete the semantic `R8` decision; the scanner cannot infer high-fit.
-- `R15-B`: confirm any metadata-accessor candidate was explicitly requested; the scanner only reports likely candidates.
+- `R15-B`: review every test against the test-value rule in `CODE_OF_CONDUCT.md`; method names do not decide whether a test is permitted.
 - `R15-C`: compare the final worktree with `Task scope baseline`; any candidate-relevant out-of-scope mutation fails. Ignore only reproducible,
   untracked or Git-ignored verification outputs.
-- `R15-D`: every parameterized test uses `@MethodSource` with at least three `Arguments` rows. Inspect external providers manually.
-- `R15-E`: the first parameter is exactly `final String name`.
-- `R15-F`: parameterized bodies contain no `switch`.
-- `R15-G`: parameterized test changes add no nested transport type.
-- `R15-H`: boolean assertions obey `R14` without assertion-dispatch control flow.
-- `R15-I`: parameterized signatures and provider rows contain no `Consumer`; inspect external providers manually.
+- `R15-D`: verify each parameterized test's argument source and actual case count against `CODE_OF_CONDUCT.md`; inspect external, unresolved, or dynamic sources manually.
+- `R15-F`: inspect each `switch` candidate in a parameterized test against the grouping rule in `CODE_OF_CONDUCT.md`.
+- `R15-G`: inspect each new nested-type candidate used in argument sets against the grouping rule in `CODE_OF_CONDUCT.md`.
+  A nested type is not a violation by itself.
+  Unresolved grouping keeps the task at `R10-D`.
+- `R15-H`: review Boolean assertions under `R14`; for assertion-dispatch candidates in parameterized tests, compare the assertion forms against the grouping rule in `CODE_OF_CONDUCT.md`.
+- `R15-I`: inspect callback candidates used in argument sets against the grouping rule in `CODE_OF_CONDUCT.md`.
+  Inspect external, unresolved, or dynamic argument sources manually.
 - `R15-J`: helpers and providers do not invoke target public methods. Treat scanner results as partial evidence and inspect unresolved ownership manually.
 
 ## Workflow
@@ -158,23 +156,24 @@ Do not use boolean `assertEquals`, boolean literals inside Hamcrest `is`, or con
 1. Complete the `R1` source loading, then read this Skill's [verification commands](references/verification.md) through EOF.
 2. Resolve targets, related tests, editable files, modules, and input-blocked state.
 3. Create a task-specific temporary directory and capture `Task scope baseline` for the resolved file set.
-4. Run focused baseline coverage through the repository command wrapper, then use `collect_quality_baseline.py` to report coverage and mechanical risks.
+4. Run focused baseline coverage and the full scanner through the repository command wrapper, retaining native JaCoCo reports and scanner diagnostics under the verification commands.
 5. Decide `R12`; otherwise record the SUT/collaborator ownership boundary and `R4` branch map.
 6. Review scanner candidates against every `R8` condition and record candidate-level decisions.
 7. Check `R9`, then implement the smallest tests allowed by `R2-R7`.
-8. After each coherent edit, run the lightweight precheck, focused test, and mechanical scan.
-9. Apply `R13`, re-run coverage, and inspect semantic `R15-A/B/D/I/J` obligations.
-10. Run final coverage, repository formatting/checkstyle gates, and the two required mechanical scans.
-11. Recheck scope against the baseline and decide `R10` twice before delivery.
+8. After each coherent edit, run invalidated focused tests and relevant repository Checkstyle checks.
+9. Apply `R13` and inspect semantic `R15-A/B/D/G/I/J` obligations.
+10. Complete missing or invalidated final coverage, repository formatting/checkstyle, and full mechanical checks under the [verification commands](references/verification.md).
+11. Confirm final scope against the baseline and decide `R10` once from current evidence before delivery.
 
-Do not reuse a prior task's test or coverage result. Final coverage must execute tests for the effective candidate.
+Do not reuse a prior task's test or coverage result.
+Final coverage must include executed tests for the effective candidate; use the verification commands to determine whether current evidence remains valid.
 
 ## Output
 
 Include:
 
 - `R10=<state>`;
-- aggregated CLASS/LINE/BRANCH counters and ratios for every target plus inner classes;
+- native JaCoCo report paths and raw CLASS/LINE/BRANCH counters for every target and inner class, with per-class ratios for each requested numeric metric;
 - `R8-CANDIDATES` with candidate decisions and evidence;
 - branch/ownership mapping, or the `R12` exemption;
 - executed commands, exit codes, and bounded log paths/summaries;

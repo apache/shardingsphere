@@ -52,7 +52,6 @@ class FirebirdCommitTransactionPacketTest {
     
     @Test
     void assertWrite() {
-        when(payload.readInt4()).thenReturn(123);
         FirebirdCommitTransactionPacket packet = new FirebirdCommitTransactionPacket(payload);
         FirebirdPacketPayload writePayload = mock(FirebirdPacketPayload.class);
         packet.write((PacketPayload) writePayload);

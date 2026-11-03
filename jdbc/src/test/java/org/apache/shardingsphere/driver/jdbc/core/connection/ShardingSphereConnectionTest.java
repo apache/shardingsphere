@@ -18,10 +18,15 @@
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
@@ -30,21 +35,29 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Savepoint;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -138,6 +151,177 @@ class ShardingSphereConnectionTest {
         when(result.getConnectionContext()).thenReturn(new ConnectionContext(Collections::emptySet));
         Plugins.getMemberAccessor().set(ShardingSphereConnection.class.getDeclaredField("databaseConnectionManager"), connection, result);
         return result;
+    }
+    
+    @Test
+    void assertRollbackSavepointWithDroppedDatabase() throws SQLException {
+        ContextManager contextManager = mockContextManager();
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", contextManager)) {
+            UnknownDatabaseException expected = new UnknownDatabaseException("foo_db");
+            mockDroppedDatabase(contextManager, expected);
+            assertThat(assertThrows(UnknownDatabaseException.class, () -> connection.rollback(mock(Savepoint.class))), sameInstance(expected));
+        }
+    }
+    
+    @Test
+    void assertSetNamedSavepointWithDroppedDatabase() throws SQLException {
+        ContextManager contextManager = mockContextManager();
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", contextManager)) {
+            UnknownDatabaseException expected = new UnknownDatabaseException("foo_db");
+            mockDroppedDatabase(contextManager, expected);
+            assertThat(assertThrows(UnknownDatabaseException.class, () -> connection.setSavepoint("foo_savepoint")), sameInstance(expected));
+        }
+    }
+    
+    @Test
+    void assertSetSavepointWithDroppedDatabase() throws SQLException {
+        ContextManager contextManager = mockContextManager();
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", contextManager)) {
+            UnknownDatabaseException expected = new UnknownDatabaseException("foo_db");
+            mockDroppedDatabase(contextManager, expected);
+            assertThat(assertThrows(UnknownDatabaseException.class, connection::setSavepoint), sameInstance(expected));
+        }
+    }
+    
+    @Test
+    void assertReleaseSavepointWithDroppedDatabase() throws SQLException {
+        ContextManager contextManager = mockContextManager();
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", contextManager)) {
+            UnknownDatabaseException expected = new UnknownDatabaseException("foo_db");
+            mockDroppedDatabase(contextManager, expected);
+            assertThat(assertThrows(UnknownDatabaseException.class, () -> connection.releaseSavepoint(mock(Savepoint.class))), sameInstance(expected));
+        }
+    }
+    
+    private void mockDroppedDatabase(final ContextManager contextManager, final UnknownDatabaseException ex) {
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(null);
+        when(contextManager.getDatabase("foo_db")).thenThrow(ex);
+    }
+    
+    @Test
+    void assertSetSavepointOutsidePostgreSQLTransaction() throws SQLException {
+        ContextManager contextManager = mockContextManagerWithDatabaseType("PostgreSQL");
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()).thenReturn(Optional.of("public"));
+        try (
+                ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", contextManager);
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class,
+                        (registry, context) -> when(registry.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData))) {
+            SQLFeatureNotSupportedException actual = assertThrows(SQLFeatureNotSupportedException.class, connection::setSavepoint);
+            assertThat(actual.getMessage(), is("Savepoint can only be used in transaction blocks"));
+        }
+    }
+    
+    @Test
+    void assertSetNamedSavepointOutsideMySQLTransaction() throws SQLException {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManagerWithDatabaseType("MySQL"))) {
+            DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManager(connection, mock(ConnectionTransaction.class));
+            Savepoint expected = mock(Savepoint.class);
+            when(databaseConnectionManager.setSavepoint("foo_savepoint")).thenReturn(expected);
+            assertThat(connection.setSavepoint("foo_savepoint"), sameInstance(expected));
+        }
+    }
+    
+    @Test
+    void assertSetSavepointOutsideMySQLTransaction() throws SQLException {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManagerWithDatabaseType("MySQL"))) {
+            DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManager(connection, mock(ConnectionTransaction.class));
+            Savepoint expected = mock(Savepoint.class);
+            when(databaseConnectionManager.setSavepoint()).thenReturn(expected);
+            assertThat(connection.setSavepoint(), sameInstance(expected));
+        }
+    }
+    
+    @Test
+    void assertRollbackSavepointWithSQLException() throws SQLException {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManagerWithDatabaseType("MySQL"))) {
+            DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManager(connection, mock(ConnectionTransaction.class));
+            Savepoint savepoint = mock(Savepoint.class);
+            SQLException expected = new SQLException("foo_savepoint failure");
+            doThrow(expected).when(databaseConnectionManager).rollback(savepoint);
+            assertThat(assertThrows(SQLException.class, () -> connection.rollback(savepoint)), sameInstance(expected));
+        }
+    }
+    
+    @Test
+    void assertReleaseSavepointOutsideMySQLTransaction() throws SQLException {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManagerWithDatabaseType("MySQL"))) {
+            DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManager(connection, mock(ConnectionTransaction.class));
+            Savepoint savepoint = mock(Savepoint.class);
+            connection.releaseSavepoint(savepoint);
+            verify(databaseConnectionManager, never()).releaseSavepoint(savepoint);
+        }
+    }
+    
+    private ContextManager mockContextManagerWithDatabaseType(final String databaseType) {
+        ContextManager result = mockContextManager();
+        when(result.getDatabase("foo_db").getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, databaseType));
+        return result;
+    }
+    
+    @Test
+    void assertRollbackSavepointInTransaction() throws SQLException {
+        ContextManager contextManager = mockContextManager();
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", contextManager)) {
+            DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManagerInTransaction(connection);
+            Savepoint savepoint = mock(Savepoint.class);
+            connection.rollback(savepoint);
+            verify(databaseConnectionManager).rollback(savepoint);
+            verify(contextManager, never()).getDatabase("foo_db");
+        }
+    }
+    
+    @Test
+    void assertSetNamedSavepointInTransaction() throws SQLException {
+        ContextManager contextManager = mockContextManager();
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", contextManager)) {
+            DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManagerInTransaction(connection);
+            Savepoint expected = mock(Savepoint.class);
+            when(databaseConnectionManager.setSavepoint("foo_savepoint")).thenReturn(expected);
+            assertThat(connection.setSavepoint("foo_savepoint"), sameInstance(expected));
+            verify(contextManager, never()).getDatabase("foo_db");
+        }
+    }
+    
+    @Test
+    void assertSetSavepointInTransaction() throws SQLException {
+        ContextManager contextManager = mockContextManager();
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", contextManager)) {
+            DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManagerInTransaction(connection);
+            Savepoint expected = mock(Savepoint.class);
+            when(databaseConnectionManager.setSavepoint()).thenReturn(expected);
+            assertThat(connection.setSavepoint(), sameInstance(expected));
+            verify(contextManager, never()).getDatabase("foo_db");
+        }
+    }
+    
+    @Test
+    void assertReleaseSavepointInTransaction() throws SQLException {
+        ContextManager contextManager = mockContextManager();
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", contextManager)) {
+            DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManagerInTransaction(connection);
+            Savepoint savepoint = mock(Savepoint.class);
+            connection.releaseSavepoint(savepoint);
+            verify(databaseConnectionManager).releaseSavepoint(savepoint);
+            verify(contextManager, never()).getDatabase("foo_db");
+        }
+    }
+    
+    private DriverDatabaseConnectionManager mockConnectionManagerInTransaction(final ShardingSphereConnection connection) {
+        ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
+        when(connectionTransaction.isHoldTransaction(true)).thenReturn(true);
+        return mockConnectionManager(connection, connectionTransaction);
+    }
+    
+    @Test
+    void assertSetSavepointOnClosedConnection() throws SQLException {
+        ContextManager contextManager = mockContextManager();
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", contextManager)) {
+            connection.close();
+            SQLException actual = assertThrows(SQLException.class, connection::setSavepoint);
+            assertThat(actual.getMessage(), is("Connection has been closed."));
+            verify(contextManager, never()).getDatabase("foo_db");
+        }
     }
     
     @Test

@@ -23,48 +23,95 @@ inputs:
     description: 'Uploaded artifact name'
     required: false
     default: 'build-outputs'
-  artifact-dir:
-    description: 'Directory used to stage packaged artifacts'
-    required: false
-    default: '/tmp/e2e-build-artifacts'
   include-maven-repository:
     description: 'Whether to package the ShardingSphere Maven repository output'
     required: false
     default: 'true'
-  docker-images:
-    description: 'Docker images to save, one per line as image=archive-file-name'
+  maven-repository-dir:
+    description: 'Maven repository directory, defaulting to ~/.m2/repository'
     required: false
-    default: 'apache/shardingsphere-proxy-test:latest=apache-shardingsphere-proxy-test.tar'
+    default: ''
+  image-archive:
+    description: 'Docker archive returned by Prepare E2E Docker after saving its cache'
+    required: false
+    default: ''
+  include-distribution:
+    description: 'Whether to package the MCP distribution home'
+    required: false
+    default: 'false'
+
+outputs:
+  artifact-id:
+    description: 'ID of the uploaded artifact'
+    value: ${{ steps.upload.outputs.artifact-id }}
 
 runs:
   using: composite
   steps:
-    - name: Prepare E2E Artifact Directory
+    - name: Record E2E Build Identity
+      id: identity
       shell: bash
-      run: |
-        mkdir -p "${{ inputs.artifact-dir }}"
-    - name: Package shardingsphere Maven Repository
-      if: inputs.include-maven-repository == 'true'
-      shell: bash
-      run: |
-        tar -czf "${{ inputs.artifact-dir }}/maven-repo-output.tar.gz" -C ~/.m2/repository org/apache/shardingsphere
-    - name: Save E2E Images
-      shell: bash
-      env:
-        E2E_DOCKER_IMAGES: ${{ inputs.docker-images }}
       run: |
         set -euo pipefail
-        while IFS= read -r each; do
-          if [[ -z "${each}" ]]; then
-            continue
+        source_sha="$(git rev-parse HEAD)"
+        if [[ "$source_sha" != "$GITHUB_SHA" ]]; then
+          echo '::error::The checked-out commit does not match the workflow commit.'
+          exit 1
+        fi
+        artifact_dir="$(mktemp -d "/tmp/shardingsphere-e2e-${source_sha}.XXXXXX")"
+        echo "artifact-dir=$artifact_dir" >> "$GITHUB_OUTPUT"
+        jq -n --arg source_sha "$source_sha" '{source_sha: $source_sha}' \
+          > "$artifact_dir/build-identity.json"
+    - name: Package E2E Build Outputs
+      shell: bash
+      env:
+        ARTIFACT_DIR: ${{ steps.identity.outputs.artifact-dir }}
+        INCLUDE_MAVEN_REPOSITORY: ${{ inputs.include-maven-repository }}
+        MAVEN_REPOSITORY_DIR: ${{ inputs.maven-repository-dir }}
+        INCLUDE_DISTRIBUTION: ${{ inputs.include-distribution }}
+      run: |
+        set -euo pipefail
+        if [[ "$INCLUDE_MAVEN_REPOSITORY" == 'true' ]]; then
+          tar -czf "$ARTIFACT_DIR/maven-repo-output.tar.gz" -C "${MAVEN_REPOSITORY_DIR:-$HOME/.m2/repository}" org/apache/shardingsphere
+        fi
+        if [[ "$INCLUDE_DISTRIBUTION" == 'true' ]]; then
+          distribution_homes=()
+          for directory in distribution/mcp/target/apache-shardingsphere-mcp-*; do
+            if [[ -d "$directory" ]]; then
+              distribution_homes+=("$directory")
+            fi
+          done
+          if [[ "${#distribution_homes[@]}" != 1 ]]; then
+            echo '::error::Expected exactly one built MCP distribution home.'
+            exit 1
           fi
-          image="${each%%=*}"
-          archive_name="${each#*=}"
-          docker save -o "${{ inputs.artifact-dir }}/${archive_name}" "${image}"
-        done <<< "${E2E_DOCKER_IMAGES}"
+          tar -czf "$ARTIFACT_DIR/mcp-distribution-home.tar.gz" -C distribution/mcp/target "${distribution_homes[0]##*/}"
+        fi
+    - name: Stage E2E Image
+      if: inputs.image-archive != ''
+      shell: bash
+      env:
+        ARTIFACT_DIR: ${{ steps.identity.outputs.artifact-dir }}
+        IMAGE_ARCHIVE: ${{ inputs.image-archive }}
+      run: |
+        set -euo pipefail
+        if [[ ! -f "$IMAGE_ARCHIVE" ]] || ! jq -e --arg source_sha "$GITHUB_SHA" '.source_sha == $source_sha' "$IMAGE_ARCHIVE.json"; then
+          echo '::error::The Docker archive is missing or does not match the source commit.'
+          exit 1
+        fi
+        mv "$IMAGE_ARCHIVE" "$ARTIFACT_DIR/image.tar"
+        mv "$IMAGE_ARCHIVE.json" "$ARTIFACT_DIR/image.tar.json"
     - name: Upload Build Artifacts
+      id: upload
       uses: actions/upload-artifact@v6
       with:
-        name: ${{ inputs.artifact-name }}
-        path: ${{ inputs.artifact-dir }}/*
+        name: ${{ inputs.artifact-name }}-${{ github.run_id }}-${{ github.job }}-${{ github.run_attempt }}
+        path: ${{ steps.identity.outputs.artifact-dir }}/*
+        if-no-files-found: error
         retention-days: 3
+    - name: Clean E2E Artifact Staging
+      if: always() && steps.identity.outputs.artifact-dir != ''
+      shell: bash
+      env:
+        ARTIFACT_DIR: ${{ steps.identity.outputs.artifact-dir }}
+      run: rm -rf -- "$ARTIFACT_DIR"

@@ -323,8 +323,8 @@
     </update>
 
     <update sql-case-id="update_with_dblink_oracle">
-        <table start-index="7" stop-index="22">
-            <simple-table name="employees" start-index="7" stop-index="22" />
+        <table start-index="7" stop-index="15">
+            <simple-table name="employees" start-index="7" stop-index="15" db-link="remote" at="@" table-name-start-index="7" table-name-stop-index="15" />
         </table>
         <set start-index="24" stop-index="42">
             <assignment start-index="24" stop-index="42">
@@ -2843,6 +2843,331 @@
                 <column name="last_login" start-index="25" stop-index="34" />
                 <assignment-value>
                     <literal-expression value="null" start-index="38" stop-index="41" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_tuple_implicit_postgresql_regression" parameters="1, 2">
+        <table>
+            <simple-table name="foo" start-index="7" stop-index="9" />
+        </table>
+        <set start-index="11" stop-index="29">
+            <assignment start-index="15" stop-index="29">
+                <columns name="a" start-index="16" stop-index="16" />
+                <columns name="b" start-index="19" stop-index="19" />
+                <assignment-value>
+                    <row-expression start-index="24" stop-index="29">
+                        <items>
+                            <parameter-marker-expression parameter-index="0" start-index="25" stop-index="25" />
+                        </items>
+                        <items>
+                            <parameter-marker-expression parameter-index="1" start-index="28" stop-index="28" />
+                        </items>
+                    </row-expression>
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+    <update sql-case-id="update_tuple_explicit_postgresql_regression" parameters="1, 2">
+        <table>
+            <simple-table name="foo" start-index="7" stop-index="9" />
+        </table>
+        <set start-index="11" stop-index="32">
+            <assignment start-index="15" stop-index="32">
+                <columns name="a" start-index="16" stop-index="16" />
+                <columns name="b" start-index="19" stop-index="19" />
+                <assignment-value>
+                    <row-expression start-index="24" stop-index="32">
+                        <items>
+                            <parameter-marker-expression parameter-index="0" start-index="28" stop-index="28" />
+                        </items>
+                        <items>
+                            <parameter-marker-expression parameter-index="1" start-index="31" stop-index="31" />
+                        </items>
+                    </row-expression>
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+    <update sql-case-id="update_tuple_subquery_postgresql_regression" parameters="1, 2">
+        <table>
+            <simple-table name="foo" start-index="7" stop-index="9" />
+        </table>
+        <set start-index="11" stop-index="36">
+            <assignment start-index="15" stop-index="36">
+                <columns name="a" start-index="16" stop-index="16" />
+                <columns name="b" start-index="19" stop-index="19" />
+                <assignment-value>
+                    <subquery text="(SELECT ?, ?)" start-index="24" stop-index="36">
+                        <select>
+                            <projections start-index="32" stop-index="35">
+                                <expression-projection text="?" start-index="32" stop-index="32">
+                                    <expr>
+                                        <parameter-marker-expression parameter-index="0" start-index="32" stop-index="32" />
+                                    </expr>
+                                </expression-projection>
+                                <expression-projection text="?" start-index="35" stop-index="35">
+                                    <expr>
+                                        <parameter-marker-expression parameter-index="1" start-index="35" stop-index="35" />
+                                    </expr>
+                                </expression-projection>
+                            </projections>
+                        </select>
+                    </subquery>
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+    <update sql-case-id="update_current_of_postgresql_regression" parameters="1">
+        <table>
+            <simple-table name="foo" start-index="7" stop-index="9" />
+        </table>
+        <set start-index="11" stop-index="20">
+            <assignment start-index="15" stop-index="20">
+                <column name="id" start-index="15" stop-index="16" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="20" stop-index="20" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="22" stop-index="48">
+            <expr>
+                <common-expression text="CURRENT OF foo_cursor" start-index="28" stop-index="48" />
+            </expr>
+        </where>
+    </update>
+    <update sql-case-id="update_with_returning_postgresql_regression" parameters="1, 2, 3, 4">
+        <table>
+            <simple-table name="foo" start-index="35" stop-index="37" />
+        </table>
+        <set start-index="39" stop-index="48">
+            <assignment start-index="43" stop-index="48">
+                <column name="id" start-index="43" stop-index="44" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="48" stop-index="48" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="50" stop-index="61">
+            <expr>
+                <binary-operation-expression start-index="56" stop-index="61">
+                    <left>
+                        <column name="id" start-index="56" stop-index="57" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="2" start-index="61" stop-index="61" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <with start-index="0" stop-index="26">
+            <common-table-expression name="seed" start-index="5" stop-index="26">
+                <column name="id" start-index="10" stop-index="11" />
+                <subquery-expression start-index="5" stop-index="26">
+                    <select parameters="1">
+                        <projections start-index="25" stop-index="25">
+                            <expression-projection text="?" start-index="25" stop-index="25">
+                                <expr>
+                                    <parameter-marker-expression parameter-index="0" start-index="25" stop-index="25" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <returning>
+            <projections start-index="73" stop-index="77">
+                <column-projection name="id" start-index="73" stop-index="74" />
+                <expression-projection text="?" start-index="77" stop-index="77">
+                    <expr>
+                        <parameter-marker-expression parameter-index="3" start-index="77" stop-index="77" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </returning>
+    </update>
+    <update sql-case-id="update_with_returning_aliases_postgresql_regression" parameters="1, 2, 3, 4">
+        <table>
+            <simple-table name="foo" start-index="35" stop-index="37" />
+        </table>
+        <set start-index="39" stop-index="48">
+            <assignment start-index="43" stop-index="48">
+                <column name="id" start-index="43" stop-index="44" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="48" stop-index="48" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="50" stop-index="61">
+            <expr>
+                <binary-operation-expression start-index="56" stop-index="61">
+                    <left>
+                        <column name="id" start-index="56" stop-index="57" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="2" start-index="61" stop-index="61" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <with start-index="0" stop-index="26">
+            <common-table-expression name="seed" start-index="5" stop-index="26">
+                <column name="id" start-index="10" stop-index="11" />
+                <subquery-expression start-index="5" stop-index="26">
+                    <select parameters="1">
+                        <projections start-index="25" stop-index="25">
+                            <expression-projection text="?" start-index="25" stop-index="25">
+                                <expr>
+                                    <parameter-marker-expression parameter-index="0" start-index="25" stop-index="25" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <returning old-alias="old_row" old-alias-start-index="86" old-alias-stop-index="92" new-alias="new_row" new-alias-start-index="102" new-alias-stop-index="108">
+            <projections start-index="111" stop-index="135">
+                <column-projection name="id" start-index="111" stop-index="120">
+                    <owner name="old_row" start-index="111" stop-index="117" />
+                </column-projection>
+                <column-projection name="id" start-index="123" stop-index="132">
+                    <owner name="new_row" start-index="123" stop-index="129" />
+                </column-projection>
+                <expression-projection text="?" start-index="135" stop-index="135">
+                    <expr>
+                        <parameter-marker-expression parameter-index="3" start-index="135" stop-index="135" />
+                    </expr>
+                </expression-projection>
+            </projections>
+        </returning>
+    </update>
+    <update sql-case-id="update_tuple_literal_pg">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="48">
+            <assignment start-index="19" stop-index="48">
+                <columns name="user_id" start-index="20" stop-index="26" />
+                <columns name="status" start-index="29" stop-index="34" />
+                <assignment-value>
+                    <row-expression start-index="39" stop-index="48">
+                        <items>
+                            <literal-expression value="1" start-index="40" stop-index="40" />
+                        </items>
+                        <items>
+                            <literal-expression value="foo" start-index="43" stop-index="47" />
+                        </items>
+                    </row-expression>
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_tuple_subquery_pg">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="55">
+            <assignment start-index="19" stop-index="55">
+                <columns name="user_id" start-index="20" stop-index="26" />
+                <columns name="status" start-index="29" stop-index="34" />
+                <assignment-value>
+                    <subquery start-index="39" stop-index="55">
+                        <select>
+                            <projections start-index="47" stop-index="54">
+                                <expression-projection text="1" start-index="47" stop-index="47">
+                                    <expr>
+                                        <literal-expression value="1" start-index="47" stop-index="47" />
+                                    </expr>
+                                </expression-projection>
+                                <expression-projection text="'foo'" start-index="50" stop-index="54">
+                                    <expr>
+                                        <literal-expression value="foo" start-index="50" stop-index="54" />
+                                    </expr>
+                                </expression-projection>
+                            </projections>
+                        </select>
+                    </subquery>
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_array_element_pg">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="35">
+            <assignment start-index="19" stop-index="35">
+                <column name="status" start-index="19" stop-index="27" />
+                <assignment-value>
+                    <literal-expression value="foo" start-index="31" stop-index="35" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_array_slice_pg">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="40">
+            <assignment start-index="19" stop-index="40">
+                <column name="status" start-index="19" stop-index="32" />
+                <assignment-value>
+                    <literal-expression value="foo" start-index="36" stop-index="40" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_array_parameter_pg" parameters="1, 'foo'">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="33">
+            <assignment start-index="19" stop-index="33">
+                <column name="status" start-index="19" stop-index="28" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="32" stop-index="33" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_member_target_pg">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="38">
+            <assignment start-index="19" stop-index="38">
+                <column name="status" start-index="19" stop-index="30" />
+                <assignment-value>
+                    <literal-expression value="foo" start-index="34" stop-index="38" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+    <update sql-case-id="update_indirection_parameters_postgresql_regression" parameters="1, 2, 3, 4, 5">
+        <table start-index="7" stop-index="9">
+            <simple-table name="foo" start-index="7" stop-index="9" />
+        </table>
+        <set start-index="11" stop-index="41">
+            <assignment start-index="15" stop-index="26">
+                <column name="items" start-index="15" stop-index="22" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="26" stop-index="26" />
+                </assignment-value>
+            </assignment>
+            <assignment start-index="29" stop-index="41">
+                <column name="span" start-index="29" stop-index="37" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="4" start-index="41" stop-index="41" />
                 </assignment-value>
             </assignment>
         </set>

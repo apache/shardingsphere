@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.infra.binder.context.segment.select.pagination.engine;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 
 import java.util.List;
@@ -35,6 +38,8 @@ public final class LimitPaginationContextEngine {
      * @return pagination context
      */
     public PaginationContext createPaginationContext(final LimitSegment limitSegment, final List<Object> params) {
-        return new PaginationContext(limitSegment.getOffset().orElse(null), limitSegment.getRowCount().orElse(null), params);
+        PaginationValueSegment offset = limitSegment.getOffset().orElse(null);
+        ShardingSpherePreconditions.checkState(!limitSegment.isImplicitRowCount(), () -> new UnsupportedSQLOperationException("Implicit FETCH row count"));
+        return new PaginationContext(offset, limitSegment.getRowCount().orElse(null), params);
     }
 }

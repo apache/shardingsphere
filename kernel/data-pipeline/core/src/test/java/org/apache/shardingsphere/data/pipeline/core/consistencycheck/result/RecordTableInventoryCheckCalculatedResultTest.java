@@ -87,9 +87,9 @@ class RecordTableInventoryCheckCalculatedResultTest {
     
     @Test
     void assertNotEqualsWithDifferentRandomColumnValue() {
-        Map<String, Object> record = buildFixedFullTypeRecord();
-        RecordTableInventoryCheckCalculatedResult result1 = new RecordTableInventoryCheckCalculatedResult(1000, Collections.singletonList(record));
-        record.forEach((key, value) -> {
+        Map<String, Object> recordMap = buildFixedFullTypeRecord();
+        RecordTableInventoryCheckCalculatedResult result1 = new RecordTableInventoryCheckCalculatedResult(1000, Collections.singletonList(recordMap));
+        recordMap.forEach((key, value) -> {
             RecordTableInventoryCheckCalculatedResult result2 = new RecordTableInventoryCheckCalculatedResult(
                     1000, Collections.singletonList(ConsistencyCheckDataBuilder.modifyColumnValueRandomly(buildFixedFullTypeRecord(), key)));
             assertThat(result1, not(result2));

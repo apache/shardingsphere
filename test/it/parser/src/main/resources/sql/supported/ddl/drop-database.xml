@@ -36,4 +36,9 @@
     <sql-case id="drop_database_doris_force" value="DROP DATABASE db_test FORCE" db-types="Doris" />
     <sql-case id="drop_database_doris_if_exists_force" value="DROP DATABASE IF EXISTS db_test FORCE" db-types="Doris" />
     <sql-case id="drop_database_doris_without_force" value="DROP DATABASE db_test" db-types="Doris" />
+    <sql-case id="drop_database_force_pg" value="DROP DATABASE database1 (FORCE)" db-types="PostgreSQL" />
+    <sql-case id="drop_database_with_force_pg" value="DROP DATABASE database1 WITH (FORCE)" db-types="PostgreSQL" />
+    <sql-case id="drop_database_if_exists_force_pg" value="DROP DATABASE IF EXISTS &quot;Database1&quot; (FORCE)" db-types="PostgreSQL" />
+    <sql-case id="drop_database_if_exists_with_force_pg" value="DROP DATABASE IF EXISTS database1 WITH (FORCE)" db-types="PostgreSQL" />
+    <sql-case id="drop_database_force_list_pg" value="DROP DATABASE database1 (FORCE, FORCE)" db-types="PostgreSQL" />
 </sql-cases>

@@ -13,7 +13,7 @@ weight = 2
 
 ## 前置条件
 
-- 已按[快速开始](../../quick-start/)准备 ShardingSphere-MCP 发行包和数据库配置。
+- 已按[快速开始](/cn/user-manual/shardingsphere-mcp/quick-start/)准备 ShardingSphere-MCP 发行包和数据库配置。
 - Claude Code CLI 可用。
 - 使用 HTTP 方式时，Claude Code 所在环境可以访问 `http://127.0.0.1:18088/mcp`，或访问你实际配置的 MCP Server 地址。
 
@@ -84,18 +84,18 @@ claude mcp add --transport stdio shardingsphere -- \
 
 - 使用 STDIO 时，Claude Code 需要能够访问本地 ShardingSphere-MCP 发行包和对应配置文件。
 - 同一个 `shardingsphere` server name 应只对应一种接入方式；如果需要同时保留 HTTP 与 STDIO，建议使用不同的 server name。
-- 具体可用任务和使用边界见[能力清单](../../capabilities/)。
+- 具体可用任务和使用边界见[能力清单](/cn/user-manual/shardingsphere-mcp/capabilities/)。
 - 涉及 SQL 执行或规则变更时，应先审查预览内容，再确认执行。
-- 如果希望通过 Anthropic API 平台侧接入 ShardingSphere-MCP，请参考 [Anthropic MCP Connector](../anthropic-mcp-connector/)。
+- 如果希望通过 Anthropic API 平台侧接入 ShardingSphere-MCP，请参考 [Anthropic MCP Connector](/cn/user-manual/shardingsphere-mcp/client-integration/anthropic-mcp-connector/)。
 
 ## 参考资料
 
 ### 相关文档
 
-- [快速开始](../../quick-start/)
-- [能力清单](../../capabilities/)
-- [配置说明](../../configuration/)
-- [Anthropic MCP Connector](../anthropic-mcp-connector/)
+- [快速开始](/cn/user-manual/shardingsphere-mcp/quick-start/)
+- [能力清单](/cn/user-manual/shardingsphere-mcp/capabilities/)
+- [配置说明](/cn/user-manual/shardingsphere-mcp/configuration/)
+- [Anthropic MCP Connector](/cn/user-manual/shardingsphere-mcp/client-integration/anthropic-mcp-connector/)
 
 ### 官方参考
 

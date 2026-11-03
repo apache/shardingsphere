@@ -111,7 +111,7 @@ class FirebirdParseBatchBlrTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("blobFieldArguments")
-    void assertParseRejectsBlob(final String name, final byte[] fieldBlr, final int scale) {
+    void assertParseRejectsBlob(final String name, final byte[] fieldBlr) {
         ByteBuf blr = createBlr(BlrConstants.blr_version5, fieldBlr, 2);
         DatabaseProtocolException actual = assertThrows(DatabaseProtocolException.class, () -> FirebirdParseBatchBlr.parse(blr, blr.readableBytes()));
         assertThat(actual.getMessage(), is("BLOB fields are not supported in Firebird batch operations"));
@@ -161,8 +161,7 @@ class FirebirdParseBatchBlrTest {
     }
     
     private static byte[] longFieldBlr(final int... terminator) {
-        byte[] base = {(byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0,
-                2, 0, (byte) BlrConstants.blr_long, 0, (byte) BlrConstants.blr_short, 0};
+        byte[] base = {(byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0, 2, 0, (byte) BlrConstants.blr_long, 0, (byte) BlrConstants.blr_short, 0};
         return append(base, terminator);
     }
     

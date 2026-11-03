@@ -17,14 +17,17 @@
 
 # Review Corrections and Multi-Round Review
 
-Read this reference when public review feedback already exists, new commits
-address previous findings, or an author, maintainer, or user challenges a
-finding.
+Read this reference when review feedback already exists, new commits address previous findings, an author, maintainer, or user challenges a finding, or a previous overall readiness conclusion is challenged or disproved.
 
 ## Multi-Round Review
 
-Use public previous-round feedback only. Do not expose private review notes,
-local chat iterations, raw inventory, or internal scratch state.
+Use public previous-round feedback only for public PR conclusions.
+For standalone local corrections, inherit the main Skill's task baseline, attributed local delta, authorized evidence boundary and selected mode's output contract.
+Do not expose private review notes, local chat iterations, raw inventory, or internal scratch state.
+
+Before changing an overall conclusion, apply the basis comparison and historical-finding procedures in [review-coordination.md](review-coordination.md).
+Correct both unsupported findings and an unsupported overall readiness conclusion, including a previous claim that no issues remain.
+Do not preserve an unsupported previous verdict for consistency.
 
 For every prior public finding, classify the latest head as:
 
@@ -52,17 +55,18 @@ Classify every finding first reported after an earlier formal review:
   reachable or materially changed the evidence.
 - `Missed in the previous review`: the problem was already present in the
   previously reviewed head.
+- `Established by a changed review basis`: a proven applicable requirement, selected focus or decisive fact changed and newly supports a finding that the prior basis did not support.
 
-Prove the classification from the previous and current heads. Do not describe
-an earlier-head problem as newly introduced. For a previous-review miss,
-acknowledge it directly, rerun the full Completion Gate, and return the complete
-remaining blocker set rather than publishing only the late finding.
+Prove the classification from the previous and current effective candidates and their applicable requirements, focus and decisive facts.
+Identify a changed requirement or review scope separately and cite the decision establishing it; a later rejection of an earlier approved design does not by itself prove an earlier code defect.
+Do not describe an earlier-candidate problem as newly introduced.
+For a previous-review miss, acknowledge it directly and inspect the complete effective candidate for the same omitted structure, then follow [review-coordination.md](review-coordination.md) before returning the complete remaining blocker set.
 
 ## Challenged Findings
 
 Treat the prior finding as a hypothesis to disprove:
 
-1. Rebuild the evidence chain from current public facts.
+1. Rebuild the evidence chain from current admissible facts under the main Skill's evidence boundary.
 2. List every assumption required for the finding to remain true.
 3. Inspect challenger-provided source, version, reproduction, CI, specification,
    and implementation evidence first.
@@ -78,15 +82,14 @@ Run the final finding audit again before publishing another blocking result.
 
 ## Correction Output
 
-When correcting a previously published conclusion, begin the single fenced
-Markdown result with:
+When correcting a previously reported conclusion, use the selected mode's output contract and begin with:
 
-- `Previous Finding`
+- `Previous Finding or Conclusion`
 - `Current Status`: `Retained`, `Withdrawn`, or `Changed to Review Incomplete`
 - `Reason`
 
-Then provide the current mode's ordinary result. Keep exactly one formal
-`Review Result` line when a formal result is requested.
+Then provide the current mode's ordinary result.
+Keep exactly one formal `Review Result` line when a formal result is requested.
 
 ## Discussion Replies
 

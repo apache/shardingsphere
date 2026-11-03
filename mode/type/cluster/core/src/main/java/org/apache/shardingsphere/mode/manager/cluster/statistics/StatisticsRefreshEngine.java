@@ -85,21 +85,22 @@ public final class StatisticsRefreshEngine {
     
     private void refreshForDatabase(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database) {
         for (ShardingSphereSchema each : database.getAllSchemas()) {
-            refreshForSchema(metaData, database.getName(), each);
+            refreshForSchema(metaData, database, each);
         }
     }
     
-    private void refreshForSchema(final ShardingSphereMetaData metaData, final String databaseName, final ShardingSphereSchema schema) {
+    private void refreshForSchema(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final ShardingSphereSchema schema) {
         for (ShardingSphereTable each : schema.getAllTables()) {
-            refreshForTable(metaData, databaseName, schema.getName(), each);
+            refreshForTable(metaData, database, schema.getName(), each);
         }
     }
     
-    private void refreshForTable(final ShardingSphereMetaData metaData, final String databaseName, final String schemaName, final ShardingSphereTable table) {
+    private void refreshForTable(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable table) {
+        String databaseName = database.getName();
         try {
             Optional<DialectDatabaseStatisticsCollector> dialectStatisticsCollector = "shardingsphere".equalsIgnoreCase(schemaName)
                     ? Optional.of(new ShardingSphereStatisticsCollector())
-                    : DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, metaData.getDatabase(databaseName).getProtocolType());
+                    : DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, database.getProtocolType());
             if (dialectStatisticsCollector.isPresent()) {
                 Optional<Collection<Map<String, Object>>> rowColumnValues = dialectStatisticsCollector.get().collectRowColumnValues(databaseName, schemaName, table.getName(), metaData);
                 rowColumnValues.ifPresent(optional -> new StatisticsStorageEngine(contextManager, databaseName, schemaName, table.getName(), optional).storage());

@@ -57,11 +57,11 @@ public @interface ConfigurationReferenceExists {
     boolean allowEmpty() default false;
     
     /**
-     * Get the violation message. Use {pool} for the configuration pool property and {reference} for the missing name.
+     * Get the violation message. Use {pool} for the configuration pool property.
      *
      * @return violation message
      */
-    String message() default "references unconfigured {pool} `{reference}`";
+    String message() default "references unconfigured {pool}";
     
     /**
      * Get groups.

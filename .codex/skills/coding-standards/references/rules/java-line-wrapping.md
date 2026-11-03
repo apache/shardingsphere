@@ -22,17 +22,21 @@ Apply these rules to Java declaration headers, statements, and expressions.
 ## Line-Length Decision
 
 - Count every character in the physical line, including its leading indentation.
-- Reconstruct a multi-line declaration header, statement, or expression in normal one-line Java form by removing only layout line breaks and indentation and preserving the tokens and required spaces.
-- Keep the reconstructed form on one physical line when it contains no more than 200 characters.
-- Wrap the reconstructed form only when it would contain more than 200 characters.
+- Before reconstructing a multi-line construct, identify the complete declaration header, statement, or expression and distinguish layout line breaks from structural line breaks.
 - Do not treat braces and the bodies of classes, methods, control-flow statements, switch rules, or multi-statement lambdas as removable layout line breaks.
 - Do not reconstruct comments, Javadocs, text blocks, or string contents in a way that changes their tokens, content, or semantics.
+- Reconstruct the complete declaration header, statement, or expression in normal one-line Java form while retaining its first line's actual leading indentation.
+  Remove only layout line breaks and continuation indentation, preserving the tokens and required spaces.
+- Keep the reconstructed form on one physical line when it contains no more than 200 characters.
+- Wrap the reconstructed form only when it would contain more than 200 characters.
 - In Implementation Guidance Mode, apply these rules to every declaration header, statement, or expression added or modified by the task, but do not reformat untouched surrounding code.
 - In Standalone Compliance Audit Mode, apply these rules to every Java declaration header, statement, and expression in the exact audit scope.
 
 ## Wrapping Forms
 
-- Use the fewest line breaks that keep every physical line within 200 characters, except for the list, builder, and resource forms defined below.
+- Apply the specific wrapping forms below before the general rules for line-break count and preceding-line content.
+- A specific form does not permit layout line breaks when the complete reconstructed form contains no more than 200 characters.
+- Use the fewest line breaks that keep every physical line within 200 characters, subject to the applicable specific form below.
 - Keep as much complete content as possible on the preceding line and break only at the applicable syntactic boundary.
 - Indent expression continuations by eight additional spaces unless a declaration rule below requires alignment with the first parameter.
 - Keep a closing parenthesis, bracket, or statement terminator on the same line as the last item or expression that it closes.
@@ -55,6 +59,6 @@ Apply these rules to Java declaration headers, statements, and expressions.
 - Use Checkstyle `LineLength` to detect physical Java lines longer than 200 characters.
 - Do not treat passing Checkstyle as proof that a multi-line construct needed wrapping or used the required wrapping form.
 - Do not treat passing Spotless as proof of compliance because the repository formatter preserves existing wrapped lines.
-- For every multi-line candidate in scope, reconstruct and measure its normal one-line form before deciding whether the line breaks are allowed.
-- Report a construct whose reconstructed form contains no more than 200 characters as a violation and use the reconstructed single line as the minimum correction.
+- For every multi-line candidate in scope, distinguish structural line breaks from layout line breaks, then reconstruct and measure the complete unit wherever only layout would change.
+- Report layout line breaks in a construct whose reconstructed form contains no more than 200 characters as a violation and use the reconstructed single line as the minimum correction.
 - When the reconstructed form exceeds 200 characters, verify every physical line, wrapping boundary, continuation indentation, operator position, and closing delimiter against the applicable wrapping form.

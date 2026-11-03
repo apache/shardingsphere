@@ -19,51 +19,114 @@ name: 'Download E2E Artifacts'
 description: 'Download and restore E2E build artifacts including Maven repository and Docker image'
 
 inputs:
-  artifact-name:
-    description: 'Downloaded artifact name'
-    required: false
-    default: 'build-outputs'
-  artifact-dir:
-    description: 'Directory used to download packaged artifacts'
-    required: false
-    default: '/tmp/e2e-build-artifacts'
+  artifact-id:
+    description: 'Artifact ID returned by the producing job'
+    required: true
   restore-maven-repository:
     description: 'Whether to restore the ShardingSphere Maven repository output'
     required: false
     default: 'true'
+  maven-repository-dir:
+    description: 'Maven repository directory, defaulting to ~/.m2/repository'
+    required: false
+    default: ''
   load-docker-image:
     description: 'Whether to load the Docker image after download'
     required: false
     default: 'true'
-  docker-image-archives:
-    description: 'Docker image archive file names to load from artifact-dir, one per line'
+  restore-distribution:
+    description: 'Whether to restore the MCP distribution home'
     required: false
-    default: 'apache-shardingsphere-proxy-test.tar'
+    default: 'false'
+
+outputs:
+  image:
+    description: 'Private image reference restored for this consumer'
+    value: ${{ steps.load-image.outputs.image }}
 
 runs:
   using: composite
   steps:
+    - name: Prepare E2E Artifact Download
+      id: staging
+      shell: bash
+      env:
+        ARTIFACT_ID: ${{ inputs.artifact-id }}
+      run: |
+        set -euo pipefail
+        if [[ -z "$ARTIFACT_ID" ]]; then
+          echo '::error::The artifact ID is required.'
+          exit 1
+        fi
+        artifact_dir="$(mktemp -d "/tmp/shardingsphere-e2e-${GITHUB_SHA}.XXXXXX")"
+        echo "artifact-dir=$artifact_dir" >> "$GITHUB_OUTPUT"
     - name: Download Build Artifacts
       uses: actions/download-artifact@v8
       with:
-        name: ${{ inputs.artifact-name }}
-        path: ${{ inputs.artifact-dir }}
+        artifact-ids: ${{ inputs.artifact-id }}
+        path: ${{ steps.staging.outputs.artifact-dir }}
+    - name: Verify E2E Build Identity
+      shell: bash
+      env:
+        ARTIFACT_DIR: ${{ steps.staging.outputs.artifact-dir }}
+        RESTORE_MAVEN_REPOSITORY: ${{ inputs.restore-maven-repository }}
+        RESTORE_DISTRIBUTION: ${{ inputs.restore-distribution }}
+        LOAD_DOCKER_IMAGE: ${{ inputs.load-docker-image }}
+      run: |
+        set -euo pipefail
+        required_files=(build-identity.json)
+        if [[ "$RESTORE_MAVEN_REPOSITORY" == 'true' ]]; then
+          required_files+=(maven-repo-output.tar.gz)
+        fi
+        if [[ "$RESTORE_DISTRIBUTION" == 'true' ]]; then
+          required_files+=(mcp-distribution-home.tar.gz)
+        fi
+        if [[ "$LOAD_DOCKER_IMAGE" == 'true' ]]; then
+          required_files+=(image.tar image.tar.json)
+        fi
+        for file in "${required_files[@]}"; do
+          if [[ ! -f "$ARTIFACT_DIR/$file" ]]; then
+            echo "::error::The downloaded artifact is missing $file."
+            exit 1
+          fi
+        done
+        if ! jq -e --arg source_sha "$GITHUB_SHA" \
+          '.source_sha == $source_sha' "$ARTIFACT_DIR/build-identity.json"; then
+          echo '::error::The downloaded artifact does not match the source commit.'
+          exit 1
+        fi
     - name: Restore shardingsphere Maven Repository
       if: inputs.restore-maven-repository == 'true'
       shell: bash
-      run: |
-        mkdir -p ~/.m2/repository
-        tar -xzf "${{ inputs.artifact-dir }}/maven-repo-output.tar.gz" -C ~/.m2/repository
-    - name: Load E2E Images
-      if: inputs.load-docker-image == 'true'
-      shell: bash
       env:
-        E2E_DOCKER_IMAGE_ARCHIVES: ${{ inputs.docker-image-archives }}
+        ARTIFACT_DIR: ${{ steps.staging.outputs.artifact-dir }}
+        MAVEN_REPOSITORY_DIR: ${{ inputs.maven-repository-dir }}
       run: |
         set -euo pipefail
-        while IFS= read -r each; do
-          if [[ -z "${each}" ]]; then
-            continue
-          fi
-          docker load -i "${{ inputs.artifact-dir }}/${each}"
-        done <<< "${E2E_DOCKER_IMAGE_ARCHIVES}"
+        repository_dir="${MAVEN_REPOSITORY_DIR:-$HOME/.m2/repository}"
+        mkdir -p "$repository_dir"
+        tar -xzf "$ARTIFACT_DIR/maven-repo-output.tar.gz" -C "$repository_dir"
+    - name: Restore MCP Distribution
+      if: inputs.restore-distribution == 'true'
+      shell: bash
+      env:
+        ARTIFACT_DIR: ${{ steps.staging.outputs.artifact-dir }}
+      run: |
+        set -euo pipefail
+        mkdir -p distribution/mcp/target
+        tar -xzf "$ARTIFACT_DIR/mcp-distribution-home.tar.gz" -C distribution/mcp/target
+    - name: Load E2E Image
+      id: load-image
+      if: inputs.load-docker-image == 'true'
+      uses: ./.github/actions/prepare-e2e-docker
+      with:
+        type: source
+        operation: load
+        archive: ${{ steps.staging.outputs.artifact-dir }}/image.tar
+        source-revision: ${{ github.sha }}
+    - name: Clean E2E Artifact Staging
+      if: always() && steps.staging.outputs.artifact-dir != ''
+      shell: bash
+      env:
+        ARTIFACT_DIR: ${{ steps.staging.outputs.artifact-dir }}
+      run: rm -rf -- "$ARTIFACT_DIR"

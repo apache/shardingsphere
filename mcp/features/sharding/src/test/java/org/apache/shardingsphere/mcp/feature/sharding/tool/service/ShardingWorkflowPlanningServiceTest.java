@@ -330,11 +330,27 @@ class ShardingWorkflowPlanningServiceTest {
         assertThat(((ShardingWorkflowRequest) actual.getRequest()).getKeyGeneratorProperties(), is(Map.of("worker-id", "1")));
     }
     
-    @Test
-    void assertPlanTableRuleRejectsDataNodeAndStorageUnitInputs() {
-        ShardingWorkflowRequest request = createTableRuleRequest();
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertPlanTableRuleConflictingAutoTableInputsArguments")
+    void assertPlanTableRuleConflictingAutoTableInputs(final String name, final String dataNodes, final String strategyType, final String shardingColumns,
+                                                       final List<String> expectedConflictingInputs) {
+        ShardingWorkflowRequest request = createDatabaseRequest();
+        request.setTable("t_order");
+        request.setDataNodes(dataNodes);
         request.setStorageUnits("ds_0");
-        assertTableRuleInputConflict(request, List.of("data_nodes", "storage_units"));
+        request.setStrategyType(strategyType);
+        request.setShardingColumns(shardingColumns);
+        WorkflowContextSnapshot actual = planningService.planTableRule(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_INPUT_CONFLICT));
+        assertThat(actual.getIssues().getFirst().getDetails().get("conflicting_inputs"), is(expectedConflictingInputs));
+    }
+    
+    private static Stream<Arguments> assertPlanTableRuleConflictingAutoTableInputsArguments() {
+        return Stream.of(
+                Arguments.of("data nodes and storage units", "ds_0.t_order", "none", "", List.of("data_nodes", "storage_units")),
+                Arguments.of("complex auto-table strategy", "", "complex", "", List.of("storage_units", "strategy_type")),
+                Arguments.of("auto-table sharding columns", "", "standard", "order_id,user_id", List.of("storage_units", "sharding_columns")));
     }
     
     @Test
@@ -606,6 +622,42 @@ class ShardingWorkflowPlanningServiceTest {
         WorkflowContextSnapshot actual = planningService.planComponentCleanup(new TestWorkflowSessionContext(), queryFacade, request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getRuleArtifacts().getFirst().getSql(), is(expectedSQL));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertPlanTableRuleRequiredStrategyInputsArguments")
+    void assertPlanTableRuleRequiredStrategyInputs(final String name, final String table, final String dataNodes, final String storageUnits, final String strategyType,
+                                                   final String column, final String shardingColumns, final String algorithmType, final String expectedField, final String expectedMessage) {
+        ShardingWorkflowRequest request = new ShardingWorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setTable(table);
+        request.setDataNodes(dataNodes);
+        request.setStorageUnits(storageUnits);
+        request.setStrategyType(strategyType);
+        request.setColumn(column);
+        request.setShardingColumns(shardingColumns);
+        request.setAlgorithmType(algorithmType);
+        WorkflowContextSnapshot actual = planningService.planTableRule(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_INPUT_REQUIRED));
+        assertThat(actual.getClarifiedIntent().getUnresolvedFields(), is(List.of(expectedField)));
+        assertThat(actual.getClarifiedIntent().getClarificationMessages(), is(List.of(expectedMessage)));
+    }
+    
+    private static Stream<Arguments> assertPlanTableRuleRequiredStrategyInputsArguments() {
+        return Stream.of(
+                Arguments.of("missing table", "", "ds_0.t_order", "", "standard", "order_id", "", "INLINE", "table", "Please provide target logical table."),
+                Arguments.of("missing auto-table column", "t_order", "", "ds_0", "standard", "", "", "HASH_MOD", "column", "Please provide auto table sharding column."),
+                Arguments.of("missing auto-table algorithm", "t_order", "", "ds_0", "standard", "order_id", "", "", "algorithm_type", "Please provide auto table sharding algorithm type."),
+                Arguments.of("missing complex columns", "t_order", "ds_0.t_order", "", "complex", "", "", "COMPLEX_INLINE", "sharding_columns",
+                        "Please provide at least two sharding columns for complex strategy."),
+                Arguments.of("one complex column", "t_order", "ds_0.t_order", "", "complex", "", "order_id", "COMPLEX_INLINE", "sharding_columns",
+                        "Please provide at least two sharding columns for complex strategy."),
+                Arguments.of("missing complex algorithm", "t_order", "ds_0.t_order", "", "complex", "", "order_id,user_id", "", "algorithm_type", "Please provide sharding algorithm type."),
+                Arguments.of("missing hint algorithm", "t_order", "ds_0.t_order", "", "hint", "", "", "", "algorithm_type", "Please provide sharding algorithm type."),
+                Arguments.of("unknown strategy", "t_order", "ds_0.t_order", "", "foo_strategy", "", "", "", "strategy_type", "Please provide strategy_type as standard, complex, hint, or none."),
+                Arguments.of("missing standard column", "t_order", "ds_0.t_order", "", "standard", "", "", "INLINE", "column", "Please provide sharding column."),
+                Arguments.of("missing standard algorithm", "t_order", "ds_0.t_order", "", "standard", "order_id", "", "", "algorithm_type", "Please provide sharding algorithm type."));
     }
     
     private ShardingWorkflowRequest createDatabaseRequest() {

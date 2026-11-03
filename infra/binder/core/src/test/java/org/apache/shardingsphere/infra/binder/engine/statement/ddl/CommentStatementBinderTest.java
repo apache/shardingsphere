@@ -39,7 +39,6 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,13 +62,13 @@ class CommentStatementBinderTest {
     void assertBindWithTable() {
         IdentifierValue databaseName = new IdentifierValue("foo_db_1");
         IdentifierValue tableName = new IdentifierValue("t_order");
-        when(metaData.containsDatabase(eq(databaseName))).thenReturn(true);
+        when(metaData.containsDatabase(databaseName)).thenReturn(true);
         when(metaData.getDatabase(databaseName.getValue())).thenReturn(database);
-        when(metaData.getDatabase(eq(databaseName))).thenReturn(database);
+        when(metaData.getDatabase(databaseName)).thenReturn(database);
         when(database.getDefaultSchemaName()).thenReturn(databaseName.getValue());
-        when(database.getSchema(eq(databaseName))).thenReturn(schema);
-        when(schema.containsTable(eq(tableName))).thenReturn(true);
-        when(schema.getTable(eq(tableName))).thenReturn(table);
+        when(database.getSchema(databaseName)).thenReturn(schema);
+        when(schema.containsTable(tableName)).thenReturn(true);
+        when(schema.getTable(tableName)).thenReturn(table);
         when(table.getAllColumns()).thenReturn(Collections.emptyList());
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
@@ -96,13 +95,13 @@ class CommentStatementBinderTest {
     void assertBindWithColumn() {
         IdentifierValue databaseName = new IdentifierValue("foo_db_1");
         IdentifierValue tableName = new IdentifierValue("t_order");
-        when(metaData.containsDatabase(eq(databaseName))).thenReturn(true);
+        when(metaData.containsDatabase(databaseName)).thenReturn(true);
         when(metaData.getDatabase(databaseName.getValue())).thenReturn(database);
-        when(metaData.getDatabase(eq(databaseName))).thenReturn(database);
+        when(metaData.getDatabase(databaseName)).thenReturn(database);
         when(database.getDefaultSchemaName()).thenReturn(databaseName.getValue());
-        when(database.getSchema(eq(databaseName))).thenReturn(schema);
-        when(schema.containsTable(eq(tableName))).thenReturn(true);
-        when(schema.getTable(eq(tableName))).thenReturn(table);
+        when(database.getSchema(databaseName)).thenReturn(schema);
+        when(schema.containsTable(tableName)).thenReturn(true);
+        when(schema.getTable(tableName)).thenReturn(table);
         when(table.getAllColumns()).thenReturn(Collections.emptyList());
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);

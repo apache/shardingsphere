@@ -38,6 +38,9 @@ import java.util.List;
 public final class ExpectedColumnDefinition extends AbstractExpectedSQLSegment {
     
     @XmlAttribute
+    private String text;
+    
+    @XmlAttribute
     private String type;
     
     @XmlAttribute(name = "primary-key")
@@ -63,4 +66,10 @@ public final class ExpectedColumnDefinition extends AbstractExpectedSQLSegment {
     
     @XmlAttribute(name = "agg-type")
     private String aggType;
+    
+    @XmlAttribute(name = "charset-name")
+    private String charsetName;
+    
+    @XmlAttribute(name = "collate-name")
+    private String collateName;
 }

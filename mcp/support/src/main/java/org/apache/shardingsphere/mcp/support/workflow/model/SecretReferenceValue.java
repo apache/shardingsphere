@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Secret reference value.
@@ -33,6 +34,8 @@ import java.util.Map;
 public final class SecretReferenceValue {
     
     private static final String PLACEHOLDER_PREFIX = "secret_reference:";
+    
+    private static final Pattern MANUAL_PLACEHOLDER_SEPARATOR_PATTERN = Pattern.compile("[^A-Z0-9]+");
     
     private final boolean malformed;
     
@@ -109,7 +112,7 @@ public final class SecretReferenceValue {
     }
     
     private static String normalizeForManualPlaceholder(final String value) {
-        String result = normalize(value).toUpperCase(Locale.ENGLISH).replaceAll("[^A-Z0-9]+", "_");
+        String result = MANUAL_PLACEHOLDER_SEPARATOR_PATTERN.matcher(normalize(value).toUpperCase(Locale.ENGLISH)).replaceAll("_");
         return result.isEmpty() ? "VALUE" : result;
     }
 }

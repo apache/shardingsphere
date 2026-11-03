@@ -46,6 +46,9 @@ public final class ColumnDefinitionAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ColumnDefinitionSegment actual, final ExpectedColumnDefinition expected) {
         assertColumnName(assertContext, actual, expected);
+        if (null != expected.getText()) {
+            assertThat(assertContext.getText("Column definition text assertion error: "), actual.getText(), is(expected.getText()));
+        }
         if (null != expected.getType()) {
             assertNotNull(actual.getDataType(), assertContext.getText("Column definition data type should exist."));
             assertThat(assertContext.getText("Column definition data type assertion error: "), actual.getDataType().getDataTypeName(), is(expected.getType()));
@@ -74,6 +77,12 @@ public final class ColumnDefinitionAssert {
             assertThat(assertContext.getText("Column definition agg type assertion error: "), actual.getAggType(), is(expected.getAggType()));
         } else {
             assertNull(actual.getAggType(), assertContext.getText("Column definition agg type should not exist."));
+        }
+        if (null != expected.getCharsetName()) {
+            assertThat(assertContext.getText("Column definition charset assertion error: "), actual.getCharsetName().orElse(""), is(expected.getCharsetName()));
+        }
+        if (null != expected.getCollateName()) {
+            assertThat(assertContext.getText("Column definition collation assertion error: "), actual.getCollateName().orElse(""), is(expected.getCollateName()));
         }
     }
     

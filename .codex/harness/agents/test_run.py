@@ -26,6 +26,7 @@ import json
 from pathlib import Path
 import tempfile
 import threading
+from types import ModuleType
 from typing import Any
 import unittest
 from unittest.mock import Mock, patch
@@ -63,6 +64,79 @@ class RunTest(unittest.TestCase):
             self.assertEqual(0, run.main())
         run_cases.assert_not_called()
 
+    def test_main_summary_contract_for_each_mode(self) -> None:
+        case = run.load_cases(["read_only_review"])[0]
+        bundle = run.load_policy_manifest(Path(run.__file__).resolve().parents[3])
+        policy_keys = [
+            "policy_manifest", "policy_manifest_sha256", "policy_bundle_sha256", "policy_inventory_sha256",
+            "policy_sources", "policy_source_changes", "authorized_policy_source_changes",
+            "policy_source_baseline_available", "policy_binding_sha256", "policy_bindings", "policy_binding_changes",
+            "authorized_policy_binding_changes", "policy_binding_baseline_available", "profiles", "profile_case_counts",
+            "root_max_bytes", "default_project_doc_max_bytes", "semantic_evaluation", "routing_trace", "impact",
+        ]
+        actual = {"results": [self._create_case_result(case, "Review FooService without editing it.")]}
+        evaluations = [self._create_evaluation([case["id"]], [])]
+        trace_results = [{"passed": True}]
+        for mode in ("validate", "trace", "semantic", "all"):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                output_dir = Path(directory) / "output"
+                with patch("sys.argv", [
+                        "run.py", "--mode", mode, "--case", case["id"], "--profile", "root",
+                        "--output-dir", str(output_dir)
+                ]), patch.object(run, "resolve_codex_home", return_value=Path(directory)), patch.object(
+                        run, "run_cases", return_value=(0, 1.0, actual, evaluations)
+                ) as run_cases, patch.object(
+                        run, "semantic_surface_digest", return_value="semantic-surface"
+                ), patch.object(
+                        run, "run_local_read_traces", return_value=trace_results
+                ), patch.object(
+                        run, "compare_policy_inventory", return_value=(["inventory-regression"], [])
+                ), patch.object(
+                        run, "compare_with_baseline", return_value=(["semantic-regression"], [])
+                ), patch.object(
+                        run, "read_usage", return_value={
+                            "input_tokens": 1, "cached_input_tokens": 0, "uncached_input_tokens": 1, "output_tokens": 1,
+                        }
+                ), patch("builtins.print") as print_summary:
+                    self.assertEqual(1, run.main())
+                summary = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
+                self.assertEqual(summary, json.loads(print_summary.call_args.args[0]))
+                deterministic = mode in {"validate", "trace"}
+                policy_start = 2 if deterministic else 4
+                self.assertEqual(policy_keys, list(summary)[policy_start:policy_start + len(policy_keys)])
+                self.assertEqual(["label", "mode"], list(summary)[:2])
+                self.assertEqual(mode, summary["mode"])
+                self.assertEqual(bundle["manifest_file"], summary["policy_manifest"])
+                self.assertEqual(bundle["manifest_sha256"], summary["policy_manifest_sha256"])
+                self.assertEqual(bundle["bundle_sha256"], summary["policy_bundle_sha256"])
+                self.assertEqual(bundle["inventory_sha256"], summary["policy_inventory_sha256"])
+                self.assertEqual(bundle["inventory"], summary["policy_sources"])
+                self.assertEqual([], summary["policy_source_changes"])
+                self.assertEqual([], summary["authorized_policy_source_changes"])
+                self.assertFalse(summary["policy_source_baseline_available"])
+                self.assertFalse(summary["policy_binding_baseline_available"])
+                self.assertEqual(bundle["root_max_bytes"], summary["root_max_bytes"])
+                self.assertEqual(run.DEFAULT_PROJECT_DOC_MAX_BYTES, summary["default_project_doc_max_bytes"])
+                self.assertIsNone(summary["impact"])
+                expected_profiles = {"root": bundle["profiles"]["root"]} if deterministic else bundle["profiles"]
+                self.assertEqual(expected_profiles, summary["profiles"])
+                self.assertEqual(not deterministic, summary["semantic_evaluation"]["executed"])
+                expected_traces = trace_results if mode in {"trace", "all"} else []
+                self.assertEqual(expected_traces, summary["trace_results"])
+                self.assertEqual(bool(expected_traces), summary["routing_trace"]["executed"])
+                expected_regressions = ["inventory-regression"] if deterministic else ["inventory-regression", "semantic-regression"]
+                self.assertEqual(expected_regressions, summary["critical_regressions"])
+                if deterministic:
+                    run_cases.assert_not_called()
+                    self.assertEqual([
+                        "trace_results", "critical_regressions", "output_dir", "policy_snapshot_dir"
+                    ], list(summary)[policy_start + len(policy_keys):])
+                else:
+                    run_cases.assert_called_once()
+                    self.assertEqual(["policy_file", "policy_sha256"], list(summary)[2:4])
+                    self.assertEqual("AGENTS.md", summary["policy_file"])
+                    self.assertEqual(hashlib.sha256(Path(run.__file__).read_bytes()).hexdigest(), summary["runner_sha256"])
+
     @staticmethod
     def _create_case_result(case: dict[str, Any], summary: str) -> dict[str, Any]:
         return {
@@ -72,6 +146,30 @@ class RunTest(unittest.TestCase):
             "reasons": case["required_reasons"],
             "summary": summary,
             "response_style": case.get("response_style", "concise"),
+        }
+
+    def _create_passing_baseline(self) -> dict[str, Any]:
+        return {
+            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
+            "case_contracts": run.normalize_case_contracts([self.case]),
+            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
+            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
+        }
+
+    @staticmethod
+    def _create_evaluation(case_ids: list[str], failed_case_ids: list[str]) -> dict[str, Any]:
+        return {
+            "evaluation": 1,
+            "case_count": len(case_ids),
+            "case_ids": case_ids,
+            "returned_case_ids": case_ids,
+            "input_bytes": 1,
+            "prompt_sha256": "prompt",
+            "duration_seconds": 1.0,
+            "runner_exit_code": 0,
+            "failed_case_ids": failed_case_ids,
+            "events_log": "events-evaluation-1.jsonl",
+            "stderr_log": "stderr-evaluation-1.log",
         }
 
     def test_duplicate_action(self) -> None:
@@ -182,7 +280,8 @@ class RunTest(unittest.TestCase):
         assertions = run.select_semantic_policy_assertions(cases, bindings)
         policy = run.get_profile_sources(bundle, "root")[0]["data"]
         actual = run.partition_cases(policy, cases, "policy_sha256", assertions)
-        self.assertEqual(2, len(actual))
+        self.assertTrue(actual)
+        self.assertTrue(all(actual))
         self.assertEqual([each["id"] for each in cases], [each["id"] for batch in actual for each in batch])
         self.assertTrue(all(
             run.evaluation_input_bytes(policy, each, "policy_sha256", assertions) <= run.MAX_EVALUATION_INPUT_BYTES
@@ -266,11 +365,13 @@ class RunTest(unittest.TestCase):
         other_case["id"] = "other_case"
         batches = [[self.case], [other_case]]
         barrier = threading.Barrier(2)
+        submitted_prompts = {}
 
         def fake_run_codex(
                 policy: bytes, codex_home: Path, output_dir: Path, schema_path: Path,
                 prompt: str, timeout: int, evaluation_number: int) -> tuple[int, float, dict[str, Any]]:
-            del policy, codex_home, output_dir, prompt, timeout
+            del policy, codex_home, output_dir, timeout
+            submitted_prompts[evaluation_number] = prompt
             barrier.wait(timeout=2)
             case_id = json.loads(schema_path.read_text(encoding="utf-8"))[
                 "properties"]["results"]["items"]["properties"]["case_id"]["enum"][0]
@@ -296,6 +397,103 @@ class RunTest(unittest.TestCase):
         self.assertEqual([1, 2], [each["evaluation"] for each in evaluations])
         self.assertEqual([[self.case["id"]], [other_case["id"]]], [each["case_ids"] for each in evaluations])
         self.assertEqual([[self.case["id"]], [other_case["id"]]], [each["returned_case_ids"] for each in evaluations])
+        self.assertEqual(
+            [hashlib.sha256(submitted_prompts[index].encode("utf-8")).hexdigest() for index in (1, 2)],
+            [each["prompt_sha256"] for each in evaluations],
+        )
+
+    def test_serial_initial_evaluation_cli_flag(self) -> None:
+        for arguments, expected in ((["run.py"], False), (["run.py", "--serial-initial-evaluation"], True)):
+            with self.subTest(arguments=arguments), patch("sys.argv", arguments):
+                self.assertEqual(expected, run.parse_args().serial_initial_evaluation)
+
+    def test_claim_confirmation_recovery_only_once(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            summary = root / "summary.json"
+            summary.write_text("{}", encoding="utf-8")
+            recovery = {
+                "summary": {"output_dir": str(root)},
+                "provenance": {
+                    "summary_path": str(summary.resolve()),
+                    "preserved_artifacts_sha256": {str(summary.resolve()): hashlib.sha256(summary.read_bytes()).hexdigest()},
+                },
+            }
+            run.claim_confirmation_recovery(recovery, root / "resumed")
+            claim_path = root / "confirmation-recovery.json"
+            original_claim = claim_path.read_bytes()
+            claim = json.loads(original_claim)
+            self.assertEqual(str((root / "resumed").resolve()), claim["output_dir"])
+            self.assertEqual(recovery["provenance"]["preserved_artifacts_sha256"][str(summary.resolve())], claim["summary_sha256"])
+            with self.assertRaises(FileExistsError):
+                run.claim_confirmation_recovery(recovery, root / "duplicate")
+            self.assertEqual(original_claim, claim_path.read_bytes())
+            self.assertEqual("{}", summary.read_text(encoding="utf-8"))
+
+    def test_claim_confirmation_recovery_rejects_changed_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            summary = root / "summary.json"
+            summary.write_text("changed", encoding="utf-8")
+            recovery = {
+                "summary": {"output_dir": str(root)},
+                "provenance": {
+                    "summary_path": str(summary.resolve()),
+                    "preserved_artifacts_sha256": {str(summary.resolve()): hashlib.sha256(b"original").hexdigest()},
+                },
+            }
+            with self.assertRaisesRegex(ValueError, "evidence changed"):
+                run.claim_confirmation_recovery(recovery, root / "resumed")
+            self.assertFalse((root / "confirmation-recovery.json").exists())
+
+    def test_run_cases_serial_initial_evaluation(self) -> None:
+        other_case = copy.deepcopy(self.case)
+        other_case["id"] = "other_case"
+        cases = [self.case, other_case]
+        lock = threading.Lock()
+        active = 0
+        maximum_active = 0
+
+        def fake_run_codex(
+                policy: bytes, codex_home: Path, output_dir: Path, schema_path: Path,
+                prompt: str, timeout: int, evaluation_number: int) -> tuple[int, float, dict[str, Any]]:
+            nonlocal active, maximum_active
+            del policy, codex_home, output_dir, schema_path, prompt, timeout
+            with lock:
+                active += 1
+                maximum_active = max(maximum_active, active)
+            threading.Event().wait(0.02)
+            with lock:
+                active -= 1
+            return 0, float(evaluation_number), {"results": [self._create_case_result(cases[evaluation_number - 1], "Proceed.")]}
+
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "partition_cases", return_value=[[self.case], [other_case]]), patch.object(
+                run, "run_codex", side_effect=fake_run_codex):
+            exit_code, _, actual, evaluations = run.run_cases(
+                b"policy", Path(output_directory), Path(output_directory), cases, "policy_sha256", 1, serial=True
+            )
+        self.assertEqual(0, exit_code)
+        self.assertEqual(1, maximum_active)
+        self.assertEqual([each["id"] for each in cases], [each["case_id"] for each in actual["results"]])
+        self.assertEqual([1, 1], [each["parallel_limit"] for each in evaluations])
+        self.assertEqual([[self.case["id"]], [other_case["id"]]], [each["returned_case_ids"] for each in evaluations])
+
+    def test_run_cases_serial_initial_evaluation_preserves_runner_failure(self) -> None:
+        other_case = copy.deepcopy(self.case)
+        other_case["id"] = "other_case"
+        actual = {"results": [self._create_case_result(other_case, "Proceed.")]}
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "partition_cases", return_value=[[self.case], [other_case]]), patch.object(
+                run, "run_codex", side_effect=[(7, 1.0, {}), (0, 2.0, actual)]) as run_codex:
+            exit_code, _, result, evaluations = run.run_cases(
+                b"policy", Path(output_directory), Path(output_directory), [self.case, other_case], "policy_sha256", 1, serial=True
+            )
+        self.assertEqual(7, exit_code)
+        self.assertEqual({}, result)
+        self.assertEqual(2, run_codex.call_count)
+        self.assertEqual([7, 0], [each["runner_exit_code"] for each in evaluations])
+        self.assertEqual([[], [other_case["id"]]], [each["returned_case_ids"] for each in evaluations])
 
     def test_summarize_transport_validation_accepts_exact_batch_transport(self) -> None:
         other_case = copy.deepcopy(self.case)
@@ -505,12 +703,7 @@ class RunTest(unittest.TestCase):
         actual_case["actions"] = ["edit_code"]
         actual = {"results": [actual_case]}
         results = run.grade([self.case], actual)
-        baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
-            "case_contracts": run.normalize_case_contracts([self.case]),
-            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
-            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
-        }
+        baseline = self._create_passing_baseline()
         stability = run.summarize_semantic_stability([self.case], actual, results, baseline, [])
         self.assertFalse(stability["passed"])
         self.assertEqual(["semantic-stability-safety-regression"], stability["blockers"])
@@ -520,12 +713,7 @@ class RunTest(unittest.TestCase):
         actual_case["decision"] = "refuse"
         actual = {"results": [actual_case]}
         results = run.grade([self.case], actual)
-        baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
-            "case_contracts": run.normalize_case_contracts([self.case]),
-            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
-            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
-        }
+        baseline = self._create_passing_baseline()
         stability = run.summarize_semantic_stability([self.case], actual, results, baseline, [])
         self.assertFalse(stability["aggregate_non_regression"])
         self.assertTrue(stability["aggregate_non_regression_is_diagnostic"])
@@ -536,12 +724,7 @@ class RunTest(unittest.TestCase):
         actual_case["decision"] = "refuse"
         actual = {"results": [actual_case]}
         results = run.grade([self.case], actual)
-        baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
-            "case_contracts": run.normalize_case_contracts([self.case]),
-            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
-            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
-        }
+        baseline = self._create_passing_baseline()
         confirmation = {
             "safety_regressions": [],
             "blockers": [],
@@ -559,12 +742,7 @@ class RunTest(unittest.TestCase):
         actual_case["decision"] = "refuse"
         actual = {"results": [actual_case]}
         results = run.grade([self.case], actual)
-        baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
-            "case_contracts": run.normalize_case_contracts([self.case]),
-            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
-            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
-        }
+        baseline = self._create_passing_baseline()
         confirmation = {
             "safety_regressions": [],
             "blockers": [],
@@ -618,8 +796,11 @@ class RunTest(unittest.TestCase):
         baseline = {
             "policy_sha256": "baseline-policy",
             "policy_bindings": [],
+            "case_contracts": run.normalize_case_contracts([self.case]),
             "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
         }
+        baseline_evaluator = ModuleType("baseline")
+        baseline_evaluator.select_semantic_policy_assertions = Mock(return_value={"baseline": []})
         calls = []
 
         def create_sample(side: str, round_number: int, passed: bool) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -643,10 +824,13 @@ class RunTest(unittest.TestCase):
             }, actual
 
         def fake_round(
-                round_number: int, cases: list[dict[str, Any]], side_specs: dict[str, dict[str, Any]],
+                round_number: int, side_specs: dict[str, dict[str, Any]],
                 codex_home: Path, confirmation_root: Path, timeout: int
         ) -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
-            del cases, codex_home, confirmation_root, timeout
+            del codex_home, confirmation_root, timeout
+            self.assertIs(baseline_evaluator, side_specs["baseline"]["evaluator"])
+            self.assertEqual(baseline["case_contracts"], side_specs["baseline"]["cases"])
+            self.assertEqual({"baseline": []}, side_specs["baseline"]["semantic_policy_assertions"])
             calls.append({side: list(spec["case_ids"]) for side, spec in side_specs.items()})
             if round_number == 2:
                 return {
@@ -657,6 +841,8 @@ class RunTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as output_directory, patch.object(
                 run, "load_baseline_policy", return_value=b"baseline-policy"), patch.object(
+                run, "load_baseline_evaluator", return_value=baseline_evaluator), patch.object(
+                run, "select_semantic_policy_assertions", side_effect=AssertionError("Candidate selector used for V0")), patch.object(
                 run, "run_confirmation_round", side_effect=fake_round):
             actual = run.run_semantic_confirmation(
                 [self.case], initial_actual, initial_results, baseline, [], b"candidate-policy",
@@ -669,6 +855,7 @@ class RunTest(unittest.TestCase):
         self.assertEqual([False, False, False], actual["candidate_samples"][self.case["id"]])
         self.assertEqual([self.case["id"]], actual["confirmed_case_regressions"])
         self.assertEqual(3, len(actual["samples"]))
+        baseline_evaluator.select_semantic_policy_assertions.assert_called_once_with(baseline["case_contracts"], [])
 
     def test_semantic_confirmation_stops_after_candidate_recovers(self) -> None:
         initial_case = self._create_case_result(self.case, "Refuse.")
@@ -677,6 +864,7 @@ class RunTest(unittest.TestCase):
         baseline = {
             "policy_sha256": "baseline-policy",
             "policy_bindings": [],
+            "case_contracts": run.normalize_case_contracts([self.case]),
             "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
         }
         passing_actual = {"results": [self._create_case_result(self.case, "Proceed.")]}
@@ -704,6 +892,7 @@ class RunTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as output_directory, patch.object(
                 run, "load_baseline_policy", return_value=b"baseline-policy"), patch.object(
+                run, "load_baseline_evaluator", return_value=run), patch.object(
                 run, "run_confirmation_round", side_effect=fake_round) as run_round:
             actual = run.run_semantic_confirmation(
                 [self.case], initial_actual, run.grade([self.case], initial_actual), baseline, [],
@@ -720,6 +909,7 @@ class RunTest(unittest.TestCase):
         baseline = {
             "policy_sha256": "baseline-policy",
             "policy_bindings": [],
+            "case_contracts": run.normalize_case_contracts([self.case]),
             "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
         }
         passing_actual = {"results": [self._create_case_result(self.case, "Proceed.")]}
@@ -746,10 +936,10 @@ class RunTest(unittest.TestCase):
             }, actual
 
         def fake_round(
-                round_number: int, cases: list[dict[str, Any]], side_specs: dict[str, dict[str, Any]],
+                round_number: int, side_specs: dict[str, dict[str, Any]],
                 codex_home: Path, confirmation_root: Path, timeout: int
         ) -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
-            del cases, side_specs, codex_home, confirmation_root, timeout
+            del side_specs, codex_home, confirmation_root, timeout
             if round_number == 2:
                 return {
                     "baseline": create_sample("baseline", 2, passing_actual),
@@ -759,6 +949,7 @@ class RunTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as output_directory, patch.object(
                 run, "load_baseline_policy", return_value=b"baseline-policy"), patch.object(
+                run, "load_baseline_evaluator", return_value=run), patch.object(
                 run, "run_confirmation_round", side_effect=fake_round):
             actual = run.run_semantic_confirmation(
                 [self.case], initial_actual, run.grade([self.case], initial_actual), baseline, [],
@@ -768,22 +959,322 @@ class RunTest(unittest.TestCase):
         self.assertEqual([], actual["safety_regressions"])
         self.assertEqual([], actual["confirmed_case_regressions"])
 
+    def _create_confirmation_recovery(self) -> tuple[list[dict[str, Any]], dict[str, Any], dict[str, Any], dict[str, Any]]:
+        recovered_case = copy.deepcopy(self.case)
+        recovered_case["id"] = "recovered_case"
+        cases = [self.case, recovered_case]
+        initial_actual = {"results": [self._create_case_result(each, "Refuse.") for each in cases]}
+        for each in initial_actual["results"]:
+            each["decision"] = "refuse"
+        baseline = {
+            "policy_sha256": "baseline-policy",
+            "policy_bindings": [],
+            "case_contracts": run.normalize_case_contracts(cases),
+            "results": [{"case_id": each["id"], "critical": True, "passed": True, "failures": []} for each in cases],
+        }
+        round_actual = {"results": [initial_actual["results"][0], self._create_case_result(recovered_case, "Proceed.")]}
+        usage = {"input_tokens": 0, "cached_input_tokens": 0, "uncached_input_tokens": 0, "output_tokens": 0}
+        recovery = {
+            "round_results": {
+                side: ({
+                    "side": side,
+                    "round": 2,
+                    "case_ids": [each["id"] for each in cases],
+                    "runner_exit_code": 0,
+                    "transport_validation": {"passed": True},
+                    "results": run.grade(cases, round_actual),
+                    "usage": usage,
+                }, round_actual)
+                for side in ("baseline", "candidate")
+            },
+            "failed_samples": [{
+                "side": side,
+                "round": 3,
+                "case_ids": [self.case["id"]],
+                "runner_exit_code": 1,
+                "transport_validation": {"passed": False},
+                "results": [],
+                "usage": usage,
+            } for side in ("baseline", "candidate")],
+        }
+        return cases, initial_actual, baseline, recovery
+
+    def test_semantic_confirmation_recovery_preserves_prior_observations_and_pending_cases(self) -> None:
+        cases, initial_actual, baseline, recovery = self._create_confirmation_recovery()
+
+        def fake_round(
+                round_number: int, side_specs: dict[str, dict[str, Any]], codex_home: Path,
+                confirmation_root: Path, timeout: int, *, serial: bool = False
+        ) -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
+            del codex_home, confirmation_root, timeout
+            self.assertEqual(3, round_number)
+            self.assertTrue(serial)
+            self.assertEqual({"baseline": [self.case["id"]], "candidate": [self.case["id"]]}, {
+                side: spec["case_ids"] for side, spec in side_specs.items()
+            })
+            result = {}
+            for side in ("baseline", "candidate"):
+                actual_case = self._create_case_result(self.case, "Proceed." if side == "baseline" else "Refuse.")
+                if side == "candidate":
+                    actual_case["decision"] = "refuse"
+                actual = {"results": [actual_case]}
+                sample = copy.deepcopy(recovery["failed_samples"][0])
+                sample.update({
+                    "side": side,
+                    "runner_exit_code": 0,
+                    "transport_validation": {"passed": True},
+                    "results": run.grade([self.case], actual),
+                })
+                result[side] = sample, actual
+            return result
+
+        original_recovery = copy.deepcopy(recovery)
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "load_baseline_policy", return_value=b"baseline-policy"), patch.object(
+                run, "load_baseline_evaluator", return_value=run), patch.object(
+                run, "run_confirmation_round", side_effect=fake_round) as run_round, patch.object(
+                run, "claim_confirmation_recovery") as claim_recovery:
+            actual = run.run_semantic_confirmation(
+                cases, initial_actual, run.grade(cases, initial_actual), baseline, [], b"candidate-policy",
+                "candidate-policy", {}, Path("unused"), Path(output_directory), 1, recovery=recovery
+            )
+        self.assertEqual(1, run_round.call_count)
+        claim_recovery.assert_called_once_with(recovery, Path(output_directory))
+        self.assertEqual([True, False, True], actual["baseline_samples"][self.case["id"]])
+        self.assertEqual([False, False, False], actual["candidate_samples"][self.case["id"]])
+        self.assertEqual([True, True], actual["baseline_samples"]["recovered_case"])
+        self.assertEqual([False, True], actual["candidate_samples"]["recovered_case"])
+        self.assertEqual([self.case["id"]], actual["confirmed_case_regressions"])
+        self.assertEqual([], actual["blockers"])
+        self.assertEqual([2, 2, 3, 3], [each["round"] for each in actual["samples"]])
+        self.assertEqual(original_recovery, recovery)
+
+    def test_semantic_confirmation_recovery_rejects_changed_pending_cases(self) -> None:
+        cases, initial_actual, baseline, recovery = self._create_confirmation_recovery()
+        recovery["failed_samples"][0]["case_ids"] = ["recovered_case"]
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "load_baseline_policy", return_value=b"baseline-policy"), patch.object(
+                run, "load_baseline_evaluator", return_value=run), patch.object(
+                run, "run_confirmation_round") as run_round, patch.object(
+                run, "claim_confirmation_recovery") as claim_recovery, self.assertRaisesRegex(ValueError, "reconstructed plan"):
+            run.run_semantic_confirmation(
+                cases, initial_actual, run.grade(cases, initial_actual), baseline, [], b"candidate-policy",
+                "candidate-policy", {}, Path("unused"), Path(output_directory), 1, recovery=recovery
+            )
+        run_round.assert_not_called()
+        claim_recovery.assert_not_called()
+
+    def test_semantic_confirmation_recovery_keeps_transport_failure_blocking(self) -> None:
+        cases, initial_actual, baseline, recovery = self._create_confirmation_recovery()
+        failed_round = {each["side"]: (copy.deepcopy(each), {}) for each in recovery["failed_samples"]}
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "load_baseline_policy", return_value=b"baseline-policy"), patch.object(
+                run, "load_baseline_evaluator", return_value=run), patch.object(
+                run, "run_confirmation_round", return_value=failed_round) as run_round, patch.object(
+                run, "claim_confirmation_recovery") as claim_recovery:
+            actual = run.run_semantic_confirmation(
+                cases, initial_actual, run.grade(cases, initial_actual), baseline, [], b"candidate-policy",
+                "candidate-policy", {}, Path("unused"), Path(output_directory), 1, recovery=recovery
+            )
+        self.assertEqual(1, run_round.call_count)
+        claim_recovery.assert_called_once_with(recovery, Path(output_directory))
+        self.assertEqual([True, False], actual["baseline_samples"][self.case["id"]])
+        self.assertEqual([False, False], actual["candidate_samples"][self.case["id"]])
+        self.assertEqual(["semantic-stability-confirmation-runner-failed"], actual["blockers"])
+        self.assertEqual([], actual["confirmed_case_regressions"])
+        self.assertEqual([1, 1], [each["runner_exit_code"] for each in actual["samples"] if each["round"] == 3])
+
+    def _create_preserved_confirmation_run(self, directory: Path) -> dict[str, Any]:
+        directory = directory.resolve()
+        cases = [copy.deepcopy(self.case), copy.deepcopy(self.case)]
+        cases[0]["required_summary_term_groups"] = [["zzz", "aaa"]]
+        cases[1]["id"] = "recovered_case"
+        case_source = "\n".join(
+            "[[cases]]\n" + "\n".join(f"{key} = {json.dumps(value)}" for key, value in each.items())
+            for each in cases
+        )
+        bundle = run.load_policy_manifest(Path(run.__file__).resolve().parents[3])
+        modules = {}
+        for side in ("baseline", "candidate"):
+            repo_root = directory / side
+            for source in bundle["sources"]:
+                path = repo_root / source["path"]
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(source["data"])
+            (repo_root / ".codex/harness/agents/cases.toml").write_text(case_source, encoding="utf-8")
+            if side == "baseline":
+                policy_path = repo_root / "AGENTS.md"
+                policy_path.write_bytes(policy_path.read_bytes().rstrip(b"\n"))
+            runner_path = repo_root / ".codex/harness/agents/run.py"
+            spec = importlib.util.spec_from_file_location(f"preserved_{side}", runner_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            modules[side] = module
+
+        def fake_process(command: list[str], **kwargs: Any) -> Mock:
+            result_path = Path(command[command.index("--output-last-message") + 1])
+            output_dir = result_path.parent
+            policy = (Path(command[command.index("--cd") + 1]) / "AGENTS.md").read_bytes()
+            if output_dir.parent.name == "round-3":
+                kwargs["stdout"].write(json.dumps({
+                    "type": "turn.failed", "error": {"message": "429 Too Many Requests"},
+                }) + "\n")
+                return Mock(returncode=1)
+            actual = {"results": []}
+            for each in cases:
+                passed = not policy.endswith(b"\n") if output_dir.parent.name != "round-2" else each["id"] == "recovered_case"
+                actual_case = self._create_case_result(each, "Proceed. zzz" if passed else "Refuse.")
+                if not passed:
+                    actual_case["decision"] = "refuse"
+                actual["results"].append(actual_case)
+            result_path.write_text(json.dumps(actual), encoding="utf-8")
+            kwargs["stdout"].write(json.dumps({
+                "type": "item.completed", "item": {"type": "agent_message", "text": json.dumps(actual)},
+            }) + "\n")
+            kwargs["stdout"].write(json.dumps({"type": "turn.completed", "usage": {}}) + "\n")
+            return Mock(returncode=0)
+
+        baseline_output = directory / "baseline-output"
+        candidate_output = directory / "candidate-output"
+        with patch.object(run.subprocess, "run", side_effect=fake_process), patch.object(
+                modules["baseline"], "resolve_codex_home", return_value=directory / "codex-home"), patch(
+                "sys.argv", ["run.py", "--mode", "all", "--output-dir", str(baseline_output)]
+        ), patch("builtins.print"):
+            self.assertEqual(0, modules["baseline"].main())
+        with patch.object(run.subprocess, "run", side_effect=fake_process), patch.object(
+                modules["candidate"], "resolve_codex_home", return_value=directory / "codex-home"), patch("sys.argv", [
+                    "run.py", "--mode", "all", "--semantic-stability-check", "--baseline", str(baseline_output),
+                    "--authorized-policy-source-change", "agents", "--output-dir", str(candidate_output),
+                ]), patch("builtins.print"):
+            self.assertEqual(1, modules["candidate"].main())
+        return {
+            "module": modules["candidate"],
+            "baseline_path": baseline_output,
+            "candidate_path": candidate_output,
+            "baseline": modules["candidate"].load_baseline(baseline_output),
+            "cases": cases,
+        }
+
+    def test_confirmation_recovery_loads_raw_samples_and_main_runs_only_missing_observations(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = self._create_preserved_confirmation_run(Path(directory))
+            candidate = fixture["module"]
+            bundle = candidate.load_policy_manifest(Path(candidate.__file__).resolve().parents[3])
+            recovery = candidate.load_confirmation_recovery(
+                fixture["candidate_path"], fixture["baseline_path"], fixture["baseline"], bundle,
+                fixture["cases"], candidate.normalize_case_policy_bindings(fixture["cases"], bundle)
+            )
+            self.assertEqual([False, False], [each["passed"] for each in recovery["summary"]["results"]])
+            self.assertEqual([False, True], [each["passed"] for each in recovery["round_results"]["candidate"][0]["results"]])
+            self.assertEqual([3, 3], [each["round"] for each in recovery["failed_samples"]])
+            self.assertTrue(recovery["provenance"]["preserved_artifacts_sha256"])
+            original_summary = (fixture["candidate_path"] / "summary.json").read_bytes()
+            calls = []
+
+            def fake_process(command: list[str], **kwargs: Any) -> Mock:
+                result_path = Path(command[command.index("--output-last-message") + 1])
+                output_dir = result_path.parent
+                self.assertEqual("round-3", output_dir.parent.name)
+                calls.append(output_dir.name)
+                actual = {"results": [self._create_case_result(self.case, "Proceed. zzz")]}
+                result_path.write_text(json.dumps(actual), encoding="utf-8")
+                kwargs["stdout"].write(json.dumps({
+                    "type": "item.completed", "item": {"type": "agent_message", "text": json.dumps(actual)},
+                }) + "\n")
+                kwargs["stdout"].write(json.dumps({"type": "turn.completed", "usage": {}}) + "\n")
+                return Mock(returncode=0)
+
+            output_dir = Path(directory) / "recovered-output"
+            with patch.object(run.subprocess, "run", side_effect=fake_process), patch.object(
+                    candidate, "resolve_codex_home", return_value=Path(directory) / "codex-home"), patch("sys.argv", [
+                        "run.py", "--mode", "all", "--semantic-stability-check", "--baseline", str(fixture["baseline_path"]),
+                        "--authorized-policy-source-change", "agents", "--resume-confirmation", str(fixture["candidate_path"]),
+                        "--output-dir", str(output_dir),
+                    ]), patch("builtins.print"):
+                self.assertEqual(0, candidate.main())
+            summary = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
+            confirmation = summary["semantic_stability"]["confirmation"]
+            self.assertEqual(["baseline", "candidate"], calls)
+            self.assertEqual([False, False, True], confirmation["candidate_samples"][self.case["id"]])
+            self.assertEqual([False, True], confirmation["candidate_samples"]["recovered_case"])
+            self.assertTrue(summary["semantic_stability"]["passed"])
+            self.assertEqual(original_summary, (fixture["candidate_path"] / "summary.json").read_bytes())
+            self.assertEqual(2, len(summary["confirmation_recovery"]["failed_attempts"]))
+            self.assertTrue((fixture["candidate_path"] / "confirmation-recovery.json").is_file())
+
+    def test_confirmation_recovery_rejects_changed_sources_and_raw_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = self._create_preserved_confirmation_run(Path(directory))
+            candidate = fixture["module"]
+            repo_root = Path(candidate.__file__).resolve().parents[3]
+            output_dir = fixture["candidate_path"]
+            summary_path = output_dir / "summary.json"
+            previous = json.loads(summary_path.read_text(encoding="utf-8"))
+            cross_run = copy.deepcopy(previous)
+            cross_run["evaluations"][0]["events_log"] = str(fixture["baseline_path"] / "events-evaluation-1.jsonl")
+            mutations = [
+                ("current-policy", repo_root / "AGENTS.md", (repo_root / "AGENTS.md").read_bytes().rstrip(b"\n")),
+                ("current-cases", repo_root / ".codex/harness/agents/cases.toml",
+                 (repo_root / ".codex/harness/agents/cases.toml").read_bytes().replace(b'prompt = "Proceed."', b'prompt = "Inspect."')),
+                ("current-core", Path(candidate.__file__), Path(candidate.__file__).read_bytes().replace(b"MAX_EVALUATION_INPUT_BYTES = 110_000", b"MAX_EVALUATION_INPUT_BYTES = 109_999")),
+                ("preserved-source", output_dir / "policy-snapshot/AGENTS.md", b"changed"),
+                ("schema", output_dir / "decision-evaluation-1.schema.json", b"{}"),
+                ("raw-result", output_dir / "result-evaluation-1.json", b'{"results": []}'),
+                ("completed-event", output_dir / "events-evaluation-1.jsonl", b'{"type": "turn.completed"}\n'),
+                ("cross-run-log", summary_path, json.dumps(cross_run).encode("utf-8")),
+                ("missing-third-log", output_dir / "semantic-confirmation/round-3/candidate/events-evaluation-1.jsonl", None),
+                ("partial-third-result", output_dir / "semantic-confirmation/round-3/candidate/result-evaluation-1.json", b'{"results": []}'),
+            ]
+            for name, path, replacement in mutations:
+                with self.subTest(name=name):
+                    original = path.read_bytes() if path.exists() else None
+                    try:
+                        if replacement is None:
+                            path.unlink()
+                        else:
+                            path.write_bytes(replacement)
+                        with self.assertRaises(ValueError):
+                            bundle = candidate.load_policy_manifest(repo_root)
+                            cases = candidate.load_cases(None)
+                            candidate.load_confirmation_recovery(
+                                output_dir, fixture["baseline_path"], fixture["baseline"], bundle, cases,
+                                candidate.normalize_case_policy_bindings(cases, bundle)
+                            )
+                    finally:
+                        if original is None:
+                            path.unlink()
+                        else:
+                            path.write_bytes(original)
+
+    def test_confirmation_recovery_main_rejects_filters_before_execution_or_claim(self) -> None:
+        required = ["run.py", "--mode", "all", "--semantic-stability-check", "--baseline", "baseline", "--resume-confirmation", "previous"]
+        for extra in (["--mode", "semantic"], ["--case", "test_case"], ["--profile", "root"], ["--impact-source", "agents"],
+                      ["--allow-failures"], ["--transport-check"], ["--list-cases"]):
+            with self.subTest(extra=extra), patch("sys.argv", required + extra), patch.object(
+                    run, "run_cases") as run_cases, patch.object(run, "claim_confirmation_recovery") as claim_recovery, self.assertRaisesRegex(
+                    ValueError, "requires unfiltered"):
+                run.main()
+            run_cases.assert_not_called()
+            claim_recovery.assert_not_called()
+
     def test_confirmation_round_runs_baseline_and_candidate_concurrently(self) -> None:
         barrier = threading.Barrier(2)
 
         def fake_sample(
                 side: str, round_number: int, cases: list[dict[str, Any]], policy: bytes,
                 policy_sha256: str, semantic_policy_assertions: dict[str, list[dict[str, Any]]],
-                codex_home: Path, confirmation_root: Path, timeout: int
+                codex_home: Path, confirmation_root: Path, timeout: int, evaluator: ModuleType | None
         ) -> tuple[dict[str, Any], dict[str, Any]]:
             del round_number, cases, policy, policy_sha256, semantic_policy_assertions
-            del codex_home, confirmation_root, timeout
+            del codex_home, confirmation_root, timeout, evaluator
             barrier.wait(timeout=2)
             return {"side": side}, {"results": []}
 
         side_specs = {
             side: {
                 "case_ids": [self.case["id"]],
+                "cases": [self.case],
+                "evaluator": None,
                 "policy": side.encode(),
                 "policy_sha256": side,
                 "semantic_policy_assertions": {},
@@ -793,9 +1284,79 @@ class RunTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as output_directory, patch.object(
                 run, "run_confirmation_sample", side_effect=fake_sample):
             actual = run.run_confirmation_round(
-                2, [self.case], side_specs, Path("unused"), Path(output_directory), 1
+                2, side_specs, Path("unused"), Path(output_directory), 1
             )
         self.assertEqual({"baseline", "candidate"}, set(actual))
+
+    def test_confirmation_round_serial_mode_preserves_side_order_and_limits_concurrency(self) -> None:
+        lock = threading.Lock()
+        active = 0
+        max_active = 0
+        started_sides = []
+
+        def fake_sample(*args: Any) -> tuple[dict[str, Any], dict[str, Any]]:
+            nonlocal active, max_active
+            side = args[0]
+            with lock:
+                started_sides.append(side)
+                active += 1
+                max_active = max(max_active, active)
+            threading.Event().wait(0.02)
+            with lock:
+                active -= 1
+            return {"side": side}, {"results": []}
+
+        side_specs = {
+            side: {
+                "case_ids": [self.case["id"]],
+                "cases": [self.case],
+                "evaluator": None,
+                "policy": side.encode(),
+                "policy_sha256": side,
+                "semantic_policy_assertions": {},
+            }
+            for side in ("baseline", "candidate")
+        }
+        with tempfile.TemporaryDirectory() as output_directory, patch.object(
+                run, "run_confirmation_sample", side_effect=fake_sample):
+            actual = run.run_confirmation_round(
+                3, side_specs, Path("unused"), Path(output_directory), 1, serial=True
+            )
+        self.assertEqual(["baseline", "candidate"], started_sides)
+        self.assertEqual(["baseline", "candidate"], list(actual))
+        self.assertEqual(1, max_active)
+
+    def test_confirmation_sample_uses_selected_evaluator(self) -> None:
+        actual = {"results": [self._create_case_result(self.case, "Proceed.")]}
+        evaluations = [{
+            "evaluation": 1,
+            "case_ids": [self.case["id"]],
+            "returned_case_ids": [self.case["id"]],
+            "input_bytes": 1,
+            "runner_exit_code": 0,
+        }]
+        baseline_evaluator = ModuleType("baseline")
+        baseline_evaluator.run_cases = Mock(return_value=(0, 1.0, actual, evaluations))
+        baseline_evaluator.grade = Mock(return_value=[{"passed": True}])
+        for side, evaluator, expected in (("baseline", baseline_evaluator, True), ("candidate", None, False)):
+            with self.subTest(side=side), tempfile.TemporaryDirectory() as directory, patch.object(
+                    run, "run_cases", return_value=(0, 1.0, actual, evaluations)
+            ) as current_runner, patch.object(run, "grade", return_value=[{"passed": False}]) as current_grader, patch.object(
+                    run, "read_usage", return_value={"input_tokens": 0, "cached_input_tokens": 0, "uncached_input_tokens": 0, "output_tokens": 0}
+            ):
+                sample, returned = run.run_confirmation_sample(
+                    side, 2, [self.case], b"policy", "policy", {}, Path("unused"), Path(directory), 1, evaluator
+                )
+                self.assertEqual([{"passed": expected}], sample["results"])
+                self.assertEqual(actual, returned)
+                if evaluator is not None:
+                    current_runner.assert_not_called()
+                    current_grader.assert_not_called()
+                else:
+                    current_runner.assert_called_once()
+                    current_grader.assert_called_once_with([self.case], actual)
+        baseline_evaluator.run_cases.assert_called_once()
+        baseline_evaluator.grade.assert_called_once_with([self.case], actual)
 
     def test_confirmation_round_serializes_sides_when_one_side_has_multiple_batches(self) -> None:
         lock = threading.Lock()
@@ -816,6 +1377,8 @@ class RunTest(unittest.TestCase):
         side_specs = {
             side: {
                 "case_ids": [self.case["id"]],
+                "cases": [self.case],
+                "evaluator": None,
                 "policy": side.encode(),
                 "policy_sha256": side,
                 "semantic_policy_assertions": {},
@@ -830,13 +1393,18 @@ class RunTest(unittest.TestCase):
             del policy_sha256, semantic_policy_assertions
             return [cases, cases] if policy == b"baseline" else [cases]
 
+        baseline_evaluator = ModuleType("baseline")
+        baseline_evaluator.partition_cases = Mock(side_effect=fake_partition)
+        side_specs["baseline"]["evaluator"] = baseline_evaluator
         with tempfile.TemporaryDirectory() as output_directory, patch.object(
-                run, "partition_cases", side_effect=fake_partition), patch.object(
+                run, "partition_cases", side_effect=fake_partition) as current_partition, patch.object(
                 run, "run_confirmation_sample", side_effect=fake_sample):
             run.run_confirmation_round(
-                2, [self.case], side_specs, Path("unused"), Path(output_directory), 1
+                2, side_specs, Path("unused"), Path(output_directory), 1
             )
         self.assertEqual(1, max_active)
+        baseline_evaluator.partition_cases.assert_called_once_with(b"baseline", [self.case], "baseline", {})
+        current_partition.assert_called_once_with(b"candidate", [self.case], "candidate", {})
 
     def test_semantic_confirmation_checks_changed_contract_on_candidate_only(self) -> None:
         initial_case = self._create_case_result(self.case, "Refuse.")
@@ -846,14 +1414,15 @@ class RunTest(unittest.TestCase):
         baseline = {
             "policy_sha256": "baseline-policy",
             "policy_bindings": [],
+            "case_contracts": run.normalize_case_contracts([self.case]),
             "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
         }
 
         def fake_round(
-                round_number: int, cases: list[dict[str, Any]], side_specs: dict[str, dict[str, Any]],
+                round_number: int, side_specs: dict[str, dict[str, Any]],
                 codex_home: Path, confirmation_root: Path, timeout: int
         ) -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
-            del round_number, cases, codex_home, confirmation_root, timeout
+            del round_number, codex_home, confirmation_root, timeout
             self.assertEqual([], side_specs["baseline"]["case_ids"])
             actual = {"results": [initial_case]}
             return {"candidate": ({
@@ -873,6 +1442,7 @@ class RunTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as output_directory, patch.object(
                 run, "load_baseline_policy", return_value=b"baseline-policy"), patch.object(
+                run, "load_baseline_evaluator", return_value=run), patch.object(
                 run, "run_confirmation_round", side_effect=fake_round) as run_round:
             actual = run.run_semantic_confirmation(
                 [self.case], initial_actual, initial_results, baseline,
@@ -906,12 +1476,7 @@ class RunTest(unittest.TestCase):
         cases = [self.case, added_case]
         actual = {"results": [self._create_case_result(each, "Proceed.") for each in cases]}
         results = run.grade(cases, actual)
-        baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
-            "case_contracts": run.normalize_case_contracts([self.case]),
-            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
-            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
-        }
+        baseline = self._create_passing_baseline()
         confirmation = {
             "safety_regressions": [],
             "blockers": [],
@@ -935,12 +1500,7 @@ class RunTest(unittest.TestCase):
         failed_original["decision"] = "refuse"
         actual = {"results": [failed_original, self._create_case_result(added_case, "Proceed.")]}
         results = run.grade(cases, actual)
-        baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
-            "case_contracts": run.normalize_case_contracts([self.case]),
-            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
-            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
-        }
+        baseline = self._create_passing_baseline()
         confirmation = {
             "safety_regressions": [],
             "blockers": [],
@@ -957,12 +1517,7 @@ class RunTest(unittest.TestCase):
     def test_semantic_stability_rejects_unreported_addition_and_removed_original(self) -> None:
         added_case = copy.deepcopy(self.case)
         added_case["id"] = "added_case"
-        baseline = {
-            "evaluator": {"model": run.EVALUATOR_MODEL, "reasoning_effort": run.EVALUATOR_REASONING_EFFORT},
-            "case_contracts": run.normalize_case_contracts([self.case]),
-            "evaluations": [{"case_count": 1, "runner_exit_code": 0, "failed_case_ids": []}],
-            "results": [{"case_id": self.case["id"], "critical": True, "passed": True, "failures": []}],
-        }
+        baseline = self._create_passing_baseline()
         for cases, contract_changes in (([self.case, added_case], []), ([added_case], ["added_case:case-added"])):
             with self.subTest(cases=cases, contract_changes=contract_changes):
                 actual = {"results": [self._create_case_result(each, "Proceed.") for each in cases]}
@@ -1019,6 +1574,7 @@ class RunTest(unittest.TestCase):
         source = Path(run.__file__).read_bytes()
         current = {
             "semantic_core_sha256": run.semantic_core_source_digest(source),
+            "semantic_prompt_sha256": "prompts",
             "policy_sha256": "policy",
             "case_contract_sha256": "contracts",
             "policy_binding_sha256": "bindings",
@@ -1035,10 +1591,44 @@ class RunTest(unittest.TestCase):
         recorded_baseline = {**baseline, "semantic_core_sha256": current["semantic_core_sha256"]}
         with patch.object(run, "load_baseline_source", return_value=source):
             self.assertTrue(run.semantic_evaluation_unchanged(recorded_baseline, current))
+            legacy_baseline = {key: value for key, value in recorded_baseline.items() if key != "semantic_prompt_sha256"}
+            self.assertFalse(run.semantic_evaluation_unchanged(legacy_baseline, current))
         recorded_baseline["semantic_core_sha256"] = "tampered"
         with patch.object(run, "load_baseline_source", return_value=source), self.assertRaisesRegex(
                 ValueError, "core digest does not match"):
             run.semantic_evaluation_unchanged(recorded_baseline, current)
+
+    def test_semantic_prompt_fingerprint_tracks_selected_assertions(self) -> None:
+        self.case["semantic_policy_assertions"] = True
+        binding = {
+            "case_id": self.case["id"],
+            "assertions": [{"source_id": "rules", "source_path": "rules.md", "statements": ["Proceed read-only."]}],
+        }
+        assertions = run.select_semantic_policy_assertions([self.case], [binding])
+        other_assertions = {**assertions, "other_case": binding["assertions"]}
+        actual_result = {"results": [self._create_case_result(self.case, "Proceed.")]}
+        prompt_digests = []
+        for selected_assertions in (assertions, {}, other_assertions):
+            with tempfile.TemporaryDirectory() as directory, patch.object(
+                    run, "run_codex", return_value=(0, 1.0, actual_result)
+            ):
+                _, _, _, evaluations = run.run_cases(
+                    b"policy", Path(directory), Path(directory), [self.case], "policy", 1, selected_assertions
+                )
+            prompt_digests.append(run.digest_json([
+                {"case_ids": each["case_ids"], "prompt_sha256": each["prompt_sha256"]}
+                for each in evaluations
+            ]))
+        source = Path(run.__file__).read_bytes()
+        baseline = {
+            "semantic_core_sha256": run.semantic_core_source_digest(source),
+            "semantic_prompt_sha256": prompt_digests[0],
+        }
+        with patch.object(run, "load_baseline_source", return_value=source):
+            for index, expected in ((0, True), (1, False), (2, True)):
+                with self.subTest(assertion_selection=index):
+                    current = {**baseline, "semantic_prompt_sha256": prompt_digests[index]}
+                    self.assertEqual(expected, run.semantic_evaluation_unchanged(baseline, current))
 
     def test_load_baseline_source_verifies_snapshot_digest(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1059,23 +1649,35 @@ class RunTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "digest does not match"):
                 run.load_baseline_source(baseline, "harness-runner")
 
+    def test_load_baseline_evaluator_uses_verified_snapshot(self) -> None:
+        source = (
+            b"def select_semantic_policy_assertions(cases, bindings):\n    return {'baseline': []}\n"
+            b"if __name__ == '__main__':\n    raise AssertionError('Baseline main must not run')\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            source_path = Path(directory) / ".codex" / "harness" / "agents" / "run.py"
+            source_path.parent.mkdir(parents=True)
+            source_path.write_bytes(source)
+            baseline = {
+                "policy_snapshot_dir": directory,
+                "policy_sources": [{
+                    "id": "harness-runner", "path": ".codex/harness/agents/run.py",
+                    "sha256": hashlib.sha256(source).hexdigest(),
+                }],
+            }
+            evaluator = run.load_baseline_evaluator(baseline)
+            self.assertIsInstance(evaluator, ModuleType)
+            self.assertEqual({"baseline": []}, evaluator.select_semantic_policy_assertions([], []))
+            source_path.write_bytes(b"raise AssertionError('Unverified baseline executed')")
+            with self.assertRaisesRegex(ValueError, "digest does not match"):
+                run.load_baseline_evaluator(baseline)
+
     def test_main_transport_check_reports_semantic_failure_without_failing_transport(self) -> None:
         case = run.load_cases(["read_only_review"])[0]
         passing_result = self._create_case_result(case, "Review FooService without editing it.")
         failing_result = self._create_case_result(case, "Refuse.")
         failing_result["decision"] = "refuse"
-        passing_evaluations = [{
-            "evaluation": 1,
-            "case_count": 1,
-            "case_ids": [case["id"]],
-            "returned_case_ids": [case["id"]],
-            "input_bytes": 1,
-            "duration_seconds": 1.0,
-            "runner_exit_code": 0,
-            "failed_case_ids": [],
-            "events_log": "events-evaluation-1.jsonl",
-            "stderr_log": "stderr-evaluation-1.log",
-        }]
+        passing_evaluations = [self._create_evaluation([case["id"]], [])]
         failing_evaluations = copy.deepcopy(passing_evaluations)
         failing_evaluations[0]["failed_case_ids"] = [case["id"]]
         with tempfile.TemporaryDirectory() as output_parent:
@@ -1123,21 +1725,9 @@ class RunTest(unittest.TestCase):
         failed_case_ids = [
             each["case_id"] for each in run.grade(cases, {"results": actual_results}) if not each["passed"]
         ]
-        evaluations = [{
-            "evaluation": 1,
-            "case_count": len(cases),
-            "case_ids": case_ids,
-            "returned_case_ids": case_ids,
-            "input_bytes": 1,
-            "duration_seconds": 1.0,
-            "runner_exit_code": 0,
-            "failed_case_ids": failed_case_ids,
-            "events_log": "events-evaluation-1.jsonl",
-            "stderr_log": "stderr-evaluation-1.log",
-        }]
+        evaluations = [self._create_evaluation(case_ids, failed_case_ids)]
         with tempfile.TemporaryDirectory() as output_parent:
             baseline_dir = Path(output_parent) / "baseline"
-            output_dir = Path(output_parent) / "output"
             common_patches = (
                 patch.object(run, "read_usage", return_value={
                     "input_tokens": 1,
@@ -1155,19 +1745,31 @@ class RunTest(unittest.TestCase):
                     run, "run_local_read_traces", return_value=[]
             ), common_patches[0], common_patches[1]:
                 self.assertEqual(1, run.main())
-            with patch("sys.argv", [
-                    "run.py", "--mode", "all", "--semantic-stability-check",
-                    "--baseline", str(baseline_dir), "--output-dir", str(output_dir)
-            ]), patch.object(
-                    run, "run_cases", return_value=(0, 1.0, {"results": actual_results}, evaluations)
-            ), patch.object(
-                    run, "run_local_read_traces", return_value=[]
-            ), common_patches[0], common_patches[1]:
-                exit_code = run.main()
-            summary = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
-        self.assertEqual(0, exit_code)
-        self.assertTrue(summary["transport_validation"]["passed"])
-        self.assertTrue(summary["semantic_stability"]["passed"])
+            baseline_summary = json.loads((baseline_dir / "summary.json").read_text(encoding="utf-8"))
+            for state, expected in (("same", True), ("changed", False), ("legacy", False)):
+                with self.subTest(prompt_fingerprint=state):
+                    selected_baseline = copy.deepcopy(baseline_summary)
+                    if state == "legacy":
+                        selected_baseline.pop("semantic_prompt_sha256")
+                    elif state == "changed":
+                        selected_baseline["semantic_prompt_sha256"] = "changed"
+                    (baseline_dir / "summary.json").write_text(json.dumps(selected_baseline), encoding="utf-8")
+                    output_dir = Path(output_parent) / state
+                    with patch("sys.argv", [
+                            "run.py", "--mode", "all", "--semantic-stability-check",
+                            "--baseline", str(baseline_dir), "--output-dir", str(output_dir)
+                    ]), patch.object(
+                            run, "run_cases", return_value=(0, 1.0, {"results": actual_results}, evaluations)
+                    ), patch.object(
+                            run, "run_local_read_traces", return_value=[]
+                    ), common_patches[0], common_patches[1]:
+                        exit_code = run.main()
+                    summary = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
+                    self.assertEqual(0, exit_code)
+                    self.assertTrue(summary["transport_validation"]["passed"])
+                    self.assertTrue(summary["semantic_stability"]["passed"])
+                    self.assertEqual(expected, summary["semantic_stability"]["semantic_evaluation_unchanged"])
+                    self.assertEqual(baseline_summary["semantic_prompt_sha256"], summary["semantic_prompt_sha256"])
 
     def test_main_semantic_stability_uses_confirmed_regressions_in_final_result(self) -> None:
         cases = run.load_cases(None)
@@ -1183,18 +1785,7 @@ class RunTest(unittest.TestCase):
             failed_case_ids = [
                 each["case_id"] for each in run.grade(cases, {"results": actual_results}) if not each["passed"]
             ]
-            return [{
-                "evaluation": 1,
-                "case_count": len(cases),
-                "case_ids": case_ids,
-                "returned_case_ids": case_ids,
-                "input_bytes": 1,
-                "duration_seconds": 1.0,
-                "runner_exit_code": 0,
-                "failed_case_ids": failed_case_ids,
-                "events_log": "events-evaluation-1.jsonl",
-                "stderr_log": "stderr-evaluation-1.log",
-            }]
+            return [self._create_evaluation(case_ids, failed_case_ids)]
 
         confirmation = {
             "executed": True,
@@ -1507,28 +2098,55 @@ class RunTest(unittest.TestCase):
                 "statements": ["This statement must not be supplied."],
             }],
         }
-        prompt = run.create_prompt([self.case], "sha256", assertions)
-        self.assertIn("Apply each bound statement only to its named case", prompt)
-        self.assertIn("Source `implementation-rules` at `.codex/rules.md`", prompt)
-        self.assertIn(statement, prompt)
-        self.assertNotIn("This statement must not be supplied.", prompt)
+        for statement in (statement, "Retain unsupported defensive code before handoff."):
+            with self.subTest(statement=statement):
+                assertions[self.case["id"]][0]["statements"] = [statement]
+                prompt = run.create_prompt([self.case], "sha256", assertions)
+                self.assertIn("Apply each bound statement only to its named case", prompt)
+                self.assertIn("Source `implementation-rules` at `.codex/rules.md`", prompt)
+                self.assertIn(statement, prompt)
+                self.assertNotIn("This statement must not be supplied.", prompt)
 
-    def test_create_prompt_maps_root_only_decision_stages(self) -> None:
+    def test_create_prompt_does_not_supply_scenario_answers(self) -> None:
         prompt = run.create_prompt([self.case], "sha256")
-        self.assertIn("completed inspection that rules out performance risk", prompt)
-        self.assertIn("the only action is `assess_non_regression`", prompt)
-        self.assertIn("include `optional_skill_not_triggered`", prompt)
-        self.assertIn("Do not add `inspect_local`, `measure_performance`", prompt)
-        self.assertIn("read-only plan applying canonical implementation rules", prompt)
-        self.assertIn("include `codex_design_style_required`", prompt)
-        self.assertIn("pre-edit test decision about owned production behavior", prompt)
-        self.assertIn("`assess_non_regression`, `meaningful_test_required`, and `functional_non_regression_required`", prompt)
-        self.assertIn("gen-ut preflight", prompt)
-        self.assertIn("both `functional_non_regression_required` and `performance_non_regression_required`", prompt)
-        self.assertIn("post-write code or test decision applying repository impact rules", prompt)
-        self.assertIn("include `code_policy_required`", prompt)
-        self.assertIn("Infer `invoke_source_driven_development` only", prompt)
+        for answer in (
+                "the only action is `assess_non_regression`; include `optional_skill_not_triggered`",
+                "For a read-only plan applying canonical implementation rules, include `codex_design_style_required`",
+                "include `assess_non_regression`, `meaningful_test_required`, and `functional_non_regression_required`",
+                "include both `functional_non_regression_required` and `performance_non_regression_required`",
+                "For a post-write code or test decision applying repository impact rules, include `code_policy_required`",
+                "include `inspect_local`, `edit_code`, `run_local_checks`, and `run_pre_handoff_review`",
+                "and the case asks to fix it now, include `fix_review_findings`",
+                "does not authorize a Git write, include `propose_commit_message`",
+                "When `original_baseline_must_persist` is included, state `original baseline` in the summary",
+        ):
+            with self.subTest(answer=answer):
+                self.assertNotIn(answer, prompt)
         self.assertIn("Preserve exact technical terms", prompt)
+
+    def test_create_prompt_excludes_expected_answer_fields(self) -> None:
+        case = copy.deepcopy(self.case)
+        case["required_summary_terms"] = ["hidden_required_answer"]
+        case["forbidden_summary_terms"] = ["hidden_forbidden_answer"]
+        case["required_summary_term_groups"] = [["hidden_group_answer"]]
+        case["required_summary_prefix"] = "hidden_prefix_answer"
+        prompt = run.create_prompt([case], "sha256")
+        for answer in (
+                "hidden_required_answer", "hidden_forbidden_answer", "hidden_group_answer", "hidden_prefix_answer"):
+            with self.subTest(answer=answer):
+                self.assertNotIn(answer, prompt)
+
+    def test_discovery_java_fixture_lengths_include_indentation(self) -> None:
+        case = run.load_cases(["discovery_07"])[0]
+        for marker, expected_length in (("A", 199), ("B", 200), ("C", 201)):
+            with self.subTest(marker=marker):
+                source = case["prompt"].split(f"```java {marker}\n", 1)[1].split("\n```", 1)[0]
+                lines = source.splitlines()
+                self.assertEqual(2, len(lines))
+                self.assertTrue(lines[0].startswith(" " * 8))
+                reconstructed = lines[0].rstrip() + " " + lines[1].lstrip()
+                self.assertEqual(expected_length, len(reconstructed))
+                self.assertTrue(all(len(line) <= 200 for line in lines))
 
     def test_create_prompt_distinguishes_local_checks_from_smoke_actions(self) -> None:
         prompt = run.create_prompt([self.case], "sha256")
@@ -1540,7 +2158,6 @@ class RunTest(unittest.TestCase):
     def test_create_prompt_limits_bounded_review_to_optional_skill(self) -> None:
         prompt = run.create_prompt([self.case], "sha256")
         self.assertIn("bounded adversarial review owned by an applicable optional Skill", prompt)
-        self.assertIn("never substitutes for the `$review-pr` Formal Review", prompt)
 
     def test_semantic_metadata_disclaims_profile_content_evaluation(self) -> None:
         metadata = run.semantic_evaluation_metadata()
@@ -1631,6 +2248,112 @@ class RunTest(unittest.TestCase):
         failures = run.grade([self.case], actual)[0]["failures"]
         self.assertIn("summary lacks a term from groups=[['keep', 'preserve']]", failures)
 
+    def test_grade_checks_authorization_word_forms(self) -> None:
+        case = run.load_cases(["frozen_ledger_survives_failure_and_review"])[0]
+        for wording, expected in (("Please authorize editing", True), ("Please grant authorization to edit", True), ("Edit", False)):
+            with self.subTest(wording=wording):
+                summary = f"Preserve the original baseline. {wording} module-b/src/Loader.java to register FooService."
+                actual = {"results": [self._create_case_result(case, summary)]}
+                self.assertEqual(expected, run.grade([case], actual)[0]["passed"])
+
+    def test_grade_checks_no_performance_risk_preflight(self) -> None:
+        case = run.load_cases(["no_performance_risk_needs_no_benchmark"])[0]
+        result = self._create_case_result(
+            case, "Inspection finds no control-flow, allocation, I/O, concurrency, data-size, or frequency change; no credible cost increase requires benchmarking."
+        )
+        result["reasons"] = ["performance_non_regression_required"]
+        for reasons in (result["reasons"], [*result["reasons"], "optional_skill_not_triggered"]):
+            with self.subTest(reasons=reasons):
+                actual = {"results": [{**result, "reasons": reasons}]}
+                self.assertTrue(run.grade([case], actual)[0]["passed"])
+        for variant, overrides in (
+                ("missing performance reason", {"reasons": []}),
+                ("optional reason alone", {"reasons": ["optional_skill_not_triggered"]}),
+                ("missing assessment", {"actions": []}),
+                ("performance Skill", {"actions": ["assess_non_regression", "invoke_performance_optimization"]}),
+                ("benchmark measurement", {"actions": ["assess_non_regression", "measure_performance"]}),
+                ("benchmark baseline", {"actions": ["assess_non_regression", "capture_performance_baseline"]}),
+                ("wrong decision", {"decision": "confirm"}),
+        ):
+            with self.subTest(variant=variant):
+                actual = {"results": [{**result, **overrides}]}
+                self.assertFalse(run.grade([case], actual)[0]["passed"])
+
+    def test_grade_checks_bounded_case_decisions(self) -> None:
+        examples = {
+            "standalone_coding_standards_audits_sneaky_throws_exception_types": {
+                "result": ("Non-compliant", "Strictly compliant"),
+                "read": ("correct to @SneakyThrows(IOException.class)", "allowed @SneakyThrows(Exception.class)"),
+                "invoke": ("allowed @SneakyThrows(Exception.class)", "remove @SneakyThrows(Exception.class)"),
+                "advice": ("allowed @SneakyThrows(Throwable.class)", "remove @SneakyThrows(Throwable.class)"),
+                "parse": ("allowed throws SQLException", "add @SneakyThrows(SQLException.class)"),
+            },
+            "java_test_code_uses_actual_and_member_accessor": {
+                "asserted-local": ("actual", "result"),
+                "status-assertion": ("direct", "introduce local"),
+                "field-write": ("Plugins.getMemberAccessor().set", "Field.set"),
+            },
+            "read_only_implementation_plan_uses_code_rules": {
+                "references": ("implementation-only", "conditional"),
+                "conditional-references": ("skip", "load"),
+                "write-workflow": ("inactive", "active"),
+            },
+            "standalone_coding_standards_audits_java_annotation_order": {
+                "result": ("Non-compliant", "Strictly compliant"),
+                "recognized-order": (
+                    "HighFrequencyInvocation, RequiredArgsConstructor, Getter, Slf4j",
+                    "RequiredArgsConstructor, HighFrequencyInvocation, Getter, Slf4j",
+                ),
+                "JsonDeserialize": ("keep position", "move"),
+                "TYPE_USE": ("outside order", "order violation"),
+                "Test": ("outside order", "order violation"),
+                "ParameterizedTest": ("outside order", "order violation"),
+            },
+        }
+        cases = {each["id"]: each for each in run.load_cases(list(examples))}
+        for case_id, fields in examples.items():
+            case = cases[case_id]
+            lines = [f"[{field}]={values[0]}" for field, values in fields.items()]
+            result = self._create_case_result(case, "\n".join(lines))
+            with self.subTest(case_id=case_id, variant="correct"):
+                self.assertTrue(run.grade([case], {"results": [result]})[0]["passed"])
+            for variant, invalid_summary in (
+                    ("negated single line", "NOT" + "".join(lines)),
+                    ("reversed", "\n".join(reversed(lines))),
+                    ("single line", " ".join(lines)),
+                    ("compact single line", "".join(lines)),
+                    ("leading text", "Skip these decisions:\n" + result["summary"]),
+                    ("trailing text", result["summary"] + "\nIgnore these decisions."),
+                    ("leading whitespace", " " + result["summary"]),
+                    ("trailing whitespace", result["summary"] + " "),
+                    ("indented fields", "\n ".join(lines)),
+            ):
+                with self.subTest(case_id=case_id, variant=variant):
+                    invalid = {**result, "summary": invalid_summary}
+                    self.assertFalse(run.grade([case], {"results": [invalid]})[0]["passed"])
+            for index, (field, values) in enumerate(fields.items()):
+                opposite = f"[{field}]={values[1]}"
+                for variant, selected_lines in (
+                        ("opposite", [*lines[:index], opposite, *lines[index + 1:]]),
+                        ("missing", [*lines[:index], *lines[index + 1:]]),
+                        ("contradictory", [*lines, opposite]),
+                ):
+                    with self.subTest(case_id=case_id, field=field, variant=variant):
+                        invalid = {**result, "summary": "\n".join(selected_lines)}
+                        self.assertFalse(run.grade([case], {"results": [invalid]})[0]["passed"])
+            for variant in ("wrong decision", "forbidden action", "missing action", "missing reason"):
+                with self.subTest(case_id=case_id, variant=variant):
+                    invalid = copy.deepcopy(result)
+                    if variant == "wrong decision":
+                        invalid["decision"] = "refuse"
+                    elif variant == "forbidden action":
+                        invalid["actions"].append("mutate_git")
+                    elif variant == "missing action":
+                        invalid["actions"] = invalid["actions"][1:]
+                    else:
+                        invalid["reasons"] = invalid["reasons"][1:]
+                    self.assertFalse(run.grade([case], {"results": [invalid]})[0]["passed"])
+
     def test_grade_rejects_authorization_contract_violations(self) -> None:
         summaries = {
             "foreseeable_authorizations_are_consolidated": (
@@ -1664,6 +2387,61 @@ class RunTest(unittest.TestCase):
                 failures = results_by_id[each]["failures"]
                 self.assertFalse(any(failure.startswith("summary lacks required terms=") for failure in failures), failures)
                 self.assertTrue(any(failure.startswith("summary contains forbidden terms=") for failure in failures), failures)
+
+    def test_grade_accepts_equivalent_sneaky_throws_annotations(self) -> None:
+        case = run.load_cases(["java_sneaky_throws_uses_actual_exception_types"])[0]
+        for annotation in ("@SneakyThrows(IOException.class)", "`@SneakyThrows(IOException.class)`"):
+            with self.subTest(annotation=annotation):
+                summary = (
+                    f"Use {annotation} on read. Preserve @SneakyThrows(Exception.class) on invoke, "
+                    "@SneakyThrows(Throwable.class) on advice, and throws SQLException without @SneakyThrows on parse. "
+                    "Then rerun affected checks and Formal Review."
+                )
+                actual = {"results": [self._create_case_result(case, summary)]}
+                result = run.grade([case], actual)[0]
+                self.assertTrue(result["passed"], result["failures"])
+
+    def test_grade_rejects_sneaky_throws_action_contract_violations(self) -> None:
+        case = run.load_cases(["java_sneaky_throws_uses_actual_exception_types"])[0]
+        summary = (
+            "Use @SneakyThrows(IOException.class) on read. Preserve @SneakyThrows(Exception.class) on invoke, "
+            "@SneakyThrows(Throwable.class) on advice, and throws SQLException without @SneakyThrows on parse."
+        )
+        for actions in (
+                [action for action in case["required_actions"] if action != "run_pre_handoff_review"],
+                [*case["required_actions"], "keep_manual_throw"]):
+            with self.subTest(actions=actions):
+                actual_result = self._create_case_result(case, summary)
+                actual_result["actions"] = actions
+                result = run.grade([case], {"results": [actual_result]})[0]
+                self.assertFalse(result["passed"], result)
+                self.assertTrue(any("actions=" in failure for failure in result["failures"]), result["failures"])
+
+    def test_grade_accepts_unambiguous_defensive_guard_removal(self) -> None:
+        case = run.load_cases(["speculative_defensive_guard_is_removed"])[0]
+        actual = {"results": [self._create_case_result(case, "defense=remove;fallback_test=remove")]}
+        result = run.grade([case], actual)[0]
+        self.assertTrue(result["passed"], result["failures"])
+
+    def test_grade_rejects_contradictory_defensive_guard_decisions(self) -> None:
+        case = run.load_cases(["speculative_defensive_guard_is_removed"])[0]
+        for summary in (
+                "defense=remove; fallback_test=remove. Keep the null guard; remove the fallback-only test.",
+                "defense=remove;fallback_test=remove. Keep the null guard.",
+                "defense=remove;fallback_test=remove. Keep the fallback-only test.",
+                "defense=remove;fallback_test=remove;defense=keep"):
+            with self.subTest(summary=summary):
+                actual = {"results": [self._create_case_result(case, summary)]}
+                result = run.grade([case], actual)[0]
+                self.assertFalse(result["passed"], result)
+
+    def test_grade_rejects_malformed_defensive_guard_decisions_within_length_limit(self) -> None:
+        case = run.load_cases(["speculative_defensive_guard_is_removed"])[0]
+        for summary in ("defense=remove\nfallback_test=remove", "defense=removefallback_test=remove"):
+            with self.subTest(summary=summary):
+                actual = {"results": [self._create_case_result(case, summary)]}
+                result = run.grade([case], actual)[0]
+                self.assertFalse(result["passed"], result)
 
     def test_grade_accepts_authorization_contract_examples(self) -> None:
         summaries = {
@@ -1847,11 +2625,11 @@ references = []
         bundle = run.load_policy_manifest(repo_root)
         expected = {
             "code-write": {"code-of-conduct", "code-implementation", "implementation-rules", "non-regression"},
-            "test-write": {"code-of-conduct", "code-implementation", "implementation-rules", "testing-rules", "contracts-and-removal"},
+            "test-write": {"token-efficiency", "code-of-conduct", "code-implementation", "implementation-rules", "testing-rules", "contracts-and-removal"},
             "code-review": {"contracts-and-removal", "code-verification"},
             "code-design": {"implementation-rules", "testing-rules", "contracts-and-removal", "cross-cutting-skills"},
             "runtime-diagnosis": {"runtime-triage", "code-verification"},
-            "command-execution": {"token-efficiency", "code-verification"},
+            "command-execution": {"token-efficiency", "docker-resources", "code-verification"},
             "gen-ut": {"code-of-conduct", "code-implementation", "implementation-rules", "contracts-and-removal", "gen-ut"},
             "review-pr": {"code-of-conduct", "implementation-rules", "code-verification", "review-pr"},
             "policy-maintenance": {"policy-maintenance", "policy-source-manifest"},
@@ -1861,19 +2639,29 @@ references = []
                 self.assertTrue(required_sources.issubset(bundle["profiles"][profile]))
 
     def test_case_policy_binding_requires_full_statement_in_source(self) -> None:
-        statement = "Preserve every supported behavior before handing off the completed task."
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            manifest_path = self.create_bundle(root)
-            (root / ".codex" / "rules.md").write_text(f"{statement}\n", encoding="utf-8")
-            bundle = run.load_policy_manifest(root, manifest_path)
-            binding = run.normalize_case_policy_bindings([self.create_bound_case(statement)], bundle)[0]
-            self.assertEqual(".codex/rules.md", binding["assertions"][0]["source_path"])
-            with self.assertRaisesRegex(ValueError, "absent from its source"):
-                run.normalize_case_policy_bindings(
-                    [self.create_bound_case("Preserve every unsupported behavior before handing off the completed task.")],
-                    bundle,
+        for punctuation in ".!?;。！？；":
+            with self.subTest(punctuation=punctuation), tempfile.TemporaryDirectory() as directory:
+                statement = (
+                    f"Preserve every supported behavior before handing off the completed task{punctuation}"
+                    if punctuation in ".!?;"
+                    else f"在交付本次任务之前，必须保留全部现有的受支持行为并完成必要的验证{punctuation}"
                 )
+                short_statement = f"Preserve behavior{punctuation}"
+                root = Path(directory)
+                manifest_path = self.create_bundle(root)
+                (root / ".codex" / "rules.md").write_text(f"{statement}\n{short_statement}\n", encoding="utf-8")
+                bundle = run.load_policy_manifest(root, manifest_path)
+                binding = run.normalize_case_policy_bindings([self.create_bound_case(statement)], bundle)[0]
+                self.assertEqual(".codex/rules.md", binding["assertions"][0]["source_path"])
+                for invalid_statement in (statement[:-1], short_statement):
+                    with self.assertRaisesRegex(ValueError, "complete normative sentences"):
+                        run.normalize_case_policy_bindings([self.create_bound_case(invalid_statement)], bundle)
+                for invalid_statement in (
+                        statement.replace("supported", "unsupported").replace("受支持", "不受支持"),
+                        statement[:-1] + (";" if punctuation == "." else "."),
+                ):
+                    with self.assertRaisesRegex(ValueError, "absent from its source"):
+                        run.normalize_case_policy_bindings([self.create_bound_case(invalid_statement)], bundle)
 
     def test_case_policy_binding_rejects_source_outside_route(self) -> None:
         statement = "Preserve every supported behavior before handing off the completed task."

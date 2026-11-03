@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="do_dollar_body_postgresql" value="DO $$BEGIN RAISE NOTICE 'hello'; END$$" db-types="PostgreSQL" />
+    <sql-case id="do_tagged_dollar_body_postgresql" value="DO LANGUAGE plpgsql $body$BEGIN RAISE NOTICE 'hello'; END$body$" db-types="PostgreSQL" />
+    <sql-case id="copy_merge_returning_postgresql" value="COPY (MERGE INTO foo USING bar ON foo.id = bar.id WHEN MATCHED THEN UPDATE SET id = bar.id RETURNING foo.id) TO STDOUT" db-types="PostgreSQL" />
+    <sql-case id="copy_legacy_delimiter_null_encoding_postgresql" value="COPY foo FROM STDIN WITH DELIMITER AS ':' NULL AS E'\\X' ENCODING 'sql_ascii'" db-types="PostgreSQL" />
+    <sql-case id="copy_legacy_columns_quote_delimiter_postgresql" value="COPY foo(foo_id, foo_value) TO STDOUT WITH CSV HEADER QUOTE '''' DELIMITER '|'" db-types="PostgreSQL" />
+    <sql-case id="copy_legacy_force_quote_encoding_postgresql" value="COPY foo TO STDOUT WITH CSV FORCE QUOTE foo_id ESCAPE E'\\' ENCODING 'sql_ascii'" db-types="PostgreSQL" />
+    <sql-case id="copy_legacy_csv_freeze_postgresql" value="COPY foo FROM STDIN CSV FREEZE" db-types="PostgreSQL" />
+    <sql-case id="copy_legacy_binary_postgresql" value="COPY foo TO STDOUT WITH BINARY" db-types="PostgreSQL" />
+    <sql-case id="copy_legacy_force_not_null_postgresql" value="COPY foo FROM STDIN CSV FORCE NOT NULL foo_id, foo_value" db-types="PostgreSQL" />
+    <sql-case id="copy_legacy_force_quote_all_postgresql" value="COPY foo TO STDOUT CSV FORCE QUOTE *" db-types="PostgreSQL" />
+    <sql-case id="truncate_only_each_table_postgresql" value="TRUNCATE ONLY foo, ONLY bar" db-types="PostgreSQL" />
+    <sql-case id="truncate_only_mixed_tables_postgresql" value="TRUNCATE TABLE foo, ONLY bar RESTART IDENTITY CASCADE" db-types="PostgreSQL" />
+</sql-cases>

@@ -108,7 +108,7 @@ materializedViewName
     ;
 
 columnName
-    : (owner? DOT_)? name (DOT_ nestedItem)*
+    : (owner? DOT_)? name (DOT_ nestedItem)* (AT_ dbLink)?
     ;
 
 objectName
@@ -145,6 +145,7 @@ rollbackSegmentName
 
 typeName
     : (owner DOT_)? name
+    | schemaName DOT_ owner DOT_ name
     ;
 
 indexTypeName
@@ -670,7 +671,7 @@ extractFunction
     ;
 
 regularFunction
-    : (owner DOT_)* regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : (owner DOT_)* regularFunctionName (AT_ dbLink)? LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
 regularFunctionName

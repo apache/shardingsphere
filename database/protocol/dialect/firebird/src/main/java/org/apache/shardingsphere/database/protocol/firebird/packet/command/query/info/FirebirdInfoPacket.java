@@ -55,11 +55,7 @@ public final class FirebirdInfoPacket extends FirebirdCommandPacket {
         while (buffer.isReadable()) {
             int code = buffer.readByte();
             FirebirdInfoPacketType type = valueOf.apply(code);
-            if (null != type) {
-                infoItems.add(type);
-            } else {
-                infoItems.add(FirebirdCommonInfoPacketType.valueOf(code));
-            }
+            infoItems.add(null == type ? FirebirdCommonInfoPacketType.valueOf(code) : type);
         }
     }
     

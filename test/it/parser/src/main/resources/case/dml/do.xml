@@ -148,4 +148,16 @@
             </function>
         </parameter>
     </do>
+
+    <do sql-case-id="do_quoted_code_pg" />
+
+    <do sql-case-id="do_dollar_code_pg" />
+
+    <do sql-case-id="do_tagged_code_pg" />
+
+    <do sql-case-id="do_empty_dollar_code_pg" />
+
+    <do sql-case-id="do_language_before_pg" />
+
+    <do sql-case-id="do_language_after_pg" />
 </sql-parser-test-cases>

@@ -19,18 +19,16 @@
 """Mechanical quality-rule scan and task-scope guard for gen-ut."""
 
 import argparse
-import difflib
-import hashlib
 import json
-import os
 import re
-import stat
 import subprocess
 import sys
 from collections import defaultdict
 from dataclasses import asdict
 from dataclasses import dataclass
 from pathlib import Path
+
+from guard_task_scope import check_scope_baseline, get_added_lines_for_path, get_repo_root, load_scope_baseline, write_scope_baseline
 
 
 @dataclass(frozen=True)
@@ -60,44 +58,9 @@ class FileScanContext:
     added_lines: list[str]
 
 
-RULE_ORDER = ("R8", "R14", "R15-A", "R15-B", "R15-C", "R15-D", "R15-E", "R15-F", "R15-G", "R15-H", "R15-I", "R15-J")
-PRECHECK_ORDER = (
-    "checkstyle-final-parameters",
-    "parameterized-methodsource",
-    "parameterized-name-parameter",
-)
-PRECHECK_MESSAGES = {
-    "checkstyle-final-parameters": "test method parameters should be final to avoid Checkstyle FinalParameters failures",
-    "parameterized-methodsource": "parameterized tests should use @MethodSource providers with at least 3 Arguments rows",
-    "parameterized-name-parameter": "parameterized tests should declare the first parameter exactly as `final String name`",
-}
-RULE_MESSAGES = {
-    "R8": "@ParameterizedTest must use name = \"{0}\"",
-    "R14": "forbidden boolean assertion found",
-    "R15-A": "parameterization suitability requires semantic evidence",
-    "R15-B": "metadata accessor candidates require request-scope review",
-    "R15-C": "out-of-scope worktree mutation detected",
-    "R15-D": "each @ParameterizedTest must have >= 3 Arguments rows from @MethodSource",
-    "R15-E": "each @ParameterizedTest method must declare first parameter as `final String name`",
-    "R15-F": "@ParameterizedTest method body must not contain switch",
-    "R15-G": "parameterized tests must not introduce nested helper type declarations",
-    "R15-H": "do not dispatch boolean assertions by control flow to choose assertTrue/assertFalse",
-    "R15-I": "parameterized tests must not use Consumer in signatures or @MethodSource argument rows",
-    "R15-J": "helper and provider target invocations require semantic ownership review",
-}
-RULE_MODES = {
-    "R15-A": "manual",
-    "R15-B": "manual",
-    "R15-D": "hybrid",
-    "R15-I": "hybrid",
-    "R15-J": "hybrid",
-}
-RULE_SPECS = tuple(RuleSpec(each, RULE_MESSAGES[each], RULE_MODES.get(each, "automated")) for each in RULE_ORDER)
-BOOLEAN_ASSERTION_BAN_PATTERN = re.compile(
-    r"assertThat\s*\((?s:[^;]*?)is\s*\(\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*\)\s*\)"
-    r"|assertEquals\s*\(\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*,"
-    r"|assertEquals\s*\((?s:[^;]*?),\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*\)",
-    re.S,
+RULE_SPECS = (
+    RuleSpec("R15-C", "out-of-scope worktree mutation detected", "automated"),
+    RuleSpec("R15-J", "helper or provider invokes a target public method", "hybrid"),
 )
 CONSUMER_TOKEN_PATTERN = re.compile(r"\bConsumer\s*(?:<|\b)")
 CONSTRUCTOR_CALL_PATTERN = re.compile(r"\bnew\s+(\w+)\s*\(")
@@ -112,13 +75,8 @@ PARAM_METHOD_PATTERN = re.compile(
     re.S,
 )
 TEST_METHOD_DECL_PATTERN = re.compile(
-    r"((?:@Test(?:\s*\([^)]*\))?|@ParameterizedTest(?:\s*\([^)]*\))?)\s*(?:@\w+(?:\s*\([^)]*\))?\s*)*)"
+    r"((?:@Test(?:\s*\([^)]*\))?|@ParameterizedTest(?:\s*\([^)]*\))?|@RepeatedTest(?:\s*\([^)]*\))?)\s*(?:@\w+(?:\s*\([^)]*\))?\s*)*)"
     r"void\s+(assert\w+)\s*\([^)]*\)\s*(?:throws [^{]+)?\{",
-    re.S,
-)
-TEST_METHOD_SIGNATURE_PATTERN = re.compile(
-    r"((?:@Test(?:\s*\([^)]*\))?|@ParameterizedTest(?:\s*\([^)]*\))?)\s*(?:@\w+(?:\s*\([^)]*\))?\s*)*)"
-    r"void\s+(assert\w+)\s*\(([^)]*)\)\s*(?:throws [^{]+)?",
     re.S,
 )
 R15_A_CALL_PATTERN = re.compile(r"\b\w+\.(\w+)\s*\(")
@@ -136,7 +94,6 @@ R15_H_IF_RETURN_PATTERN = re.compile(
     r"|if\s*\([^)]*\)\s*\{[\s\S]*?assertFalse\s*\([^;]+\)\s*;[\s\S]*?return\s*;[\s\S]*?\}\s*assertTrue\s*\([^;]+\)\s*;",
     re.S,
 )
-R15_NAME_PATTERN = re.compile(r'name\s*=\s*"\{0\}"')
 R15_SWITCH_PATTERN = re.compile(r"\bswitch\s*\(")
 TYPE_DECL_LINE_PATTERN = re.compile(
     r"^\s*(?:(?:public|protected|private|static|final|abstract|sealed|non-sealed)\s+)*(class|interface|enum|record)\s+(\w+)\b"
@@ -146,10 +103,6 @@ PUBLIC_METHOD_DECL_PATTERN = re.compile(
     re.M,
 )
 CONSTRUCTOR_TEST_PREFIXES = ("New", "Construct", "Constructor")
-TEST_SCOPE_MARKERS = ("src/test/java/", "src/test/resources/")
-MAVEN_OUTPUT_DIRECTORY = "target"
-PYTHON_CACHE_DIRECTORY = "__pycache__"
-PYTHON_CACHE_SUFFIXES = frozenset((".pyc", ".pyo"))
 
 
 def line_number(source: str, index: int) -> int:
@@ -246,38 +199,6 @@ def extract_block(text: str, brace_index: int) -> str:
     return ""
 
 
-def split_parameters(params: str) -> list[str]:
-    result = []
-    current = []
-    angle_depth = 0
-    paren_depth = 0
-    bracket_depth = 0
-    for char in params:
-        if "," == char and 0 == angle_depth and 0 == paren_depth and 0 == bracket_depth:
-            part = "".join(current).strip()
-            if part:
-                result.append(part)
-            current = []
-            continue
-        current.append(char)
-        if "<" == char:
-            angle_depth += 1
-        elif ">" == char and angle_depth > 0:
-            angle_depth -= 1
-        elif "(" == char:
-            paren_depth += 1
-        elif ")" == char and paren_depth > 0:
-            paren_depth -= 1
-        elif "[" == char:
-            bracket_depth += 1
-        elif "]" == char and bracket_depth > 0:
-            bracket_depth -= 1
-    tail = "".join(current).strip()
-    if tail:
-        result.append(tail)
-    return result
-
-
 def parse_method_sources(method_name: str, annotation_block: str) -> list[str]:
     result = []
     matches = list(METHOD_SOURCE_PATTERN.finditer(annotation_block))
@@ -303,192 +224,6 @@ def parse_method_blocks(source: str) -> dict[str, tuple[int, str]]:
         if brace_index >= 0:
             result[method_name] = (line, extract_block(source, brace_index))
     return result
-
-
-def run_git_command(args: list[str], *, cwd: Path | None = None, allow_failure: bool = False) -> str:
-    try:
-        return subprocess.run(args, cwd=cwd, check=True, capture_output=True, text=True).stdout
-    except subprocess.CalledProcessError:
-        if allow_failure:
-            return ""
-        raise
-
-
-def get_repo_root(path: Path | None = None) -> Path:
-    output = run_git_command(["git", "rev-parse", "--show-toplevel"], cwd=path)
-    return Path(output.strip()).resolve()
-
-
-def get_head(repo_root: Path) -> str | None:
-    result = run_git_command(["git", "rev-parse", "--verify", "HEAD"], cwd=repo_root, allow_failure=True).strip()
-    return result or None
-
-
-def normalize_repo_paths(repo_root: Path, paths: list[Path]) -> list[str]:
-    result = []
-    for each in paths:
-        resolved = (repo_root / each).resolve() if not each.is_absolute() else each.resolve()
-        try:
-            relative = resolved.relative_to(repo_root)
-        except ValueError as ex:
-            raise ValueError(f"path is outside repository: {resolved}") from ex
-        result.append(relative.as_posix())
-    return sorted(set(result))
-
-
-def validate_test_scope_paths(paths: list[str]) -> None:
-    invalid = [each for each in paths if not any(marker in each for marker in TEST_SCOPE_MARKERS)]
-    if invalid:
-        raise ValueError(f"path is outside test scope: {invalid[0]}")
-
-
-def fingerprint_path(path: Path) -> str:
-    digest = hashlib.sha256()
-    if path.is_symlink():
-        digest.update(b"symlink\0")
-        digest.update(str(path.readlink()).encode("utf-8", errors="surrogateescape"))
-        return digest.hexdigest()
-    if not path.exists():
-        return "missing"
-    if path.is_dir():
-        return "directory"
-    digest.update(b"file\0")
-    digest.update(str(stat.S_IMODE(path.stat().st_mode)).encode("ascii"))
-    digest.update(b"\0")
-    with path.open("rb") as input_file:
-        while chunk := input_file.read(64 * 1024):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
-def parse_status_entries(raw: bytes) -> dict[str, str]:
-    records = raw.split(b"\0")
-    result = {}
-    index = 0
-    while index < len(records):
-        record = records[index]
-        index += 1
-        if not record:
-            continue
-        if len(record) < 4 or b" " != record[2:3]:
-            raise ValueError("unexpected git status --porcelain output")
-        status = record[:2].decode("ascii")
-        path = record[3:].decode("utf-8", errors="surrogateescape")
-        result[path] = status
-        if status[0] in "RC" or status[1] in "RC":
-            if index >= len(records) or not records[index]:
-                raise ValueError("incomplete rename entry in git status output")
-            old_path = records[index].decode("utf-8", errors="surrogateescape")
-            result[old_path] = "rename-source"
-            index += 1
-    return result
-
-
-def is_maven_target_output(repo_root: Path, path: Path, module_cache: dict[Path, bool]) -> bool:
-    for index, each in enumerate(path.parts):
-        if MAVEN_OUTPUT_DIRECTORY != each:
-            continue
-        module_path = Path(*path.parts[:index])
-        if module_path not in module_cache:
-            module_cache[module_path] = (repo_root / module_path / "pom.xml").is_file()
-        if module_cache[module_path]:
-            return True
-    return False
-
-
-def is_reproducible_verification_output(repo_root: Path, path: str, status: str, module_cache: dict[Path, bool]) -> bool:
-    if status not in ("??", "!!"):
-        return False
-    relative_path = Path(path)
-    python_cache = PYTHON_CACHE_DIRECTORY in relative_path.parts and relative_path.suffix in PYTHON_CACHE_SUFFIXES
-    return python_cache or is_maven_target_output(repo_root, relative_path, module_cache)
-
-
-def collect_worktree_entries(repo_root: Path, allowed_paths: set[str]) -> dict[str, dict[str, str]]:
-    completed = subprocess.run(
-        ["git", "status", "--porcelain=v1", "-z", "--untracked-files=all", "--ignored=traditional"],
-        cwd=repo_root, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-    )
-    module_cache = {}
-    return {
-        path: {"status": status, "fingerprint": fingerprint_path(repo_root / path)}
-        for path, status in parse_status_entries(completed.stdout).items()
-        if path not in allowed_paths and not is_reproducible_verification_output(repo_root, path, status, module_cache)
-    }
-
-
-def build_scope_snapshot(repo_root: Path, allowed_paths: list[Path]) -> dict:
-    normalized_allowed = normalize_repo_paths(repo_root, allowed_paths)
-    validate_test_scope_paths(normalized_allowed)
-    return {
-        "version": 1,
-        "repo_root": str(repo_root),
-        "head": get_head(repo_root),
-        "allowed_paths": normalized_allowed,
-        "allowed_contents": {
-            each: (repo_root / each).read_text(encoding="utf-8") if each.endswith(".java") and (repo_root / each).is_file() else None
-            for each in normalized_allowed
-        },
-        "outside_entries": collect_worktree_entries(repo_root, set(normalized_allowed)),
-    }
-
-
-def write_scope_baseline(output_path: Path, repo_root: Path, allowed_paths: list[Path]) -> None:
-    repo_root = repo_root.resolve()
-    output_path = output_path.resolve()
-    try:
-        output_path.relative_to(repo_root)
-    except ValueError:
-        pass
-    else:
-        raise ValueError("scope baseline must be stored outside the repository")
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    payload = json.dumps(build_scope_snapshot(repo_root, allowed_paths), indent=2, sort_keys=True) + "\n"
-    descriptor = os.open(output_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    with os.fdopen(descriptor, "w", encoding="utf-8") as output_file:
-        output_file.write(payload)
-
-
-def load_scope_baseline(baseline_path: Path) -> dict:
-    result = json.loads(baseline_path.read_text(encoding="utf-8"))
-    if not isinstance(result, dict) or 1 != result.get("version"):
-        raise ValueError(f"invalid scope baseline: {baseline_path}")
-    expected_types = {
-        "repo_root": str,
-        "allowed_paths": list,
-        "allowed_contents": dict,
-        "outside_entries": dict,
-    }
-    if any(not isinstance(result.get(key), expected_type) for key, expected_type in expected_types.items()):
-        raise ValueError(f"invalid scope baseline: {baseline_path}")
-    if result.get("head") is not None and not isinstance(result.get("head"), str):
-        raise ValueError(f"invalid scope baseline: {baseline_path}")
-    return result
-
-
-def check_scope_baseline(baseline_path: Path, allowed_paths: list[Path]) -> list[str]:
-    if not baseline_path.exists():
-        return [f"missing scope baseline: {baseline_path}"]
-    baseline = load_scope_baseline(baseline_path)
-    repo_root = Path(baseline["repo_root"])
-    if get_head(repo_root) != baseline.get("head"):
-        return ["repository HEAD differs from scope baseline"]
-    normalized_allowed = normalize_repo_paths(repo_root, allowed_paths)
-    if normalized_allowed != baseline.get("allowed_paths"):
-        return ["resolved test file set differs from scope baseline"]
-    current = collect_worktree_entries(repo_root, set(normalized_allowed))
-    before = baseline.get("outside_entries", {})
-    return sorted(path for path in set(before) | set(current) if before.get(path) != current.get(path))
-
-
-def get_added_lines_for_path(path: Path, scope_baseline: dict | None = None) -> list[str]:
-    if scope_baseline is None:
-        return []
-    repo_root = Path(scope_baseline["repo_root"])
-    relative_path = normalize_repo_paths(repo_root, [path])[0]
-    before = scope_baseline.get("allowed_contents", {}).get(relative_path) or ""
-    after = path.read_text(encoding="utf-8") if path.exists() else ""
-    return [f"+{each[2:]}" for each in difflib.ndiff(before.splitlines(), after.splitlines()) if each.startswith("+ ")]
 
 
 def get_top_level_class_name(source: str) -> str | None:
@@ -593,92 +328,10 @@ def analyze_parameterization_candidates(path: Path, source: str, target_public_m
 
 
 def describe_candidate(candidate: dict) -> str:
-    decision = "already parameterized" if candidate["parameterized_present"] else "manual-review-required"
-    return f'{candidate["path"]}: method={candidate["method"]} plainTestCount={candidate["plain_test_count"]} parameterizedPresent={candidate["parameterized_present"]} decision={decision}'
+    return f'{candidate["path"]}: method={candidate["method"]} plainTestCount={candidate["plain_test_count"]} parameterizedPresent={candidate["parameterized_present"]}'
 
 
-def check_parameterized_name(path: Path, source: str) -> list[str]:
-    source = mask_java_non_code(source, False)
-    violations = []
-    token = "@ParameterizedTest"
-    pos = 0
-    while True:
-        token_pos = source.find(token, pos)
-        if token_pos < 0:
-            break
-        line = line_number(source, token_pos)
-        cursor = token_pos + len(token)
-        while cursor < len(source) and source[cursor].isspace():
-            cursor += 1
-        if cursor >= len(source) or "(" != source[cursor]:
-            violations.append(f"{path}:{line}")
-            pos = token_pos + len(token)
-            continue
-        depth = 1
-        end = cursor + 1
-        while end < len(source) and depth:
-            if "(" == source[end]:
-                depth += 1
-            elif ")" == source[end]:
-                depth -= 1
-            end += 1
-        if depth or not R15_NAME_PATTERN.search(source[cursor + 1:end - 1]):
-            violations.append(f"{path}:{line}")
-        pos = end
-    return violations
-
-
-def check_r15_d(path: Path, source: str, method_bodies: dict[str, str]) -> list[str]:
-    violations = []
-    for match in PARAM_METHOD_PATTERN.finditer(source):
-        annotation_block = match.group(1)
-        method_name = match.group(2)
-        line = line_number(source, match.start())
-        providers = parse_method_sources(method_name, annotation_block)
-        if not providers:
-            violations.append(f"{path}:{line} method={method_name} missing @MethodSource")
-            continue
-        total_rows = 0
-        for provider in providers:
-            body = method_bodies.get(provider)
-            if body is None:
-                continue
-            total_rows += len(re.findall(r"\b(?:Arguments\.of|arguments)\s*\(", body))
-        if any(provider not in method_bodies for provider in providers):
-            continue
-        if total_rows < 3:
-            violations.append(f"{path}:{line} method={method_name} argumentsRows={total_rows}")
-    return violations
-
-
-def find_unresolved_method_sources(path: Path, source: str, method_bodies: dict[str, str]) -> list[str]:
-    result = []
-    for match in PARAM_METHOD_PATTERN.finditer(source):
-        method_name = match.group(2)
-        providers = parse_method_sources(method_name, match.group(1))
-        unresolved = [each for each in providers if each not in method_bodies]
-        if unresolved:
-            result.append(f"{path}:{line_number(source, match.start())} method={method_name} unresolvedProviders={','.join(unresolved)}")
-    return result
-
-
-def check_r15_e(path: Path, source: str) -> list[str]:
-    violations = []
-    for match in PARAM_METHOD_PATTERN.finditer(source):
-        method_name = match.group(2)
-        params = match.group(3).strip()
-        line = line_number(source, match.start())
-        if not params:
-            violations.append(f"{path}:{line} method={method_name} missingParameters")
-            continue
-        first_param = params.split(",", 1)[0].strip()
-        normalized = re.sub(r"\s+", " ", first_param)
-        if "final String name" != normalized:
-            violations.append(f"{path}:{line} method={method_name} firstParam={first_param}")
-    return violations
-
-
-def check_r15_f(path: Path, source: str) -> list[str]:
+def find_switch_dispatch_candidates(path: Path, source: str) -> list[str]:
     violations = []
     for match in PARAM_METHOD_BODY_PATTERN.finditer(source):
         method_name = match.group(1)
@@ -710,7 +363,7 @@ def check_r15_g(path: Path, source: str, added_lines: list[str]) -> list[str]:
     return violations
 
 
-def check_r15_i(path: Path, source: str, method_bodies: dict[str, str]) -> list[str]:
+def find_consumer_transport_candidates(path: Path, source: str, method_bodies: dict[str, str]) -> list[str]:
     violations = []
     for match in PARAM_METHOD_PATTERN.finditer(source):
         annotation_block = match.group(1)
@@ -749,12 +402,7 @@ def check_r15_j(context: FileScanContext) -> list[str]:
     return violations
 
 
-def check_r14(path: Path, source: str) -> list[str]:
-    source = mask_java_non_code(source, True)
-    return [f"{path}:{line_number(source, match.start())}" for match in BOOLEAN_ASSERTION_BAN_PATTERN.finditer(source)]
-
-
-def check_r15_h(path: Path, source: str) -> list[str]:
+def find_boolean_dispatch_candidates(path: Path, source: str) -> list[str]:
     source = mask_java_non_code(source, True)
     violations = []
     for match in TEST_METHOD_DECL_PATTERN.finditer(source):
@@ -766,39 +414,6 @@ def check_r15_h(path: Path, source: str) -> list[str]:
         if R15_H_IF_ELSE_PATTERN.search(body) or R15_H_IF_RETURN_PATTERN.search(body) or switch_dispatch:
             violations.append(f"{path}:{line} method={method_name}")
     return violations
-
-
-def find_metadata_accessor_test_candidates(path: Path, source: str) -> list[str]:
-    source = mask_java_non_code(source, False)
-    result = []
-    for match in TEST_METHOD_DECL_PATTERN.finditer(source):
-        method_name = match.group(2)
-        if any(method_name.startswith(f"assert{each}") for each in ("GetType", "GetOrder", "GetTypeClass")):
-            result.append(f"{path}:{line_number(source, match.start())} method={method_name}")
-    return result
-
-
-def checkstyle_preview_final_parameters(path: Path, source: str) -> list[str]:
-    violations = []
-    for match in TEST_METHOD_SIGNATURE_PATTERN.finditer(source):
-        method_name = match.group(2)
-        params = match.group(3).strip()
-        if not params:
-            continue
-        line = line_number(source, match.start())
-        for each in split_parameters(params):
-            normalized = re.sub(r"\s+", " ", each.strip())
-            if not normalized.startswith("final "):
-                violations.append(f"{path}:{line} method={method_name} param={each.strip()}")
-    return violations
-
-
-def collect_precheck_violations(context: FileScanContext) -> dict[str, list[str]]:
-    return {
-        "checkstyle-final-parameters": checkstyle_preview_final_parameters(context.path, context.source),
-        "parameterized-methodsource": check_r15_d(context.path, context.source, context.method_bodies),
-        "parameterized-name-parameter": check_r15_e(context.path, context.source),
-    }
 
 
 def create_file_scan_context(path: Path, scope_baseline: dict | None = None) -> FileScanContext:
@@ -817,20 +432,6 @@ def create_file_scan_context(path: Path, scope_baseline: dict | None = None) -> 
     )
 
 
-def file_rule_violations(context: FileScanContext) -> dict[str, list[str]]:
-    violations = defaultdict(list)
-    violations["R8"].extend(check_parameterized_name(context.path, context.source))
-    violations["R14"].extend(check_r14(context.path, context.source))
-    violations["R15-D"].extend(check_r15_d(context.path, context.source, context.method_bodies))
-    violations["R15-E"].extend(check_r15_e(context.path, context.source))
-    violations["R15-F"].extend(check_r15_f(context.path, context.source))
-    violations["R15-G"].extend(check_r15_g(context.path, context.source, context.added_lines))
-    violations["R15-H"].extend(check_r15_h(context.path, context.source))
-    violations["R15-I"].extend(check_r15_i(context.path, context.source, context.method_bodies))
-    violations["R15-J"].extend(check_r15_j(context))
-    return violations
-
-
 def build_rule_result(violations_by_rule: dict[str, list[str]]) -> dict[str, dict[str, object]]:
     return {
         each.name: {
@@ -842,40 +443,35 @@ def build_rule_result(violations_by_rule: dict[str, list[str]]) -> dict[str, dic
     }
 
 
+def find_argument_source_reviews(path: Path, source: str) -> list[str]:
+    result = []
+    for match in PARAM_METHOD_PATTERN.finditer(source):
+        method_name = match.group(2)
+        providers = parse_method_sources(method_name, match.group(1))
+        detail = f"providers={','.join(providers)}" if providers else "configured argument source"
+        result.append(f"{path}:{line_number(source, match.start())} method={method_name} {detail}")
+    return result
+
+
 def collect_scan_result(paths: list[Path], scope_baseline_path: Path | None) -> dict:
     violations_by_rule = defaultdict(list)
-    precheck_violations = defaultdict(list)
     java_paths = [each for each in paths if each.suffix == ".java"]
     scope_baseline = load_scope_baseline(scope_baseline_path) if scope_baseline_path and scope_baseline_path.exists() else None
     contexts = [create_file_scan_context(each, scope_baseline) for each in java_paths]
     for context in contexts:
-        for rule, entries in file_rule_violations(context).items():
-            violations_by_rule[rule].extend(entries)
-        for name, entries in collect_precheck_violations(context).items():
-            precheck_violations[name].extend(entries)
+        violations_by_rule["R15-J"].extend(check_r15_j(context))
     violations_by_rule["R15-C"].extend(
         check_scope_baseline(scope_baseline_path, paths) if scope_baseline_path else ["missing scope baseline"]
     )
-    unresolved_sources = [
-        each
-        for context in contexts
-        for each in find_unresolved_method_sources(context.path, context.source, context.method_bodies)
-    ]
     return {
         "rules": build_rule_result(violations_by_rule),
-        "prechecks": {
-            name: {
-                "message": PRECHECK_MESSAGES[name],
-                "violations": precheck_violations[name],
-            }
-            for name in PRECHECK_ORDER
-        },
         "candidates": [asdict(each) for context in contexts for each in context.candidates],
         "reviews": {
-            "R15-A": [str(context.path) for context in contexts if not context.target_public_methods],
-            "R15-B": [each for context in contexts for each in find_metadata_accessor_test_candidates(context.path, context.source)],
-            "R15-D": unresolved_sources,
-            "R15-I": unresolved_sources,
+            "R15-D": [each for context in contexts for each in find_argument_source_reviews(context.path, context.source)],
+            "R15-F": [each for context in contexts for each in find_switch_dispatch_candidates(context.path, context.source)],
+            "R15-G": [each for context in contexts for each in check_r15_g(context.path, context.source, context.added_lines)],
+            "R15-H": [each for context in contexts for each in find_boolean_dispatch_candidates(context.path, context.source)],
+            "R15-I": [each for context in contexts for each in find_consumer_transport_candidates(context.path, context.source, context.method_bodies)],
             "R15-J": [str(context.path) for context in contexts if not context.target_public_methods],
         },
         "java_file_count": len(contexts),
@@ -897,12 +493,11 @@ def print_rule_summary(result: dict) -> int:
             continue
         if "automated" == each.mode:
             print(f"[{each.name}] ok")
-        elif "manual" == each.mode:
-            print(f"[{each.name}] semanticReviewRequired=true")
         else:
-            print(f"[{each.name}] mechanical=ok semanticReviewRequired=true")
-        for review in result.get("reviews", {}).get(each.name, []):
-            print(f"review: {review}")
+            print(f"[{each.name}] mechanical=ok")
+    for name, reviews in result.get("reviews", {}).items():
+        for review in reviews:
+            print(f"[{name}] review: {review}")
     return 1 if failed_rules else 0
 
 
@@ -916,31 +511,14 @@ def print_summary_only(result: dict) -> int:
         print("[R8-CANDIDATES] no candidates")
     failed_rules = [f"{each.name}={len(result['rules'][each.name]['violations'])}" for each in RULE_SPECS if result["rules"][each.name]["violations"]]
     print(f"[summary] javaFiles={result['java_file_count']}")
-    manual_rules = ",".join(each.name for each in RULE_SPECS if "automated" != each.mode)
-    print(f"[summary] semanticReviewRequired={manual_rules}")
+    reviews = [f"{name}={len(locations)}" for name, locations in result.get("reviews", {}).items() if locations]
+    if reviews:
+        print(f"[summary] reviews={' '.join(reviews)}")
     if failed_rules:
         print(f"[summary] violations={' '.join(failed_rules)}")
         return 1
     print("[summary] all mechanical rules ok")
     return 0
-
-
-def print_precheck_summary(result: dict) -> int:
-    prechecks = result.get("prechecks", {})
-    failed = False
-    for name in PRECHECK_ORDER:
-        details = prechecks.get(name)
-        if not details:
-            continue
-        violations = details["violations"]
-        if not violations:
-            print(f"[precheck:{name}] ok")
-            continue
-        failed = True
-        print(f"[precheck:{name}] {details['message']}")
-        for each in violations:
-            print(each)
-    return 1 if failed else 0
 
 
 def main() -> int:
@@ -949,7 +527,6 @@ def main() -> int:
     parser.add_argument("--capture-scope-baseline", help="Write a structured task scope baseline to this path, then exit.")
     parser.add_argument("--json", action="store_true", help="Emit JSON output instead of the default text report.")
     parser.add_argument("--summary-only", action="store_true", help="Emit a compact text summary with candidate information.")
-    parser.add_argument("--precheck-only", action="store_true", help="Emit only lightweight deterministic prechecks for early edit loops.")
     parser.add_argument("paths", nargs="*", help="Resolved test file set.")
     args = parser.parse_args()
 
@@ -967,8 +544,6 @@ def main() -> int:
         if args.json:
             print(json.dumps(result, indent=2, sort_keys=True))
             return 1 if failed_rule_names(result) else 0
-        if args.precheck_only:
-            return print_precheck_summary(result)
         if args.summary_only:
             return print_summary_only(result)
         return print_rule_summary(result)

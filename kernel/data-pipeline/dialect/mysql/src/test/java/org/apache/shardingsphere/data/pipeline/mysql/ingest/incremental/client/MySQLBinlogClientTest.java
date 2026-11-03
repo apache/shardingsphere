@@ -32,6 +32,7 @@ import io.netty.util.Attribute;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.ThreadUtils;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.MySQLBinlogContext;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
@@ -48,6 +49,8 @@ import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperation
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +62,9 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.mockito.stubbing.Answer;
 
+import javax.annotation.Nullable;
 import java.net.InetSocketAddress;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -67,6 +72,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -86,7 +92,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.times;
@@ -95,9 +103,10 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
 @SuppressWarnings("ProhibitedExceptionDeclared")
-@ExtendWith({MockitoExtension.class, LogCaptureExtension.class})
+@ExtendWith({MockitoExtension.class, LogCaptureExtension.class, AutoMockExtension.class})
 @LogCaptureSettings(suppressOutput = true)
 @MockitoSettings(strictness = Strictness.LENIENT)
+@StaticMockSettings({CompletableFuture.class, ThreadUtils.class})
 class MySQLBinlogClientTest {
     
     @Mock
@@ -138,7 +147,6 @@ class MySQLBinlogClientTest {
     void assertConnect() throws Exception {
         MySQLServerVersion expected = new MySQLServerVersion("5.5.0-log");
         AtomicReference<ChannelInitializer<SocketChannel>> initializer = new AtomicReference<>();
-        mockChannelResponse(expected);
         try (MockedConstruction<Bootstrap> ignored = mockConstruction(Bootstrap.class, (mock, context) -> {
             when(mock.group(any())).thenReturn(mock);
             when(mock.channel(any())).thenReturn(mock);
@@ -147,7 +155,7 @@ class MySQLBinlogClientTest {
                 initializer.set(invocation.getArgument(0));
                 return mock;
             });
-            when(mock.connect(anyString(), anyInt())).thenReturn(channelFuture);
+            when(mock.connect(anyString(), anyInt())).thenAnswer(mockChannelResponse(expected));
         })) {
             client.connect();
         }
@@ -160,10 +168,19 @@ class MySQLBinlogClientTest {
         client.closeChannel(true);
     }
     
+    private Answer<ChannelFuture> mockChannelResponse(@Nullable final Object response) {
+        return invocation -> {
+            @SuppressWarnings("unchecked")
+            Promise<Object> callback = (Promise<Object>) Plugins.getMemberAccessor().get(MySQLBinlogClient.class.getDeclaredField("responseCallback"), client);
+            callback.setSuccess(response);
+            return channelFuture;
+        };
+    }
+    
     @Test
     void assertExecuteSuccess() {
         prepareClientChannel();
-        mockChannelResponse(new MySQLOKPacket(0));
+        doAnswer(mockChannelResponse(new MySQLOKPacket(0))).when(channel).writeAndFlush(any(MySQLComQueryPacket.class));
         assertTrue(client.execute("sql"));
         verify(channel).writeAndFlush(any(MySQLComQueryPacket.class));
     }
@@ -171,7 +188,7 @@ class MySQLBinlogClientTest {
     @Test
     void assertNullResponseHandling() {
         prepareClientChannel();
-        mockChannelResponse(null);
+        doAnswer(mockChannelResponse(null)).when(channel).writeAndFlush(any(MySQLComQueryPacket.class));
         assertFalse(client.execute("sql"));
         PipelineInternalException updateException = assertThrows(PipelineInternalException.class, () -> client.executeUpdate("update"));
         assertThat(updateException.getMessage(), is("Could not get MySQL OK packet"));
@@ -182,7 +199,7 @@ class MySQLBinlogClientTest {
     @Test
     void assertExecuteThrowsWhenErrorResponse() {
         prepareClientChannel();
-        mockChannelResponse(new MySQLErrPacket(new SQLException("err", "state", 1)));
+        doAnswer(mockChannelResponse(new MySQLErrPacket(new SQLException("err", "state", 1)))).when(channel).writeAndFlush(any(MySQLComQueryPacket.class));
         PipelineInternalException ex = assertThrows(PipelineInternalException.class, () -> client.execute("sql"));
         assertThat(ex.getMessage(), is("err"));
     }
@@ -190,7 +207,7 @@ class MySQLBinlogClientTest {
     @Test
     void assertExecuteQueryThrowsWhenUnexpectedResponse() {
         prepareClientChannel();
-        mockChannelResponse(new Object());
+        doAnswer(mockChannelResponse(new Object())).when(channel).writeAndFlush(any(MySQLComQueryPacket.class));
         PipelineInternalException ex = assertThrows(PipelineInternalException.class, () -> client.executeQuery("query"));
         assertThat(ex.getMessage(), is("unexpected response type"));
     }
@@ -264,9 +281,7 @@ class MySQLBinlogClientTest {
         client.subscribe("binlog-000002", 8L);
         ArgumentCaptor<ChannelHandler> captor = ArgumentCaptor.forClass(ChannelHandler.class);
         verify(pipeline, times(4)).addLast(captor.capture());
-        List<Integer> checksumLengths = captor.getAllValues().stream()
-                .filter(each -> each instanceof MySQLBinlogEventPacketDecoder)
-                .map(each -> getChecksumLength((MySQLBinlogEventPacketDecoder) each))
+        List<Integer> checksumLengths = captor.getAllValues().stream().filter(MySQLBinlogEventPacketDecoder.class::isInstance).map(each -> getChecksumLength((MySQLBinlogEventPacketDecoder) each))
                 .collect(Collectors.toList());
         assertThat(checksumLengths, is(Arrays.asList(0, 4)));
     }
@@ -303,10 +318,45 @@ class MySQLBinlogClientTest {
         client.subscribe("binlog-000004", 16L);
         ArgumentCaptor<ChannelHandler> captor = ArgumentCaptor.forClass(ChannelHandler.class);
         verify(pipeline, times(2)).addLast(captor.capture());
-        MySQLBinlogEventPacketDecoder decoder = captor.getAllValues().stream()
-                .filter(each -> each instanceof MySQLBinlogEventPacketDecoder)
-                .map(MySQLBinlogEventPacketDecoder.class::cast).findFirst().orElseThrow(IllegalStateException::new);
+        MySQLBinlogEventPacketDecoder decoder = captor.getAllValues().stream().filter(MySQLBinlogEventPacketDecoder.class::isInstance).map(MySQLBinlogEventPacketDecoder.class::cast).findFirst()
+                .orElseThrow(IllegalStateException::new);
         assertThat(getChecksumLength(decoder), is(0));
+    }
+    
+    @Test
+    void assertReconnectAfterTransientFailure() throws Exception {
+        client = createClientMock();
+        prepareClientChannel();
+        setServerVersion("5.5.0");
+        doReturn(true).when(client).execute(anyString());
+        when(channel.writeAndFlush(any(MySQLComRegisterSlaveCommandPacket.class))).thenAnswer(invocation -> {
+            Promise<Object> callback = new DefaultPromise<>(eventLoopGroup.next());
+            callback.setSuccess(new MySQLOKPacket(0));
+            setResponseCallback(callback);
+            return null;
+        });
+        client.subscribe("binlog-000004", 16L);
+        ArgumentCaptor<ChannelHandler> handlerCaptor = ArgumentCaptor.forClass(ChannelHandler.class);
+        verify(pipeline, times(2)).addLast(handlerCaptor.capture());
+        ChannelInboundHandlerAdapter handler = handlerCaptor.getAllValues().stream().filter(each -> "MySQLBinlogEventHandler".equals(each.getClass().getSimpleName()))
+                .map(each -> (ChannelInboundHandlerAdapter) each).findFirst().orElseThrow(IllegalStateException::new);
+        ChannelHandlerContext context = mock(ChannelHandlerContext.class);
+        handler.channelRead(context, new PlaceholderBinlogEvent("binlog-000005", 32L, 1L));
+        doThrow(new PipelineInternalException("connect failed")).doNothing().when(client).connect();
+        doNothing().when(client).subscribe("binlog-000005", 32L);
+        CompletableFuture<Void> reconnectFuture = new CompletableFuture<>();
+        ArgumentCaptor<Runnable> reconnectCaptor = ArgumentCaptor.forClass(Runnable.class);
+        when(CompletableFuture.runAsync(reconnectCaptor.capture())).thenReturn(reconnectFuture);
+        handler.channelInactive(context);
+        handler.channelInactive(context);
+        assertThat(reconnectCaptor.getAllValues().size(), is(1));
+        reconnectCaptor.getValue().run();
+        verify(client, times(2)).connect();
+        verify(channel).close();
+        verify(client).subscribe("binlog-000005", 32L);
+        reconnectFuture.complete(null);
+        handler.channelInactive(context);
+        assertThat(reconnectCaptor.getAllValues().size(), is(2));
     }
     
     @Test
@@ -359,7 +409,6 @@ class MySQLBinlogClientTest {
         SocketChannel socketChannel = mock(SocketChannel.class, RETURNS_DEEP_STUBS);
         when(socketChannel.pipeline()).thenReturn(pipeline);
         when(channelFuture.channel()).thenReturn(channel);
-        mockChannelResponse(new MySQLServerVersion("5.5.0-log"));
         try (MockedConstruction<Bootstrap> ignored = mockConstruction(Bootstrap.class, (mock, context) -> {
             when(mock.group(any())).thenReturn(mock);
             when(mock.channel(any())).thenReturn(mock);
@@ -368,7 +417,7 @@ class MySQLBinlogClientTest {
                 initializer.set(invocation.getArgument(0));
                 return mock;
             });
-            when(mock.connect(anyString(), anyInt())).thenReturn(channelFuture);
+            when(mock.connect(anyString(), anyInt())).thenAnswer(mockChannelResponse(new MySQLServerVersion("5.5.0-log")));
         })) {
             client.connect();
         }
@@ -379,9 +428,8 @@ class MySQLBinlogClientTest {
         initializer.get().channelRegistered(context);
         ArgumentCaptor<ChannelHandler> captor = ArgumentCaptor.forClass(ChannelHandler.class);
         verify(pipeline, times(7)).addLast(captor.capture());
-        ChannelInboundHandlerAdapter handler = captor.getAllValues().stream()
-                .filter(each -> "MySQLCommandResponseHandler".equals(each.getClass().getSimpleName()))
-                .map(each -> (ChannelInboundHandlerAdapter) each).findFirst().orElseThrow(IllegalStateException::new);
+        ChannelInboundHandlerAdapter handler = captor.getAllValues().stream().filter(each -> "MySQLCommandResponseHandler".equals(each.getClass().getSimpleName()))
+                .map(ChannelInboundHandlerAdapter.class::cast).findFirst().orElseThrow(IllegalStateException::new);
         Promise<Object> callback = new DefaultPromise<>(eventLoopGroup.next());
         setResponseCallback(callback);
         handler.channelRead(mock(ChannelHandlerContext.class), new Object());
@@ -438,27 +486,5 @@ class MySQLBinlogClientTest {
     private int getChecksumLength(final MySQLBinlogEventPacketDecoder decoder) {
         MySQLBinlogContext binlogContext = (MySQLBinlogContext) Plugins.getMemberAccessor().get(MySQLBinlogEventPacketDecoder.class.getDeclaredField("binlogContext"), decoder);
         return binlogContext.getChecksumLength();
-    }
-    
-    private void mockChannelResponse(final Object response) {
-        new Thread(() -> mockChannelResponseInThread(response)).start();
-    }
-    
-    @SneakyThrows(InterruptedException.class)
-    @SuppressWarnings("unchecked")
-    private void mockChannelResponseInThread(final Object response) {
-        long startMillis = System.currentTimeMillis();
-        do {
-            Promise<Object> callback;
-            try {
-                callback = (Promise<Object>) Plugins.getMemberAccessor().get(MySQLBinlogClient.class.getDeclaredField("responseCallback"), client);
-            } catch (final ReflectiveOperationException ex) {
-                throw new RuntimeException(ex);
-            }
-            if (null != callback && !callback.isDone()) {
-                callback.setSuccess(response);
-            }
-            TimeUnit.MILLISECONDS.sleep(100L);
-        } while (System.currentTimeMillis() - startMillis <= TimeUnit.SECONDS.toMillis(20L));
     }
 }

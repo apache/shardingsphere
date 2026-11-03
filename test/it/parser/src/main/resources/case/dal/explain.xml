@@ -1789,4 +1789,35 @@
             </where>
         </select>
     </explain>
+
+    <explain sql-case-id="explain_insert_returning_star_pg">
+        <insert>
+            <table name="t_order" start-index="20" stop-index="26" />
+            <columns start-index="27" stop-index="27" />
+            <values>
+                <value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="36" stop-index="36" />
+                    </assignment-value>
+                </value>
+            </values>
+            <returning>
+                <projections start-index="49" stop-index="49">
+                    <shorthand-projection start-index="49" stop-index="49" />
+                </projections>
+            </returning>
+        </insert>
+    </explain>
+
+    <explain sql-case-id="explain_insert_default_returning_pg">
+        <insert>
+            <table name="t_order" start-index="20" stop-index="26" />
+            <columns start-index="27" stop-index="27" />
+            <returning>
+                <projections start-index="53" stop-index="60">
+                    <column-projection name="order_id" start-index="53" stop-index="60" />
+                </projections>
+            </returning>
+        </insert>
+    </explain>
 </sql-parser-test-cases>

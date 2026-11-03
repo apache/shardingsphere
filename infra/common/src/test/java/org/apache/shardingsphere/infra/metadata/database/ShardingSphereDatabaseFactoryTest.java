@@ -90,7 +90,7 @@ class ShardingSphereDatabaseFactoryTest {
             mockedDefaultSchemaNameResolver.when(() -> DefaultSchemaNameResolver.resolveProtocol(protocolType, "foo_db")).thenReturn("foo_schema");
             mockedRulesBuilder.when(() -> DatabaseRulesBuilder.build(eq("foo_db"), eq(protocolType), eq(databaseConfig), eq(computeNodeInstanceContext), any(ResourceMetaData.class)))
                     .thenReturn(Collections.singleton(mock(ShardingSphereRule.class)));
-            mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.build(eq(protocolType), any(GenericSchemaBuilderMaterial.class)))
+            mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.buildWithInventoryCheck(eq(protocolType), any(GenericSchemaBuilderMaterial.class)))
                     .thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", protocolType)));
             mockedSystemSchemaBuilder.when(() -> SystemSchemaBuilder.build("foo_db", protocolType, props)).thenReturn(systemSchemas);
             ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create("foo_db", protocolType, databaseConfig, props, computeNodeInstanceContext);
@@ -118,8 +118,7 @@ class ShardingSphereDatabaseFactoryTest {
             mockedDefaultSchemaNameResolver.when(() -> DefaultSchemaNameResolver.resolveProtocol(protocolType, "foo_db")).thenReturn("foo_schema");
             mockedRulesBuilder.when(() -> DatabaseRulesBuilder.build(eq("foo_db"), eq(protocolType), eq(databaseConfig), eq(computeNodeInstanceContext), any(ResourceMetaData.class)))
                     .thenReturn(Collections.singleton(mock(ShardingSphereRule.class)));
-            mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.build(eq(protocolType),
-                    argThat(material -> material.getRevisionCandidateSchemas().contains(candidateSchema))))
+            mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.buildWithInventoryCheck(eq(protocolType), argThat(material -> material.getRevisionCandidateSchemas().contains(candidateSchema))))
                     .thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", protocolType)));
             mockedSystemSchemaBuilder.when(() -> SystemSchemaBuilder.build("foo_db", protocolType, props)).thenReturn(Collections.emptyMap());
             ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.createWithRevisionCandidateSchemas(

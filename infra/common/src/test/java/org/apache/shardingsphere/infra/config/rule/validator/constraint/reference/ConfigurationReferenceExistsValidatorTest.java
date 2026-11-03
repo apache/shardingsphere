@@ -52,14 +52,22 @@ class ConfigurationReferenceExistsValidatorTest {
         Set<ConstraintViolation<DirectConfiguration>> actual = VALIDATOR.validate(new DirectConfiguration("bar_provider", Collections.singletonMap("foo_provider", "configured")));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getPropertyPath().toString(), is("providerName"));
-        assertThat(actual.iterator().next().getMessage(), is("references unconfigured providers `bar_provider`"));
+        assertThat(actual.iterator().next().getMessage(), is("references unconfigured providers"));
+    }
+    
+    @Test
+    void assertUnconfiguredReferenceWithTemplateCharacters() {
+        Collection<ConstraintViolation<DirectConfiguration>> actual = VALIDATOR.validate(new DirectConfiguration("bar_{message}_${7*7}", Collections.singletonMap("foo_provider", "configured")));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getPropertyPath().toString(), is("providerName"));
+        assertThat(actual.iterator().next().getMessage(), is("references unconfigured providers"));
     }
     
     @Test
     void assertUnconfiguredReferenceWithMissingPool() {
         Set<ConstraintViolation<DirectConfiguration>> actual = VALIDATOR.validate(new DirectConfiguration("bar_provider", null));
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getMessage(), is("references unconfigured providers `bar_provider`"));
+        assertThat(actual.iterator().next().getMessage(), is("references unconfigured providers"));
     }
     
     @Test
@@ -76,7 +84,7 @@ class ConfigurationReferenceExistsValidatorTest {
         Set<ConstraintViolation<NestedConfiguration>> actual = VALIDATOR.validate(config);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getPropertyPath().toString(), is("groups"));
-        assertThat(actual.iterator().next().getMessage(), is("references unconfigured algorithms `bar_algorithm`"));
+        assertThat(actual.iterator().next().getMessage(), is("references unconfigured algorithms"));
     }
     
     @Test
@@ -87,7 +95,7 @@ class ConfigurationReferenceExistsValidatorTest {
                 Collections.singletonMap("foo_algorithm", "configured"));
         Set<ConstraintViolation<NestedConfiguration>> actual = VALIDATOR.validate(config);
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getMessage(), is("references unconfigured algorithms `first_missing`"));
+        assertThat(actual.iterator().next().getMessage(), is("references unconfigured algorithms"));
     }
     
     @Test

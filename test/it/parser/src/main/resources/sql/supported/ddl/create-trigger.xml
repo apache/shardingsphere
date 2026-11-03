@@ -136,5 +136,13 @@ BEGIN
 END;" db-types="Oracle" />
     <sql-case id="create_trigger_pg_after_insert" value="CREATE TRIGGER t_merge_trigger AFTER INSERT ON t_merge_target FOR EACH ROW EXECUTE FUNCTION merge_notify()" db-types="PostgreSQL" />
     <sql-case id="create_trigger_pg_multi_events_when" value="CREATE TRIGGER check_update BEFORE INSERT OR DELETE ON t_merge_target FOR EACH ROW WHEN (order_id = 1) EXECUTE PROCEDURE process_order_audit()" db-types="PostgreSQL" />
-    <sql-case id="create_trigger_pg_constraint" value="CREATE CONSTRAINT TRIGGER FROM t_merge_target DEFERRABLE FOR EACH ROW WHEN (order_id = 1) EXECUTE FUNCTION merge_notify()" db-types="PostgreSQL" />
+    <sql-case id="create_trigger_pg_constraint" value="CREATE CONSTRAINT TRIGGER t_merge_constraint AFTER INSERT ON t_merge_target FROM t_merge_source DEFERRABLE FOR EACH ROW WHEN (NEW.order_id = 1) EXECUTE FUNCTION merge_notify()" db-types="PostgreSQL" />
+    <sql-case id="create_trigger_if_not_exists_mysql" value="CREATE TRIGGER IF NOT EXISTS tr BEFORE INSERT ON t FOR EACH ROW SET @a=1" db-types="MySQL,Doris" />
+    <sql-case id="create_trigger_constraint_named_pg" value="CREATE CONSTRAINT TRIGGER ct AFTER INSERT ON t FOR EACH ROW EXECUTE FUNCTION f()" db-types="PostgreSQL" />
+    <sql-case id="create_trigger_constraint_deferred_pg" value="CREATE CONSTRAINT TRIGGER ct AFTER UPDATE OR DELETE ON s.t DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE s.f()" db-types="PostgreSQL" />
+    <sql-case id="create_trigger_constraint_from_pg" value="CREATE CONSTRAINT TRIGGER ct AFTER INSERT ON t FROM s.ref FOR EACH ROW EXECUTE FUNCTION f()" db-types="PostgreSQL" />
+    <sql-case id="create_trigger_constraint_when_pg" value="CREATE CONSTRAINT TRIGGER ct AFTER UPDATE ON t FOR EACH ROW WHEN (NEW.a &gt; 0) EXECUTE FUNCTION f()" db-types="PostgreSQL" />
+    <sql-case id="create_trigger_replace_regular_pg" value="CREATE OR REPLACE TRIGGER tr AFTER INSERT ON t FOR EACH ROW EXECUTE FUNCTION f()" db-types="PostgreSQL" />
+    <sql-case id="create_trigger_regular_control_pg" value="CREATE TRIGGER tr AFTER INSERT ON t FOR EACH ROW EXECUTE FUNCTION f()" db-types="PostgreSQL" />
+    <sql-case id="create_trigger_pg_constraint_without_from" value="CREATE CONSTRAINT TRIGGER t_constraint AFTER INSERT ON t_merge_target DEFERRABLE FOR EACH ROW WHEN (order_id = 1) EXECUTE FUNCTION merge_notify()" db-types="PostgreSQL" />
 </sql-cases>

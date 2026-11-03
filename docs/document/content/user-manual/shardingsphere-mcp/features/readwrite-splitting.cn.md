@@ -27,7 +27,7 @@ weight = 5
 - `RANDOM` 和 `ROUND_ROBIN` 不需要负载均衡属性；`WEIGHT` 需要为每个读存储单元提供一个权重属性。
 - 执行 workflow 前，确认返回的 `plan_id`、`resources_to_read`、`next_actions` 和 `distsql_artifacts`。
 
-规则变更的通用审查流程见[规则变更流程](../plugin-workflow/)。
+规则变更的通用审查流程见[规则变更流程](/cn/user-manual/shardingsphere-mcp/features/plugin-workflow/)。
 
 ## 限制
 

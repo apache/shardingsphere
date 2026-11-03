@@ -39,4 +39,19 @@
         <notes>Elasticjob was incorrectly identified as Apache ZooKeeper</notes>
         <cve>CVE-2016-5017</cve>
     </suppress>
+    <suppress>
+        <notes>ElasticJob was incorrectly identified as Apache ZooKeeper</notes>
+        <packageUrl>pkg:maven/org.apache.shardingsphere.elasticjob/elasticjob-registry-center-zookeeper-curator@3.0.4</packageUrl>
+        <cve>CVE-2019-0201</cve>
+    </suppress>
+    <suppress>
+        <notes>The affected cache deserialization implementation belongs to KAPT, not kotlin-stdlib.</notes>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin-stdlib(-jdk7|-jdk8)?@2\.2\.21$</packageUrl>
+        <cve>CVE-2026-53914</cve>
+    </suppress>
+    <suppress>
+        <notes>The affected W3C Baggage propagation implementation belongs to @opentelemetry/core for JavaScript, not the OpenTelemetry Java libraries.</notes>
+        <packageUrl regex="true">^pkg:maven/io\.opentelemetry/opentelemetry-(api|common|context|exporter-otlp|sdk|sdk-common|sdk-extension-autoconfigure|sdk-extension-autoconfigure-spi|sdk-logs|sdk-metrics|sdk-trace)@1\.58\.0$</packageUrl>
+        <cve>CVE-2026-54285</cve>
+    </suppress>
 </suppressions>

@@ -38,7 +38,7 @@ public final class FirebirdProtocol {
     private final int weight;
     
     public FirebirdProtocol(final ByteBuf buffer) {
-        version = FirebirdProtocolVersion.valueOf(buffer.readInt());
+        version = FirebirdProtocolVersion.valueOf(buffer.readInt() & 0xFFFF);
         arch = FirebirdArchType.valueOf(buffer.readInt());
         minType = buffer.readInt();
         maxType = buffer.readInt();

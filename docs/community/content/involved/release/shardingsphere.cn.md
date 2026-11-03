@@ -618,7 +618,7 @@ ShardingSphere MCP 通过仓库中的 [`.github/workflows/release-mcp.yml`](http
 GitHub release 发布后：
 
 - 等待 `Release - MCP` workflow 成功完成
-- 确认 [GitHub Packages](https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-mcp) 中存在 `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}`
+- 确认 [GitHub Packages](https://github.com/orgs/apache/packages?repo_name=shardingsphere) 中存在 `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}`
 - 通过下面的命令确认官方 MCP Registry 已返回该 server 的 metadata：
 
 ```shell

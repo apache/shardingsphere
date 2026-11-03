@@ -19,9 +19,13 @@ package org.apache.shardingsphere.mcp.core.metadata;
 
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -31,6 +35,27 @@ import static org.mockito.Mockito.when;
 class GovernanceMetadataQueryServiceTest {
     
     private final GovernanceMetadataQueryService service = new GovernanceMetadataQueryService();
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("storageUnitAttributeCases")
+    void assertQueryStorageUnitsWithOtherAttributes(final String name, final Object attributes, final Object expected) {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("foo_db", "SHOW STORAGE UNITS FROM foo_db")).thenReturn(List.of(Map.of("name", "foo_ds", "other_attributes", attributes)));
+        List<Map<String, Object>> actual = service.queryStorageUnits(queryFacade, "foo_db");
+        assertThat(actual, is(List.of(Map.of("name", "foo_ds", "other_attributes", expected))));
+    }
+    
+    private static Stream<Arguments> storageUnitAttributeCases() {
+        return Stream.of(
+                Arguments.of("nested collections", List.of(Map.of("PASSWORD", "foo_password"), List.of(Map.of("pool", 8))), List.of(Map.of("PASSWORD", "******"), List.of(Map.of("pool", 8)))),
+                Arguments.of("JSON array", "[{\"secret\":\"foo_secret\"},7]", List.of(Map.of("secret", "******"), 7)),
+                Arguments.of("ordinary text", "foo_pool=8", "foo_pool=8"),
+                Arguments.of("sensitive text", "PASSWORD=foo_password", "******"),
+                Arguments.of("malformed sensitive JSON", "{\"token\":", "******"),
+                Arguments.of("malformed ordinary JSON", "{\"pool\":", "{\"pool\":"),
+                Arguments.of("ordinary scalar", 8, 8),
+                Arguments.of("ordinary map", Map.of("pool", 8), Map.of("pool", 8)));
+    }
     
     @Test
     void assertQueryStorageUnits() {

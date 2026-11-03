@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.util;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -34,6 +35,7 @@ import java.time.MonthDay;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -42,6 +44,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ShardingValueTypeConvertUtilsTest {
     
@@ -49,6 +52,12 @@ class ShardingValueTypeConvertUtilsTest {
     @MethodSource("convertToTargetTypeArguments")
     void assertConvertToTargetType(final String name, final Comparable<?> value, final Class<?> targetType, final Object expected) {
         assertThat(ShardingValueTypeConvertUtils.convertToTargetType(value, targetType), is(expected));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(classes = {Instant.class, LocalDate.class, LocalDateTime.class, Time.class})
+    void assertConvertToTargetTypeWithInvalidTemporalValue(final Class<?> targetType) {
+        assertThrows(DateTimeParseException.class, () -> ShardingValueTypeConvertUtils.convertToTargetType("2024-08-05T25:30:45", targetType));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -128,6 +137,7 @@ class ShardingValueTypeConvertUtilsTest {
                 Arguments.of("SqlDate <- String(LocalDate)", "2024-08-05", java.sql.Date.class, java.sql.Date.valueOf(LocalDate.of(2024, 8, 5))),
                 Arguments.of("SqlTime <- LocalTime", LocalTime.of(12, 30, 45), Time.class, Time.valueOf(LocalTime.of(12, 30, 45))),
                 Arguments.of("SqlTime <- String", "12:30:45", Time.class, Time.valueOf(LocalTime.of(12, 30, 45))),
+                Arguments.of("SqlTime <- String(LocalDateTime)", "2024-08-05T12:30:45", Time.class, Time.valueOf(LocalTime.of(12, 30, 45))),
                 Arguments.of("Timestamp <- LocalDateTime", LocalDateTime.of(2024, 1, 1, 12, 30, 45), Timestamp.class, Timestamp.valueOf(LocalDateTime.of(2024, 1, 1, 12, 30, 45))),
                 Arguments.of("Timestamp <- Instant", Instant.parse("2024-01-01T12:30:45Z"), Timestamp.class, Timestamp.from(Instant.parse("2024-01-01T12:30:45Z"))),
                 Arguments.of("Timestamp <- String", "2024-08-05T12:30:45", Timestamp.class, Timestamp.from(LocalDateTime.of(2024, 8, 5, 12, 30, 45).atZone(ZoneId.systemDefault()).toInstant())),
@@ -144,6 +154,7 @@ class ShardingValueTypeConvertUtilsTest {
                 Arguments.of("LocalDateTime <- LocalDate", LocalDate.of(2024, 1, 1), LocalDateTime.class, LocalDateTime.of(2024, 1, 1, 0, 0)),
                 Arguments.of("LocalDateTime <- Timestamp", Timestamp.valueOf("2024-01-01 12:30:45"), LocalDateTime.class, LocalDateTime.of(2024, 1, 1, 12, 30, 45)),
                 Arguments.of("LocalDateTime <- String", "2024-08-05T12:30:45", LocalDateTime.class, LocalDateTime.of(2024, 8, 5, 12, 30, 45)),
+                Arguments.of("LocalDateTime <- String(Instant)", "2024-08-05T12:30:45Z", LocalDateTime.class, Instant.parse("2024-08-05T12:30:45Z").atZone(ZoneId.systemDefault()).toLocalDateTime()),
                 Arguments.of("Instant <- Long", 1704067200000L, Instant.class, Instant.ofEpochMilli(1704067200000L)),
                 Arguments.of("Instant <- String", "2024-08-05T12:30:45Z", Instant.class, Instant.parse("2024-08-05T12:30:45Z")),
                 Arguments.of("Instant <- String(LocalDate)", "2024-08-05", Instant.class, LocalDate.of(2024, 8, 5).atStartOfDay(ZoneId.systemDefault()).toInstant()),

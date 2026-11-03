@@ -36,5 +36,4 @@ public final class FirebirdDatabaseType implements DatabaseType {
     public String getType() {
         return "Firebird";
     }
-    
 }

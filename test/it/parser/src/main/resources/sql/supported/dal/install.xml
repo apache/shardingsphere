@@ -28,4 +28,8 @@
     <sql-case id="install_plugin_with_null" value="INSTALL PLUGIN FROM &quot;/path/to/plugin.zip&quot; PROPERTIES (&quot;description&quot; = NULL)" db-types="Doris" />
     <sql-case id="install_plugin_multiple_properties" value="INSTALL PLUGIN FROM &quot;/path/to/plugin.zip&quot; PROPERTIES (&quot;md5sum&quot; = &quot;abc123&quot;, &quot;timeout&quot; = 30)" db-types="Doris" />
     <sql-case id="install_plugin_mixed_types" value="INSTALL PLUGIN FROM &quot;/path/to/plugin.zip&quot; PROPERTIES (&quot;md5sum&quot; = &quot;abc123&quot;, &quot;timeout&quot; = 30, &quot;auto_load&quot; = false)" db-types="Doris" />
+    <sql-case id="install_component_set_global" value="INSTALL COMPONENT 'file://component1' SET GLOBAL component1.var1=1, component1.var2=DEFAULT" db-types="MySQL,Doris" />
+
+    <sql-case id="install_component_set_persist" value="INSTALL COMPONENT 'file://component1' SET PERSIST component1.var1=1, component1.var2=DEFAULT" db-types="MySQL,Doris" />
+
 </sql-cases>

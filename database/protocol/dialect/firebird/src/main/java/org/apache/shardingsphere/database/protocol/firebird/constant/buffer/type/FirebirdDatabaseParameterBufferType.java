@@ -62,7 +62,6 @@ public enum FirebirdDatabaseParameterBufferType implements FirebirdParameterBuff
     QUIT_LOG(26),
     NO_RESERVE(27, FirebirdValueFormat.INT),
     USER_NAME(28),
-    // USER(USER_NAME.getCode()),
     PASSWORD(29),
     PASSWORD_ENC(30),
     SYS_USER_NAME_ENC(31),

@@ -74,6 +74,9 @@ public final class SQLE2ETestCasesXMLLoader {
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
     private Collection<SQLE2ETestCaseContext> loadE2ETestCaseContexts(final SQLCommandType sqlCommandType) {
+        if ("runtime".equals(System.getProperty("org.graalvm.nativeimage.imagecode"))) {
+            return loadE2ETestCaseContexts(Paths.get("src/test/resources/cases").toAbsolutePath().toUri().toURL(), sqlCommandType);
+        }
         URL url = Thread.currentThread().getContextClassLoader().getResource("cases/");
         if (null != url) {
             return loadE2ETestCaseContexts(url, sqlCommandType);

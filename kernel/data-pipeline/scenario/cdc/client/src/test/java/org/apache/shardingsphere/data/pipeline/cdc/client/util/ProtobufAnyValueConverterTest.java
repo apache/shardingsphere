@@ -57,9 +57,9 @@ class ProtobufAnyValueConverterTest {
         assertThat(actual.getMessage(), is(String.format("not support unpack the type %s", any.getTypeUrl())));
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("supportedValues")
-    void assertConvertToObject(final Any any, final Object expected) throws InvalidProtocolBufferException {
+    void assertConvertToObject(final String name, final Any any, final Object expected) throws InvalidProtocolBufferException {
         Object actual = ProtobufAnyValueConverter.convertToObject(any);
         if (expected instanceof Struct) {
             Builder actualStruct = Struct.newBuilder();
@@ -80,18 +80,18 @@ class ProtobufAnyValueConverterTest {
                 .putFields("number", Value.newBuilder().setNumberValue(123.45D).build())
                 .putFields("list", Value.newBuilder().setListValue(ListValue.newBuilder().addValues(Value.newBuilder().setNumberValue(1)).build()).build()).build();
         return Stream.of(
-                Arguments.of(null, null),
-                Arguments.of(Any.pack(Int32Value.of(123)), 123),
-                Arguments.of(Any.pack(Int64Value.of(Long.MAX_VALUE)), Long.MAX_VALUE),
-                Arguments.of(Any.pack(UInt32Value.of(7)), 7),
-                Arguments.of(Any.pack(com.google.protobuf.Timestamp.newBuilder().setSeconds(seconds).setNanos(nanos).build()), expectedTimestamp),
-                Arguments.of(Any.pack(FloatValue.of(1.23F)), 1.23F),
-                Arguments.of(Any.pack(DoubleValue.of(4.56D)), 4.56D),
-                Arguments.of(Any.pack(StringValue.of("Hello")), "Hello"),
-                Arguments.of(Any.pack(BoolValue.of(true)), true),
-                Arguments.of(Any.pack(BytesValue.of(ByteString.copyFrom(new byte[]{1, 2, 3}))), new byte[]{1, 2, 3}),
-                Arguments.of(Any.pack(UInt64Value.of(101010L)), 101010L),
-                Arguments.of(Any.pack(Empty.getDefaultInstance()), null),
-                Arguments.of(Any.pack(struct), struct));
+                Arguments.of("null input", null, null),
+                Arguments.of("int32", Any.pack(Int32Value.of(123)), 123),
+                Arguments.of("int64", Any.pack(Int64Value.of(Long.MAX_VALUE)), Long.MAX_VALUE),
+                Arguments.of("uint32", Any.pack(UInt32Value.of(7)), 7),
+                Arguments.of("timestamp", Any.pack(com.google.protobuf.Timestamp.newBuilder().setSeconds(seconds).setNanos(nanos).build()), expectedTimestamp),
+                Arguments.of("float", Any.pack(FloatValue.of(1.23F)), 1.23F),
+                Arguments.of("double", Any.pack(DoubleValue.of(4.56D)), 4.56D),
+                Arguments.of("string", Any.pack(StringValue.of("Hello")), "Hello"),
+                Arguments.of("boolean", Any.pack(BoolValue.of(true)), true),
+                Arguments.of("bytes", Any.pack(BytesValue.of(ByteString.copyFrom(new byte[]{1, 2, 3}))), new byte[]{1, 2, 3}),
+                Arguments.of("uint64", Any.pack(UInt64Value.of(101010L)), 101010L),
+                Arguments.of("empty message", Any.pack(Empty.getDefaultInstance()), null),
+                Arguments.of("struct", Any.pack(struct), struct));
     }
 }

@@ -52,6 +52,7 @@ public final class PrepareStatementBinder implements SQLStatementBinder<PrepareS
                 .insert(boundInsert)
                 .update(boundUpdate)
                 .delete(boundDelete)
+                .merge(sqlStatement.getMerge().orElse(null))
                 .build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;

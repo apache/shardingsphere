@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjections;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -27,6 +28,24 @@ import javax.xml.bind.annotation.XmlElement;
  */
 @Getter
 public class ExpectedReturningClause {
+    
+    @XmlAttribute(name = "old-alias")
+    private String oldAlias;
+    
+    @XmlAttribute(name = "old-alias-start-index")
+    private Integer oldAliasStartIndex;
+    
+    @XmlAttribute(name = "old-alias-stop-index")
+    private Integer oldAliasStopIndex;
+    
+    @XmlAttribute(name = "new-alias")
+    private String newAlias;
+    
+    @XmlAttribute(name = "new-alias-start-index")
+    private Integer newAliasStartIndex;
+    
+    @XmlAttribute(name = "new-alias-stop-index")
+    private Integer newAliasStopIndex;
     
     @XmlElement
     private final ExpectedProjections projections = new ExpectedProjections();

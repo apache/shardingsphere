@@ -21,20 +21,51 @@ This file is the sole owner of completion-loop orchestration. Other policy sourc
 
 For every authorized code-writing task, including a restoration or rollback that changes production, test, script, build, generated, or behavior-affecting configuration artifacts:
 
-1. Perform the post-write task-delta audit required by `AGENTS.md` with the read-only diff, surrounding context, and acceptance checklist. Confirm every task-introduced hunk is necessary and allowlisted, prohibited paths have no task delta, architecture changes were authorized, tests protect owned behavior, and unattributed work remains untouched.
-2. Apply every triggered coding-standard and simplification rule to the effective task delta. Treat scripts, searches, formatters, compilation, tests, benchmarks, and review tools as evidence rather than proof, and fix every safe in-scope violation.
-3. Run the applicable verification and non-regression checks. An invalidated, unmatched, missing, or inconclusive required result keeps the task incomplete.
-4. Invoke `$review-pr` in Formal Review Mode for the complete task-owned candidate. Use Code Correctness Review for a standalone local candidate unless the user requests another focus. For a PR-backed candidate, apply the public-head, remote-evidence, and mandatory style-verification gates; for a standalone candidate, review only the original task baseline and attributed task-owned delta.
-   - Assign an independent reviewer within the current task to perform a read-only audit of defensive code added, extended or strengthened by the task under the existing defensive-code rules.
-5. Hand off only when the latest complete Formal Review returns `Review Result: Mergeable` and no later code-affecting write or new evidence invalidates it. Include that complete passing Formal Review report unchanged in the final handoff.
-6. When Formal Review returns `Not Mergeable` with a safe in-scope Change Request, fix every required finding, repeat the task-delta audit, rerun invalidated checks, and rerun Formal Review. Continue this loop until it returns `Review Result: Mergeable`.
-7. A scope expansion, missing authority, unresolved architecture choice, high-risk action, `Review Incomplete`, or `Needs Discussion` result keeps the task incomplete. Yield to the user only for the exact decision, authority, or unavailable evidence needed to continue; do not claim successful completion or provide commit artifacts while the task remains incomplete.
-8. After a code-writing task completes, provide a commit message and manual Git commands without being asked; this never authorizes Git mutation. Propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks, list a required `git add -- <new-task-paths>` first for untracked task files, and never execute a Git write without exact current-task authorization.
+1. Confirm the post-write task-delta audit required by `AGENTS.md` is current for the read-only diff, surrounding context, and acceptance checklist.
+   Confirm every task-introduced hunk is necessary and allowlisted, prohibited paths have no task delta, architecture changes were authorized, tests protect owned behavior, and unattributed work remains untouched.
+2. Apply any missing or invalidated triggered coding-standard and simplification checks to the effective task delta.
+   Treat scripts, searches, formatters, compilation, tests, benchmarks, and review tools as evidence rather than proof, and fix every safe in-scope violation.
+3. Run the applicable verification and non-regression checks that lack valid current-state evidence.
+   An invalidated, unmatched, missing, or inconclusive required result keeps the task incomplete.
+4. Invoke `$review-pr` in Formal Review Mode for every code-writing task, including ordinary low-risk local changes, without requiring a separate user request.
+   Policy and harness changes also require this Formal Review route.
+   Use [review-pr](../skills/review-pr/SKILL.md) as the sole review entry and apply its Review Focus, Local Candidate Scope, Scope and Evidence, and Independent Review Coordination requirements.
+   Existing authority, architecture, safety, and triggered high-risk gates remain required.
+   - When the effective final task delta adds, extends or strengthens defensive code, assign an independent reviewer within the current task to audit that delta read-only under the existing defensive-code rules.
+     Do not assign this audit when no such defensive change remains in the final task delta.
+5. Hand off only when the selected review is confirmed, all required current-state checks pass, and no later code-affecting write or new evidence invalidates them.
+   For a required Formal Review, the latest confirmed complete review must return `Review Result: Mergeable`.
+6. When a confirmed Formal Review returns `Not Mergeable` with a safe in-scope required finding, fix it, rerun only invalidated audits and checks, and invoke the same review entry for the changed full candidate.
+   Preserve the original task baseline and attributed scope through this fix loop, and continue until step 5 passes.
+7. A scope expansion, missing authority, unresolved architecture choice, high-risk action, `Review Incomplete`, `Needs Discussion`, or unconfirmed review keeps the task incomplete.
+   Report the exact decision, authority, unavailable evidence or concrete failure preventing continuation; yield for user action only when that action is required.
+   Do not claim successful completion or provide commit artifacts while the task remains incomplete.
+8. After every code-writing task completes, provide a nonempty `Commit Message:` without requiring a separate user request; this never authorizes Git mutation.
+   Provide manual Git commands only when the user requests them.
+   For requested manual Git commands, propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks.
+   Include `git add -- <new-task-paths>` first only when requested manual instructions need to add untracked task files.
+   Never execute a Git write without exact current-task authorization.
 
-When the delta audit, required current-state checks, and applicable review pass and no later write or new evidence invalidates them, the loop is complete. Do not repeat an unchanged check, audit, or review.
+Each invocation in this loop, including the first and each call after a fix, must complete the review entry's full workflow for the current task-owned candidate.
+Defensive-code audits, known-fix rechecks, passing checks, and ledger validation provide evidence but cannot replace that review.
 
-If a report or verdict is disproved, fix the highest-leverage rule, schema, validator, prompt, or regression case before correcting the artifact, unless the user explicitly requests a one-off correction.
+Do not repeat a still-valid completed check, audit or review-confirmation process; required rounds within an unfinished confirmation follow the review entry.
 
-The final response must lead with the outcome and include changed files and rationale, verification status, remaining risks, and the next action only when one is still required. Every successful code-writing handoff must include the latest complete passing Formal Review as the exact fenced `markdown` artifact required by `$review-pr`, with `### Result`, exactly one `Review Result: Mergeable`, `### Evidence`, and `### Coverage`. Put required non-review handoff details, including a non-empty `Commit Message:`, in a separate fenced text block so the Formal Review artifact remains unchanged. Validation results, passing tests, a bare verdict, a bounded review summary, or commit artifacts do not substitute for the Formal Review report.
+If a report or verdict is disproved, correct it first and identify the evidence that changed the conclusion.
+Repair a policy, schema, validator, prompt or regression case only when the task already authorizes that target and evidence proves an independent underlying defect.
+Otherwise report the minimum additional scope instead of changing policy to justify the correction.
 
-The project Stop hook validates this contract after supported write tools change a non-prose repository artifact. Any later code-affecting write marks the task pending again and requires a new passing Formal Review. When step 7 requires user input, include the complete non-passing Formal Review plus separate `Task Status: Awaiting User` and non-empty `Required User Action:` lines; the hook may yield that turn but must retain the pending state. Omit `Commit Message:` until the task succeeds.
+The final response must lead with the outcome and include changed files and rationale, verification status, remaining risks, and the next action only when one is still required.
+For a completed task, include exactly one `Task Status: Completed` line and a non-empty `Evidence:` summary of the current audit, verification and selected review.
+Include the actual completed Formal Review as one complete fenced `markdown` report with exactly one `Review Result: Mergeable` line and nonempty `### Result`, `### Evidence`, and `### Coverage` sections.
+Report confirmed findings and required changes, or explicitly state that no blocking issues or recommended changes remain.
+Keep `Task Status: Completed`, the outer `Evidence:` summary, and `Commit Message:` outside the review block.
+Do not substitute bounded self-review for the required Formal Review or fabricate a passing verdict.
+
+The project Stop hook checks the textual completion state after supported write tools change a non-prose repository artifact.
+Any later code-affecting write marks the task pending again and requires current checks and the applicable passing review before completion.
+When required user input blocks completion, include exactly one `Task Status: Awaiting User` line, non-empty `Required User Action:` and `Evidence:` summaries, and any actual non-passing Formal Review result relevant to that blocker.
+If no Formal Review has run, state that fact instead of fabricating a report.
+The hook may yield that turn but must retain the pending state.
+Omit completed status and commit artifacts while the task remains incomplete.
+The hook checks textual states; it does not prove risk classification, verification or review execution.

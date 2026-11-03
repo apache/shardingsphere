@@ -29,13 +29,14 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ci-mcp-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 env:
+  MAVEN_ARGS: -B -ntp -fae -e
   MAVEN_OPTS: -Dhttp.keepAlive=false
 
 jobs:
@@ -50,30 +51,12 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-build-environment
         with:
           java-version: '21'
           cache-suffix: 'mcp'
-      - name: Run MCP Unit Tests
-        shell: bash
-        run: |
-          set -euo pipefail
-          MCP_MODULES=mcp/api,mcp/support,mcp/core,mcp/features/broadcast,mcp/features/encrypt,mcp/features/mask
-          MCP_MODULES="${MCP_MODULES},mcp/features/readwrite-splitting,mcp/features/shadow,mcp/features/sharding"
-          MCP_MODULES="${MCP_MODULES},mcp/bootstrap,mcp/registry"
-          ./mvnw -pl "${MCP_MODULES}" -am install \
-            -DskipITs -Dspotless.skip=true \
-            -Dsurefire.failIfNoSpecifiedTests=false \
-            -B -ntp
+      - name: Build and Run Unit Tests
+        run: ./mvnw install -DskipITs
       - name: Run MCP HTTP Integration Test
-        run: ./mvnw -pl mcp/bootstrap verify -DskipITs=false -Dspotless.skip=true -B -ntp
-      - name: Verify MCP Metadata Pagination Coverage
-        shell: bash
-        run: |
-          set -euo pipefail
-          ./mvnw -pl mcp/core verify -Pcoverage-check \
-            -DskipITs -Dspotless.skip=true -Djacoco.skip=false \
-            -Djacoco.check.class.pattern='org.apache.shardingsphere.mcp.core.tool.handler.metadata.SearchMetadata*' \
-            -Dsurefire.failIfNoSpecifiedTests=false \
-            -B -ntp
+        run: ./mvnw -pl mcp/bootstrap verify

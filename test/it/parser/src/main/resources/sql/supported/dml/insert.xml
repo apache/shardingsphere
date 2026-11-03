@@ -82,7 +82,7 @@
     <sql-case id="insert_without_columns_with_with_clause" value="WITH cte AS (SELECT order_id, user_id FROM t_order) INSERT INTO t_order (order_id, user_id) SELECT order_id, user_id FROM cte" db-types="SQLServer" />
     <sql-case id="insert_without_into_keyword" value="INSERT t_order (order_id, user_id, status) VALUES (?, ?, ?)" db-types="MySQL,SQLServer" />
     <sql-case id="insert_with_default_values" value="INSERT INTO t_order (order_id, user_id, status) DEFAULT VALUES" db-types="SQLServer" />
-    <sql-case id="insert_without_columns_with_default_values" value="INSERT INTO t_order DEFAULT VALUES" db-types="SQLServer" />
+    <sql-case id="insert_without_columns_with_default_values" value="INSERT INTO t_order DEFAULT VALUES" db-types="SQLServer,PostgreSQL" />
     <sql-case id="insert_with_top" value="INSERT TOP(10) t_order (order_id, user_id) SELECT order_id, user_id FROM t_order" db-types="SQLServer" />
     <sql-case id="insert_with_top_percent" value="INSERT TOP(10) PERCENT t_order (order_id, user_id) SELECT order_id, user_id FROM t_order" db-types="SQLServer" />
     <sql-case id="insert_with_uuid_column" value="insert into t_order (id,uuid) values (?, ?)" db-types="PostgreSQL,openGauss" />
@@ -213,4 +213,29 @@
     <sql-case id="insert_table_collection_oracle" value="INSERT INTO TABLE(SELECT t.nested_col FROM t_nested t) VALUES (1)" db-types="Oracle" />
     <sql-case id="insert_returning_into_parameter_marker_oracle" value="INSERT INTO t_user (user_id, user_name) VALUES (?, ?) RETURNING user_id INTO ?" db-types="Oracle" />
     <sql-case id="insert_on_conflit_do_update" value="INSERT INTO t_order ( c1, c2, c3 ) VALUES ( ?, now(), ? ) ON CONFLICT ( c1, c3 ) DO UPDATE set c2 = now() WHERE user_id= ?" db-types="PostgreSQL" />
+
+    <sql-case id="insert_default_values_postgresql_regression" value="INSERT INTO foo DEFAULT VALUES" db-types="PostgreSQL" />
+    <sql-case id="insert_parenthesized_select_postgresql_regression" value="INSERT INTO foo (id) (SELECT ?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_set_select_postgresql_regression" value="INSERT INTO foo (id) SELECT ? UNION ALL SELECT ?" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_indirection_parameters_postgresql_regression" value="INSERT INTO foo (items[?], span[?:?]) VALUES (?, ?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_with_returning_postgresql_regression" value="WITH seed(id) AS (SELECT ?) INSERT INTO foo (id) VALUES (?) RETURNING id, ?" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_returning_aliases_postgresql_regression" value="INSERT INTO foo (id) VALUES (?) RETURNING WITH (OLD AS old_row, NEW AS new_row) old_row.id, new_row.id, ?" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_with_schema_database_link_oracle" value="INSERT INTO userinfo.USER_CONSIS_LIST@pjzw (telnum) VALUES (?)" db-types="Oracle" />
+    <sql-case id="insert_default_values_returning_pg" value="INSERT INTO foo.t_order AS bar DEFAULT VALUES RETURNING bar.*" db-types="PostgreSQL" />
+    <sql-case id="insert_parenthesized_query_pg" value="INSERT INTO t_order (SELECT 1)" db-types="PostgreSQL" />
+    <sql-case id="insert_nested_parenthesized_query_pg" value="INSERT INTO t_order ((SELECT 1))" db-types="PostgreSQL" />
+    <sql-case id="insert_union_query_pg" value="INSERT INTO t_order SELECT 1 UNION ALL SELECT 2" db-types="PostgreSQL" />
+    <sql-case id="insert_array_element_pg" value="INSERT INTO t_order (status[1]) VALUES ('foo')" db-types="PostgreSQL" />
+    <sql-case id="insert_array_slice_pg" value="INSERT INTO t_order (status[1:2][2]) VALUES ('foo')" db-types="PostgreSQL" />
+    <sql-case id="insert_member_target_pg" value="INSERT INTO t_order (status.value) VALUES ('foo')" db-types="PostgreSQL" />
+    <sql-case id="insert_conflict_select_returning_pg" value="INSERT INTO foo_table (a) VALUES (1) ON CONFLICT (a) DO SELECT RETURNING a" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="insert_conflict_select_key_share_pg" value="INSERT INTO foo_table (a) VALUES (1) ON CONFLICT (a) DO SELECT FOR KEY SHARE" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="insert_conflict_select_share_where_pg" value="INSERT INTO foo_table (a) VALUES (1) ON CONFLICT (a) DO SELECT FOR SHARE WHERE a &gt; 0" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="insert_conflict_select_no_key_update_pg" value="INSERT INTO foo_table (a) VALUES (1) ON CONFLICT (a) DO SELECT FOR NO KEY UPDATE" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="insert_conflict_select_parameters_pg" value="INSERT INTO foo_table (a) VALUES ($1) ON CONFLICT (a) DO SELECT FOR UPDATE WHERE a = $2 RETURNING a" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_conflict_select_constraint_pg" value="INSERT INTO foo_table (a) VALUES (1) ON CONFLICT ON CONSTRAINT foo_pk DO SELECT" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="insert_array_parameters_pg" value="INSERT INTO t_order (status[$2][$1], user_id) VALUES ($3, $2)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_array_jdbc_parameters_pg" value="INSERT INTO t_order (status[?][?], user_id) VALUES (?, ?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_array_slice_parameters_pg" value="INSERT INTO t_order (status[$1:$2][$3]) VALUES ($4)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_array_slice_jdbc_parameters_pg" value="INSERT INTO t_order (status[?:?][?]) VALUES (?)" db-types="PostgreSQL" case-types="Placeholder" />
 </sql-cases>

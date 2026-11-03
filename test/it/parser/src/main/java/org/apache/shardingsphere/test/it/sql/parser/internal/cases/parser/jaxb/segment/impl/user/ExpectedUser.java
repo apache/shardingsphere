@@ -32,4 +32,7 @@ public final class ExpectedUser extends AbstractExpectedSQLSegment {
     
     @XmlAttribute
     private String name;
+    
+    @XmlAttribute
+    private String host;
 }

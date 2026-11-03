@@ -35,6 +35,9 @@ import java.util.List;
 @Setter
 public final class ExpectedConstraintDefinition extends AbstractExpectedSQLSegment {
     
+    @XmlAttribute(name = "primary-key-column-count")
+    private Integer primaryKeyColumnCount;
+    
     @XmlElement(name = "referenced-table")
     private ExpectedSimpleTable referencedTable;
     

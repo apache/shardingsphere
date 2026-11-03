@@ -28,7 +28,8 @@ import org.apache.shardingsphere.mode.retry.RetryExecutor;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -41,7 +42,7 @@ public final class ClusterExclusiveOperatorContext implements ExclusiveOperatorC
     
     private final ClusterPersistRepository repository;
     
-    private final Collection<String> exclusiveOperationKeys = new CopyOnWriteArraySet<>();
+    private final Set<String> exclusiveOperationKeys = ConcurrentHashMap.newKeySet();
     
     @Override
     public Optional<ExclusiveLockHandle> start(final String operationKey, final long timeoutMillis) {

@@ -89,4 +89,6 @@
     <sql-case id="explain_for_select_group_by_multi_columns" value="explain plan for select p.prod_name, t.time_id, sum(s.amount_sold) from sales s, times t, products p where s.time_id = t.time_id and s.prod_id = p.prod_id and t.fiscal_year = 2000 and t.fiscal_week_number = 3 and p.prod_category = 'Hardware' group by t.time_id, p.prod_name;" db-types="Oracle"/>
     <sql-case id="explain_for_select_in_sub_query" value="explain plan for select sum(amount_sold) from sales where time_id in (select time_id from times where fiscal_year = 2000);" db-types="Oracle"/>
     <sql-case id="explain_for_select_between_to_date_function" value="explain plan for select sum(amount_sold) from sales where time_id between to_date('01-JAN-2000','dd-MON-yyyy') and to_date('31-DEC-2000','dd-MON-yyyy') ;" db-types="Oracle"/>
+    <sql-case id="explain_insert_returning_star_pg" value="EXPLAIN INSERT INTO t_order VALUES (1) RETURNING *" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="explain_insert_default_returning_pg" value="EXPLAIN INSERT INTO t_order DEFAULT VALUES RETURNING order_id" db-types="PostgreSQL" case-types="Literal" />
 </sql-cases>

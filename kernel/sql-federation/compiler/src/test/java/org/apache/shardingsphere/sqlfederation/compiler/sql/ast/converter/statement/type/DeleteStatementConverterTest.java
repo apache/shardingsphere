@@ -206,8 +206,7 @@ class DeleteStatementConverterTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("col"))));
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment).build();
-        CommonTableExpressionSegment cte = new CommonTableExpressionSegment(
-                0, 0, new AliasSegment(0, 0, new IdentifierValue("cte")), new SubquerySegment(0, 0, selectStatement, "subquery"));
+        CommonTableExpressionSegment cte = new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("cte")), new SubquerySegment(0, 0, selectStatement, "subquery"), null);
         return new WithSegment(0, 0, Collections.singleton(cte), false);
     }
     

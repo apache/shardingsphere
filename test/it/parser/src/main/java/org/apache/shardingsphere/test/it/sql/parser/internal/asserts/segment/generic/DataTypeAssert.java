@@ -27,6 +27,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  *  Data type assert.
@@ -48,6 +50,14 @@ public final class DataTypeAssert {
                 actual.getStartIndex(), is(expected.getStartIndex()));
         assertThat(assertContext.getText(String.format("%s end index assertion error: ", "dataType")),
                 actual.getStopIndex(), is(expected.getStopIndex()));
+        if (Boolean.TRUE.equals(expected.getLengthPresent())) {
+            assertNotNull(actual.getDataLength(), assertContext.getText("Data type length should exist."));
+        } else if (Boolean.FALSE.equals(expected.getLengthPresent())) {
+            assertNull(actual.getDataLength(), assertContext.getText("Data type length should not exist."));
+        }
+        if (null != expected.getScale()) {
+            assertThat(assertContext.getText("Data type scale assertion error: "), actual.getDataLength().getScale().get(), is(expected.getScale()));
+        }
         if (null != expected.getDataLength()) {
             DataTypeLengthSegment actualDataLength = actual.getDataLength();
             ExpectedDataTypeLength expectedDataLength = expected.getDataLength();

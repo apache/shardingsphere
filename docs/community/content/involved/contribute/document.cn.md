@@ -11,8 +11,8 @@ chapter = true
 ## 前置条件
 
 - 熟悉 [官方网站](https://shardingsphere.apache.org/index_zh.html)。
-- 熟悉 [GitHub 协同开发流程](https://help.github.com/cn/github/collaborating-with-issues-and-pull-requests)。
-- 熟练掌握 [Markdown](https://help.github.com/cn/github/writing-on-github/basic-writing-and-formatting-syntax)。
+- 熟悉 [GitHub 协同开发流程](https://docs.github.com/zh/pull-requests)。
+- 熟练掌握 [Markdown](https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)。
 - 熟悉 [Hugo](https://gohugo.io/)。
 
 ## Fork 文档项目

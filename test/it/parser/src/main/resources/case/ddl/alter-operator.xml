@@ -23,4 +23,12 @@
     <alter-operator sql-case-id="alter_operator_set_restrict_join" />
     <alter-operator sql-case-id="alter_operator_compile" />
     <alter-operator sql-case-id="alter_operator_add_binding_return_number_using" />
+    <alter-operator-class sql-case-id="alter_operator_class_owner_pg" />
+    <alter-operator-class sql-case-id="alter_operator_class_rename_pg" />
+    <alter-operator-class sql-case-id="alter_operator_class_schema_pg" />
+    <alter-operator-family sql-case-id="alter_operator_family_owner_pg" />
+    <alter-operator-family sql-case-id="alter_operator_family_rename_pg" />
+    <alter-operator-family sql-case-id="alter_operator_family_schema_pg" />
+    <alter-operator-family sql-case-id="alter_operator_family_add_pg" />
+    <alter-operator-family sql-case-id="alter_operator_family_drop_pg" />
 </sql-parser-test-cases>

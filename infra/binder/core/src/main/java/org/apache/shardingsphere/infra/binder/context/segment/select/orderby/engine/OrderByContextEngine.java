@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.segment.select.orderby.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.GroupByContext;
@@ -70,12 +70,11 @@ public final class OrderByContextEngine {
         if (groupByContext.getItems().isEmpty() && selectStatement.getProjections().isDistinctRow()) {
             int index = 0;
             List<OrderByItem> orderByItems = new LinkedList<>();
-            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+            NullsOrderType nullsOrderType = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDefaultNullsOrderType().getResolvedOrderType(OrderDirection.ASC.name());
             for (ProjectionSegment projectionSegment : selectStatement.getProjections().getProjections()) {
                 if (projectionSegment instanceof ColumnProjectionSegment) {
                     ColumnProjectionSegment columnProjectionSegment = (ColumnProjectionSegment) projectionSegment;
-                    ColumnOrderByItemSegment columnOrderByItemSegment =
-                            new ColumnOrderByItemSegment(columnProjectionSegment.getColumn(), OrderDirection.ASC, dialectDatabaseMetaData.getDefaultNullsOrderType());
+                    ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(columnProjectionSegment.getColumn(), OrderDirection.ASC, nullsOrderType);
                     OrderByItem item = new OrderByItem(columnOrderByItemSegment);
                     item.setIndex(index++);
                     orderByItems.add(item);

@@ -92,6 +92,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.St
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -552,7 +553,7 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
             visit(each);
         }
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text, Collections.emptyList());
     }
     
     @Override

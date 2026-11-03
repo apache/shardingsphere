@@ -88,6 +88,8 @@ class DDLE2EIT implements SQLE2EIT {
     
     private final Map<DataSource, IdentifierCasePolicy> tableIdentifierPolicies = new HashMap<>();
     
+    private final Map<DataSource, IdentifierCasePolicy> columnIdentifierPolicies = new HashMap<>();
+    
     private SQLE2EEnvironmentEngine environmentEngine;
     
     @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
@@ -302,11 +304,13 @@ class DDLE2EIT implements SQLE2EIT {
             assertNotContainsTable(environmentEngine, dataNodes, testParam.getDatabaseType());
             return;
         }
-        assertTableMetaData(testParam, getActualColumns(dataNodes, testParam.getDatabaseType()), getActualIndexes(dataNodes), expected);
+        assertTableMetaData(testParam, getActualColumns(dataNodes, testParam.getDatabaseType()), getActualIndexes(dataNodes), expected,
+                getColumnIdentifierPolicy(testParam.getDatabaseType(), dataNodes.iterator().next()));
     }
     
-    private void assertTableMetaData(final AssertionTestParameter testParam, final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetaData expected) {
-        assertColumnMetaData(testParam, actualColumns, expected.getColumns());
+    private void assertTableMetaData(final AssertionTestParameter testParam, final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetaData expected,
+                                     final IdentifierCasePolicy columnIdentifierPolicy) {
+        assertColumnMetaData(testParam, actualColumns, expected.getColumns(), columnIdentifierPolicy);
         assertIndexMetaData(actualIndexes, expected.getIndexes());
     }
     
@@ -388,15 +392,20 @@ class DDLE2EIT implements SQLE2EIT {
         }
     }
     
-    private void assertColumnMetaData(final AssertionTestParameter testParam, final List<DataSetColumn> actual, final List<DataSetColumn> expected) {
+    private IdentifierCasePolicy getColumnIdentifierPolicy(final DatabaseType databaseType, final DataNode dataNode) {
+        DataSource dataSource = environmentEngine.getActualDataSourceMap().get(dataNode.getDataSourceName());
+        return columnIdentifierPolicies.computeIfAbsent(dataSource, unused -> IdentifierNormalizeEngine.resolvePolicy(databaseType, dataSource, IdentifierScope.COLUMN));
+    }
+    
+    private void assertColumnMetaData(final AssertionTestParameter testParam, final List<DataSetColumn> actual, final List<DataSetColumn> expected, final IdentifierCasePolicy columnIdentifierPolicy) {
         assertThat("Size of actual columns is different with size of expected columns.", actual.size(), is(expected.size()));
         for (int i = 0; i < actual.size(); i++) {
-            assertColumnMetaData(testParam, actual.get(i), expected.get(i));
+            assertColumnMetaData(testParam, actual.get(i), expected.get(i), columnIdentifierPolicy);
         }
     }
     
-    private void assertColumnMetaData(final AssertionTestParameter testParam, final DataSetColumn actual, final DataSetColumn expected) {
-        assertThat("Mismatched column name.", actual.getName(), is(expected.getName()));
+    private void assertColumnMetaData(final AssertionTestParameter testParam, final DataSetColumn actual, final DataSetColumn expected, final IdentifierCasePolicy columnIdentifierPolicy) {
+        assertThat("Mismatched column name.", actual.getName(), is(IdentifierNormalizeEngine.normalize(columnIdentifierPolicy, expected.getName())));
         if ("MySQL".equals(testParam.getDatabaseType().getType()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int"));
         } else if ("PostgreSQL".equals(testParam.getDatabaseType().getType()) && "integer".equals(expected.getType())) {

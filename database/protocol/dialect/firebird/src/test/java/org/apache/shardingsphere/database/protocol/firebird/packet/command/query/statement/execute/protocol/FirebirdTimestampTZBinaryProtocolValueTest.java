@@ -17,21 +17,23 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol;
 
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.util.FirebirdDateTimeUtils;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.inOrder;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdTimestampTZBinaryProtocolValueTest {
@@ -39,25 +41,44 @@ class FirebirdTimestampTZBinaryProtocolValueTest {
     @Mock
     private FirebirdPacketPayload payload;
     
-    @Test
-    void assertRead() {
-        LocalDateTime dateTime = LocalDateTime.of(2024, 1, 1, 12, 0);
-        int encodedDate = FirebirdDateTimeUtils.getEncodedDate(dateTime);
-        int encodedTime = new FirebirdDateTimeUtils(dateTime).getEncodedTime();
-        when(payload.readInt4()).thenReturn(encodedDate, encodedTime, 60);
-        assertThat(new FirebirdTimestampTZBinaryProtocolValue().read(payload), is(FirebirdDateTimeUtils.getDateTimeWithOffset(encodedDate, encodedTime, 60)));
+    @ParameterizedTest(name = "{2}: {3}")
+    @CsvSource({
+            "60310, 801301234, 1559, 2024-01-02T00:15:30.123400+02:00",
+            "60617, 234000000, 65361, 2024-11-03T01:30:00-05:00",
+            "60617, 234000000, -175, 2024-11-03T01:30:00-05:00"
+    })
+    void assertRead(final int encodedDate, final int encodedTime, final int encodedTimeZone, final String expected) {
+        ByteBuf buffer = Unpooled.buffer();
+        try {
+            buffer.writeInt(encodedDate).writeInt(encodedTime).writeInt(encodedTimeZone).writeInt(0x12345678);
+            FirebirdPacketPayload actualPayload = new FirebirdPacketPayload(buffer, StandardCharsets.UTF_8);
+            Object actual = new FirebirdTimestampTZBinaryProtocolValue().read(actualPayload);
+            assertThat(actual, is(OffsetDateTime.parse(expected)));
+            assertThat(buffer.readerIndex(), is(12));
+            assertThat(actualPayload.readInt4(), is(0x12345678));
+        } finally {
+            buffer.release();
+        }
     }
     
-    @Test
-    void assertWrite() {
-        OffsetDateTime value = OffsetDateTime.of(LocalDateTime.of(2024, 1, 1, 12, 0), ZoneOffset.ofHours(2));
-        LocalDateTime utc = value.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
-        int encodedDate = FirebirdDateTimeUtils.getEncodedDate(utc);
-        int encodedTime = new FirebirdDateTimeUtils(utc).getEncodedTime();
-        new FirebirdTimestampTZBinaryProtocolValue().write(payload, value);
-        verify(payload).writeInt4(encodedDate);
-        verify(payload).writeInt4(encodedTime);
-        verify(payload).writeInt4(120);
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({
+            "2024-01-01T12:00:00Z, 60310, 432000000, 1439",
+            "2024-01-01T12:00:00+02:00, 60310, 360000000, 1559",
+            "2024-01-01T12:00:00-05:00, 60310, 612000000, 1139",
+            "2024-01-01T12:00:00+05:30, 60310, 234000000, 1769",
+            "2024-01-01T01:00:00+08:00, 60309, 612000000, 1919",
+            "2024-01-01T23:30:00-05:00, 60311, 162000000, 1139",
+            "2024-01-02T00:15:30.123400+02:00, 60310, 801301234, 1559",
+            "2024-03-10T02:30:00Z, 60379, 90000000, 1439",
+            "2024-11-03T01:30:00-05:00, 60617, 234000000, 1139"
+    })
+    void assertWrite(final String value, final int encodedDate, final int encodedTime, final int encodedTimeZone) {
+        new FirebirdTimestampTZBinaryProtocolValue().write(payload, OffsetDateTime.parse(value));
+        InOrder ordered = inOrder(payload);
+        ordered.verify(payload).writeInt4(encodedDate);
+        ordered.verify(payload).writeInt4(encodedTime);
+        ordered.verify(payload).writeInt4(encodedTimeZone);
     }
     
     @Test

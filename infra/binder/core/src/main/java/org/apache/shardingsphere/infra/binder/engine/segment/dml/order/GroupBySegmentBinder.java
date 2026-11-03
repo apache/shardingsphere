@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.order.item.Orde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 
 import java.util.Collection;
@@ -62,6 +63,9 @@ public final class GroupBySegmentBinder {
     private static OrderByItemSegment bind(final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,
                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts, final OrderByItemSegment groupByItemSegment) {
+        if (groupByItemSegment instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) groupByItemSegment).getColumn().getOwner().isPresent()) {
+            return OrderByItemSegmentBinder.bind(groupByItemSegment, binderContext, tableBinderContexts, outerTableBinderContexts, SegmentType.GROUP_BY);
+        }
         try {
             return OrderByItemSegmentBinder.bind(groupByItemSegment, binderContext, currentTableBinderContexts, outerTableBinderContexts, SegmentType.GROUP_BY);
         } catch (final ColumnNotFoundException ignored) {

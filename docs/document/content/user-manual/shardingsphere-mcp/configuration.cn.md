@@ -144,7 +144,7 @@ Proxy 可见元数据可能不同于底层物理库的完整结构；涉及元�
 此时用户看到的是目标数据库自身元数据，不代表 ShardingSphere 规则状态。
 数据加密、数据脱敏等依赖 ShardingSphere 规则的任务不适用于数据库直连。
 
-不同连接目标支持的自然语言任务见[能力清单](../capabilities/)。
+不同连接目标支持的自然语言任务见[能力清单](/cn/user-manual/shardingsphere-mcp/capabilities/)。
 
 ## 插件目录
 

@@ -20,3 +20,4 @@ org.apache.shardingsphere.sharding.merge.dql.pagination.builder.dialect.PostgreS
 org.apache.shardingsphere.sharding.merge.dql.pagination.builder.dialect.OpenGaussPaginationDecoratorMergedResultBuilder
 org.apache.shardingsphere.sharding.merge.dql.pagination.builder.dialect.OraclePaginationDecoratorMergedResultBuilder
 org.apache.shardingsphere.sharding.merge.dql.pagination.builder.dialect.SQLServerPaginationDecoratorMergedResultBuilder
+org.apache.shardingsphere.sharding.merge.dql.pagination.builder.dialect.FirebirdPaginationDecoratorMergedResultBuilder

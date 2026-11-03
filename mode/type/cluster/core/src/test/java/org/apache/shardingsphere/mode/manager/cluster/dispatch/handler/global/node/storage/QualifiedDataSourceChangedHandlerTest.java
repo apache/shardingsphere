@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.storage;
 
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -35,12 +36,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,18 +63,25 @@ class QualifiedDataSourceChangedHandlerTest {
     @Test
     void assertHandleWithEmptyValue() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds", "", Type.ADDED));
-        verify(contextManager.getMetaDataContexts().getMetaData(), never()).containsDatabase(anyString());
+        verifyNoInteractions(contextManager);
     }
     
     @Test
     void assertHandleWithoutQualifiedDataSource() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/qualified_data_sources", "state: DISABLED", Type.ADDED));
-        verify(contextManager.getMetaDataContexts().getMetaData(), never()).containsDatabase(anyString());
+        verifyNoInteractions(contextManager);
+    }
+    
+    @Test
+    void assertHandleWithUnknownDatabase() {
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(null);
+        UnknownDatabaseException actual = assertThrows(UnknownDatabaseException.class,
+                () -> handler.handle(contextManager, new DataChangedEvent("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds", "state: DISABLED", Type.ADDED)));
+        assertThat(actual.getDatabaseName(), is("foo_db"));
     }
     
     @Test
     void assertHandle() {
-        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         StaticDataSourceRuleAttribute staticDataSourceRuleAttribute = mock(StaticDataSourceRuleAttribute.class);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class))
                 .thenReturn(Collections.singleton(staticDataSourceRuleAttribute));

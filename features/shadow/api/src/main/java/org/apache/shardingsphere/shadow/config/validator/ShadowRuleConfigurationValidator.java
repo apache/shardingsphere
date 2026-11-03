@@ -52,15 +52,14 @@ public final class ShadowRuleConfigurationValidator implements ConstraintValidat
     
     private boolean areTableDataSourcesValid(final ShadowRuleConfiguration ruleConfig, final ConstraintValidatorContext context) {
         Collection<String> dataSourceNames = ruleConfig.getDataSources().stream().map(ShadowDataSourceConfiguration::getName).collect(Collectors.toSet());
-        return ruleConfig.getTables().entrySet().stream().allMatch(entry -> areTableDataSourcesValid(entry.getKey(), entry.getValue(), dataSourceNames, context));
+        return ruleConfig.getTables().values().stream().allMatch(each -> areTableDataSourcesValid(each, dataSourceNames, context));
     }
     
-    private boolean areTableDataSourcesValid(final String tableName, final ShadowTableConfiguration tableConfig, final Collection<String> dataSourceNames, final ConstraintValidatorContext context) {
+    private boolean areTableDataSourcesValid(final ShadowTableConfiguration tableConfig, final Collection<String> dataSourceNames, final ConstraintValidatorContext context) {
         for (String each : tableConfig.getDataSourceNames()) {
             if (!dataSourceNames.contains(each)) {
                 context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(String.format("table `%s` references unconfigured shadow data source `%s`", tableName, each))
-                        .addPropertyNode("tables").addConstraintViolation();
+                context.buildConstraintViolationWithTemplate("references an unconfigured shadow data source").addPropertyNode("tables").addConstraintViolation();
                 return false;
             }
         }
@@ -68,15 +67,14 @@ public final class ShadowRuleConfigurationValidator implements ConstraintValidat
     }
     
     private boolean areTableAlgorithmsValid(final ShadowRuleConfiguration ruleConfig, final ConstraintValidatorContext context) {
-        return ruleConfig.getTables().entrySet().stream().allMatch(entry -> areTableAlgorithmsValid(entry.getKey(), entry.getValue(), ruleConfig, context));
+        return ruleConfig.getTables().values().stream().allMatch(each -> areTableAlgorithmsValid(each, ruleConfig, context));
     }
     
-    private boolean areTableAlgorithmsValid(final String tableName, final ShadowTableConfiguration tableConfig, final ShadowRuleConfiguration ruleConfig, final ConstraintValidatorContext context) {
+    private boolean areTableAlgorithmsValid(final ShadowTableConfiguration tableConfig, final ShadowRuleConfiguration ruleConfig, final ConstraintValidatorContext context) {
         for (String each : tableConfig.getShadowAlgorithmNames()) {
             if (!ruleConfig.getShadowAlgorithms().containsKey(each)) {
                 context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(String.format("table `%s` references unconfigured shadow algorithm `%s`", tableName, each))
-                        .addPropertyNode("tables").addConstraintViolation();
+                context.buildConstraintViolationWithTemplate("references an unconfigured shadow algorithm").addPropertyNode("tables").addConstraintViolation();
                 return false;
             }
         }

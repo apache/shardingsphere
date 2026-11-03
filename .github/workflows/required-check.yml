@@ -23,11 +23,14 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: check-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
+
+env:
+  MAVEN_ARGS: -B -ntp -fae -e
 
 jobs:
   global-environment:
@@ -41,7 +44,7 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-java@v5.2.0
         with:
           distribution: 'temurin'
@@ -56,7 +59,7 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-java@v5.2.0
         with:
           distribution: 'temurin'
@@ -71,6 +74,6 @@ jobs:
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v7.0.1
       - name: Run Apache Rat
         run: ./mvnw apache-rat:check -Pcheck -T1C

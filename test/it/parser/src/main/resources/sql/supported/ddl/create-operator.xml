@@ -25,4 +25,8 @@
     <sql-case id="create_operator_with_binding_custom_datatype" value="CREATE OPERATOR Contains BINDING (VARCHAR2, VARCHAR2) RETURN NUMBER USING text.contains, (Spatial.Geo, Spatial.Geo) RETURN NUMBER USING Spatial.contains;" db-types="Oracle" />
     <sql-case id="create_operator_with_compute_ancillary_data" value="CREATE OPERATOR Contains BINDING (VARCHAR2, VARCHAR2) RETURN NUMBER WITH INDEX CONTEXT, SCAN CONTEXT TextIndexMethods COMPUTE ANCILLARY DATA USING TextContains;" db-types="Oracle" />
     <sql-case id="create_operator_with_single_binding" value="CREATE OPERATOR userOp BINDING (NUMBER) RETURN NUMBER USING userOp_func;" db-types="Oracle" />
+    <sql-case id="create_operator_class_basic_pg" value="CREATE OPERATOR CLASS foo_class FOR TYPE integer USING btree AS OPERATOR 1 &lt; (integer, integer), FUNCTION 1 btint4cmp(integer, integer)" db-types="PostgreSQL" />
+    <sql-case id="create_operator_class_default_pg" value="CREATE OPERATOR CLASS foo.foo_class DEFAULT FOR TYPE integer USING btree FAMILY foo.foo_family AS FUNCTION 1 btint4cmp(integer, integer)" db-types="PostgreSQL" />
+    <sql-case id="create_operator_family_basic_pg" value="CREATE OPERATOR FAMILY foo_family USING btree" db-types="PostgreSQL" />
+    <sql-case id="create_operator_family_schema_pg" value="CREATE OPERATOR FAMILY foo.foo_family USING hash" db-types="PostgreSQL" />
 </sql-cases>

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.exception.core.exception.connection.Ac
 import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.database.exception.firebird.exception.connection.LoginErrorException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdAuthenticationMethod;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
@@ -44,8 +45,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.variable.charset.FirebirdCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
@@ -102,9 +101,6 @@ class FirebirdAuthenticationEngineTest {
     
     @Mock
     private FirebirdConnectionResourceManager connectionResourceManager;
-    
-    @Mock
-    private ProxyContext proxyContext;
     
     private final FirebirdAuthenticationEngine authenticationEngine = new FirebirdAuthenticationEngine();
     
@@ -189,6 +185,28 @@ class FirebirdAuthenticationEngineTest {
             assertNull(acceptPacket.getAcceptDataPacket());
         }
         verify(charsetAttr).set(FirebirdCharacterSets.findCharacterSet("NONE"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("mismatchedPluginArguments")
+    void assertAuthenticateConnectWithMismatchedPlugin(final String name, final String rulePluginType, final FirebirdAuthenticationMethod connectPlugin) {
+        AuthorityRule rule = mock(AuthorityRule.class);
+        ShardingSphereUser user = new ShardingSphereUser("root", "pwd", "");
+        when(rule.findUser(any(Grantee.class))).thenReturn(Optional.of(user));
+        when(rule.getAuthenticatorType(user)).thenReturn(rulePluginType);
+        mockProxyContext(rule, true);
+        FirebirdProtocol protocol = mock(FirebirdProtocol.class);
+        when(protocol.getVersion()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION13);
+        FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.CONNECT);
+        try (MockedConstruction<FirebirdConnectPacket> ignored = mockConstruction(FirebirdConnectPacket.class, (connectPacket, construction) -> {
+            when(connectPacket.getUserProtocols()).thenReturn(new ArrayList<>(Collections.singletonList(protocol)));
+            when(connectPacket.getLogin()).thenReturn("root");
+            when(connectPacket.getPlugin()).thenReturn(connectPlugin);
+        })) {
+            LoginErrorException actual = assertThrows(LoginErrorException.class, () -> authenticationEngine.authenticate(context, payload));
+            assertThat(actual.getMessage(), is("Error occurred during login"));
+        }
+        verify(context, never()).writeAndFlush(any());
     }
     
     @SuppressWarnings("rawtypes")
@@ -342,7 +360,6 @@ class FirebirdAuthenticationEngineTest {
         FirebirdSRPAuthenticationData authData = mock(FirebirdSRPAuthenticationData.class);
         Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("authData"), authenticationEngine, authData);
         FirebirdAuthenticator authenticator = mock(FirebirdAuthenticator.class);
-        when(authenticator.authenticate(any(), any())).thenReturn(false);
         FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.ATTACH);
         try (MockedConstruction<FirebirdAttachPacket> ignoredPacket = mockConstruction(FirebirdAttachPacket.class, (attachPacket, construction) -> {
             when(attachPacket.getEncoding()).thenReturn("UTF8");
@@ -362,22 +379,24 @@ class FirebirdAuthenticationEngineTest {
     }
     
     private void mockProxyContext(final AuthorityRule rule, final boolean containsDatabase) {
-        ContextManager contextManager = mock(ContextManager.class);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         lenient().when(metaData.containsDatabase(anyString())).thenReturn(containsDatabase);
-        when(metaDataContexts.getMetaData()).thenReturn(metaData);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(ProxyContext.getInstance()).thenReturn(proxyContext);
-        when(proxyContext.getContextManager()).thenReturn(contextManager);
     }
     
     private static Stream<Arguments> connectArguments() {
         return Stream.of(
-                Arguments.of("pluginMismatch", "", FirebirdAuthenticationMethod.SRP, FirebirdAuthenticationMethod.SRP256, true, false),
+                Arguments.of("defaultSrp256Plugin", "", FirebirdAuthenticationMethod.SRP256, FirebirdAuthenticationMethod.SRP256, true, true),
                 Arguments.of("srpPlugin", "SRP512", FirebirdAuthenticationMethod.SRP512, FirebirdAuthenticationMethod.SRP512, true, true),
+                Arguments.of("legacyPluginSwitch", "LEGACY_AUTH", FirebirdAuthenticationMethod.SRP, FirebirdAuthenticationMethod.LEGACY_AUTH, true, false),
                 Arguments.of("legacyPlugin", "LEGACY_AUTH", FirebirdAuthenticationMethod.LEGACY_AUTH, FirebirdAuthenticationMethod.LEGACY_AUTH, false, false));
+    }
+    
+    private static Stream<Arguments> mismatchedPluginArguments() {
+        return Stream.of(
+                Arguments.of("defaultSrp256", "", FirebirdAuthenticationMethod.SRP),
+                Arguments.of("configuredSrp256", "SRP256", FirebirdAuthenticationMethod.SRP),
+                Arguments.of("configuredSrp512", "SRP512", FirebirdAuthenticationMethod.SRP256));
     }
     
     private static Stream<Arguments> attachArguments() {
