@@ -497,6 +497,21 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeInsertSelectInParameters() throws Exception {
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) SELECT id + 2 FROM foo_tbl WHERE id IN (?, ?)");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(2));
+        for (FirebirdReturnColumnPacket each : actualReturnPacket.getDescribeBind()) {
+            FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+            each.write(payload);
+            verify(payload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        }
+    }
+    
+    @Test
     void assertDescribeInsertSelectCastParameters() throws Exception {
         when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id, content) SELECT CAST(? AS INTEGER), CAST(? AS VARCHAR(20)) FROM foo_tbl");
         when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);

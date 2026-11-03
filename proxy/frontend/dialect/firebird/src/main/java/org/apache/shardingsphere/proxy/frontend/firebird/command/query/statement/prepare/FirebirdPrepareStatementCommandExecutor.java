@@ -72,6 +72,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Betw
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -522,6 +524,15 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             if (between.getLeft() instanceof ColumnSegment) {
                 putAffectedColumn((ColumnSegment) between.getLeft(), between.getBetweenExpr(), affectedColumns);
                 putAffectedColumn((ColumnSegment) between.getLeft(), between.getAndExpr(), affectedColumns);
+            }
+            return;
+        }
+        if (expr instanceof InExpression) {
+            InExpression inExpression = (InExpression) expr;
+            if (inExpression.getLeft() instanceof ColumnSegment && inExpression.getRight() instanceof ListExpression) {
+                for (ExpressionSegment each : ((ListExpression) inExpression.getRight()).getItems()) {
+                    putAffectedColumn((ColumnSegment) inExpression.getLeft(), each, affectedColumns);
+                }
             }
             return;
         }
