@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentif
 import org.apache.shardingsphere.infra.rule.attribute.column.ShardingColumnRuleAttribute;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.LogicalOperator;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
@@ -88,6 +89,8 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
      * Resolve values of unspecified type parameters by the integer sharding columns they are compared with or assigned to.
      * Only sharding columns are used, because routing needs their values, while a parameter of another column, such as a domain over integer with its own operators,
      * keeps the type the database infers for it. NOT IN and NOT BETWEEN are not used either, because routing ignores them.
+     * A WHERE condition is used only when every OR branch of it has a sharding condition,
+     * because routing goes to all data nodes without reading the remaining parameters once it reaches a branch without one.
      * A parameter is resolved only when every occurrence of it is compared with or assigned to a column, so that a parameter also used elsewhere,
      * such as an overloaded function argument, keeps the type the database infers from all of its occurrences.
      * Only columns of physical tables are used, and an IN list is used only when all of its values are parameters or literals,
@@ -109,7 +112,7 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
             return params;
         }
         List<Object> result = new ArrayList<>(params);
-        for (Entry<Integer, Collection<Integer>> entry : getParameterColumnTypes(connectionSession, preparedStatement).entrySet()) {
+        for (Entry<Integer, Collection<Integer>> entry : getParameterColumnTypes(connectionSession, preparedStatement, params).entrySet()) {
             int parameterIndex = entry.getKey();
             if (parameterIndex < result.size() && result.get(parameterIndex) instanceof PostgreSQLTypeUnspecifiedSQLParameter) {
                 result.set(parameterIndex, resolveUnspecifiedParameterValue(result.get(parameterIndex), entry.getValue()));
@@ -127,8 +130,9 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         return false;
     }
     
-    private static Map<Integer, Collection<Integer>> getParameterColumnTypes(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement) {
-        Map<Integer, Collection<Integer>> parameterMarkerColumnTypes = getParameterMarkerColumnTypes(connectionSession, preparedStatement);
+    private static Map<Integer, Collection<Integer>> getParameterColumnTypes(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement,
+                                                                             final List<Object> params) {
+        Map<Integer, Collection<Integer>> parameterMarkerColumnTypes = getParameterMarkerColumnTypes(connectionSession, preparedStatement, params);
         Map<Integer, Collection<Integer>> result = new HashMap<>(preparedStatement.getParameterTypes().size(), 1F);
         Collection<Integer> parameterIndexesWithoutColumnType = new HashSet<>();
         int parameterMarkerIndex = 0;
@@ -144,7 +148,8 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         return result;
     }
     
-    private static Map<Integer, Collection<Integer>> getParameterMarkerColumnTypes(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement) {
+    private static Map<Integer, Collection<Integer>> getParameterMarkerColumnTypes(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement,
+                                                                                   final List<Object> params) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase(connectionSession.getUsedDatabaseName());
         if (database.getRuleMetaData().getAttributes(ShardingColumnRuleAttribute.class).isEmpty()) {
             return Collections.emptyMap();
@@ -158,8 +163,9 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         if (sqlStatement instanceof UpdateStatement) {
             putSetAssignmentColumnTypes(database, (UpdateStatement) sqlStatement, result);
         }
+        List<Object> markerParams = preparedStatement.adjustParametersOrder(params);
         for (WhereSegment each : SQLStatementContextExtractor.getAllWhereSegments(preparedStatement.getSqlStatementContext())) {
-            putWhereColumnTypes(database, usingColumnNames, each, result);
+            putWhereColumnTypes(database, usingColumnNames, each, markerParams, result);
         }
         return result;
     }
@@ -270,11 +276,82 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         return table.containsColumn(columnBoundInfo.getOriginalColumn()) ? Optional.of(table.getColumn(columnBoundInfo.getOriginalColumn()).getDataType()) : Optional.empty();
     }
     
-    private static void putWhereColumnTypes(final ShardingSphereDatabase database, final Collection<String> usingColumnNames, final WhereSegment whereSegment,
+    private static void putWhereColumnTypes(final ShardingSphereDatabase database, final Collection<String> usingColumnNames, final WhereSegment whereSegment, final List<Object> params,
                                             final Map<Integer, Collection<Integer>> parameterMarkerColumnTypes) {
+        if (!hasShardingConditionInEveryBranch(database, whereSegment.getExpr(), params)) {
+            return;
+        }
         for (ExpressionSegment each : ExpressionExtractor.extractAllExpressions(whereSegment.getExpr())) {
             putPredicateColumnTypes(database, usingColumnNames, each, parameterMarkerColumnTypes);
         }
+    }
+    
+    private static boolean hasShardingConditionInEveryBranch(final ShardingSphereDatabase database, final ExpressionSegment expression, final List<Object> params) {
+        if (expression instanceof BinaryOperationExpression) {
+            BinaryOperationExpression binaryOperationExpression = (BinaryOperationExpression) expression;
+            Optional<LogicalOperator> logicalOperator = LogicalOperator.valueFrom(binaryOperationExpression.getOperator());
+            if (logicalOperator.isPresent() && LogicalOperator.OR == logicalOperator.get()) {
+                return hasShardingConditionInEveryBranch(database, binaryOperationExpression.getLeft(), params)
+                        && hasShardingConditionInEveryBranch(database, binaryOperationExpression.getRight(), params);
+            }
+            if (logicalOperator.isPresent() && LogicalOperator.AND == logicalOperator.get()) {
+                return hasShardingConditionInEveryBranch(database, binaryOperationExpression.getLeft(), params)
+                        || hasShardingConditionInEveryBranch(database, binaryOperationExpression.getRight(), params);
+            }
+        }
+        return isShardingCondition(database, expression, params);
+    }
+    
+    private static boolean isShardingCondition(final ShardingSphereDatabase database, final ExpressionSegment predicate, final List<Object> params) {
+        if (predicate instanceof BinaryOperationExpression) {
+            return isShardingCompareCondition(database, (BinaryOperationExpression) predicate, params);
+        }
+        if (predicate instanceof InExpression) {
+            InExpression inExpression = (InExpression) predicate;
+            return !inExpression.isNot() && isShardingColumnSegment(database, inExpression.getLeft()) && isNotNullValues(inExpression.getExpressionList(), params);
+        }
+        if (predicate instanceof BetweenExpression) {
+            BetweenExpression betweenExpression = (BetweenExpression) predicate;
+            return !betweenExpression.isNot() && isShardingColumnSegment(database, betweenExpression.getLeft()) && isNotNullValue(betweenExpression.getBetweenExpr(), params)
+                    && isNotNullValue(betweenExpression.getAndExpr(), params);
+        }
+        return false;
+    }
+    
+    private static boolean isShardingCompareCondition(final ShardingSphereDatabase database, final BinaryOperationExpression predicate, final List<Object> params) {
+        if (!COMPARE_OPERATORS.contains(predicate.getOperator())) {
+            return false;
+        }
+        return isShardingColumnSegment(database, predicate.getLeft()) && isNotNullValue(predicate.getRight(), params)
+                || isShardingColumnSegment(database, predicate.getRight()) && isNotNullValue(predicate.getLeft(), params);
+    }
+    
+    private static boolean isShardingColumnSegment(final ShardingSphereDatabase database, final ExpressionSegment expression) {
+        if (!(expression instanceof ColumnSegment)) {
+            return false;
+        }
+        ColumnSegmentBoundInfo columnBoundInfo = ((ColumnSegment) expression).getColumnBoundInfo();
+        return isShardingColumn(database, columnBoundInfo.getOriginalColumn().getValue(), columnBoundInfo.getOriginalTable().getValue());
+    }
+    
+    private static boolean isNotNullValue(final ExpressionSegment expression, final List<Object> params) {
+        if (expression instanceof ParameterMarkerExpressionSegment) {
+            int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex();
+            return parameterMarkerIndex < params.size() && null != params.get(parameterMarkerIndex);
+        }
+        return expression instanceof LiteralExpressionSegment && null != ((LiteralExpressionSegment) expression).getLiterals();
+    }
+    
+    private static boolean isNotNullValues(final Collection<ExpressionSegment> expressions, final List<Object> params) {
+        if (expressions.isEmpty()) {
+            return false;
+        }
+        for (ExpressionSegment each : expressions) {
+            if (!isNotNullValue(each, params)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private static void putPredicateColumnTypes(final ShardingSphereDatabase database, final Collection<String> usingColumnNames, final ExpressionSegment predicate,

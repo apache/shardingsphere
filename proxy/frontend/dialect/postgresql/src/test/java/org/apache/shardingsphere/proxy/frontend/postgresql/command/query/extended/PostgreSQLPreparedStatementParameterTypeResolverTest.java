@@ -226,13 +226,36 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         assertThat(actual.get(0), sameInstance(expected));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("resolveUnspecifiedParameterValuesWithNegatedPredicateArguments")
-    void assertResolveUnspecifiedParameterValuesWithNegatedPredicate(final String name, final String sql, final List<Integer> actualParameterMarkerIndexes) {
-        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement(sql, actualParameterMarkerIndexes);
+    @Test
+    void assertResolveUnspecifiedParameterValuesWithNotInPredicate() {
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT id FROM foo_tbl WHERE id NOT IN (?)", Collections.singletonList(0));
         PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("7");
         List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Collections.singletonList(expected));
         assertThat(actual.get(0), sameInstance(expected));
+    }
+    
+    @Test
+    void assertResolveUnspecifiedParameterValuesWithNotBetweenPredicate() {
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT id FROM foo_tbl WHERE id NOT BETWEEN ? AND ?", Arrays.asList(0, 0));
+        PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("7");
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Collections.singletonList(expected));
+        assertThat(actual.get(0), sameInstance(expected));
+    }
+    
+    @Test
+    void assertResolveUnspecifiedParameterValuesWithOrBranchWithoutShardingCondition() {
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT id FROM foo_tbl WHERE v=0 OR id=?", Collections.singletonList(0));
+        PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("7");
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Collections.singletonList(expected));
+        assertThat(actual.get(0), sameInstance(expected));
+    }
+    
+    @Test
+    void assertResolveUnspecifiedParameterValuesWithOrBranchOfNullParameter() {
+        PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT id FROM foo_tbl WHERE id>? OR k=?", Arrays.asList(0, 1));
+        PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("7");
+        List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Arrays.asList(null, expected));
+        assertThat(actual.get(1), sameInstance(expected));
     }
     
     @Test
@@ -452,12 +475,6 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
                 Arguments.of("integer domain column", "SELECT id FROM foo_tbl WHERE domain_v=?", Collections.singletonList(0)),
                 Arguments.of("sharding and non sharding columns", "SELECT id FROM foo_tbl WHERE id=? OR v=?", Arrays.asList(0, 0)),
                 Arguments.of("set assignment of non sharding column", "UPDATE foo_tbl SET v=?", Collections.singletonList(0)));
-    }
-    
-    private static Stream<Arguments> resolveUnspecifiedParameterValuesWithNegatedPredicateArguments() {
-        return Stream.of(
-                Arguments.of("not in", "SELECT id FROM foo_tbl WHERE id NOT IN (?)", Collections.singletonList(0)),
-                Arguments.of("not between", "SELECT id FROM foo_tbl WHERE id NOT BETWEEN ? AND ?", Arrays.asList(0, 0)));
     }
     
     private static Stream<Arguments> resolveUnspecifiedParameterValuesWithUnresolvedTextArguments() {
