@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Type
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.StringLiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.TemporalLiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -78,6 +79,16 @@ class InsertValueTest {
         InsertValue insertValue = new InsertValue(expressionSegments);
         String actualToString = insertValue.toString();
         String expectedToString = "(SYSDATE)";
+        assertThat(actualToString, is(expectedToString));
+    }
+    
+    @Test
+    void assertStringLiteralToString() {
+        List<ExpressionSegment> expressionSegments = new ArrayList<>(1);
+        expressionSegments.add(new StringLiteralExpressionSegment(0, 10, "abc", "_UTF8 'abc'"));
+        InsertValue insertValue = new InsertValue(expressionSegments);
+        String actualToString = insertValue.toString();
+        String expectedToString = "(_UTF8 'abc')";
         assertThat(actualToString, is(expectedToString));
     }
     

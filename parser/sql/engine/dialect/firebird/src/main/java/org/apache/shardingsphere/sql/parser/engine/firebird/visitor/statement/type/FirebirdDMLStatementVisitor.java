@@ -80,7 +80,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.StringLiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
@@ -123,6 +125,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -201,19 +204,29 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     public ASTNode visitAssignmentValues(final AssignmentValuesContext ctx) {
         List<ExpressionSegment> segments = new LinkedList<>();
         for (AssignmentValueContext each : ctx.assignmentValue()) {
-            segments.add(isStringLiteralWithCharacterSetOrCollation(each)
-                    ? new CommonExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), getOriginalText(each), Collections.emptyList())
-                    : (ExpressionSegment) visit(each));
+            ExpressionSegment expression = (ExpressionSegment) visit(each);
+            Optional<StringLiteralsContext> stringLiterals = findStringLiterals(each);
+            if (expression instanceof LiteralExpressionSegment && stringLiterals.isPresent() && (null != stringLiterals.get().UNDERSCORE_CHARSET() || null != stringLiterals.get().collateClause())) {
+                expression = new StringLiteralExpressionSegment(expression.getStartIndex(), expression.getStopIndex(),
+                        ((LiteralExpressionSegment) expression).getLiterals(), getOriginalText(stringLiterals.get()));
+            }
+            segments.add(expression);
         }
         return new InsertValuesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), segments);
     }
     
-    private boolean isStringLiteralWithCharacterSetOrCollation(final AssignmentValueContext ctx) {
+    private Optional<StringLiteralsContext> findStringLiterals(final ParserRuleContext ctx) {
         ParserRuleContext current = ctx;
-        while (!(current instanceof StringLiteralsContext) && 1 == current.getChildCount() && current.getChild(0) instanceof ParserRuleContext) {
-            current = (ParserRuleContext) current.getChild(0);
+        while (!(current instanceof StringLiteralsContext)) {
+            if (3 == current.getChildCount() && "(".equals(current.getChild(0).getText()) && ")".equals(current.getChild(2).getText()) && current.getChild(1) instanceof ParserRuleContext) {
+                current = (ParserRuleContext) current.getChild(1);
+            } else if (1 == current.getChildCount() && current.getChild(0) instanceof ParserRuleContext) {
+                current = (ParserRuleContext) current.getChild(0);
+            } else {
+                return Optional.empty();
+            }
         }
-        return current instanceof StringLiteralsContext && (null != ((StringLiteralsContext) current).characterSetName() || null != ((StringLiteralsContext) current).collateClause());
+        return Optional.of((StringLiteralsContext) current);
     }
     
     @Override

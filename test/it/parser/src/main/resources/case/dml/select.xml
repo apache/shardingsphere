@@ -13445,9 +13445,9 @@
 
     <select sql-case-id="select_hexadecimal_literal_with_introducer_firebird">
         <projections start-index="7" stop-index="21">
-            <expression-projection text="_utf8X'616263'" start-index="7" stop-index="21">
+            <expression-projection text="_utf8 X'616263'" start-index="7" stop-index="21">
                 <expr>
-                    <common-expression text="_utf8X'616263'" start-index="7" stop-index="21" />
+                    <common-expression text="_utf8 X'616263'" start-index="7" stop-index="21" />
                 </expr>
             </expression-projection>
         </projections>

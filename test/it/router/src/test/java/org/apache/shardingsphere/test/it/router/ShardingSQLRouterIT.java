@@ -47,6 +47,7 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
@@ -92,6 +93,28 @@ class ShardingSQLRouterIT {
         RouteContext actual = route(sql, params);
         assertThat(getRouteUnitSignatures(actual), is(expectedRouteUnits));
         assertThat(getOriginalDataNodeSignatures(actual), is(expectedOriginalDataNodes));
+    }
+    
+    @Test
+    void assertFirebirdIntroducedStringShardingKey() {
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        ShardingSphereDatabase database = createFirebirdStringShardingDatabase(props);
+        Set<String> expected = createRouteUnits("ds_0:t_order=t_order_2");
+        assertThat(getRouteUnitSignatures(route("INSERT INTO t_order (id, status) VALUES (1, 'abc')", Collections.emptyList(), database, props)), is(expected));
+        assertThat(getRouteUnitSignatures(route("INSERT INTO t_order (id, status) VALUES (1, _UTF8 'abc')", Collections.emptyList(), database, props)), is(expected));
+        assertThat(getRouteUnitSignatures(route("INSERT INTO t_order (id, status) VALUES (1, 'abc' COLLATE UNICODE)", Collections.emptyList(), database, props)), is(expected));
+        assertThat(getRouteUnitSignatures(route("INSERT INTO t_order (id, status) VALUES (1, _ISO8859_1 'abc')", Collections.emptyList(), database, props)), is(expected));
+    }
+    
+    private ShardingSphereDatabase createFirebirdStringShardingDatabase(final ConfigurationProperties props) {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
+        ShardingRuleConfiguration config = new ShardingRuleConfiguration();
+        ShardingAutoTableRuleConfiguration table = new ShardingAutoTableRuleConfiguration("t_order", "ds_0");
+        table.setShardingStrategy(new StandardShardingStrategyConfiguration("status", "hash_mod"));
+        config.getAutoTables().add(table);
+        config.getShardingAlgorithms().put("hash_mod", new AlgorithmConfiguration("HASH_MOD", PropertiesBuilder.build(new Property("sharding-count", "4"))));
+        ShardingRule rule = new ShardingRule(config, Collections.singletonMap("ds_0", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+        return createDatabase(databaseType, rule, props);
     }
     
     private static Stream<Arguments> getTestArguments() {
