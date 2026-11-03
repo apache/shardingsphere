@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.admin;
 
+import io.netty.channel.Channel;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.firebirdsql.gds.ISCConstants;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -26,11 +32,20 @@ import java.util.Collections;
 /**
  * Cancel command executor for Firebird.
  */
+@RequiredArgsConstructor
 public final class FirebirdCancelCommandExecutor implements CommandExecutor {
     
+    private final FirebirdCancelCommandPacket packet;
+    
+    private final ConnectionSession connectionSession;
+    
     @Override
+    @HighFrequencyInvocation
     public Collection<DatabasePacket> execute() {
-        // TODO cancel the executing operation on fb_cancel_raise and track fb_cancel_disable and fb_cancel_enable as Firebird server does
+        FirebirdCancellationRegistry.getInstance().apply(connectionSession.getConnectionId(), packet.getKind());
+        if (ISCConstants.fb_cancel_abort == packet.getKind() && connectionSession.getAttributeMap() instanceof Channel) {
+            ((Channel) connectionSession.getAttributeMap()).close();
+        }
         return Collections.emptyList();
     }
 }

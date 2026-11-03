@@ -63,7 +63,7 @@ public final class FirebirdBatchRegistry {
     public void registerBatchStatement(final int connectionId, final int statementId, final FirebirdBatchStatement batchStatement) {
         Map<Integer, FirebirdBatchStatement> statements = batchRegistry.get(connectionId);
         ShardingSpherePreconditions.checkNotNull(statements, () -> new IllegalStateException("Connection [" + connectionId + "] is not registered."));
-        statements.put(statementId, batchStatement);
+        statements.put(statementId & 0xFFFF, batchStatement);
     }
     
     /**
@@ -75,7 +75,7 @@ public final class FirebirdBatchRegistry {
      */
     public FirebirdBatchStatement getBatchStatement(final int connectionId, final int statementId) {
         Map<Integer, FirebirdBatchStatement> statements = batchRegistry.get(connectionId);
-        return null == statements ? null : statements.get(statementId);
+        return null == statements ? null : statements.get(statementId & 0xFFFF);
     }
     
     /**
@@ -87,7 +87,7 @@ public final class FirebirdBatchRegistry {
     public void unregisterBatchStatement(final int connectionId, final int statementId) {
         Map<Integer, FirebirdBatchStatement> statements = batchRegistry.get(connectionId);
         if (null != statements) {
-            statements.remove(statementId);
+            statements.remove(statementId & 0xFFFF);
         }
     }
     

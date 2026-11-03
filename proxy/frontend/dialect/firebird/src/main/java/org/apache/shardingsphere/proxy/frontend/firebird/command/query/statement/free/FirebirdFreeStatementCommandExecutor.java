@@ -19,13 +19,18 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdStatusVector;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchStatementManager;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
+import org.firebirdsql.gds.ISCConstants;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -37,26 +42,40 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class FirebirdFreeStatementCommandExecutor implements CommandExecutor {
     
+    private static final int INVALID_OBJECT_HANDLE = -1;
+    
     private final FirebirdFreeStatementPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
+    @HighFrequencyInvocation
     public Collection<DatabasePacket> execute() throws SQLException {
+        int connectionId = connectionSession.getConnectionId();
+        int statementId = FirebirdStatementIdGenerator.getInstance().resolveStatementId(connectionId, packet.getStatementId(),
+                Boolean.TRUE.equals(connectionSession.getAttributeMap().attr(FirebirdConstant.LAZY_SEND).get()));
+        if (!FirebirdStatementIdGenerator.getInstance().isStatementAllocated(connectionId, statementId)) {
+            FirebirdStatusVector statusVector = FirebirdStatusVector.fromSegments(Collections.singletonList(
+                    FirebirdStatusVector.Segment.withArguments(ISCConstants.isc_bad_req_handle, Collections.emptyList(), null)));
+            return Collections.singleton(new FirebirdGenericResponsePacket().setStatusVector(statusVector));
+        }
         switch (packet.getOption()) {
             case FirebirdFreeStatementPacket.DROP:
             case FirebirdFreeStatementPacket.UNPREPARE:
-                connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
-                FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementId());
-                FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), true);
+                connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(statementId);
+                FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionId, statementId);
+                FirebirdStatementResourceCleaner.clean(connectionSession, statementId, true);
+                if (FirebirdFreeStatementPacket.DROP == packet.getOption()) {
+                    FirebirdStatementIdGenerator.getInstance().releaseStatementId(connectionId, statementId);
+                }
                 break;
             case FirebirdFreeStatementPacket.CLOSE:
-                FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementId());
-                FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), false);
+                FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionId, statementId);
+                FirebirdStatementResourceCleaner.clean(connectionSession, statementId, false);
                 break;
             default:
                 throw new DatabaseProtocolException("Unknown DSQL option type %d", packet.getOption());
         }
-        return Collections.singleton(new FirebirdGenericResponsePacket());
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(FirebirdFreeStatementPacket.DROP == packet.getOption() ? INVALID_OBJECT_HANDLE : (short) statementId));
     }
 }

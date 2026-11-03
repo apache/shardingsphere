@@ -19,7 +19,9 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.transact
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdObjectHandleGenerator;
 
 import java.util.Map;
 import java.util.Set;
@@ -52,9 +54,15 @@ public final class FirebirdTransactionIdGenerator {
      *
      * @param connectionId connection ID
      */
+    @HighFrequencyInvocation
     public void registerConnection(final int connectionId) {
         connectionRegistry.put(connectionId, new AtomicInteger());
-        activeTransactionRegistry.put(connectionId, ConcurrentHashMap.newKeySet());
+        Set<Integer> previous = activeTransactionRegistry.put(connectionId, ConcurrentHashMap.newKeySet());
+        if (null != previous) {
+            for (int each : previous) {
+                FirebirdObjectHandleGenerator.getInstance().releaseHandle(connectionId, each);
+            }
+        }
     }
     
     /**
@@ -63,9 +71,13 @@ public final class FirebirdTransactionIdGenerator {
      * @param connectionId connection ID
      * @return generated transaction ID
      */
+    @HighFrequencyInvocation
     public int nextTransactionId(final int connectionId) {
-        int result = getTransactionCounter(connectionId).incrementAndGet();
-        getActiveTransactions(connectionId).add(result);
+        AtomicInteger lastTransactionId = getTransactionCounter(connectionId);
+        Set<Integer> activeTransactions = getActiveTransactions(connectionId);
+        int result = FirebirdObjectHandleGenerator.getInstance().nextHandle(connectionId);
+        activeTransactions.add(result);
+        lastTransactionId.set(result);
         return result;
     }
     
@@ -77,7 +89,7 @@ public final class FirebirdTransactionIdGenerator {
      * @return is transaction active or not
      */
     public boolean isTransactionActive(final int connectionId, final int transactionId) {
-        return getActiveTransactions(connectionId).contains(transactionId);
+        return getActiveTransactions(connectionId).contains(transactionId & 0xFFFF);
     }
     
     /**
@@ -96,8 +108,12 @@ public final class FirebirdTransactionIdGenerator {
      * @param connectionId connection ID
      * @param transactionId transaction ID
      */
+    @HighFrequencyInvocation
     public void closeTransaction(final int connectionId, final int transactionId) {
-        getActiveTransactions(connectionId).remove(transactionId);
+        int handle = transactionId & 0xFFFF;
+        if (getActiveTransactions(connectionId).remove(handle)) {
+            FirebirdObjectHandleGenerator.getInstance().releaseHandle(connectionId, handle);
+        }
     }
     
     /**
@@ -115,10 +131,19 @@ public final class FirebirdTransactionIdGenerator {
      *
      * @param connectionId connection ID
      */
+    @HighFrequencyInvocation
     public void unregisterConnection(final int connectionId) {
-        FirebirdTransactionSessionRegistry.getInstance().unregisterConnection(connectionId);
-        connectionRegistry.remove(connectionId);
-        activeTransactionRegistry.remove(connectionId);
+        try {
+            FirebirdTransactionSessionRegistry.getInstance().unregisterConnection(connectionId);
+        } finally {
+            connectionRegistry.remove(connectionId);
+            Set<Integer> activeTransactions = activeTransactionRegistry.remove(connectionId);
+            if (null != activeTransactions) {
+                for (int each : activeTransactions) {
+                    FirebirdObjectHandleGenerator.getInstance().releaseHandle(connectionId, each);
+                }
+            }
+        }
     }
     
     private AtomicInteger getTransactionCounter(final int connectionId) {

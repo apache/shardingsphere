@@ -17,13 +17,17 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement;
 
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdObjectHandleGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdStatementIdGeneratorTest {
     
@@ -47,6 +51,53 @@ class FirebirdStatementIdGeneratorTest {
     @Test
     void assertGetStatementId() {
         assertThat(GENERATOR.getStatementId(1), is(0));
+    }
+    
+    @Test
+    void assertIsStatementAllocated() {
+        assertFalse(GENERATOR.isStatementAllocated(1, 1));
+        int statementId = GENERATOR.nextStatementId(1);
+        assertTrue(GENERATOR.isStatementAllocated(1, statementId));
+        GENERATOR.releaseStatementId(1, statementId);
+        assertFalse(GENERATOR.isStatementAllocated(1, statementId));
+        assertFalse(GENERATOR.isStatementAllocated(2, statementId));
+    }
+    
+    @Test
+    void assertResolveLazyStatementId() {
+        int statementId = GENERATOR.nextStatementId(1);
+        int lastHandle = FirebirdObjectHandleGenerator.getInstance().nextHandle(1);
+        try {
+            assertThat(GENERATOR.resolveStatementId(1, -1, true), is(lastHandle));
+            assertThat(GENERATOR.resolveStatementId(1, 65535, true), is(lastHandle));
+            assertThat(GENERATOR.resolveStatementId(1, -1, false), is(65535));
+            assertThat(GENERATOR.resolveStatementId(1, -32768, false), is(32768));
+            assertThat(GENERATOR.resolveStatementId(1, statementId, true), is(statementId));
+        } finally {
+            FirebirdObjectHandleGenerator.getInstance().releaseHandle(1, lastHandle);
+        }
+    }
+    
+    @Test
+    void assertReleaseStatementId() {
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(1);
+        try {
+            int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(1);
+            int statementId = GENERATOR.nextStatementId(1);
+            GENERATOR.releaseStatementId(1, transactionId);
+            assertThat(GENERATOR.nextStatementId(1), is(3));
+            GENERATOR.releaseStatementId(1, statementId);
+            assertThat(GENERATOR.nextStatementId(1), is(statementId));
+        } finally {
+            FirebirdTransactionIdGenerator.getInstance().unregisterConnection(1);
+        }
+    }
+    
+    @Test
+    void assertRegisterConnectionReleasesPreviousHandles() {
+        int statementId = GENERATOR.nextStatementId(1);
+        GENERATOR.registerConnection(1);
+        assertThat(GENERATOR.nextStatementId(1), is(statementId));
     }
     
     @Test

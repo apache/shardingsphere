@@ -26,6 +26,9 @@ import java.io.ByteArrayOutputStream;
 public final class FirebirdBlobWrite {
     
     @Getter
+    private final int transactionId;
+    
+    @Getter
     private final int blobHandle;
     
     @Getter

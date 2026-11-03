@@ -20,10 +20,13 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdFetchResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdCancellationRegistry;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdCancellationRegistry.Scope;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdBinaryRowBuilder;
 
 import java.sql.SQLException;
@@ -41,20 +44,34 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
     
     private int fetchCount;
     
+    private Scope cancellationScope;
+    
+    @HighFrequencyInvocation
     public FirebirdFetchStatementCommandExecutor(final FirebirdFetchStatementPacket packet, final ConnectionSession connectionSession) {
-        ConnectionSession owner = FirebirdFetchStatementCache.getInstance().getOwner(connectionSession.getConnectionId(), packet.getStatementId());
+        int statementId = packet.getStatementId() & 0xFFFF;
+        ConnectionSession owner = FirebirdFetchStatementCache.getInstance().getOwner(connectionSession.getConnectionId(), statementId);
         this.connectionSession = null == owner ? connectionSession : owner;
-        proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), packet.getStatementId());
+        proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), statementId);
         fetchCount = packet.getFetchSize();
     }
     
     @Override
+    @HighFrequencyInvocation
     public Collection<DatabasePacket> execute() throws SQLException {
         if (null == proxyBackendHandler) {
             fetchCount = -1;
             return Collections.singletonList(FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket());
         }
+        cancellationScope = FirebirdCancellationRegistry.getInstance().enter(connectionSession.getConnectionId(), connectionSession.getDatabaseConnectionManager());
         return Collections.singletonList(getQueryRowPacket());
+    }
+    
+    @Override
+    @HighFrequencyInvocation
+    public void close() {
+        if (null != cancellationScope) {
+            cancellationScope.close();
+        }
     }
     
     @Override

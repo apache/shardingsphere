@@ -20,7 +20,32 @@ grammar TCLStatement;
 import BaseRule;
 
 setTransaction
-    : SET TRANSACTION (ISOLATION LEVEL levelOfIsolation)?
+    : SET TRANSACTION transactionOption*
+    ;
+
+transactionOption
+    : READ (ONLY | WRITE)
+    | NO? WAIT
+    | (ISOLATION LEVEL)? (levelOfIsolation | SNAPSHOT (TABLE STABILITY? | AT NUMBER numberSign? NUMBER_)? | READ (COMMITTED | UNCOMMITTED) (NO? (RECORD_VERSION | VERSION) | READ CONSISTENCY)?)
+    | NO AUTO UNDO
+    | IGNORE LIMBO
+    | RESTART REQUESTS
+    | AUTO COMMIT
+    | AUTO RELEASE TEMP BLOBID
+    | LOCK TIMEOUT numberSign? NUMBER_
+    | RESERVING transactionReservation (COMMA_ transactionReservation)*
+    ;
+
+numberSign
+    : PLUS_ | MINUS_
+    ;
+
+transactionReservation
+    : transactionTableName (COMMA_ transactionTableName)* (FOR (SHARED | PROTECTED)? (READ | WRITE))?
+    ;
+
+transactionTableName
+    : tableName | DQ_ DQ_
     ;
 
 commit

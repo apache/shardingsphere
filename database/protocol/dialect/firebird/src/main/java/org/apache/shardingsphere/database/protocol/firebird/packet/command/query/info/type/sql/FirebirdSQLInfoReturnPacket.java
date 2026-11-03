@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacke
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.List;
 
@@ -53,6 +54,7 @@ public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
     private final int statementFlags;
     
     @Override
+    @HighFrequencyInvocation
     protected void write(final FirebirdPacketPayload payload) {
         for (FirebirdInfoPacketType type : infoItems) {
             if (FirebirdCommonInfoPacketType.END == type) {

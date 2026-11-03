@@ -17,14 +17,18 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.admin;
 
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdCancelCommandPacket;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class FirebirdCancelCommandExecutorTest {
     
     @Test
     void assertExecute() {
-        assertTrue(new FirebirdCancelCommandExecutor().execute().isEmpty());
+        assertTrue(new FirebirdCancelCommandExecutor(mock(FirebirdCancelCommandPacket.class), mock(ConnectionSession.class)).execute().isEmpty());
+        FirebirdCancellationRegistry.getInstance().unregister(0);
     }
 }

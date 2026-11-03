@@ -20,16 +20,18 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdSQLResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -58,14 +60,20 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionSessionRegistry;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -83,11 +91,14 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -166,11 +177,52 @@ class FirebirdExecuteStatementCommandExecutorTest {
         assertThrows(InvalidStatementHandleException.class, executor::execute);
     }
     
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(booleans = {false, true})
+    void assertExecuteWithOpenBatch(final boolean execute2) throws SQLException {
+        FirebirdBatchRegistry actualRegistry = FirebirdBatchRegistry.getInstance();
+        actualRegistry.registerConnection(CONNECTION_ID);
+        FirebirdBatchStatement batch = new FirebirdBatchStatement(STATEMENT_ID);
+        actualRegistry.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batch);
+        try {
+            when(packet.isStoredProcedure()).thenReturn(execute2);
+            FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdExecuteStatementCommandExecutor(packet, connectionSession).execute().iterator().next();
+            assertThat(actual.getStatusVector().getSegments().size(), is(2));
+            assertThat(actual.getStatusVector().getSegments().get(0).getGdsCode(), is(ISCConstants.isc_sqlerr));
+            assertThat(actual.getStatusVector().getSegments().get(0).getTypedArguments().get(0).getNumber(), is(-502));
+            assertThat(actual.getStatusVector().getSegments().get(1).getGdsCode(), is(ISCConstants.isc_dsql_cursor_open_err));
+            assertTrue(actual.getStatusVector().getSegments().get(1).getTypedArguments().isEmpty());
+            assertThat(actualRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID), is(batch));
+            verify(connectionSession, never()).beginPreparedStatementCache(any());
+        } finally {
+            actualRegistry.unregisterConnection(CONNECTION_ID);
+        }
+    }
+    
+    @Test
+    void assertExecute2WithNoOutputMessageKeepsOpenBatch() throws SQLException {
+        FirebirdBatchRegistry actualRegistry = FirebirdBatchRegistry.getInstance();
+        actualRegistry.registerConnection(CONNECTION_ID);
+        FirebirdBatchStatement batch = new FirebirdBatchStatement(STATEMENT_ID);
+        actualRegistry.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batch);
+        try {
+            when(packet.isStoredProcedure()).thenReturn(true);
+            when(packet.getOutputMessageNumber()).thenReturn(65535);
+            FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdExecuteStatementCommandExecutor(packet, connectionSession).execute().iterator().next();
+            assertNull(actual.getStatusVector());
+            assertThat(actual.getHandle(), is(transactionId));
+            assertThat(actualRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID), is(batch));
+            verify(connectionSession, never()).beginPreparedStatementCache(any());
+        } finally {
+            actualRegistry.unregisterConnection(CONNECTION_ID);
+        }
+    }
+    
     @Test
     void assertExecuteWithClosedTransactionHandle() {
         when(packet.getStatementId()).thenReturn(2);
-        FirebirdTransactionIdGenerator.getInstance().closeTransaction(CONNECTION_ID, transactionId);
         FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        FirebirdTransactionIdGenerator.getInstance().closeTransaction(CONNECTION_ID, transactionId);
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
         assertThrows(InvalidTransactionHandleException.class, executor::execute);
         verify(connectionSession, never()).finishPreparedStatementCache();
@@ -189,7 +241,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         Iterator<DatabasePacket> iterator = actual.iterator();
         assertThat(executor.getResponseType(), is(ResponseType.QUERY));
         assertThat(iterator.next(), isA(FirebirdSQLResponsePacket.class));
-        assertThat(iterator.next(), isA(FirebirdGenericResponsePacket.class));
+        assertThat(((FirebirdGenericResponsePacket) iterator.next()).getHandle(), is(transactionId));
         assertFalse(iterator.hasNext());
         assertThat(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID), is(proxyBackendHandler));
         verify(connectionSession).beginPreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(1));
@@ -204,7 +256,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), any(QueryContext.class), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(executor.getResponseType(), is(ResponseType.UPDATE));
-        assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle(), is(transactionId));
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(2);
         assertThat(preparedStatement.getAffectedRows(), is(7L));
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
@@ -213,14 +265,71 @@ class FirebirdExecuteStatementCommandExecutorTest {
     }
     
     @Test
-    void assertRejectUnclosedBlobParameter() {
+    void assertExecuteWithBackendErrorInFirstTransaction() throws SQLException {
+        int otherTransactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        ConnectionSession otherSession = FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, otherTransactionId);
+        assertThat(FirebirdTransactionSessionRegistry.getInstance().get(connectionSession, otherTransactionId), sameInstance(otherSession));
+        when(packet.getStatementId()).thenReturn(2);
+        when(proxyBackendHandler.execute()).thenThrow(new SQLException("violation of PRIMARY or UNIQUE KEY constraint \"INTEG_4\" on table \"T_PLAIN\"; "
+                + "Problematic key value is (\"ID\" = 57201)", "23000", ISCConstants.isc_unique_key_violation));
+        when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), any(QueryContext.class), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdExecuteStatementCommandExecutor(packet, connectionSession).execute().iterator().next();
+        assertThat(actual.getStatusVector().getSegments().size(), is(2));
+        assertThat(actual.getStatusVector().getSegments().get(0).getGdsCode(), is(ISCConstants.isc_unique_key_violation));
+        assertThat(actual.getStatusVector().getSegments().get(0).getArguments(), contains("INTEG_4", "T_PLAIN"));
+        assertThat(actual.getStatusVector().getSegments().get(1).getGdsCode(), is(ISCConstants.isc_random));
+        assertThat(actual.getStatusVector().getSegments().get(1).getArguments(), contains("Problematic key value is (\"ID\" = 57201)"));
+        assertTrue(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, transactionId));
+        assertTrue(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, otherTransactionId));
+        assertThat(FirebirdTransactionSessionRegistry.getInstance().get(connectionSession, otherTransactionId), sameInstance(otherSession));
+        verify(connectionSession).finishPreparedStatementCache();
+    }
+    
+    @Test
+    void assertExecuteCommitWithConcurrentTransaction() throws SQLException {
+        int otherTransactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        ConnectionSession otherSession = FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, otherTransactionId);
+        Collection<DatabasePacket> actual = executeTransactionControlStatement(new CommitStatement(DATABASE_TYPE));
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle(), is(0));
+        assertFalse(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, transactionId));
+        assertNull(FirebirdTransactionSessionRegistry.getInstance().get(connectionSession, transactionId));
+        assertTrue(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, otherTransactionId));
+        assertThat(FirebirdTransactionSessionRegistry.getInstance().get(connectionSession, otherTransactionId), sameInstance(otherSession));
+    }
+    
+    @Test
+    void assertExecuteRollbackClosesTransaction() throws SQLException {
+        Collection<DatabasePacket> actual = executeTransactionControlStatement(new RollbackStatement(DATABASE_TYPE));
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle(), is(0));
+        assertFalse(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, transactionId));
+        assertNull(FirebirdTransactionSessionRegistry.getInstance().get(connectionSession, transactionId));
+    }
+    
+    @Test
+    void assertExecuteRollbackToSavepointKeepsTransaction() throws SQLException {
+        Collection<DatabasePacket> actual = executeTransactionControlStatement(new RollbackStatement(DATABASE_TYPE, "savepoint"));
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle(), is(transactionId));
+        assertTrue(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, transactionId));
+    }
+    
+    private Collection<DatabasePacket> executeTransactionControlStatement(final SQLStatement sqlStatement) throws SQLException {
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(3,
+                new FirebirdServerPreparedStatement("transaction control", new CommonSQLStatementContext(sqlStatement), new HintValueContext()));
+        when(packet.getStatementId()).thenReturn(3);
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(sqlStatement));
+        when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), any(QueryContext.class), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
+        return new FirebirdExecuteStatementCommandExecutor(packet, connectionSession).execute();
+    }
+    
+    @Test
+    void assertRejectUnclosedBlobParameter() throws SQLException {
         int blobHandle = 7;
         long blobId = 11L;
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, transactionId, blobHandle, blobId, false);
         FirebirdBlobWriteCache.getInstance().appendSegment(CONNECTION_ID, blobHandle, new byte[]{1, 2});
         mockParameter(FirebirdBinaryColumnType.BLOB, blobId);
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
-        assertThrows(InvalidSegstrIdException.class, () -> executor.execute());
+        assertInvalidBlobId(executor.execute());
     }
     
     private void mockParameter(final FirebirdBinaryColumnType parameterType, final Object parameterValue) {
@@ -230,11 +339,11 @@ class FirebirdExecuteStatementCommandExecutorTest {
     }
     
     @Test
-    void assertRejectUnknownBlobParameter() {
+    void assertRejectUnknownBlobParameter() throws SQLException {
         long blobId = 13L;
         mockParameter(FirebirdBinaryColumnType.BLOB, blobId);
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
-        assertThrows(InvalidSegstrIdException.class, () -> executor.execute());
+        assertInvalidBlobId(executor.execute());
     }
     
     @Test
@@ -270,10 +379,17 @@ class FirebirdExecuteStatementCommandExecutorTest {
     }
     
     @Test
-    void assertRejectUnknownResultBlobParameter() {
+    void assertRejectUnknownResultBlobParameter() throws SQLException {
         mockParameter(FirebirdBinaryColumnType.BLOB, -1L);
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
-        assertThrows(InvalidSegstrIdException.class, () -> executor.execute());
+        assertInvalidBlobId(executor.execute());
+    }
+    
+    private void assertInvalidBlobId(final Collection<DatabasePacket> packets) {
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) packets.iterator().next();
+        assertThat(actual.getStatusVector().getSegments().size(), is(1));
+        assertThat(actual.getStatusVector().getSegments().get(0).getGdsCode(), is(ISCConstants.isc_bad_segstr_id));
+        assertTrue(actual.getStatusVector().getSegments().get(0).getArguments().isEmpty());
     }
     
     @Test
@@ -292,14 +408,14 @@ class FirebirdExecuteStatementCommandExecutorTest {
         int blobHandle = 13;
         long blobId = 17L;
         byte[] expectedBytes = new byte[]{3, 4};
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, transactionId, blobHandle, blobId, false);
         FirebirdBlobWriteCache.getInstance().appendSegment(CONNECTION_ID, blobHandle, expectedBytes);
         FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, blobHandle);
         mockParameter(FirebirdBinaryColumnType.BLOB, blobId);
         List<Object> actualParams = executeAndGetParameters();
         assertThat(actualParams.size(), is(1));
         assertThat(actualParams.get(0), is(expectedBytes));
-        assertFalse(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, blobId).isPresent());
+        assertFalse(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, transactionId, blobId).isPresent());
     }
     
     @Test

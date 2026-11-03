@@ -77,10 +77,10 @@ class FirebirdAttachPacketTest {
         when(payload.readString()).thenReturn("db");
         ByteBuf dpb = mock(ByteBuf.class);
         when(payload.readBuffer()).thenReturn(dpb);
-        when(dpb.readUnsignedByte()).thenReturn((short) 1, (short) FirebirdDatabaseParameterBufferType.LC_CTYPE.getCode(), (short) FirebirdDatabaseParameterBufferType.SPECIFIC_AUTH_DATA.getCode(),
-                (short) FirebirdDatabaseParameterBufferType.USER_NAME.getCode(), (short) FirebirdDatabaseParameterBufferType.PASSWORD_ENC.getCode());
+        when(dpb.readUnsignedByte()).thenReturn((short) 1, (short) FirebirdDatabaseParameterBufferType.LC_CTYPE.getCode(), (short) 4,
+                (short) FirebirdDatabaseParameterBufferType.SPECIFIC_AUTH_DATA.getCode(), (short) 2, (short) FirebirdDatabaseParameterBufferType.USER_NAME.getCode(), (short) 4,
+                (short) FirebirdDatabaseParameterBufferType.PASSWORD_ENC.getCode(), (short) 6);
         when(dpb.isReadable()).thenReturn(true, true, true, true, false);
-        when(dpb.readByte()).thenReturn((byte) 4, (byte) 2, (byte) 4, (byte) 6);
         ByteBuf encodingSlice = mock(ByteBuf.class);
         when(encodingSlice.toString(StandardCharsets.UTF_8)).thenReturn("UTF8");
         ByteBuf authDataSlice = mock(ByteBuf.class);

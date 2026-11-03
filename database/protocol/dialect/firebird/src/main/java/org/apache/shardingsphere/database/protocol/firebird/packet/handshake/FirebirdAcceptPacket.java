@@ -69,16 +69,29 @@ public final class FirebirdAcceptPacket extends FirebirdPacket {
         opCode = FirebirdCommandPacketType.ACCEPT_DATA;
     }
     
+    /**
+     * Check whether the selected protocol uses lazy sends.
+     *
+     * @return whether lazy sends are enabled
+     */
+    public boolean isLazySend() {
+        return LAZY_SEND == getType();
+    }
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         payload.writeInt4(opCode.getValue());
         payload.writeInt4(protocol.getVersion().getCode());
         payload.writeInt4(protocol.getArch().getCode());
-        int type = Math.min(protocol.getMaxType() & MASK, LAZY_SEND);
+        int type = getType();
         int compress = protocol.getMaxType() & COMPRESS;
         payload.writeInt4(type | compress);
         if (null != acceptDataPacket) {
             acceptDataPacket.write(payload);
         }
+    }
+    
+    private int getType() {
+        return Math.min(protocol.getMaxType() & MASK, LAZY_SEND);
     }
 }

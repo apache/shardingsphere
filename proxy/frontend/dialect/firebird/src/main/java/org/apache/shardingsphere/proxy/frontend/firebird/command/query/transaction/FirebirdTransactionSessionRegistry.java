@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 
 import java.sql.SQLException;
@@ -68,7 +70,7 @@ public final class FirebirdTransactionSessionRegistry {
                     continue;
                 }
                 ConnectionSession result = transactions.sessions.isEmpty() ? parent : newSession(parent);
-                transactions.sessions.put(handle, result);
+                transactions.sessions.put(handle & 0xFFFF, result);
                 return result;
             }
         }
@@ -93,7 +95,7 @@ public final class FirebirdTransactionSessionRegistry {
      */
     public ConnectionSession get(final ConnectionSession parent, final int handle) {
         Transactions transactions = connections.get(parent.getConnectionId());
-        return null == transactions ? null : transactions.sessions.get(handle);
+        return null == transactions ? null : transactions.sessions.get(handle & 0xFFFF);
     }
     
     /**
@@ -114,10 +116,14 @@ public final class FirebirdTransactionSessionRegistry {
             if (connections.get(connectionId) != transactions) {
                 return;
             }
-            removed = transactions.sessions.remove(handle);
+            removed = transactions.sessions.remove(handle & 0xFFFF);
             if (transactions.sessions.isEmpty()) {
                 connections.remove(connectionId, transactions);
             }
+        }
+        if (null != removed) {
+            FirebirdBlobWriteCache.getInstance().unregisterTransaction(connectionId, handle & 0xFFFF);
+            FirebirdBlobIdGenerator.getInstance().unregisterTransaction(connectionId, handle & 0xFFFF);
         }
         if (null != removed && removed != parent) {
             try {

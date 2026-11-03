@@ -124,6 +124,7 @@ class FirebirdParseBatchBlrTest {
         FirebirdParseBatchBlr actual = FirebirdParseBatchBlr.parseForFraming(blr, blr.readableBytes());
         assertThat(actual.getFields().size(), is(1));
         assertDescriptor(actual.getFields().get(0), FirebirdBinaryColumnType.BLOB, 8, expectedScale, 0);
+        assertThrows(DatabaseProtocolException.class, actual::validateSupported);
     }
     
     private static Stream<Arguments> validSingleFieldArguments() {

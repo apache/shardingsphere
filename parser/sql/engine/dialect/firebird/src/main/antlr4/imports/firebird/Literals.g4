@@ -25,7 +25,7 @@ UNDERSCORE_CHARSET
 
 IDENTIFIER_
     : [A-Za-z_$0-9\u0080-\uFFFF]*?[A-Za-z_$\u0080-\uFFFF]+?[A-Za-z_$0-9\u0080-\uFFFF]*
-    |  DQ_ ~'"'+ DQ_
+    |  DQ_ (DQ_ DQ_ | ~'"')+ DQ_
     ;
 
 STRING_

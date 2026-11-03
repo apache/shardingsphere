@@ -90,7 +90,7 @@ class FirebirdStartTransactionCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteAfterClosedTransactionExpectsNextHandle() {
+    void assertExecuteReusesClosedTransactionHandle() {
         int firstTransactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
         FirebirdTransactionIdGenerator.getInstance().closeTransaction(CONNECTION_ID, firstTransactionId);
         when(packet.isAutoCommit()).thenReturn(true);
@@ -98,6 +98,6 @@ class FirebirdStartTransactionCommandExecutorTest {
         when(packet.getIsolationLevel()).thenReturn(TransactionIsolationLevel.SERIALIZABLE);
         FirebirdStartTransactionCommandExecutor executor = new FirebirdStartTransactionCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
-        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle(), is(firstTransactionId + 1));
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle(), is(firstTransactionId));
     }
 }

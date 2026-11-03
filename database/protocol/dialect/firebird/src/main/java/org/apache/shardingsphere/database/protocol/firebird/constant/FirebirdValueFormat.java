@@ -38,7 +38,9 @@ public enum FirebirdValueFormat {
     
     STRING(4),
     
-    SIZED_INT(5);
+    SIZED_INT(5),
+    
+    SIZED_LONG(6);
     
     private final int code;
     

@@ -55,6 +55,7 @@ public final class FirebirdFetchStatementCache {
      *
      * @param connectionId connection ID
      */
+    @HighFrequencyInvocation
     public void registerConnection(final int connectionId) {
         statementRegistry.put(connectionId, new LinkedHashMap<>());
         owners.remove(connectionId);
@@ -119,6 +120,7 @@ public final class FirebirdFetchStatementCache {
      * @param connectionId connection ID
      * @param statementId statement ID
      */
+    @HighFrequencyInvocation
     public void unregisterStatement(final int connectionId, final int statementId) {
         Map<Integer, ProxyBackendHandler> statements = statementRegistry.get(connectionId);
         if (null != statements) {
@@ -157,6 +159,7 @@ public final class FirebirdFetchStatementCache {
      * @param connectionId connection ID
      */
     @SneakyThrows(SQLException.class)
+    @HighFrequencyInvocation
     public void unregisterConnection(final int connectionId) {
         owners.remove(connectionId);
         Map<Integer, ProxyBackendHandler> statements = statementRegistry.remove(connectionId);

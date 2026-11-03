@@ -33,4 +33,6 @@ public final class FirebirdConstant {
     public static final AttributeKey<Integer> CURRENT_CONNECTION = AttributeKey.valueOf("FIREBIRD_CURRENT_CONNECTION");
     
     public static final AttributeKey<String> ATTACHMENT_CHARSET = AttributeKey.valueOf("FIREBIRD_ATTACHMENT_CHARSET");
+    
+    public static final AttributeKey<Boolean> LAZY_SEND = AttributeKey.valueOf("FIREBIRD_LAZY_SEND");
 }

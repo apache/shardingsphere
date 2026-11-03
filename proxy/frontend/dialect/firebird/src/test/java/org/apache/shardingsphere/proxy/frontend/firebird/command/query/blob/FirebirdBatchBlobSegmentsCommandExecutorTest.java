@@ -73,7 +73,7 @@ class FirebirdBatchBlobSegmentsCommandExecutorTest {
     void assertExecute() {
         int blobHandle = 4;
         long blobId = 12L;
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, 0, blobHandle, blobId, false);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
         when(packet.getSegments()).thenReturn(Arrays.asList(new byte[]{1, 2}, new byte[]{3, 4, 5}));
         FirebirdBatchBlobSegmentsCommandExecutor executor = new FirebirdBatchBlobSegmentsCommandExecutor(packet, connectionSession);
@@ -82,20 +82,20 @@ class FirebirdBatchBlobSegmentsCommandExecutorTest {
         DatabasePacket response = actual.iterator().next();
         assertThat(response, isA(FirebirdGenericResponsePacket.class));
         assertThat(((FirebirdGenericResponsePacket) response).getId(), is(blobId));
-        assertThat(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, blobId).orElse(new byte[0]).length, is(5));
+        assertThat(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, 0, blobId).orElse(new byte[0]).length, is(5));
     }
     
     @Test
     void assertExecuteWithDeferredPlaceholderHandle() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
         long blobId = 21L;
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, 0, blobHandle, blobId, false);
         when(packet.getBlobHandle()).thenReturn(0xFFFF);
         when(packet.getSegments()).thenReturn(Arrays.asList(new byte[]{1}, new byte[]{2, 3}));
         FirebirdBatchBlobSegmentsCommandExecutor executor = new FirebirdBatchBlobSegmentsCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getId(), is(blobId));
-        assertThat(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, blobId).orElse(new byte[0]).length, is(3));
+        assertThat(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, 0, blobId).orElse(new byte[0]).length, is(3));
     }
     
     @Test
@@ -109,7 +109,7 @@ class FirebirdBatchBlobSegmentsCommandExecutorTest {
     void assertExecuteAfterClose() {
         int blobHandle = 4;
         long blobId = 12L;
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, 0, blobHandle, blobId, false);
         FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, blobHandle);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
         FirebirdBatchBlobSegmentsCommandExecutor executor = new FirebirdBatchBlobSegmentsCommandExecutor(packet, connectionSession);

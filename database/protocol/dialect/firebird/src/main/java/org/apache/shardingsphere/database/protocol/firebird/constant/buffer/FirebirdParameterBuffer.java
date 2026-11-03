@@ -31,6 +31,7 @@ import java.util.function.Function;
 /**
  * Firebird parameter buffer.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class FirebirdParameterBuffer {
     
@@ -64,10 +65,12 @@ public final class FirebirdParameterBuffer {
                 return parameterBuffer.readIntLE();
             case SIZED_INT:
                 return readSizedIntValue(parameterBuffer, traditionalStyle ? parameterBuffer.readUnsignedByte() : parameterBuffer.readIntLE());
+            case SIZED_LONG:
+                return readSizedLongValue(parameterBuffer, traditionalStyle ? parameterBuffer.readUnsignedByte() : parameterBuffer.readIntLE());
             case BOOLEAN:
                 return true;
             case STRING:
-                int length = traditionalStyle ? parameterBuffer.readByte() : parameterBuffer.readIntLE();
+                int length = traditionalStyle ? parameterBuffer.readUnsignedByte() : parameterBuffer.readIntLE();
                 return parameterBuffer.readSlice(length).toString(StandardCharsets.UTF_8);
             default:
                 throw new DatabaseProtocolException("Unsupported format type %s", type.getFormat().name());
@@ -79,6 +82,17 @@ public final class FirebirdParameterBuffer {
         int result = 0;
         for (int i = 0; i < length; i++) {
             result |= parameterBuffer.readUnsignedByte() << (i * Byte.SIZE);
+        }
+        return result;
+    }
+    
+    private long readSizedLongValue(final ByteBuf parameterBuffer, final int length) {
+        if (length > Long.BYTES) {
+            throw new DatabaseProtocolException("Invalid long value length %d", length);
+        }
+        long result = 0;
+        for (int i = 0; i < length; i++) {
+            result |= (long) parameterBuffer.readUnsignedByte() << (i * Byte.SIZE);
         }
         return result;
     }

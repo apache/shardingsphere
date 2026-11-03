@@ -50,10 +50,12 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 /**
  * Command packet factory for Firebird.
  */
+@HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdCommandPacketFactory {
     
@@ -142,6 +144,12 @@ public final class FirebirdCommandPacketFactory {
      */
     public static int getExpectedLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion, final int connectionId) {
         switch (commandPacketType) {
+            case CONNECT:
+                return getConnectPacketLength(payload);
+            case ATTACH:
+                return getBufferPacketLength(payload, 8, 2);
+            case CONT_AUTH:
+                return getBufferPacketLength(payload, 4, 4);
             case INFO_DATABASE:
             case INFO_SQL:
             case INFO_BLOB:
@@ -200,5 +208,19 @@ public final class FirebirdCommandPacketFactory {
             default:
                 return 0;
         }
+    }
+    
+    private static int getConnectPacketLength(final FirebirdPacketPayload payload) {
+        int protocolCountOffset = 16 + payload.getBufferLength(16);
+        int protocolCount = payload.getByteBuf().getInt(protocolCountOffset) & 0xFFFF;
+        return getBufferPacketLength(payload, protocolCountOffset + 4, 1) + protocolCount * 20;
+    }
+    
+    private static int getBufferPacketLength(final FirebirdPacketPayload payload, final int initialLength, final int bufferCount) {
+        int result = initialLength;
+        for (int i = 0; i < bufferCount; i++) {
+            result += payload.getBufferLength(result);
+        }
+        return result;
     }
 }

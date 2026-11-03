@@ -21,6 +21,8 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -37,6 +39,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -45,6 +48,56 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 class FirebirdTransactionSessionRegistryTest {
+    
+    @Test
+    void assertSignedTransactionHandle() throws SQLException {
+        int connectionId = 10925;
+        ConnectionSession parent = mock(ConnectionSession.class);
+        when(parent.getConnectionId()).thenReturn(connectionId);
+        FirebirdTransactionSessionRegistry actualRegistry = FirebirdTransactionSessionRegistry.getInstance();
+        try {
+            actualRegistry.register(parent, 32768);
+            assertThat(actualRegistry.get(parent, -32768), sameInstance(parent));
+            actualRegistry.unregister(parent, -32768);
+            assertNull(actualRegistry.get(parent, 32768));
+        } finally {
+            actualRegistry.unregisterConnection(connectionId);
+        }
+    }
+    
+    @Test
+    void assertUnregisterRemovesOnlyTheFinishedTransactionBlobs() throws SQLException {
+        int connectionId = 924;
+        ConnectionSession parent = new ConnectionSession(mock(DatabaseType.class), null);
+        parent.setConnectionId(connectionId);
+        parent.setGrantee(mock(Grantee.class));
+        parent.setCurrentDatabaseName("db");
+        FirebirdTransactionSessionRegistry actualRegistry = FirebirdTransactionSessionRegistry.getInstance();
+        FirebirdBlobWriteCache actualBlobs = FirebirdBlobWriteCache.getInstance();
+        FirebirdBlobIdGenerator actualIds = FirebirdBlobIdGenerator.getInstance();
+        actualBlobs.registerConnection(connectionId);
+        actualIds.registerConnection(connectionId);
+        try {
+            actualRegistry.register(parent, 1);
+            actualRegistry.register(parent, 2);
+            assertThat(actualIds.nextBlobId(connectionId, 1), is(1L));
+            assertThat(actualIds.nextBlobId(connectionId, 2), is(1L));
+            actualBlobs.registerBlob(connectionId, 1, 11, 1L, false);
+            actualBlobs.registerBlob(connectionId, 2, 12, 1L, false);
+            actualBlobs.closeWrite(connectionId, 11);
+            actualBlobs.closeWrite(connectionId, 12);
+            actualRegistry.unregister(parent, 1);
+            assertFalse(actualBlobs.isClosed(connectionId, 1, 1L));
+            assertTrue(actualBlobs.isClosed(connectionId, 2, 1L));
+            assertThat(actualIds.nextBlobId(connectionId, 2), is(2L));
+            actualRegistry.unregister(parent, 2);
+            assertFalse(actualBlobs.isClosed(connectionId, 2, 1L));
+        } finally {
+            actualRegistry.unregisterConnection(connectionId);
+            actualBlobs.unregisterConnection(connectionId);
+            actualIds.unregisterConnection(connectionId);
+        }
+    }
     
     @Test
     void assertConcurrentTransactionsHaveIndependentSessions() throws SQLException {
@@ -92,9 +145,11 @@ class FirebirdTransactionSessionRegistryTest {
             Future<ConnectionSession> slow = executor.submit(() -> registry.register(first, 1));
             assertTrue(entered.await(5, TimeUnit.SECONDS));
             Future<ConnectionSession> independent = executor.submit(() -> registry.register(second, 1));
-            assertThat(independent.get(5, TimeUnit.SECONDS), sameInstance(second));
+            ConnectionSession actualIndependent = independent.get(5, TimeUnit.SECONDS);
+            assertThat(actualIndependent, sameInstance(second));
             release.countDown();
-            assertThat(slow.get(5, TimeUnit.SECONDS), sameInstance(first));
+            ConnectionSession actualSlow = slow.get(5, TimeUnit.SECONDS);
+            assertThat(actualSlow, sameInstance(first));
         } finally {
             release.countDown();
             executor.shutdown();

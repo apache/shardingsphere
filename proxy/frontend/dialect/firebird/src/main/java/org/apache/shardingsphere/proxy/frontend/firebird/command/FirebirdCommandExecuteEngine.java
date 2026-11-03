@@ -18,12 +18,15 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdStatusVector;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
@@ -37,8 +40,11 @@ import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.firebirdsql.gds.ISCConstants;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -64,6 +70,13 @@ public final class FirebirdCommandExecuteEngine implements CommandExecuteEngine 
     
     @Override
     public FirebirdPacket getErrorPacket(final Exception cause) {
+        if (cause instanceof InvalidParameterValueException && "lc_ctype".equals(((InvalidParameterValueException) cause).getParameterName())) {
+            String charsetName = ((InvalidParameterValueException) cause).getParameterValue();
+            int errorCode = "OCTETS".equalsIgnoreCase(charsetName) || "BINARY".equalsIgnoreCase(charsetName) ? ISCConstants.isc_invalid_attachment_charset : ISCConstants.isc_charset_not_found;
+            return FirebirdGenericResponsePacket.getPacket().setStatusVector(FirebirdStatusVector.fromSegments(Arrays.asList(
+                    new FirebirdStatusVector.Segment(ISCConstants.isc_bad_dpb_content, Collections.emptyList(), null),
+                    FirebirdStatusVector.Segment.withArguments(errorCode, Collections.singletonList(FirebirdStatusVector.Argument.ofString(charsetName)), null))));
+        }
         return FirebirdErrorPacketFactory.newInstance(cause);
     }
     

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.admi
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 /**
  * Firebird cancel command packet.
@@ -29,6 +30,7 @@ public final class FirebirdCancelCommandPacket extends FirebirdCommandPacket {
     
     private final int kind;
     
+    @HighFrequencyInvocation
     public FirebirdCancelCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         kind = payload.readInt4();
@@ -43,6 +45,7 @@ public final class FirebirdCancelCommandPacket extends FirebirdCommandPacket {
      *
      * @return length of packet
      */
+    @HighFrequencyInvocation
     public static int getLength() {
         return 8;
     }

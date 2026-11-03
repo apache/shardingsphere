@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacke
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -63,6 +64,7 @@ public final class FirebirdDatabaseInfoReturnPacket extends FirebirdPacket {
     private final int attachmentCharsetId;
     
     @Override
+    @HighFrequencyInvocation
     protected void write(final FirebirdPacketPayload payload) {
         for (FirebirdInfoPacketType type : infoItems) {
             if (FirebirdCommonInfoPacketType.END == type) {
@@ -112,6 +114,7 @@ public final class FirebirdDatabaseInfoReturnPacket extends FirebirdPacket {
         }
     }
     
+    @HighFrequencyInvocation
     private void writeUnknownInfo(final FirebirdPacketPayload payload, final int code) {
         payload.writeInt1(FirebirdCommonInfoPacketType.ERROR.getCode());
         payload.writeInt2LE(5);

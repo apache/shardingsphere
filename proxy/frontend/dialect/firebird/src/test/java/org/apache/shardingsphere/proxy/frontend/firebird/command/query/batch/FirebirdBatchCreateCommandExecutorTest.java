@@ -35,12 +35,14 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 import org.firebirdsql.gds.BlrConstants;
+import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -121,6 +123,41 @@ class FirebirdBatchCreateCommandExecutorTest {
         assertThat(actualBatchStatement.getColumnDescriptors().get(0).getOffset(), is(0));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(ints = {0, 2, 255})
+    void assertExecuteWithInvalidBatchParameterVersion(final int version) {
+        mockPreparedStatement();
+        when(packet.getBatchBlr()).thenReturn(createBatchBlr());
+        when(packet.getBatchMessageLength()).thenReturn(6L);
+        when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{(byte) version}));
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute().iterator().next();
+        assertThat(actual.getStatusVector().getSegments().size(), is(1));
+        assertThat(actual.getStatusVector().getSegments().get(0).getGdsCode(), is(ISCConstants.isc_batch_param_version));
+        assertThat(actual.getStatusVector().getSegments().get(0).getTypedArguments().size(), is(2));
+        assertThat(actual.getStatusVector().getSegments().get(0).getTypedArguments().get(0).getType(), is(ISCConstants.isc_arg_number));
+        assertThat(actual.getStatusVector().getSegments().get(0).getTypedArguments().get(0).getNumber(), is(version));
+        assertThat(actual.getStatusVector().getSegments().get(0).getTypedArguments().get(1).getType(), is(ISCConstants.isc_arg_number));
+        assertThat(actual.getStatusVector().getSegments().get(0).getTypedArguments().get(1).getNumber(), is(BATCH_VERSION_1));
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
+    }
+    
+    @Test
+    void assertInvalidBatchVersionIsReportedBeforeUnsupportedBlobField() {
+        mockPreparedStatement();
+        when(packet.getBatchBlr()).thenReturn(createBlobBatchBlr());
+        when(packet.getBatchMessageLength()).thenReturn(10L);
+        when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{2}));
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute().iterator().next();
+        assertThat(actual.getStatusVector().getSegments().size(), is(1));
+        assertThat(actual.getStatusVector().getSegments().get(0).getGdsCode(), is(ISCConstants.isc_batch_param_version));
+        assertThat(actual.getStatusVector().getSegments().get(0).getTypedArguments().size(), is(2));
+        assertThat(actual.getStatusVector().getSegments().get(0).getTypedArguments().get(0).getType(), is(ISCConstants.isc_arg_number));
+        assertThat(actual.getStatusVector().getSegments().get(0).getTypedArguments().get(0).getNumber(), is(2));
+        assertThat(actual.getStatusVector().getSegments().get(0).getTypedArguments().get(1).getType(), is(ISCConstants.isc_arg_number));
+        assertThat(actual.getStatusVector().getSegments().get(0).getTypedArguments().get(1).getNumber(), is(BATCH_VERSION_1));
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
+    }
+    
     private void mockPreparedStatement() {
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
@@ -185,6 +222,8 @@ class FirebirdBatchCreateCommandExecutorTest {
     void assertExecuteWhenBatchBlrContainsBlob() {
         mockPreparedStatement();
         when(packet.getBatchBlr()).thenReturn(createBlobBatchBlr());
+        when(packet.getBatchMessageLength()).thenReturn(10L);
+        when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.EMPTY_BUFFER);
         DatabaseProtocolException actual = assertThrows(DatabaseProtocolException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
         assertThat(actual.getMessage(), is("BLOB fields are not supported in Firebird batch operations"));
         assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
@@ -194,6 +233,8 @@ class FirebirdBatchCreateCommandExecutorTest {
     void assertBlobBatchCreateProducesFirebirdErrorResponseWithoutClosingChannel() {
         mockPreparedStatement();
         when(packet.getBatchBlr()).thenReturn(createBlobBatchBlr());
+        when(packet.getBatchMessageLength()).thenReturn(10L);
+        when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.EMPTY_BUFFER);
         DatabaseProtocolException cause = assertThrows(DatabaseProtocolException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
         FirebirdGenericResponsePacket errorPacket = (FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(cause);
         assertThat(errorPacket.getErrorMessage(), containsString("BLOB fields are not supported in Firebird batch operations"));

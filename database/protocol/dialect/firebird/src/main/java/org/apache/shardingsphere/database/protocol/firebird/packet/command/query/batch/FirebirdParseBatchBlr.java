@@ -55,12 +55,12 @@ public final class FirebirdParseBatchBlr {
      */
     public static FirebirdParseBatchBlr parse(final ByteBuf blr, final int blrLength) {
         FirebirdParseBatchBlr result = parseForFraming(blr, blrLength);
-        validateSupported(result.fields);
+        result.validateSupported();
         return result;
     }
     
     /**
-     * Parse a BLR message buffer into its message format for codec framing only, without semantic support validation.
+     * Parse a BLR message buffer into its message format without semantic support validation.
      *
      * <p>Used by the packet codec to split a coalesced {@code BATCH_CREATE + BATCH_MSG} frame. Semantically unsupported
      * but structurally valid fields (such as BLOB) are returned as descriptors instead of being rejected here, so that the
@@ -99,7 +99,12 @@ public final class FirebirdParseBatchBlr {
         return blrLength - (buffer.readerIndex() - startReaderIndex);
     }
     
-    private static void validateSupported(final List<FirebirdBatchColumnDescriptor> fields) {
+    /**
+     * Validate that every field is supported by batch operations.
+     *
+     * @throws DatabaseProtocolException when a field type is not supported
+     */
+    public void validateSupported() {
         for (FirebirdBatchColumnDescriptor each : fields) {
             // TODO Implement BATCH_REGBLOB, BATCH_BLOB_STREAM and BATCH_SET_BPB before accepting BLOB fields.
             ShardingSpherePreconditions.checkState(FirebirdBinaryColumnType.BLOB != each.getType(), () -> new DatabaseProtocolException("BLOB fields are not supported in Firebird batch operations"));

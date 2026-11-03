@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.gene
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.OptionalLong;
 
 /**
  * Cancel blob command executor for Firebird.
@@ -45,10 +44,7 @@ public final class FirebirdCancelBlobCommandExecutor implements CommandExecutor 
     @Override
     public Collection<DatabasePacket> execute() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
-        OptionalLong blobId = FirebirdBlobWriteCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
-        if (blobId.isPresent()) {
-            FirebirdBlobWriteCache.getInstance().removeWrite(connectionSession.getConnectionId(), blobId.getAsLong());
-        }
+        FirebirdBlobWriteCache.getInstance().removeWriteByHandle(connectionSession.getConnectionId(), blobHandle);
         FirebirdBlobReadCache.getInstance().removeBlob(connectionSession.getConnectionId(), blobHandle);
         FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(connectionSession.getConnectionId(), blobHandle);
         return Collections.singleton(new FirebirdGenericResponsePacket());
