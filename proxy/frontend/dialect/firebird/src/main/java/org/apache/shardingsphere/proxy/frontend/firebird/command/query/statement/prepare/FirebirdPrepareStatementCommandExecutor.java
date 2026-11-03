@@ -123,6 +123,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private static final int MAX_VARCHAR_LENGTH = 32765;
     
+    private static final int MAX_CHAR_LENGTH = 32767;
+    
     private static final int MAX_BYTES_PER_CHARACTER = 4;
     
     private static final int MAX_FLOAT_PRECISION = 24;
@@ -173,7 +175,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         FirebirdServerPreparedStatement serverPreparedStatement = new FirebirdServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
-        return createResponse(sqlStatementContext);
+        return createResponse(sqlStatementContext, serverPreparedStatement.getExactNumericParameterIndexes());
     }
     
     private SQLStatement resolveCurrentDatabase(final SQLStatement sqlStatement) {
@@ -189,7 +191,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return packet.isValidStatementHandle() ? packet.getStatementId() : FirebirdStatementIdGenerator.getInstance().getStatementId(connectionSession.getConnectionId());
     }
     
-    private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext) {
+    private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext, final Collection<Integer> exactNumericParameterIndexes) {
         FirebirdSQLInfoReturnValue statementType = getFirebirdStatementType(sqlStatementContext.getSqlStatement());
         FirebirdPrepareStatementReturnPacket returnPacket = new FirebirdPrepareStatementReturnPacket();
         while (packet.nextItem()) {
@@ -199,14 +201,14 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                     break;
                 case SELECT:
                     if (statementType.isSelectDescribable()) {
-                        processDescribe(sqlStatementContext, returnPacket.getDescribeSelect(), true);
+                        processDescribe(sqlStatementContext, returnPacket.getDescribeSelect(), true, exactNumericParameterIndexes);
                     } else {
                         skipDescribe();
                     }
                     break;
                 case BIND:
                     if (statementType.isBindDescribable()) {
-                        processDescribe(sqlStatementContext, returnPacket.getDescribeBind(), false);
+                        processDescribe(sqlStatementContext, returnPacket.getDescribeBind(), false, exactNumericParameterIndexes);
                     } else {
                         skipDescribe();
                     }
@@ -261,7 +263,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
-    private void processDescribe(final SQLStatementContext sqlStatementContext, final Collection<FirebirdReturnColumnPacket> describeColumns, final boolean returnAll) {
+    private void processDescribe(final SQLStatementContext sqlStatementContext, final Collection<FirebirdReturnColumnPacket> describeColumns, final boolean returnAll,
+                                 final Collection<Integer> exactNumericParameterIndexes) {
         // TODO add exception if the first item is not DESCRIBE_VARS
         packet.nextItem();
         Collection<FirebirdSQLInfoPacketType> requestedItems = new LinkedList<>();
@@ -273,7 +276,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 if (returnAll) {
                     processReturnValues(sqlStatementContext, database, schema, describeColumns, requestedItems);
                 } else {
-                    processParameters(sqlStatementContext, database, schema, describeColumns, requestedItems);
+                    processParameters(sqlStatementContext, database, schema, describeColumns, requestedItems, exactNumericParameterIndexes);
                 }
                 return;
             }
@@ -404,7 +407,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private void processParameters(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                    final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
-                                   final Collection<FirebirdSQLInfoPacketType> requestedItems) {
+                                   final Collection<FirebirdSQLInfoPacketType> requestedItems, final Collection<Integer> exactNumericParameterIndexes) {
         if (sqlStatementContext instanceof InsertStatementContext && !((InsertStatementContext) sqlStatementContext).getSqlStatement().getInsertSelect().isPresent()) {
             processInsertStatement((InsertStatementContext) sqlStatementContext, database, schema, describeColumns, requestedItems);
             return;
@@ -417,7 +420,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             if (null != columnSegment) {
                 ShardingSphereTable table = getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue(), database, schema);
                 ShardingSphereColumn column = table.getColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue());
-                if (null != column && isTextBoundDataType(column.getDataType())) {
+                if (null != column && isExactNumericDataType(column.getDataType())) {
+                    exactNumericParameterIndexes.add(i);
+                    processUnknownParameter(describeColumns, requestedItems, i + 1);
+                } else if (null != column && Types.TIME_WITH_TIMEZONE == column.getDataType()) {
                     processUnknownParameter(describeColumns, requestedItems, i + 1);
                 } else {
                     processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), i + 1);
@@ -585,8 +591,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
-    private boolean isTextBoundDataType(final int dataType) {
-        return Types.DECIMAL == dataType || Types.NUMERIC == dataType || Types.TIME_WITH_TIMEZONE == dataType;
+    private boolean isExactNumericDataType(final int dataType) {
+        return Types.DECIMAL == dataType || Types.NUMERIC == dataType;
     }
     
     private void processCastParameter(final DataTypeSegment dataType, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,
@@ -598,14 +604,15 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         ShardingSphereColumn column = new ShardingSphereColumn(null, castDataType.get(), false, false, true, true, false, false);
         String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
-        int columnLength = dataType.getDataTypeLength().map(each -> Math.min(each.getPrecision() * MAX_BYTES_PER_CHARACTER, MAX_VARCHAR_LENGTH))
+        int maxColumnLength = Types.CHAR == castDataType.get() ? MAX_CHAR_LENGTH : MAX_VARCHAR_LENGTH;
+        int columnLength = dataType.getDataTypeLength().map(optional -> Math.min(optional.getPrecision() * MAX_BYTES_PER_CHARACTER, maxColumnLength))
                 .orElse(Types.CHAR == castDataType.get() ? MAX_BYTES_PER_CHARACTER : MAX_VARCHAR_LENGTH);
         describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, LITERAL_TABLE, column, null, null, owner, columnLength, false, null));
     }
     
     private Optional<Integer> findCastDataType(final DataTypeSegment dataType) {
         String dataTypeName = dataType.getDataTypeName().toUpperCase(Locale.ENGLISH);
-        if (dataTypeName.startsWith("BLOB")) {
+        if ("BLOB".equals(dataTypeName) || dataTypeName.startsWith("BLOB ")) {
             return Optional.of(Types.BLOB);
         }
         if ("FLOAT".equals(dataTypeName) && dataType.getDataTypeLength().map(DataTypeLengthSegment::getPrecision).orElse(0) > MAX_FLOAT_PRECISION) {

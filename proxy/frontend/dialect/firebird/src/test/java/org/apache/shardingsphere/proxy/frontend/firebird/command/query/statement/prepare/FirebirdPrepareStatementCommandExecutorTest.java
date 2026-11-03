@@ -77,6 +77,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -514,12 +515,12 @@ class FirebirdPrepareStatementCommandExecutorTest {
     
     @Test
     void assertDescribeCharacterCastParametersWithMultibyteLength() throws Exception {
-        when(packet.getSQL()).thenReturn("SELECT CAST(? AS VARCHAR(5) CHARACTER SET UTF8), CAST(? AS CHAR), CAST(? AS VARCHAR(10000)) FROM foo_tbl");
+        when(packet.getSQL()).thenReturn("SELECT CAST(? AS VARCHAR(5) CHARACTER SET UTF8), CAST(? AS CHAR), CAST(? AS VARCHAR(10000)), CAST(? AS CHAR(32767) CHARACTER SET ISO8859_1) FROM foo_tbl");
         when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
         when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
                 FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
-        assertThat(actualReturnPacket.getDescribeBind().size(), is(3));
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(4));
         FirebirdPacketPayload varcharPayload = mock(FirebirdPacketPayload.class);
         actualReturnPacket.getDescribeBind().get(0).write(varcharPayload);
         verify(varcharPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
@@ -530,6 +531,27 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPacketPayload maxVarcharPayload = mock(FirebirdPacketPayload.class);
         actualReturnPacket.getDescribeBind().get(2).write(maxVarcharPayload);
         verify(maxVarcharPayload).writeInt4LE(32765);
+        FirebirdPacketPayload maxCharPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(3).write(maxCharPayload);
+        verify(maxCharPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        verify(maxCharPayload).writeInt4LE(32767);
+    }
+    
+    @Test
+    void assertDescribeBlobAndDomainCastParameters() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT CAST(? AS BLOB SUB_TYPE TEXT), CAST(? AS BLOB_NUMBER) FROM foo_tbl");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(2));
+        FirebirdPacketPayload blobPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(0).write(blobPayload);
+        verify(blobPayload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
+        FirebirdPacketPayload domainPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(1).write(domainPayload);
+        verify(domainPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        verify(domainPayload).writeInt4LE(32765);
     }
     
     @Test
@@ -550,6 +572,8 @@ class FirebirdPrepareStatementCommandExecutorTest {
             verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
             verify(payload).writeInt4LE(32765);
         }
+        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+        assertThat(preparedStatement.getExactNumericParameterIndexes(), is(new HashSet<>(Arrays.asList(0, 1))));
     }
     
     @Test

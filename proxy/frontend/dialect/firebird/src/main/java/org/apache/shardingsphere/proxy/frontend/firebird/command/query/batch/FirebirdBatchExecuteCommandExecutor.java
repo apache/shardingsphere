@@ -34,6 +34,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transacti
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @RequiredArgsConstructor
 public final class FirebirdBatchExecuteCommandExecutor implements CommandExecutor {
@@ -53,6 +54,9 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
             return Collections.singleton(new FirebirdBatchCompletionStateResponse().setHandle(packet.getStatementHandle()).setRecordsCount(0).setUpdateCounts(new int[0]));
         }
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(batchStatement.getStatementHandle());
+        for (List<Object> each : batchStatement.getParameterValues()) {
+            preparedStatement.convertExactNumericParameters(each);
+        }
         FirebirdBatchedStatementsExecutor executor = new FirebirdBatchedStatementsExecutor(connectionSession, preparedStatement, batchStatement.getParameterValues(), batchStatement.isMultiError());
         FirebirdBatchCompletion completion = executor.executeBatch();
         batchStatementManager.resetBatchStatement(batchStatement);
