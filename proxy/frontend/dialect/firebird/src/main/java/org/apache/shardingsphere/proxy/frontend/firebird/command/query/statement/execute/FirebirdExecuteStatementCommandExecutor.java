@@ -200,7 +200,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
     }
     
     private FirebirdSQLResponsePacket getSQLResponse() throws SQLException {
-        return new FirebirdSQLResponsePacket(FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData()));
+        return new FirebirdSQLResponsePacket(FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData(), packet.getReturnColumns()));
     }
     
     @HighFrequencyInvocation

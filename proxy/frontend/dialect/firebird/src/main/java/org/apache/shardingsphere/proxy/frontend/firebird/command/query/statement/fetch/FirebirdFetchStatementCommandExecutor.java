@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch;
 
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdFetchResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -32,11 +33,16 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Firebird fetch statement command executor.
  */
 public final class FirebirdFetchStatementCommandExecutor implements QueryCommandExecutor {
+    
+    private final int connectionId;
+    
+    private final int statementId;
     
     private final ConnectionSession connectionSession;
     
@@ -48,10 +54,15 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
     
     @HighFrequencyInvocation
     public FirebirdFetchStatementCommandExecutor(final FirebirdFetchStatementPacket packet, final ConnectionSession connectionSession) {
-        int statementId = packet.getStatementId() & 0xFFFF;
-        ConnectionSession owner = FirebirdFetchStatementCache.getInstance().getOwner(connectionSession.getConnectionId(), statementId);
+        connectionId = connectionSession.getConnectionId();
+        statementId = packet.getStatementId() & 0xFFFF;
+        ConnectionSession owner = FirebirdFetchStatementCache.getInstance().getOwner(connectionId, statementId);
         this.connectionSession = null == owner ? connectionSession : owner;
-        proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), statementId);
+        proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionId, statementId);
+        List<FirebirdBinaryColumnType> columnTypes = packet.getParameterTypes();
+        if (!columnTypes.isEmpty()) {
+            FirebirdFetchStatementCache.getInstance().registerColumnTypes(connectionId, statementId, columnTypes);
+        }
         fetchCount = packet.getFetchSize();
     }
     
@@ -91,7 +102,8 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
             return FirebirdFetchResponsePacket.getFetchEndPacket();
         }
         if (proxyBackendHandler.next()) {
-            return FirebirdFetchResponsePacket.getFetchRowPacket(FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData()));
+            return FirebirdFetchResponsePacket.getFetchRowPacket(FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData(),
+                    FirebirdFetchStatementCache.getInstance().getColumnTypes(connectionId, statementId)));
         }
         connectionSession.getDatabaseConnectionManager().unmarkResourceInUse(proxyBackendHandler);
         fetchCount = -1;

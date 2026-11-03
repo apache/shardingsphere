@@ -151,6 +151,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, transactionId);
         when(packet.getStatementId()).thenReturn(STATEMENT_ID);
         when(packet.getTransactionId()).thenReturn(transactionId);
+        when(packet.getReturnColumns()).thenReturn(Collections.emptyList());
         ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
@@ -231,16 +232,18 @@ class FirebirdExecuteStatementCommandExecutorTest {
     @Test
     void assertIsQueryResponse() throws SQLException {
         when(packet.isStoredProcedure()).thenReturn(true);
+        when(packet.getReturnColumns()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.BLOB));
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
         when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(queryHeader)));
         when(proxyBackendHandler.next()).thenReturn(true);
-        QueryResponseRow row = new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1)));
+        QueryResponseRow row = new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.SMALLINT, (short) 0)));
         when(proxyBackendHandler.getRowData()).thenReturn(row);
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), any(QueryContext.class), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
         Collection<DatabasePacket> actual = executor.execute();
         Iterator<DatabasePacket> iterator = actual.iterator();
         assertThat(executor.getResponseType(), is(ResponseType.QUERY));
-        assertThat(iterator.next(), isA(FirebirdSQLResponsePacket.class));
+        FirebirdSQLResponsePacket actualResponsePacket = (FirebirdSQLResponsePacket) iterator.next();
+        assertThat(actualResponsePacket.getData().getCells().iterator().next().getColumnType(), is(FirebirdBinaryColumnType.BLOB));
         assertThat(((FirebirdGenericResponsePacket) iterator.next()).getHandle(), is(transactionId));
         assertFalse(iterator.hasNext());
         assertThat(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID), is(proxyBackendHandler));

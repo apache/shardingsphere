@@ -20,12 +20,15 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -40,6 +43,8 @@ public final class FirebirdFetchStatementCache {
     private final Map<Integer, Map<Integer, ProxyBackendHandler>> statementRegistry = new ConcurrentHashMap<>();
     
     private final Map<Integer, Map<Integer, ConnectionSession>> owners = new ConcurrentHashMap<>();
+    
+    private final Map<Integer, Map<Integer, List<FirebirdBinaryColumnType>>> columnTypes = new ConcurrentHashMap<>();
     
     /**
      * Get fetch statement registry instance.
@@ -59,6 +64,7 @@ public final class FirebirdFetchStatementCache {
     public void registerConnection(final int connectionId) {
         statementRegistry.put(connectionId, new LinkedHashMap<>());
         owners.remove(connectionId);
+        columnTypes.remove(connectionId);
     }
     
     /**
@@ -72,6 +78,10 @@ public final class FirebirdFetchStatementCache {
         Map<Integer, ProxyBackendHandler> statements = statementRegistry.get(connectionId);
         if (null != statements) {
             statements.put(statementId, proxyBackendHandler);
+        }
+        Map<Integer, List<FirebirdBinaryColumnType>> connectionColumnTypes = columnTypes.get(connectionId);
+        if (null != connectionColumnTypes) {
+            connectionColumnTypes.remove(statementId);
         }
     }
     
@@ -103,6 +113,31 @@ public final class FirebirdFetchStatementCache {
     }
     
     /**
+     * Register column types from the client message BLR.
+     *
+     * @param connectionId connection ID
+     * @param statementId statement ID
+     * @param types column types from the client message BLR
+     */
+    @HighFrequencyInvocation
+    void registerColumnTypes(final int connectionId, final int statementId, final List<FirebirdBinaryColumnType> types) {
+        columnTypes.computeIfAbsent(connectionId, ignored -> new LinkedHashMap<>()).put(statementId, types);
+    }
+    
+    /**
+     * Get column types from the client message BLR.
+     *
+     * @param connectionId connection ID
+     * @param statementId statement ID
+     * @return column types from the client message BLR, or an empty list when the client did not send it
+     */
+    @HighFrequencyInvocation
+    List<FirebirdBinaryColumnType> getColumnTypes(final int connectionId, final int statementId) {
+        Map<Integer, List<FirebirdBinaryColumnType>> connectionColumnTypes = columnTypes.get(connectionId);
+        return null == connectionColumnTypes ? Collections.emptyList() : connectionColumnTypes.getOrDefault(statementId, Collections.emptyList());
+    }
+    
+    /**
      * Get fetch response packets for statement ID.
      *
      * @param connectionId connection ID
@@ -130,6 +165,10 @@ public final class FirebirdFetchStatementCache {
         if (null != connectionOwners) {
             connectionOwners.remove(statementId);
         }
+        Map<Integer, List<FirebirdBinaryColumnType>> connectionColumnTypes = columnTypes.get(connectionId);
+        if (null != connectionColumnTypes) {
+            connectionColumnTypes.remove(statementId);
+        }
     }
     
     /**
@@ -142,12 +181,16 @@ public final class FirebirdFetchStatementCache {
     public void unregisterOwner(final int connectionId, final ConnectionSession owner) {
         Map<Integer, ConnectionSession> connectionOwners = owners.get(connectionId);
         Map<Integer, ProxyBackendHandler> statements = statementRegistry.get(connectionId);
+        Map<Integer, List<FirebirdBinaryColumnType>> connectionColumnTypes = columnTypes.get(connectionId);
         if (null != connectionOwners && null != statements) {
             connectionOwners.entrySet().removeIf(entry -> {
                 if (entry.getValue() != owner) {
                     return false;
                 }
                 statements.remove(entry.getKey());
+                if (null != connectionColumnTypes) {
+                    connectionColumnTypes.remove(entry.getKey());
+                }
                 return true;
             });
         }
@@ -162,6 +205,7 @@ public final class FirebirdFetchStatementCache {
     @HighFrequencyInvocation
     public void unregisterConnection(final int connectionId) {
         owners.remove(connectionId);
+        columnTypes.remove(connectionId);
         Map<Integer, ProxyBackendHandler> statements = statementRegistry.remove(connectionId);
         if (null == statements) {
             return;

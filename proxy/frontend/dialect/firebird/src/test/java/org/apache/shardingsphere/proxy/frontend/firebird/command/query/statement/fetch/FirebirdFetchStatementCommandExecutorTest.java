@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch;
 
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdFetchResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -46,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -76,6 +78,7 @@ class FirebirdFetchStatementCommandExecutorTest {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         when(packet.getStatementId()).thenReturn(STATEMENT_ID);
+        lenient().when(packet.getParameterTypes()).thenReturn(Collections.emptyList());
     }
     
     @AfterEach
@@ -145,6 +148,22 @@ class FirebirdFetchStatementCommandExecutorTest {
         assertTrue(executor.next());
         assertFetchEndResponse((FirebirdFetchResponsePacket) executor.getQueryRowPacket());
         assertFalse(executor.next());
+    }
+    
+    @Test
+    void assertExecuteUsesColumnTypesFromClientMessageBlr() throws SQLException {
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
+        when(packet.getFetchSize()).thenReturn(1);
+        when(packet.getParameterTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.BLOB));
+        QueryResponseRow responseRow = new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.SMALLINT, (short) 0)));
+        when(proxyBackendHandler.next()).thenReturn(true);
+        when(proxyBackendHandler.getRowData()).thenReturn(responseRow);
+        executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
+        FirebirdFetchResponsePacket actualFirstPacket = (FirebirdFetchResponsePacket) executor.execute().iterator().next();
+        assertThat(actualFirstPacket.getRow().getCells().iterator().next().getColumnType(), is(FirebirdBinaryColumnType.BLOB));
+        when(packet.getParameterTypes()).thenReturn(Collections.emptyList());
+        FirebirdFetchResponsePacket actualSecondPacket = (FirebirdFetchResponsePacket) new FirebirdFetchStatementCommandExecutor(packet, connectionSession).execute().iterator().next();
+        assertThat(actualSecondPacket.getRow().getCells().iterator().next().getColumnType(), is(FirebirdBinaryColumnType.BLOB));
     }
     
     @Test
