@@ -27,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLineConvertUtils;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
-import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.config.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
@@ -41,8 +40,6 @@ import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepa
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.config.YamlMigrationJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.swapper.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
@@ -119,7 +116,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     public String schedule(final PipelineContextKey contextKey, final Collection<MigrationSourceTargetEntry> sourceTargetEntries, final String targetDatabaseName) {
         Collection<MigrationSourceTargetEntry> distinctSourceTargetEntries = new HashSet<>(sourceTargetEntries);
         checkSourceTableNames(distinctSourceTargetEntries);
-        MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(buildYamlJobConfiguration(contextKey, distinctSourceTargetEntries, targetDatabaseName));
+        MigrationJobConfiguration jobConfig = buildJobConfiguration(contextKey, distinctSourceTargetEntries, targetDatabaseName);
         jobManager.start(jobConfig);
         return jobConfig.getJobId();
     }
@@ -134,14 +131,12 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
         }
     }
     
-    private YamlMigrationJobConfiguration buildYamlJobConfiguration(final PipelineContextKey contextKey,
-                                                                    final Collection<MigrationSourceTargetEntry> sourceTargetEntries, final String targetDatabaseName) {
-        YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
-        result.setTargetDatabaseName(targetDatabaseName);
+    private MigrationJobConfiguration buildJobConfiguration(final PipelineContextKey contextKey, final Collection<MigrationSourceTargetEntry> sourceTargetEntries, final String targetDatabaseName) {
         Map<String, DataSourcePoolProperties> metaDataDataSource = dataSourcePersistService.load(contextKey, "MIGRATION");
         Map<String, List<DataNode>> sourceDataNodes = new LinkedHashMap<>(sourceTargetEntries.size(), 1F);
-        Map<String, YamlPipelineDataSourceConfiguration> configSources = new LinkedHashMap<>(sourceTargetEntries.size(), 1F);
+        Map<String, PipelineDataSourceConfiguration> configSources = new LinkedHashMap<>(sourceTargetEntries.size(), 1F);
         YamlDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
+        DatabaseType sourceDatabaseType = null;
         for (MigrationSourceTargetEntry each : sourceTargetEntries.stream()
                 .sorted(Comparator.comparing(MigrationSourceTargetEntry::getTargetTableName).thenComparing(each -> each.getSource().format())).collect(Collectors.toList())) {
             sourceDataNodes.computeIfAbsent(each.getTargetTableName(), key -> new LinkedList<>()).add(each.getSource());
@@ -155,34 +150,24 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
                     () -> new PipelineInvalidParameterException(dataSourceName + " doesn't exist. Run `SHOW MIGRATION SOURCE STORAGE UNITS;` to verify it."));
             Map<String, Object> sourceDataSourcePoolProps = dataSourceConfigSwapper.swapToMap(metaDataDataSource.get(dataSourceName));
             StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourcePoolProps);
-            configSources.put(dataSourceName, buildYamlPipelineDataSourceConfiguration(sourceDataSourceConfig.getType(), sourceDataSourceConfig.getParameter()));
-            DatabaseType sourceDatabaseType = sourceDataSourceConfig.getDatabaseType();
-            if (null == result.getSourceDatabaseType()) {
-                result.setSourceDatabaseType(sourceDatabaseType.getType());
-            } else if (!result.getSourceDatabaseType().equals(sourceDatabaseType.getType())) {
-                throw new PipelineInvalidParameterException("Source storage units have different database types");
+            configSources.put(dataSourceName, sourceDataSourceConfig);
+            DatabaseType currentSourceDatabaseType = sourceDataSourceConfig.getDatabaseType();
+            if (null == sourceDatabaseType) {
+                sourceDatabaseType = currentSourceDatabaseType;
+            } else {
+                ShardingSpherePreconditions.checkState(sourceDatabaseType.getType().equals(currentSourceDatabaseType.getType()),
+                        () -> new PipelineInvalidParameterException("Source storage units have different database types"));
             }
         }
-        result.setSources(configSources);
         ShardingSphereDatabase targetDatabase = PipelineContextManager.getProxyContext().getMetaDataContexts().getMetaData().getDatabase(targetDatabaseName);
         PipelineDataSourceConfiguration targetPipelineDataSourceConfig = buildTargetPipelineDataSourceConfiguration(targetDatabase);
-        result.setTarget(buildYamlPipelineDataSourceConfiguration(targetPipelineDataSourceConfig.getType(), targetPipelineDataSourceConfig.getParameter()));
-        result.setTargetDatabaseType(targetPipelineDataSourceConfig.getDatabaseType().getType());
         List<JobDataNodeEntry> tablesFirstDataNodes = sourceDataNodes.entrySet().stream()
                 .map(entry -> new JobDataNodeEntry(entry.getKey(), entry.getValue().subList(0, 1))).collect(Collectors.toList());
-        result.setTargetTableNames(new ArrayList<>(sourceDataNodes.keySet()).stream().sorted().collect(Collectors.toList()));
-        result.setTargetTableSchemaMap(buildTargetTableSchemaMap(sourceDataNodes));
-        result.setTablesFirstDataNodes(new JobDataNodeLine(tablesFirstDataNodes).marshal());
-        result.setJobShardingDataNodes(JobDataNodeLineConvertUtils.convertDataNodesToLines(sourceDataNodes).stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
-        result.setJobId(PipelineJobIdUtils.marshal(new MigrationJobId(contextKey, result.getJobShardingDataNodes())));
-        return result;
-    }
-    
-    private YamlPipelineDataSourceConfiguration buildYamlPipelineDataSourceConfiguration(final String type, final String param) {
-        YamlPipelineDataSourceConfiguration result = new YamlPipelineDataSourceConfiguration();
-        result.setType(type);
-        result.setParameter(param);
-        return result;
+        List<String> targetTableNames = new ArrayList<>(sourceDataNodes.keySet()).stream().sorted().collect(Collectors.toList());
+        List<JobDataNodeLine> jobShardingDataNodes = JobDataNodeLineConvertUtils.convertDataNodesToLines(sourceDataNodes);
+        String jobId = PipelineJobIdUtils.marshal(new MigrationJobId(contextKey, jobShardingDataNodes.stream().map(JobDataNodeLine::marshal).collect(Collectors.toList())));
+        return new MigrationJobConfiguration(jobId, targetDatabaseName, sourceDatabaseType, targetPipelineDataSourceConfig.getDatabaseType(), configSources, targetPipelineDataSourceConfig,
+                targetTableNames, buildTargetTableSchemaMap(sourceDataNodes), new JobDataNodeLine(tablesFirstDataNodes), jobShardingDataNodes, 3, 3);
     }
     
     private PipelineDataSourceConfiguration buildTargetPipelineDataSourceConfiguration(final ShardingSphereDatabase targetDatabase) {

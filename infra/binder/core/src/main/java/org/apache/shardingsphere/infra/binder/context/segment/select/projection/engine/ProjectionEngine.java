@@ -41,8 +41,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.Optional;
 
 /**
@@ -100,7 +100,7 @@ public final class ProjectionEngine {
     
     private ShorthandProjection createProjection(final ShorthandProjectionSegment projectionSegment) {
         IdentifierValue owner = projectionSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null);
-        Collection<Projection> projections = new LinkedHashSet<>(projectionSegment.getActualProjectionSegments().size(), 1F);
+        Collection<Projection> projections = new ArrayList<>(projectionSegment.getActualProjectionSegments().size());
         projectionSegment.getActualProjectionSegments().forEach(each -> createProjection(each).ifPresent(projections::add));
         return new ShorthandProjection(owner, projections);
     }

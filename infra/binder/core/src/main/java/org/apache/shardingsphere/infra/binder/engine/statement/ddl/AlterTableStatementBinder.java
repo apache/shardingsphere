@@ -58,7 +58,9 @@ public final class AlterTableStatementBinder implements SQLStatementBinder<Alter
                 .replaceColumnDefinitions(sqlStatement.getReplaceColumnDefinitions()).addRollupDefinitions(sqlStatement.getAddRollupDefinitions())
                 .dropRollupDefinitions(sqlStatement.getDropRollupDefinitions()).renameRollupDefinitions(sqlStatement.getRenameRollupDefinitions())
                 .renamePartitionDefinitions(sqlStatement.getRenamePartitionDefinitions()).addPartitionDefinitions(sqlStatement.getAddPartitionDefinitions())
-                .addPartitionsSegments(sqlStatement.getAddPartitionsSegments()).modifyPartitionDefinitions(sqlStatement.getModifyPartitionDefinitions()).build();
+                .addPartitionsSegments(sqlStatement.getAddPartitionsSegments()).modifyPartitionDefinitions(sqlStatement.getModifyPartitionDefinitions())
+                .exchangePartitionDefinitions(sqlStatement.getExchangePartitionDefinitions())
+                .build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
